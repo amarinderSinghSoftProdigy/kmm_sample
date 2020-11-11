@@ -7,10 +7,21 @@
         android:theme="@style/AppTheme"
         android:name=".MedicoApp"
         android:label="@string/app_name">
-        <activity android:name="com.zealsoftsol.medico.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
 
+        <activity android:name=".screens.auth.AuthActivity"/>
+
+        <activity android:name=".screens.auth.AuthRestoreActivity"/>
+
+        <activity android:name=".screens.auth.SignUpActivity"/>
+
+        <activity android:name=".SplashActivity" android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>

@@ -1,23 +1,29 @@
 package com.zealsoftsol.medico.core.viewmodel
 
-import com.zealsoftsol.medico.core.extensions.logIt
-import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.interop.currentThread
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.data.TestData
+import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.AuthState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class AuthViewModel(private val userRepo: UserRepo) : BaseViewModel(), AuthViewModelFacade {
-    override val testData: DataSource<TestData> = DataSource(TestData("empty"))
 
-    override fun asyncTest() {
+    override val credentials: DataSource<AuthCredentials> = DataSource(userRepo.getAuthCredentials())
+    override val state: DataSource<AuthState?> = DataSource(null)
+
+    override fun tryLogIn() {
         launch {
-            "launch in $currentThread".logIt()
-            delay(500)
-            "set async".warnIt()
-            testData.value = TestData("async")
+            delay(1000)
+            state.value = AuthState.Error.SomeError
         }
+    }
+
+    override fun updateAuthCredentials(credentials: AuthCredentials) {
+        this.credentials.value = credentials
+    }
+
+    override fun clearState() {
+        state.value = null
     }
 }

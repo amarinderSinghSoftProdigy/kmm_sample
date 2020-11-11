@@ -41,7 +41,7 @@ object Deps {
         const val playcorektx = "com.google.android.play:core-ktx:1.7.0"
 
         object Ktx {
-            const val core = "androidx.core:core-ktx:1.1.0"
+            const val core = "androidx.core:core-ktx:1.3.2"
         }
 
         object Compose {
@@ -99,6 +99,8 @@ object Deps {
         const val serial = "io.ktor:ktor-client-serialization:${Versions.ktor}"
         const val log = "io.ktor:ktor-client-logging:${Versions.ktor}"
     }
+
+    const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.6.3"
 }
 
 

@@ -1,7 +1,8 @@
 package com.zealsoftsol.medico.core.viewmodel
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.data.TestData
+import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.AuthState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -12,7 +13,12 @@ abstract class BaseViewModel : CoroutineScope {
 }
 
 interface AuthViewModelFacade {
-    val testData: DataSource<TestData>
+    val credentials: DataSource<AuthCredentials>
+    val state: DataSource<AuthState?>
 
-    fun asyncTest()
+    fun updateAuthCredentials(credentials: AuthCredentials)
+
+    fun tryLogIn()
+
+    fun clearState()
 }

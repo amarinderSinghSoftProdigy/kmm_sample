@@ -23,5 +23,12 @@ allprojects {
         jcenter()
         mavenCentral()
         maven("https://kotlin.bintray.com/kotlinx/")
+//        maven {
+//            url = uri("https://zealsoftsol.jfrog.io/artifactory/libs-release")
+//            credentials {
+//                username = "${project.property("artifactory_user")}"
+//                password = "${project.property("artifactory_password")}"
+//            }
+//        }
     }
 }

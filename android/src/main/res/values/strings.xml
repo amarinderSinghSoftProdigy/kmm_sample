@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Medico dev</string>
+    <string name="log_in">Log in</string>
+    <string name="phone_number_or_email">Phone Number or Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="sign_up_to_medico">Sign up to Medico Stores</string>
 </resources>

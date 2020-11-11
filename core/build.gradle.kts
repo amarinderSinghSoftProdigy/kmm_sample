@@ -45,6 +45,7 @@ kotlin {
                 implementation(Deps.Ktor.json)
                 implementation(Deps.Ktor.serial)
                 api(Deps.Kodein.DI.core)
+                implementation(Deps.multiplatformSettings)
             }
         }
         val androidMain by getting {
