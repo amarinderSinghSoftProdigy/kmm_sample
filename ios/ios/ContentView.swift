@@ -5,17 +5,17 @@ import core
 struct ContentView: View {
     let authViewModel: AuthViewModelFacade
     
-    @ObservedObject var testData: SwiftDatasource<DataTestData>
+    @ObservedObject var authState: SwiftDatasource<DataAuthState>
+    @ObservedObject var credentials: SwiftDatasource<DataAuthCredentials>
     
     init(authViewModel: AuthViewModelFacade) {
         self.authViewModel = authViewModel
-        testData = SwiftDatasource(dataSource: authViewModel.testData)
+        authState = SwiftDatasource(dataSource: authViewModel.state)
+        credentials = SwiftDatasource(dataSource: authViewModel.credentials)
     }
     
     var body: some View {
-        Text(String(testData.value?.test ?? "")).onTapGesture {
-            self.authViewModel.asyncTest()
-        }
+        Text("test")
     }
 }
 

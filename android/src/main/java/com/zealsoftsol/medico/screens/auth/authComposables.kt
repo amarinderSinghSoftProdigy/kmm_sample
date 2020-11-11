@@ -73,7 +73,7 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
         AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter))
         val authState = authViewModel.state.flow.collectAsState()
         when (authState.value) {
-            AuthState.Error.SomeError -> AlertDialog(
+            AuthState.ERROR -> AlertDialog(
                 onDismissRequest = { authViewModel.clearState() },
                 title = {
                     Text(

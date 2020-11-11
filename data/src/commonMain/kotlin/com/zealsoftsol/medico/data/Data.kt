@@ -5,12 +5,8 @@ data class AuthCredentials(
     val password: String
 )
 
-sealed class AuthState {
-    object Success : AuthState()
-
-    sealed class Error : AuthState() {
-        object SomeError : Error()
-    }
+enum class AuthState {
+    SUCCESS, ERROR
 }
 
 enum class UserType {

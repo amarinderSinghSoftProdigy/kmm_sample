@@ -15,7 +15,7 @@ internal class AuthViewModel(private val userRepo: UserRepo) : BaseViewModel(), 
     override fun tryLogIn() {
         launch {
             delay(1000)
-            state.value = AuthState.Error.SomeError
+            state.value = AuthState.ERROR
         }
     }
 
