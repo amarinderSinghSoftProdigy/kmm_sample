@@ -1,0 +1,192 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.zealsoftsol.medico.dev"
+4    android:versionCode="11"
+5    android:versionName="0.0.1[dev]" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+8-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml
+9        android:targetSdkVersion="21" />
+9-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+11-->[com.google.firebase:firebase-crashlytics:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/f3fc97cc1e4a9bbe975ec350fc727116/firebase-crashlytics-17.2.2/AndroidManifest.xml:10:5-67
+11-->[com.google.firebase:firebase-crashlytics:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/f3fc97cc1e4a9bbe975ec350fc727116/firebase-crashlytics-17.2.2/AndroidManifest.xml:10:22-64
+12    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:25:5-79
+13-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:25:22-76
+14    <uses-permission android:name="android.permission.WAKE_LOCK" />
+14-->[com.google.android.gms:play-services-measurement-api:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ff22d81fe10bfbcdab5afa49baa5ed78/play-services-measurement-api-18.0.0/AndroidManifest.xml:24:5-68
+14-->[com.google.android.gms:play-services-measurement-api:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ff22d81fe10bfbcdab5afa49baa5ed78/play-services-measurement-api-18.0.0/AndroidManifest.xml:24:22-65
+15    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+15-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:26:5-110
+15-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:26:22-107
+16
+17    <application
+17-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:4:5-17:19
+18        android:name="com.zealsoftsol.medico.MedicoApp"
+18-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:8:9-34
+19        android:allowBackup="false"
+19-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:5:9-36
+20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+20-->[androidx.core:core:1.5.0-alpha01] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ec660a37587772c1f6ed012d59408b6c/core-1.5.0-alpha01/AndroidManifest.xml:24:18-86
+21        android:debuggable="true"
+22        android:label="@string/app_name"
+22-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:9:9-41
+23        android:supportsRtl="true"
+23-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:6:9-35
+24        android:testOnly="true"
+25        android:theme="@style/AppTheme" >
+25-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:7:9-40
+26        <activity android:name="com.zealsoftsol.medico.MainActivity" >
+26-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:10:9-16:20
+26-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:10:19-69
+27            <intent-filter>
+27-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:11:13-15:29
+28                <action android:name="android.intent.action.MAIN" />
+28-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:12:17-68
+28-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:12:25-66
+29
+30                <category android:name="android.intent.category.LAUNCHER" />
+30-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:14:17-76
+30-->/Users/arnis/repos/ZealsoftMedico/android/src/main/AndroidManifest.xml:14:27-74
+31            </intent-filter>
+32        </activity>
+33        <activity
+33-->[androidx.ui:ui-tooling:1.0.0-alpha05] /Users/arnis/.gradle/caches/transforms-2/files-2.1/9a06f58fdcfa05880bad960762e852ff/ui-tooling-1.0.0-alpha05/AndroidManifest.xml:25:9-28:79
+34            android:name="androidx.ui.tooling.preview.PreviewActivity"
+34-->[androidx.ui:ui-tooling:1.0.0-alpha05] /Users/arnis/.gradle/caches/transforms-2/files-2.1/9a06f58fdcfa05880bad960762e852ff/ui-tooling-1.0.0-alpha05/AndroidManifest.xml:26:13-71
+35            android:exported="true"
+35-->[androidx.ui:ui-tooling:1.0.0-alpha05] /Users/arnis/.gradle/caches/transforms-2/files-2.1/9a06f58fdcfa05880bad960762e852ff/ui-tooling-1.0.0-alpha05/AndroidManifest.xml:27:13-36
+36            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+36-->[androidx.ui:ui-tooling:1.0.0-alpha05] /Users/arnis/.gradle/caches/transforms-2/files-2.1/9a06f58fdcfa05880bad960762e852ff/ui-tooling-1.0.0-alpha05/AndroidManifest.xml:28:13-76
+37
+38        <service
+38-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:8:9-14:19
+39            android:name="com.google.firebase.components.ComponentDiscoveryService"
+39-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:9:13-84
+40            android:directBootAware="true"
+40-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:35:13-43
+41            android:exported="false" >
+41-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:10:13-37
+42            <meta-data
+42-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:11:13-13:85
+43                android:name="com.google.firebase.components:com.google.firebase.analytics.ktx.FirebaseAnalyticsKtxRegistrar"
+43-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:12:17-126
+44                android:value="com.google.firebase.components.ComponentRegistrar" />
+44-->[com.google.firebase:firebase-analytics-ktx:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/d6cffd65a8eb6ec6348288190b6cca85/firebase-analytics-ktx-18.0.0/AndroidManifest.xml:13:17-82
+45            <meta-data
+45-->[com.google.firebase:firebase-crashlytics-ktx:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/182560d23713007345438154eed620fa/firebase-crashlytics-ktx-17.2.2/AndroidManifest.xml:27:13-29:85
+46                android:name="com.google.firebase.components:com.google.firebase.crashlytics.ktx.FirebaseCrashlyticsKtxRegistrar"
+46-->[com.google.firebase:firebase-crashlytics-ktx:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/182560d23713007345438154eed620fa/firebase-crashlytics-ktx-17.2.2/AndroidManifest.xml:28:17-130
+47                android:value="com.google.firebase.components.ComponentRegistrar" />
+47-->[com.google.firebase:firebase-crashlytics-ktx:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/182560d23713007345438154eed620fa/firebase-crashlytics-ktx-17.2.2/AndroidManifest.xml:29:17-82
+48            <meta-data
+48-->[com.google.firebase:firebase-crashlytics:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/f3fc97cc1e4a9bbe975ec350fc727116/firebase-crashlytics-17.2.2/AndroidManifest.xml:16:13-18:85
+49                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
+49-->[com.google.firebase:firebase-crashlytics:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/f3fc97cc1e4a9bbe975ec350fc727116/firebase-crashlytics-17.2.2/AndroidManifest.xml:17:17-115
+50                android:value="com.google.firebase.components.ComponentRegistrar" />
+50-->[com.google.firebase:firebase-crashlytics:17.2.2] /Users/arnis/.gradle/caches/transforms-2/files-2.1/f3fc97cc1e4a9bbe975ec350fc727116/firebase-crashlytics-17.2.2/AndroidManifest.xml:18:17-82
+51            <meta-data
+51-->[com.google.firebase:firebase-common-ktx:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/12dafa6214e4db88c98549cf2dad7cd7/firebase-common-ktx-19.3.1/AndroidManifest.xml:15:13-17:85
+52                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonKtxRegistrar"
+52-->[com.google.firebase:firebase-common-ktx:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/12dafa6214e4db88c98549cf2dad7cd7/firebase-common-ktx-19.3.1/AndroidManifest.xml:16:17-113
+53                android:value="com.google.firebase.components.ComponentRegistrar" />
+53-->[com.google.firebase:firebase-common-ktx:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/12dafa6214e4db88c98549cf2dad7cd7/firebase-common-ktx-19.3.1/AndroidManifest.xml:17:17-82
+54            <meta-data
+54-->[com.google.android.gms:play-services-measurement-api:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ff22d81fe10bfbcdab5afa49baa5ed78/play-services-measurement-api-18.0.0/AndroidManifest.xml:30:13-32:85
+55                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+55-->[com.google.android.gms:play-services-measurement-api:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ff22d81fe10bfbcdab5afa49baa5ed78/play-services-measurement-api-18.0.0/AndroidManifest.xml:31:17-139
+56                android:value="com.google.firebase.components.ComponentRegistrar" />
+56-->[com.google.android.gms:play-services-measurement-api:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ff22d81fe10bfbcdab5afa49baa5ed78/play-services-measurement-api-18.0.0/AndroidManifest.xml:32:17-82
+57            <meta-data
+57-->[com.google.firebase:firebase-installations:16.3.3] /Users/arnis/.gradle/caches/transforms-2/files-2.1/10b1eb4cd4847d5338e174f0891bb1de/firebase-installations-16.3.3/AndroidManifest.xml:17:13-19:85
+58                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+58-->[com.google.firebase:firebase-installations:16.3.3] /Users/arnis/.gradle/caches/transforms-2/files-2.1/10b1eb4cd4847d5338e174f0891bb1de/firebase-installations-16.3.3/AndroidManifest.xml:18:17-127
+59                android:value="com.google.firebase.components.ComponentRegistrar" />
+59-->[com.google.firebase:firebase-installations:16.3.3] /Users/arnis/.gradle/caches/transforms-2/files-2.1/10b1eb4cd4847d5338e174f0891bb1de/firebase-installations-16.3.3/AndroidManifest.xml:19:17-82
+60        </service>
+61        <service
+61-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:29:9-35:19
+62            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+62-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:30:13-103
+63            android:exported="false" >
+63-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:31:13-37
+64            <meta-data
+64-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:32:13-34:39
+65                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+65-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:33:17-94
+66                android:value="cct" />
+66-->[com.google.android.datatransport:transport-backend-cct:2.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/911d2c53b40c8086c94022027fdd9584/transport-backend-cct-2.3.1/AndroidManifest.xml:34:17-36
+67        </service>
+68
+69        <provider
+69-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:26:9-31:39
+70            android:name="com.google.firebase.provider.FirebaseInitProvider"
+70-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:27:13-77
+71            android:authorities="com.zealsoftsol.medico.dev.firebaseinitprovider"
+71-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:28:13-72
+72            android:directBootAware="true"
+72-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:29:13-43
+73            android:exported="false"
+73-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:30:13-37
+74            android:initOrder="100" />
+74-->[com.google.firebase:firebase-common:19.3.1] /Users/arnis/.gradle/caches/transforms-2/files-2.1/ae103cf3882b65a35920d63aa13ebab6/firebase-common-19.3.1/AndroidManifest.xml:31:13-36
+75
+76        <receiver
+76-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:29:9-33:20
+77            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+77-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:30:13-85
+78            android:enabled="true"
+78-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:31:13-35
+79            android:exported="false" >
+79-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:32:13-37
+80        </receiver>
+81
+82        <service
+82-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:35:9-38:40
+83            android:name="com.google.android.gms.measurement.AppMeasurementService"
+83-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:36:13-84
+84            android:enabled="true"
+84-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:37:13-35
+85            android:exported="false" />
+85-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:38:13-37
+86        <service
+86-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:39:9-43:72
+87            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+87-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:40:13-87
+88            android:enabled="true"
+88-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:41:13-35
+89            android:exported="false"
+89-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:42:13-37
+90            android:permission="android.permission.BIND_JOB_SERVICE" />
+90-->[com.google.android.gms:play-services-measurement:18.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/dfa972e3c655230f6ad4df4497074cb3/play-services-measurement-18.0.0/AndroidManifest.xml:43:13-69
+91
+92        <meta-data
+92-->[com.google.android.gms:play-services-basement:17.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/29331e8e49ae2aa329cc28faf45fea48/play-services-basement-17.0.0/AndroidManifest.xml:23:9-25:69
+93            android:name="com.google.android.gms.version"
+93-->[com.google.android.gms:play-services-basement:17.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/29331e8e49ae2aa329cc28faf45fea48/play-services-basement-17.0.0/AndroidManifest.xml:24:13-58
+94            android:value="@integer/google_play_services_version" />
+94-->[com.google.android.gms:play-services-basement:17.0.0] /Users/arnis/.gradle/caches/transforms-2/files-2.1/29331e8e49ae2aa329cc28faf45fea48/play-services-basement-17.0.0/AndroidManifest.xml:25:13-66
+95
+96        <service
+96-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:26:9-30:19
+97            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+97-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:27:13-117
+98            android:exported="false"
+98-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:28:13-37
+99            android:permission="android.permission.BIND_JOB_SERVICE" >
+99-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:29:13-69
+100        </service>
+101
+102        <receiver
+102-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:32:9-34:40
+103            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+103-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:33:13-132
+104            android:exported="false" />
+104-->[com.google.android.datatransport:transport-runtime:2.2.4] /Users/arnis/.gradle/caches/transforms-2/files-2.1/517e5abc933a2a99b2cff5ecb4d9405f/transport-runtime-2.2.4/AndroidManifest.xml:34:13-37
+105    </application>
+106
+107</manifest>

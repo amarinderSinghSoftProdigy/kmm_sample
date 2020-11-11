@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="medico-mobile.data.commonMain" target="1.6" />
+      <module name="medico-mobile.data.commonTest" target="1.6" />
+      <module name="medico-mobile.data.jvmMain" target="1.6" />
+      <module name="medico-mobile.data.jvmTest" target="1.6" />
+      <module name="ZealsoftMedico.core.commonMain" target="1.6" />
+      <module name="ZealsoftMedico.core.commonTest" target="1.6" />
+      <module name="ZealsoftMedico.core.jvmMain" target="1.6" />
+      <module name="ZealsoftMedico.core.jvmTest" target="1.6" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
