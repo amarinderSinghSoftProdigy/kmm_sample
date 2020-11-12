@@ -4,18 +4,38 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal class AuthViewModel(private val userRepo: UserRepo) : BaseViewModel(), AuthViewModelFacade {
+internal class AuthViewModel(
+    private val userRepo: UserRepo
+) : BaseViewModel(), AuthViewModelFacade {
 
     override val credentials: DataSource<AuthCredentials> = DataSource(userRepo.getAuthCredentials())
-    override val state: DataSource<AuthState?> = DataSource(null)
+    override val state: DataSource<AuthState?> = DataSource(if (userRepo.isLoggedIn) AuthState.SUCCESS else null)
 
     override fun tryLogIn() {
-        launch {
-            delay(1000)
-            state.value = AuthState.ERROR
+        uniqueJob("login") {
+            launch {
+                state.value = AuthState.IN_PROGRESS
+                state.value = if (userRepo.login(credentials.value)) {
+                    AuthState.SUCCESS
+                } else {
+                    AuthState.ERROR
+                }
+            }
+        }
+    }
+
+    override fun logOut() {
+        uniqueJob("logout") {
+            launch {
+                state.value = AuthState.IN_PROGRESS
+                state.value = if (userRepo.logout()) {
+                    null
+                } else {
+                    AuthState.SUCCESS
+                }
+            }
         }
     }
 

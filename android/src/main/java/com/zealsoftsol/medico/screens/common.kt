@@ -1,13 +1,16 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 
@@ -26,6 +29,13 @@ fun MedicoButton(text: String, onClick: () -> Unit) {
         elevation = 2.dp,
         modifier = Modifier.fillMaxWidth().height(48.dp).clickable(onClick = onClick)
     ) {
-        Text(text = text)
+        BasicText(text = text)
+    }
+}
+
+@Composable
+inline fun <reified T> launchScreen() {
+    ContextAmbient.current.let {
+        it.startActivity(Intent(it, T::class.java))
     }
 }

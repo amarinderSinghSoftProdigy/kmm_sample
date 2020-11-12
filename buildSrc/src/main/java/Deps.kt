@@ -9,7 +9,7 @@ object Versions {
     const val work = "2.0.1"
     const val kodeinDi = "7.1.0"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-alpha05"
+    const val compose = "1.0.0-alpha07"
 }
 
 object Deps {

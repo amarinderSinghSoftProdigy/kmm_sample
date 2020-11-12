@@ -10,8 +10,11 @@ class MockAuthViewModel : AuthViewModelFacade {
     override val state: DataSource<AuthState?> = DataSource(null)
 
     override fun tryLogIn() {
-
     }
+
+    override fun logOut() {
+    }
+
     override fun updateAuthCredentials(credentials: AuthCredentials) {
     }
 

@@ -15,7 +15,10 @@ struct ContentView: View {
     }
     
     var body: some View {
-        Text("test")
+        Text(credentials.value!.phoneNumberOrEmail).onTapGesture {
+            self.authViewModel.updateAuthCredentials(credentials: DataAuthCredentials(phoneNumberOrEmail: "sdfsd", password: "dfsdf"))
+            self.authViewModel.tryLogIn()
+        }
     }
 }
 

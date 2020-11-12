@@ -12,7 +12,7 @@ fun startKodein(context: Any) = DI {
     platformDependencies(context)
     bind<NetworkClient>() with singleton { NetworkClient(instance()) }
     bind<AuthViewModel>() with singleton { AuthViewModel(instance()) }
-    bind<UserRepo>() with singleton { UserRepo(instance<NetworkClient>(), instance()) }
+    bind<UserRepo>() with singleton { UserRepo(instance<NetworkClient>(), instance()/*, instance()*/) }
 }
 
 expect fun DI.MainBuilder.platformDependencies(context: Any)

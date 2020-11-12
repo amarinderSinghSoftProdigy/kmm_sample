@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonConstants
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -33,13 +34,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.screenHeight
+import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
 import com.zealsoftsol.medico.core.viewmodel.mock.MockAuthViewModel
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.launchScreen
 
 @Composable
 fun AuthScreen(authViewModel: AuthViewModelFacade) {
@@ -71,8 +75,11 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
             }
         }
         AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter))
+
         val authState = authViewModel.state.flow.collectAsState()
         when (authState.value) {
+            AuthState.IN_PROGRESS -> ContextAmbient.current.toast("waiting")
+            AuthState.SUCCESS -> launchScreen<MainActivity>()
             AuthState.ERROR -> AlertDialog(
                 onDismissRequest = { authViewModel.clearState() },
                 title = {
@@ -90,12 +97,12 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
                 confirmButton = {
                     Button(
                         onClick = { authViewModel.clearState() },
-                        backgroundColor = Color.Transparent,
-                        elevation = 0.dp
+                        colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
+                        elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
                     ) {
                         Text(
                             text = "OKAY",
-                            style = MaterialTheme.typography.subtitle2.copy(color = ConstColors.lightBlue)
+                            style = MaterialTheme.typography.subtitle2
                         )
                     }
                 }
