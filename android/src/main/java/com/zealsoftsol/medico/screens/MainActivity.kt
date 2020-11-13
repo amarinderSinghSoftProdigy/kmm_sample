@@ -27,6 +27,7 @@ import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
+import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.screens.auth.AuthActivity
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -43,9 +44,12 @@ class MainActivity : AppCompatActivity(), DIAware {
         setContent {
             AppTheme {
                 val authState = authViewModel.state.flow.collectAsState()
-                if (authState.value == null) {
-                    launchScreen<AuthActivity>()
-                    finish()
+                when (authState.value) {
+                    AuthState.IN_PROGRESS -> IndefiniteProgressBar()
+                    null -> {
+                        launchScreen<AuthActivity>()
+                        finish()
+                    }
                 }
                 val scaffoldState = rememberScaffoldState()
                 Scaffold(

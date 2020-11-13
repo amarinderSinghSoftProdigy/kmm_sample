@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.ConstColors
 
 @Composable
@@ -47,4 +49,9 @@ inline fun <reified T> launchScreen() {
     ContextAmbient.current.let {
         it.startActivity(Intent(it, T::class.java))
     }
+}
+
+@Composable
+fun IndefiniteProgressBar() {
+    Dialog(onDismissRequest = {}) { CircularProgressIndicator() }
 }

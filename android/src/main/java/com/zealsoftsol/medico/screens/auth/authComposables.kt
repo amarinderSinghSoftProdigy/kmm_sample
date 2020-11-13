@@ -32,7 +32,10 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
@@ -41,11 +44,11 @@ import androidx.ui.tooling.preview.Preview
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
 import com.zealsoftsol.medico.core.viewmodel.mock.MockAuthViewModel
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.screens.IndefiniteProgressBar
 import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.TabBar
@@ -103,18 +106,21 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
 
         val authState = authViewModel.state.flow.collectAsState()
         when (authState.value) {
-            AuthState.IN_PROGRESS -> ContextAmbient.current.toast("waiting")
-            AuthState.SUCCESS -> launchScreen<MainActivity>()
+            AuthState.IN_PROGRESS -> IndefiniteProgressBar()
+            AuthState.SUCCESS -> {
+                launchScreen<MainActivity>()
+                (ContextAmbient.current as AuthActivity).finish()
+            }
             AuthState.ERROR -> AlertDialog(
                 onDismissRequest = { authViewModel.clearState() },
                 title = {
-                    Text(
+                    BasicText(
                         text = "Log in error",
                         style = MaterialTheme.typography.h6
                     )
                 },
                 text = {
-                    Text(
+                    BasicText(
                         text = "Log in or password is wrong. Please try again or restore your password",
                         style = MaterialTheme.typography.subtitle1
                     )
@@ -173,8 +179,11 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
         MedicoButton(text = stringResource(id = R.string.log_in)) {
             authViewModel.tryLogIn()
         }
+        val string = AnnotatedString.Builder(stringResource(id = R.string.sign_up_to_medico)).apply {
+            addStyle(SpanStyle(fontWeight = FontWeight.W700), 0, stringResource(id = R.string.sign_up).length)
+        }.toAnnotatedString()
         Text(
-            text = stringResource(id = R.string.sign_up_to_medico),
+            text = string,
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
