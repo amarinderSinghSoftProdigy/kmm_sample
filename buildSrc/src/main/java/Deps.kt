@@ -9,7 +9,7 @@ object Versions {
     const val work = "2.0.1"
     const val kodeinDi = "7.1.0"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-alpha05"
+    const val compose = "1.0.0-alpha07"
 }
 
 object Deps {
@@ -41,7 +41,7 @@ object Deps {
         const val playcorektx = "com.google.android.play:core-ktx:1.7.0"
 
         object Ktx {
-            const val core = "androidx.core:core-ktx:1.1.0"
+            const val core = "androidx.core:core-ktx:1.3.2"
         }
 
         object Compose {
@@ -99,6 +99,9 @@ object Deps {
         const val serial = "io.ktor:ktor-client-serialization:${Versions.ktor}"
         const val log = "io.ktor:ktor-client-logging:${Versions.ktor}"
     }
+
+    const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.6.3"
+    const val libphonenumber = "com.googlecode.libphonenumber:libphonenumber:8.12.7"
 }
 
 

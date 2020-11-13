@@ -40,11 +40,14 @@ kotlin {
             dependencies {
                 api(project(":data"))
                 api(Deps.Kotlin.Coroutines.core)
+                api(Deps.Kodein.DI.core)
                 implementation(Deps.Ktor.Client.core)
                 implementation(Deps.Ktor.auth)
                 implementation(Deps.Ktor.json)
                 implementation(Deps.Ktor.serial)
-                api(Deps.Kodein.DI.core)
+                implementation(Deps.Ktor.log)
+                implementation(Deps.multiplatformSettings)
+
             }
         }
         val androidMain by getting {

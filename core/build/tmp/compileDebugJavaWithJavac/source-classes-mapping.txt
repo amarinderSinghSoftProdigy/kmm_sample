@@ -1,2 +1,0 @@
-com/zealsoftsol/medico/BuildConfig.java
- com.zealsoftsol.medico.BuildConfig

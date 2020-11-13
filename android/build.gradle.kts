@@ -84,4 +84,5 @@ dependencies {
     implementation(platform(Deps.Firebase.BOM))
     implementation(Deps.Firebase.analytics)
     implementation(Deps.Firebase.crashlytics)
+    implementation(Deps.libphonenumber)
 }
