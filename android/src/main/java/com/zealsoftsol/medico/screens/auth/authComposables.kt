@@ -173,7 +173,7 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             text = stringResource(id = R.string.forgot_password),
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
-                context.startActivity(Intent(context, AuthRestoreActivity::class.java))
+                context.launchScreen<AuthRestoreActivity>()
             })
         )
         MedicoButton(text = stringResource(id = R.string.log_in)) {
@@ -187,7 +187,7 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
-                context.startActivity(Intent(context, SignUpActivity::class.java))
+                context.launchScreen<SignUpActivity>()
             })
         )
     }
