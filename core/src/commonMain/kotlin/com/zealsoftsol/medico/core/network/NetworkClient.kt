@@ -66,7 +66,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : CoroutineScope, Networ
     }
 
     private inline fun HttpRequestBuilder.withToken() {
-        token?.let { header("Bearer", it) } ?: "no token for request".warnIt()
+        token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
 
     companion object {

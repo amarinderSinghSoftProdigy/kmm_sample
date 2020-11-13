@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity(), DIAware {
         setContent {
             AppTheme {
                 val authState = authViewModel.state.flow.collectAsState()
-                if (authState.value == null) launchScreen<AuthActivity>()
+                if (authState.value == null) {
+                    launchScreen<AuthActivity>()
+                    finish()
+                }
                 val scaffoldState = rememberScaffoldState()
                 Scaffold(
                     scaffoldState = scaffoldState,
