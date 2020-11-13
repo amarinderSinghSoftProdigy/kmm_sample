@@ -6,7 +6,7 @@ import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 
 class MockAuthViewModel : AuthViewModelFacade {
-    override val credentials: DataSource<AuthCredentials> = DataSource(AuthCredentials("", ""))
+    override val credentials: DataSource<AuthCredentials> = DataSource(AuthCredentials("", null, ""))
     override val state: DataSource<AuthState?> = DataSource(null)
 
     override fun tryLogIn() {
@@ -15,7 +15,7 @@ class MockAuthViewModel : AuthViewModelFacade {
     override fun logOut() {
     }
 
-    override fun updateAuthCredentials(credentials: AuthCredentials) {
+    override fun updateAuthCredentials(emailOrPhone: String, password: String) {
     }
 
     override fun clearState() {

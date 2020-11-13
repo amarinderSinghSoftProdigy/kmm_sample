@@ -2,10 +2,15 @@ package com.zealsoftsol.medico.data
 
 data class AuthCredentials(
     val phoneNumberOrEmail: String,
-    val password: String
+    val type: Type?,
+    val password: String,
 ) {
-    fun getPhoneNumber(): String? = phoneNumberOrEmail.takeIf { !it.contains("@") }
-    fun getEmail(): String? = phoneNumberOrEmail.takeIf { it.contains("@") }
+    fun getPhoneNumber(): String? = phoneNumberOrEmail.takeIf { type == Type.PHONE }
+    fun getEmail(): String? = phoneNumberOrEmail.takeIf { type == Type.EMAIL }
+
+    enum class Type {
+        EMAIL, PHONE
+    }
 }
 
 enum class AuthState {

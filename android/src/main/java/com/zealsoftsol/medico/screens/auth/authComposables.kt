@@ -23,6 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,11 +44,13 @@ import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
 import com.zealsoftsol.medico.core.viewmodel.mock.MockAuthViewModel
+import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.TabBar
 import com.zealsoftsol.medico.screens.launchScreen
+import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 
 @OptIn(ExperimentalLayout::class)
 @Composable
@@ -145,18 +148,19 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             text = stringResource(id = R.string.log_in),
             style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onPrimary)
         )
-        InputField(
+        PhoneFormatInputField(
             hint = stringResource(id = R.string.phone_number_or_email),
-            text = credentialsState.value.phoneNumberOrEmail
+            text = credentialsState.value.phoneNumberOrEmail,
+            useFormat = credentialsState.value.type == AuthCredentials.Type.PHONE
         ) {
-            authViewModel.updateAuthCredentials(credentialsState.value.copy(phoneNumberOrEmail = it))
+            authViewModel.updateAuthCredentials(it, credentialsState.value.password)
         }
         InputField(
             hint = stringResource(id = R.string.password),
             text = credentialsState.value.password,
             hideCharacters = true
         ) {
-            authViewModel.updateAuthCredentials(credentialsState.value.copy(password = it))
+            authViewModel.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
         }
         val context = ContextAmbient.current
         BasicText(
@@ -178,6 +182,13 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             })
         )
     }
+}
+
+@Composable
+fun PhoneFormatInputField(hint: String, text: String, useFormat: Boolean, onValueChange: (String) -> Unit) {
+    val context = ContextAmbient.current
+    val formatter = remember { PhoneNumberFormatter(context.resources.configuration.locale.toLanguageTag()) }
+    InputField(hint = hint, text = if (useFormat) formatter.verifyNumber(text).formattedPhone else text, onValueChange = onValueChange)
 }
 
 @Composable

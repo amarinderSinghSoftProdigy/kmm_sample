@@ -39,8 +39,8 @@ internal class AuthViewModel(
         }
     }
 
-    override fun updateAuthCredentials(credentials: AuthCredentials) {
-        this.credentials.value = credentials
+    override fun updateAuthCredentials(emailOrPhone: String, password: String) {
+        credentials.value = userRepo.updateAuthCredentials(credentials.value, emailOrPhone, password)
     }
 
     override fun clearState() {

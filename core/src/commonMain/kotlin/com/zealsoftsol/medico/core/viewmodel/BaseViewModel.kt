@@ -27,7 +27,7 @@ interface AuthViewModelFacade {
     val credentials: DataSource<AuthCredentials>
     val state: DataSource<AuthState?>
 
-    fun updateAuthCredentials(credentials: AuthCredentials)
+    fun updateAuthCredentials(emailOrPhone: String, password: String)
 
     fun tryLogIn()
 

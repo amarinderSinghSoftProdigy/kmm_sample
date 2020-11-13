@@ -101,6 +101,7 @@ object Deps {
     }
 
     const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.6.3"
+    const val libphonenumber = "com.googlecode.libphonenumber:libphonenumber:8.12.7"
 }
 
 

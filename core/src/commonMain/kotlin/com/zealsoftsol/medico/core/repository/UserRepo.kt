@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.repository
 import com.russhwolf.settings.Settings
 import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRequest
@@ -11,6 +12,7 @@ import kotlinx.serialization.json.Json
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
     private val settings: Settings,
+    private val phoneEmailVerifier: PhoneEmailVerifier,
 ) {
     val isLoggedIn: Boolean
         get() = settings.hasKey(AUTH_USER_KEY)
@@ -54,9 +56,19 @@ class UserRepo(
     }
 
     fun getAuthCredentials(): AuthCredentials {
+        val id = settings.getString(AUTH_ID_KEY, "")
         return AuthCredentials(
-            settings.getString(AUTH_ID_KEY, ""),
-            settings.getString(AUTH_PASS_KEY, "")
+            id,
+            phoneEmailVerifier.verify(id),
+            settings.getString(AUTH_PASS_KEY, ""),
+        )
+    }
+
+    fun updateAuthCredentials(current: AuthCredentials, emailOrPhone: String, password: String): AuthCredentials {
+        return current.copy(
+            emailOrPhone,
+            phoneEmailVerifier.verify(emailOrPhone),
+            password,
         )
     }
 
