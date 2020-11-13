@@ -7,12 +7,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ConstraintLayout
+import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonConstants
@@ -28,46 +31,65 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
 import com.zealsoftsol.medico.ConstColors
-import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.screenHeight
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
 import com.zealsoftsol.medico.core.viewmodel.mock.MockAuthViewModel
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.TabBar
 import com.zealsoftsol.medico.screens.launchScreen
 
+@OptIn(ExperimentalLayout::class)
 @Composable
 fun AuthScreen(authViewModel: AuthViewModelFacade) {
-    Box {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            asset = imageResource(id = R.drawable.auth_logo),
-            modifier = Modifier.fillMaxWidth().aspectRatio(1f)
-        )
-        Image(
-            painter = ColorPainter(Color(0,132,212,178)),
+            painter = ColorPainter(Color(0xff003657)),
             modifier = Modifier.fillMaxSize()
         )
-        Image(
-            painter = ColorPainter(Color.Transparent),
-            modifier = Modifier.fillMaxSize()
-                .background(
-                    VerticalGradient(
-                        0f to Color(0xff003657),
-                        1f to Color(0x00003657),
-                        startY = ContextAmbient.current.screenHeight.toFloat(),
-                        endY = 0f
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (image, gradient, solid) = createRefs()
+
+            Image(
+                asset = imageResource(id = R.drawable.auth_logo),
+                modifier = Modifier.constrainAs(image) {
+                    top.linkTo(parent.top)
+                    centerHorizontallyTo(parent)
+                }.fillMaxWidth().aspectRatio(1f)
+            )
+            Image(
+                painter = ColorPainter(Color.Transparent),
+                modifier = Modifier.constrainAs(gradient) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(image.bottom)
+                    centerHorizontallyTo(parent)
+                }.fillMaxWidth().aspectRatio(1.0925f)
+                    .background(
+                        VerticalGradient(
+                            0f to Color(0x00003657),
+                            1f to Color((0xff003657)),
+                            startY = 0f,
+                            endY = ContextAmbient.current.screenWidth / 1.0925f
+                        )
                     )
-                )
-        )
+            )
+            Image(
+                painter = ColorPainter(Color(0,132,212,178)),
+                modifier = Modifier.constrainAs(solid) {
+                    centerTo(parent)
+                }.fillMaxSize()
+            )
+        }
         TabBar {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(asset = imageResource(id = R.drawable.medico_logo), modifier = Modifier.align(
@@ -119,7 +141,7 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
         .background(MaterialTheme.colors.primary)
         .padding(24.dp)
     ) {
-        Text(
+        BasicText(
             text = stringResource(id = R.string.log_in),
             style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onPrimary)
         )
@@ -137,7 +159,7 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             authViewModel.updateAuthCredentials(credentialsState.value.copy(password = it))
         }
         val context = ContextAmbient.current
-        Text(
+        BasicText(
             text = stringResource(id = R.string.forgot_password),
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
@@ -163,9 +185,13 @@ fun InputField(hint: String, text: String, hideCharacters: Boolean = false, onVa
     Spacer(modifier = Modifier.size(12.dp))
     TextField(
         value = text,
-        label = { Text(text = hint) },
+        label = {
+            BasicText(
+                text = hint,
+                style = TextStyle.Default.copy(color = if (text.isEmpty()) ConstColors.gray else ConstColors.lightBlue)
+            )
+        },
         activeColor = ConstColors.lightBlue,
-//        inactiveColor = Color(0xff8E8E93),
         backgroundColor = Color.White,
         onValueChange = onValueChange,
         visualTransformation = if (hideCharacters) PasswordVisualTransformation() else VisualTransformation.None,
