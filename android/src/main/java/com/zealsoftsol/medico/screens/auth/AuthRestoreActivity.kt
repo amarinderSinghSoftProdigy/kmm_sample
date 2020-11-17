@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
 import com.zealsoftsol.medico.data.PasswordReset
 import com.zealsoftsol.medico.screens.IndefiniteProgressBar
@@ -66,13 +67,13 @@ class AuthRestoreActivity : AppCompatActivity(), DIAware {
             AppTheme {
                 val resetState = authViewModel.resetPasswordUiState.flow.collectAsState()
                 when (val uiState = resetState.value.uiState) {
-                    is PasswordReset.Default -> AuthRestoreScreen(authViewModel, uiState.phoneNumber)
+                    is PasswordReset.Default -> AuthRestoreScreen(authViewModel, uiState)
                     is PasswordReset.AwaitVerification -> AuthAwaitVerificationScreen(
                         authViewModel,
                         uiState,
                         dateFormat,
                     )
-                    is PasswordReset.EnterNewPassword -> AuthResetPasswordScreen(authViewModel)
+                    is PasswordReset.EnterNewPassword -> AuthResetPasswordScreen(authViewModel, uiState)
                     is PasswordReset.Done -> {
                         previousScreen()
                         window.decorView.post { authViewModel.clearPasswordResetState() }
@@ -153,9 +154,9 @@ private fun BasicAuthRestoreScreen(
 }
 
 @Composable
-fun AuthRestoreScreen(authViewModel: AuthViewModelFacade, phoneNumber: String) {
+fun AuthRestoreScreen(authViewModel: AuthViewModelFacade, uiState: PasswordReset.Default) {
     val context = ContextAmbient.current
-    val phoneState = remember { mutableStateOf(phoneNumber) }
+    val phoneState = remember { mutableStateOf(uiState.phoneNumber) }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.password_reset),
         subtitle = stringResource(id = R.string.reset_password_hint),
@@ -170,6 +171,7 @@ fun AuthRestoreScreen(authViewModel: AuthViewModelFacade, phoneNumber: String) {
         buttonText = stringResource(id = R.string.get_code),
         onButtonClick = { authViewModel.sendOtp(phoneState.value) }
     )
+    if (uiState.success.isFalse) context.toast(R.string.something_went_wrong)
 }
 
 @Composable
@@ -232,7 +234,7 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    val showDialog = remember(uiState.attemptsLeft) { mutableStateOf(!uiState.isCodeValid) }
+    val showDialog = remember(uiState.attemptsLeft) { mutableStateOf(uiState.codeValidity.isFalse) }
     if (showDialog.value) AlertDialog(
         onDismissRequest = { showDialog.value = false },
         title = {
@@ -254,10 +256,11 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
+    if (uiState.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
 
 @Composable
-fun AuthResetPasswordScreen(authViewModel: AuthViewModelFacade) {
+fun AuthResetPasswordScreen(authViewModel: AuthViewModelFacade, uiState: PasswordReset.EnterNewPassword) {
     val password1 = remember { mutableStateOf("") }
     val password2 = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
@@ -292,4 +295,5 @@ fun AuthResetPasswordScreen(authViewModel: AuthViewModelFacade) {
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { authViewModel.changePassword(password2.value) }
     )
+    if (uiState.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }

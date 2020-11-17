@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
+import com.zealsoftsol.medico.data.JustResponseBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.ResponseBody
@@ -23,9 +24,7 @@ import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
@@ -77,35 +76,35 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     }
 
     override suspend fun sendOtp(phoneNumber: String): Boolean = ktorDispatcher {
-        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
             withm2mToken()
             contentType(ContentType.parse("application/json"))
             body = OtpRequest(phoneNumber)
-        }.status == HttpStatusCode.OK
+        }.isSuccess
     }
 
     override suspend fun retryOtp(phoneNumber: String): Boolean = ktorDispatcher {
-        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
+        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
             withm2mToken()
             contentType(ContentType.parse("application/json"))
             body = OtpRequest(phoneNumber)
-        }.status == HttpStatusCode.OK
+        }.isSuccess
     }
 
     override suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean = ktorDispatcher {
-        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
             withm2mToken()
             contentType(ContentType.parse("application/json"))
             body = VerifyOtpRequest(phoneNumber, otp)
-        }.status == HttpStatusCode.OK
+        }.isSuccess
     }
 
     override suspend fun changePassword(phoneNumber: String, password: String): Boolean = ktorDispatcher {
-        client.post<HttpResponse>("$AUTH_URL/api/v1/medico/resetpwd") {
+        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/resetpwd") {
             withm2mToken()
             contentType(ContentType.parse("application/json"))
             body = PasswordResetRequest(phoneNumber, password, password)
-        }.status == HttpStatusCode.OK
+        }.isSuccess
     }
 
     private inline fun HttpRequestBuilder.withToken() {

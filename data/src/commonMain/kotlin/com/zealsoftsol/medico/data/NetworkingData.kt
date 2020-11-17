@@ -58,3 +58,12 @@ data class ResponseBody<T>(
 
     fun getBodyOrNull(): T? = body.takeIf { isSuccess }
 }
+
+@Serializable
+data class JustResponseBody(
+    val type: String,
+    val message: String,
+) {
+    val isSuccess: Boolean
+        get() = type == "success"
+}

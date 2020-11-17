@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.utils.UiStateHandler
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.PasswordReset
+import com.zealsoftsol.medico.data.SuccessEvent
 import com.zealsoftsol.medico.data.UiStateWithProgress
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -19,7 +20,9 @@ internal class AuthViewModel(
     override val credentials: DataSource<AuthCredentials> = DataSource(userRepo.getAuthCredentials())
     override val authState: DataSource<AuthState?> = DataSource(if (userRepo.isLoggedIn) AuthState.SUCCESS else null)
 
-    private val resetPasswordStateHandler: UiStateHandler<PasswordReset> = UiStateHandler(PasswordReset.Default(credentials.value.getPhoneNumber().orEmpty()))
+    private val resetPasswordStateHandler: UiStateHandler<PasswordReset> = UiStateHandler(
+        PasswordReset.Default(credentials.value.getPhoneNumber().orEmpty())
+    )
     override val resetPasswordUiState: DataSource<UiStateWithProgress<PasswordReset>> = resetPasswordStateHandler.dataSource
     private var resetPasswordTimerJob: Job? = null
 
@@ -71,23 +74,13 @@ internal class AuthViewModel(
                             phoneNumber = phoneNumber,
                             timeBeforeResend = RESEND_TIMER,
                             attemptsLeft = MAX_RESEND_ATTEMPTS,
-                            isCodeValid = true,
                         )
                     )
-                    resetPasswordTimerJob?.cancel()
-                    resetPasswordTimerJob = launch {
-                        var remainingTime = RESEND_TIMER
-                        while (remainingTime > 0) {
-                            delay(1000)
-                            remainingTime -= 1000
-                            val isSuccess = resetPasswordStateHandler.updateUiState<PasswordReset.AwaitVerification> {
-                                copy(timeBeforeResend = remainingTime)
-                            }
-                            if (!isSuccess) cancel()
-                        }
-                    }
+                    startResetPasswordTimer()
                 } else {
-                    resetPasswordStateHandler.setProgress(false)
+                    resetPasswordStateHandler.updateUiState<PasswordReset.Default> {
+                        copy(success = SuccessEvent.`false`)
+                    }
                 }
             }
         }
@@ -104,7 +97,7 @@ internal class AuthViewModel(
                     PasswordReset.EnterNewPassword(phoneNumber)
                 } else {
                     (resetPasswordStateHandler.dataSource.value.uiState as PasswordReset.AwaitVerification).let {
-                        it.copy(isCodeValid = false, attemptsLeft = it.attemptsLeft - 1)
+                        it.copy(codeValidity = SuccessEvent.`false`, attemptsLeft = it.attemptsLeft - 1)
                     }
                 }
                 resetPasswordStateHandler.newState(newUiState)
@@ -116,7 +109,11 @@ internal class AuthViewModel(
         uniqueJob("resendOtp") {
             launch {
                 (resetPasswordStateHandler.dataSource.value.uiState as? PasswordReset.AwaitVerification)?.let {
-                    userRepo.resendOtp(it.phoneNumber)
+                    val isSuccess = userRepo.resendOtp(it.phoneNumber)
+                    if (isSuccess) startResetPasswordTimer()
+                    resetPasswordStateHandler.updateUiState<PasswordReset.AwaitVerification> {
+                        copy(resendSuccess = if (isSuccess) SuccessEvent.`true` else SuccessEvent.`false`)
+                    }
                 }
             }
         }
@@ -130,7 +127,9 @@ internal class AuthViewModel(
                 if (userRepo.changePassword(phoneNumber, newPassword)) {
                     resetPasswordStateHandler.newState(PasswordReset.Done)
                 } else {
-                    resetPasswordStateHandler.setProgress(false)
+                    resetPasswordStateHandler.updateUiState<PasswordReset.EnterNewPassword>(skipInProgress = false) {
+                        copy(success = SuccessEvent.`false`)
+                    }
                 }
             }
         }
@@ -144,6 +143,22 @@ internal class AuthViewModel(
 
     override fun previousPasswordResetScreen(): Boolean {
         return resetPasswordStateHandler.goBack() != null
+    }
+
+    private fun startResetPasswordTimer() {
+        resetPasswordTimerJob?.cancel()
+        resetPasswordTimerJob = launch {
+            var remainingTime = RESEND_TIMER
+            while (remainingTime > 0) {
+                delay(1000)
+                remainingTime -= 1000
+                val isSuccess =
+                    resetPasswordStateHandler.updateUiState<PasswordReset.AwaitVerification> {
+                        copy(timeBeforeResend = remainingTime)
+                    }
+                if (!isSuccess) cancel()
+            }
+        }
     }
 
     companion object {

@@ -24,4 +24,5 @@
     <string name="new_password_repeat">Repeat New Password</string>
     <string name="confirm">Confirm</string>
     <string name="password_doesnt_match">Password doesn’t match</string>
+    <string name="something_went_wrong">Something went wrong</string>
 </resources>

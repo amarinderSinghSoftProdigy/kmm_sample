@@ -23,10 +23,14 @@ class UiStateHandler<T: UiState>(private val initial: T) {
         dataSource.value = queue.first()
     }
 
-    inline fun <S> updateUiState(update: S.() -> S): Boolean {
-        return (dataSource.value.uiState as? S)?.let {
-            val updatedState = it.update() as T
-            newState(updatedState)
+    fun <S> updateUiState(skipInProgress: Boolean = true, update: S.() -> S): Boolean {
+        val uiStateWithProgress = dataSource.value
+        if (uiStateWithProgress.isInProgress && skipInProgress) return true
+        val cast = runCatching { uiStateWithProgress.uiState as S }.getOrNull()
+        return cast?.let {
+            runCatching { it.update() as T }.getOrNull()?.also { updated ->
+                newState(updated)
+            }
         } != null
     }
 
