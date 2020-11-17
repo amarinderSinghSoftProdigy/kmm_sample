@@ -2,9 +2,13 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
+import com.zealsoftsol.medico.data.OtpRequest
+import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.ResponseBody
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserInfo
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -19,17 +23,18 @@ import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
-import kotlin.coroutines.CoroutineContext
 
-class NetworkClient(engine: HttpClientEngineFactory<*>) : CoroutineScope, NetworkScope.Auth {
-
-    override val coroutineContext: CoroutineContext = ktorDispatcher + SupervisorJob()
+class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
@@ -51,26 +56,69 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : CoroutineScope, Networ
         }
     }
     override var token: String? = null
+    private var m2mToken: Deferred<String?> = GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
+        client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/oauth/token") {
+            contentType(ContentType.parse("application/json"))
+            body = UserRequest("medico.m2msystem@zealsoftsol.com", "P@ssw0rd")
+        }.getBodyOrNull()?.token
+    }
 
     override suspend fun login(request: UserRequest): UserInfo? = ktorDispatcher {
-        client.post<ResponseBody<UserInfo>>("$BASE_URL/medico/login") {
+        client.post<ResponseBody<UserInfo>>("$AUTH_URL/medico/login") {
             contentType(ContentType.parse("application/json"))
             body = request
         }.getBodyOrNull()
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {
-        client.post<ResponseBody<String>>("$BASE_URL/medico/logout") {
+        client.post<ResponseBody<String>>("$AUTH_URL/medico/logout") {
             withToken()
         }.isSuccess
+    }
+
+    override suspend fun sendOtp(phoneNumber: String): Boolean = ktorDispatcher {
+        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+            withm2mToken()
+            contentType(ContentType.parse("application/json"))
+            body = OtpRequest(phoneNumber)
+        }.status == HttpStatusCode.OK
+    }
+
+    override suspend fun retryOtp(phoneNumber: String): Boolean = ktorDispatcher {
+        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
+            withm2mToken()
+            contentType(ContentType.parse("application/json"))
+            body = OtpRequest(phoneNumber)
+        }.status == HttpStatusCode.OK
+    }
+
+    override suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean = ktorDispatcher {
+        client.post<HttpResponse>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+            withm2mToken()
+            contentType(ContentType.parse("application/json"))
+            body = VerifyOtpRequest(phoneNumber, otp)
+        }.status == HttpStatusCode.OK
+    }
+
+    override suspend fun changePassword(phoneNumber: String, password: String): Boolean = ktorDispatcher {
+        client.post<HttpResponse>("$AUTH_URL/api/v1/medico/resetpwd") {
+            withm2mToken()
+            contentType(ContentType.parse("application/json"))
+            body = PasswordResetRequest(phoneNumber, password, password)
+        }.status == HttpStatusCode.OK
     }
 
     private inline fun HttpRequestBuilder.withToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
 
+    private suspend inline fun HttpRequestBuilder.withm2mToken() {
+        m2mToken.await()?.let { header("Authorization", "Bearer $it") } ?: "no m2m token for request".warnIt()
+    }
+
     companion object {
-        private const val BASE_URL = "https://develop-api-auth0.medicostores.com"
+        private const val AUTH_URL = "https://develop-api-auth0.medicostores.com"
+        private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
     }
 }
 

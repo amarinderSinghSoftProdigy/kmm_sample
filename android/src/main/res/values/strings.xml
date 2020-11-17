@@ -3,9 +3,25 @@
     <string name="app_name">Medico dev</string>
     <string name="log_in">Log in</string>
     <string name="phone_number_or_email">Phone Number or Email</string>
+    <string name="phone_number">Phone Number</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="sign_up_to_medico">Sign up to Medico Stores</string>
     <string name="sign_up">Sign up</string>
     <string name="log_out">Log out</string>
+    <string name="password_reset">Password Reset</string>
+    <string name="reset_password_hint">To reset your password please enter verified phone number:</string>
+    <string name="get_code">Get Code</string>
+    <string name="phone_verification">Phone Verification</string>
+    <string name="verification_code_sent_hint">We sent you a verification code to your phone number</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="submit">Submit</string>
+    <string name="didnt_get_code">Didn’t get a code?</string>
+    <string name="resend">Resend</string>
+    <string name="wrong_code">Wrong Code</string>
+    <string name="attempt_left">attempts left</string>
+    <string name="new_password">New Password</string>
+    <string name="new_password_repeat">Repeat New Password</string>
+    <string name="confirm">Confirm</string>
+    <string name="password_doesnt_match">Password doesn’t match</string>
 </resources>

@@ -19,7 +19,7 @@ class SplashActivity : AppCompatActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val targetActivity = if (authViewModel.state.value == AuthState.SUCCESS) {
+        val targetActivity = if (authViewModel.authState.value == AuthState.SUCCESS) {
             MainActivity::class.java
         } else {
             AuthActivity::class.java

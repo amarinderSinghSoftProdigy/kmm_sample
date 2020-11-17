@@ -8,5 +8,9 @@ interface NetworkScope {
     interface Auth : NetworkScope {
         suspend fun login(request: UserRequest): UserInfo?
         suspend fun logout(): Boolean
+        suspend fun sendOtp(phoneNumber: String): Boolean
+        suspend fun retryOtp(phoneNumber: String): Boolean
+        suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean
+        suspend fun changePassword(phoneNumber: String, password: String): Boolean
     }
 }

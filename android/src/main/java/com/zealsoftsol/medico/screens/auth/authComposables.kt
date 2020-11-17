@@ -1,8 +1,6 @@
 package com.zealsoftsol.medico.screens.auth
 
-import android.content.Intent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,15 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonConstants
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.TextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +30,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
@@ -51,9 +44,10 @@ import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.screens.IndefiniteProgressBar
 import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
+import com.zealsoftsol.medico.screens.PasswordFormatInputField
+import com.zealsoftsol.medico.screens.PhoneOrEmailFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
 import com.zealsoftsol.medico.screens.launchScreen
-import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 
 @OptIn(ExperimentalLayout::class)
 @Composable
@@ -96,7 +90,7 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
                 }.fillMaxSize()
             )
         }
-        TabBar {
+        TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(asset = imageResource(id = R.drawable.medico_logo), modifier = Modifier.align(
                     Alignment.CenterStart))
@@ -104,7 +98,7 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
         }
         AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter))
 
-        val authState = authViewModel.state.flow.collectAsState()
+        val authState = authViewModel.authState.flow.collectAsState()
         when (authState.value) {
             AuthState.IN_PROGRESS -> IndefiniteProgressBar()
             AuthState.SUCCESS -> {
@@ -112,22 +106,22 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
                 (ContextAmbient.current as AuthActivity).finish()
             }
             AuthState.ERROR -> AlertDialog(
-                onDismissRequest = { authViewModel.clearState() },
+                onDismissRequest = { authViewModel.clearAuthState() },
                 title = {
-                    BasicText(
+                    Text(
                         text = "Log in error",
                         style = MaterialTheme.typography.h6
                     )
                 },
                 text = {
-                    BasicText(
+                    Text(
                         text = "Log in or password is wrong. Please try again or restore your password",
                         style = MaterialTheme.typography.subtitle1
                     )
                 },
                 confirmButton = {
                     Button(
-                        onClick = { authViewModel.clearState() },
+                        onClick = { authViewModel.clearAuthState() },
                         colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
                         elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
                     ) {
@@ -150,33 +144,35 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
         .background(MaterialTheme.colors.primary)
         .padding(24.dp)
     ) {
-        BasicText(
+        Text(
             text = stringResource(id = R.string.log_in),
             style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onPrimary)
         )
-        PhoneFormatInputField(
+        Spacer(modifier = Modifier.size(12.dp))
+
+        PhoneOrEmailFormatInputField(
             hint = stringResource(id = R.string.phone_number_or_email),
             text = credentialsState.value.phoneNumberOrEmail,
-            useFormat = credentialsState.value.type == AuthCredentials.Type.PHONE
+            isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE,
         ) {
             authViewModel.updateAuthCredentials(it, credentialsState.value.password)
         }
-        InputField(
+        Spacer(modifier = Modifier.size(12.dp))
+        PasswordFormatInputField(
             hint = stringResource(id = R.string.password),
             text = credentialsState.value.password,
-            hideCharacters = true
         ) {
             authViewModel.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
         }
         val context = ContextAmbient.current
-        BasicText(
+        Text(
             text = stringResource(id = R.string.forgot_password),
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
                 context.launchScreen<AuthRestoreActivity>()
             })
         )
-        MedicoButton(text = stringResource(id = R.string.log_in)) {
+        MedicoButton(text = stringResource(id = R.string.log_in), isEnabled = true) {
             authViewModel.tryLogIn()
         }
         val string = AnnotatedString.Builder(stringResource(id = R.string.sign_up_to_medico)).apply {
@@ -191,32 +187,6 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             })
         )
     }
-}
-
-@Composable
-fun PhoneFormatInputField(hint: String, text: String, useFormat: Boolean, onValueChange: (String) -> Unit) {
-    val context = ContextAmbient.current
-    val formatter = remember { PhoneNumberFormatter(context.resources.configuration.locale.toLanguageTag()) }
-    InputField(hint = hint, text = if (useFormat) formatter.verifyNumber(text).formattedPhone else text, onValueChange = onValueChange)
-}
-
-@Composable
-fun InputField(hint: String, text: String, hideCharacters: Boolean = false, onValueChange: (String) -> Unit) {
-    Spacer(modifier = Modifier.size(12.dp))
-    TextField(
-        value = text,
-        label = {
-            BasicText(
-                text = hint,
-                style = TextStyle.Default.copy(color = if (text.isEmpty()) ConstColors.gray else ConstColors.lightBlue)
-            )
-        },
-        activeColor = ConstColors.lightBlue,
-        backgroundColor = Color.White,
-        onValueChange = onValueChange,
-        visualTransformation = if (hideCharacters) PasswordVisualTransformation() else VisualTransformation.None,
-        modifier = Modifier.fillMaxWidth()
-    )
 }
 
 @Preview

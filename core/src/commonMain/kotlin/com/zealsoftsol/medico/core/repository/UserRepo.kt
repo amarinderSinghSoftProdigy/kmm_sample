@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AuthCredentials
@@ -20,7 +19,7 @@ class UserRepo(
     init {
         if (isLoggedIn) {
             val user = Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
-            networkAuthScope.token = user.token.log("token")
+            networkAuthScope.token = user.token
         }
     }
 
@@ -28,8 +27,8 @@ class UserRepo(
         settings.putString(AUTH_ID_KEY, authCredentials.phoneNumberOrEmail)
         settings.putString(AUTH_PASS_KEY, authCredentials.password)
         return networkAuthScope.login(
-            UserRequest(authCredentials.phoneNumberOrEmail, authCredentials.password).log("request")
-        ).log("response")?.let {
+            UserRequest(authCredentials.phoneNumberOrEmail, authCredentials.password)
+        )?.let {
             networkAuthScope.token = it.token
             val json = Json.encodeToString(
                 User.serializer(),
@@ -71,6 +70,24 @@ class UserRepo(
             password,
         )
     }
+
+    suspend fun sendOtp(phoneNumber: String): Boolean {
+        return networkAuthScope.sendOtp(phoneNumber.toNationalFormat())
+    }
+
+    suspend fun submitOtp(phoneNumber: String, otp: String): Boolean {
+        return networkAuthScope.verifyOtp(phoneNumber.toNationalFormat(), otp)
+    }
+
+    suspend fun changePassword(phoneNumber: String, newPassword: String): Boolean {
+        return networkAuthScope.changePassword(phoneNumber.toNationalFormat(), newPassword)
+    }
+
+    suspend fun resendOtp(phoneNumber: String): Boolean {
+        return networkAuthScope.retryOtp(phoneNumber.toNationalFormat())
+    }
+
+    private inline fun String.toNationalFormat() = replace("+", "0")
 
     companion object {
         // TODO make secure

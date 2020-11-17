@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), DIAware {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                val authState = authViewModel.state.flow.collectAsState()
+                val authState = authViewModel.authState.flow.collectAsState()
                 when (authState.value) {
                     AuthState.IN_PROGRESS -> IndefiniteProgressBar()
                     null -> {

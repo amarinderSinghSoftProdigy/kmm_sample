@@ -17,8 +17,9 @@ private val LightColors = lightColors(
     secondary = Color(0xff003657),
     onSecondary = Color.White,
     background = Color(0xffF4F9FD),
-    surface = Color(0xffF4F9FD),
-    onSurface = Color(0xff003657)
+    surface = Color.White,
+    onSurface = Color(0xff003657),
+    error = Color(0xffFF1744),
 )
 
 private val DarkColors = darkColors()
@@ -33,9 +34,9 @@ object ConstColors {
 fun AppTheme(isDarkTheme: Boolean = false/*isSystemInDarkTheme()*/, content: @Composable () -> Unit) = MaterialTheme(
     colors = if (isDarkTheme) DarkColors else LightColors,
     shapes = Shapes(
-        small = RoundedCornerShape(0.dp),
-        medium = RoundedCornerShape(0.dp),
-        large = RoundedCornerShape(0.dp),
+        small = RoundedCornerShape(2.dp),
+        medium = RoundedCornerShape(2.dp),
+        large = RoundedCornerShape(2.dp),
     ),
     typography = Typography(
         h5 = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W700)
