@@ -47,7 +47,9 @@ data class TokenInfo(
     private val expiresIn: Long,
     val tokenType: String,
 ) {
-    val expiresAt = (Clock.System.now().epochSeconds + expiresIn) * 1000L
+    private val createdAt = Clock.System.now().epochSeconds
+
+    fun expiresAt() = (createdAt + expiresIn) * 1000L
 }
 
 @Serializable

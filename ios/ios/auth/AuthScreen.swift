@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import core
 
 struct AuthScreen: View {
@@ -37,8 +38,8 @@ struct AuthScreen: View {
             let isError = Binding.constant(authState.value == DataAuthState.error)
             
             AuthTab(
-                phoneOrEmail: authViewModel.credentials.value!.phoneNumberOrEmail,
-                password: authViewModel.credentials.value!.password,
+                phoneOrEmail: credentials.value!.phoneNumberOrEmail,
+                password: credentials.value!.password,
                 isLoading: authState.value == DataAuthState.inProgress,
                 authViewModel: authViewModel
             )
@@ -48,10 +49,6 @@ struct AuthScreen: View {
                 .alert(isPresented: isError.projectedValue) {
                     Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                 }
-            
-            if authState.value == DataAuthState.success {
-                
-            }
         }.edgesIgnoringSafeArea(.top)
     }
 }
@@ -78,14 +75,23 @@ struct AuthTab: View {
             }.frame(maxWidth: .infinity).padding([.bottom])
             TextField(LocalizedStringKey("phone_number_or_email"), text: $phoneOrEmail)
                 .authInputField()
-            TextField(LocalizedStringKey("password"), text: $password)
+                .onReceive(Just(phoneOrEmail)) { pe in
+                    if pe != authViewModel.credentials.value!.phoneNumberOrEmail {
+                        authViewModel.updateAuthCredentials(emailOrPhone: pe, password: password)
+                    }
+                }
+            SecureField(LocalizedStringKey("password"), text: $password)
                 .authInputField()
+                .onReceive(Just(password)) { pass in
+                    if pass != authViewModel.credentials.value!.password {
+                        authViewModel.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
+                    }
+                }
             Text(LocalizedStringKey("forgot_password"))
                 .font(Font.caption)
                 .padding(.top, 4)
                 .foregroundColor(Color.medicoLightBlue)
             Button(action: {
-                authViewModel.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: password)
                 authViewModel.tryLogIn()
             }) {
                 ZStack(alignment: .trailing) {
@@ -114,7 +120,8 @@ struct AuthInputField: ViewModifier {
         content
             .autocapitalization(UITextAutocapitalizationType.none)
             .disableAutocorrection(true)
-            .padding(12)
+            .frame(height: 48)
+            .padding([.leading, .trailing], 12)
             .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
         
     }

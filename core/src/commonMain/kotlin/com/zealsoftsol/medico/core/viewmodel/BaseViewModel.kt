@@ -31,7 +31,7 @@ abstract class BaseViewModel : CoroutineScope {
                     }
                 }
             }
-            Platform.iOS -> launch(Dispatchers.Default) {
+            Platform.iOS -> launch(Dispatchers.Main) {
                 block()
             }
         }
