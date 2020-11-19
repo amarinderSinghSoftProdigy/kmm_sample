@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.core.network
 
+import com.zealsoftsol.medico.core.extensions.Interval
+import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.JustResponseBody
@@ -21,6 +23,7 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
@@ -30,6 +33,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.invoke
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 
 class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
@@ -55,12 +59,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }
     }
     override var token: String? = null
-    private var m2mToken: Deferred<String?> = GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
-        client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/oauth/token") {
-            contentType(ContentType.parse("application/json"))
-            body = UserRequest("medico.m2msystem@zealsoftsol.com", "P@ssw0rd")
-        }.getBodyOrNull()?.token
-    }
+    private var noAuthToken: Deferred<TokenInfo?> = fetchNoAuthToken()
 
     override suspend fun login(request: UserRequest): TokenInfo? = ktorDispatcher {
         client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/login") {
@@ -76,8 +75,8 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     }
 
     override suspend fun sendOtp(phoneNumber: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
-            withm2mToken()
+        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/forgetpwd") {
+            withNoAuthToken()
             contentType(ContentType.parse("application/json"))
             body = OtpRequest(phoneNumber)
         }.isSuccess
@@ -85,7 +84,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun retryOtp(phoneNumber: String): Boolean = ktorDispatcher {
         client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
-            withm2mToken()
+            withNoAuthToken()
             contentType(ContentType.parse("application/json"))
             body = OtpRequest(phoneNumber)
         }.isSuccess
@@ -93,15 +92,15 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean = ktorDispatcher {
         client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
-            withm2mToken()
+            withNoAuthToken()
             contentType(ContentType.parse("application/json"))
             body = VerifyOtpRequest(phoneNumber, otp)
         }.isSuccess
     }
 
     override suspend fun changePassword(phoneNumber: String, password: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/resetpwd") {
-            withm2mToken()
+        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
+            withNoAuthToken()
             contentType(ContentType.parse("application/json"))
             body = PasswordResetRequest(phoneNumber, password, password)
         }.isSuccess
@@ -111,8 +110,16 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
 
-    private suspend inline fun HttpRequestBuilder.withm2mToken() {
-        m2mToken.await()?.let { header("Authorization", "Bearer $it") } ?: "no m2m token for request".warnIt()
+    private suspend inline fun HttpRequestBuilder.withNoAuthToken() {
+        retry(Interval.Linear(100, 5)) {
+            noAuthToken = fetchNoAuthToken()
+            noAuthToken.await()?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt }
+        }?.let { header("Authorization", "Bearer ${it.token}") }
+            ?: "no noAuth token for request".warnIt()
+    }
+
+    private inline fun fetchNoAuthToken(): Deferred<TokenInfo?> = GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
+        client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd").getBodyOrNull()
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.data
 
+import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -43,15 +44,28 @@ data class UserInfo(
 @Serializable
 data class TokenInfo(
     val token: String,
-    val expiresIn: Long,
+    private val expiresIn: Long,
     val tokenType: String,
-)
+) {
+    val expiresAt = (Clock.System.now().epochSeconds + expiresIn) * 1000L
+}
 
 @Serializable
 data class ResponseBody<T>(
     private val body: T? = null,
     val type: String,
-    val message: String,
+) {
+    val isSuccess: Boolean
+        get() = type == "success"
+
+    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
+}
+
+@Serializable
+data class ValidatedResponseBody<T, V>(
+    private val body: T? = null,
+    val validation: V? = null,
+    val type: String,
 ) {
     val isSuccess: Boolean
         get() = type == "success"
