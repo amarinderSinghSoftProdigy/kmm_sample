@@ -36,7 +36,7 @@ class UserRepo(
                     authCredentials.getEmail(),
                     authCredentials.getPhoneNumber().orEmpty(),
                     it.token,
-                    it.userType,
+                    "",
                     authCredentials.password
                 )
             )

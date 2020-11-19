@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.ResponseBody
 import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.UserInfo
 import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
@@ -37,6 +36,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
+        expectSuccess = false
         install(JsonFeature) {
             serializer = KotlinxSerializer(
                 Json {
@@ -62,8 +62,8 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }.getBodyOrNull()?.token
     }
 
-    override suspend fun login(request: UserRequest): UserInfo? = ktorDispatcher {
-        client.post<ResponseBody<UserInfo>>("$AUTH_URL/medico/login") {
+    override suspend fun login(request: UserRequest): TokenInfo? = ktorDispatcher {
+        client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/login") {
             contentType(ContentType.parse("application/json"))
             body = request
         }.getBodyOrNull()

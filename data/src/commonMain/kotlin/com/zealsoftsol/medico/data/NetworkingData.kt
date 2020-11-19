@@ -49,14 +49,14 @@ data class TokenInfo(
 
 @Serializable
 data class ResponseBody<T>(
-    private val body: T,
+    private val body: T? = null,
     val type: String,
     val message: String,
 ) {
     val isSuccess: Boolean
         get() = type == "success"
 
-    fun getBodyOrNull(): T? = body.takeIf { isSuccess }
+    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
 }
 
 @Serializable
