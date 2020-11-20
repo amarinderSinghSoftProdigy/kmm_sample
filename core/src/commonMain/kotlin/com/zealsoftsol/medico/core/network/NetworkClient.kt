@@ -69,7 +69,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {
-        client.post<ResponseBody<String>>("$AUTH_URL/medico/logout") {
+        client.post<JustResponseBody>("$AUTH_URL/medico/logout") {
             withToken()
         }.isSuccess
     }

@@ -148,22 +148,3 @@ fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
     }
     return state
 }
-
-@Composable
-inline fun <reified T> launchScreen() {
-    ContextAmbient.current.let {
-        it.startActivity(Intent(it, T::class.java))
-    }
-}
-
-inline fun <reified T> Context.launchScreen() {
-    startActivity(Intent(this, T::class.java))
-}
-
-inline fun AppCompatActivity.previousScreen() {
-    finish()
-}
-
-inline fun Context.previousScreen() {
-    (this as AppCompatActivity).previousScreen()
-}

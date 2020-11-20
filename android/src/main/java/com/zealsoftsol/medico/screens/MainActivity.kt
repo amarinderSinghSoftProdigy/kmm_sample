@@ -16,6 +16,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,74 +27,104 @@ import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
-import com.zealsoftsol.medico.data.AuthState
-import com.zealsoftsol.medico.screens.auth.AuthActivity
+import com.zealsoftsol.medico.core.Scope
+import com.zealsoftsol.medico.core.UiNavigator
+import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
+import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
+import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
+import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
+import com.zealsoftsol.medico.screens.auth.AuthScreen
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
+import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity(), DIAware {
 
     override val di: DI by closestDI()
-    private val authViewModel by instance<AuthViewModelFacade>()
+    private val authViewModel by instance<AuthViewModel>()
+    private val navigator by instance<UiNavigator>()
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                val authState = authViewModel.authState.flow.collectAsState()
-                when (authState.value) {
-                    AuthState.IN_PROGRESS -> IndefiniteProgressBar()
-                    null -> {
-                        launchScreen<AuthActivity>()
-                        finish()
-                    }
+                val currentScope = navigator.scope.flow.collectAsState()
+                when (val scope = currentScope.value) {
+                    is Scope.LogIn -> AuthScreen(
+                        authViewModel = authViewModel,
+                        scope = scope,
+                    )
+                    is Scope.ForgetPassword.PhoneNumberInput -> AuthPhoneNumberInputScreen(
+                        authViewModel = authViewModel,
+                        scope = scope,
+                    )
+                    is Scope.ForgetPassword.AwaitVerification -> AuthAwaitVerificationScreen(
+                        authViewModel = authViewModel,
+                        scope = scope,
+                        dateFormat = dateFormat
+                    )
+                    is Scope.ForgetPassword.EnterNewPassword -> AuthEnterNewPasswordScreen(
+                        authViewModel = authViewModel,
+                        scope = scope,
+                    )
+                    is Scope.Main -> MainView(authViewModel = authViewModel)
                 }
-                val scaffoldState = rememberScaffoldState()
-                Scaffold(
-                    scaffoldState = scaffoldState,
-                    drawerContent = {
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(1.dp)
-                                    .padding(horizontal = 16.dp)
-                                    .background(ConstColors.gray)
-                            )
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .clickable(onClick = { authViewModel.logOut() })
-                                    .padding(vertical = 12.dp)
-                            ) {
-                                Icon(
-                                    asset = vectorResource(id = R.drawable.ic_exit),
-                                    modifier = Modifier.padding(start = 18.dp),
-                                )
-                                BasicText(
-                                    text = stringResource(R.string.log_out),
-                                    style = MaterialTheme.typography.body2.copy(color = ConstColors.gray),
-                                    modifier = Modifier.padding(start = 32.dp),
-                                )
-                            }
-                        }
-                    },
-                    topBar = {
-                        TabBar {
-                            Row {
-                                Icon(
-                                    asset = vectorResource(id = R.drawable.ic_menu),
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                        .padding(16.dp)
-                                        .clickable(onClick = { scaffoldState.drawerState.open() })
-                                )
-                            }
-                        }
-                    },
-                    bodyContent = { }
-                )
+                if (currentScope.value.isInProgress) IndefiniteProgressBar()
             }
         }
     }
+
+    override fun onBackPressed() {
+        if (!navigator.handleBack())
+            super.onBackPressed()
+    }
+}
+
+@Composable
+fun MainView(authViewModel: AuthViewModel) {
+    val scaffoldState = rememberScaffoldState()
+    Scaffold(
+        scaffoldState = scaffoldState,
+        drawerContent = {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(1.dp)
+                        .padding(horizontal = 16.dp)
+                        .background(ConstColors.gray)
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .clickable(onClick = { authViewModel.logOut() })
+                        .padding(vertical = 12.dp)
+                ) {
+                    Icon(
+                        asset = vectorResource(id = R.drawable.ic_exit),
+                        modifier = Modifier.padding(start = 18.dp),
+                    )
+                    BasicText(
+                        text = stringResource(R.string.log_out),
+                        style = MaterialTheme.typography.body2.copy(color = ConstColors.gray),
+                        modifier = Modifier.padding(start = 32.dp),
+                    )
+                }
+            }
+        },
+        topBar = {
+            TabBar {
+                Row {
+                    Icon(
+                        asset = vectorResource(id = R.drawable.ic_menu),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                            .padding(16.dp)
+                            .clickable(onClick = { scaffoldState.drawerState.open() })
+                    )
+                }
+            }
+        },
+        bodyContent = { },
+    )
 }

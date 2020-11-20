@@ -5,9 +5,6 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Platform
 import com.zealsoftsol.medico.core.interop.platform
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.AuthState
-import com.zealsoftsol.medico.data.PasswordReset
-import com.zealsoftsol.medico.data.UiStateWithProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,10 +35,8 @@ abstract class BaseViewModel : CoroutineScope {
     }
 }
 
-interface AuthViewModelFacade {
+interface AuthViewModel {
     val credentials: DataSource<AuthCredentials>
-    val authState: DataSource<AuthState?>
-    val resetPasswordUiState: DataSource<UiStateWithProgress<PasswordReset>>
 
     fun updateAuthCredentials(emailOrPhone: String, password: String)
 
@@ -56,10 +51,4 @@ interface AuthViewModelFacade {
     fun resendOtp()
 
     fun changePassword(newPassword: String)
-
-    fun previousPasswordResetScreen(): Boolean
-
-    fun clearAuthState()
-
-    fun clearPasswordResetState()
 }

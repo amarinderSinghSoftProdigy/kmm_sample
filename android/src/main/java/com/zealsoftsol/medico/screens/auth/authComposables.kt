@@ -1,7 +1,5 @@
 package com.zealsoftsol.medico.screens.auth
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,13 +19,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.VerticalGradient
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.ContextAmbient
-import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -35,44 +34,19 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
-import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
-import com.zealsoftsol.medico.core.viewmodel.mock.MockAuthViewModel
+import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.AuthState
-import com.zealsoftsol.medico.screens.IndefiniteProgressBar
-import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneOrEmailFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
-import com.zealsoftsol.medico.screens.launchScreen
-import org.kodein.di.DI
-import org.kodein.di.DIAware
-import org.kodein.di.android.closestDI
-import org.kodein.di.instance
-
-class AuthActivity : AppCompatActivity(), DIAware {
-
-    override val di: DI by closestDI()
-    private val authViewModel by instance<AuthViewModelFacade>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                AuthScreen(authViewModel)
-            }
-        }
-    }
-}
 
 @Composable
-fun AuthScreen(authViewModel: AuthViewModelFacade) {
+fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = ColorPainter(Color(0xff003657)),
@@ -117,48 +91,41 @@ fun AuthScreen(authViewModel: AuthViewModelFacade) {
                     Alignment.CenterStart))
             }
         }
-        AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter))
+        AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter), scope)
 
-        val authState = authViewModel.authState.flow.collectAsState()
-        when (authState.value) {
-            AuthState.IN_PROGRESS -> IndefiniteProgressBar()
-            AuthState.SUCCESS -> {
-                launchScreen<MainActivity>()
-                (ContextAmbient.current as AuthActivity).finish()
-            }
-            AuthState.ERROR -> AlertDialog(
-                onDismissRequest = { authViewModel.clearAuthState() },
-                title = {
+        val showErrorDialog = remember(scope) { mutableStateOf(scope.success.isFalse) }
+        if (showErrorDialog.value) AlertDialog(
+            onDismissRequest = { showErrorDialog.value = false },
+            title = {
+                Text(
+                    text = "Log in error",
+                    style = MaterialTheme.typography.h6
+                )
+            },
+            text = {
+                Text(
+                    text = "Log in or password is wrong. Please try again or restore your password",
+                    style = MaterialTheme.typography.subtitle1
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showErrorDialog.value = false },
+                    colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
+                    elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
+                ) {
                     Text(
-                        text = "Log in error",
-                        style = MaterialTheme.typography.h6
+                        text = "OKAY",
+                        style = MaterialTheme.typography.subtitle2
                     )
-                },
-                text = {
-                    Text(
-                        text = "Log in or password is wrong. Please try again or restore your password",
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = { authViewModel.clearAuthState() },
-                        colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
-                        elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
-                    ) {
-                        Text(
-                            text = "OKAY",
-                            style = MaterialTheme.typography.subtitle2
-                        )
-                    }
                 }
-            )
-        }
+            }
+        )
     }
 }
 
 @Composable
-fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
+fun AuthTab(authViewModel: AuthViewModel, modifier: Modifier, scope: Scope.LogIn) {
     val credentialsState = authViewModel.credentials.flow.collectAsState()
     Column(modifier = modifier.fillMaxWidth()
         .padding(12.dp)
@@ -185,12 +152,11 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
         ) {
             authViewModel.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
         }
-        val context = ContextAmbient.current
         Text(
             text = stringResource(id = R.string.forgot_password),
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
-                context.launchScreen<AuthRestoreActivity>()
+                scope.goToForgetPassword()
             })
         )
         MedicoButton(text = stringResource(id = R.string.log_in), isEnabled = true) {
@@ -204,14 +170,8 @@ fun AuthTab(authViewModel: AuthViewModelFacade, modifier: Modifier) {
             style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
-                context.launchScreen<SignUpActivity>()
+                scope.goToSignUp()
             })
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewAuthScreen() {
-    AuthScreen(authViewModel = MockAuthViewModel())
 }

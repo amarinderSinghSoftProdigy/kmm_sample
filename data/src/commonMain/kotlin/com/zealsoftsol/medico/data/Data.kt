@@ -14,7 +14,7 @@ data class AuthCredentials(
 }
 
 enum class AuthState {
-    SUCCESS, IN_PROGRESS, ERROR
+    AUTHORIZED, NOT_AUTHORIZED
 }
 
 enum class UserType {

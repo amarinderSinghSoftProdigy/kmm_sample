@@ -1,7 +1,5 @@
 package com.zealsoftsol.medico.screens.auth
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,73 +20,29 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ContextAmbient
-import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.extensions.toast
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
-import com.zealsoftsol.medico.data.PasswordReset
-import com.zealsoftsol.medico.screens.IndefiniteProgressBar
+import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
-import com.zealsoftsol.medico.screens.previousScreen
-import org.kodein.di.DI
-import org.kodein.di.DIAware
-import org.kodein.di.android.closestDI
-import org.kodein.di.instance
 import java.text.SimpleDateFormat
-
-class AuthRestoreActivity : AppCompatActivity(), DIAware {
-
-    override val di: DI by closestDI()
-    private val authViewModel by instance<AuthViewModelFacade>()
-    private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                val resetState = authViewModel.resetPasswordUiState.flow.collectAsState()
-                when (val uiState = resetState.value.uiState) {
-                    is PasswordReset.Default -> AuthRestoreScreen(authViewModel, uiState)
-                    is PasswordReset.AwaitVerification -> AuthAwaitVerificationScreen(
-                        authViewModel,
-                        uiState,
-                        dateFormat,
-                    )
-                    is PasswordReset.EnterNewPassword -> AuthResetPasswordScreen(authViewModel, uiState)
-                    is PasswordReset.Done -> {
-                        previousScreen()
-                        window.decorView.post { authViewModel.clearPasswordResetState() }
-                    }
-                }
-                if (resetState.value.isInProgress) IndefiniteProgressBar()
-            }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (!authViewModel.previousPasswordResetScreen())
-            super.onBackPressed()
-    }
-}
 
 @Composable
 private fun BasicAuthRestoreScreen(
@@ -154,13 +108,12 @@ private fun BasicAuthRestoreScreen(
 }
 
 @Composable
-fun AuthRestoreScreen(authViewModel: AuthViewModelFacade, uiState: PasswordReset.Default) {
-    val context = ContextAmbient.current
-    val phoneState = remember { mutableStateOf(uiState.phoneNumber) }
+fun AuthPhoneNumberInputScreen(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.PhoneNumberInput) {
+    val phoneState = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.password_reset),
         subtitle = stringResource(id = R.string.reset_password_hint),
-        onBack = { context.previousScreen() },
+        onBack = { scope.goBack() },
         body = {
             PhoneFormatInputField(
                 hint = stringResource(id = R.string.phone_number),
@@ -171,24 +124,24 @@ fun AuthRestoreScreen(authViewModel: AuthViewModelFacade, uiState: PasswordReset
         buttonText = stringResource(id = R.string.get_code),
         onButtonClick = { authViewModel.sendOtp(phoneState.value) }
     )
-    if (uiState.success.isFalse) context.toast(R.string.something_went_wrong)
+    if (scope.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
 
 @Composable
 fun AuthAwaitVerificationScreen(
-    authViewModel: AuthViewModelFacade,
-    uiState: PasswordReset.AwaitVerification,
+    authViewModel: AuthViewModel,
+    scope: Scope.ForgetPassword.AwaitVerification,
     dateFormat: SimpleDateFormat,
 ) {
     val code = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.phone_verification),
-        subtitle = "${stringResource(id = R.string.verification_code_sent_hint)} ${uiState.phoneNumber}",
-        onBack = { authViewModel.previousPasswordResetScreen() },
+        subtitle = "${stringResource(id = R.string.verification_code_sent_hint)} ${scope.phoneNumber}",
+        onBack = { scope.goBack() },
         body = {
-            if (uiState.timeBeforeResend > 0 && uiState.attemptsLeft > 0) {
+            if (scope.timeBeforeResend > 0 && scope.attemptsLeft > 0) {
                 Text(
-                    text = dateFormat.format(uiState.timeBeforeResend),
+                    text = dateFormat.format(scope.timeBeforeResend),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.W700,
                     color = MaterialTheme.colors.onPrimary,
@@ -196,7 +149,7 @@ fun AuthAwaitVerificationScreen(
                 )
             } else {
                 Text(
-                    text = "${uiState.attemptsLeft} ${stringResource(id = R.string.attempt_left)}",
+                    text = "${scope.attemptsLeft} ${stringResource(id = R.string.attempt_left)}",
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight.W600,
                     color = ConstColors.lightBlue,
@@ -210,7 +163,7 @@ fun AuthAwaitVerificationScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { code.value = it },
             )
-            code.value.isNotEmpty() && uiState.attemptsLeft > 0
+            code.value.isNotEmpty() && scope.attemptsLeft > 0
         },
         buttonText = stringResource(id = R.string.submit),
         onButtonClick = { authViewModel.submitOtp(code.value) },
@@ -234,7 +187,7 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    val showDialog = remember(uiState.attemptsLeft) { mutableStateOf(uiState.codeValidity.isFalse) }
+    val showDialog = remember(scope.attemptsLeft) { mutableStateOf(scope.codeValidity.isFalse) }
     if (showDialog.value) AlertDialog(
         onDismissRequest = { showDialog.value = false },
         title = {
@@ -256,17 +209,21 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    if (uiState.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
+    when (scope.resendSuccess.value) {
+        true -> ContextAmbient.current.toast("code sent")
+        false -> ContextAmbient.current.toast(R.string.something_went_wrong)
+    }
+    if (scope.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
 
 @Composable
-fun AuthResetPasswordScreen(authViewModel: AuthViewModelFacade, uiState: PasswordReset.EnterNewPassword) {
+fun AuthEnterNewPasswordScreen(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.EnterNewPassword) {
     val password1 = remember { mutableStateOf("") }
     val password2 = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.new_password),
         subtitle = "",
-        onBack = { authViewModel.previousPasswordResetScreen() },
+        onBack = { scope.goBack() },
         body = {
             PasswordFormatInputField(
                 hint = stringResource(id = R.string.new_password),
@@ -295,5 +252,5 @@ fun AuthResetPasswordScreen(authViewModel: AuthViewModelFacade, uiState: Passwor
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { authViewModel.changePassword(password2.value) }
     )
-    if (uiState.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
+    if (scope.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }

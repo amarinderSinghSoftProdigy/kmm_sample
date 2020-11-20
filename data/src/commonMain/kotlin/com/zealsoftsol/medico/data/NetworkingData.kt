@@ -18,7 +18,7 @@ data class PasswordResetRequest(
 
 @Serializable
 data class OtpRequest(
-    val mobileNumber: String,
+    val mobileno: String,
 )
 
 @Serializable

@@ -2,7 +2,7 @@ import SwiftUI
 import core
 
 struct MainScreen: View {
-    let authViewModel: AuthViewModelFacade
+    let authViewModel: AuthViewModel
     
     var body: some View {
         Text(LocalizedStringKey("log_out")).onTapGesture {

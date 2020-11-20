@@ -3,15 +3,17 @@ import Combine
 import core
 
 struct AuthScreen: View {
-    let authViewModel: AuthViewModelFacade
+    let authViewModel: AuthViewModel
+    let scope: Scope.LogIn
+    @Binding var isError: Bool
     
-    @ObservedObject var authState: SwiftDatasource<DataAuthState>
     @ObservedObject var credentials: SwiftDatasource<DataAuthCredentials>
     
-    init(authViewModel: AuthViewModelFacade) {
+    init(authViewModel: AuthViewModel, scope: Scope.LogIn) {
         self.authViewModel = authViewModel
-        authState = SwiftDatasource(dataSource: authViewModel.authState)
+        self.scope = scope
         credentials = SwiftDatasource(dataSource: authViewModel.credentials)
+        _isError = Binding.constant(scope.success.isFalse)
     }
     
     var body: some View {
@@ -34,19 +36,16 @@ struct AuthScreen: View {
                     .opacity(0.2)
                     .frame(idealWidth: .infinity, maxHeight: 44, alignment: Alignment.top)
             }
-            
-            let isError = Binding.constant(authState.value == DataAuthState.error)
-            
+
             AuthTab(
                 phoneOrEmail: credentials.value!.phoneNumberOrEmail,
                 password: credentials.value!.password,
-                isLoading: authState.value == DataAuthState.inProgress,
                 authViewModel: authViewModel
             )
                 .frame(maxWidth: .infinity)
                 .background(Color.primary)
                 .padding()
-                .alert(isPresented: isError.projectedValue) {
+                .alert(isPresented: $isError) {
                     Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                 }
         }.edgesIgnoringSafeArea(.top)
@@ -56,9 +55,8 @@ struct AuthScreen: View {
 struct AuthTab: View {
     @State var phoneOrEmail: String
     @State var password: String
-    var isLoading: Bool
     
-    let authViewModel: AuthViewModelFacade
+    let authViewModel: AuthViewModel
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -94,15 +92,10 @@ struct AuthTab: View {
             Button(action: {
                 authViewModel.tryLogIn()
             }) {
-                ZStack(alignment: .trailing) {
-                    Text(LocalizedStringKey("log_in"))
-                        .fontWeight(Font.Weight.semibold)
-                        .frame(maxWidth: .infinity)
-                    if isLoading, #available(iOS 14.0, *) {
-                        ProgressView()
-                    }
-                }
-            }.medicoButton(isEnabled: !isLoading)
+                Text(LocalizedStringKey("log_in"))
+                    .fontWeight(Font.Weight.semibold)
+                    .frame(maxWidth: .infinity)
+            }.medicoButton(isEnabled: true)
             .padding(.top)
             Text(LocalizedStringKey("sign_up_to_medico"))
                 .font(Font.caption)
@@ -141,8 +134,8 @@ struct MedicoButton: ViewModifier {
     }
 }
 
-struct AuthScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        AuthScreen(authViewModel: MockAuthViewModel())
-    }
-}
+//struct AuthScreen_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AuthScreen(authViewModel: MockAuthViewModel(), scope: Scope.LogIn())
+//    }
+//}
