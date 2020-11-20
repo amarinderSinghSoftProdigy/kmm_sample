@@ -112,8 +112,11 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private suspend inline fun HttpRequestBuilder.withNoAuthToken() {
         retry(Interval.Linear(100, 5)) {
-            noAuthToken = fetchNoAuthToken()
-            noAuthToken.await()?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
+            val tokenInfo = noAuthToken.await()
+                ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
+            if (tokenInfo == null)
+                noAuthToken = fetchNoAuthToken()
+            tokenInfo
         }?.let { header("Authorization", "Bearer ${it.token}") }
             ?: "no noAuth token for request".warnIt()
     }
