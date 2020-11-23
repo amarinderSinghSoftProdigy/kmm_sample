@@ -4,15 +4,13 @@ import core
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    var di: Kodein_diDI!
     var navigator: UiNavigator!
     var authViewModel: AuthViewModel!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let start = UiLink().appStart(context: self, isDebug: true)
-        di = start.di
-        let swiftDI = SwiftDI(di: di)
+        let start = UiLink().appStart(context: self, isDebug: true, loggerLevel: Logger.Level.log)
+        let swiftDI = SwiftDI(di: start.di)
         authViewModel = swiftDI.authViewModel
         navigator = swiftDI.navigator
         return true
