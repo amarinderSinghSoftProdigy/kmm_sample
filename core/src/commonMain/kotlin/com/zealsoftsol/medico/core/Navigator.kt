@@ -170,7 +170,7 @@ sealed class Scope {
             }
 
             companion object {
-                const val RESEND_TIMER = 2 * 60 * 1000L
+                const val RESEND_TIMER = 3 * 60 * 1000L
                 private const val MAX_RESEND_ATTEMPTS = 3
             }
         }
