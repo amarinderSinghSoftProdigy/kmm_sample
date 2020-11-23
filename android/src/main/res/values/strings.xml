@@ -25,4 +25,7 @@
     <string name="confirm">Confirm</string>
     <string name="password_doesnt_match">Password doesn’t match</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="error_log_in_title">Log in error</string>
+    <string name="error_log_in_text">Log in or password is wrong. Please try again or restore your password</string>
+    <string name="okay">Okay</string>
 </resources>

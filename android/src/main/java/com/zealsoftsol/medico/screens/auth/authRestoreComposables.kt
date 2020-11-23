@@ -42,6 +42,7 @@ import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.showError
 import java.text.SimpleDateFormat
 
 @Composable
@@ -122,9 +123,13 @@ fun AuthPhoneNumberInputScreen(authViewModel: AuthViewModel, scope: Scope.Forget
             )
         },
         buttonText = stringResource(id = R.string.get_code),
-        onButtonClick = { authViewModel.sendOtp(phoneState.value) }
+        onButtonClick = { authViewModel.sendOtp(phoneState.value) },
     )
-    if (scope.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
+    scope.showError(
+        titleRes = R.string.something_went_wrong,
+        textRes = 0,
+        case = { success.isFalse },
+    )
 }
 
 @Composable
@@ -209,10 +214,6 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    when (scope.resendSuccess.value) {
-        true -> ContextAmbient.current.toast("code sent")
-        false -> ContextAmbient.current.toast(R.string.something_went_wrong)
-    }
     if (scope.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
 

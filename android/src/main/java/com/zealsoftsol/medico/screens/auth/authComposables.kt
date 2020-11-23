@@ -12,15 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonConstants
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +39,7 @@ import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneOrEmailFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.showError
 
 @Composable
 fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
@@ -79,7 +75,7 @@ fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
                     )
             )
             Image(
-                painter = ColorPainter(Color(0,132,212,178)),
+                painter = ColorPainter(Color(0, 132, 212, 178)),
                 modifier = Modifier.constrainAs(solid) {
                     centerTo(parent)
                 }.fillMaxSize()
@@ -87,39 +83,19 @@ fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
         }
         TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
-                Image(asset = imageResource(id = R.drawable.medico_logo), modifier = Modifier.align(
-                    Alignment.CenterStart))
+                Image(
+                    asset = imageResource(id = R.drawable.medico_logo), modifier = Modifier.align(
+                        Alignment.CenterStart
+                    )
+                )
             }
         }
         AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter), scope)
 
-        val showErrorDialog = remember(scope) { mutableStateOf(scope.success.isFalse) }
-        if (showErrorDialog.value) AlertDialog(
-            onDismissRequest = { showErrorDialog.value = false },
-            title = {
-                Text(
-                    text = "Log in error",
-                    style = MaterialTheme.typography.h6
-                )
-            },
-            text = {
-                Text(
-                    text = "Log in or password is wrong. Please try again or restore your password",
-                    style = MaterialTheme.typography.subtitle1
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = { showErrorDialog.value = false },
-                    colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
-                    elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
-                ) {
-                    Text(
-                        text = "OKAY",
-                        style = MaterialTheme.typography.subtitle2
-                    )
-                }
-            }
+        scope.showError(
+            titleRes = R.string.error_log_in_title,
+            textRes = R.string.error_log_in_text,
+            case = { success.isFalse },
         )
     }
 }
