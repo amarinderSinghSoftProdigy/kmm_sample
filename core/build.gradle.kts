@@ -47,7 +47,6 @@ kotlin {
                 implementation(Deps.Ktor.serial)
                 implementation(Deps.Ktor.log)
                 implementation(Deps.multiplatformSettings)
-
             }
         }
         val androidMain by getting {
@@ -55,6 +54,7 @@ kotlin {
                 implementation(Deps.Ktor.Client.jvm)
                 api(Deps.Kodein.DI.android)
                 api(Deps.Android.Ktx.core)
+                implementation(Deps.okhttpinterceptor)
             }
         }
         val iosMain by getting {

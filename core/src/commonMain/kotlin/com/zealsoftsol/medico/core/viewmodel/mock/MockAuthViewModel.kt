@@ -1,13 +1,11 @@
 package com.zealsoftsol.medico.core.viewmodel.mock
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModelFacade
+import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.AuthState
 
-class MockAuthViewModel : AuthViewModelFacade {
+class MockAuthViewModel : AuthViewModel {
     override val credentials: DataSource<AuthCredentials> = DataSource(AuthCredentials("", null, ""))
-    override val state: DataSource<AuthState?> = DataSource(null)
 
     override fun tryLogIn() {
     }
@@ -18,6 +16,19 @@ class MockAuthViewModel : AuthViewModelFacade {
     override fun updateAuthCredentials(emailOrPhone: String, password: String) {
     }
 
-    override fun clearState() {
+    override fun sendOtp(phoneNumber: String) {
+
+    }
+
+    override fun changePassword(newPassword: String) {
+
+    }
+
+    override fun submitOtp(otp: String) {
+
+    }
+
+    override fun resendOtp() {
+
     }
 }

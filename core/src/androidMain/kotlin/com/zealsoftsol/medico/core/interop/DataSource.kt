@@ -7,7 +7,7 @@ actual class DataSource<T> actual constructor(initialValue: T) {
     private val stateFlow = MutableStateFlow(initialValue)
     actual var value: T
         get() = stateFlow.value
-        set(value) {
+        internal set(value) {
             stateFlow.value = value
         }
     val flow: StateFlow<T>

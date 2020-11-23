@@ -3,26 +3,23 @@ package com.zealsoftsol.medico.utils
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 
-class PhoneNumberFormatter(private val countryCode: String) {
+class PhoneNumberFormatter(locale: String) {
+    private val countryCode: String = locale.split("-").first()
     private var phoneNumber: Phonenumber.PhoneNumber? = null
     private val util: PhoneNumberUtil = PhoneNumberUtil.getInstance()
 
-    fun verifyNumber(number: String): Result {
+    fun verifyNumber(number: String): String? {
         return try {
             phoneNumber = util.parse(number, countryCode)
-            Result(
-                phoneNumber?.formatted().orEmpty(),
-                phoneNumber.isValid(true),
-            )
+            if (phoneNumber.isValid(true)) {
+                "${phoneNumber!!.countryCode}${phoneNumber!!.nationalNumber}"
+            } else {
+                null
+            }
         } catch (e: Exception) {
-//            number.digits().takeIf { it.isNotEmpty() }?.let {
-//                phoneNumber?.nationalNumber = it.toLong()
-//            } ?: phoneNumber?.clearNationalNumber()
-            Result(number, false)
+            null
         }
     }
-
-    data class Result(val formattedPhone: String, val isValid: Boolean)
 }
 
 object PhoneParser {

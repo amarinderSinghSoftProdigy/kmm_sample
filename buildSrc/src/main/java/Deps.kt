@@ -102,6 +102,7 @@ object Deps {
 
     const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.6.3"
     const val libphonenumber = "com.googlecode.libphonenumber:libphonenumber:8.12.7"
+    const val okhttpinterceptor = "com.squareup.okhttp3:logging-interceptor:4.9.0"
 }
 
 

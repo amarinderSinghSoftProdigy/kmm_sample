@@ -96,10 +96,17 @@ inline fun <T> Any.safeCall(block: () -> T) = try {
     null
 }
 
-sealed class Interval(protected val value: Long) {
-    open fun getInterval(): Long = value
-    class Linear(value: Long) : Interval(value)
-    class Progressive(startValue: Long) : Interval(startValue) {
+sealed class Interval(protected val value: Long, private val maxRetries: Int) {
+    private var retries = 0
+
+    internal fun canRetry(): Boolean = retries < maxRetries
+
+    open fun getInterval(): Long {
+        retries++
+        return value
+    }
+    class Linear(value: Long, maxRetries: Int = Int.MAX_VALUE) : Interval(value, maxRetries)
+    class Progressive(startValue: Long, maxRetries: Int = Int.MAX_VALUE) : Interval(startValue, maxRetries) {
         private var count = 1
         override fun getInterval(): Long {
             return value * count++
@@ -107,11 +114,11 @@ sealed class Interval(protected val value: Long) {
     }
 }
 
-suspend fun <T> getEventually(interval: Interval, block: suspend () -> T?): T {
-    var item = Unit.safeCall { block() }
-    while (item == null) {
-        item = Unit.safeCall { block() }
+suspend fun <T> retry(interval: Interval, block: suspend () -> T?): T? {
+    var item = block()
+    while (item == null && interval.canRetry()) {
         delay(interval.getInterval())
+        item = block()
     }
     return item
 }
