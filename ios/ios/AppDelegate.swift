@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let start = UiLink().appStart(context: self)
+        let start = UiLink().appStart(context: self, isDebug: true)
         di = start.di
         let swiftDI = SwiftDI(di: di)
         authViewModel = swiftDI.authViewModel

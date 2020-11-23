@@ -40,7 +40,8 @@ struct AuthScreen: View {
             AuthTab(
                 phoneOrEmail: credentials.value!.phoneNumberOrEmail,
                 password: credentials.value!.password,
-                authViewModel: authViewModel
+                authViewModel: authViewModel,
+                scope: scope
             )
                 .frame(maxWidth: .infinity)
                 .background(Color.primary)
@@ -57,6 +58,7 @@ struct AuthTab: View {
     @State var password: String
     
     let authViewModel: AuthViewModel
+    let scope: Scope.LogIn
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -89,6 +91,9 @@ struct AuthTab: View {
                 .font(Font.caption)
                 .padding(.top, 4)
                 .foregroundColor(Color.medicoLightBlue)
+                .onTapGesture {
+                    scope.goToForgetPassword()
+                }
             Button(action: {
                 authViewModel.tryLogIn()
             }) {

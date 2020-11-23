@@ -35,6 +35,8 @@ struct HostScreen: View {
                     AuthScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.LogIn)
                 case is Scope.Main:
                     MainScreen(authViewModel: authViewModel)
+                case is Scope.ForgetPassword.ForgetPasswordPhoneNumberInput:
+                    AuthPhoneNumberInputScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.ForgetPassword.ForgetPasswordPhoneNumberInput)
                 default:
                     Group {}
                 }
