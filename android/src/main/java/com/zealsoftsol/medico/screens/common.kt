@@ -1,8 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import android.content.Context
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,20 +12,20 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedTask
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
@@ -70,31 +67,34 @@ fun IndefiniteProgressBar() {
 
 @Composable
 fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) -> Unit): Boolean {
-    val context = ContextAmbient.current
-    val formatter = remember { PhoneNumberFormatter(context.resources.configuration.locale.toLanguageTag()) }
-    val (plain, _, isValid) = formatter.verifyNumber(text)
+    val formatter =
+        remember { PhoneNumberFormatter(if (BuildConfig.FLAVOR == "dev") "RU-ru" else "IN-in") }
+    val formatted = formatter.verifyNumber(text)
+    val isValid = formatted != null
     InputField(
         hint = hint,
-        text = plain,
-        isValid = isValid || plain.isEmpty(),
+        text = formatted ?: text,
+        isValid = isValid,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-        onValueChange = onValueChange
+        onValueChange = onValueChange,
     )
+    formatted?.let(onValueChange)
     return isValid
 }
 
 @Composable
 fun PhoneOrEmailFormatInputField(hint: String, text: String, isPhoneNumber: Boolean, onValueChange: (String) -> Unit) {
-    val context = ContextAmbient.current
-    val formatter = remember { PhoneNumberFormatter(context.resources.configuration.locale.toLanguageTag()) }
-    val (plain, _, isValid) = formatter.verifyNumber(text)
+    val formatter =
+        remember { PhoneNumberFormatter(if (BuildConfig.FLAVOR == "dev") "RU-ru" else "IN-in") }
+    val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
-        text = if (isPhoneNumber) plain else text,
-        isValid = if (isPhoneNumber) isValid else true,
+        text = formatted ?: text,
+        isValid = if (isPhoneNumber) formatted != null else true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (isPhoneNumber) KeyboardType.Phone else KeyboardType.Email),
-        onValueChange = onValueChange
+        onValueChange = onValueChange,
     )
+    formatted?.let(onValueChange)
 }
 
 @Composable
@@ -143,7 +143,7 @@ fun InputField(
 @Composable
 fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
     val state = remember { mutableStateOf(initial) }
-    LaunchedTask(this) {
+    LaunchedEffect(this) {
         state.value = await()
     }
     return state

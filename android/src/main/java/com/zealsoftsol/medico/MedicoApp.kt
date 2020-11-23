@@ -11,7 +11,7 @@ class MedicoApp : Application(), DIAware {
 
     override fun onCreate() {
         super.onCreate()
-        val (di) = UiLink.appStart(this)
+        val (di) = UiLink.appStart(this, BuildConfig.FLAVOR == "dev")
         this.di = di
     }
 }

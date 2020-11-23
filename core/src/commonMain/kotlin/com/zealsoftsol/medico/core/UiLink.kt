@@ -4,8 +4,8 @@ import org.kodein.di.DI
 
 object UiLink {
 
-    fun appStart(context: Any): AppStartResult {
-        return AppStartResult(startKodein(context))
+    fun appStart(context: Any, isDebug: Boolean): AppStartResult {
+        return AppStartResult(startKodein(context, isDebug))
     }
 
     data class AppStartResult(val di: DI)

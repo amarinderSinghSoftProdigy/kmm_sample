@@ -9,8 +9,15 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
 
-actual fun DI.MainBuilder.platformDependencies(context: Any) {
+actual fun DI.MainBuilder.platformDependencies(context: Any, isDebugBuild: Boolean) {
     context as Context
     bind<HttpClientEngineFactory<*>>() with singleton { OkHttp }
-    bind<Settings>() with singleton { AndroidSettings(context.getSharedPreferences("prefs", Context.MODE_PRIVATE)) }
+    bind<Settings>() with singleton {
+        AndroidSettings(
+            context.getSharedPreferences(
+                "prefs",
+                Context.MODE_PRIVATE
+            )
+        )
+    }
 }

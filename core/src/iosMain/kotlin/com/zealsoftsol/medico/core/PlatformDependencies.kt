@@ -9,7 +9,7 @@ import org.kodein.di.bind
 import org.kodein.di.singleton
 import platform.Foundation.NSUserDefaults
 
-actual fun DI.MainBuilder.platformDependencies(context: Any) {
+actual fun DI.MainBuilder.platformDependencies(context: Any, isDebugBuild: Boolean) {
     bind<HttpClientEngineFactory<*>>() with singleton { Ios }
     bind<Settings>() with singleton { AppleSettings(NSUserDefaults()) }
 }

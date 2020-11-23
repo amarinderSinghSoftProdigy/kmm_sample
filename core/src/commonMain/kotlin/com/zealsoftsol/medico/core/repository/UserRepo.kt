@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRequest
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 
 class UserRepo(
@@ -76,19 +75,19 @@ class UserRepo(
     }
 
     suspend fun sendOtp(phoneNumber: String): Boolean {
-        return networkAuthScope.sendOtp(phoneNumber.toNationalFormat())
+        return networkAuthScope.sendOtp(phoneNumber.toServerFormat())
     }
 
     suspend fun submitOtp(phoneNumber: String, otp: String): Boolean {
-        return networkAuthScope.verifyOtp(phoneNumber.toNationalFormat(), otp)
+        return networkAuthScope.verifyOtp(phoneNumber.toServerFormat(), otp)
     }
 
     suspend fun changePassword(phoneNumber: String, newPassword: String): Boolean {
-        return networkAuthScope.changePassword(phoneNumber.toNationalFormat(), newPassword)
+        return networkAuthScope.changePassword(phoneNumber.toServerFormat(), newPassword)
     }
 
     suspend fun resendOtp(phoneNumber: String): Boolean {
-        return networkAuthScope.retryOtp(phoneNumber.toNationalFormat())
+        return networkAuthScope.retryOtp(phoneNumber.toServerFormat())
     }
 
     private fun fetchUser(): User? {
@@ -99,11 +98,14 @@ class UserRepo(
         return user
     }
 
-    private inline fun String.toNationalFormat() = replace("+", "0")
-
-    private suspend fun mockResponse(isSuccess: Boolean = true): Boolean {
-        delay(2000)
-        return isSuccess
+    private inline fun String.toServerFormat() = replace("+", "").let {
+        val leadingZeros = (12 - it.length).coerceAtLeast(0)
+        buildString {
+            repeat(leadingZeros) {
+                append("0")
+            }
+            append(it)
+        }
     }
 
     companion object {
