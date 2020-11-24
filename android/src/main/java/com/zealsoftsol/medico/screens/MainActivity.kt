@@ -29,7 +29,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.UiNavigator
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
+import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen

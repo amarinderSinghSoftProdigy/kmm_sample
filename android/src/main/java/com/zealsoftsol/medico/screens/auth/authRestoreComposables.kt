@@ -36,7 +36,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.extensions.toast
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
+import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
