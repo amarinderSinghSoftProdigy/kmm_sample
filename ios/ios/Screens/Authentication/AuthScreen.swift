@@ -94,6 +94,7 @@ struct AuthTab: View {
                 .onTapGesture {
                     scope.goToForgetPassword()
                 }
+            
             Button(action: {
                 authViewModel.tryLogIn()
             }) {
@@ -101,14 +102,17 @@ struct AuthTab: View {
                     .fontWeight(Font.Weight.semibold)
                     .frame(maxWidth: .infinity)
             }.medicoButton(isEnabled: true)
-            .padding(.top)
+                            .padding(.top)
+            
             Text(LocalizedStringKey("sign_up_to_medico"))
                 .font(Font.caption)
                 .underline()
                 .padding(.top, 4)
                 .padding(.bottom)
                 .foregroundColor(Color.medicoLightBlue)
-        }.padding(20)
+        }
+        .padding(20)
+        .navigationBarHidden(true)
     }
 }
 
