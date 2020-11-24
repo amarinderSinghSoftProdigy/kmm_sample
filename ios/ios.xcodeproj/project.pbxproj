@@ -15,8 +15,11 @@
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
 		33B1B809256421B4005215A3 /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B808256421B4005215A3 /* ColorExt.swift */; };
 		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
+		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
+		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
+		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
 		33F1C06E256811A30041A890 /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C06D256811A30041A890 /* CommonExt.swift */; };
-		33F1C07225683FFF0041A890 /* AuthRestoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* AuthRestoreScreen.swift */; };
+		33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
@@ -68,8 +71,11 @@
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
 		33B1B808256421B4005215A3 /* ColorExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExt.swift; sourceTree = "<group>"; };
 		33B1B80E2564378E005215A3 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
+		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
+		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
+		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
 		33F1C06D256811A30041A890 /* CommonExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExt.swift; sourceTree = "<group>"; };
-		33F1C07125683FFF0041A890 /* AuthRestoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRestoreScreen.swift; sourceTree = "<group>"; };
+		33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPasswordRestoreScreen.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Medico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF80242A565900829871 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -112,32 +118,65 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		33016394255999F200835961 /* utils */ = {
+		33016394255999F200835961 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				3301639525599A0E00835961 /* SwiftDataSource.swift */,
 				33B1B80E2564378E005215A3 /* HostingController.swift */,
+				3301639525599A0E00835961 /* SwiftDataSource.swift */,
 			);
-			path = utils;
+			path = Utils;
 			sourceTree = "<group>";
 		};
-		33B1B7FE2563F4C6005215A3 /* auth */ = {
+		337C0A35256D423D00C3F0A5 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */,
-				33F1C07125683FFF0041A890 /* AuthRestoreScreen.swift */,
+				33B1B7FE2563F4C6005215A3 /* Authentication */,
+				3308674B2566D441000C3EB8 /* MainScreen.swift */,
+				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
-			path = auth;
+			path = Screens;
 			sourceTree = "<group>";
 		};
-		33B1B80725642192005215A3 /* extensions */ = {
+		337C0A36256D426900C3F0A5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7555FF84242A565B00829871 /* Assets.xcassets */,
+				33E7682D256D5F6D00B35FDF /* Fonts */,
+				7555FF86242A565B00829871 /* Preview Content */,
+				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
+				7555FF8C242A565B00829871 /* Info.plist */,
+				33289422256537A50003E092 /* Localizable.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		33B1B7FE2563F4C6005215A3 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */,
+				33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		33B1B80725642192005215A3 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				33B1B808256421B4005215A3 /* ColorExt.swift */,
-				33289418256532780003E092 /* ViewExt.swift */,
 				33F1C06D256811A30041A890 /* CommonExt.swift */,
+				33289418256532780003E092 /* ViewExt.swift */,
 			);
-			path = extensions;
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		33E7682D256D5F6D00B35FDF /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */,
+				33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */,
+				33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -164,18 +203,12 @@
 		7555FF7D242A565900829871 /* ios */ = {
 			isa = PBXGroup;
 			children = (
-				33B1B80725642192005215A3 /* extensions */,
-				33B1B7FE2563F4C6005215A3 /* auth */,
-				33016394255999F200835961 /* utils */,
-				3308674B2566D441000C3EB8 /* MainScreen.swift */,
-				330867512566D67E000C3EB8 /* HostScreen.swift */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
+				33B1B80725642192005215A3 /* Extensions */,
+				337C0A36256D426900C3F0A5 /* Resources */,
+				337C0A35256D423D00C3F0A5 /* Screens */,
+				33016394255999F200835961 /* Utils */,
 				7555FF80242A565900829871 /* SceneDelegate.swift */,
-				7555FF84242A565B00829871 /* Assets.xcassets */,
-				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
-				7555FF8C242A565B00829871 /* Info.plist */,
-				7555FF86242A565B00829871 /* Preview Content */,
-				33289422256537A50003E092 /* Localizable.strings */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -324,8 +357,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				33289420256537A50003E092 /* Localizable.strings in Resources */,
+				33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */,
 				7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */,
 				7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */,
+				33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */,
+				33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -435,7 +471,7 @@
 			files = (
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
-				33F1C07225683FFF0041A890 /* AuthRestoreScreen.swift in Sources */,
+				33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */,
 				33B1B80F2564378E005215A3 /* HostingController.swift in Sources */,
 				3301639625599A0E00835961 /* SwiftDataSource.swift in Sources */,
 				33B1B809256421B4005215A3 /* ColorExt.swift in Sources */,
@@ -548,7 +584,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -602,7 +638,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -617,11 +653,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"ios/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../core/build/xcode-frameworks";
-				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_FILE = ios/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -638,11 +675,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"ios/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../core/build/xcode-frameworks";
-				INFOPLIST_FILE = ios/Info.plist;
+				INFOPLIST_FILE = ios/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

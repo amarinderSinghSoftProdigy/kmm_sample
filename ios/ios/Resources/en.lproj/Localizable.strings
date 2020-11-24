@@ -5,6 +5,10 @@
   Created by Arnis on 18.11.2020.
   Copyright © 2020 orgName. All rights reserved.
 */
+
+// MARK: Authentication Password Restore Screen
+"password_reset" = "Password Reset";
+
 "app_name" = "Medico dev";
 "log_in" = "Log in";
 "phone_number_or_email" = "Phone Number or Email";
@@ -14,11 +18,10 @@
 "sign_up_to_medico" = "Sign up to Medico Stores";
 "sign_up" = "Sign up";
 "log_out" = "Log out";
-"password_reset" = "Password Reset";
-"reset_password_hint" = "To reset your password please enter verified phonenumber:";
+"reset_password_hint" = "To reset your password please enter verified phone number:";
 "get_code" = "Get Code";
 "phone_verification" = "Phone Verification";
-"verification_code_sent_hint" = "We sent you a verification code to your phonenumber";
+"verification_code_sent_hint" = "We sent you a verification code to your phone number";
 "verification_code" = "Verification Code";
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
