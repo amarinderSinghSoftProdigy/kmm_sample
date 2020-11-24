@@ -1,10 +1,8 @@
 package com.zealsoftsol.medico.core.viewmodel
 
 import com.zealsoftsol.medico.core.extensions.warnIt
-import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Platform
 import com.zealsoftsol.medico.core.interop.platform
-import com.zealsoftsol.medico.data.AuthCredentials
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,22 +31,4 @@ abstract class BaseViewModel : CoroutineScope {
             }
         }
     }
-}
-
-interface AuthViewModel {
-    val credentials: DataSource<AuthCredentials>
-
-    fun updateAuthCredentials(emailOrPhone: String, password: String)
-
-    fun tryLogIn()
-
-    fun logOut()
-
-    fun sendOtp(phoneNumber: String)
-
-    fun submitOtp(otp: String)
-
-    fun resendOtp()
-
-    fun changePassword(newPassword: String)
 }

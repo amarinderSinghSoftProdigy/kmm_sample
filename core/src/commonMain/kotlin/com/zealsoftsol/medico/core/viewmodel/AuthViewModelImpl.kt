@@ -5,11 +5,9 @@ import com.zealsoftsol.medico.core.Navigator
 import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.Scope.ForgetPassword.AwaitVerification.Companion.RESEND_TIMER
 import com.zealsoftsol.medico.core.extensions.ifTrue
-import com.zealsoftsol.medico.core.extensions.logIt
-import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.interop.currentThread
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
 import com.zealsoftsol.medico.core.withProgress
 import com.zealsoftsol.medico.data.AuthCredentials
 import kotlinx.coroutines.Job
@@ -125,21 +123,6 @@ internal class AuthViewModelImpl(
                 }
                 if (!isSuccess) cancel()
             }
-        }
-    }
-}
-
-data class TestData(val string: String)
-
-class TestAuthViewModel(private val userRepo: UserRepo) : BaseViewModel() {
-    val testData: DataSource<TestData> = DataSource(TestData("empty"))
-
-    fun asyncTest() {
-        launch {
-            "launch in $currentThread".logIt()
-            delay(500)
-            "set async".warnIt()
-            testData.value = TestData("async")
         }
     }
 }

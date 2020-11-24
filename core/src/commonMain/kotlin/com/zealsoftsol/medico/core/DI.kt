@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.network.mock.MockAuthScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.core.viewmodel.AuthViewModelImpl
-import com.zealsoftsol.medico.core.viewmodel.TestAuthViewModel
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -27,7 +26,6 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
             instance<UiNavigator>() as Navigator
         )
     }
-    bind<TestAuthViewModel>() with singleton { TestAuthViewModel(instance()) }
     bind<UserRepo>() with singleton { UserRepo(instance(), instance(), instance()) }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<UiNavigator>() with singleton { Navigator(instance()) }
