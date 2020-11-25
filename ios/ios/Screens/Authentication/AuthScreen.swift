@@ -19,7 +19,7 @@ struct AuthScreen: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ZStack(alignment: .top) {
-                Color.secondary.edgesIgnoringSafeArea(.all)
+                AppColor.secondary.color.edgesIgnoringSafeArea(.all)
                 
                 Image("auth_logo")
                     .resizable()
@@ -44,7 +44,7 @@ struct AuthScreen: View {
                 scope: scope
             )
                 .frame(maxWidth: .infinity)
-                .background(Color.primary)
+                .background(appColor: .primary)
                 .padding()
                 .alert(isPresented: $isError) {
                     Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
@@ -64,22 +64,23 @@ struct AuthTab: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(LocalizedStringKey("log_in"))
-                    .foregroundColor(Color.secondary)
                     .font(Font.system(size: 24))
                     .fontWeight(Font.Weight.semibold)
+                    .foregroundColor(appColor: .secondary)
                 Spacer()
                 Image("medico_logo")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 135, alignment: Alignment.trailing)
             }.frame(maxWidth: .infinity).padding([.bottom])
-            TextField(LocalizedStringKey("phone_number_or_email"), text: $phoneOrEmail)
-                .authInputField()
+            
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email", text: $phoneOrEmail)
                 .onReceive(Just(phoneOrEmail)) { pe in
                     if pe != authViewModel.credentials.value!.phoneNumberOrEmail {
                         authViewModel.updateAuthCredentials(emailOrPhone: pe, password: password)
                     }
                 }
+            
             SecureField(LocalizedStringKey("password"), text: $password)
                 .authInputField()
                 .onReceive(Just(password)) { pass in
@@ -87,10 +88,11 @@ struct AuthTab: View {
                         authViewModel.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
                     }
                 }
+            
             Text(LocalizedStringKey("forgot_password"))
                 .font(Font.caption)
                 .padding(.top, 4)
-                .foregroundColor(Color.medicoLightBlue)
+                .foregroundColor(appColor: .lightBlue)
                 .onTapGesture {
                     scope.goToForgetPassword()
                 }
@@ -109,7 +111,7 @@ struct AuthTab: View {
                 .underline()
                 .padding(.top, 4)
                 .padding(.bottom)
-                .foregroundColor(Color.medicoLightBlue)
+                .foregroundColor(appColor: .lightBlue)
         }
         .padding(20)
         .navigationBarHidden(true)
@@ -122,8 +124,10 @@ struct AuthInputField: ViewModifier {
         content
             .autocapitalization(UITextAutocapitalizationType.none)
             .disableAutocorrection(true)
-            .frame(height: 48)
-            .padding([.leading, .trailing], 12)
+            .frame(height: 50)
+            .padding([.leading, .trailing], 16)
+            .font(.custom("Barlow-Regular", size: 15))
+            .foregroundColor(appColor: .placeholderGray)
             .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
         
     }
@@ -137,9 +141,9 @@ struct MedicoButton: ViewModifier {
             .frame(maxWidth: .infinity)
             .padding()
             .disabled(!isEnabled)
-            .foregroundColor(Color.secondary)
-            .background(RoundedRectangle(cornerRadius: 8).fill(isEnabled ? Color.medicoYellow : Color.gray))
-        
+            .background(RoundedRectangle(cornerRadius: 8)
+                            .fill(isEnabled ? Color.yellow : Color.gray))
+            .foregroundColor(appColor: .secondary)
     }
 }
 

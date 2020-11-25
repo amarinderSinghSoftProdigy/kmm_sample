@@ -12,3 +12,9 @@ import SwiftUI
 var navigator: UiNavigator {
     (UIApplication.shared.delegate as! AppDelegate).navigator
 }
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}

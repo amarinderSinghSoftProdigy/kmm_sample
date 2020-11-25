@@ -18,15 +18,16 @@ struct AuthPasswordRestoreScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.primary.edgesIgnoringSafeArea(.all)
+                AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 VStack {
                     Text(LocalizedStringKey("reset_password_hint"))
                         .font(.custom("Barlow-Regular", size: 14))
                         .foregroundColor(.init(hex: "6E7882"))
                         .multilineTextAlignment(.center)
                         .padding([.trailing, .leading], geometry.size.width * 0.15)
-                    TextField(LocalizedStringKey("phone_number"), text: $phone)
-                        .authInputField()
+                    
+                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number", text: $phone)
+                        .padding([.leading, .trailing], 12)
                         .padding([.top, .bottom])
                     
                     Button(action: {

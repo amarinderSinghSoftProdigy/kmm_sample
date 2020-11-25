@@ -64,7 +64,7 @@ struct HostScreen: View {
 struct SplashScreenView: View {
     var body: some View {
         ZStack {
-            Color.primary.edgesIgnoringSafeArea(.all)
+            AppColor.primary.color.edgesIgnoringSafeArea(.all)
             Image("medico_logo")
                 .resizable()
                 .scaledToFit()

@@ -6,13 +6,9 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
-// MARK: Authentication Password Restore Screen
-"password_reset" = "Password Reset";
-
 "app_name" = "Medico dev";
 "log_in" = "Log in";
 "phone_number_or_email" = "Phone Number or Email";
-"phone_number" = "Phone Number";
 "password" = "Password";
 "forgot_password" = "Forgot password?";
 "sign_up_to_medico" = "Sign up to Medico Stores";
@@ -33,3 +29,7 @@
 "confirm" = "Confirm";
 "password_doesnt_match" = "Password doesn’t match";
 "something_went_wrong" = "Something went wrong";
+
+// MARK: Authentication Password Restore Screen
+"password_reset" = "Password Reset";
+"phone_number" = "Phone Number";
