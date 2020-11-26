@@ -3,8 +3,7 @@ package com.zealsoftsol.medico.utils
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
 
-class PhoneNumberFormatter(locale: String) {
-    private val countryCode: String = locale.split("-").first()
+class PhoneNumberFormatter(private val countryCode: String) {
     private var phoneNumber: Phonenumber.PhoneNumber? = null
     private val util: PhoneNumberUtil = PhoneNumberUtil.getInstance()
 

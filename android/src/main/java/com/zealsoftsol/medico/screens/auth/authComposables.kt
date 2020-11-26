@@ -31,9 +31,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
@@ -42,7 +41,7 @@ import com.zealsoftsol.medico.screens.TabBar
 import com.zealsoftsol.medico.screens.showError
 
 @Composable
-fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
+fun AuthScreen(scope: LogInScope) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = ColorPainter(Color(0xff003657)),
@@ -90,7 +89,7 @@ fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
                 )
             }
         }
-        AuthTab(authViewModel = authViewModel, Modifier.align(Alignment.BottomCenter), scope)
+        AuthTab(Modifier.align(Alignment.BottomCenter), scope)
 
         scope.showError(
             titleRes = R.string.error_log_in_title,
@@ -101,12 +100,13 @@ fun AuthScreen(authViewModel: AuthViewModel, scope: Scope.LogIn) {
 }
 
 @Composable
-fun AuthTab(authViewModel: AuthViewModel, modifier: Modifier, scope: Scope.LogIn) {
-    val credentialsState = authViewModel.credentials.flow.collectAsState()
-    Column(modifier = modifier.fillMaxWidth()
-        .padding(12.dp)
-        .background(MaterialTheme.colors.primary)
-        .padding(24.dp)
+fun AuthTab(modifier: Modifier, scope: LogInScope) {
+    val credentialsState = scope.credentials.flow.collectAsState()
+    Column(
+        modifier = modifier.fillMaxWidth()
+            .padding(12.dp)
+            .background(MaterialTheme.colors.primary)
+            .padding(24.dp)
     ) {
         Text(
             text = stringResource(id = R.string.log_in),
@@ -119,14 +119,14 @@ fun AuthTab(authViewModel: AuthViewModel, modifier: Modifier, scope: Scope.LogIn
             text = credentialsState.value.phoneNumberOrEmail,
             isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE,
         ) {
-            authViewModel.updateAuthCredentials(it, credentialsState.value.password)
+            scope.updateAuthCredentials(it, credentialsState.value.password)
         }
         Spacer(modifier = Modifier.size(12.dp))
         PasswordFormatInputField(
             hint = stringResource(id = R.string.password),
             text = credentialsState.value.password,
         ) {
-            authViewModel.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
+            scope.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
         }
         Text(
             text = stringResource(id = R.string.forgot_password),
@@ -136,7 +136,7 @@ fun AuthTab(authViewModel: AuthViewModel, modifier: Modifier, scope: Scope.LogIn
             })
         )
         MedicoButton(text = stringResource(id = R.string.log_in), isEnabled = true) {
-            authViewModel.tryLogIn()
+            scope.tryLogIn()
         }
         val string = AnnotatedString.Builder(stringResource(id = R.string.sign_up_to_medico)).apply {
             addStyle(SpanStyle(fontWeight = FontWeight.W700), 0, stringResource(id = R.string.sign_up).length)

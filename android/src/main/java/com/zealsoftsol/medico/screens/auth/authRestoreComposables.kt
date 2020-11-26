@@ -16,10 +16,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonConstants
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,21 +27,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.Scope
 import com.zealsoftsol.medico.core.extensions.toast
-import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
+import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
-import com.zealsoftsol.medico.screens.TabBar
 import com.zealsoftsol.medico.screens.showError
 import java.text.SimpleDateFormat
 
@@ -49,7 +48,7 @@ import java.text.SimpleDateFormat
 private fun BasicAuthRestoreScreen(
     title: String,
     subtitle: String,
-    onBack: () -> Unit,
+    back: CanGoBack,
     body: @Composable ColumnScope.() -> Boolean,
     buttonText: String,
     onButtonClick: () -> Unit,
@@ -58,25 +57,7 @@ private fun BasicAuthRestoreScreen(
     Box(modifier = Modifier.fillMaxSize()
         .background(MaterialTheme.colors.primary)
     ) {
-        TabBar {
-            Row {
-                Icon(
-                    asset = vectorResource(id = R.drawable.ic_arrow_back),
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                        .padding(16.dp)
-                        .clickable(
-                            indication = null,
-                            onClick = onBack,
-                        )
-                )
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                        .padding(start = 16.dp),
-                )
-            }
-        }
+        BasicTabBar(back = back, title = title)
         Column(modifier = Modifier.align(Alignment.Center).padding(16.dp)) {
             if (subtitle.isNotEmpty()) {
                 Text(
@@ -109,12 +90,12 @@ private fun BasicAuthRestoreScreen(
 }
 
 @Composable
-fun AuthPhoneNumberInputScreen(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.PhoneNumberInput) {
-    val phoneState = remember { mutableStateOf("") }
+fun AuthPhoneNumberInputScreen(scope: ForgetPasswordScope.PhoneNumberInput) {
+    val phoneState = remember { mutableStateOf(scope.phoneNumber) }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.password_reset),
         subtitle = stringResource(id = R.string.reset_password_hint),
-        onBack = { scope.goBack() },
+        back = scope,
         body = {
             PhoneFormatInputField(
                 hint = stringResource(id = R.string.phone_number),
@@ -123,7 +104,7 @@ fun AuthPhoneNumberInputScreen(authViewModel: AuthViewModel, scope: Scope.Forget
             )
         },
         buttonText = stringResource(id = R.string.get_code),
-        onButtonClick = { authViewModel.sendOtp(phoneState.value) },
+        onButtonClick = { scope.sendOtp(phoneState.value) },
     )
     scope.showError(
         titleRes = R.string.something_went_wrong,
@@ -134,19 +115,19 @@ fun AuthPhoneNumberInputScreen(authViewModel: AuthViewModel, scope: Scope.Forget
 
 @Composable
 fun AuthAwaitVerificationScreen(
-    authViewModel: AuthViewModel,
-    scope: Scope.ForgetPassword.AwaitVerification,
+    scope: ForgetPasswordScope.AwaitVerification,
     dateFormat: SimpleDateFormat,
 ) {
     val code = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.phone_verification),
         subtitle = "${stringResource(id = R.string.verification_code_sent_hint)} ${scope.phoneNumber}",
-        onBack = { scope.goBack() },
+        back = scope,
         body = {
-            if (scope.timeBeforeResend > 0 && scope.attemptsLeft > 0) {
+            val timer = scope.resendTimer.flow.collectAsState()
+            if (timer.value > 0 && scope.attemptsLeft > 0) {
                 Text(
-                    text = dateFormat.format(scope.timeBeforeResend),
+                    text = dateFormat.format(timer.value),
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.W700,
                     color = MaterialTheme.colors.onPrimary,
@@ -171,13 +152,13 @@ fun AuthAwaitVerificationScreen(
             code.value.isNotEmpty() && scope.attemptsLeft > 0
         },
         buttonText = stringResource(id = R.string.submit),
-        onButtonClick = { authViewModel.submitOtp(code.value) },
+        onButtonClick = { scope.submitOtp(code.value) },
         footer = {
             Row(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(vertical = 24.dp)
-                    .clickable(onClick = { authViewModel.resendOtp() })
+                    .clickable(onClick = { scope.resendOtp() })
             ) {
                 Text(
                     text = stringResource(id = R.string.didnt_get_code),
@@ -218,13 +199,13 @@ fun AuthAwaitVerificationScreen(
 }
 
 @Composable
-fun AuthEnterNewPasswordScreen(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.EnterNewPassword) {
+fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
     val password1 = remember { mutableStateOf("") }
     val password2 = remember { mutableStateOf("") }
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.new_password),
         subtitle = "",
-        onBack = { scope.goBack() },
+        back = scope,
         body = {
             PasswordFormatInputField(
                 hint = stringResource(id = R.string.new_password),
@@ -251,7 +232,7 @@ fun AuthEnterNewPasswordScreen(authViewModel: AuthViewModel, scope: Scope.Forget
             password1.value.isNotEmpty() && password1.value == password2.value
         },
         buttonText = stringResource(id = R.string.confirm),
-        onButtonClick = { authViewModel.changePassword(password2.value) }
+        onButtonClick = { scope.changePassword(password2.value) }
     )
     if (scope.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
