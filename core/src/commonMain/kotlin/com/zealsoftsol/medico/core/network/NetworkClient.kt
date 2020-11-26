@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidatedResponseBody
+import com.zealsoftsol.medico.data.ValidationData
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -113,40 +114,43 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         body.isSuccess
     }
 
-    override suspend fun changePassword(phoneNumber: String, password: String): Boolean =
+    override suspend fun changePassword(
+        phoneNumber: String,
+        password: String
+    ): ValidationData<PasswordValidation> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<Any, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
+            client.post<ValidatedResponseBody<Unit, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
                 withTempToken(TempToken.FORGET_PASSWORD)
                 contentType(ContentType.parse("application/json"))
                 body = PasswordResetRequest(phoneNumber, password, password)
-            }.isSuccess
+            }.getValidationData()
         }
 
-    override suspend fun signUpPart1(userRegistration1: UserRegistration1): UserValidation1? =
+    override suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> =
         ktorDispatcher {
             client.post<ValidatedResponseBody<String, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration1
-            }.validation
+            }.getValidationData()
         }
 
-    override suspend fun signUpPart2(userRegistration2: UserRegistration2): UserValidation2? =
+    override suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> =
         ktorDispatcher {
             client.post<ValidatedResponseBody<String, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration2
-            }.validation
+            }.getValidationData()
         }
 
-    override suspend fun signUpPart3(userRegistration3: UserRegistration3): UserValidation3? =
+    override suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> =
         ktorDispatcher {
             client.post<ValidatedResponseBody<String, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration3
-            }.validation
+            }.getValidationData()
         }
 
     private inline fun HttpRequestBuilder.withMainToken() {

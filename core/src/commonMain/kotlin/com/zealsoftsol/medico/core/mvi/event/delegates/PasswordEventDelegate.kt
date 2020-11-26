@@ -63,14 +63,18 @@ internal class PasswordEventDelegate(
 
     private suspend fun changePassword(newPassword: String) {
         navigator.withScope<ForgetPasswordScope.EnterNewPassword> {
-            val isSuccess = withProgress {
+            val (validation, isSuccess) = withProgress {
                 authViewModel.changePassword(it.phoneNumber, newPassword)
             }
-            setCurrentScope(it.copy(success = BooleanEvent.of(isSuccess)))
-            if (isSuccess) navigator.transitionTo(
-                LogInScope(authViewModel.credentials),
-                replaceScope = true
+            setCurrentScope(
+                it.copy(
+                    success = BooleanEvent.of(isSuccess),
+                    passwordValidation = validation,
+                )
             )
+            if (isSuccess) {
+                navigator.transitionTo(LogInScope(authViewModel.credentials), replaceScope = true)
+            }
         }
     }
 }

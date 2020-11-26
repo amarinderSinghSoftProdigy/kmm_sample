@@ -143,14 +143,18 @@ data class ResponseBody<T>(
 @Serializable
 data class ValidatedResponseBody<T, V>(
     private val body: T? = null,
-    val validation: V? = null,
+    private val validations: V? = null,
     val type: String,
 ) {
     val isSuccess: Boolean
         get() = type == "success"
 
     fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
+
+    fun getValidationData(): ValidationData<V> = ValidationData(validations, isSuccess)
 }
+
+data class ValidationData<V>(val validation: V?, val isSuccess: Boolean)
 
 @Serializable
 data class JustResponseBody(

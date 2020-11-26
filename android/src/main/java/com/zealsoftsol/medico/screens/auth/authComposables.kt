@@ -92,8 +92,8 @@ fun AuthScreen(scope: LogInScope) {
         AuthTab(Modifier.align(Alignment.BottomCenter), scope)
 
         scope.showError(
-            titleRes = R.string.error_log_in_title,
-            textRes = R.string.error_log_in_text,
+            title = stringResource(id = R.string.error_log_in_title),
+            text = stringResource(id = R.string.error_log_in_text),
             case = { success.isFalse },
         )
     }
