@@ -2,17 +2,11 @@ import SwiftUI
 import core
 
 struct MainScreen: View {
-    let authViewModel: AuthViewModel
+    let scope: MainScope
     
     var body: some View {
         Text(LocalizedStringKey("log_out")).onTapGesture {
-            authViewModel.logOut()
+            scope.tryLogOut()
         }
-    }
-}
-
-struct MainScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        MainScreen(authViewModel: MockAuthViewModel())
     }
 }

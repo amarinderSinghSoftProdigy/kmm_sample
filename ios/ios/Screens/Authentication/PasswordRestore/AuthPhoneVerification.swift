@@ -10,8 +10,7 @@ import SwiftUI
 import core
 
 struct AuthPhoneVerification: View {
-    let authViewModel: AuthViewModel
-    let scope: Scope.ForgetPassword.ForgetPasswordAwaitVerification
+    let scope: ForgetPasswordScope.AwaitVerification
     
     @State var code: String = ""
     
@@ -21,7 +20,7 @@ struct AuthPhoneVerification: View {
                 ZStack {
                     AppColor.primary.color.edgesIgnoringSafeArea(.all)
                     VStack {
-                        Text("reset_password_hint \(authViewModel.credentials.value?.getPhoneNumber() ?? "")")
+                        Text("reset_password_hint \(scope.phoneNumber)")
                             .font(.custom("Barlow-Regular", size: 14))
                             .foregroundColor(appColor: .textGrey)
                             .multilineTextAlignment(.center)
@@ -39,7 +38,7 @@ struct AuthPhoneVerification: View {
                             .padding([.top, .bottom])
                         
                         Button(action: {
-                            authViewModel.submitOtp(otp: code)
+                            scope.submitOtp(otp: code)
                         }) {
                             Text(LocalizedStringKey("submit"))
                                 .font(.custom("Barlow-Medium", size: 17))
@@ -55,8 +54,7 @@ struct AuthPhoneVerification: View {
         }
     }
     
-    init(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.ForgetPasswordAwaitVerification) {
-        self.authViewModel = authViewModel
+    init(scope: ForgetPasswordScope.AwaitVerification) {
         self.scope = scope
     }
 }

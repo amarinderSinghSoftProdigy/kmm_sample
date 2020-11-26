@@ -10,19 +10,18 @@ import SwiftUI
 import core
 
 struct AuthPasswordRestoreScreen: View {
-    let authViewModel: AuthViewModel
-    let scope: Scope
+    let scope: ForgetPasswordScope
     
     var body: some View {
         switch scope {
-        case is Scope.ForgetPassword.ForgetPasswordPhoneNumberInput:
-            if let scope = self.scope as? Scope.ForgetPassword.ForgetPasswordPhoneNumberInput {
-                AuthPhoneRequestScreen(authViewModel: authViewModel, scope: scope)
+        case is ForgetPasswordScope.PhoneNumberInput:
+            if let scope = self.scope as? ForgetPasswordScope.PhoneNumberInput {
+                AuthPhoneRequestScreen(scope: scope)
             }
                 
-        case is Scope.ForgetPassword.ForgetPasswordAwaitVerification:
-            if let scope = self.scope as? Scope.ForgetPassword.ForgetPasswordAwaitVerification {
-                AuthPhoneVerification(authViewModel: authViewModel, scope: scope)
+        case is ForgetPasswordScope.AwaitVerification:
+            if let scope = self.scope as? ForgetPasswordScope.AwaitVerification {
+                AuthPhoneVerification(scope: scope)
             }
             
         default:

@@ -4,9 +4,7 @@ import core
 struct HostScreen: View {
     @State var isSplashScreenActive = true
     
-    let authViewModel: AuthViewModel
-    
-    @ObservedObject var currentScope: SwiftDatasource<Scope>
+    @ObservedObject var currentScope: SwiftDatasource<BaseScope>
     
     var body: some View {
         if isSplashScreenActive {
@@ -20,15 +18,17 @@ struct HostScreen: View {
         } else {
             NavigationView {
                 switch currentScope.value {
-                case is Scope.LogIn:
-                    if let scopeValue = currentScope.value as? Scope.LogIn {
-                        AuthScreen(authViewModel: authViewModel, scope: scopeValue)
+                case is LogInScope:
+                    if let scopeValue = currentScope.value as? LogInScope {
+                        AuthScreen(scope: scopeValue)
                     }
-                case is Scope.Main:
-                    MainScreen(authViewModel: authViewModel)
-                case is Scope.ForgetPassword:
-                    if let scopeValue = currentScope.value as? Scope.ForgetPassword {
-                        AuthPasswordRestoreScreen(authViewModel: authViewModel, scope: scopeValue)
+                case is MainScope:
+                    if let scopeValue = currentScope.value as? MainScope {
+                        MainScreen(scope: scopeValue)
+                    }
+                case is ForgetPasswordScope:
+                    if let scopeValue = currentScope.value as? ForgetPasswordScope {
+                        AuthPasswordRestoreScreen(scope: scopeValue)
                     }
                 default:
                     Group {}
@@ -45,8 +45,7 @@ struct HostScreen: View {
         }
     }
     
-    init(authViewModel: AuthViewModel) {
-        self.authViewModel = authViewModel
+    init() {
         currentScope = SwiftDatasource(dataSource: navigator.scope)
         
         setUpNavigationBar()
@@ -84,9 +83,3 @@ struct VisualEffectView: UIViewRepresentable {
         uiView.effect = effect
     }
 }
-
-//struct HostScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HostScreen(authViewModel: MockAuthViewModel())
-//    }
-//}

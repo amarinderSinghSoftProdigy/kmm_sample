@@ -10,8 +10,7 @@ import SwiftUI
 import core
 
 struct AuthPhoneRequestScreen: View {
-    let authViewModel: AuthViewModel
-    let scope: Scope.ForgetPassword.ForgetPasswordPhoneNumberInput
+    let scope: ForgetPasswordScope.PhoneNumberInput
     
     @State var phone: String = ""
     
@@ -34,7 +33,7 @@ struct AuthPhoneRequestScreen: View {
                             .padding([.top, .bottom])
                         
                         Button(action: {
-                            authViewModel.sendOtp(phoneNumber: phone)
+                            scope.sendOtp(phoneNumber: phone)
                         }) {
                             Text(LocalizedStringKey("get_code"))
                                 .font(.custom("Barlow-Medium", size: 17))
@@ -48,8 +47,7 @@ struct AuthPhoneRequestScreen: View {
         }
     }
     
-    init(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.ForgetPasswordPhoneNumberInput) {
-        self.authViewModel = authViewModel
+    init(scope: ForgetPasswordScope.PhoneNumberInput) {
         self.scope = scope
     }
     

@@ -3,16 +3,14 @@ import Combine
 import core
 
 struct AuthScreen: View {
-    let authViewModel: AuthViewModel
-    let scope: Scope.LogIn
+    let scope: LogInScope
     @Binding var isError: Bool
     
     @ObservedObject var credentials: SwiftDatasource<DataAuthCredentials>
     
-    init(authViewModel: AuthViewModel, scope: Scope.LogIn) {
-        self.authViewModel = authViewModel
+    init(scope: LogInScope) {
         self.scope = scope
-        credentials = SwiftDatasource(dataSource: authViewModel.credentials)
+        credentials = SwiftDatasource(dataSource: scope.credentials)
         _isError = Binding.constant(scope.success.isFalse)
     }
     
@@ -42,7 +40,6 @@ struct AuthScreen: View {
                 AuthTab(
                     phoneOrEmail: credentials.value!.phoneNumberOrEmail,
                     password: credentials.value!.password,
-                    authViewModel: authViewModel,
                     scope: scope
                 )
                     .frame(maxWidth: .infinity)
@@ -60,8 +57,7 @@ struct AuthTab: View {
     @State var phoneOrEmail: String
     @State var password: String
     
-    let authViewModel: AuthViewModel
-    let scope: Scope.LogIn
+    let scope: LogInScope
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -81,16 +77,18 @@ struct AuthTab: View {
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
                 .onReceive(Just(phoneOrEmail)) { pe in
-                    if pe != authViewModel.credentials.value!.phoneNumberOrEmail {
-                        authViewModel.updateAuthCredentials(emailOrPhone: pe, password: password)
-                    }
+                    guard let phoneNumberOrEmail = scope.credentials.value?.phoneNumberOrEmail,
+                          pe != phoneNumberOrEmail else { return }
+                    
+                    scope.updateAuthCredentials(emailOrPhone: pe, password: password)
                 }
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
                 .onReceive(Just(password)) { pass in
-                    if pass != authViewModel.credentials.value!.password {
-                        authViewModel.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
-                    }
+                    guard let password = scope.credentials.value?.password,
+                          pass != password else { return }
+                    
+                    scope.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
                 }
             
             Text(LocalizedStringKey("forgot_password"))
@@ -102,7 +100,7 @@ struct AuthTab: View {
                 }
             
             Button(action: {
-                authViewModel.tryLogIn()
+                scope.tryLogIn()
             }) {
                 Text(LocalizedStringKey("log_in"))
                     .fontWeight(Font.Weight.semibold)
@@ -121,9 +119,3 @@ struct AuthTab: View {
         .navigationBarHidden(true)
     }
 }
-
-//struct AuthScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AuthScreen(authViewModel: MockAuthViewModel(), scope: Scope.LogIn())
-//    }
-//}
