@@ -9,36 +9,26 @@
 import Foundation
 import SwiftUI
 
-enum AppColor {
+enum AppColor: String {
     case primary
-    case secondary
     
     case white
     case yellow
-    case lightBlue
     case red
     
-    case placeholderGray
+    case lightBlue
+    case darkBlue
+    
+    case placeholderGrey
+    case textGrey
     
     var color: Color {
         switch self {
-        case .primary:
-            return Color("Primary")
-        case .secondary:
-            return Color("Secondary")
-            
         case .white:
             return Color.white
-        case .yellow:
-            return Color("Yellow")
-        case .lightBlue:
-            return Color("LightBlue")
-        case .red:
-            return Color(hex: "FF1744")
             
-        case .placeholderGray:
-            return Color(hex: "8E8E93")
-            
+        default:
+            return Color(self.rawValue.capitalizeFirstLetter())
         }
     }
 }

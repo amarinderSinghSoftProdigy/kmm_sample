@@ -20,17 +20,18 @@ struct AuthScreen: View {
         Background {
             ZStack(alignment: .bottom) {
                 ZStack(alignment: .top) {
-                    AppColor.secondary.color.edgesIgnoringSafeArea(.all)
+                    AppColor.darkBlue.color.edgesIgnoringSafeArea(.all)
                     
                     Image("auth_logo")
                         .resizable()
                         .scaledToFit()
                     
+                    let darkBlue = AppColor.darkBlue.color
                     Rectangle()
-                        .fill(LinearGradient(gradient: Gradient(colors: [Color(hex: "003657").opacity(0.0), Color(hex: "003657").opacity(1.0)]), startPoint: .top, endPoint: .bottom))
+                        .fill(LinearGradient(gradient: Gradient(colors: [darkBlue.opacity(0.0), darkBlue.opacity(1.0)]), startPoint: .top, endPoint: .bottom))
                         .aspectRatio(1.03878, contentMode: .fit)
                     
-                    Color(hex: "0084D4").opacity(0.7).edgesIgnoringSafeArea(.all)
+                    AppColor.lightBlue.color.opacity(0.7).edgesIgnoringSafeArea(.all)
                     
                     Rectangle()
                         .fill(Color.black)
@@ -68,7 +69,7 @@ struct AuthTab: View {
                 Text(LocalizedStringKey("log_in"))
                     .font(Font.system(size: 24))
                     .fontWeight(Font.Weight.semibold)
-                    .foregroundColor(appColor: .secondary)
+                    .foregroundColor(appColor: .darkBlue)
                 Spacer()
                 Image("medico_logo")
                     .resizable()
@@ -118,20 +119,6 @@ struct AuthTab: View {
         }
         .padding(20)
         .navigationBarHidden(true)
-    }
-}
-
-struct MedicoButton: ViewModifier {
-    let isEnabled: Bool
-    
-    func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity)
-            .padding()
-            .disabled(!isEnabled)
-            .background(RoundedRectangle(cornerRadius: 8)
-                            .fill(isEnabled ? Color.yellow : Color.gray))
-            .foregroundColor(appColor: .secondary)
     }
 }
 

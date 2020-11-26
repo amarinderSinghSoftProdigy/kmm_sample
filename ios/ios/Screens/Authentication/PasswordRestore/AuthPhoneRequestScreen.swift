@@ -1,15 +1,15 @@
 //
-//  AuthRestoreScreen.swift
+//  AuthPhoneRequestScreen.swift
 //  ios
 //
-//  Created by Arnis on 20.11.2020.
-//  Copyright © 2020 orgName. All rights reserved.
+//  Created by Dasha Gurinovich on 26.11.20.
+//  Copyright © 2020 Zeal Software Solutions. All rights reserved.
 //
 
 import SwiftUI
 import core
 
-struct AuthPasswordRestoreScreen: View {
+struct AuthPhoneRequestScreen: View {
     let authViewModel: AuthViewModel
     let scope: Scope.ForgetPassword.ForgetPasswordPhoneNumberInput
     
@@ -23,7 +23,7 @@ struct AuthPasswordRestoreScreen: View {
                     VStack {
                         Text(LocalizedStringKey("reset_password_hint"))
                             .font(.custom("Barlow-Regular", size: 14))
-                            .foregroundColor(.init(hex: "6E7882"))
+                            .foregroundColor(appColor: .textGrey)
                             .multilineTextAlignment(.center)
                             .padding([.trailing, .leading], geometry.size.width * 0.15)
                         
@@ -31,7 +31,6 @@ struct AuthPasswordRestoreScreen: View {
                                                      text: $phone,
                                                      textValidator: checkPhoneNumber,
                                                      keyboardType: .phonePad)
-                            .padding([.leading, .trailing], 12)
                             .padding([.top, .bottom])
                         
                         Button(action: {
@@ -62,9 +61,3 @@ struct AuthPasswordRestoreScreen: View {
         return possibleNumber.isValid
     }
 }
-
-//struct AuthRestoreScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AuthRestoreScreen()
-//    }
-//}

@@ -12,3 +12,9 @@ import SwiftUI
 var navigator: UiNavigator {
     (UIApplication.shared.delegate as! AppDelegate).navigator
 }
+
+extension String {
+    func capitalizeFirstLetter() -> String {
+        return prefix(1).capitalized + dropFirst()
+    }
+}

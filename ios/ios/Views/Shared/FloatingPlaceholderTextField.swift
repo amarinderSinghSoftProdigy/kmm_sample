@@ -103,7 +103,7 @@ struct PlaceholderText: ViewModifier {
         
     }
     
-    init(fontSize: CGFloat = 15, textColor: AppColor = .placeholderGray, padding: CGFloat = 16) {
+    init(fontSize: CGFloat = 15, textColor: AppColor = .placeholderGrey, padding: CGFloat = 16) {
         self.fontSize = fontSize
         self.textColor = textColor
         self.padding = padding
@@ -132,7 +132,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
             let fontSize: CGFloat = placeholderMoved ? 11 : 15
             let textOffset: CGFloat = placeholderMoved ? -10 : 0
             let textColor: AppColor = placeholderMoved ?
-                (isValid ? .lightBlue : .red) : .placeholderGray
+                (isValid ? .lightBlue : .red) : .placeholderGrey
 
             Text(LocalizedStringKey(placeholderLocalizedStringKey))
                 .modifier(PlaceholderText(fontSize: fontSize, textColor: textColor, padding: padding))
@@ -145,6 +145,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
             content
                 .font(.custom("Barlow-Regular", size: 15))
                 .frame(height: textFieldHeight, alignment: textFieldAlignment)
+                .foregroundColor(appColor: .darkBlue)
                 .padding([.leading, .trailing], padding)
         }
     }

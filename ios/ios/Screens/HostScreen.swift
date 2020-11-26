@@ -21,11 +21,15 @@ struct HostScreen: View {
             NavigationView {
                 switch currentScope.value {
                 case is Scope.LogIn:
-                    AuthScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.LogIn)
+                    if let scopeValue = currentScope.value as? Scope.LogIn {
+                        AuthScreen(authViewModel: authViewModel, scope: scopeValue)
+                    }
                 case is Scope.Main:
                     MainScreen(authViewModel: authViewModel)
-                case is Scope.ForgetPassword.ForgetPasswordPhoneNumberInput:
-                    AuthPasswordRestoreScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.ForgetPassword.ForgetPasswordPhoneNumberInput)
+                case is Scope.ForgetPassword:
+                    if let scopeValue = currentScope.value as? Scope.ForgetPassword {
+                        AuthPasswordRestoreScreen(authViewModel: authViewModel, scope: scopeValue)
+                    }
                 default:
                     Group {}
                 }

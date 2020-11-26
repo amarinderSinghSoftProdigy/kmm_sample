@@ -16,12 +16,6 @@
 "log_out" = "Log out";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
 "get_code" = "Get Code";
-"phone_verification" = "Phone Verification";
-"verification_code_sent_hint" = "We sent you a verification code to your phone number";
-"verification_code" = "Verification Code";
-"submit" = "Submit";
-"didnt_get_code" = "Didn’t get a code?";
-"resend" = "Resend";
 "wrong_code" = "Wrong Code";
 "attempt_left" = "attempts left";
 "new_password" = "New Password";
@@ -33,3 +27,9 @@
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";
 "phone_number" = "Phone Number";
+"phone_verification" = "Phone Verification";
+"verification_code_sent_hint" = "We sent you a verification code to your phone number %@";
+"verification_code" = "Verification Code";
+"submit" = "Submit";
+"didnt_get_code" = "Didn’t get a code?";
+"resend" = "Resend";
