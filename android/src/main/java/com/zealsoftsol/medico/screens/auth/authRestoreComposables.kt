@@ -37,11 +37,13 @@ import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
 import com.zealsoftsol.medico.screens.BasicTabBar
+import com.zealsoftsol.medico.screens.ErrorDialog
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.showError
+import com.zealsoftsol.medico.screens.withState
 import java.text.SimpleDateFormat
 
 @Composable
@@ -107,8 +109,7 @@ fun AuthPhoneNumberInputScreen(scope: ForgetPasswordScope.PhoneNumberInput) {
         onButtonClick = { scope.sendOtp(phoneState.value) },
     )
     scope.showError(
-        titleRes = R.string.something_went_wrong,
-        textRes = 0,
+        title = stringResource(id = R.string.something_went_wrong),
         case = { success.isFalse },
     )
 }
@@ -234,5 +235,12 @@ fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { scope.changePassword(password2.value) }
     )
-    if (scope.success.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
+    val errorState = scope.withState { success.isFalse }
+    if (errorState.value) scope.passwordValidation?.password?.let {
+        ErrorDialog(
+            title = stringResource(id = R.string.error),
+            text = it,
+            onDismiss = { errorState.value = false },
+        )
+    }
 }
