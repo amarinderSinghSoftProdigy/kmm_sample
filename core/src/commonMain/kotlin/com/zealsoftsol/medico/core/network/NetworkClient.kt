@@ -7,9 +7,18 @@ import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.JustResponseBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
+import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.ResponseBody
+import com.zealsoftsol.medico.data.TempOtpRequest
 import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidatedResponseBody
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -28,6 +37,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
@@ -59,7 +69,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }
     }
     override var token: String? = null
-    private var noAuthToken: Deferred<TokenInfo?> = fetchNoAuthToken()
+    private var tempToken: Deferred<TokenInfo?> = CompletableDeferred(value = null)
 
     override suspend fun login(request: UserRequest): TokenInfo? = ktorDispatcher {
         client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/login") {
@@ -70,63 +80,118 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun logout(): Boolean = ktorDispatcher {
         client.post<JustResponseBody>("$AUTH_URL/medico/logout") {
-            withToken()
+            withMainToken()
         }.isSuccess
     }
 
     override suspend fun sendOtp(phoneNumber: String): Boolean = ktorDispatcher {
         client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/forgetpwd") {
-            withNoAuthToken()
+            withTempToken(TempToken.FORGET_PASSWORD)
             contentType(ContentType.parse("application/json"))
-            body = OtpRequest(phoneNumber)
+            body = TempOtpRequest(phoneNumber)
         }.isSuccess
     }
 
     override suspend fun retryOtp(phoneNumber: String): Boolean = ktorDispatcher {
         client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
-            withNoAuthToken()
+            withTempToken(TempToken.FORGET_PASSWORD)
             contentType(ContentType.parse("application/json"))
             body = OtpRequest(phoneNumber)
         }.isSuccess
     }
 
     override suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
-            withNoAuthToken()
-            contentType(ContentType.parse("application/json"))
-            body = VerifyOtpRequest(phoneNumber, otp)
-        }.isSuccess
+        val body =
+            client.post<ResponseBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
+                withTempToken(TempToken.FORGET_PASSWORD)
+                contentType(ContentType.parse("application/json"))
+                body = VerifyOtpRequest(phoneNumber, otp)
+            }
+        if (body.isSuccess) {
+            tempToken = CompletableDeferred(body.getBodyOrNull())
+        }
+        body.isSuccess
     }
 
-    override suspend fun changePassword(phoneNumber: String, password: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
-            withNoAuthToken()
-            contentType(ContentType.parse("application/json"))
-            body = PasswordResetRequest(phoneNumber, password, password)
-        }.isSuccess
-    }
+    override suspend fun changePassword(phoneNumber: String, password: String): Boolean =
+        ktorDispatcher {
+            client.post<ValidatedResponseBody<Any, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
+                withTempToken(TempToken.FORGET_PASSWORD)
+                contentType(ContentType.parse("application/json"))
+                body = PasswordResetRequest(phoneNumber, password, password)
+            }.isSuccess
+        }
 
-    private inline fun HttpRequestBuilder.withToken() {
+    override suspend fun signUpPart1(userRegistration1: UserRegistration1): UserValidation1? =
+        ktorDispatcher {
+            client.post<ValidatedResponseBody<String, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
+                withTempToken(TempToken.REGISTRATION)
+                contentType(ContentType.parse("application/json"))
+                body = userRegistration1
+            }.validation
+        }
+
+    override suspend fun signUpPart2(userRegistration2: UserRegistration2): UserValidation2? =
+        ktorDispatcher {
+            client.post<ValidatedResponseBody<String, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
+                withTempToken(TempToken.REGISTRATION)
+                contentType(ContentType.parse("application/json"))
+                body = userRegistration2
+            }.validation
+        }
+
+    override suspend fun signUpPart3(userRegistration3: UserRegistration3): UserValidation3? =
+        ktorDispatcher {
+            client.post<ValidatedResponseBody<String, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
+                withTempToken(TempToken.REGISTRATION)
+                contentType(ContentType.parse("application/json"))
+                body = userRegistration3
+            }.validation
+        }
+
+    private inline fun HttpRequestBuilder.withMainToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
 
-    private suspend inline fun HttpRequestBuilder.withNoAuthToken() {
+    private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
         retry(Interval.Linear(100, 5)) {
-            val tokenInfo = noAuthToken.await()
+            val tokenInfo = tempToken.await()
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
-            if (tokenInfo == null)
-                noAuthToken = fetchNoAuthToken()
+            // compare tokens types
+            if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
+                tempToken = when (tokenType) {
+                    TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
+                    TempToken.REGISTRATION -> fetchRegistrationToken()
+                }
+            }
             tokenInfo
         }?.let { header("Authorization", "Bearer ${it.token}") }
-            ?: "no noAuth token for request".warnIt()
+            ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
     }
 
-    private inline fun fetchNoAuthToken(): Deferred<TokenInfo?> = GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
-        client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd").getBodyOrNull()
+    private inline fun fetchNoAuthToken(): Deferred<TokenInfo?> =
+        GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
+            client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd")
+                .getBodyOrNull()
+        }
+
+    private inline fun fetchRegistrationToken(): Deferred<TokenInfo?> =
+        GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
+            client.get<ResponseBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
+                .getBodyOrNull()
+        }
+
+    private enum class TempToken(val serverValue: String) {
+        //        MAIN("login"),
+        FORGET_PASSWORD("forgetpwd"),
+
+        //        UPDATE_PASSWORD("updatepwd"),
+        REGISTRATION("registration");
     }
 
     companion object {
         private const val AUTH_URL = "https://develop-api-auth0.medicostores.com"
+        private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com/"
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
     }
 }

@@ -27,13 +27,17 @@ import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.Scope
-import com.zealsoftsol.medico.core.UiNavigator
-import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
+import com.zealsoftsol.medico.core.mvi.UiNavigator
+import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
+import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
+import com.zealsoftsol.medico.screens.auth.AuthUserType
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
@@ -43,7 +47,6 @@ import java.text.SimpleDateFormat
 class MainActivity : AppCompatActivity(), DIAware {
 
     override val di: DI by closestDI()
-    private val authViewModel by instance<AuthViewModel>()
     private val navigator by instance<UiNavigator>()
     private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
 
@@ -53,24 +56,26 @@ class MainActivity : AppCompatActivity(), DIAware {
             AppTheme {
                 val currentScope = navigator.scope.flow.collectAsState()
                 when (val scope = currentScope.value) {
-                    is Scope.LogIn -> AuthScreen(
-                        authViewModel = authViewModel,
+                    is LogInScope -> AuthScreen(
                         scope = scope,
                     )
-                    is Scope.ForgetPassword.PhoneNumberInput -> AuthPhoneNumberInputScreen(
-                        authViewModel = authViewModel,
+                    is ForgetPasswordScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
                         scope = scope,
                     )
-                    is Scope.ForgetPassword.AwaitVerification -> AuthAwaitVerificationScreen(
-                        authViewModel = authViewModel,
+                    is ForgetPasswordScope.AwaitVerification -> AuthAwaitVerificationScreen(
                         scope = scope,
                         dateFormat = dateFormat
                     )
-                    is Scope.ForgetPassword.EnterNewPassword -> AuthEnterNewPasswordScreen(
-                        authViewModel = authViewModel,
+                    is ForgetPasswordScope.EnterNewPassword -> AuthEnterNewPasswordScreen(
                         scope = scope,
                     )
-                    is Scope.Main -> MainView(authViewModel = authViewModel)
+                    is SignUpScope.SelectUserType -> AuthUserType(
+                        scope = scope,
+                    )
+                    is SignUpScope.PersonalData -> AuthPersonalData(
+                        scope = scope,
+                    )
+                    is MainScope -> MainView(scope = scope)
                 }
                 if (currentScope.value.isInProgress) IndefiniteProgressBar()
             }
@@ -84,7 +89,7 @@ class MainActivity : AppCompatActivity(), DIAware {
 }
 
 @Composable
-fun MainView(authViewModel: AuthViewModel) {
+fun MainView(scope: MainScope) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
@@ -98,7 +103,7 @@ fun MainView(authViewModel: AuthViewModel) {
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .clickable(onClick = { authViewModel.logOut() })
+                        .clickable(onClick = { scope.tryLogOut() })
                         .padding(vertical = 12.dp)
                 ) {
                     Icon(

@@ -1,13 +1,17 @@
 package com.zealsoftsol.medico.screens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonConstants
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -21,7 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ConfigurationAmbient
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,9 +37,35 @@ import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.Scope
+import com.zealsoftsol.medico.core.mvi.scope.BaseScope
+import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
+
+@Composable
+fun BasicTabBar(back: CanGoBack?, title: String) {
+    TabBar {
+        Row {
+            if (back != null) {
+                Icon(
+                    asset = vectorResource(id = R.drawable.ic_arrow_back),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                        .padding(16.dp)
+                        .clickable(
+                            indication = null,
+                            onClick = { back.goBack() },
+                        )
+                )
+            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.align(Alignment.CenterVertically)
+                    .padding(start = 16.dp),
+            )
+        }
+    }
+}
 
 @Composable
 fun TabBar(color: Color = Color(0xffD9EDF9), content: @Composable () -> Unit) {
@@ -43,7 +75,12 @@ fun TabBar(color: Color = Color(0xffD9EDF9), content: @Composable () -> Unit) {
 }
 
 @Composable
-fun MedicoButton(text: String, isEnabled: Boolean, onClick: () -> Unit) {
+fun MedicoButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isEnabled: Boolean,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
         colors = ButtonConstants.defaultButtonColors(
@@ -55,7 +92,7 @@ fun MedicoButton(text: String, isEnabled: Boolean, onClick: () -> Unit) {
         enabled = isEnabled,
         shape = RoundedCornerShape(2.dp),
         elevation = ButtonConstants.defaultElevation(),
-        modifier = Modifier.fillMaxWidth().height(48.dp),
+        modifier = modifier.fillMaxWidth().height(48.dp),
     ) {
         Text(
             text = text,
@@ -104,7 +141,7 @@ fun ErrorDialog(titleRes: Int, textRes: Int, onDismiss: () -> Unit) {
 }
 
 @Composable
-inline fun <T : Scope> T.showError(titleRes: Int, textRes: Int, case: T.() -> Boolean) {
+inline fun <T : BaseScope> T.showError(titleRes: Int, textRes: Int, case: T.() -> Boolean) {
     val state = withState(event = case)
     if (state.value) ErrorDialog(
         titleRes = titleRes,
@@ -116,14 +153,15 @@ inline fun <T : Scope> T.showError(titleRes: Int, textRes: Int, case: T.() -> Bo
 }
 
 @Composable
-inline fun <T : Scope> T.withState(event: T.() -> Boolean): MutableState<Boolean> {
+inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boolean> {
     return remember(this) { mutableStateOf(event()) }
 }
 
 @Composable
 fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) -> Unit): Boolean {
-    val formatter =
-        remember { PhoneNumberFormatter(if (BuildConfig.DEBUG) "RU-ru" else "IN-in") }
+    val countryCode =
+        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null
     InputField(
@@ -139,14 +177,14 @@ fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) ->
 
 @Composable
 fun PhoneOrEmailFormatInputField(hint: String, text: String, isPhoneNumber: Boolean, onValueChange: (String) -> Unit) {
-    val formatter =
-        remember { PhoneNumberFormatter(if (BuildConfig.DEBUG) "RU-ru" else "IN-in") }
+    val countryCode = if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
         text = formatted ?: text,
         isValid = if (isPhoneNumber) formatted != null else true,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (isPhoneNumber) KeyboardType.Phone else KeyboardType.Email),
+//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (isPhoneNumber) KeyboardType.Phone else KeyboardType.Email),
         onValueChange = onValueChange,
     )
     formatted?.let(onValueChange)
