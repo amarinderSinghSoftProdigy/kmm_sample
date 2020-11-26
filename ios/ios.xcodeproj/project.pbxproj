@@ -24,6 +24,7 @@
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
+		33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
 		33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */; };
 		3FAAABB6433903C9E319491F /* Pods_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -92,6 +93,7 @@
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
+		33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhoneNumberUtil.swift; path = ios/utils/PhoneNumberUtil.swift; sourceTree = SOURCE_ROOT; };
 		33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPasswordRestoreScreen.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7B242A565900829871 /* Medico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medico.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,6 +150,7 @@
 			children = (
 				33CDAA2B256E55AB001C189A /* AppColor.swift */,
 				33B1B80E2564378E005215A3 /* HostingController.swift */,
+				33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */,
 				3301639525599A0E00835961 /* SwiftDataSource.swift */,
 			);
 			path = Utils;
@@ -307,7 +310,6 @@
 				0173AFE2E760A52B7A03B65F /* Pods-iosTests.debug.xcconfig */,
 				01998AE6153115D7A99CC100 /* Pods-iosTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -577,6 +579,7 @@
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
+				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,

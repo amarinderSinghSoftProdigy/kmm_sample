@@ -29,6 +29,7 @@ struct AuthPasswordRestoreScreen: View {
                         
                         FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
                                                      text: $phone,
+                                                     textValidator: checkPhoneNumber,
                                                      keyboardType: .phonePad)
                             .padding([.leading, .trailing], 12)
                             .padding([.top, .bottom])
@@ -51,6 +52,14 @@ struct AuthPasswordRestoreScreen: View {
     init(authViewModel: AuthViewModel, scope: Scope.ForgetPassword.ForgetPasswordPhoneNumberInput) {
         self.authViewModel = authViewModel
         self.scope = scope
+    }
+    
+    private func checkPhoneNumber(_ phone: String) -> Bool {
+        let possibleNumber = PhoneNumberUtil.shared.isValidNumber(phone)
+        
+        self.phone = possibleNumber.formattedNumber
+        
+        return possibleNumber.isValid
     }
 }
 
