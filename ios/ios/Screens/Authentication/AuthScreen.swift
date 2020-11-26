@@ -17,39 +17,41 @@ struct AuthScreen: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ZStack(alignment: .top) {
-                AppColor.secondary.color.edgesIgnoringSafeArea(.all)
-                
-                Image("auth_logo")
-                    .resizable()
-                    .scaledToFit()
-                
-                Rectangle()
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color(hex: "003657").opacity(0.0), Color(hex: "003657").opacity(1.0)]), startPoint: .top, endPoint: .bottom))
-                    .aspectRatio(1.03878, contentMode: .fit)
-                
-                Color(hex: "0084D4").opacity(0.7).edgesIgnoringSafeArea(.all)
-                
-                Rectangle()
-                    .fill(Color.black)
-                    .opacity(0.2)
-                    .frame(idealWidth: .infinity, maxHeight: 44, alignment: Alignment.top)
-            }
-
-            AuthTab(
-                phoneOrEmail: credentials.value!.phoneNumberOrEmail,
-                password: credentials.value!.password,
-                authViewModel: authViewModel,
-                scope: scope
-            )
-                .frame(maxWidth: .infinity)
-                .background(appColor: .primary)
-                .padding()
-                .alert(isPresented: $isError) {
-                    Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
+        Background {
+            ZStack(alignment: .bottom) {
+                ZStack(alignment: .top) {
+                    AppColor.secondary.color.edgesIgnoringSafeArea(.all)
+                    
+                    Image("auth_logo")
+                        .resizable()
+                        .scaledToFit()
+                    
+                    Rectangle()
+                        .fill(LinearGradient(gradient: Gradient(colors: [Color(hex: "003657").opacity(0.0), Color(hex: "003657").opacity(1.0)]), startPoint: .top, endPoint: .bottom))
+                        .aspectRatio(1.03878, contentMode: .fit)
+                    
+                    Color(hex: "0084D4").opacity(0.7).edgesIgnoringSafeArea(.all)
+                    
+                    Rectangle()
+                        .fill(Color.black)
+                        .opacity(0.2)
+                        .frame(idealWidth: .infinity, maxHeight: 44, alignment: Alignment.top)
                 }
-        }.edgesIgnoringSafeArea(.top)
+
+                AuthTab(
+                    phoneOrEmail: credentials.value!.phoneNumberOrEmail,
+                    password: credentials.value!.password,
+                    authViewModel: authViewModel,
+                    scope: scope
+                )
+                    .frame(maxWidth: .infinity)
+                    .background(appColor: .primary)
+                    .padding()
+                    .alert(isPresented: $isError) {
+                        Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
+                    }
+            }.edgesIgnoringSafeArea(.top)
+        }
     }
 }
 
@@ -74,15 +76,16 @@ struct AuthTab: View {
                     .frame(width: 135, alignment: Alignment.trailing)
             }.frame(maxWidth: .infinity).padding([.bottom])
             
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email", text: $phoneOrEmail)
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email", text: $phoneOrEmail, keyboardType: .emailAddress)
+                .autocapitalization(UITextAutocapitalizationType.none)
+                .disableAutocorrection(true)
                 .onReceive(Just(phoneOrEmail)) { pe in
                     if pe != authViewModel.credentials.value!.phoneNumberOrEmail {
                         authViewModel.updateAuthCredentials(emailOrPhone: pe, password: password)
                     }
                 }
             
-            SecureField(LocalizedStringKey("password"), text: $password)
-                .authInputField()
+            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
                 .onReceive(Just(password)) { pass in
                     if pass != authViewModel.credentials.value!.password {
                         authViewModel.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
@@ -115,21 +118,6 @@ struct AuthTab: View {
         }
         .padding(20)
         .navigationBarHidden(true)
-    }
-}
-
-
-struct AuthInputField: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .autocapitalization(UITextAutocapitalizationType.none)
-            .disableAutocorrection(true)
-            .frame(height: 50)
-            .padding([.leading, .trailing], 16)
-            .font(.custom("Barlow-Regular", size: 15))
-            .foregroundColor(appColor: .placeholderGray)
-            .background(RoundedRectangle(cornerRadius: 8).fill(Color.white))
-        
     }
 }
 

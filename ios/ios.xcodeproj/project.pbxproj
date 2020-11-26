@@ -11,7 +11,12 @@
 		3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3308674B2566D441000C3EB8 /* MainScreen.swift */; };
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
+		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
+		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
+		33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A85256FB7C200DACD7C /* ViewExtensions.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
+		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
+		33AD1050256F9335005FF354 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104F256F9335005FF354 /* Background.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
 		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
 		33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA2B256E55AB001C189A /* AppColor.swift */; };
@@ -67,7 +72,12 @@
 		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		33385A7A256FB66B00DACD7C /* ColorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ColorExt.swift; path = ios/extensions/ColorExt.swift; sourceTree = SOURCE_ROOT; };
+		33385A7B256FB66B00DACD7C /* CommonExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonExt.swift; path = ios/extensions/CommonExt.swift; sourceTree = SOURCE_ROOT; };
+		33385A85256FB7C200DACD7C /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = ios/extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
+		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
+		33AD104F256F9335005FF354 /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
 		33B1B80E2564378E005215A3 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
 		33CDAA2B256E55AB001C189A /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColor.swift; path = ios/utils/AppColor.swift; sourceTree = SOURCE_ROOT; };
@@ -139,6 +149,7 @@
 		33789560256E3BBC0034D79F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				33AD104F256F9335005FF354 /* Background.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 			);
 			path = Shared;
@@ -180,6 +191,10 @@
 			isa = PBXGroup;
 			children = (
 				33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */,
+				33385A7A256FB66B00DACD7C /* ColorExt.swift */,
+				33385A7B256FB66B00DACD7C /* CommonExt.swift */,
+				33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */,
+				33385A85256FB7C200DACD7C /* ViewExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -332,7 +347,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1130;
-				ORGANIZATIONNAME = orgName;
+				ORGANIZATIONNAME = "Zeal Software Solutions";
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
 						CreatedOnToolsVersion = 11.3.1;
@@ -485,15 +500,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
+				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
+				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,
 				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
 				33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */,
 				33B1B80F2564378E005215A3 /* HostingController.swift in Sources */,
 				33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */,
+				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				3301639625599A0E00835961 /* SwiftDataSource.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
+				33AD1050256F9335005FF354 /* Background.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */,
 			);
