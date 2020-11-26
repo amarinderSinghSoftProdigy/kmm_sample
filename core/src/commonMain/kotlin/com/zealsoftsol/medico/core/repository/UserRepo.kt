@@ -7,7 +7,12 @@ import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserValidation
 import kotlinx.serialization.json.Json
 
 class UserRepo(
@@ -88,6 +93,14 @@ class UserRepo(
 
     suspend fun resendOtp(phoneNumber: String): Boolean {
         return networkAuthScope.retryOtp(phoneNumber.toServerFormat())
+    }
+
+    suspend fun signUpPartially(userRegistration: UserRegistration): UserValidation? {
+        return when (userRegistration) {
+            is UserRegistration1 -> networkAuthScope.signUpPart1(userRegistration)
+            is UserRegistration2 -> networkAuthScope.signUpPart2(userRegistration)
+            is UserRegistration3 -> networkAuthScope.signUpPart3(userRegistration)
+        }
     }
 
     private fun fetchUser(): User? {

@@ -18,5 +18,7 @@ enum class AuthState {
 }
 
 enum class UserType {
-    STOCKIST, RETAILER, SEASON_BOY;
+    STOCKIST, RETAILER, SEASON_BOY, HOSPITAL;
 }
+
+data class UserRegistrationData(val registration: UserRegistration, val validation: UserValidation?)

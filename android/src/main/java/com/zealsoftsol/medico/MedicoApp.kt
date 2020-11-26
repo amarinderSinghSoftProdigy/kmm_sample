@@ -15,7 +15,7 @@ class MedicoApp : Application(), DIAware {
         val (di) = UiLink.appStart(
             this,
             BuildConfig.FLAVOR == "dev",
-            if (BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG
+            if (BuildConfig.DEBUG) Logger.Level.LOG else Logger.Level.NONE
         )
         this.di = di
     }

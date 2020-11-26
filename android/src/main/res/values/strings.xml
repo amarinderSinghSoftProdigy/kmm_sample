@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Medico dev</string>
+    <string name="app_name">Medico</string>
     <string name="log_in">Log in</string>
     <string name="phone_number_or_email">Phone Number or Email</string>
     <string name="phone_number">Phone Number</string>
@@ -28,4 +28,39 @@
     <string name="error_log_in_title">Log in error</string>
     <string name="error_log_in_text">Log in or password is wrong. Please try again or restore your password</string>
     <string name="okay">Okay</string>
+    <string name="who_are_you">Who are you?</string>
+    <string name="personal_data">Personal Data</string>
+    <string name="stockist">Stockist</string>
+    <string name="retailer">Retailer</string>
+    <string name="season_boy">Season Boy</string>
+    <string name="hospital">Hospital</string>
+    <string name="next">Next</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email Address</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="tos_line_1">Continuing, I accept the</string>
+    <string name="tos_line_2">Terms of Conditions and Privacy Policy</string>
+    <string name="address">Address</string>
+    <string name="pincode">Pincode</string>
+    <string name="address_line">Address Line</string>
+    <string name="location">Location</string>
+    <string name="city">City</string>
+    <string name="district">District</string>
+    <string name="state">State</string>
+    <string name="trader_details">Trader Details</string>
+    <string name="gstin">GSTIN</string>
+    <string name="drug_license_1">Drug License №1</string>
+    <string name="drug_license_2">Drug License №2</string>
+    <string name="provide_drug_license_hint">Please provide drug license to activate the account</string>
+    <string name="upload_new_document">Upload new document</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="actions">Actions</string>
+    <string name="upload">Upload</string>
+    <string name="use_camera">Use camera</string>
+    <string name="thanks_for_registration">Thank you for registration!</string>
+    <string name="documents_under_review">Your documents are under review. We will update you.</string>
+    <string name="welcome">Welcome</string>
+    <string name="legal_documents">Legal Documents</string>
+    <string name="upload_new">Upload new</string>
 </resources>
