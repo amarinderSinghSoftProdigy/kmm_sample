@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.viewmodel.mock
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.viewmodel.AuthViewModel
+import com.zealsoftsol.medico.core.viewmodel.interfaces.AuthViewModel
 import com.zealsoftsol.medico.data.AuthCredentials
 
 class MockAuthViewModel : AuthViewModel {
