@@ -20,7 +20,7 @@ struct FloatingPlaceholderTextField: View {
     let textValidator: ((String) -> Bool)?
     
     @State var fieldSelected = false
-    @State var isValid = false
+    @State var isValid = true
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {

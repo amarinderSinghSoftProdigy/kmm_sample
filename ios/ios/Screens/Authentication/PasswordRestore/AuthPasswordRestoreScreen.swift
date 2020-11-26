@@ -13,20 +13,35 @@ struct AuthPasswordRestoreScreen: View {
     let scope: ForgetPasswordScope
     
     var body: some View {
+        Background {
+            GeometryReader { geometry in
+                ZStack {
+                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                    
+                    getCurrentView(with: geometry)
+                        .padding()
+                }
+            }
+        }
+    }
+    
+    func getCurrentView(with geometry: GeometryProxy) ->  some View {
         switch scope {
         case is ForgetPasswordScope.PhoneNumberInput:
             if let scope = self.scope as? ForgetPasswordScope.PhoneNumberInput {
-                AuthPhoneRequestScreen(scope: scope)
+                return AnyView(AuthPhoneRequestScreen(scope: scope, geometry: geometry))
             }
                 
         case is ForgetPasswordScope.AwaitVerification:
             if let scope = self.scope as? ForgetPasswordScope.AwaitVerification {
-                AuthPhoneVerification(scope: scope)
+                return AnyView(AuthPhoneVerification(scope: scope, geometry: geometry))
             }
             
         default:
-            Group {}
+            break
         }
+        
+        return AnyView(Group {})
     }
 }
 

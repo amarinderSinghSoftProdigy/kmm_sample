@@ -28,7 +28,7 @@
 "password_reset" = "Password Reset";
 "phone_number" = "Phone Number";
 "phone_verification" = "Phone Verification";
-"verification_code_sent_hint" = "We sent you a verification code to your phone number %@";
+"verification_code_sent_hint %@" = "We sent you a verification code to your phone number %@";
 "verification_code" = "Verification Code";
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
