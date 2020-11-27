@@ -70,19 +70,31 @@ struct FloatingPlaceholderSecureField: View {
     
     let showPlaceholderWithText: Bool
     
+    let textValidator: ((String) -> Bool)?
+    @State var isValid = true
+    
     var body: some View {
         SecureField("", text: text)
             .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
                                                   text: text,
                                                   height: height,
                                                   fieldSelected: false,
+                                                  isValid: isValid,
                                                   showPlaceholderWithText: showPlaceholderWithText))
+            .onReceive(Just(text.wrappedValue)) { text in
+                if let textValidator = self.textValidator {
+                    self.isValid = textValidator(text)
+                }
+            }
     }
     
     init(placeholderLocalizedStringKey: String, text: Binding<String>,
+         textValidator: ((String) -> Bool)? = nil,
          height: CGFloat = 50, showPlaceholderWithText: Bool = false) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         self.text = text
+        
+        self.textValidator = textValidator
         
         self.height = height
         self.showPlaceholderWithText = showPlaceholderWithText
@@ -119,6 +131,8 @@ struct FloatingPlaceholderModifier: ViewModifier {
     let fieldSelected: Bool
     let isValid: Bool
     let showPlaceholderWithText: Bool
+    
+//    let errorMessageKey: String
     
     func body(content: Content) -> some View {
         ZStack(alignment: .leading) {

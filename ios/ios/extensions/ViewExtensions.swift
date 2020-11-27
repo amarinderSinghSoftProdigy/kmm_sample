@@ -29,5 +29,4 @@ extension View {
                   dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
         }
     }
-    
 }

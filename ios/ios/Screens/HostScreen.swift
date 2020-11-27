@@ -16,30 +16,28 @@ struct HostScreen: View {
                 }
             }
         } else {
-            NavigationView {
-                switch currentScope.value {
-                case is LogInScope:
-                    if let scopeValue = currentScope.value as? LogInScope {
-                        AuthScreen(scope: scopeValue)
+            ZStack {
+                NavigationView {
+                    switch currentScope.value {
+                    case is LogInScope:
+                        if let scopeValue = currentScope.value as? LogInScope {
+                            AuthScreen(scope: scopeValue)
+                        }
+                    case is MainScope:
+                        if let scopeValue = currentScope.value as? MainScope {
+                            MainScreen(scope: scopeValue)
+                        }
+                    case is ForgetPasswordScope:
+                        if let scopeValue = currentScope.value as? ForgetPasswordScope {
+                            AuthPasswordRestoreScreen(scope: scopeValue)
+                        }
+                    default:
+                        Group {}
                     }
-                case is MainScope:
-                    if let scopeValue = currentScope.value as? MainScope {
-                        MainScreen(scope: scopeValue)
-                    }
-                case is ForgetPasswordScope:
-                    if let scopeValue = currentScope.value as? ForgetPasswordScope {
-                        AuthPasswordRestoreScreen(scope: scopeValue)
-                    }
-                default:
-                    Group {}
                 }
-                
+            
                 if let currentScopeValue = currentScope.value, currentScopeValue.isInProgress {
-                    VisualEffectView(effect: UIBlurEffect(style: .dark))
-                        .edgesIgnoringSafeArea(.all)
-                    if #available(iOS 14.0, *) {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    }
+                    ActivityView()
                 }
             }
         }

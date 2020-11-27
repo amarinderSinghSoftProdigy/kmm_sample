@@ -8,14 +8,20 @@
 
 import SwiftUI
 
-struct ProgressView: View {
-    VisualEffectView(effect: UIBlurEffect(style: .dark))
-        .edgesIgnoringSafeArea(.all)
-        .onAppear {
-            UIApplication.shared.endEditing()
+struct ActivityView: View {
+    var body: some View {
+        ZStack {
+            VisualEffectView(effect: UIBlurEffect(style: .dark))
+                .edgesIgnoringSafeArea(.all)
+                .onAppear {
+                    UIApplication.shared.endEditing()
+                }
+            
+            ActivityIndicator(isAnimating: true) {
+                $0.color = .white
+            }
         }
-    
-    ActivityIndicator()
+    }
 }
 
 struct ActivityIndicator: UIViewRepresentable {

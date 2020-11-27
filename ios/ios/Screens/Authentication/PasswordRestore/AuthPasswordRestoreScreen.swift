@@ -36,6 +36,11 @@ struct AuthPasswordRestoreScreen: View {
                 return AnyView(AuthPhoneVerification(scope: scope, geometry: geometry))
             }
             
+        case is ForgetPasswordScope.EnterNewPassword:
+            if let scope = self.scope as? ForgetPasswordScope.EnterNewPassword {
+                return AnyView(AuthNewPasswordScreen(scope: scope))
+            }
+            
         default:
             break
         }
