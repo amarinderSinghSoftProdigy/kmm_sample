@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.BooleanEvent
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.PasswordValidation
 
 sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
 
@@ -49,6 +50,7 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
 
     data class EnterNewPassword(
         internal val phoneNumber: String,
+        val passwordValidation: PasswordValidation? = null,
         val success: BooleanEvent = BooleanEvent.none,
         override val isInProgress: Boolean = false,
     ) : ForgetPasswordScope() {

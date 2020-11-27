@@ -1,19 +1,20 @@
 package com.zealsoftsol.medico.core.mvi.viewmodel
 
 import com.zealsoftsol.medico.core.compatDispatcher
-import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope.AwaitVerification.Companion.RESEND_TIMER
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.ValidationData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class AuthViewModel(
+internal class AuthViewModel(
     private val userRepo: UserRepo,
 ) : BaseViewModel() {
 
@@ -45,7 +46,10 @@ class AuthViewModel(
 
     suspend fun resendOtp(phoneNumber: String): Boolean = userRepo.resendOtp(phoneNumber)
 
-    suspend fun changePassword(phoneNumber: String, newPassword: String) =
+    suspend fun changePassword(
+        phoneNumber: String,
+        newPassword: String
+    ): ValidationData<PasswordValidation> =
         userRepo.changePassword(phoneNumber, newPassword)
 
     fun stopResetPasswordTimer() {
@@ -57,7 +61,7 @@ class AuthViewModel(
         resetPasswordTimerJob = GlobalScope.launch(compatDispatcher) {
             var remainingTime = RESEND_TIMER
             while (remainingTime > 0) {
-                resendTimer.value = remainingTime.logIt()
+                resendTimer.value = remainingTime
                 delay(1000)
                 remainingTime -= 1000
             }

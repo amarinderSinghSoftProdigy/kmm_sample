@@ -108,19 +108,19 @@ fun IndefiniteProgressBar() {
 }
 
 @Composable
-fun ErrorDialog(titleRes: Int, textRes: Int, onDismiss: () -> Unit) {
+fun ErrorDialog(title: String, text: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(id = titleRes),
+                text = title,
                 style = MaterialTheme.typography.h6
             )
         },
         text = {
-            if (textRes != 0) {
+            if (text.isNotEmpty()) {
                 Text(
-                    text = stringResource(id = textRes),
+                    text = text,
                     style = MaterialTheme.typography.subtitle1
                 )
             }
@@ -141,14 +141,12 @@ fun ErrorDialog(titleRes: Int, textRes: Int, onDismiss: () -> Unit) {
 }
 
 @Composable
-inline fun <T : BaseScope> T.showError(titleRes: Int, textRes: Int, case: T.() -> Boolean) {
+inline fun <T : BaseScope> T.showError(title: String, text: String = "", case: T.() -> Boolean) {
     val state = withState(event = case)
     if (state.value) ErrorDialog(
-        titleRes = titleRes,
-        textRes = textRes,
-        onDismiss = {
-            state.value = false
-        },
+        title = title,
+        text = text,
+        onDismiss = { state.value = false },
     )
 }
 
