@@ -164,8 +164,7 @@ inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boo
 
 @Composable
 fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) -> Unit): Boolean {
-    val countryCode =
-        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val countryCode = if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null
