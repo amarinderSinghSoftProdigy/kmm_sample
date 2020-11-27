@@ -28,7 +28,11 @@ class PhoneNumberUtil {
             return (false, phoneNumberString)
         }
         
-        let isValid = phoneUtil.isValidNumber(forRegion: phoneNumber, regionCode: region)
+//        #if DEBUG
+        let isValid = phoneUtil.isValidNumber(phoneNumber)
+//        #else
+//        let isValid = phoneUtil.isValidNumber(forRegion: phoneNumber, regionCode: region)
+//        #endif
         
         return (isValid, isValid ? formattedNumber : phoneNumberString)
     }

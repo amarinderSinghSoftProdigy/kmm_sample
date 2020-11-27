@@ -830,7 +830,7 @@
 			baseConfigurationReference = 1646DD83415E626B134F3755 /* Pods-ios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
@@ -847,7 +847,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
 				PRODUCT_NAME = Medico;
-				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				PROVISIONING_PROFILE_SPECIFIER = medicodistribution;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
