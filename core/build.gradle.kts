@@ -28,9 +28,10 @@ android {
 kotlin {
     android()
     ios {
+        val postfix = name.substring(3).toLowerCase()
         binaries {
             framework {
-                baseName = "core"
+                baseName = "core_$postfix"
                 transitiveExport = true
             }
         }
@@ -68,13 +69,16 @@ kotlin {
 val packForXcode by tasks.creating(Sync::class) {
     group = "build"
     val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val sdkName = System.getenv("SDK_NAME") ?: "iphonesimulator"
-    val targetName = "ios" + if (sdkName.startsWith("iphoneos")) "Arm64" else "X64"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>(targetName).binaries.getFramework(mode)
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
+    kotlin.targets
+        .filterIsInstance<KotlinNativeTarget>()
+        .map { it.binaries.getFramework(mode) }
+        .forEach { framework ->
+            println("Building framework ${framework.baseName}")
+            inputs.property("mode", mode)
+            dependsOn(framework.linkTask)
+            val targetDir = File(buildDir, "xcode-frameworks")
+            from({ framework.outputDirectory })
+            into(targetDir)
+        }
 }
 tasks.getByName("build").dependsOn(packForXcode)
