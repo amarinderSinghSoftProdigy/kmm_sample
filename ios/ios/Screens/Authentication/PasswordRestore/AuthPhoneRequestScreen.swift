@@ -14,6 +14,7 @@ struct AuthPhoneRequestScreen: View {
     let geometry: GeometryProxy
     
     @State var phone: String = ""
+    @State var canSubmitPhone = false
     
     var body: some View {
         VStack {
@@ -35,7 +36,7 @@ struct AuthPhoneRequestScreen: View {
                 Text(LocalizedStringKey("get_code"))
                     .font(.custom("Barlow-Medium", size: 17))
                     .frame(maxWidth: .infinity)
-            }.medicoButton(isEnabled: true)
+            }.medicoButton(isEnabled: canSubmitPhone)
         }
         .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
     }
@@ -49,6 +50,7 @@ struct AuthPhoneRequestScreen: View {
         let possibleNumber = PhoneNumberUtil.shared.isValidNumber(phone)
         
         self.phone = possibleNumber.formattedNumber
+        self.canSubmitPhone = possibleNumber.isValid
         
         return possibleNumber.isValid
     }
