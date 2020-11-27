@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity(), DIAware {
 fun MainView(scope: MainScope) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
+        backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerContent = {
             Column(modifier = Modifier.fillMaxSize()) {
