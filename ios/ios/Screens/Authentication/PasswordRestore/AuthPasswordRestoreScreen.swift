@@ -20,6 +20,7 @@ struct AuthPasswordRestoreScreen: View {
                     
                     getCurrentView(with: geometry)
                 }
+                .backButton { scope.goBack() }
             }
         }
     }

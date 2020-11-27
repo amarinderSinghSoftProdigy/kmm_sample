@@ -43,6 +43,7 @@ struct HostScreen: View {
         }
     }
     
+    
     init() {
         currentScope = SwiftDatasource(dataSource: navigator.scope)
         

@@ -13,7 +13,7 @@ struct AuthPhoneRequestScreen: View {
     let scope: ForgetPasswordScope.PhoneNumberInput
     let geometry: GeometryProxy
     
-    @State var phone: String = ""
+    @State var phone: String
     @State var canSubmitPhone = false
     
     @Binding var isOtpSendFailed: Bool
@@ -49,6 +49,8 @@ struct AuthPhoneRequestScreen: View {
     init(scope: ForgetPasswordScope.PhoneNumberInput, geometry: GeometryProxy) {
         self.scope = scope
         self.geometry = geometry
+        
+        _phone = State(initialValue: scope.phoneNumber)
         
         _isOtpSendFailed = Binding.constant(scope.success.isFalse)
     }

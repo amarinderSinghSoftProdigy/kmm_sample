@@ -29,4 +29,18 @@ extension View {
                   dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
         }
     }
+    
+    func backButton(action: @escaping () -> ()) -> some View {
+        let backButton = AnyView(
+            Button(action: action) {
+                Image("Back")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+            .frame(width: 12, height: 21)
+        )
+        
+        return self.navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading: backButton)
+    }
 }
