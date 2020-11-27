@@ -20,15 +20,19 @@ struct AuthNewPasswordScreen: View {
     @Binding var passwordUpdateFailed: Bool
     
     var body: some View {
+        let errorMessageKey = scope.passwordValidation?.password ?? "something_went_wrong"
+        
         VStack(spacing: 12) {
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
                                            text: $newPassword,
+                                           textValidator: checkPasswordsMatch,
                                            showPlaceholderWithText: true)
         
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
                                            text: $confirmationPassword,
                                            textValidator: checkPasswordsMatch,
-                                           showPlaceholderWithText: true)
+                                           showPlaceholderWithText: true,
+                                           errorMessageKey: "password_doesnt_match")
             
             MedicoButton(action: {
                 scope.changePassword(newPassword: newPassword)
@@ -39,7 +43,7 @@ struct AuthNewPasswordScreen: View {
         
         .alert($passwordUpdateFailed,
                withTitleKey: "otp_error",
-               withMessageKey: "something_went_wrong",
+               withMessageKey: errorMessageKey,
                withButtonTextKey: "okay")
     }
     
