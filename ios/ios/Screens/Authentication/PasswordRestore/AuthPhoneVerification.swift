@@ -16,6 +16,9 @@ struct AuthPhoneVerification: View {
     @State var code: String = ""
     @ObservedObject var timerValue: SwiftDatasource<KotlinLong>
     
+    @Binding var isCodeIncorrect: Bool
+    @Binding var isResendUnsuccessful: Bool
+    
     var body: some View {
         ZStack {
             VStack {
@@ -26,10 +29,15 @@ struct AuthPhoneVerification: View {
                     .multilineTextAlignment(.center)
                     .padding([.trailing, .leading], geometry.size.width * 0.15)
                 
-                if let timerValue = timerValue.value {
-                    Text("\(TimeInterval(milliseconds: Double(truncating: timerValue)).timeString)")
-                        .font(.custom("Barlow-Medium", size: 15))
-                        .foregroundColor(appColor: .darkBlue)
+                if let timerValue = timerValue.value as? Double,
+                   timerValue > 0 && scope.attemptsLeft > 0 {
+                    Text("\(TimeInterval(milliseconds: timerValue).timeString)")
+                        .modifier(MedicoText(textWeight: .medium, fontSize: 15))
+                        .padding([.top, .bottom])
+                }
+                else {
+                    Text("attempts_left \(Int(scope.attemptsLeft))")
+                        .modifier(MedicoText(textWeight: .medium, fontSize: 15, color: .lightBlue))
                         .padding([.top, .bottom])
                 }
                 
@@ -49,6 +57,17 @@ struct AuthPhoneVerification: View {
                 .frame(height: otpHeight)
                 .position(x: geometry.size.width / 2, y: geometry.size.height - otpHeight)
         }
+        
+        .alert($isCodeIncorrect,
+               withTitleKey: "otp_error",
+               withMessageKey: "otp_error_description",
+               withButtonTextKey: "okay")
+        
+        .alert($isResendUnsuccessful,
+               withTitleKey: "otp_error",
+               withMessageKey: "something_went_wrong",
+               withButtonTextKey: "okay")
+        
         .navigationBarTitle(LocalizedStringKey("phone_verification"), displayMode: .inline)
     }
     
@@ -57,6 +76,9 @@ struct AuthPhoneVerification: View {
         self.geometry = geometry
         
         self.timerValue = SwiftDatasource(dataSource: scope.resendTimer)
+        
+        _isCodeIncorrect = Binding.constant(scope.codeValidity.isFalse)
+        _isResendUnsuccessful = Binding.constant(scope.resendSuccess.isFalse)
     }
     
     private func resendOtp() {

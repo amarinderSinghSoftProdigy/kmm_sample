@@ -19,4 +19,15 @@ extension View {
         }
     }
     
+    func alert(_ isPresented: Binding<Bool>,
+               withTitleKey titleKey: String,
+               withMessageKey messageKey: String,
+               withButtonTextKey buttonTextKey: String) -> some View {
+        return self.alert(isPresented: isPresented) {
+            Alert(title: Text(LocalizedStringKey(titleKey)),
+                  message: Text(LocalizedStringKey(messageKey)),
+                  dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
+        }
+    }
+    
 }

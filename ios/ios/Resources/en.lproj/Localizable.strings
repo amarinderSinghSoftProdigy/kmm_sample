@@ -33,3 +33,11 @@
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
 "resend" = "Resend";
+"attempts_left %lld" = "%lld attempts left";
+"wrong_code" = "Wrong code";
+"otp_error" = "OTP Error";
+"otp_error_description" = "OTP is incorrect. Please, try again";
+"something_went_wrong" = "Something went wrong. Please, try again";
+
+// MARK: Alert
+"okay" = "OKAY";

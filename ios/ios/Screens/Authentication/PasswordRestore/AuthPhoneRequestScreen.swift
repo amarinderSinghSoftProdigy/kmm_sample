@@ -16,6 +16,8 @@ struct AuthPhoneRequestScreen: View {
     @State var phone: String = ""
     @State var canSubmitPhone = false
     
+    @Binding var isOtpSendFailed: Bool
+    
     var body: some View {
         VStack {
             Text(LocalizedStringKey("reset_password_hint"))
@@ -37,11 +39,18 @@ struct AuthPhoneRequestScreen: View {
         }
         .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
         .padding()
+        
+        .alert($isOtpSendFailed,
+               withTitleKey: "otp_error",
+               withMessageKey: "something_went_wrong",
+               withButtonTextKey: "okay")
     }
     
     init(scope: ForgetPasswordScope.PhoneNumberInput, geometry: GeometryProxy) {
         self.scope = scope
         self.geometry = geometry
+        
+        _isOtpSendFailed = Binding.constant(scope.success.isFalse)
     }
     
     private func checkPhoneNumber(_ phone: String) -> Bool {
