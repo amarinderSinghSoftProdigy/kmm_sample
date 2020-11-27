@@ -140,6 +140,8 @@ data class ResponseBody<T>(
     fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
 }
 
+typealias MapBody = Map<String, String>
+
 @Serializable
 data class ValidatedResponseBody<T, V>(
     private val body: T? = null,
