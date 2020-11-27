@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.JustResponseBody
+import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -119,7 +120,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         password: String
     ): ValidationData<PasswordValidation> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<Unit, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
+            client.post<ValidatedResponseBody<MapBody, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
                 withTempToken(TempToken.FORGET_PASSWORD)
                 contentType(ContentType.parse("application/json"))
                 body = PasswordResetRequest(phoneNumber, password, password)
