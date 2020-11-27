@@ -8,9 +8,13 @@ import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
-import com.zealsoftsol.medico.data.UserValidation
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationData
 import kotlinx.serialization.json.Json
 
@@ -97,12 +101,18 @@ class UserRepo(
         return networkAuthScope.retryOtp(phoneNumber.toServerFormat())
     }
 
-    suspend fun signUpPartially(userRegistration: UserRegistration): UserValidation? {
-        return null/*when (userRegistration) {
-            is UserRegistration1 -> networkAuthScope.signUpPart1(userRegistration)
-            is UserRegistration2 -> networkAuthScope.signUpPart2(userRegistration)
-            is UserRegistration3 -> networkAuthScope.signUpPart3(userRegistration)
-        }*/
+    suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> {
+        return networkAuthScope.signUpPart1(
+            userRegistration1.copy(phoneNumber = userRegistration1.phoneNumber.toServerFormat())
+        )
+    }
+
+    suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> {
+        return networkAuthScope.signUpPart2(userRegistration2)
+    }
+
+    suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
+        return networkAuthScope.signUpPart3(userRegistration3)
     }
 
     private fun fetchUser(): User? {

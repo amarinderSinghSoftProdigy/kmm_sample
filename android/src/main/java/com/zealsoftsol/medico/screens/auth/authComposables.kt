@@ -110,7 +110,8 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
     ) {
         Text(
             text = stringResource(id = R.string.log_in),
-            style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onPrimary)
+            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.h5,
         )
         Spacer(modifier = Modifier.size(12.dp))
 
@@ -130,7 +131,8 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
         }
         Text(
             text = stringResource(id = R.string.forgot_password),
-            style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
+            color = ConstColors.lightBlue,
+            style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
                 scope.goToForgetPassword()
             })
@@ -143,11 +145,12 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
         }.toAnnotatedString()
         Text(
             text = string,
-            style = MaterialTheme.typography.body2.copy(color = ConstColors.lightBlue),
+            color = ConstColors.lightBlue,
+            style = MaterialTheme.typography.body2,
             textDecoration = TextDecoration.Underline,
             modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
                 scope.goToSignUp()
-            })
+            }),
         )
     }
 }

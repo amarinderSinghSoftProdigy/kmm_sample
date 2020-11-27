@@ -12,12 +12,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 private val LightColors = lightColors(
-    primary = Color(0xffF4F9FD),
+    primary = Color(0xffF4F9FD), // very light blue
     onPrimary = Color(0xff003657),
-    secondary = Color(0xff003657),
-    onSecondary = Color.White,
-    background = Color(0xffF4F9FD),
-    surface = Color.White,
+    secondary = Color(0xffD9EDF9), // slightly darker blue
+    onSecondary = Color(0xff003657),
+    background = Color(0xff003657), // very dark blue
+    onBackground = Color.White,
+    surface = Color(0xffF4F9FD),
     onSurface = Color(0xff003657),
     error = Color(0xffFF1744),
 )

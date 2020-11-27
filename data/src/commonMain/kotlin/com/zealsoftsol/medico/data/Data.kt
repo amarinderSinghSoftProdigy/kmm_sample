@@ -17,8 +17,9 @@ enum class AuthState {
     AUTHORIZED, NOT_AUTHORIZED
 }
 
-enum class UserType {
-    STOCKIST, RETAILER, SEASON_BOY, HOSPITAL;
+enum class UserType(val serverValue: String) {
+    STOCKIST("stockist"),
+    RETAILER("retailer"),
+    SEASON_BOY("season_boy"),
+    HOSPITAL("hospital");
 }
-
-data class UserRegistrationData(val registration: UserRegistration, val validation: UserValidation?)

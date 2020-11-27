@@ -129,7 +129,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<String, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
+            client.post<ValidatedResponseBody<MapBody, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration1
@@ -138,7 +138,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<String, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
+            client.post<ValidatedResponseBody<MapBody, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration2
@@ -147,7 +147,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<String, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
+            client.post<ValidatedResponseBody<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
                 body = userRegistration3
@@ -196,7 +196,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     companion object {
         private const val AUTH_URL = "https://develop-api-auth0.medicostores.com"
-        private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com/"
+        private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com"
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
     }
 }
