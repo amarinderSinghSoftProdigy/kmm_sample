@@ -33,10 +33,17 @@ class PhoneNumberUtil {
         return (isValid, isValid ? formattedNumber : phoneNumberString)
     }
     
-    func getFormattedPhoneNumber(_ phoneNumberString: String) -> String? {
+    func getRawPhoneNumber(_ phoneNumberString: String) -> String {
         guard let phoneNumber = try? phoneUtil.parse(phoneNumberString, defaultRegion: region),
-              let formattedNumber = try? phoneUtil.format(phoneNumber, numberFormat: numberFormat) else { return nil }
+              let rawNumber = try? phoneUtil.format(phoneNumber, numberFormat: .E164) else { return phoneNumberString }
         
-        return formattedNumber
+        return rawNumber
+    }
+    
+    func getFormattedPhoneNumber(_ phoneNumberString: String) -> String {
+        guard let phoneNumber = try? phoneUtil.parse(phoneNumberString, defaultRegion: region),
+              let rawNumber = try? phoneUtil.format(phoneNumber, numberFormat: numberFormat) else { return phoneNumberString }
+        
+        return rawNumber
     }
 }

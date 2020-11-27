@@ -99,14 +99,10 @@ struct AuthTab: View {
                     scope.goToForgetPassword()
                 }
             
-            Button(action: {
+            MedicoButton(action: {
                 scope.tryLogIn()
-            }) {
-                Text(LocalizedStringKey("log_in"))
-                    .fontWeight(Font.Weight.semibold)
-                    .frame(maxWidth: .infinity)
-            }.medicoButton(isEnabled: true)
-                            .padding(.top)
+            }, localizedStringKey: "log_in")
+            .padding(.top)
             
             Text(LocalizedStringKey("sign_up_to_medico"))
                 .font(Font.caption)

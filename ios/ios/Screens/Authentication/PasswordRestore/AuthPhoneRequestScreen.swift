@@ -30,15 +30,13 @@ struct AuthPhoneRequestScreen: View {
                                          keyboardType: .phonePad)
                 .padding([.top, .bottom])
             
-            Button(action: {
-                scope.sendOtp(phoneNumber: phone)
-            }) {
-                Text(LocalizedStringKey("get_code"))
-                    .font(.custom("Barlow-Medium", size: 17))
-                    .frame(maxWidth: .infinity)
-            }.medicoButton(isEnabled: canSubmitPhone)
+            MedicoButton(action: {
+                let rawPhoneNumber = PhoneNumberUtil.shared.getRawPhoneNumber(phone)
+                scope.sendOtp(phoneNumber: rawPhoneNumber)
+            }, localizedStringKey: "get_code", isEnabled: canSubmitPhone)
         }
         .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
+        .padding()
     }
     
     init(scope: ForgetPasswordScope.PhoneNumberInput, geometry: GeometryProxy) {

@@ -19,7 +19,6 @@ struct AuthPasswordRestoreScreen: View {
                     AppColor.primary.color.edgesIgnoringSafeArea(.all)
                     
                     getCurrentView(with: geometry)
-                        .padding()
                 }
             }
         }

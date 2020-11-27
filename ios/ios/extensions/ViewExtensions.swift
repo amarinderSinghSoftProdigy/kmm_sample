@@ -9,10 +9,6 @@
 import SwiftUI
 
 extension View {
-    func medicoButton(isEnabled: Bool) -> some View {
-        self.modifier(MedicoButton(isEnabled: isEnabled))
-    }
-    
     @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
         if hidden {
             if !remove {

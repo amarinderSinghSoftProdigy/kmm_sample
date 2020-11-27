@@ -8,23 +8,35 @@
 
 import SwiftUI
 
-struct MedicoButton: ViewModifier {
+struct MedicoButton: View {
+    let action: () -> ()
+    let localizedStringKey: String
     let isEnabled: Bool
     
-    func body(content: Content) -> some View {
-        content
-            .frame(maxWidth: .infinity)
-            .padding()
-            .disabled(!isEnabled)
-            .background(RoundedRectangle(cornerRadius: 8)
-                            .fill(isEnabled ? Color.yellow : Color.gray))
-            .foregroundColor(appColor: .darkBlue)
+    var body: some View {
+        Button(action: action) {
+            Text(LocalizedStringKey(localizedStringKey))
+                .font(.custom("Barlow-Medium", size: 17))
+                .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .disabled(!isEnabled)
+        .background(RoundedRectangle(cornerRadius: 8)
+                        .fill(isEnabled ? Color.yellow : Color.gray))
+        .foregroundColor(appColor: .darkBlue)
+    }
+    
+    init(action: @escaping () -> (), localizedStringKey: String, isEnabled: Bool = true) {
+        self.action = action
+        self.localizedStringKey = localizedStringKey
+        
+        self.isEnabled = isEnabled
     }
 }
 
 struct MedicoButton_Previews: PreviewProvider {
     static var previews: some View {
-        Button("Button") {  }
-            .modifier(MedicoButton(isEnabled: true))
+        MedicoButton(action: {}, localizedStringKey: "verification_code", isEnabled: true)
     }
 }
