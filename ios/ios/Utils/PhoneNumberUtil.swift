@@ -44,7 +44,7 @@ class PhoneNumberUtil {
         guard let phoneNumber = try? phoneUtil.parse(phoneNumberString, defaultRegion: region),
               let rawNumber = try? phoneUtil.format(phoneNumber, numberFormat: .E164) else { return phoneNumberString }
         
-        return rawNumber
+        return rawNumber.replacingOccurrences(of: "+", with: "")
     }
     
     func getFormattedPhoneNumber(_ phoneNumberString: String) -> String {
