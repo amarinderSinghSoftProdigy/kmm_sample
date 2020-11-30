@@ -15,6 +15,7 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
     ) : ForgetPasswordScope() {
 
         /**
+         * Phone number should be formatted with E164 format and should not contain "+"
          * Transition to [AwaitVerification] if successful
          */
         fun sendOtp(phoneNumber: String) =

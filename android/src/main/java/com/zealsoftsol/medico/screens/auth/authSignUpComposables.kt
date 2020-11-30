@@ -19,10 +19,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,13 +38,16 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
@@ -196,6 +204,143 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             }
             scope.isRegistrationValid
         },
+    )
+}
+
+@Composable
+fun AuthAddressData(scope: SignUpScope.AddressData) {
+    val registration = scope.registration.flow.collectAsState()
+    val validation = scope.validation.flow.collectAsState()
+    val locationData = scope.locationData.flow.collectAsState()
+    registration.value.log("registartion")
+    BasicAuthSignUpScreenWithButton(
+        title = stringResource(id = R.string.address),
+        progress = 0.6,
+        back = scope,
+        buttonText = stringResource(id = R.string.next),
+        onButtonClick = { scope.tryToSignUp(registration.value) },
+        body = {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.Top,
+            ) {
+                InputWithError(
+                    errorText = if (locationData.value == Location.Unknown)
+                        stringResource(id = R.string.wrong_code)
+                    else
+                        null
+                ) {
+                    InputField(
+                        hint = stringResource(id = R.string.pincode),
+                        text = registration.value.pincode,
+                        onValueChange = { scope.changePincode(it) }
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.addressLine1) {
+                    InputField(
+                        hint = stringResource(id = R.string.address_line),
+                        text = registration.value.addressLine1,
+                        onValueChange = { scope.changeAddressLine(it) }
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.location) {
+                    LocationSelector(
+                        chooseRemember = locationData.value,
+                        chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
+                        defaultName = stringResource(id = R.string.location),
+                        dropDownItems = (locationData.value as? Location.Data)?.locations.orEmpty(),
+                        onSelected = { scope.changeLocation(it) }
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.city) {
+                    LocationSelector(
+                        chooseRemember = locationData.value,
+                        chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
+                        defaultName = stringResource(id = R.string.city),
+                        dropDownItems = (locationData.value as? Location.Data)?.cities.orEmpty(),
+                        onSelected = { scope.changeCity(it) }
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.district) {
+                    Text(
+                        text = if (registration.value.district.isEmpty()) stringResource(id = R.string.district) else registration.value.district,
+                        color = if (registration.value.district.isEmpty()) ConstColors.gray else Color.Black,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White)
+                            .padding(vertical = 20.dp, horizontal = 16.dp),
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.state) {
+                    Text(
+                        text = if (registration.value.state.isEmpty()) stringResource(id = R.string.state) else registration.value.state,
+                        color = if (registration.value.state.isEmpty()) ConstColors.gray else Color.Black,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.White)
+                            .padding(vertical = 20.dp, horizontal = 16.dp),
+                    )
+                }
+            }
+            scope.isRegistrationValid
+        }
+    )
+}
+
+@Composable
+private fun LocationSelector(
+    chooseRemember: Any?,
+    chosenValue: String?,
+    defaultName: String,
+    dropDownItems: List<String>,
+    onSelected: (String) -> Unit,
+) {
+    val choosing = remember(chooseRemember) { mutableStateOf(false) }
+    DropdownMenu(
+        toggle = {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .background(color = Color.White)
+                    .clickable(onClick = {
+                        if (dropDownItems.isNotEmpty()) {
+                            choosing.value = true
+                        }
+                    })
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
+            ) {
+                Text(
+                    text = chosenValue ?: defaultName,
+                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                )
+                Icon(
+                    asset = vectorResource(id = R.drawable.ic_drop_down),
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    tint = ConstColors.gray,
+                )
+            }
+        },
+        expanded = choosing.value,
+        onDismissRequest = { choosing.value = false },
+        dropdownContent = {
+            dropDownItems.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        choosing.value = false
+                        onSelected(it)
+                    },
+                    content = { Text(it) },
+                )
+            }
+        }
     )
 }
 
