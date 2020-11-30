@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -76,10 +77,35 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
     data class AddressData(
         internal val registrationStep1: UserRegistration1,
+        val locationData: DataSource<Location?>,
         val registration: DataSource<UserRegistration2>,
         val validation: DataSource<UserValidation2?>,
         override val isInProgress: Boolean = false,
     ) : SignUpScope() {
+
+        val isRegistrationValid: Boolean
+            get() = registration.value.run {
+                pincode.length == 6 && addressLine1.isNotEmpty() && location.isNotEmpty()
+                        && city.isNotEmpty() && district.isNotEmpty() && state.isNotEmpty()
+            }
+
+        /**
+         * Updates [locationData] with 1s debounce
+         */
+        fun changePincode(pincode: String) =
+            EventCollector.sendEvent(Event.Action.Registration.UpdatePincode(pincode))
+
+        fun changeAddressLine(address: String) {
+            registration.value = registration.value.copy(addressLine1 = address)
+        }
+
+        fun changeLocation(location: String) {
+            registration.value = registration.value.copy(location = location)
+        }
+
+        fun changeCity(city: String) {
+            registration.value = registration.value.copy(city = city)
+        }
 
         /**
          * Transition to [TraderData] if successful

@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope.AwaitVerificati
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -86,4 +87,7 @@ internal class AuthViewModel(
     suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
         return userRepo.signUpPart3(userRegistration3)
     }
+
+    suspend fun getLocationData(pincode: String): Location =
+        userRepo.getLocationData(pincode) ?: Location.Unknown
 }

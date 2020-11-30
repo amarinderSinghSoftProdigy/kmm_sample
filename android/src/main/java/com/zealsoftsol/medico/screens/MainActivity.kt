@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity(), DIAware {
                     is SignUpScope.PersonalData -> AuthPersonalData(
                         scope = scope,
                     )
+                    is SignUpScope.AddressData -> AuthAddressData(scope = scope)
                     is MainScope -> MainView(scope = scope)
                 }
                 if (currentScope.value.isInProgress) IndefiniteProgressBar()

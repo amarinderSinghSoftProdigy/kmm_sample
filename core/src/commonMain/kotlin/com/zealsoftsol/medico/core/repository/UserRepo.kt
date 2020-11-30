@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -113,6 +114,10 @@ class UserRepo(
 
     suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
         return networkAuthScope.signUpPart3(userRegistration3)
+    }
+
+    suspend fun getLocationData(pincode: String): Location.Data? {
+        return networkAuthScope.getLocationData(pincode)
     }
 
     private fun fetchUser(): User? {

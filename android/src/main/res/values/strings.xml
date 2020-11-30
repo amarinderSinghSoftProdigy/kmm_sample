@@ -43,6 +43,7 @@
     <string name="tos_line_2">Terms of Conditions and Privacy Policy</string>
     <string name="address">Address</string>
     <string name="pincode">Pincode</string>
+    <string name="wrong_pincode">Wrong pincode</string>
     <string name="address_line">Address Line</string>
     <string name="location">Location</string>
     <string name="city">City</string>
