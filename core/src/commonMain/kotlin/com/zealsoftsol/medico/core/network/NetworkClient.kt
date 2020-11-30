@@ -169,7 +169,6 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         retry(Interval.Linear(100, 5)) {
             val tokenInfo = tempToken.await()
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
-            // compare tokens types
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 tempToken = when (tokenType) {
                     TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
