@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
@@ -7,6 +8,8 @@ import com.zealsoftsol.medico.core.mvi.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 
 internal class RegistrationEventDelegate(
@@ -21,20 +24,58 @@ internal class RegistrationEventDelegate(
 
     private fun selectUserType(userType: UserType) {
         navigator.withScope<SignUpScope.SelectUserType> {
-            setCurrentScope(it.copy(userType = userType), updateDataSource = false)
+            it.userType.value = userType
             transitionTo(
                 SignUpScope.PersonalData(
-                    userType = userType,
-                    registration1 = UserRegistration1()
+                    registration = DataSource(UserRegistration1(userType = userType.serverValue)),
+                    validation = DataSource(null),
                 )
             )
         }
     }
 
     private suspend fun trySignUp(userRegistration: UserRegistration) {
-        navigator.withScope<SignUpScope.PersonalData> {
-            val validation = withProgress {
-                authViewModel.trySignUp(userRegistration)
+        when (userRegistration) {
+            is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
+                val validation = withProgress {
+                    authViewModel.signUpPart1(userRegistration)
+                }
+                it.validation.value = validation.validation
+                if (validation.isSuccess) {
+                    transitionTo(
+                        SignUpScope.AddressData(
+                            registrationStep1 = it.registration.value,
+                            registration = DataSource(UserRegistration2()),
+                            validation = DataSource(null)
+                        )
+                    )
+                }
+            }
+            is UserRegistration2 -> navigator.withScope<SignUpScope.AddressData> {
+                val validation = withProgress {
+                    authViewModel.signUpPart2(userRegistration)
+                }
+                it.validation.value = validation.validation
+                if (validation.isSuccess) {
+                    transitionTo(
+                        SignUpScope.TraderData(
+                            registrationStep1 = it.registrationStep1,
+                            registrationStep2 = it.registration.value,
+                            registration = DataSource(UserRegistration3()),
+                            validation = DataSource(null)
+                        )
+                    )
+                }
+            }
+            is UserRegistration3 -> navigator.withScope<SignUpScope.TraderData> {
+                val validation = withProgress {
+                    authViewModel.signUpPart3(userRegistration)
+                }
+                it.validation.value = validation.validation
+                if (validation.isSuccess) {
+//                    transitionTo(
+//                    )
+                }
             }
         }
     }

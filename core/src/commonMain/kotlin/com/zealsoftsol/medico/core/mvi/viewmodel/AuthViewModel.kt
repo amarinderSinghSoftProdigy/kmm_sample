@@ -7,7 +7,12 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserValidation1
+import com.zealsoftsol.medico.data.UserValidation2
+import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -70,16 +75,15 @@ internal class AuthViewModel(
 
     // SIGN UP =====================================================================================
 
-    suspend fun trySignUp(userRegistration: UserRegistration) {
-        val validation = userRepo.signUpPartially(userRegistration)
-        //            when (userRegistration) {
-//                is UserRegistration1 -> {
-//                    validation?.let {
-//
-//                    } ?: navigator.withScope<BaseScope.SignUp.PersonalData> {  }
-//                }
-//                is UserRegistration2 -> {}
-//                is UserRegistration3 -> {}
-//            }
+    suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> {
+        return userRepo.signUpPart1(userRegistration1)
+    }
+
+    suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> {
+        return userRepo.signUpPart2(userRegistration2)
+    }
+
+    suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
+        return userRepo.signUpPart3(userRegistration3)
     }
 }

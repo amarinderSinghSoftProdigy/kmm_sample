@@ -2,9 +2,12 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -32,7 +35,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
@@ -50,6 +55,7 @@ fun BasicTabBar(back: CanGoBack?, title: String) {
                 Icon(
                     asset = vectorResource(id = R.drawable.ic_arrow_back),
                     modifier = Modifier.align(Alignment.CenterVertically)
+                        .fillMaxHeight()
                         .padding(16.dp)
                         .clickable(
                             indication = null,
@@ -68,7 +74,7 @@ fun BasicTabBar(back: CanGoBack?, title: String) {
 }
 
 @Composable
-fun TabBar(color: Color = Color(0xffD9EDF9), content: @Composable () -> Unit) {
+fun TabBar(color: Color = MaterialTheme.colors.secondary, content: @Composable () -> Unit) {
     Surface(color = color, modifier = Modifier.fillMaxWidth().height(56.dp)) {
         content()
     }
@@ -96,7 +102,8 @@ fun MedicoButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.onPrimary,
+            fontSize = 15.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
         )
     }
@@ -157,8 +164,7 @@ inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boo
 
 @Composable
 fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) -> Unit): Boolean {
-    val countryCode =
-        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val countryCode = if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null
@@ -214,11 +220,13 @@ fun InputField(
             Text(
                 text = hint,
                 style = TextStyle.Default
-                    .copy(color = when {
-                        text.isEmpty() -> ConstColors.gray
-                        !isValid -> MaterialTheme.colors.error
-                        else -> ConstColors.lightBlue
-                    })
+                    .copy(
+                        color = when {
+                            text.isEmpty() -> ConstColors.gray
+                            !isValid -> MaterialTheme.colors.error
+                            else -> ConstColors.lightBlue
+                        }
+                    )
             )
         },
         isErrorValue = !isValid,
@@ -229,6 +237,25 @@ fun InputField(
         keyboardOptions = keyboardOptions,
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Composable
+fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
+    input()
+    errorText?.let {
+        Spacer(modifier = Modifier.size(4.dp))
+        Text(
+            text = it,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.error,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+    }
+}
+
+@Composable
+fun Space(dp: Dp) {
+    Spacer(modifier = Modifier.size(dp))
 }
 
 @Composable

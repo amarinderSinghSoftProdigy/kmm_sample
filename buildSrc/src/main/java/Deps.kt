@@ -122,6 +122,7 @@ object Config {
                 val isBuild = version["build"].toString().toBoolean()
                 code = major * 10000 + minor * 1000 + patch * 10 + (if (isBuild) 1 else 0)
                 name = "${major}.${minor}.${patch}${if (isBuild) "[dev]" else ""}"
+                println("APP VERSION $name")
             } catch (e: Exception) {
                 println("COULD NOT PARSE config.json")
             }
