@@ -19,6 +19,7 @@
 		33638EE12574EBF000A9E8B4 /* core_arm64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33638EE02574EBF000A9E8B4 /* core_arm64.framework */; };
 		33638EE22574EBF000A9E8B4 /* core_arm64.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33638EE02574EBF000A9E8B4 /* core_arm64.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
+		33638F01257523A000A9E8B4 /* Barlow-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33638F00257523A000A9E8B4 /* Barlow-Bold.ttf */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33AD1050256F9335005FF354 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104F256F9335005FF354 /* Background.swift */; };
@@ -94,6 +95,7 @@
 		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
 		33638EE02574EBF000A9E8B4 /* core_arm64.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = core_arm64.framework; path = "../core/build/xcode-frameworks/core_arm64.framework"; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
+		33638F00257523A000A9E8B4 /* Barlow-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Barlow-Bold.ttf"; path = "../../../../../../Downloads/Barlow/Barlow-Bold.ttf"; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33AD104F256F9335005FF354 /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 		33E7682D256D5F6D00B35FDF /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				33638F00257523A000A9E8B4 /* Barlow-Bold.ttf */,
 				33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */,
 				33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */,
 				33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */,
@@ -461,6 +464,7 @@
 				33F1520A256FF5D200C4C656 /* Colors.xcassets in Resources */,
 				33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
+				33638F01257523A000A9E8B4 /* Barlow-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

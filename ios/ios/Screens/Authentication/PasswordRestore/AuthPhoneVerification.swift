@@ -24,20 +24,19 @@ struct AuthPhoneVerification: View {
             VStack {
                 let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.phoneNumber)
                 Text("verification_code_sent_hint \(formattedPhone)")
-                    .font(.custom("Barlow-Regular", size: 14))
-                    .foregroundColor(appColor: .textGrey)
+                    .modifier(MedicoText(textWeight: .medium, color: .textGrey))
                     .multilineTextAlignment(.center)
                     .padding([.trailing, .leading], geometry.size.width * 0.15)
                 
                 if let timerValue = timerValue.value as? Double,
                    timerValue > 0 && scope.attemptsLeft > 0 {
                     Text("\(TimeInterval(milliseconds: timerValue).timeString)")
-                        .modifier(MedicoText(textWeight: .medium, fontSize: 15))
+                        .modifier(MedicoText(textWeight: .bold, fontSize: 15))
                         .padding([.top, .bottom])
                 }
                 else {
                     Text("attempts_left \(Int(scope.attemptsLeft))")
-                        .modifier(MedicoText(textWeight: .medium, fontSize: 15, color: .lightBlue))
+                        .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
                         .padding([.top, .bottom])
                 }
                 
@@ -95,10 +94,10 @@ struct ResendOtpView: View {
                 
             HStack(alignment: .center) {
                 Text(LocalizedStringKey("didnt_get_code"))
-                    .modifier(MedicoText())
+                    .modifier(MedicoText(textWeight: .medium))
                 
                 Text(LocalizedStringKey("resend"))
-                    .modifier(MedicoText(textWeight: .medium, color: .lightBlue))
+                    .modifier(MedicoText(textWeight: .semiBold, color: .lightBlue))
                     .onTapGesture {
                         resendAction()
                     }

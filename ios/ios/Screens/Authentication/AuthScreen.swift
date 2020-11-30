@@ -76,10 +76,10 @@ struct AuthTab: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(LocalizedStringKey("log_in"))
-                    .font(Font.system(size: 24))
-                    .fontWeight(Font.Weight.semibold)
-                    .foregroundColor(appColor: .darkBlue)
+                    .modifier(MedicoText(textWeight: .bold, fontSize: 24))
+                
                 Spacer()
+                
                 Image("medico_logo")
                     .resizable()
                     .scaledToFit()
@@ -103,9 +103,8 @@ struct AuthTab: View {
                 }
             
             Text(LocalizedStringKey("forgot_password"))
-                .font(Font.caption)
+                .modifier(MedicoText(color: .lightBlue))
                 .padding(.top, 4)
-                .foregroundColor(appColor: .lightBlue)
                 .onTapGesture {
                     scope.goToForgetPassword()
                 }
@@ -115,12 +114,13 @@ struct AuthTab: View {
             }, localizedStringKey: "log_in")
             .padding(.top)
             
-            Text(LocalizedStringKey("sign_up_to_medico"))
-                .font(Font.caption)
+            (Text(LocalizedStringKey("sign_up"))
+                .font(.custom("Barlow-Bold", size: 14))
+            + Text(LocalizedStringKey("to_medico")))
                 .underline()
+                .modifier(MedicoText(color: .lightBlue))
                 .padding(.top, 4)
                 .padding(.bottom)
-                .foregroundColor(appColor: .lightBlue)
         }
         .padding(20)
         .navigationBarHidden(true)

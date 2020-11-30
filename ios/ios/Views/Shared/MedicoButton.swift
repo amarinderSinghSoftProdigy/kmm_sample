@@ -16,7 +16,7 @@ struct MedicoButton: View {
     var body: some View {
         Button(action: action) {
             Text(LocalizedStringKey(localizedStringKey))
-                .font(.custom("Barlow-Medium", size: 17))
+                .modifier(MedicoText(textWeight: .semiBold, fontSize: 17))
                 .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
@@ -24,7 +24,6 @@ struct MedicoButton: View {
         .disabled(!isEnabled)
         .background(RoundedRectangle(cornerRadius: 8)
                         .fill(isEnabled ? Color.yellow : Color.gray))
-        .foregroundColor(appColor: .darkBlue)
     }
     
     init(action: @escaping () -> (), localizedStringKey: String, isEnabled: Bool = true) {

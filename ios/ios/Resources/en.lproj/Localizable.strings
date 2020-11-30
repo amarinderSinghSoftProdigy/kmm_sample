@@ -6,13 +6,14 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
+// MARK: Authentication Log In Screen
 "app_name" = "Medico dev";
 "log_in" = "Log in";
 "phone_number_or_email" = "Phone Number or Email";
 "password" = "Password";
 "forgot_password" = "Forgot password?";
-"sign_up_to_medico" = "Sign up to Medico Stores";
 "sign_up" = "Sign up";
+"to_medico" = " to Medico Stores";
 "log_out" = "Log out";
 
 // MARK: Authentication Password Restore Screen

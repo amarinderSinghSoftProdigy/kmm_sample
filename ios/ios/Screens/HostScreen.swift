@@ -55,7 +55,7 @@ struct HostScreen: View {
         
         var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
         
-        if let titleFont = UIFont(name: "Barlow-Medium", size: 17) {
+        if let titleFont = UIFont(name: "Barlow-SemiBold", size: 17) {
             titleTextAttributes[.font] = titleFont
         }
         
