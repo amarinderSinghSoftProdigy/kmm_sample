@@ -12,22 +12,25 @@ import libPhoneNumber_iOS
 class PhoneNumberUtil {
     private let phoneUtil = NBPhoneNumberUtil()
     
-    #if DEBUG
-    private let region = "BY"
-    #else
-    private let region = "IN"
-    #endif
+    private let region: String
     
     private let numberFormat: NBEPhoneNumberFormat = .INTERNATIONAL
     
     static let shared = PhoneNumberUtil()
+    
+    init() {
+//        #if DEBUG
+        region = Locale.current.regionCode ?? "IN"
+//        #else
+//        region = "IN"
+//        #endif
+    }
     
     func isValidNumber(_ phoneNumberString: String) -> (isValid: Bool, formattedNumber: String) {
         guard let phoneNumber = try? phoneUtil.parse(phoneNumberString, defaultRegion: region),
               let formattedNumber = try? phoneUtil.format(phoneNumber, numberFormat: numberFormat) else {
             return (false, phoneNumberString)
         }
-        
 //        #if DEBUG
         let isValid = phoneUtil.isValidNumber(phoneNumber)
 //        #else
