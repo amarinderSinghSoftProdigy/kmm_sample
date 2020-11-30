@@ -48,7 +48,7 @@ struct AuthPhoneVerification: View {
                 
                 MedicoButton(action: {
                     scope.submitOtp(otp: code)
-                }, localizedStringKey: "submit", isEnabled: !code.isEmpty)
+                }, localizedStringKey: "submit", isEnabled: !code.isEmpty && scope.attemptsLeft > 0)
             }
             .padding()
             

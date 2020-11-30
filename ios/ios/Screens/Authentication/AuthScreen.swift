@@ -16,7 +16,7 @@ struct AuthScreen: View {
     
     var body: some View {
         Background {
-            ZStack {
+            ZStack (alignment: .bottom) {
                 let blackRectangleHeight: CGFloat = 44
                 
                 ZStack(alignment: .top) {
@@ -52,7 +52,13 @@ struct AuthScreen: View {
                     .alert(isPresented: $isError) {
                         Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                     }
+                    .frame(maxHeight: .infinity)
                 }
+                
+                Text("© Copyright mediostores.com 2021")
+                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
+                    .opacity(0.8)
+                    .padding(.bottom, 30)
             }.edgesIgnoringSafeArea(.top)
         }
     }
