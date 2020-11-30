@@ -12,3 +12,25 @@ import SwiftUI
 var navigator: UiNavigator {
     (UIApplication.shared.delegate as! AppDelegate).navigator
 }
+
+extension String {
+    func capitalizeFirstLetter() -> String {
+        return prefix(1).capitalized + dropFirst()
+    }
+}
+
+extension TimeInterval{
+    init(milliseconds: Double) {
+        self.init(milliseconds / 1000.0)
+    }
+    
+    var timeString: String {
+        let time = NSInteger(self)
+
+        let seconds = time % 60
+        let minutes = (time / 60)
+
+        return String(format: "%1d:%0.2d", minutes, seconds)
+
+    }
+}

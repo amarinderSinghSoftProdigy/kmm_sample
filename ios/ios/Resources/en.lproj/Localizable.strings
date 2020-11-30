@@ -6,30 +6,37 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
-// MARK: Authentication Password Restore Screen
-"password_reset" = "Password Reset";
-
 "app_name" = "Medico dev";
 "log_in" = "Log in";
 "phone_number_or_email" = "Phone Number or Email";
-"phone_number" = "Phone Number";
 "password" = "Password";
 "forgot_password" = "Forgot password?";
 "sign_up_to_medico" = "Sign up to Medico Stores";
 "sign_up" = "Sign up";
 "log_out" = "Log out";
+
+// MARK: Authentication Password Restore Screen
+"otp_error" = "OTP Error";
+
+"password_reset" = "Password Reset";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
+"phone_number" = "Phone Number";
 "get_code" = "Get Code";
+
 "phone_verification" = "Phone Verification";
-"verification_code_sent_hint" = "We sent you a verification code to your phone number";
+"verification_code_sent_hint %@" = "We sent you a verification code to your phone number %@";
+"attempts_left %lld" = "%lld attempts left";
 "verification_code" = "Verification Code";
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
 "resend" = "Resend";
-"wrong_code" = "Wrong Code";
-"attempt_left" = "attempts left";
+"otp_error_description" = "OTP is incorrect. Please, try again";
+
 "new_password" = "New Password";
 "new_password_repeat" = "Repeat New Password";
 "confirm" = "Confirm";
 "password_doesnt_match" = "Password doesn’t match";
-"something_went_wrong" = "Something went wrong";
+
+// MARK: Alert
+"something_went_wrong" = "Something went wrong. Please, try again";
+"okay" = "OKAY";

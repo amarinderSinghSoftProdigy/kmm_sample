@@ -9,11 +9,6 @@
 import SwiftUI
 
 extension Color {
-    static let primary = Color("Primary")
-    static let secondary = Color("Secondary")
-    static let medicoLightBlue = Color("LightBlue")
-    static let medicoYellow = Color("Yellow")
-    
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0

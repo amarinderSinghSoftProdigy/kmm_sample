@@ -4,9 +4,7 @@ import core
 struct HostScreen: View {
     @State var isSplashScreenActive = true
     
-    let authViewModel: AuthViewModel
-    
-    @ObservedObject var currentScope: SwiftDatasource<Scope>
+    @ObservedObject var currentScope: SwiftDatasource<BaseScope>
     
     var body: some View {
         if isSplashScreenActive {
@@ -18,31 +16,35 @@ struct HostScreen: View {
                 }
             }
         } else {
-            NavigationView {
-                switch currentScope.value {
-                case is Scope.LogIn:
-                    AuthScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.LogIn)
-                case is Scope.Main:
-                    MainScreen(authViewModel: authViewModel)
-                case is Scope.ForgetPassword.ForgetPasswordPhoneNumberInput:
-                    AuthPasswordRestoreScreen(authViewModel: authViewModel, scope: currentScope.value as! Scope.ForgetPassword.ForgetPasswordPhoneNumberInput)
-                default:
-                    Group {}
-                }
-                
-                if let currentScopeValue = currentScope.value, currentScopeValue.isInProgress {
-                    VisualEffectView(effect: UIBlurEffect(style: .dark))
-                        .edgesIgnoringSafeArea(.all)
-                    if #available(iOS 14.0, *) {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
+            ZStack {
+                NavigationView {
+                    switch currentScope.value {
+                    case is LogInScope:
+                        if let scopeValue = currentScope.value as? LogInScope {
+                            AuthScreen(scope: scopeValue)
+                        }
+                    case is MainScope:
+                        if let scopeValue = currentScope.value as? MainScope {
+                            MainScreen(scope: scopeValue)
+                        }
+                    case is ForgetPasswordScope:
+                        if let scopeValue = currentScope.value as? ForgetPasswordScope {
+                            AuthPasswordRestoreScreen(scope: scopeValue)
+                        }
+                    default:
+                        Group {}
                     }
+                }
+            
+                if let currentScopeValue = currentScope.value, currentScopeValue.isInProgress {
+                    ActivityView()
                 }
             }
         }
     }
     
-    init(authViewModel: AuthViewModel) {
-        self.authViewModel = authViewModel
+    
+    init() {
         currentScope = SwiftDatasource(dataSource: navigator.scope)
         
         setUpNavigationBar()
@@ -64,7 +66,7 @@ struct HostScreen: View {
 struct SplashScreenView: View {
     var body: some View {
         ZStack {
-            Color.primary.edgesIgnoringSafeArea(.all)
+            AppColor.primary.color.edgesIgnoringSafeArea(.all)
             Image("medico_logo")
                 .resizable()
                 .scaledToFit()
@@ -80,9 +82,3 @@ struct VisualEffectView: UIViewRepresentable {
         uiView.effect = effect
     }
 }
-
-//struct HostScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HostScreen(authViewModel: MockAuthViewModel())
-//    }
-//}

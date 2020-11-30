@@ -8,6 +8,8 @@ target 'ios' do
   # Pods for ios
   pod 'Firebase/Analytics'
   pod 'Firebase/Crashlytics'
+  
+  pod 'libPhoneNumber-iOS'
 
   target 'iosTests' do
     inherit! :search_paths
