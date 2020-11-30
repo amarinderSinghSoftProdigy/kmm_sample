@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.data
 
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -71,13 +72,20 @@ sealed class UserValidation
 @Serializable
 data class UserRegistration1(
     @SerialName("customerType")
+    @Required
     val userType: String = "",
+    @Required
     val firstName: String = "",
+    @Required
     val lastName: String = "",
+    @Required
     val email: String = "",
     @SerialName("mobileNumber")
+    @Required
     val phoneNumber: String = "",
+    @Required
     val password: String = "",
+    @Required
     val verifyPassword: String = "",
 ) : UserRegistration()
 
@@ -92,30 +100,42 @@ data class UserValidation1(
 
 @Serializable
 data class UserRegistration2(
+    @Required
     val pincode: String = "",
+    @Required
     val addressLine1: String = "",
+    @Required
     val location: String = "",
-    val cityTown: String = "",
+    @SerialName("cityTown")
+    @Required
+    val city: String = "",
+    @Required
     val district: String = "",
+    @Required
     val state: String = "",
 ) : UserRegistration()
 
 @Serializable
 data class UserValidation2(
-    val pincode: String? = null,
     val addressLine1: String? = null,
     val location: String? = null,
-    val cityTown: String? = null,
+    @SerialName("cityTown")
+    val city: String? = null,
     val district: String? = null,
     val state: String? = null,
 ) : UserValidation()
 
 @Serializable
 data class UserRegistration3(
+    @Required
     val tradeName: String = "",
+    @Required
     val gstin: String = "",
+    @Required
     val panNumber: String = "",
+    @Required
     val drugLicenseNo1: String = "",
+    @Required
     val drugLicenseNo2: String = "",
 ) : UserRegistration()
 
@@ -128,6 +148,18 @@ data class UserValidation3(
     val drugLicenseNo2: String? = null,
 ) : UserValidation()
 
+sealed class Location {
+    @Serializable
+    data class Data(
+        val locations: List<String>,
+        @SerialName("cityTowns")
+        val cities: List<String>,
+        val district: String,
+        val state: String
+    ) : Location()
+
+    object Unknown : Location()
+}
 
 @Serializable
 data class ResponseBody<T>(

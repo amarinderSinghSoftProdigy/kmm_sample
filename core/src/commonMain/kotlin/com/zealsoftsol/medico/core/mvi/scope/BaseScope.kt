@@ -16,6 +16,8 @@ abstract class BaseScope {
             is ForgetPasswordScope.EnterNewPassword -> copy(isInProgress = value)
             is SignUpScope.SelectUserType -> this
             is SignUpScope.PersonalData -> copy(isInProgress = value)
+            is SignUpScope.AddressData -> copy(isInProgress = value)
+            is SignUpScope.TraderData -> copy(isInProgress = value)
             else -> throw UnsupportedOperationException("Changing progress in scope $this is not supported")
         }
     }

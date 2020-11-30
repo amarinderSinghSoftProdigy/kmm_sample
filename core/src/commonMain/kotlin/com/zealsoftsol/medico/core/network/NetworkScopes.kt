@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.network
 
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -27,5 +28,6 @@ interface NetworkScope {
         suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1>
         suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2>
         suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3>
+        suspend fun getLocationData(pincode: String): Location.Data?
     }
 }

@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.JustResponseBody
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -154,6 +155,12 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getValidationData()
         }
 
+    override suspend fun getLocationData(pincode: String): Location.Data? = ktorDispatcher {
+        client.get<ResponseBody<Location.Data>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
+            withTempToken(TempToken.REGISTRATION)
+        }.getBodyOrNull()
+    }
+
     private inline fun HttpRequestBuilder.withMainToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
@@ -162,7 +169,6 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         retry(Interval.Linear(100, 5)) {
             val tokenInfo = tempToken.await()
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
-            // compare tokens types
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 tempToken = when (tokenType) {
                     TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
@@ -198,6 +204,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         private const val AUTH_URL = "https://develop-api-auth0.medicostores.com"
         private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com"
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
+        private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
     }
 }
 

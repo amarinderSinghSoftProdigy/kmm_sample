@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network.mock
 
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -48,5 +49,11 @@ class MockAuthScope : NetworkScope.Auth {
 
     override suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
         return mockResponse { ValidationData(null, true) }
+    }
+
+    override suspend fun getLocationData(pincode: String): Location.Data {
+        return mockResponse {
+            Location.Data(listOf("location"), listOf("city"), "district", "state")
+        }
     }
 }
