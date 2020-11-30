@@ -84,28 +84,26 @@ class UserRepo(
     }
 
     suspend fun sendOtp(phoneNumber: String): Boolean {
-        return networkAuthScope.sendOtp(phoneNumber.toServerFormat())
+        return networkAuthScope.sendOtp(phoneNumber)
     }
 
     suspend fun submitOtp(phoneNumber: String, otp: String): Boolean {
-        return networkAuthScope.verifyOtp(phoneNumber.toServerFormat(), otp)
+        return networkAuthScope.verifyOtp(phoneNumber, otp)
     }
 
     suspend fun changePassword(
         phoneNumber: String,
         newPassword: String
     ): ValidationData<PasswordValidation> {
-        return networkAuthScope.changePassword(phoneNumber.toServerFormat(), newPassword)
+        return networkAuthScope.changePassword(phoneNumber, newPassword)
     }
 
     suspend fun resendOtp(phoneNumber: String): Boolean {
-        return networkAuthScope.retryOtp(phoneNumber.toServerFormat())
+        return networkAuthScope.retryOtp(phoneNumber)
     }
 
     suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> {
-        return networkAuthScope.signUpPart1(
-            userRegistration1.copy(phoneNumber = userRegistration1.phoneNumber.toServerFormat())
-        )
+        return networkAuthScope.signUpPart1(userRegistration1)
     }
 
     suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> {
@@ -116,8 +114,8 @@ class UserRepo(
         return networkAuthScope.signUpPart3(userRegistration3)
     }
 
-    suspend fun getLocationData(pincode: String): Location.Data? {
-        return networkAuthScope.getLocationData(pincode)
+    suspend fun getLocationData(pincode: String): Location {
+        return networkAuthScope.getLocationData(pincode) ?: Location.Unknown
     }
 
     private fun fetchUser(): User? {
@@ -126,16 +124,6 @@ class UserRepo(
         }.getOrNull()
         if (user == null) "error fetching user".errorIt()
         return user
-    }
-
-    private inline fun String.toServerFormat() = replace("+", "").let {
-        val leadingZeros = (12 - it.length).coerceAtLeast(0)
-        buildString {
-            repeat(leadingZeros) {
-                append("0")
-            }
-            append(it)
-        }
     }
 
     companion object {

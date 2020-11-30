@@ -88,6 +88,5 @@ internal class AuthViewModel(
         return userRepo.signUpPart3(userRegistration3)
     }
 
-    suspend fun getLocationData(pincode: String): Location =
-        userRepo.getLocationData(pincode) ?: Location.Unknown
+    suspend fun getLocationData(pincode: String): Location = userRepo.getLocationData(pincode)
 }
