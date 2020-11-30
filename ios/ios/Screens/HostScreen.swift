@@ -1,5 +1,5 @@
 import SwiftUI
-import core
+import core_arm64
 
 struct HostScreen: View {
     @State var isSplashScreenActive = true

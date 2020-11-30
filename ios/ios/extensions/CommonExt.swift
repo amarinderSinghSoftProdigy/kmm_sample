@@ -6,7 +6,7 @@
 //  Copyright © 2020 orgName. All rights reserved.
 //
 
-import core
+import core_arm64
 import SwiftUI
 
 var navigator: UiNavigator {

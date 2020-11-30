@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3301639625599A0E00835961 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3301639525599A0E00835961 /* SwiftDataSource.swift */; };
 		3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3308674B2566D441000C3EB8 /* MainScreen.swift */; };
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
@@ -17,6 +16,9 @@
 		33621CF62571009D004BD4CF /* MedicoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF52571009D004BD4CF /* MedicoText.swift */; };
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */; };
+		33638EE12574EBF000A9E8B4 /* core_arm64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33638EE02574EBF000A9E8B4 /* core_arm64.framework */; };
+		33638EE22574EBF000A9E8B4 /* core_arm64.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33638EE02574EBF000A9E8B4 /* core_arm64.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33AD1050256F9335005FF354 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104F256F9335005FF354 /* Background.swift */; };
@@ -41,8 +43,6 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		7555FF96242A565B00829871 /* iosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF95242A565B00829871 /* iosTests.swift */; };
 		7555FFA1242A565B00829871 /* iosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FFA0242A565B00829871 /* iosUITests.swift */; };
-		7555FFB2242A642300829871 /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* core.framework */; };
-		7555FFB3242A642300829871 /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D182B00AE32478B9E72C2C08 /* Pods_ios_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */; };
 		E196B03EACB4EE497277BA66 /* Pods_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0DF918E28D88878DE572A81 /* Pods_ios.framework */; };
 /* End PBXBuildFile section */
@@ -71,7 +71,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7555FFB3242A642300829871 /* core.framework in Embed Frameworks */,
+				33638EE22574EBF000A9E8B4 /* core_arm64.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -83,7 +83,6 @@
 		01998AE6153115D7A99CC100 /* Pods-iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosTests.release.xcconfig"; path = "Target Support Files/Pods-iosTests/Pods-iosTests.release.xcconfig"; sourceTree = "<group>"; };
 		1646DD83415E626B134F3755 /* Pods-ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.release.xcconfig"; path = "Target Support Files/Pods-ios/Pods-ios.release.xcconfig"; sourceTree = "<group>"; };
 		2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3301639525599A0E00835961 /* SwiftDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
 		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -93,6 +92,8 @@
 		33621CF52571009D004BD4CF /* MedicoText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoText.swift; sourceTree = "<group>"; };
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
+		33638EE02574EBF000A9E8B4 /* core_arm64.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = core_arm64.framework; path = "../core/build/xcode-frameworks/core_arm64.framework"; sourceTree = "<group>"; };
+		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33AD104F256F9335005FF354 /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
@@ -123,7 +124,6 @@
 		7555FF9C242A565B00829871 /* iosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FFA0242A565B00829871 /* iosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosUITests.swift; sourceTree = "<group>"; };
 		7555FFA2242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7555FFB1242A642300829871 /* core.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = core.framework; path = "../core/build/xcode-frameworks/core.framework"; sourceTree = "<group>"; };
 		889F3A4D3291A9E6CD8FC2F2 /* Pods-ios-iosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-iosUITests.debug.xcconfig"; path = "Target Support Files/Pods-ios-iosUITests/Pods-ios-iosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A0DF918E28D88878DE572A81 /* Pods_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65A07C3273E1A13DF427E58 /* Pods-ios-iosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-iosUITests.release.xcconfig"; path = "Target Support Files/Pods-ios-iosUITests/Pods-ios-iosUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7555FFB2242A642300829871 /* core.framework in Frameworks */,
+				33638EE12574EBF000A9E8B4 /* core_arm64.framework in Frameworks */,
 				E196B03EACB4EE497277BA66 /* Pods_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -165,7 +165,7 @@
 				33CDAA2B256E55AB001C189A /* AppColor.swift */,
 				33B1B80E2564378E005215A3 /* HostingController.swift */,
 				33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */,
-				3301639525599A0E00835961 /* SwiftDataSource.swift */,
+				33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -321,7 +321,7 @@
 		7555FFB0242A642200829871 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7555FFB1242A642300829871 /* core.framework */,
+				33638EE02574EBF000A9E8B4 /* core_arm64.framework */,
 				A0DF918E28D88878DE572A81 /* Pods_ios.framework */,
 				5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */,
 				2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */,
@@ -613,6 +613,7 @@
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				33F151F5256FEAAC00C4C656 /* MedicoButton.swift in Sources */,
+				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,
 				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* AuthPhoneVerification.swift in Sources */,
@@ -623,7 +624,6 @@
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33621CF62571009D004BD4CF /* MedicoText.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
-				3301639625599A0E00835961 /* SwiftDataSource.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
 				33AD1050256F9335005FF354 /* Background.swift in Sources */,

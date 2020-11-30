@@ -1,5 +1,5 @@
 import UIKit
-import core
+import core_arm64
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

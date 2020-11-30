@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import core
+import core_arm64
 
 struct AuthPasswordRestoreScreen: View {
     let scope: ForgetPasswordScope

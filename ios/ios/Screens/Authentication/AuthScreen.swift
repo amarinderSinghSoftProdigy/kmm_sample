@@ -1,6 +1,6 @@
 import SwiftUI
 import Combine
-import core
+import core_arm64
 
 struct AuthScreen: View {
     let scope: LogInScope
@@ -16,7 +16,9 @@ struct AuthScreen: View {
     
     var body: some View {
         Background {
-            ZStack(alignment: .bottom) {
+            ZStack {
+                let blackRectangleHeight: CGFloat = 44
+                
                 ZStack(alignment: .top) {
                     AppColor.darkBlue.color.edgesIgnoringSafeArea(.all)
                     
@@ -34,20 +36,23 @@ struct AuthScreen: View {
                     Rectangle()
                         .fill(Color.black)
                         .opacity(0.2)
-                        .frame(idealWidth: .infinity, maxHeight: 44, alignment: Alignment.top)
+                        .frame(idealWidth: .infinity, maxHeight: blackRectangleHeight, alignment: Alignment.top)
                 }
 
-                AuthTab(
-                    phoneOrEmail: credentials.value!.phoneNumberOrEmail,
-                    password: credentials.value!.password,
-                    scope: scope
-                )
+                if let credentialsValue = self.credentials.value {
+                    AuthTab(
+                        scope: scope,
+                        phoneOrEmail: credentialsValue.phoneNumberOrEmail,
+                        password: credentialsValue.password
+                    )
                     .frame(maxWidth: .infinity)
                     .background(appColor: .primary)
                     .padding()
+                    .padding(.top, blackRectangleHeight)
                     .alert(isPresented: $isError) {
                         Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                     }
+                }
             }.edgesIgnoringSafeArea(.top)
         }
     }
@@ -58,6 +63,8 @@ struct AuthTab: View {
     @State var password: String
     
     let scope: LogInScope
+    let initialPhoneOrEmail: String
+    let initialPassword: String
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -77,16 +84,14 @@ struct AuthTab: View {
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
                 .onReceive(Just(phoneOrEmail)) { pe in
-                    guard let phoneNumberOrEmail = scope.credentials.value?.phoneNumberOrEmail,
-                          pe != phoneNumberOrEmail else { return }
+                    if pe == initialPhoneOrEmail { return }
                     
                     scope.updateAuthCredentials(emailOrPhone: pe, password: password)
                 }
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
                 .onReceive(Just(password)) { pass in
-                    guard let password = scope.credentials.value?.password,
-                          pass != password else { return }
+                    if pass == initialPassword { return }
                     
                     scope.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
                 }
@@ -113,5 +118,17 @@ struct AuthTab: View {
         }
         .padding(20)
         .navigationBarHidden(true)
+    }
+    
+    init(scope: LogInScope,
+         phoneOrEmail: String,
+         password: String) {
+        self.scope = scope
+        
+        self.initialPhoneOrEmail = phoneOrEmail
+        self.initialPassword = password
+        
+        _phoneOrEmail = State(initialValue: phoneOrEmail)
+        _password = State(initialValue: password)
     }
 }
