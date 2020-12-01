@@ -38,6 +38,7 @@ import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
+import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity(), DIAware {
                         scope = scope,
                     )
                     is SignUpScope.AddressData -> AuthAddressData(scope = scope)
+                    is SignUpScope.TraderData -> AuthTraderDetails(scope = scope)
                     is MainScope -> MainView(scope = scope)
                 }
                 if (currentScope.value.isInProgress) IndefiniteProgressBar()

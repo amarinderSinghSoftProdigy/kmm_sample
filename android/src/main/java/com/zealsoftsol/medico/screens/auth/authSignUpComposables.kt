@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +45,6 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
@@ -63,7 +64,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.who_are_you),
         progress = 0.2,
-        back = scope,
+        baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.goToPersonalData() },
         body = {
@@ -104,7 +105,6 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     )
                 }
             }
-            true
         }
     )
 }
@@ -116,7 +116,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.personal_data),
         progress = 0.4,
-        back = scope,
+        baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.tryToSignUp(registration.value) },
         body = {
@@ -202,7 +202,6 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     })
                 )
             }
-            scope.isRegistrationValid
         },
     )
 }
@@ -212,11 +211,10 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     val locationData = scope.locationData.flow.collectAsState()
-    registration.value.log("registartion")
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.address),
         progress = 0.6,
-        back = scope,
+        baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.tryToSignUp(registration.value) },
         body = {
@@ -289,7 +287,71 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
             }
-            scope.isRegistrationValid
+        }
+    )
+}
+
+@Composable
+fun AuthTraderDetails(scope: SignUpScope.TraderData) {
+    val registration = scope.registration.flow.collectAsState()
+    val validation = scope.validation.flow.collectAsState()
+    BasicAuthSignUpScreenWithButton(
+        title = stringResource(id = R.string.trader_details),
+        progress = 0.8,
+        baseScope = scope,
+        buttonText = stringResource(id = R.string.next),
+        onButtonClick = { scope.tryToSignUp(registration.value) },
+        body = {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.Top,
+            ) {
+                InputWithError(errorText = validation.value?.tradeName) {
+                    InputField(
+                        hint = stringResource(id = R.string.trade_name),
+                        text = registration.value.tradeName,
+                        onValueChange = { scope.changeTradeName(it) },
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.panNumber) {
+                    InputField(
+                        hint = stringResource(id = R.string.pan_number),
+                        text = registration.value.panNumber,
+                        isValid = scope.isPanValid,
+                        keyboardOptions = KeyboardOptions.Default
+                            .copy(capitalization = KeyboardCapitalization.Characters),
+                        onValueChange = { scope.changePan(it) },
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.gstin) {
+                    InputField(
+                        hint = stringResource(id = R.string.gstin),
+                        text = registration.value.gstin,
+                        isValid = scope.isGstinValid,
+                        keyboardOptions = KeyboardOptions.Default
+                            .copy(capitalization = KeyboardCapitalization.Characters),
+                        onValueChange = { scope.changeGstin(it) },
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.drugLicenseNo1) {
+                    InputField(
+                        hint = stringResource(id = R.string.drug_license_1),
+                        text = registration.value.drugLicenseNo1,
+                        onValueChange = { scope.changeDrugLicense1(it) },
+                    )
+                }
+                Space(dp = 12.dp)
+                InputWithError(errorText = validation.value?.drugLicenseNo2) {
+                    InputField(
+                        hint = stringResource(id = R.string.drug_license_2),
+                        text = registration.value.drugLicenseNo2,
+                        onValueChange = { scope.changeDrugLicense2(it) },
+                    )
+                }
+            }
         }
     )
 }
@@ -371,17 +433,18 @@ private fun BasicAuthSignUpScreen(
 private fun BasicAuthSignUpScreenWithButton(
     title: String,
     progress: Double,
-    back: CanGoBack,
-    body: @Composable BoxScope.() -> Boolean,
+    baseScope: SignUpScope,
+    body: @Composable BoxScope.() -> Unit,
     buttonText: String,
     onButtonClick: () -> Unit,
 ) {
-    BasicAuthSignUpScreen(title, progress, back) {
-        val isButtonActive = body()
+    BasicAuthSignUpScreen(title, progress, baseScope) {
+        body()
+        val isEnabled = baseScope.canGoNext.flow.collectAsState()
         MedicoButton(
             modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
             text = buttonText,
-            isEnabled = isButtonActive,
+            isEnabled = isEnabled.value,
             onClick = onButtonClick,
         )
     }

@@ -50,6 +50,8 @@
     <string name="district">District</string>
     <string name="state">State</string>
     <string name="trader_details">Trader Details</string>
+    <string name="trade_name">Trade Name</string>
+    <string name="pan_number">PAN Number</string>
     <string name="gstin">GSTIN</string>
     <string name="drug_license_1">Drug License №1</string>
     <string name="drug_license_2">Drug License №2</string>
