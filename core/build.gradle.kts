@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Architecture
+
+val iosArchitecture = Architecture.ARM64
 
 plugins {
     id("com.android.library")
@@ -28,10 +31,9 @@ android {
 kotlin {
     android()
     ios {
-        val postfix = name.substring(3).toLowerCase()
         binaries {
             framework {
-                baseName = "core_$postfix"
+                baseName = "core"
                 transitiveExport = true
             }
         }
@@ -71,9 +73,11 @@ val packForXcode by tasks.creating(Sync::class) {
     val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
     kotlin.targets
         .filterIsInstance<KotlinNativeTarget>()
+        .filter { it.konanTarget.architecture == iosArchitecture }
         .map { it.binaries.getFramework(mode) }
-        .forEach { framework ->
-            println("Building framework ${framework.baseName}")
+        .first()
+        .let { framework ->
+            println("Building $iosArchitecture framework")
             inputs.property("mode", mode)
             dependsOn(framework.linkTask)
             val targetDir = File(buildDir, "xcode-frameworks")
