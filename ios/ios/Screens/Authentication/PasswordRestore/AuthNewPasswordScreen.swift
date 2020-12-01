@@ -34,9 +34,9 @@ struct AuthNewPasswordScreen: View {
                                            showPlaceholderWithText: true,
                                            errorMessageKey: "password_doesnt_match")
             
-            MedicoButton(action: {
+            MedicoButton(localizedStringKey: "confirm", isEnabled: canSubmitPassword) {
                 scope.changePassword(newPassword: newPassword)
-            }, localizedStringKey: "confirm", isEnabled: canSubmitPassword)
+            }
         }
         .navigationBarTitle(LocalizedStringKey("new_password"), displayMode: .inline)
         .padding()

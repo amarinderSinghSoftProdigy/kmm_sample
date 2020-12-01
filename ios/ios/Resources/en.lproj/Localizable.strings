@@ -6,6 +6,12 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
+// MARK: Roles
+"stockist" = "Stockist";
+"retailer" = "Retailer";
+"season_boy" = "Season Boy";
+"hospital" = "Hospital";
+
 // MARK: Authentication Log In Screen
 "app_name" = "Medico dev";
 "log_in" = "Log in";
@@ -37,6 +43,14 @@
 "new_password_repeat" = "Repeat New Password";
 "confirm" = "Confirm";
 "password_doesnt_match" = "Password doesn’t match";
+
+// MARK: Authentication Sign Up
+"next" = "Next";
+"skip_for_now" = "Skip for now";
+
+// MARK: Authentication Sign Up User Type Selection
+"user_type" = "User Type";
+"who_are_you" = "Who are you?";
 
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";
