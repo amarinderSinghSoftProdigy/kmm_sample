@@ -35,7 +35,7 @@ struct SignUpScreen: View {
             
         case let scope as SignUpScope.PersonalData:
             progressFill = 0.4
-            scopeView = AnyView(EmptyView())
+            scopeView = AnyView(AppColor.lightBlue.color)
             
         case let scope as SignUpScope.AddressData:
             progressFill = 0.6
@@ -62,7 +62,10 @@ struct ProgressViewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         GeometryReader { geometry in
+            let maxHeight = geometry.size.height - geometry.safeAreaInsets.top
             VStack {
+                let progressHeight: CGFloat = 4
+                
                 ZStack(alignment: .leading) {
                     AppColor.white.color
                 
@@ -72,17 +75,17 @@ struct ProgressViewModifier: ViewModifier {
                         .frame(width: geometry.size.width * CGFloat(progressFill))
                         .animation(.linear)
                 }
-                .frame(height: 4)
+                .frame(height: progressHeight)
                 
                 content
                     .frame(minWidth: 0,
-                           maxWidth: .infinity,
+                           maxWidth: geometry.size.width,
                            minHeight: 0,
-                           maxHeight: .infinity,
+                           maxHeight: maxHeight - progressHeight,
                            alignment: .topLeading)
             }
             .padding(geometry.safeAreaInsets)
-            .frame(width: geometry.size.width, height: geometry.size.height - geometry.safeAreaInsets.top)
+            .frame(width: geometry.size.width, height: maxHeight)
         }
     }
 }
@@ -91,9 +94,11 @@ struct SignUpButton: ViewModifier {
     @State private var padding: CGFloat = 0
     
     let showsSkipButton: Bool
+    let isEnabled: Bool
     let action: () -> ()
     
-    init(showsSkipButton: Bool = false, action: @escaping () -> ()) {
+    init(isEnabled: Bool, showsSkipButton: Bool = false, action: @escaping () -> ()) {
+        self.isEnabled = isEnabled
         self.showsSkipButton = showsSkipButton
         
         self.action = action
@@ -103,13 +108,13 @@ struct SignUpButton: ViewModifier {
         GeometryReader { geometry in
             let topStackPadding = geometry.size.height * 0.18
             
-            VStack {
+            VStack(spacing: 32) {
                 content
                     .frame(minWidth: 0,
-                           maxWidth: .infinity,
+                           maxWidth: geometry.size.width,
                            minHeight: 0,
-                           maxHeight: .infinity,
-                           alignment: .topLeading)
+                           maxHeight: geometry.size.height - topStackPadding,
+                           alignment: .center)
                     
                 self.createButtonsContainer(withTopStackPadding: topStackPadding)
             }
@@ -119,7 +124,7 @@ struct SignUpButton: ViewModifier {
     
     private func createButtonsContainer(withTopStackPadding topStackPadding: CGFloat) -> some View {
         return VStack(spacing: 16) {
-            MedicoButton(localizedStringKey: "next", action: action)
+            MedicoButton(localizedStringKey: "next", isEnabled: isEnabled, action: action)
             
             if showsSkipButton {
                 Text(LocalizedStringKey("skip_for_now"))

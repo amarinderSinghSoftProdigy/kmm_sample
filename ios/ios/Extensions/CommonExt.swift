@@ -34,3 +34,29 @@ extension TimeInterval{
 
     }
 }
+
+extension DataUserType {
+    var imageName: String? {
+        switch self {
+        
+        case DataUserType.stockist:
+            return "Stockist"
+            
+        case DataUserType.retailer:
+            return "Retailer"
+            
+        case DataUserType.seasonBoy:
+            return "SeasonBoy"
+            
+        case DataUserType.hospital:
+            return "Hospital"
+            
+        default:
+            return nil
+        }
+    }
+    
+    var localizedName: String {
+        return self.name.lowercased()
+    }
+}
