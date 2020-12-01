@@ -40,11 +40,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.invoke
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
@@ -72,7 +67,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }
     }
     override var token: String? = null
-    private var tempToken: Deferred<TokenInfo?> = CompletableDeferred(value = null)
+    private var tempToken: TokenInfo? = null
 
     override suspend fun login(request: UserRequest): TokenInfo? = ktorDispatcher {
         client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/login") {
@@ -111,7 +106,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
                 body = VerifyOtpRequest(phoneNumber, otp)
             }
         if (body.isSuccess) {
-            tempToken = CompletableDeferred(body.getBodyOrNull())
+            tempToken = body.getBodyOrNull()
         }
         body.isSuccess
     }
@@ -167,7 +162,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
         retry(Interval.Linear(100, 5)) {
-            val tokenInfo = tempToken.await()
+            val tokenInfo = tempToken
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 tempToken = when (tokenType) {
@@ -180,17 +175,15 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
     }
 
-    private inline fun fetchNoAuthToken(): Deferred<TokenInfo?> =
-        GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
-            client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd")
-                .getBodyOrNull()
-        }
+    private suspend inline fun fetchNoAuthToken(): TokenInfo? {
+        return client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd")
+            .getBodyOrNull()
+    }
 
-    private inline fun fetchRegistrationToken(): Deferred<TokenInfo?> =
-        GlobalScope.async(ktorDispatcher, start = CoroutineStart.LAZY) {
-            client.get<ResponseBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
-                .getBodyOrNull()
-        }
+    private suspend inline fun fetchRegistrationToken(): TokenInfo? {
+        return client.get<ResponseBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
+            .getBodyOrNull()
+    }
 
     private enum class TempToken(val serverValue: String) {
         //        MAIN("login"),
