@@ -1,0 +1,88 @@
+//
+//  SelectUserTypeScreen.swift
+//  ios
+//
+//  Created by Dasha Gurinovich on 1.12.20.
+//  Copyright © 2020 Zeal Software Solutions. All rights reserved.
+//
+
+import SwiftUI
+import core
+
+struct SelectUserTypeScreen: View {
+    let scope: SignUpScope.SelectUserType
+    
+    @ObservedObject var selectedUserType: SwiftDatasource<DataUserType>
+    
+    private let userTypesOrder = [
+        [DataUserType.stockist, DataUserType.retailer],
+        [DataUserType.seasonBoy, DataUserType.hospital]
+    ]
+    
+    var body: some View {
+        VStack(spacing: 32) {
+            Text(LocalizedStringKey("who_are_you"))
+                .modifier(MedicoText(textWeight: .bold, fontSize: 24))
+            
+            let spacing: CGFloat = 20
+            VStack(spacing: spacing) {
+                ForEach((0..<userTypesOrder.count)) { rowIndex in
+                    let row = userTypesOrder[rowIndex]
+                    
+                    HStack(spacing: spacing) {
+                        ForEach ((0..<row.count)) { elementIndex in
+                            let userType = row[elementIndex]
+                            UserTypeView(userType: userType, isSelected: self.selectedUserType.value == userType)
+                                .onTapGesture {
+                                    self.scope.chooseUserType(userType: userType)
+                                }
+                        }
+                    }
+                }
+            }
+        }
+        .modifier(SignUpButton(isEnabled: selectedUserType.value != nil, action: goToPersonalData))
+        .navigationBarTitle(LocalizedStringKey("user_type"), displayMode: .inline)
+    }
+    
+    init(scope: SignUpScope.SelectUserType) {
+        self.scope = scope
+        
+        selectedUserType = SwiftDatasource(dataSource: scope.userType)
+    }
+    
+    private func goToPersonalData() {
+        guard self.selectedUserType.value != nil else { return }
+        
+        scope.goToPersonalData()
+    }
+}
+
+fileprivate struct UserTypeView: View {
+    let userType: DataUserType
+    let isSelected: Bool
+    
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            let strokeColor: Color = isSelected ? AppColor.yellow.color : AppColor.white.color
+            let corderRadius: CGFloat = 8
+            
+            AppColor.white.color
+                .cornerRadius(corderRadius)
+                .overlay(RoundedRectangle(cornerRadius: corderRadius)
+                            .stroke(strokeColor, style: StrokeStyle(lineWidth: 2)))
+            
+            Group {
+                if let imageName = self.userType.imageName {
+                    Image(imageName)
+                }
+            }.frame(maxHeight: .infinity)
+            
+            Text(LocalizedStringKey(userType.localizedName))
+                .modifier(MedicoText(textWeight: .bold))
+                .padding(.bottom, 20)
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .frame(width: 160, height: 160)
+    }
+}

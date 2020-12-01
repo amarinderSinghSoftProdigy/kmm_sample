@@ -27,20 +27,15 @@ struct AuthPasswordRestoreScreen: View {
     
     func getCurrentView(with geometry: GeometryProxy) ->  some View {
         switch scope {
-        case is ForgetPasswordScope.PhoneNumberInput:
-            if let scope = self.scope as? ForgetPasswordScope.PhoneNumberInput {
-                return AnyView(AuthPhoneRequestScreen(scope: scope, geometry: geometry))
-            }
+        
+        case let scope as ForgetPasswordScope.PhoneNumberInput:
+            return AnyView(AuthPhoneRequestScreen(scope: scope, geometry: geometry))
                 
-        case is ForgetPasswordScope.AwaitVerification:
-            if let scope = self.scope as? ForgetPasswordScope.AwaitVerification {
-                return AnyView(AuthPhoneVerification(scope: scope, geometry: geometry))
-            }
+        case let scope as ForgetPasswordScope.AwaitVerification:
+            return AnyView(AuthPhoneVerification(scope: scope, geometry: geometry))
             
-        case is ForgetPasswordScope.EnterNewPassword:
-            if let scope = self.scope as? ForgetPasswordScope.EnterNewPassword {
-                return AnyView(AuthNewPasswordScreen(scope: scope))
-            }
+        case let scope as ForgetPasswordScope.EnterNewPassword:
+            return AnyView(AuthNewPasswordScreen(scope: scope))
             
         default:
             break

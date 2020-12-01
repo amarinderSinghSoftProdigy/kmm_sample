@@ -31,10 +31,10 @@ struct AuthPhoneRequestScreen: View {
                                          keyboardType: .phonePad)
                 .padding([.top, .bottom])
             
-            MedicoButton(action: {
+            MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                 let rawPhoneNumber = PhoneNumberUtil.shared.getRawPhoneNumber(phone)
                 scope.sendOtp(phoneNumber: rawPhoneNumber)
-            }, localizedStringKey: "get_code", isEnabled: canSubmitPhone)
+            }
         }
         .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
         .padding()

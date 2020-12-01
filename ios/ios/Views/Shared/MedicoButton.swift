@@ -26,16 +26,10 @@ struct MedicoButton: View {
                         .fill(isEnabled ? Color.yellow : Color.gray))
     }
     
-    init(action: @escaping () -> (), localizedStringKey: String, isEnabled: Bool = true) {
+    init(localizedStringKey: String, isEnabled: Bool = true, action: @escaping () -> ()) {
         self.action = action
         self.localizedStringKey = localizedStringKey
         
         self.isEnabled = isEnabled
-    }
-}
-
-struct MedicoButton_Previews: PreviewProvider {
-    static var previews: some View {
-        MedicoButton(action: {}, localizedStringKey: "verification_code", isEnabled: true)
     }
 }

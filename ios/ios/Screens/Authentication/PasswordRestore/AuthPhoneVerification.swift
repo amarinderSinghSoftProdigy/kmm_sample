@@ -45,9 +45,10 @@ struct AuthPhoneVerification: View {
                                              keyboardType: .numberPad)
                     .padding([.top, .bottom])
                 
-                MedicoButton(action: {
+                MedicoButton(localizedStringKey: "submit",
+                             isEnabled: !code.isEmpty && scope.attemptsLeft > 0) {
                     scope.submitOtp(otp: code)
-                }, localizedStringKey: "submit", isEnabled: !code.isEmpty && scope.attemptsLeft > 0)
+                }
             }
             .padding()
             
