@@ -14,24 +14,9 @@ class SwiftDatasource<T: AnyObject> : ObservableObject {
     @Published private (set) var value: T?
     
     init(dataSource: DataSource<T>) {
-        value = dataSource.value
         self.dataSource = dataSource
         self.dataSource.observeOnUi { newValue in
             self.value = newValue
-        }
-    }
-}
-
-class SwiftListDatasource<T: AnyObject> : ObservableObject {
-    private var dataSource: DataSource<NSArray>
-    
-    @Published private (set) var value: [T]
-    
-    init(dataSource: DataSource<NSArray>) {
-        value = dataSource.value as! [T]
-        self.dataSource = dataSource
-        self.dataSource.observeOnUi { newValue in
-            self.value = newValue as! [T]
         }
     }
 }

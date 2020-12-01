@@ -21,8 +21,7 @@ struct AuthPhoneRequestScreen: View {
     var body: some View {
         VStack {
             Text(LocalizedStringKey("reset_password_hint"))
-                .font(.custom("Barlow-Regular", size: 14))
-                .foregroundColor(appColor: .textGrey)
+                .modifier(MedicoText(textWeight: .medium, color: .textGrey))
                 .multilineTextAlignment(.center)
                 .padding([.trailing, .leading], geometry.size.width * 0.15)
             

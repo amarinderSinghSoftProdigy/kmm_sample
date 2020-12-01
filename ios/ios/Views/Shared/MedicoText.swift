@@ -28,9 +28,10 @@ struct MedicoText: ViewModifier {
 }
 
 enum TextWeight: String {
-    case regular
-    case medium
-    case semiBold
+    case regular // 400
+    case medium // 500
+    case semiBold // 600
+    case bold // 700
     
     fileprivate var fontName: String {
         return "Barlow-\(self.rawValue.capitalizeFirstLetter())"

@@ -16,7 +16,9 @@ struct AuthScreen: View {
     
     var body: some View {
         Background {
-            ZStack(alignment: .bottom) {
+            ZStack (alignment: .bottom) {
+                let blackRectangleHeight: CGFloat = 44
+                
                 ZStack(alignment: .top) {
                     AppColor.darkBlue.color.edgesIgnoringSafeArea(.all)
                     
@@ -34,20 +36,29 @@ struct AuthScreen: View {
                     Rectangle()
                         .fill(Color.black)
                         .opacity(0.2)
-                        .frame(idealWidth: .infinity, maxHeight: 44, alignment: Alignment.top)
+                        .frame(idealWidth: .infinity, maxHeight: blackRectangleHeight, alignment: Alignment.top)
                 }
 
-                AuthTab(
-                    phoneOrEmail: credentials.value!.phoneNumberOrEmail,
-                    password: credentials.value!.password,
-                    scope: scope
-                )
+                if let credentialsValue = self.credentials.value {
+                    AuthTab(
+                        scope: scope,
+                        phoneOrEmail: credentialsValue.phoneNumberOrEmail,
+                        password: credentialsValue.password
+                    )
                     .frame(maxWidth: .infinity)
                     .background(appColor: .primary)
                     .padding()
+                    .padding(.top, blackRectangleHeight)
                     .alert(isPresented: $isError) {
                         Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                     }
+                    .frame(maxHeight: .infinity)
+                }
+                
+                Text("© Copyright mediostores.com 2021")
+                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
+                    .opacity(0.8)
+                    .padding(.bottom, 30)
             }.edgesIgnoringSafeArea(.top)
         }
     }
@@ -58,15 +69,17 @@ struct AuthTab: View {
     @State var password: String
     
     let scope: LogInScope
+    let initialPhoneOrEmail: String
+    let initialPassword: String
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
                 Text(LocalizedStringKey("log_in"))
-                    .font(Font.system(size: 24))
-                    .fontWeight(Font.Weight.semibold)
-                    .foregroundColor(appColor: .darkBlue)
+                    .modifier(MedicoText(textWeight: .bold, fontSize: 24))
+                
                 Spacer()
+                
                 Image("medico_logo")
                     .resizable()
                     .scaledToFit()
@@ -77,24 +90,21 @@ struct AuthTab: View {
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
                 .onReceive(Just(phoneOrEmail)) { pe in
-                    guard let phoneNumberOrEmail = scope.credentials.value?.phoneNumberOrEmail,
-                          pe != phoneNumberOrEmail else { return }
+                    if pe == initialPhoneOrEmail { return }
                     
                     scope.updateAuthCredentials(emailOrPhone: pe, password: password)
                 }
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
                 .onReceive(Just(password)) { pass in
-                    guard let password = scope.credentials.value?.password,
-                          pass != password else { return }
+                    if pass == initialPassword { return }
                     
                     scope.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
                 }
             
             Text(LocalizedStringKey("forgot_password"))
-                .font(Font.caption)
+                .modifier(MedicoText(color: .lightBlue))
                 .padding(.top, 4)
-                .foregroundColor(appColor: .lightBlue)
                 .onTapGesture {
                     scope.goToForgetPassword()
                 }
@@ -104,14 +114,27 @@ struct AuthTab: View {
             }, localizedStringKey: "log_in")
             .padding(.top)
             
-            Text(LocalizedStringKey("sign_up_to_medico"))
-                .font(Font.caption)
+            (Text(LocalizedStringKey("sign_up"))
+                .font(.custom("Barlow-Bold", size: 14))
+            + Text(LocalizedStringKey("to_medico")))
                 .underline()
+                .modifier(MedicoText(color: .lightBlue))
                 .padding(.top, 4)
                 .padding(.bottom)
-                .foregroundColor(appColor: .lightBlue)
         }
         .padding(20)
         .navigationBarHidden(true)
+    }
+    
+    init(scope: LogInScope,
+         phoneOrEmail: String,
+         password: String) {
+        self.scope = scope
+        
+        self.initialPhoneOrEmail = phoneOrEmail
+        self.initialPassword = password
+        
+        _phoneOrEmail = State(initialValue: phoneOrEmail)
+        _password = State(initialValue: password)
     }
 }
