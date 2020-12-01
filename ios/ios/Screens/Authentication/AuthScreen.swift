@@ -1,6 +1,6 @@
 import SwiftUI
 import Combine
-import core_arm64
+import core
 
 struct AuthScreen: View {
     let scope: LogInScope

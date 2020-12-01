@@ -1,5 +1,5 @@
 import SwiftUI
-import core_arm64
+import core
 
 struct MainScreen: View {
     let scope: MainScope

@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import core_arm64
+import core
 
 struct AuthPhoneVerification: View {
     let scope: ForgetPasswordScope.AwaitVerification
