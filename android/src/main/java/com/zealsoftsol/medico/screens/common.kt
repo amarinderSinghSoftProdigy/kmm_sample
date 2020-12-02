@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ConfigurationAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -39,7 +38,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
@@ -74,8 +72,14 @@ fun BasicTabBar(back: CanGoBack?, title: String) {
 }
 
 @Composable
-fun TabBar(color: Color = MaterialTheme.colors.secondary, content: @Composable () -> Unit) {
-    Surface(color = color, modifier = Modifier.fillMaxWidth().height(56.dp)) {
+fun TabBar(
+    color: Color = MaterialTheme.colors.secondary,
+    content: @Composable () -> Unit,
+) {
+    Surface(
+        color = color,
+        modifier = Modifier.fillMaxWidth().height(56.dp),
+    ) {
         content()
     }
 }
@@ -85,7 +89,7 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
@@ -115,20 +119,22 @@ fun IndefiniteProgressBar() {
 }
 
 @Composable
-fun ErrorDialog(title: String, text: String, onDismiss: () -> Unit) {
+fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        backgroundColor = Color.White,
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.h6
+                color = MaterialTheme.colors.onPrimary,
+                style = MaterialTheme.typography.h6,
             )
         },
         text = {
             if (text.isNotEmpty()) {
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.subtitle1,
                 )
             }
         },
@@ -136,11 +142,11 @@ fun ErrorDialog(title: String, text: String, onDismiss: () -> Unit) {
             Button(
                 onClick = onDismiss,
                 colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
-                elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
+                elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp),
             ) {
                 Text(
                     text = stringResource(id = R.string.okay),
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.subtitle2,
                 )
             }
         }
@@ -163,8 +169,13 @@ inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boo
 }
 
 @Composable
-fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) -> Unit): Boolean {
-    val countryCode = if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+fun PhoneFormatInputField(
+    hint: String,
+    text: String,
+    onValueChange: (String) -> Unit,
+): Boolean {
+    val countryCode =
+        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null
@@ -180,28 +191,38 @@ fun PhoneFormatInputField(hint: String, text: String, onValueChange: (String) ->
 }
 
 @Composable
-fun PhoneOrEmailFormatInputField(hint: String, text: String, isPhoneNumber: Boolean, onValueChange: (String) -> Unit) {
-    val countryCode = if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+fun PhoneOrEmailFormatInputField(
+    hint: String,
+    text: String,
+    isPhoneNumber: Boolean,
+    onValueChange: (String) -> Unit,
+) {
+    val countryCode =
+        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
         text = formatted ?: text,
         isValid = if (isPhoneNumber) formatted != null else true,
-//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = if (isPhoneNumber) KeyboardType.Phone else KeyboardType.Email),
         onValueChange = onValueChange,
     )
     formatted?.let(onValueChange)
 }
 
 @Composable
-fun PasswordFormatInputField(hint: String, text: String, isValid: Boolean = true, onValueChange: (String) -> Unit) {
+fun PasswordFormatInputField(
+    hint: String,
+    text: String,
+    isValid: Boolean = true,
+    onValueChange: (String) -> Unit,
+) {
     InputField(
         hint = hint,
         text = text,
         isValid = isValid,
         visualTransformation = PasswordVisualTransformation(),
-        onValueChange = onValueChange
+        onValueChange = onValueChange,
     )
 }
 
@@ -212,7 +233,7 @@ fun InputField(
     isValid: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
     TextField(
         value = text,
@@ -235,7 +256,7 @@ fun InputField(
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     )
 }
 
@@ -248,7 +269,7 @@ fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
             text = it,
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.error,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
         )
     }
 }

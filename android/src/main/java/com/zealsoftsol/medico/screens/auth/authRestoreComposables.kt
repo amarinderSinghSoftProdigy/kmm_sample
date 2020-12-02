@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonConstants
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -175,26 +172,9 @@ fun AuthAwaitVerificationScreen(
         }
     )
     val showDialog = remember(scope.attemptsLeft) { mutableStateOf(scope.codeValidity.isFalse) }
-    if (showDialog.value) AlertDialog(
-        onDismissRequest = { showDialog.value = false },
-        title = {
-            Text(
-                text = stringResource(id = R.string.wrong_code),
-                style = MaterialTheme.typography.h6,
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = { showDialog.value = false },
-                colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
-                elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp)
-            ) {
-                Text(
-                    text = "OKAY",
-                    style = MaterialTheme.typography.subtitle2
-                )
-            }
-        }
+    if (showDialog.value) ErrorDialog(
+        title = stringResource(id = R.string.wrong_code),
+        onDismiss = { showDialog.value = false },
     )
     if (scope.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
 }
@@ -236,10 +216,12 @@ fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
         onButtonClick = { scope.changePassword(password2.value) }
     )
     val errorState = scope.withState { success.isFalse }
-    if (errorState.value) scope.passwordValidation?.password?.let {
+    if (errorState.value) {
+        val errorMessage =
+            scope.passwordValidation?.password ?: stringResource(id = R.string.something_went_wrong)
         ErrorDialog(
             title = stringResource(id = R.string.error),
-            text = it,
+            text = errorMessage,
             onDismiss = { errorState.value = false },
         )
     }

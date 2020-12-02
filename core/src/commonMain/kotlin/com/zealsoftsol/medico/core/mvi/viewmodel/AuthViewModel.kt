@@ -66,7 +66,7 @@ internal class AuthViewModel(
         stopResetPasswordTimer()
         resetPasswordTimerJob = GlobalScope.launch(compatDispatcher) {
             var remainingTime = RESEND_TIMER
-            while (remainingTime > 0) {
+            while (remainingTime >= 0) {
                 resendTimer.value = remainingTime
                 delay(1000)
                 remainingTime -= 1000

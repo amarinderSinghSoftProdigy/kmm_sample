@@ -117,7 +117,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     ): ValidationData<PasswordValidation> =
         ktorDispatcher {
             client.post<ValidatedResponseBody<MapBody, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
-                withTempToken(TempToken.FORGET_PASSWORD)
+                withTempToken(TempToken.UPDATE_PASSWORD)
                 contentType(ContentType.parse("application/json"))
                 body = PasswordResetRequest(phoneNumber, password, password)
             }.getValidationData()
@@ -168,6 +168,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
                 tempToken = when (tokenType) {
                     TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
                     TempToken.REGISTRATION -> fetchRegistrationToken()
+                    TempToken.UPDATE_PASSWORD -> tempToken
                 }
             }
             tokenInfo
@@ -188,8 +189,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     private enum class TempToken(val serverValue: String) {
         //        MAIN("login"),
         FORGET_PASSWORD("forgetpwd"),
-
-        //        UPDATE_PASSWORD("updatepwd"),
+        UPDATE_PASSWORD("updatepwd"),
         REGISTRATION("registration");
     }
 
