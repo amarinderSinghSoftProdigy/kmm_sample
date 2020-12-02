@@ -24,7 +24,7 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
 
     data class AwaitVerification(
         val phoneNumber: String,
-        val resendTimer: DataSource<Long>,
+        val resendTimer: DataSource<Long> = DataSource(RESEND_TIMER),
         val attemptsLeft: Int = MAX_RESEND_ATTEMPTS,
         val codeValidity: BooleanEvent = BooleanEvent.none,
         val resendSuccess: BooleanEvent = BooleanEvent.none,

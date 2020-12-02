@@ -2,16 +2,17 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.BooleanEvent
 import com.zealsoftsol.medico.core.extensions.ifTrue
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.core.mvi.withProgress
+import com.zealsoftsol.medico.core.repository.UserRepo
 
 internal class AuthEventDelegate(
     navigator: Navigator,
-    private val authViewModel: AuthViewModel,
+    private val userRepo: UserRepo,
 ) : EventDelegate<Event.Action.Auth>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Auth) = when (event) {
@@ -24,12 +25,10 @@ internal class AuthEventDelegate(
     }
 
     private suspend fun authTryLogin() {
-        val isSuccess = navigator.withProgress {
-            authViewModel.tryLogIn()
-        }
         navigator.withScope<LogInScope> {
-            if (isSuccess) {
-                transitionTo(MainScope())
+            if (withProgress { userRepo.login(it.credentials.value) }) {
+                clearQueue()
+                setCurrentScope(MainScope())
             } else {
                 setCurrentScope(it.copy(success = BooleanEvent.`false`))
             }
@@ -38,13 +37,17 @@ internal class AuthEventDelegate(
 
     private suspend fun authTryLogOut() {
         navigator.withProgress {
-            authViewModel.tryLogOut()
+            userRepo.logout()
         }.ifTrue {
-            navigator.transitionTo(LogInScope(authViewModel.credentials))
+            navigator.clearQueue()
+            navigator.setCurrentScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }
 
     private fun authUpdateCredentials(emailOrPhone: String, password: String) {
-        authViewModel.updateAuthCredentials(emailOrPhone, password)
+        navigator.withScope<LogInScope> {
+            it.credentials.value =
+                userRepo.updateAuthCredentials(it.credentials.value, emailOrPhone, password)
+        }
     }
 }

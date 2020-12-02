@@ -1,49 +1,53 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.BooleanEvent
+import com.zealsoftsol.medico.core.compatDispatcher
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
-import com.zealsoftsol.medico.core.mvi.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.core.mvi.withProgress
+import com.zealsoftsol.medico.core.repository.UserRepo
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 internal class PasswordEventDelegate(
     navigator: Navigator,
-    private val authViewModel: AuthViewModel,
+    private val userRepo: UserRepo,
 ) : EventDelegate<Event.Action.Password>(navigator) {
+
+    private var resetPasswordTimerJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Password) = when (event) {
         is Event.Action.Password.SendOtp -> sendOtp(event.phoneNumber)
-        is Event.Action.Password.SubmitOtp -> sumbitOtp(event.otp)
+        is Event.Action.Password.SubmitOtp -> submitOtp(event.otp)
         is Event.Action.Password.ResendOtp -> resendOtp()
         is Event.Action.Password.ChangePassword -> changePassword(event.newPassword)
     }
 
     private suspend fun sendOtp(phoneNumber: String) {
         navigator.withScope<ForgetPasswordScope.PhoneNumberInput> {
-            if (withProgress { authViewModel.sendOtp(phoneNumber) }) {
-                authViewModel.startResetPasswordTimer()
+            if (withProgress { userRepo.sendOtp(phoneNumber) }) {
+                val nextScope = ForgetPasswordScope.AwaitVerification(phoneNumber = phoneNumber)
+                startResetPasswordTimer(nextScope.resendTimer)
                 setCurrentScope(it.copy(phoneNumber = phoneNumber), false)
-                transitionTo(
-                    ForgetPasswordScope.AwaitVerification(
-                        phoneNumber = phoneNumber,
-                        resendTimer = authViewModel.resendTimer,
-                    )
-                )
+                setCurrentScope(nextScope)
             } else {
                 setCurrentScope(it.copy(success = BooleanEvent.`false`))
             }
         }
     }
 
-    private suspend fun sumbitOtp(otp: String) {
+    private suspend fun submitOtp(otp: String) {
         navigator.withScope<ForgetPasswordScope.AwaitVerification> {
-            if (withProgress { authViewModel.submitOtp(it.phoneNumber, otp) }) {
-                authViewModel.stopResetPasswordTimer()
-                transitionTo(
-                    ForgetPasswordScope.EnterNewPassword(phoneNumber = it.phoneNumber),
-                    replaceScope = true
+            if (withProgress { userRepo.submitOtp(it.phoneNumber, otp) }) {
+                stopResetPasswordTimer()
+                dropCurrentScope(updateDataSource = false)
+                setCurrentScope(
+                    ForgetPasswordScope.EnterNewPassword(phoneNumber = it.phoneNumber)
                 )
             } else {
                 setCurrentScope(
@@ -55,8 +59,8 @@ internal class PasswordEventDelegate(
 
     private suspend fun resendOtp() {
         navigator.withScope<ForgetPasswordScope.AwaitVerification> {
-            val isSuccess = authViewModel.resendOtp(it.phoneNumber)
-            if (isSuccess) authViewModel.startResetPasswordTimer()
+            val isSuccess = userRepo.resendOtp(it.phoneNumber)
+            if (isSuccess) startResetPasswordTimer(it.resendTimer)
             setCurrentScope(it.copy(resendSuccess = BooleanEvent.of(isSuccess)))
         }
     }
@@ -64,7 +68,7 @@ internal class PasswordEventDelegate(
     private suspend fun changePassword(newPassword: String) {
         navigator.withScope<ForgetPasswordScope.EnterNewPassword> {
             val (validation, isSuccess) = withProgress {
-                authViewModel.changePassword(it.phoneNumber, newPassword)
+                userRepo.changePassword(it.phoneNumber, newPassword)
             }
             setCurrentScope(
                 it.copy(
@@ -73,7 +77,25 @@ internal class PasswordEventDelegate(
                 )
             )
             if (isSuccess) {
-                navigator.transitionTo(LogInScope(authViewModel.credentials), replaceScope = true)
+                clearQueue()
+                setCurrentScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+            }
+        }
+    }
+
+    private fun stopResetPasswordTimer() {
+        resetPasswordTimerJob?.cancel()
+    }
+
+    private fun startResetPasswordTimer(timer: DataSource<Long>) {
+        stopResetPasswordTimer()
+        resetPasswordTimerJob = GlobalScope.launch(compatDispatcher) {
+            timer.value = ForgetPasswordScope.AwaitVerification.RESEND_TIMER
+            var remainingTime = timer.value
+            while (remainingTime > 0) {
+                delay(1000)
+                remainingTime -= 1000
+                timer.value = remainingTime
             }
         }
     }

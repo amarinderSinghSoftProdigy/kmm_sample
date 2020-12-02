@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.core
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.viewmodel.AuthViewModel
 import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.network.mock.MockAuthScope
@@ -21,9 +20,6 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
         } else {
             MockAuthScope()
         }
-    }
-    bind<AuthViewModel>() with singleton {
-        AuthViewModel(instance())
     }
     bind<UserRepo>() with singleton { UserRepo(instance(), instance(), instance()) }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }

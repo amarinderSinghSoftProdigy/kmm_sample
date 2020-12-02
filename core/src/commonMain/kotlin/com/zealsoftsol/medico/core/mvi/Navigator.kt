@@ -21,9 +21,8 @@ class Navigator : UiNavigator {
         currentScope.value = currentScope.value.changeProgress(value)
     }
 
-    fun transitionTo(scope: BaseScope, replaceScope: Boolean = false) {
-        if (replaceScope) dropCurrentScope(updateDataSource = false)
-        setCurrentScope(scope, true)
+    fun clearQueue() {
+        queue.clear()
     }
 
     fun setCurrentScope(scope: BaseScope, updateDataSource: Boolean = true) {
@@ -40,10 +39,6 @@ class Navigator : UiNavigator {
         val cast = runCatching { currentScope.value as S }
         cast.getOrNull()?.let { block(it) } ?: "error casting scope to ${S::class}".warnIt()
         return cast.isSuccess
-    }
-
-    internal inline fun <reified S : BaseScope> updateScopeInQueue(block: (S) -> S) {
-        withScope<S> { setCurrentScope(block(it), false) }
     }
 
     fun dropCurrentScope(updateDataSource: Boolean = true): BaseScope? {

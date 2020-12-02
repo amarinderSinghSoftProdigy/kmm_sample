@@ -2,12 +2,14 @@ package com.zealsoftsol.medico.core
 
 import com.zealsoftsol.medico.core.extensions.Logger
 import com.zealsoftsol.medico.core.extensions.logger
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.viewmodel.AuthViewModel
+import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.data.AuthState
 import org.kodein.di.DI
 import org.kodein.di.direct
 import org.kodein.di.instance
@@ -19,13 +21,13 @@ object UiLink {
         val di = startKodein(context, isDebug)
         val directDI = di.direct
         val navigator = directDI.instance<Navigator>()
-        val authViewModel = directDI.instance<AuthViewModel>()
+        val userRepo = directDI.instance<UserRepo>()
         val eventCollector = directDI.instance<EventCollector>()
         navigator.setCurrentScope(
-            if (authViewModel.isAuthorized) {
+            if (userRepo.authState == AuthState.AUTHORIZED) {
                 MainScope()
             } else {
-                LogInScope(authViewModel.credentials)
+                LogInScope(DataSource(userRepo.getAuthCredentials()))
             }
         )
         return AppStartResult(di, navigator)
