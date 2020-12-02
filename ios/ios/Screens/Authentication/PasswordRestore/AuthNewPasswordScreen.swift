@@ -23,15 +23,25 @@ struct AuthNewPasswordScreen: View {
         let errorMessageKey = scope.passwordValidation?.password ?? "something_went_wrong"
         
         VStack(spacing: 12) {
+            let arePasswordsValid = confirmationPassword.isEmpty || canSubmitPassword
+            
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
-                                           text: $newPassword,
-                                           textValidator: checkPasswordsMatch,
-                                           showPlaceholderWithText: true)
+                                           text: newPassword,
+                                           onTextChange: { newValue in
+                                            newPassword = newValue
+                                            checkPasswordsMatch(newValue)
+                                           },
+                                           showPlaceholderWithText: true,
+                                           isValid: arePasswordsValid)
         
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
-                                           text: $confirmationPassword,
-                                           textValidator: checkPasswordsMatch,
+                                           text: confirmationPassword,
+                                           onTextChange: { newValue in
+                                            confirmationPassword = newValue
+                                            checkPasswordsMatch(newValue)
+                                           },
                                            showPlaceholderWithText: true,
+                                           isValid: arePasswordsValid,
                                            errorMessageKey: "password_doesnt_match")
             
             MedicoButton(localizedStringKey: "confirm", isEnabled: canSubmitPassword) {
@@ -53,16 +63,14 @@ struct AuthNewPasswordScreen: View {
         self._passwordUpdateFailed = Binding.constant(scope.success.isFalse)
     }
     
-    private func checkPasswordsMatch(_ password: String) -> Bool {
+    private func checkPasswordsMatch(_ password: String) {
         if confirmationPassword.isEmpty {
             self.canSubmitPassword = false
-            return true
+            return
         }
         
         let areEqual = confirmationPassword == newPassword
         
         self.canSubmitPassword = areEqual
-        
-        return areEqual
     }
 }

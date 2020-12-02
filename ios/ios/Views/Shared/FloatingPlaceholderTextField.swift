@@ -13,18 +13,20 @@ struct FloatingPlaceholderTextField: View {
     let placeholderLocalizedStringKey: String
     let keyboardType: UIKeyboardType
     
-    let text: Binding<String>
+    @State private var text: String
+    
+    let onTextChange: (String) -> Void
+    let textFormatter: ((String) -> String)?
     
     let height: CGFloat
     
-    let textValidator: ((String) -> Bool)?
+    let isValid: Bool
     let errorMessageKey: String?
     
     @State var fieldSelected = false
-    @State var isValid = true
     
     var body: some View {
-        TextField("", text: text, onEditingChanged: { (changed) in
+        TextField("", text: $text, onEditingChanged: { (changed) in
             self.fieldSelected = changed
         }, onCommit: {
             self.fieldSelected = false
@@ -36,45 +38,52 @@ struct FloatingPlaceholderTextField: View {
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
                                               errorMessageKey: errorMessageKey))
-        .onReceive(Just(text.wrappedValue)) { text in
-            if let textValidator = self.textValidator {
-                self.isValid = textValidator(text)
+        .onReceive(Just(text)) { text in
+            self.onTextChange(text)
+            
+            if let textFormatter = self.textFormatter {
+                self.text = textFormatter(text)
             }
         }
     }
     
     init(placeholderLocalizedStringKey: String,
-         text: Binding<String>,
-         textValidator: ((String) -> Bool)? = nil,
+         text: String,
+         onTextChange: @escaping (String) -> Void,
+         textFormatter: ((String) -> String)? = nil,
          height: CGFloat = 50,
          keyboardType: UIKeyboardType = .default,
+         isValid: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self.text = text
-        self.textValidator = textValidator
+        self._text = State(initialValue: text)
+        self.onTextChange = onTextChange
+        self.textFormatter = textFormatter
         
         self.height = height
         self.keyboardType = keyboardType
         
+        self.isValid = isValid
         self.errorMessageKey = errorMessageKey
     }
 }
 
 struct FloatingPlaceholderSecureField: View {
     let placeholderLocalizedStringKey: String
-    let text: Binding<String>
+    @State private var text: String
+    
+    let onTextChange: (String) -> Void
     
     let height: CGFloat
     
     let showPlaceholderWithText: Bool
     
-    let textValidator: ((String) -> Bool)?
-    @State var isValid = true
+    let isValid: Bool
     let errorMessageKey: String?
     
     var body: some View {
-        SecureField("", text: text)
+        SecureField("", text: $text)
             .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
                                                   text: text,
                                                   height: height,
@@ -82,55 +91,34 @@ struct FloatingPlaceholderSecureField: View {
                                                   isValid: isValid,
                                                   showPlaceholderWithText: showPlaceholderWithText,
                                                   errorMessageKey: errorMessageKey))
-            .onReceive(Just(text.wrappedValue)) { text in
-                if let textValidator = self.textValidator {
-                    self.isValid = textValidator(text)
-                }
+            .onReceive(Just(text)) { text in
+                onTextChange(text)
             }
     }
     
     init(placeholderLocalizedStringKey: String,
-         text: Binding<String>,
-         textValidator: ((String) -> Bool)? = nil,
+         text: String,
+         onTextChange: @escaping (String) -> Void,
          height: CGFloat = 50,
          showPlaceholderWithText: Bool = false,
+         isValid: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
-        self.text = text
+        self._text = State(initialValue: text)
         
-        self.textValidator = textValidator
+        self.onTextChange = onTextChange
         
         self.height = height
         self.showPlaceholderWithText = showPlaceholderWithText
         
+        self.isValid = isValid
         self.errorMessageKey = errorMessageKey
-    }
-}
-
-struct PlaceholderText: ViewModifier {
-    let fontSize: CGFloat
-    let textColor: AppColor
-    let padding: CGFloat
-    
-    func body(content: Content) -> some View {
-        content
-            .font(.custom("Barlow-Regular", size: fontSize))
-            .foregroundColor(appColor: textColor)
-            .padding([.leading, .trailing], padding)
-            .animation(.easeOut)
-        
-    }
-    
-    init(fontSize: CGFloat = 15, textColor: AppColor = .placeholderGrey, padding: CGFloat = 16) {
-        self.fontSize = fontSize
-        self.textColor = textColor
-        self.padding = padding
     }
 }
 
 struct FloatingPlaceholderModifier: ViewModifier {
     let placeholderLocalizedStringKey: String
-    let text: Binding<String>
+    let text: String
     
     let height: CGFloat
     
@@ -149,24 +137,24 @@ struct FloatingPlaceholderModifier: ViewModifier {
                     .fill(appColor: .white)
                     .frame(height: height)
                 
-                let placeholderMoved = showPlaceholderWithText && (fieldSelected ||  !text.wrappedValue.isEmpty)
+                let placeholderMoved = showPlaceholderWithText && (fieldSelected ||  !text.isEmpty)
                 let fontSize: CGFloat = placeholderMoved ? 11 : 15
                 let textOffset: CGFloat = placeholderMoved ? -10 : 0
                 let textColor: AppColor = placeholderMoved ?
                     (isValid ? .lightBlue : .red) : .placeholderGrey
 
                 Text(LocalizedStringKey(placeholderLocalizedStringKey))
-                    .modifier(PlaceholderText(fontSize: fontSize, textColor: textColor, padding: padding))
+                    .modifier(MedicoText(fontSize: fontSize, color: textColor))
+                    .padding([.leading, .trailing], padding)
                     .offset(y: textOffset)
-                    .isHidden(!placeholderMoved && !text.wrappedValue.isEmpty)
+                    .isHidden(!placeholderMoved && !text.isEmpty)
                     .animation(.easeOut)
                 
                 let textFieldHeight = height - 12
                 let textFieldAlignment: Alignment = placeholderMoved ? .bottomLeading : .leading
                 content
-                    .font(.custom("Barlow-Regular", size: 15))
+                    .modifier(MedicoText(fontSize: 15, multilineTextAlignment: .leading))
                     .frame(height: textFieldHeight, alignment: textFieldAlignment)
-                    .foregroundColor(appColor: .darkBlue)
                     .padding([.leading, .trailing], padding)
             }
             
@@ -185,7 +173,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
         }
     }
     
-    init(placeholderLocalizedStringKey: String, text: Binding<String>,
+    init(placeholderLocalizedStringKey: String, text: String,
          height: CGFloat, fieldSelected: Bool, isValid: Bool = true, showPlaceholderWithText: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey

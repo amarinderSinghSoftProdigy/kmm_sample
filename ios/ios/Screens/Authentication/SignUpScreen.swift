@@ -35,7 +35,7 @@ struct SignUpScreen: View {
             
         case let scope as SignUpScope.PersonalData:
             progressFill = 0.4
-            scopeView = AnyView(AppColor.lightBlue.color)
+            scopeView = AnyView(SignUpPersonalDataScreen(scope: scope))
             
         case let scope as SignUpScope.AddressData:
             progressFill = 0.6

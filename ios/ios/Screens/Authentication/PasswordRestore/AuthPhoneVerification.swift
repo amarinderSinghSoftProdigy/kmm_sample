@@ -41,7 +41,8 @@ struct AuthPhoneVerification: View {
                 }
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
-                                             text: $code,
+                                             text: code,
+                                             onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
                     .padding([.top, .bottom])
                 

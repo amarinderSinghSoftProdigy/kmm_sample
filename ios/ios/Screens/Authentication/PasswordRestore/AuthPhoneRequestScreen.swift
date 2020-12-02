@@ -26,9 +26,11 @@ struct AuthPhoneRequestScreen: View {
                 .padding([.trailing, .leading], geometry.size.width * 0.15)
             
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
-                                         text: $phone,
-                                         textValidator: checkPhoneNumber,
-                                         keyboardType: .phonePad)
+                                         text: phone,
+                                         onTextChange: { newValue in checkPhoneNumber(newValue) },
+                                         textFormatter: { value in self.phone },
+                                         keyboardType: .phonePad,
+                                         isValid: canSubmitPhone)
                 .padding([.top, .bottom])
             
             MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
@@ -54,12 +56,10 @@ struct AuthPhoneRequestScreen: View {
         _isOtpSendFailed = Binding.constant(scope.success.isFalse)
     }
     
-    private func checkPhoneNumber(_ phone: String) -> Bool {
+    private func checkPhoneNumber(_ phone: String) {
         let possibleNumber = PhoneNumberUtil.shared.isValidNumber(phone)
         
         self.phone = possibleNumber.formattedNumber
         self.canSubmitPhone = possibleNumber.isValid
-        
-        return possibleNumber.isValid
     }
 }

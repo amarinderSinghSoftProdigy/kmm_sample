@@ -90,7 +90,10 @@ struct AuthTab: View {
                     .frame(width: 135, alignment: Alignment.trailing)
             }.frame(maxWidth: .infinity).padding([.bottom])
             
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email", text: $phoneOrEmail, keyboardType: .emailAddress)
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
+                                         text: phoneOrEmail,
+                                         onTextChange: { newValue in phoneOrEmail = newValue },
+                                         keyboardType: .emailAddress)
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
                 .onReceive(Just(phoneOrEmail)) { pe in
@@ -99,7 +102,9 @@ struct AuthTab: View {
                     scope.updateAuthCredentials(emailOrPhone: pe, password: password)
                 }
             
-            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
+            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
+                                           text: password,
+                                           onTextChange: { newValue in password = newValue})
                 .onReceive(Just(password)) { pass in
                     if pass == initialPassword { return }
                     

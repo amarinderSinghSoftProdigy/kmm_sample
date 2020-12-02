@@ -52,6 +52,16 @@
 "user_type" = "User Type";
 "who_are_you" = "Who are you?";
 
+// MARK: Authentication Sign Up Personal Data
+"personal_data" = "Personal Data";
+"first_name" = "First Name";
+"last_name" = "Last Name";
+"email_address" = "Email Address";
+"password" = "Password";
+"repeat_password" = "Repeat Password";
+"continueing_i_accept" = "Continueing, I accept the";
+"terms_of_conditions_and_privacy_policy" = "Terms of Conditions and Privacy Policy";
+
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";

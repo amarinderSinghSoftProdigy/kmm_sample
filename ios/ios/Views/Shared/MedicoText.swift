@@ -11,19 +11,28 @@ import SwiftUI
 struct MedicoText: ViewModifier {
     let textWeight: TextWeight
     let fontSize: CGFloat
+    
     let color: AppColor
+    
+    let multilineTextAlignment: TextAlignment
     
     func body(content: Content) -> some View {
         content
             .font(.custom(textWeight.fontName, size: fontSize))
             .foregroundColor(appColor: color)
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(multilineTextAlignment)
     }
     
-    init(textWeight: TextWeight = .regular, fontSize: CGFloat = 14, color: AppColor = .darkBlue) {
+    init(textWeight: TextWeight = .regular,
+         fontSize: CGFloat = 14,
+         color: AppColor = .darkBlue,
+         multilineTextAlignment: TextAlignment = .center) {
         self.textWeight = textWeight
         self.fontSize = fontSize
+        
         self.color = color
+        
+        self.multilineTextAlignment = multilineTextAlignment
     }
 }
 
