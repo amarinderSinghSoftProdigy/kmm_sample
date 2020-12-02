@@ -48,7 +48,7 @@ struct FloatingPlaceholderTextField: View {
     }
     
     init(placeholderLocalizedStringKey: String,
-         text: String,
+         text: String?,
          onTextChange: @escaping (String) -> Void,
          textFormatter: ((String) -> String)? = nil,
          height: CGFloat = 50,
@@ -57,7 +57,7 @@ struct FloatingPlaceholderTextField: View {
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self._text = State(initialValue: text)
+        self._text = State(initialValue: text ?? "")
         self.onTextChange = onTextChange
         self.textFormatter = textFormatter
         
@@ -97,14 +97,14 @@ struct FloatingPlaceholderSecureField: View {
     }
     
     init(placeholderLocalizedStringKey: String,
-         text: String,
+         text: String?,
          onTextChange: @escaping (String) -> Void,
          height: CGFloat = 50,
          showPlaceholderWithText: Bool = false,
          isValid: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
-        self._text = State(initialValue: text)
+        self._text = State(initialValue: text ?? "")
         
         self.onTextChange = onTextChange
         
