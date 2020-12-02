@@ -6,6 +6,9 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
+// MARK: General
+"back" = "Back";
+
 // MARK: Roles
 "stockist" = "Stockist";
 "retailer" = "Retailer";
