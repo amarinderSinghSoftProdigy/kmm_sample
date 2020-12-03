@@ -103,7 +103,7 @@ fun AuthPhoneNumberInputScreen(scope: ForgetPasswordScope.PhoneNumberInput) {
             )
         },
         buttonText = stringResource(id = R.string.get_code),
-        onButtonClick = { scope.sendOtp(phoneState.value) },
+        onButtonClick = { scope.sendOtp(phoneState.value.filter { it.isDigit() }) },
     )
     scope.showError(
         title = stringResource(id = R.string.something_went_wrong),

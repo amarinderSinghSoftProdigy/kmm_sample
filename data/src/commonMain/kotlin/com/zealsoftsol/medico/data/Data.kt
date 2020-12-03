@@ -9,12 +9,12 @@ data class AuthCredentials(
     fun getEmail(): String? = phoneNumberOrEmail.takeIf { type == Type.EMAIL }
 
     enum class Type {
-        EMAIL, PHONE
+        EMAIL, PHONE;
     }
 }
 
 enum class AuthState {
-    AUTHORIZED, NOT_AUTHORIZED
+    AUTHORIZED, NOT_AUTHORIZED;
 }
 
 enum class UserType(val serverValue: String) {

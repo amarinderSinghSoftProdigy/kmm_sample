@@ -81,7 +81,8 @@ class MainActivity : AppCompatActivity(), DIAware {
                     is SignUpScope.TraderData -> AuthTraderDetails(scope = scope)
                     is MainScope -> MainView(scope = scope)
                 }
-                if (currentScope.value.isInProgress) IndefiniteProgressBar()
+                val isInProgress = currentScope.value.isInProgress.flow.collectAsState()
+                if (isInProgress.value) IndefiniteProgressBar()
             }
         }
     }

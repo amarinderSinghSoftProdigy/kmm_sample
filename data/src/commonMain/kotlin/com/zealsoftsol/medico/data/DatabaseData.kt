@@ -8,5 +8,5 @@ data class User(
     val phoneNumber: String,
     val token: String,
     val type: String,
-    val password: String
+    val password: String,
 )

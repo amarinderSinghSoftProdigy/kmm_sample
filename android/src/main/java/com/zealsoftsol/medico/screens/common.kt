@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ConfigurationAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
@@ -175,7 +177,7 @@ fun PhoneFormatInputField(
     onValueChange: (String) -> Unit,
 ): Boolean {
     val countryCode =
-        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+        if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null
@@ -184,6 +186,7 @@ fun PhoneFormatInputField(
         text = formatted ?: text,
         isValid = isValid,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+        maxLines = 1,
         onValueChange = onValueChange,
     )
     formatted?.let(onValueChange)
@@ -198,13 +201,14 @@ fun PhoneOrEmailFormatInputField(
     onValueChange: (String) -> Unit,
 ) {
     val countryCode =
-        "RU"//if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+        if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
         text = formatted ?: text,
         isValid = if (isPhoneNumber) formatted != null else true,
+        maxLines = 1,
         onValueChange = onValueChange,
     )
     formatted?.let(onValueChange)
@@ -222,6 +226,7 @@ fun PasswordFormatInputField(
         text = text,
         isValid = isValid,
         visualTransformation = PasswordVisualTransformation(),
+        maxLines = 1,
         onValueChange = onValueChange,
     )
 }
@@ -233,6 +238,7 @@ fun InputField(
     isValid: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = 1,
     onValueChange: (String) -> Unit,
 ) {
     TextField(
@@ -256,6 +262,7 @@ fun InputField(
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
+        maxLines = maxLines,
         modifier = Modifier.fillMaxWidth(),
     )
 }

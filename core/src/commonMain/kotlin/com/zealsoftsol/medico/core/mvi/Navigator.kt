@@ -18,7 +18,7 @@ class Navigator : UiNavigator {
     }
 
     fun setProgress(value: Boolean) {
-        currentScope.value = currentScope.value.changeProgress(value)
+        currentScope.value.isInProgress.value = value
     }
 
     fun clearQueue() {
