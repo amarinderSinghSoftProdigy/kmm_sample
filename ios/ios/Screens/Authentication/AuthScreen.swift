@@ -23,8 +23,7 @@ struct AuthScreen: View {
             if let credentialsValue = self.credentials.value {
                 AuthTab(
                     scope: scope,
-                    phoneOrEmail: credentialsValue.phoneNumberOrEmail,
-                    password: credentialsValue.password
+                    credentials: credentialsValue
                 )
                 .frame(maxWidth: .infinity)
                 .background(appColor: .primary)
@@ -42,6 +41,7 @@ struct AuthScreen: View {
                 .padding(.bottom, 30)
         }
         .keyboardResponder()
+        .hideKeyboardOnTap()
     }
     
     var background: some View {
@@ -69,12 +69,8 @@ struct AuthScreen: View {
 }
 
 struct AuthTab: View {
-    @State var phoneOrEmail: String
-    @State var password: String
-    
     let scope: LogInScope
-    let initialPhoneOrEmail: String
-    let initialPassword: String
+    let credentials: DataAuthCredentials
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -91,25 +87,15 @@ struct AuthTab: View {
             }.frame(maxWidth: .infinity).padding([.bottom])
             
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
-                                         text: phoneOrEmail,
-                                         onTextChange: { newValue in phoneOrEmail = newValue },
+                                         text: credentials.phoneNumberOrEmail,
+                                         onTextChange: updateLogin,
                                          keyboardType: .emailAddress)
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
-                .onReceive(Just(phoneOrEmail)) { pe in
-                    if pe == initialPhoneOrEmail { return }
-                    
-                    scope.updateAuthCredentials(emailOrPhone: pe, password: password)
-                }
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
-                                           text: password,
-                                           onTextChange: { newValue in password = newValue})
-                .onReceive(Just(password)) { pass in
-                    if pass == initialPassword { return }
-                    
-                    scope.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
-                }
+                                           text: credentials.password,
+                                           onTextChange: updatePassword)
             
             Text(LocalizedStringKey("forgot_password"))
                 .modifier(MedicoText(color: .lightBlue))
@@ -139,14 +125,20 @@ struct AuthTab: View {
     }
     
     init(scope: LogInScope,
-         phoneOrEmail: String,
-         password: String) {
+         credentials: DataAuthCredentials) {
         self.scope = scope
-        
-        self.initialPhoneOrEmail = phoneOrEmail
-        self.initialPassword = password
-        
-        _phoneOrEmail = State(initialValue: phoneOrEmail)
-        _password = State(initialValue: password)
+        self.credentials = credentials
+    }
+    
+    private func updateLogin(withNewValue newValue: String) {
+        let password = self.credentials.password
+            
+        scope.updateAuthCredentials(emailOrPhone: newValue, password: password)
+    }
+    
+    private func updatePassword(withNewValue newValue: String) {
+        let login = self.credentials.phoneNumberOrEmail
+            
+        scope.updateAuthCredentials(emailOrPhone: login, password: newValue)
     }
 }

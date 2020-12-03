@@ -21,7 +21,6 @@
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
-		33AD1050256F9335005FF354 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104F256F9335005FF354 /* Background.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
 		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
@@ -102,7 +101,6 @@
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
-		33AD104F256F9335005FF354 /* Background.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
 		33B1B80E2564378E005215A3 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
 		33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPersonalDataScreen.swift; sourceTree = "<group>"; };
@@ -202,7 +200,6 @@
 			isa = PBXGroup;
 			children = (
 				33621CF9257125B2004BD4CF /* ActivityView.swift */,
-				33AD104F256F9335005FF354 /* Background.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				33F151F4256FEAAC00C4C656 /* MedicoButton.swift */,
 				33621CF52571009D004BD4CF /* MedicoText.swift */,
@@ -654,7 +651,6 @@
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
 				336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */,
-				33AD1050256F9335005FF354 /* Background.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */,
 			);

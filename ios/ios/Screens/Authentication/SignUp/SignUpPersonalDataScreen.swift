@@ -28,7 +28,6 @@ struct SignUpPersonalDataScreen: View {
     
     var personalDataFields: some View {
         VStack(spacing: 12) {
-//            Spacer()
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
                                          text: self.registration.value?.firstName,
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) })
