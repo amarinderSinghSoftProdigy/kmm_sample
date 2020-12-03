@@ -19,6 +19,7 @@
 		33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
+		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
@@ -99,6 +100,7 @@
 		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
+		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
@@ -188,10 +190,19 @@
 			path = SignUp;
 			sourceTree = "<group>";
 		};
+		3367284B2579293800C7E73D /* User */ = {
+			isa = PBXGroup;
+			children = (
+				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
 		3378955F256E3B970034D79F /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				33789560256E3BBC0034D79F /* Shared */,
+				3367284B2579293800C7E73D /* User */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -637,6 +648,7 @@
 				33F151F5256FEAAC00C4C656 /* MedicoButton.swift in Sources */,
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,
+				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* AuthPhoneVerification.swift in Sources */,

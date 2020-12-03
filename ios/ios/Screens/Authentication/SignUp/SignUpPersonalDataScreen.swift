@@ -15,6 +15,8 @@ struct SignUpPersonalDataScreen: View {
     @ObservedObject var registration: SwiftDatasource<DataUserRegistration1>
     @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
     
+    @State var isPhoneValid: Bool = true
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             self.personalDataFields
@@ -27,49 +29,70 @@ struct SignUpPersonalDataScreen: View {
     }
     
     var personalDataFields: some View {
-        VStack(spacing: 12) {
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
-                                         text: self.registration.value?.firstName,
-                                         onTextChange: { newValue in scope.changeFirstName(firstName: newValue) })
-                .disableAutocorrection(true)
-                .textContentType(.givenName)
-                .autocapitalization(.words)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 12) {
+                let firstName = self.registration.value?.firstName
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
+                                             text: firstName,
+                                             onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
+                                             isValid: firstName?.isEmpty == false,
+                                             errorMessageKey: "required_field")
+                    .disableAutocorrection(true)
+                    .textContentType(.givenName)
+                    .autocapitalization(.words)
                 
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
-                                         text: self.registration.value?.lastName,
-                                         onTextChange: { newValue in scope.changeLastName(lastName: newValue) })
-                .disableAutocorrection(true)
-                .textContentType(.familyName)
-                .autocapitalization(.words)
+                let lastName = self.registration.value?.lastName
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
+                                             text: lastName,
+                                             onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
+                                             isValid: lastName?.isEmpty == false,
+                                             errorMessageKey: "required_field")
+                    .disableAutocorrection(true)
+                    .textContentType(.familyName)
+                    .autocapitalization(.words)
 
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
-                                         text: self.registration.value?.email,
-                                         onTextChange: { newValue in scope.changeEmail(email: newValue) },
-                                         keyboardType: .emailAddress,
-                                         errorMessageKey: self.validation.value?.email)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
-            
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
-                                         text: self.registration.value?.phoneNumber,
-                                         onTextChange: { newValue in scope.changePhoneNumber(phoneNumber: newValue) },
-                                         keyboardType: .phonePad,
-                                         errorMessageKey: self.validation.value?.phoneNumber)
-                .textContentType(.telephoneNumber)
-
-            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
-                                           text: self.registration.value?.password,
-                                           onTextChange: { newValue in scope.changePassword(password: newValue) },
-                                           errorMessageKey: self.validation.value?.password)
-                .textContentType(.newPassword)
-            
-            let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
-                registration.value?.password == registration.value?.verifyPassword
-            let errorMessageKey: String? = !isRepeatPasswordValid ? "password_doesnt_match" : nil
-            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "repeat_password",
-                                           text: self.registration.value?.verifyPassword,
-                                           onTextChange: { newValue in scope.changeRepeatPassword(repeatPassword: newValue) },
-                                           errorMessageKey: errorMessageKey)
+                let emailErrorMessageKey = self.validation.value?.email
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
+                                             text: self.registration.value?.email,
+                                             onTextChange: { newValue in scope.changeEmail(email: newValue) },
+                                             keyboardType: .emailAddress,
+                                             isValid: emailErrorMessageKey == nil,
+                                             errorMessageKey: emailErrorMessageKey)
+                    .textContentType(.emailAddress)
+                    .autocapitalization(.none)
+                
+                PhoneTextField(phone: self.validation.value?.phoneNumber,
+                               canSubmitPhone: $isPhoneValid,
+                               errorMessageKey: self.validation.value?.phoneNumber) { newValue in
+                    scope.changePhoneNumber(phoneNumber: newValue)
+                }
+                
+                let passwordErrorMessageKey = self.validation.value?.password
+                FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
+                                               text: self.registration.value?.password,
+                                               onTextChange: { newValue in scope.changePassword(password: newValue) },
+                                               isValid: passwordErrorMessageKey == nil,
+                                               errorMessageKey: passwordErrorMessageKey)
+                    .textContentType(.newPassword)
+                
+                let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
+                    registration.value?.password == registration.value?.verifyPassword
+                let errorMessageKey: String? = !isRepeatPasswordValid ? "password_doesnt_match" : nil
+                FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "repeat_password",
+                                               text: self.registration.value?.verifyPassword,
+                                               onTextChange: { newValue in scope.changeRepeatPassword(repeatPassword: newValue) },
+                                               isValid: isRepeatPasswordValid,
+                                               errorMessageKey: errorMessageKey)
+            }
+            .background(GeometryReader { gp -> Color in
+                let frame = gp.frame(in: .local)
+                DispatchQueue.main.async {
+                    print(frame.size.height)
+                    print("\(gp.size.height)\n")
+                    
+                }
+                return Color.clear
+            })
         }
     }
     
@@ -93,6 +116,8 @@ struct SignUpPersonalDataScreen: View {
         
         self.registration = SwiftDatasource(dataSource: scope.registration)
         self.validation = SwiftDatasource(dataSource: scope.validation)
+        
+        self._isPhoneValid = State(initialValue: self.validation.value?.phoneNumber == nil)
     }
     
     private func goToAddress() {

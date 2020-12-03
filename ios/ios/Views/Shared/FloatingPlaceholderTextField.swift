@@ -166,7 +166,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                 
                 if !isValid, let errorMessageKey = self.errorMessageKey {
                     Text(LocalizedStringKey(errorMessageKey))
-                        .modifier(MedicoText(fontSize: 12, color: .red))
+                        .modifier(MedicoText(fontSize: 12, color: .red, multilineTextAlignment: .leading))
                         .padding(.leading, padding)
                 }
             }

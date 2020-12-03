@@ -50,6 +50,7 @@
 // MARK: Authentication Sign Up
 "next" = "Next";
 "skip_for_now" = "Skip for now";
+"required_field" = "The field is required";
 
 // MARK: Authentication Sign Up User Type Selection
 "user_type" = "User Type";
