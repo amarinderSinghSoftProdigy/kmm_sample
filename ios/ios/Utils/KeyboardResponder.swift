@@ -11,6 +11,8 @@ import SwiftUI
 import Combine
 
 final class KeyboardResponder: ObservableObject {
+    private let extraPadding: CGFloat = 20
+    
     //2. Keeping track off the keyboard's current height
     @Published private(set) var currentBottomPadding: CGFloat = 0
     
@@ -43,7 +45,7 @@ final class KeyboardResponder: ObservableObject {
         let keyboardTop = UIScreen.main.bounds.height - keyboardSize.height
         let focusedTextInputBottom = UIResponder.currentFirstResponder?.globalFrame?.maxY ?? 0
         
-        currentBottomPadding = max(0, focusedTextInputBottom - keyboardTop)
+        currentBottomPadding = max(0, focusedTextInputBottom - keyboardTop + extraPadding)
     }
 
     //5.2 Update the currentHeight variable when the keyboards collapses

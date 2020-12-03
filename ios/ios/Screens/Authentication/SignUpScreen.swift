@@ -13,14 +13,13 @@ struct SignUpScreen: View {
     let scope: SignUpScope
     
     var body: some View {
-        Background {
-            ZStack {
-                AppColor.primary.color.edgesIgnoringSafeArea(.all)
-            
-                getCurrentView()
-            }
-            .backButton { scope.goBack() }
+        ZStack {
+            AppColor.primary.color.edgesIgnoringSafeArea(.all)
+        
+            getCurrentView()
         }
+        .backButton { scope.goBack() }
+        .hideKeyboardOnTap()
     }
     
     private func getCurrentView() -> some View {
@@ -58,35 +57,36 @@ struct SignUpScreen: View {
 }
 
 struct ProgressViewModifier: ViewModifier {
+    let progressHeight: CGFloat = 4
+    
     let progressFill: CGFloat
     
     func body(content: Content) -> some View {
         GeometryReader { geometry in
-            let maxHeight = geometry.size.height - geometry.safeAreaInsets.top
-            VStack {
-                let progressHeight: CGFloat = 4
-                
-                ZStack(alignment: .leading) {
-                    AppColor.white.color
-                
-                    Rectangle()
-                        .fill(appColor: .yellow)
-                        .animation(nil)
-                        .frame(width: geometry.size.width * CGFloat(progressFill))
-                        .animation(.linear)
+            ZStack {
+                VStack {
+                    self.getProgressView(withGeometry: geometry)
+                    
+                    Spacer()
                 }
-                .frame(height: progressHeight)
                 
                 content
-                    .frame(minWidth: 0,
-                           maxWidth: geometry.size.width,
-                           minHeight: 0,
-                           maxHeight: maxHeight - progressHeight,
-                           alignment: .topLeading)
+                    .padding(.top, progressFill)
             }
-            .padding(geometry.safeAreaInsets)
-            .frame(width: geometry.size.width, height: maxHeight)
         }
+    }
+    
+    private func getProgressView(withGeometry geometry: GeometryProxy) -> some View {
+        ZStack(alignment: .leading) {
+            AppColor.white.color
+        
+            Rectangle()
+                .fill(appColor: .yellow)
+                .animation(nil)
+                .frame(width: geometry.size.width * CGFloat(progressFill))
+                .animation(.linear)
+        }
+        .frame(height: progressHeight)
     }
 }
 

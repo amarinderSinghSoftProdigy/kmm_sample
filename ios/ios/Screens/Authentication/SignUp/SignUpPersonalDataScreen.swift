@@ -15,15 +15,6 @@ struct SignUpPersonalDataScreen: View {
     @ObservedObject var registration: SwiftDatasource<DataUserRegistration1>
     @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
     
-//    @State private var firstName: String
-//    @State private var lastName: String
-//
-//    @State private var email: String
-//    @State private var phone: String
-//
-//    @State private var password: String = ""
-//    @State private var repeatPassword: String = ""
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             self.personalDataFields
@@ -31,11 +22,13 @@ struct SignUpPersonalDataScreen: View {
             self.termsOfConditionsAndPrivacyPolicyLink
         }
         .modifier(SignUpButton(isEnabled: true, action: goToAddress))
+        .keyboardResponder()
         .navigationBarTitle(LocalizedStringKey("personal_data"), displayMode: .inline)
     }
     
     var personalDataFields: some View {
         VStack(spacing: 12) {
+//            Spacer()
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
                                          text: self.registration.value?.firstName,
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) })
