@@ -17,32 +17,31 @@ struct AuthScreen: View {
     }
     
     var body: some View {
-        Background {
-            ZStack (alignment: .bottom) {
-                self.background
+        ZStack (alignment: .bottom) {
+            self.background
 
-                if let credentialsValue = self.credentials.value {
-                    AuthTab(
-                        scope: scope,
-                        phoneOrEmail: credentialsValue.phoneNumberOrEmail,
-                        password: credentialsValue.password
-                    )
-                    .frame(maxWidth: .infinity)
-                    .background(appColor: .primary)
-                    .padding()
-                    .padding(.top, blackRectangleHeight)
-                    .alert(isPresented: $isError) {
-                        Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
-                    }
-                    .frame(maxHeight: .infinity)
+            if let credentialsValue = self.credentials.value {
+                AuthTab(
+                    scope: scope,
+                    credentials: credentialsValue
+                )
+                .frame(maxWidth: .infinity)
+                .background(appColor: .primary)
+                .padding()
+                .padding(.top, blackRectangleHeight)
+                .alert(isPresented: $isError) {
+                    Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                 }
-                
-                Text("© Copyright mediostores.com 2021")
-                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
-                    .opacity(0.8)
-                    .padding(.bottom, 30)
-            }.edgesIgnoringSafeArea(.top)
+                .frame(maxHeight: .infinity)
+            }
+            
+            Text("© Copyright mediostores.com 2021")
+                .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
+                .opacity(0.8)
+                .padding(.bottom, 30)
         }
+        .keyboardResponder()
+        .hideKeyboardOnTap()
     }
     
     var background: some View {
@@ -65,16 +64,13 @@ struct AuthScreen: View {
                 .opacity(0.2)
                 .frame(idealWidth: .infinity, maxHeight: blackRectangleHeight, alignment: Alignment.top)
         }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
 struct AuthTab: View {
-    @State var phoneOrEmail: String
-    @State var password: String
-    
     let scope: LogInScope
-    let initialPhoneOrEmail: String
-    let initialPassword: String
+    let credentials: DataAuthCredentials
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -90,21 +86,17 @@ struct AuthTab: View {
                     .frame(width: 135, alignment: Alignment.trailing)
             }.frame(maxWidth: .infinity).padding([.bottom])
             
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email", text: $phoneOrEmail, keyboardType: .emailAddress)
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
+                                         text: credentials.phoneNumberOrEmail,
+                                         onTextChange: updateLogin,
+                                         keyboardType: .emailAddress)
                 .autocapitalization(UITextAutocapitalizationType.none)
                 .disableAutocorrection(true)
-                .onReceive(Just(phoneOrEmail)) { pe in
-                    if pe == initialPhoneOrEmail { return }
-                    
-                    scope.updateAuthCredentials(emailOrPhone: pe, password: password)
-                }
             
-            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password", text:  $password)
-                .onReceive(Just(password)) { pass in
-                    if pass == initialPassword { return }
-                    
-                    scope.updateAuthCredentials(emailOrPhone: phoneOrEmail, password: pass)
-                }
+            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
+                                           text: credentials.password,
+                                           onTextChange: updatePassword)
+                .textContentType(.password)
             
             Text(LocalizedStringKey("forgot_password"))
                 .modifier(MedicoText(color: .lightBlue))
@@ -134,14 +126,20 @@ struct AuthTab: View {
     }
     
     init(scope: LogInScope,
-         phoneOrEmail: String,
-         password: String) {
+         credentials: DataAuthCredentials) {
         self.scope = scope
-        
-        self.initialPhoneOrEmail = phoneOrEmail
-        self.initialPassword = password
-        
-        _phoneOrEmail = State(initialValue: phoneOrEmail)
-        _password = State(initialValue: password)
+        self.credentials = credentials
+    }
+    
+    private func updateLogin(withNewValue newValue: String) {
+        let password = self.credentials.password
+            
+        scope.updateAuthCredentials(emailOrPhone: newValue, password: password)
+    }
+    
+    private func updatePassword(withNewValue newValue: String) {
+        let login = self.credentials.phoneNumberOrEmail
+            
+        scope.updateAuthCredentials(emailOrPhone: login, password: newValue)
     }
 }

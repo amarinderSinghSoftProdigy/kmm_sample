@@ -6,6 +6,9 @@
   Copyright © 2020 orgName. All rights reserved.
 */
 
+// MARK: General
+"back" = "Back";
+
 // MARK: Roles
 "stockist" = "Stockist";
 "retailer" = "Retailer";
@@ -47,10 +50,21 @@
 // MARK: Authentication Sign Up
 "next" = "Next";
 "skip_for_now" = "Skip for now";
+"required_field" = "The field is required";
 
 // MARK: Authentication Sign Up User Type Selection
 "user_type" = "User Type";
 "who_are_you" = "Who are you?";
+
+// MARK: Authentication Sign Up Personal Data
+"personal_data" = "Personal Data";
+"first_name" = "First Name";
+"last_name" = "Last Name";
+"email_address" = "Email Address";
+"password" = "Password";
+"repeat_password" = "Repeat Password";
+"continueing_i_accept" = "Continueing, I accept the";
+"terms_of_conditions_and_privacy_policy" = "Terms of Conditions and Privacy Policy";
 
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";

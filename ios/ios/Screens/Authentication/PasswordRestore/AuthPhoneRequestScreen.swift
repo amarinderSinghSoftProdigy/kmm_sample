@@ -25,15 +25,13 @@ struct AuthPhoneRequestScreen: View {
                 .multilineTextAlignment(.center)
                 .padding([.trailing, .leading], geometry.size.width * 0.15)
             
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
-                                         text: $phone,
-                                         textValidator: checkPhoneNumber,
-                                         keyboardType: .phonePad)
-                .padding([.top, .bottom])
+            PhoneTextField(phone: phone, canSubmitPhone: $canSubmitPhone) { newValue in
+                self.phone = newValue
+            }
+            .padding([.top, .bottom])
             
             MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
-                let rawPhoneNumber = PhoneNumberUtil.shared.getRawPhoneNumber(phone)
-                scope.sendOtp(phoneNumber: rawPhoneNumber)
+                scope.sendOtp(phoneNumber: self.phone)
             }
         }
         .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
@@ -52,14 +50,5 @@ struct AuthPhoneRequestScreen: View {
         _phone = State(initialValue: scope.phoneNumber)
         
         _isOtpSendFailed = Binding.constant(scope.success.isFalse)
-    }
-    
-    private func checkPhoneNumber(_ phone: String) -> Bool {
-        let possibleNumber = PhoneNumberUtil.shared.isValidNumber(phone)
-        
-        self.phone = possibleNumber.formattedNumber
-        self.canSubmitPhone = possibleNumber.isValid
-        
-        return possibleNumber.isValid
     }
 }

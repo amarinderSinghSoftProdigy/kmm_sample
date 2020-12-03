@@ -33,14 +33,24 @@ extension View {
     func backButton(action: @escaping () -> ()) -> some View {
         let backButton = AnyView(
             Button(action: action) {
-                Image("Back")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                HStack(spacing: 3) {
+                    Image("Back")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                    
+                    Text(LocalizedStringKey("back"))
+                        .modifier(MedicoText(fontSize: 17))
+                }
             }
-            .frame(width: 12, height: 21)
         )
         
         return self.navigationBarBackButtonHidden(true)
             .navigationBarItems(leading: backButton)
+    }
+    
+    func hideKeyboardOnTap() -> some View {
+        self.onTapGesture {
+            UIApplication.shared.endEditing()
+        }
     }
 }

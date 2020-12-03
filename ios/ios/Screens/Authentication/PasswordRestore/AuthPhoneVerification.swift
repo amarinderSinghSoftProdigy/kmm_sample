@@ -41,9 +41,11 @@ struct AuthPhoneVerification: View {
                 }
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
-                                             text: $code,
+                                             text: code,
+                                             onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
                     .padding([.top, .bottom])
+                    .textContentType(.oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
                              isEnabled: !code.isEmpty && scope.attemptsLeft > 0) {
@@ -52,10 +54,13 @@ struct AuthPhoneVerification: View {
             }
             .padding()
             
-            let otpHeight: CGFloat = 64
-            ResendOtpView(resendAction: resendOtp)
-                .frame(height: otpHeight)
-                .position(x: geometry.size.width / 2, y: geometry.size.height - otpHeight)
+            VStack {
+                Spacer()
+                
+                let otpHeight: CGFloat = 64
+                ResendOtpView(resendAction: resendOtp)
+                    .frame(height: otpHeight)
+            }
         }
         
         .alert($isCodeIncorrect,
