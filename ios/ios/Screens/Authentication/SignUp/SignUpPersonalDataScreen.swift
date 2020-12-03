@@ -16,12 +16,15 @@ struct SignUpPersonalDataScreen: View {
     @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
     
     @State var isPhoneValid: Bool = true
+    @State var inputFieldsHeight: CGFloat = 350
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 32) {
+        VStack(alignment: .leading, spacing: 22) {
             self.personalDataFields
             
             self.termsOfConditionsAndPrivacyPolicyLink
+            
+            Spacer()
         }
         .modifier(SignUpButton(isEnabled: true, action: goToAddress))
         .keyboardResponder()
@@ -87,13 +90,11 @@ struct SignUpPersonalDataScreen: View {
             .background(GeometryReader { gp -> Color in
                 let frame = gp.frame(in: .local)
                 DispatchQueue.main.async {
-                    print(frame.size.height)
-                    print("\(gp.size.height)\n")
-                    
+                    self.inputFieldsHeight = frame.height
                 }
                 return Color.clear
             })
-        }
+        }.frame(maxHeight: inputFieldsHeight)
     }
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
@@ -107,7 +108,6 @@ struct SignUpPersonalDataScreen: View {
                 .onTapGesture {
                     showTermsOfConditionsAndPrivacyPolicy()
                 }
-                
         }
     }
     

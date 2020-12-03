@@ -64,14 +64,14 @@ struct ProgressViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         GeometryReader { geometry in
             ZStack {
+                content
+                    .padding(.top, progressFill)
+                
                 VStack {
                     self.getProgressView(withGeometry: geometry)
                     
                     Spacer()
                 }
-                
-                content
-                    .padding(.top, progressFill)
             }
         }
     }
