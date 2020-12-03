@@ -96,6 +96,7 @@ struct AuthTab: View {
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
                                            text: credentials.password,
                                            onTextChange: updatePassword)
+                .textContentType(.password)
             
             Text(LocalizedStringKey("forgot_password"))
                 .modifier(MedicoText(color: .lightBlue))

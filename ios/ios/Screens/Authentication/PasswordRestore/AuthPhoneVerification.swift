@@ -45,6 +45,7 @@ struct AuthPhoneVerification: View {
                                              onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
                     .padding([.top, .bottom])
+                    .textContentType(.oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
                              isEnabled: !code.isEmpty && scope.attemptsLeft > 0) {

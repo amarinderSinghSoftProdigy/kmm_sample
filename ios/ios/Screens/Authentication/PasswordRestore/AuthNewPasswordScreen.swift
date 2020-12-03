@@ -33,6 +33,7 @@ struct AuthNewPasswordScreen: View {
                                            },
                                            showPlaceholderWithText: true,
                                            isValid: arePasswordsValid)
+                .textContentType(.newPassword)
         
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
                                            text: confirmationPassword,

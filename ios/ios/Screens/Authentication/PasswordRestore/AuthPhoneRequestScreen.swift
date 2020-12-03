@@ -32,6 +32,7 @@ struct AuthPhoneRequestScreen: View {
                                          keyboardType: .phonePad,
                                          isValid: canSubmitPhone)
                 .padding([.top, .bottom])
+                .textContentType(.telephoneNumber)
             
             MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                 let rawPhoneNumber = PhoneNumberUtil.shared.getRawPhoneNumber(phone)

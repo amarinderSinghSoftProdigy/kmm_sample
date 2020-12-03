@@ -31,23 +31,37 @@ struct SignUpPersonalDataScreen: View {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
                                          text: self.registration.value?.firstName,
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) })
+                .disableAutocorrection(true)
+                .textContentType(.givenName)
+                .autocapitalization(.words)
+                
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
                                          text: self.registration.value?.lastName,
                                          onTextChange: { newValue in scope.changeLastName(lastName: newValue) })
+                .disableAutocorrection(true)
+                .textContentType(.familyName)
+                .autocapitalization(.words)
 
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
                                          text: self.registration.value?.email,
                                          onTextChange: { newValue in scope.changeEmail(email: newValue) },
+                                         keyboardType: .emailAddress,
                                          errorMessageKey: self.validation.value?.email)
+                .textContentType(.emailAddress)
+                .autocapitalization(.none)
+            
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
                                          text: self.registration.value?.phoneNumber,
                                          onTextChange: { newValue in scope.changePhoneNumber(phoneNumber: newValue) },
+                                         keyboardType: .phonePad,
                                          errorMessageKey: self.validation.value?.phoneNumber)
+                .textContentType(.telephoneNumber)
 
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
                                            text: self.registration.value?.password,
                                            onTextChange: { newValue in scope.changePassword(password: newValue) },
                                            errorMessageKey: self.validation.value?.password)
+                .textContentType(.newPassword)
             
             let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
                 registration.value?.password == registration.value?.verifyPassword
