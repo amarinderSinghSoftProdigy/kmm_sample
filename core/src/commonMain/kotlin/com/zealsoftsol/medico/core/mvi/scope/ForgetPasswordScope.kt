@@ -11,7 +11,6 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
     data class PhoneNumberInput(
         val phoneNumber: String,
         val success: BooleanEvent = BooleanEvent.none,
-        override val isInProgress: Boolean = false,
     ) : ForgetPasswordScope() {
 
         /**
@@ -24,11 +23,10 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
 
     data class AwaitVerification(
         val phoneNumber: String,
-        val resendTimer: DataSource<Long>,
+        val resendTimer: DataSource<Long> = DataSource(RESEND_TIMER),
         val attemptsLeft: Int = MAX_RESEND_ATTEMPTS,
         val codeValidity: BooleanEvent = BooleanEvent.none,
         val resendSuccess: BooleanEvent = BooleanEvent.none,
-        override val isInProgress: Boolean = false,
     ) : ForgetPasswordScope() {
 
         /**
@@ -53,7 +51,6 @@ sealed class ForgetPasswordScope : BaseScope(), CanGoBack {
         internal val phoneNumber: String,
         val passwordValidation: PasswordValidation? = null,
         val success: BooleanEvent = BooleanEvent.none,
-        override val isInProgress: Boolean = false,
     ) : ForgetPasswordScope() {
 
         /**

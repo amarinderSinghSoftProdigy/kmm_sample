@@ -148,7 +148,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     PhoneFormatInputField(
                         hint = stringResource(id = R.string.phone_number),
                         text = registration.value.phoneNumber,
-                        onValueChange = { scope.changePhoneNumber(it) }
+                        onValueChange = { scope.changePhoneNumber(it.filter { it.isDigit() }) }
                     )
                 }
                 Space(dp = 12.dp)

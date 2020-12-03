@@ -9,7 +9,6 @@ import com.zealsoftsol.medico.data.AuthCredentials
 data class LogInScope(
     val credentials: DataSource<AuthCredentials>,
     val success: BooleanEvent = BooleanEvent.none,
-    override val isInProgress: Boolean = false,
 ) : BaseScope() {
 
     /**

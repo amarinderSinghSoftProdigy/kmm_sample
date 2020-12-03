@@ -26,9 +26,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             canGoNext.value = true
         }
 
-        override val isInProgress: Boolean
-            get() = false
-
         fun chooseUserType(userType: UserType) {
             this.userType.value = userType
         }
@@ -47,7 +44,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
     data class PersonalData(
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?>,
-        override val isInProgress: Boolean = false,
     ) : SignUpScope() {
 
         init {
@@ -104,7 +100,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         val locationData: DataSource<Location?>,
         val registration: DataSource<UserRegistration2>,
         val validation: DataSource<UserValidation2?>,
-        override val isInProgress: Boolean = false,
     ) : SignUpScope() {
 
         init {
@@ -154,7 +149,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep2: UserRegistration2,
         val registration: DataSource<UserRegistration3>,
         val validation: DataSource<UserValidation3?>,
-        override val isInProgress: Boolean = false,
     ) : SignUpScope() {
 
         val isPanValid: Boolean
@@ -217,6 +211,12 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             private val PAN_REGEX = Regex("^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?\$")
             private val GSTIN_REGEX =
                 Regex("([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+")
+        }
+    }
+
+    class LegalDocuments : SignUpScope() {
+        override fun checkCanGoNext() {
+
         }
     }
 }

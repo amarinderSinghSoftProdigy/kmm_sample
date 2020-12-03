@@ -40,7 +40,7 @@ fun AppTheme(isDarkTheme: Boolean = false/*isSystemInDarkTheme()*/, content: @Co
         large = RoundedCornerShape(2.dp),
     ),
     typography = Typography(
-        h5 = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W700)
+        h5 = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W700),
     ),
-    content = content
+    content = content,
 )

@@ -155,7 +155,7 @@ sealed class Location {
         @SerialName("cityTowns")
         val cities: List<String>,
         val district: String,
-        val state: String
+        val state: String,
     ) : Location()
 
     object Unknown : Location()

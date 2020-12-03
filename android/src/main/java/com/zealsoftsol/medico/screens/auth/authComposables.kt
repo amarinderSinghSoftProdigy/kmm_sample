@@ -44,7 +44,7 @@ import com.zealsoftsol.medico.screens.showError
 fun AuthScreen(scope: LogInScope) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = ColorPainter(Color(0xff003657)),
+            painter = ColorPainter(MaterialTheme.colors.background),
             modifier = Modifier.fillMaxSize()
         )
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -66,8 +66,8 @@ fun AuthScreen(scope: LogInScope) {
                 }.fillMaxWidth().aspectRatio(1.0925f)
                     .background(
                         VerticalGradient(
-                            0f to Color(0x00003657),
-                            1f to Color((0xff003657)),
+                            0f to MaterialTheme.colors.background.copy(alpha = 0f),
+                            1f to MaterialTheme.colors.background,
                             startY = 0f,
                             endY = ContextAmbient.current.screenWidth / 1.0925f
                         )
@@ -83,13 +83,12 @@ fun AuthScreen(scope: LogInScope) {
         TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(
-                    asset = imageResource(id = R.drawable.medico_logo), modifier = Modifier.align(
-                        Alignment.CenterStart
-                    )
+                    asset = imageResource(id = R.drawable.medico_logo),
+                    modifier = Modifier.align(Alignment.CenterStart),
                 )
             }
         }
-        AuthTab(Modifier.align(Alignment.BottomCenter), scope)
+        AuthTab(Modifier.align(Alignment.Center), scope)
 
         scope.showError(
             title = stringResource(id = R.string.error_log_in_title),
