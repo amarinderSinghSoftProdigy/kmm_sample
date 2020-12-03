@@ -17,32 +17,31 @@ struct AuthScreen: View {
     }
     
     var body: some View {
-        Background {
-            ZStack (alignment: .bottom) {
-                self.background
+        ZStack (alignment: .bottom) {
+            self.background
 
-                if let credentialsValue = self.credentials.value {
-                    AuthTab(
-                        scope: scope,
-                        phoneOrEmail: credentialsValue.phoneNumberOrEmail,
-                        password: credentialsValue.password
-                    )
-                    .frame(maxWidth: .infinity)
-                    .background(appColor: .primary)
-                    .padding()
-                    .padding(.top, blackRectangleHeight)
-                    .alert(isPresented: $isError) {
-                        Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
-                    }
-                    .frame(maxHeight: .infinity)
+            if let credentialsValue = self.credentials.value {
+                AuthTab(
+                    scope: scope,
+                    phoneOrEmail: credentialsValue.phoneNumberOrEmail,
+                    password: credentialsValue.password
+                )
+                .frame(maxWidth: .infinity)
+                .background(appColor: .primary)
+                .padding()
+                .padding(.top, blackRectangleHeight)
+                .alert(isPresented: $isError) {
+                    Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
                 }
-                
-                Text("© Copyright mediostores.com 2021")
-                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
-                    .opacity(0.8)
-                    .padding(.bottom, 30)
-            }.edgesIgnoringSafeArea(.top)
+                .frame(maxHeight: .infinity)
+            }
+            
+            Text("© Copyright mediostores.com 2021")
+                .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
+                .opacity(0.8)
+                .padding(.bottom, 30)
         }
+        .keyboardResponder()
     }
     
     var background: some View {
@@ -65,6 +64,7 @@ struct AuthScreen: View {
                 .opacity(0.2)
                 .frame(idealWidth: .infinity, maxHeight: blackRectangleHeight, alignment: Alignment.top)
         }
+        .edgesIgnoringSafeArea(.top)
     }
 }
 

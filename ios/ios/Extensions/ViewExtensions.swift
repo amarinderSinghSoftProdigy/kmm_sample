@@ -47,4 +47,10 @@ extension View {
         return self.navigationBarBackButtonHidden(true)
             .navigationBarItems(leading: backButton)
     }
+    
+    func hideKeyboardOnTap() -> some View {
+        self.onTapGesture {
+            UIApplication.shared.endEditing()
+        }
+    }
 }

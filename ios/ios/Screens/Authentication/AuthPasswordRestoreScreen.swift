@@ -13,16 +13,16 @@ struct AuthPasswordRestoreScreen: View {
     let scope: ForgetPasswordScope
     
     var body: some View {
-        Background {
-            GeometryReader { geometry in
-                ZStack {
-                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
-                    
-                    getCurrentView(with: geometry)
-                }
-                .backButton { scope.goBack() }
+        GeometryReader { geometry in
+            ZStack {
+                AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                
+                getCurrentView(with: geometry)
             }
+            .backButton { scope.goBack() }
         }
+        .hideKeyboardOnTap()
+        .keyboardResponder()
     }
     
     func getCurrentView(with geometry: GeometryProxy) ->  some View {

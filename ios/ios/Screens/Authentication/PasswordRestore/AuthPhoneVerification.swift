@@ -53,10 +53,13 @@ struct AuthPhoneVerification: View {
             }
             .padding()
             
-            let otpHeight: CGFloat = 64
-            ResendOtpView(resendAction: resendOtp)
-                .frame(height: otpHeight)
-                .position(x: geometry.size.width / 2, y: geometry.size.height - otpHeight)
+            VStack {
+                Spacer()
+                
+                let otpHeight: CGFloat = 64
+                ResendOtpView(resendAction: resendOtp)
+                    .frame(height: otpHeight)
+            }
         }
         
         .alert($isCodeIncorrect,
