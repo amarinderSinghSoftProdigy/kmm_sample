@@ -13,6 +13,7 @@ struct FloatingPlaceholderTextField: View {
     let placeholderLocalizedStringKey: String
     let keyboardType: UIKeyboardType
     
+    private let initialText: String
     @State private var text: String
     
     let onTextChange: (String) -> Void
@@ -39,6 +40,8 @@ struct FloatingPlaceholderTextField: View {
                                               isValid: isValid,
                                               errorMessageKey: errorMessageKey))
         .onReceive(Just(text)) { text in
+            if (initialText == text) { return }
+            
             self.onTextChange(text)
             
             if let textFormatter = self.textFormatter {
@@ -57,7 +60,10 @@ struct FloatingPlaceholderTextField: View {
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self._text = State(initialValue: text ?? "")
+        let initialText = text ?? ""
+        self.initialText = initialText
+        self._text = State(initialValue: initialText)
+        
         self.onTextChange = onTextChange
         self.textFormatter = textFormatter
         
@@ -91,6 +97,7 @@ struct FloatingPlaceholderSecureField: View {
                                                   isValid: isValid,
                                                   showPlaceholderWithText: showPlaceholderWithText,
                                                   errorMessageKey: errorMessageKey))
+            .autocapitalization(.none)
             .onReceive(Just(text)) { text in
                 onTextChange(text)
             }

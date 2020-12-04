@@ -21,6 +21,9 @@ enum AppColor: String {
     
     case placeholderGrey
     case textGrey
+    case lightGrey
+    
+    case black
     
     var color: Color {
         switch self {
