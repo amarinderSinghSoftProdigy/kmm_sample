@@ -42,7 +42,7 @@ struct SignUpScreen: View {
             
         case let scope as SignUpScope.TraderData:
             progressFill = 0.8
-            scopeView = AnyView(EmptyView())
+            scopeView = AnyView(SignUpTraderDetails(scope: scope))
             
         default:
             progressFill = 0
