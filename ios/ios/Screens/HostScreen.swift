@@ -64,7 +64,7 @@ struct BaseScopeView: View {
             NavigationView {
                 self.currentView
             }
-        
+
             if let isInProgress = self.isInProgress.value, isInProgress == true {
                 ActivityView()
             }

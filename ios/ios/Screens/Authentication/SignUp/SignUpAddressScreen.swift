@@ -59,32 +59,22 @@ struct SignUpAddressScreen: View {
                                chosenElement: self.registration.value?.location,
                                data: locations,
                                onChange: { newValue in scope.changeLocation(location: newValue) })
+                    .modifier(FieldError(errorMessageKey: self.validation.value?.location))
                 
                 let cities = (locationData.value as? DataLocation.Data)?.cities ?? [String]()
                 PickerSelector(placeholder: "city",
                                chosenElement: self.registration.value?.city,
                                data: cities,
                                onChange: { newValue in scope.changeCity(city: newValue) })
+                    .modifier(FieldError(errorMessageKey: self.validation.value?.city))
                 
-                let districtErrorMessageKey = self.validation.value?.district
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "district",
-                                             text: self.registration.value?.district,
-                                             onTextChange: { newValue in
-//                                                registration.value?.district = newValue
-                                             },
-                                             isValid: districtErrorMessageKey == nil,
-                                             errorMessageKey: districtErrorMessageKey)
-                    .disabled(true)
+                PlaceholderTextView(placeholder: "district",
+                                    text: self.registration.value?.district,
+                                    errorMessageKey: self.validation.value?.district)
                 
-                let stateErrorMessageKey = self.validation.value?.state
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "state",
-                                             text: self.registration.value?.state,
-                                             onTextChange: { newValue in
-//                                                registration.value?.state = newValue
-                                             },
-                                             isValid: stateErrorMessageKey == nil,
-                                             errorMessageKey: stateErrorMessageKey)
-                    .disabled(true)
+                PlaceholderTextView(placeholder: "state",
+                                    text: self.registration.value?.state,
+                                    errorMessageKey: self.validation.value?.state)
             }
             .modifier(ScrollViewModifier())
     }
