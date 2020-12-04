@@ -16,7 +16,6 @@ struct SignUpPersonalDataScreen: View {
     @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
     
     @State var isPhoneValid: Bool = true
-    @State var inputFieldsHeight: CGFloat = 350
     
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -32,69 +31,61 @@ struct SignUpPersonalDataScreen: View {
     }
     
     var personalDataFields: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 12) {
-                let firstName = self.registration.value?.firstName
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
-                                             text: firstName,
-                                             onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
-                                             isValid: firstName?.isEmpty == false,
-                                             errorMessageKey: "required_field")
-                    .disableAutocorrection(true)
-                    .textContentType(.givenName)
-                    .autocapitalization(.words)
-                
-                let lastName = self.registration.value?.lastName
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
-                                             text: lastName,
-                                             onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
-                                             isValid: lastName?.isEmpty == false,
-                                             errorMessageKey: "required_field")
-                    .disableAutocorrection(true)
-                    .textContentType(.familyName)
-                    .autocapitalization(.words)
+        VStack(spacing: 12) {
+            let firstName = self.registration.value?.firstName
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
+                                         text: firstName,
+                                         onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
+                                         isValid: firstName?.isEmpty == false,
+                                         errorMessageKey: "required_field")
+                .disableAutocorrection(true)
+                .textContentType(.givenName)
+                .autocapitalization(.words)
+            
+            let lastName = self.registration.value?.lastName
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
+                                         text: lastName,
+                                         onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
+                                         isValid: lastName?.isEmpty == false,
+                                         errorMessageKey: "required_field")
+                .disableAutocorrection(true)
+                .textContentType(.familyName)
+                .autocapitalization(.words)
 
-                let emailErrorMessageKey = self.validation.value?.email
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
-                                             text: self.registration.value?.email,
-                                             onTextChange: { newValue in scope.changeEmail(email: newValue) },
-                                             keyboardType: .emailAddress,
-                                             isValid: emailErrorMessageKey == nil,
-                                             errorMessageKey: emailErrorMessageKey)
-                    .textContentType(.emailAddress)
-                    .autocapitalization(.none)
-                
-                PhoneTextField(phone: self.validation.value?.phoneNumber,
-                               canSubmitPhone: $isPhoneValid,
-                               errorMessageKey: self.validation.value?.phoneNumber) { newValue in
-                    scope.changePhoneNumber(phoneNumber: newValue)
-                }
-                
-                let passwordErrorMessageKey = self.validation.value?.password
-                FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
-                                               text: self.registration.value?.password,
-                                               onTextChange: { newValue in scope.changePassword(password: newValue) },
-                                               isValid: passwordErrorMessageKey == nil,
-                                               errorMessageKey: passwordErrorMessageKey)
-                    .textContentType(.newPassword)
-                
-                let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
-                    registration.value?.password == registration.value?.verifyPassword
-                let errorMessageKey: String? = !isRepeatPasswordValid ? "password_doesnt_match" : nil
-                FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "repeat_password",
-                                               text: self.registration.value?.verifyPassword,
-                                               onTextChange: { newValue in scope.changeRepeatPassword(repeatPassword: newValue) },
-                                               isValid: isRepeatPasswordValid,
-                                               errorMessageKey: errorMessageKey)
+            let emailErrorMessageKey = self.validation.value?.email
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
+                                         text: self.registration.value?.email,
+                                         onTextChange: { newValue in scope.changeEmail(email: newValue) },
+                                         keyboardType: .emailAddress,
+                                         isValid: emailErrorMessageKey == nil,
+                                         errorMessageKey: emailErrorMessageKey)
+                .textContentType(.emailAddress)
+                .autocapitalization(.none)
+            
+            PhoneTextField(phone: self.validation.value?.phoneNumber,
+                           canSubmitPhone: $isPhoneValid,
+                           errorMessageKey: self.validation.value?.phoneNumber) { newValue in
+                scope.changePhoneNumber(phoneNumber: newValue)
             }
-            .background(GeometryReader { gp -> Color in
-                let frame = gp.frame(in: .local)
-                DispatchQueue.main.async {
-                    self.inputFieldsHeight = frame.height
-                }
-                return Color.clear
-            })
-        }.frame(maxHeight: inputFieldsHeight)
+            
+            let passwordErrorMessageKey = self.validation.value?.password
+            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
+                                           text: self.registration.value?.password,
+                                           onTextChange: { newValue in scope.changePassword(password: newValue) },
+                                           isValid: passwordErrorMessageKey == nil,
+                                           errorMessageKey: passwordErrorMessageKey)
+                .textContentType(.newPassword)
+            
+            let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
+                registration.value?.password == registration.value?.verifyPassword
+            let errorMessageKey: String? = !isRepeatPasswordValid ? "password_doesnt_match" : nil
+            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "repeat_password",
+                                           text: self.registration.value?.verifyPassword,
+                                           onTextChange: { newValue in scope.changeRepeatPassword(repeatPassword: newValue) },
+                                           isValid: isRepeatPasswordValid,
+                                           errorMessageKey: errorMessageKey)
+        }
+        .modifier(ScrollViewModifier())
     }
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {

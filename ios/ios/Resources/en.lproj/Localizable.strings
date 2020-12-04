@@ -66,6 +66,15 @@
 "continueing_i_accept" = "Continueing, I accept the";
 "terms_of_conditions_and_privacy_policy" = "Terms of Conditions and Privacy Policy";
 
+// MARK: Authentication Sign Up Address
+"address" = "Address";
+"pincode" = "Pincode";
+"address_line" = "Address Line";
+"location" = "Location";
+"city" = "City";
+"district" = "District";
+"state" = "State";
+
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
