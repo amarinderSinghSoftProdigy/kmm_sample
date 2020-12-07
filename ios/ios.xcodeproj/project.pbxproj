@@ -20,7 +20,7 @@
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
-		336589BF257E779C008D1CCC /* SeasonBoyAadhaarCardScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SeasonBoyAadhaarCardScreen.swift */; };
+		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
@@ -107,7 +107,7 @@
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
-		336589BE257E779C008D1CCC /* SeasonBoyAadhaarCardScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeasonBoyAadhaarCardScreen.swift; sourceTree = "<group>"; };
+		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
@@ -193,20 +193,12 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
-		3328C480257E83C5007237C6 /* LegalDocuments */ = {
-			isa = PBXGroup;
-			children = (
-				336589BE257E779C008D1CCC /* SeasonBoyAadhaarCardScreen.swift */,
-			);
-			path = LegalDocuments;
-			sourceTree = "<group>";
-		};
 		334574EE257629B6002839C5 /* SignUp */ = {
 			isa = PBXGroup;
 			children = (
-				3328C480257E83C5007237C6 /* LegalDocuments */,
 				33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */,
 				339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */,
+				336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */,
 				33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */,
 				335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */,
 			);
@@ -665,7 +657,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
-				336589BF257E779C008D1CCC /* SeasonBoyAadhaarCardScreen.swift in Sources */,
+				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,

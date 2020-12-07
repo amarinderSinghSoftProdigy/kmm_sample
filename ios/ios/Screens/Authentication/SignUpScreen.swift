@@ -44,9 +44,9 @@ struct SignUpScreen: View {
             progressFill = 0.8
             scopeView = AnyView(SignUpTraderDetails(scope: scope))
             
-        case let scope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            progressFill = 0.8
-            scopeView = AnyView(SeasonBoyAadhaarCardScreen(scope: scope))
+        case let scope as SignUpScope.LegalDocuments:
+            progressFill = 1.0
+            scopeView = AnyView(SignUpLegalDocumentsScreen(scope: scope))
             
         default:
             progressFill = 0
