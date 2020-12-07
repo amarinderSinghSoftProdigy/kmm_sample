@@ -75,6 +75,14 @@
 "district" = "District";
 "state" = "State";
 
+// MARK: Authentication Sign Up Trader Details
+"trader_details" = "Trader Details";
+"trade_name" = "Trade Name";
+"pan_number" = "PAN Number";
+"gstin" = "GSTIN";
+"drug_license_No1" = "Drug License №1";
+"drug_license_No2" = "Drug License №2";
+
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
