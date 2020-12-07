@@ -38,7 +38,7 @@ struct SignUpScreen: View {
             
         case let scope as SignUpScope.AddressData:
             progressFill = 0.6
-            scopeView = AnyView(EmptyView())
+            scopeView = AnyView(SignUpAddressScreen(scope: scope))
             
         case let scope as SignUpScope.TraderData:
             progressFill = 0.8

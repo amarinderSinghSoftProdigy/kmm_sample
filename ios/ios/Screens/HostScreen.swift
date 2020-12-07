@@ -17,36 +17,8 @@ struct HostScreen: View {
                     }
                 }
         } else {
-            ZStack {
-                NavigationView {
-                    self.currentView
-                }
-            
-                if let currentScopeValue = currentScope.value, currentScopeValue.isInProgress {
-                    ActivityView()
-                }
-            }
-        }
-    }
-    
-    var currentView: some View {
-        Group {
-            switch currentScope.value {
-            
-            case let scopeValue as LogInScope:
-                AuthScreen(scope: scopeValue)
-                
-            case let scopeValue as MainScope:
-                MainScreen(scope: scopeValue)
-                
-            case let scopeValue as ForgetPasswordScope:
-                AuthPasswordRestoreScreen(scope: scopeValue)
-                
-            case let scopeValue as SignUpScope:
-                SignUpScreen(scope: scopeValue)
-                
-            default:
-                Group {}
+            if let scope = currentScope.value {
+                BaseScopeView(scope: scope)
             }
         }
     }
@@ -80,6 +52,51 @@ struct HostScreen: View {
         
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
+}
+
+struct BaseScopeView: View {
+    let scope: BaseScope
+    @ObservedObject var isInProgress: SwiftDatasource<KotlinBoolean>
+    
+    var body: some View {
+        ZStack {
+            NavigationView {
+                self.currentView
+            }
+
+            if let isInProgress = self.isInProgress.value, isInProgress == true {
+                ActivityView()
+            }
+        }
+    }
+    
+    var currentView: some View {
+        Group {
+            switch scope {
+            
+            case let scopeValue as LogInScope:
+                AuthScreen(scope: scopeValue)
+                
+            case let scopeValue as MainScope:
+                MainScreen(scope: scopeValue)
+                
+            case let scopeValue as ForgetPasswordScope:
+                AuthPasswordRestoreScreen(scope: scopeValue)
+                
+            case let scopeValue as SignUpScope:
+                SignUpScreen(scope: scopeValue)
+                
+            default:
+                Group {}
+            }
+        }
+    }
+    
+    init(scope: BaseScope) {
+        self.scope = scope
+        
+        self.isInProgress = SwiftDatasource(dataSource: scope.isInProgress)
     }
 }
 
