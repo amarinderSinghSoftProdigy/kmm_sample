@@ -12,6 +12,8 @@ import core
 struct SignUpPersonalDataScreen: View {
     let scope: SignUpScope.PersonalData
     
+    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    
     @ObservedObject var registration: SwiftDatasource<DataUserRegistration1>
     @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
     
@@ -25,7 +27,8 @@ struct SignUpPersonalDataScreen: View {
             
             Spacer()
         }
-        .modifier(SignUpButton(isEnabled: true, action: goToAddress))
+        .modifier(SignUpButton(isEnabled: canGoNext.value != false,
+                               action: goToAddress))
         .keyboardResponder()
         .navigationBarTitle(LocalizedStringKey("personal_data"), displayMode: .inline)
     }
@@ -104,6 +107,8 @@ struct SignUpPersonalDataScreen: View {
     
     init(scope: SignUpScope.PersonalData) {
         self.scope = scope
+        
+        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
         
         self.registration = SwiftDatasource(dataSource: scope.registration)
         self.validation = SwiftDatasource(dataSource: scope.validation)
