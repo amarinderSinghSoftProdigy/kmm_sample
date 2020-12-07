@@ -4,6 +4,8 @@ import com.russhwolf.settings.Settings
 import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
+import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.Location
@@ -116,6 +118,27 @@ class UserRepo(
 
     suspend fun getLocationData(pincode: String): Location {
         return networkAuthScope.getLocationData(pincode) ?: Location.Unknown
+    }
+
+    suspend fun uploadAadhaar(
+        aadhaar: AadhaarData,
+        fileString: String,
+        email: String,
+        phoneNumber: String
+    ): Boolean {
+        return networkAuthScope.uploadAadhaar(
+            AadhaarUpload(
+                cardNumber = aadhaar.cardNumber,
+                shareCode = aadhaar.shareCode,
+                email = email,
+                phoneNumber = phoneNumber,
+                fileString = fileString,
+            )
+        )
+    }
+
+    suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean {
+        return networkAuthScope.uploadDrugLicense(binary, phoneNumber)
     }
 
     private fun fetchUser(): User? {

@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.Interval
 import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
+import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.JustResponseBody
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.MapBody
@@ -35,6 +36,7 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -155,6 +157,25 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             withTempToken(TempToken.REGISTRATION)
         }.getBodyOrNull()
     }
+
+    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = ktorDispatcher {
+        client.post<JustResponseBody>("$REGISTRATION_URL/api/v1/upload/aadhaar") {
+            withTempToken(TempToken.REGISTRATION)
+            contentType(ContentType.parse("application/json"))
+            body = aadhaarData
+        }.isSuccess
+    }
+
+    override suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean =
+        ktorDispatcher {
+            client.post<JustResponseBody>("$REGISTRATION_URL/api/v1/upload/druglicense") {
+                withTempToken(TempToken.REGISTRATION)
+                contentType(ContentType.parse("application/json"))
+                formData {
+                    append("file", binary)
+                }
+            }.isSuccess
+        }
 
     private inline fun HttpRequestBuilder.withMainToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()

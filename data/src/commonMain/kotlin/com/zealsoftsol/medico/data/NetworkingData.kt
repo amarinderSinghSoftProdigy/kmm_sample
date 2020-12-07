@@ -148,6 +148,19 @@ data class UserValidation3(
     val drugLicenseNo2: String? = null,
 ) : UserValidation()
 
+@Serializable
+data class AadhaarUpload(
+    @SerialName("aadhaarCardNumber")
+    val cardNumber: String,
+    val consent: Boolean = true,
+    val email: String,
+    @SerialName("mobileNumber")
+    val phoneNumber: String,
+    val shareCode: String,
+    @SerialName("uploadAadhaarFile")
+    val fileString: String,
+)
+
 sealed class Location {
     @Serializable
     data class Data(

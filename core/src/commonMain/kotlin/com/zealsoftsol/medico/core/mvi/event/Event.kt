@@ -33,6 +33,9 @@ internal sealed class Event {
             data class SelectUserType(val userType: UserType) : Registration()
             data class SignUp(val userRegistration: UserRegistration) : Registration()
             data class UpdatePincode(val pincode: String) : Registration()
+            data class UploadAadhaar(val aadhaar: String) : Registration()
+            data class UploadDrugLicense(val license: ByteArray) : Registration()
+            object Skip : Registration()
         }
     }
 

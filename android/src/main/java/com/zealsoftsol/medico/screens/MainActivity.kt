@@ -35,6 +35,7 @@ import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
+import com.zealsoftsol.medico.screens.auth.AuthLegalDocuments
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), DIAware {
                     )
                     is SignUpScope.AddressData -> AuthAddressData(scope = scope)
                     is SignUpScope.TraderData -> AuthTraderDetails(scope = scope)
+                    is SignUpScope.LegalDocuments -> AuthLegalDocuments(scope = scope)
                     is MainScope -> MainView(scope = scope)
                 }
                 val isInProgress = currentScope.value.isInProgress.flow.collectAsState()

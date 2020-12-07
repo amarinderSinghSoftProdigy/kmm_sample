@@ -23,3 +23,8 @@ enum class UserType(val serverValue: String) {
     SEASON_BOY("season_boy"),
     HOSPITAL("hospital");
 }
+
+data class AadhaarData(
+    val cardNumber: String,
+    val shareCode: String,
+)

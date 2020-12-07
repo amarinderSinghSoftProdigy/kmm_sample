@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network.mock
 
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.TokenInfo
@@ -56,4 +57,10 @@ class MockAuthScope : NetworkScope.Auth {
             Location.Data(listOf("location"), listOf("city"), "district", "state")
         }
     }
+
+    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = mockBooleanResponse()
+
+    override suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean =
+        mockBooleanResponse()
+
 }

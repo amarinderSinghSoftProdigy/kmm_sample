@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -16,7 +17,15 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
-    protected abstract fun checkCanGoNext()
+    protected open fun checkCanGoNext() {
+
+    }
+
+    companion object {
+        private val PAN_REGEX = Regex("^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?\$")
+        private val GSTIN_REGEX =
+            Regex("([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+")
+    }
 
     data class SelectUserType(
         val userType: DataSource<UserType> = DataSource(UserType.STOCKIST),
@@ -35,10 +44,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
          */
         fun goToPersonalData() =
             EventCollector.sendEvent(Event.Action.Registration.SelectUserType(userType.value))
-
-        override fun checkCanGoNext() {
-
-        }
     }
 
     data class PersonalData(
@@ -131,7 +136,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         }
 
         /**
-         * Transition to [TraderData] if successful
+         * Transition to [TraderData] or [LegalDocuments.Aadhaar] if successful
          */
         fun tryToSignUp(userRegistration: UserRegistration2) =
             EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
@@ -157,8 +162,19 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         val isGstinValid: Boolean
             get() = registration.value.gstin.isEmpty() || GSTIN_REGEX.matches(registration.value.gstin)
 
+        val inputFields: List<Fields> = listOfNotNull(
+            Fields.TRADE_NAME,
+            Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
+            Fields.GSTIN,
+            Fields.LICENSE1,
+            Fields.LICENSE2.takeIf { registrationStep1.userType != UserType.RETAILER.serverValue },
+        )
+
         init {
             checkCanGoNext()
+            require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
+                "trader data not available for season boy"
+            }
         }
 
         fun changeTradeName(tradeName: String) {
@@ -195,28 +211,79 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         }
 
         /**
-         * Transition to [] if successful
+         * Transition to [LegalDocuments] if successful
          */
         fun tryToSignUp(userRegistration: UserRegistration3) =
             EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
-                tradeName.isNotEmpty() && (gstin.isNotEmpty() || panNumber.isNotEmpty())
-                        && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
+                tradeName.isNotEmpty()
+                        && (gstin.isNotEmpty() || panNumber.isNotEmpty())
+                        && drugLicenseNo1.isNotEmpty()
+                        && (drugLicenseNo2.isNotEmpty() || Fields.LICENSE2 !in inputFields)
             }
         }
 
-        companion object {
-            private val PAN_REGEX = Regex("^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?\$")
-            private val GSTIN_REGEX =
-                Regex("([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+")
+        enum class Fields {
+            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2;
         }
     }
 
-    class LegalDocuments : SignUpScope() {
-        override fun checkCanGoNext() {
+    sealed class LegalDocuments(
+        internal val registrationStep1: UserRegistration1,
+        internal val registrationStep2: UserRegistration2,
+        internal val registrationStep3: UserRegistration3,
+    ) : SignUpScope() {
 
+        class DrugLicense(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            registrationStep3: UserRegistration3,
+        ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
+
+            init {
+                canGoNext.value = true
+            }
+
+            /**
+             * Transition to [] if successful
+             */
+            fun upload(binary: ByteArray) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(binary))
         }
+
+        class Aadhaar(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            val aadhaarData: DataSource<AadhaarData>,
+        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
+
+            fun changeCard(card: String) {
+                aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
+                checkCanGoNext()
+            }
+
+            fun changeShareCode(shareCode: String) {
+                if (shareCode.length <= 4) {
+                    aadhaarData.value = aadhaarData.value.copy(shareCode = shareCode)
+                    checkCanGoNext()
+                }
+            }
+
+            /**
+             * Transition to [] if successful
+             */
+            fun upload(base64: String) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+
+            override fun checkCanGoNext() {
+                canGoNext.value = aadhaarData.value.run {
+                    cardNumber.isNotEmpty() && shareCode.isNotEmpty()
+                }
+            }
+        }
+
+        fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
     }
 }
