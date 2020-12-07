@@ -48,9 +48,6 @@ class PhoneNumberUtil {
     }
     
     func getFormattedPhoneNumber(_ phoneNumberString: String) -> String {
-        guard let phoneNumber = try? phoneUtil.parse(phoneNumberString, defaultRegion: region),
-              let rawNumber = try? phoneUtil.format(phoneNumber, numberFormat: numberFormat) else { return phoneNumberString }
-        
-        return rawNumber
+        return isValidNumber(phoneNumberString).formattedNumber
     }
 }

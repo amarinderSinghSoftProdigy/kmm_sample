@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct PhoneTextField: View {
-    @State private var phone: String
+    private var phone: Binding<String>
     
     let canSubmitPhone: Binding<Bool>
     let onTextChange: (String) -> Void
@@ -17,18 +17,18 @@ struct PhoneTextField: View {
     
     var body: some View {
         FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
-                                     text: phone,
+                                     text: phone.wrappedValue,
                                      onTextChange: { newValue in
-                                        checkPhoneNumber(newValue)
-                                        
-                                        let rawPhoneNumber = PhoneNumberUtil.shared.getRawPhoneNumber(newValue)
-                                        onTextChange(rawPhoneNumber)
+                                        phone.wrappedValue = newValue
                                      },
-                                     textFormatter: { value in self.phone },
                                      keyboardType: .phonePad,
                                      isValid: canSubmitPhone.wrappedValue,
                                      errorMessageKey: errorMessageKey)
             .textContentType(.telephoneNumber)
+            .onAppear {
+                let isValid = PhoneNumberUtil.shared.isValidNumber(phone.wrappedValue).isValid
+                canSubmitPhone.wrappedValue = isValid
+            }
     }
     
     init(phone: String?,
@@ -36,17 +36,20 @@ struct PhoneTextField: View {
          errorMessageKey: String? = nil,
          onTextChange: @escaping (String) -> Void
     ) {
-        self._phone = State(initialValue: phone ?? "")
-        
         self.canSubmitPhone = canSubmitPhone
+            
         self.errorMessageKey = errorMessageKey
         self.onTextChange = onTextChange
-    }
-    
-    private func checkPhoneNumber(_ phone: String) {
-        let possibleNumber = PhoneNumberUtil.shared.isValidNumber(phone)
         
-        self.phone = possibleNumber.formattedNumber
-        self.canSubmitPhone.wrappedValue = possibleNumber.isValid
+        self.phone = Binding(get: {
+            PhoneNumberUtil.shared.getFormattedPhoneNumber(phone ?? "")
+        },
+        set: {
+            let isValid = PhoneNumberUtil.shared.isValidNumber($0).isValid
+            canSubmitPhone.wrappedValue = isValid
+                                
+            let rawPhoneNumber = isValid ? PhoneNumberUtil.shared.getRawPhoneNumber($0) : $0
+            onTextChange(rawPhoneNumber)
+        })
     }
 }

@@ -13,11 +13,9 @@ struct FloatingPlaceholderTextField: View {
     let placeholderLocalizedStringKey: String
     let keyboardType: UIKeyboardType
     
-    private let initialText: String
-    @State private var text: String
+    private var text: Binding<String>
     
     let onTextChange: (String) -> Void
-    let textFormatter: ((String) -> String)?
     
     let height: CGFloat
     
@@ -27,45 +25,36 @@ struct FloatingPlaceholderTextField: View {
     @State var fieldSelected = false
     
     var body: some View {
-        TextField("", text: $text, onEditingChanged: { (changed) in
+        TextField("", text: text, onEditingChanged: { (changed) in
             self.fieldSelected = changed
         }, onCommit: {
             self.fieldSelected = false
         })
         .keyboardType(keyboardType)
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                              text: text,
+                                              text: text.wrappedValue,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
                                               errorMessageKey: errorMessageKey))
-        .onReceive(Just(text)) { text in
-            if (initialText == text) { return }
-            
-            self.onTextChange(text)
-            
-            if let textFormatter = self.textFormatter {
-                self.text = textFormatter(text)
-            }
-        }
     }
     
     init(placeholderLocalizedStringKey: String,
          text: String?,
          onTextChange: @escaping (String) -> Void,
-         textFormatter: ((String) -> String)? = nil,
          height: CGFloat = 50,
          keyboardType: UIKeyboardType = .default,
          isValid: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        let initialText = text ?? ""
-        self.initialText = initialText
-        self._text = State(initialValue: initialText)
+        self.text = Binding<String>(get: {
+            text ?? ""
+        }, set: {
+            onTextChange($0)
+        })
         
         self.onTextChange = onTextChange
-        self.textFormatter = textFormatter
         
         self.height = height
         self.keyboardType = keyboardType
@@ -77,7 +66,8 @@ struct FloatingPlaceholderTextField: View {
 
 struct FloatingPlaceholderSecureField: View {
     let placeholderLocalizedStringKey: String
-    @State private var text: String
+    
+    private var text: Binding<String>
     
     let onTextChange: (String) -> Void
     
@@ -88,18 +78,26 @@ struct FloatingPlaceholderSecureField: View {
     let isValid: Bool
     let errorMessageKey: String?
     
+    @State var fieldSelected = false
+    
     var body: some View {
-        SecureField("", text: $text)
+        SecureField("", text: text)
             .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                                  text: text,
+                                                  text: text.wrappedValue,
                                                   height: height,
-                                                  fieldSelected: false,
+                                                  fieldSelected: fieldSelected,
                                                   isValid: isValid,
                                                   showPlaceholderWithText: showPlaceholderWithText,
                                                   errorMessageKey: errorMessageKey))
             .autocapitalization(.none)
-            .onReceive(Just(text)) { text in
-                onTextChange(text)
+            .simultaneousGesture(TapGesture().onEnded {
+                self.fieldSelected = true
+            })
+            .onAppear {
+                setUpKeyboardHideListener()
+            }
+            .onDisappear {
+                NotificationCenter.default.removeObserver(self)
             }
     }
     
@@ -111,7 +109,12 @@ struct FloatingPlaceholderSecureField: View {
          isValid: Bool = true,
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
-        self._text = State(initialValue: text ?? "")
+        
+        self.text = Binding<String>(get: {
+            text ?? ""
+        }, set: {
+            onTextChange($0)
+        })
         
         self.onTextChange = onTextChange
         
@@ -120,6 +123,16 @@ struct FloatingPlaceholderSecureField: View {
         
         self.isValid = isValid
         self.errorMessageKey = errorMessageKey
+    }
+    
+    private func setUpKeyboardHideListener() {
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification,
+                                               object: nil,
+                                               queue: .main) { _ in
+            DispatchQueue.main.async {
+                self.fieldSelected = false
+            }
+        }
     }
 }
 
@@ -195,12 +208,3 @@ struct FloatingPlaceholderModifier: ViewModifier {
         self.errorMessageKey = errorMessageKey
     }
 }
-
-//struct FloatingPlaceholderTextField_Previews: PreviewProvider {
-//    @State static var result: String = ""
-//
-//    static var previews: some View {
-//        TextField(LocalizedStringKey(""), text: $result)
-//        .modifier(FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number"))
-//    }
-//}

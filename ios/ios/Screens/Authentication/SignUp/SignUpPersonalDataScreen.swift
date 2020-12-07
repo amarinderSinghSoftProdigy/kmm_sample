@@ -36,7 +36,7 @@ struct SignUpPersonalDataScreen: View {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
                                          text: firstName,
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
-                                         isValid: firstName?.isEmpty == false,
+                                         isValid: self.validation.value == nil || firstName?.isEmpty == false,
                                          errorMessageKey: "required_field")
                 .disableAutocorrection(true)
                 .textContentType(.givenName)
@@ -46,7 +46,7 @@ struct SignUpPersonalDataScreen: View {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
                                          text: lastName,
                                          onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
-                                         isValid: lastName?.isEmpty == false,
+                                         isValid: self.validation.value == nil || lastName?.isEmpty == false,
                                          errorMessageKey: "required_field")
                 .disableAutocorrection(true)
                 .textContentType(.familyName)
@@ -62,7 +62,7 @@ struct SignUpPersonalDataScreen: View {
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
             
-            PhoneTextField(phone: self.validation.value?.phoneNumber,
+            PhoneTextField(phone: self.registration.value?.phoneNumber,
                            canSubmitPhone: $isPhoneValid,
                            errorMessageKey: self.validation.value?.phoneNumber) { newValue in
                 scope.changePhoneNumber(phoneNumber: newValue)
