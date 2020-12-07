@@ -44,6 +44,10 @@ struct SignUpScreen: View {
             progressFill = 0.8
             scopeView = AnyView(SignUpTraderDetails(scope: scope))
             
+        case let scope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
+            progressFill = 0.8
+            scopeView = AnyView(SeasonBoyAadhaarCardScreen(scope: scope))
+            
         default:
             progressFill = 0
             scopeView = AnyView(EmptyView())
@@ -93,15 +97,21 @@ struct ProgressViewModifier: ViewModifier {
 struct SignUpButton: ViewModifier {
     @State private var padding: CGFloat = 0
     
-    let showsSkipButton: Bool
     let isEnabled: Bool
-    let action: () -> ()
+    let buttonTextKey: String
     
-    init(isEnabled: Bool, showsSkipButton: Bool = false, action: @escaping () -> ()) {
+    let action: () -> ()
+    let skipButtonAction: (() -> ())?
+    
+    init(isEnabled: Bool,
+         buttonTextKey: String = "next",
+         skipButtonAction: (() -> ())? = nil,
+         action: @escaping () -> ()) {
         self.isEnabled = isEnabled
-        self.showsSkipButton = showsSkipButton
+        self.buttonTextKey = buttonTextKey
         
         self.action = action
+        self.skipButtonAction = skipButtonAction
     }
     
     func body(content: Content) -> some View {
@@ -124,11 +134,14 @@ struct SignUpButton: ViewModifier {
     
     private func createButtonsContainer(withTopStackPadding topStackPadding: CGFloat) -> some View {
         return VStack(spacing: 16) {
-            MedicoButton(localizedStringKey: "next", isEnabled: isEnabled, action: action)
+            MedicoButton(localizedStringKey: buttonTextKey, isEnabled: isEnabled, action: action)
             
-            if showsSkipButton {
+            if let skipButtonAction = self.skipButtonAction {
                 Text(LocalizedStringKey("skip_for_now"))
                     .modifier(MedicoText(color: .lightBlue))
+                    .onTapGesture {
+                        skipButtonAction()
+                    }
             }
         }
         .background(GeometryReader { gp -> Color in
