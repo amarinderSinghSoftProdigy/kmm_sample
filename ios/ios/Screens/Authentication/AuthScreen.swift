@@ -105,7 +105,8 @@ struct AuthTab: View {
                     scope.goToForgetPassword()
                 }
             
-            MedicoButton(localizedStringKey: "log_in") {
+            MedicoButton(localizedStringKey: "log_in",
+                         isEnabled: !credentials.phoneNumberOrEmail.isEmpty && !credentials.password.isEmpty) {
                 scope.tryLogIn()
             }
             .padding(.top)
