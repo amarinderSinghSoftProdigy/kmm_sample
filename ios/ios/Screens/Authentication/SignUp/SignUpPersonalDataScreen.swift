@@ -62,7 +62,7 @@ struct SignUpPersonalDataScreen: View {
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
             
-            PhoneTextField(phone: self.validation.value?.phoneNumber,
+            PhoneTextField(phone: self.registration.value?.phoneNumber,
                            canSubmitPhone: $isPhoneValid,
                            errorMessageKey: self.validation.value?.phoneNumber) { newValue in
                 scope.changePhoneNumber(phoneNumber: newValue)
