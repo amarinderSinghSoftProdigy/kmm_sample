@@ -12,6 +12,8 @@ import core
 struct SignUpTraderDetails: View {
     let scope: SignUpScope.TraderData
     
+    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    
     @ObservedObject var registration: SwiftDatasource<DataUserRegistration3>
     @ObservedObject var validation: SwiftDatasource<DataUserValidation3>
     
@@ -21,7 +23,8 @@ struct SignUpTraderDetails: View {
             
             Spacer()
         }
-        .modifier(SignUpButton(isEnabled: true, action: tryToSignUp))
+        .modifier(SignUpButton(isEnabled: canGoNext.value != false,
+                               action: tryToSignUp))
         .keyboardResponder()
         .navigationBarTitle(LocalizedStringKey("trader_details"), displayMode: .inline)
     }
@@ -37,6 +40,8 @@ struct SignUpTraderDetails: View {
     
     init(scope: SignUpScope.TraderData) {
         self.scope = scope
+        
+        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
         
         self.registration = SwiftDatasource(dataSource: scope.registration)
         self.validation = SwiftDatasource(dataSource: scope.validation)
