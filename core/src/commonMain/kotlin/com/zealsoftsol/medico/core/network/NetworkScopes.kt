@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -31,6 +32,6 @@ interface NetworkScope {
         suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3>
         suspend fun getLocationData(pincode: String): Location.Data?
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
-        suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean
+        suspend fun uploadDrugLicense(licenseData: String, phoneNumber: String): StorageKeyResponse?
     }
 }

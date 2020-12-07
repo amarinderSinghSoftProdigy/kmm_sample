@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -234,12 +235,16 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope() {
+    ) : SignUpScope(), WithErrors {
+
+        abstract fun upload(base64: String): Boolean
 
         class DrugLicense(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
+            val storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
             init {
@@ -249,14 +254,15 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             /**
              * Transition to [] if successful
              */
-            fun upload(binary: ByteArray) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(binary))
+            override fun upload(base64: String) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64))
         }
 
         class Aadhaar(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             val aadhaarData: DataSource<AadhaarData>,
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
             fun changeCard(card: String) {
@@ -274,7 +280,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             /**
              * Transition to [] if successful
              */
-            fun upload(base64: String) =
+            override fun upload(base64: String) =
                 EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
 
             override fun checkCanGoNext() {

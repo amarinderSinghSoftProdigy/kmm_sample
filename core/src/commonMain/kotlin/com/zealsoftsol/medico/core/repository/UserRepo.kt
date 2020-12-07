@@ -137,8 +137,8 @@ class UserRepo(
         )
     }
 
-    suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean {
-        return networkAuthScope.uploadDrugLicense(binary, phoneNumber)
+    suspend fun uploadDrugLicense(fileString: String, phoneNumber: String): String? {
+        return networkAuthScope.uploadDrugLicense(fileString, phoneNumber)?.key
     }
 
     private fun fetchUser(): User? {

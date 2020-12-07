@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -19,6 +20,8 @@ internal class RegistrationEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
 ) : EventDelegate<Event.Action.Registration>(navigator) {
+
+    private var cached: SignUpScope.LegalDocuments? = null
 
     override suspend fun handleEvent(event: Event.Action.Registration) = when (event) {
         is Event.Action.Registration.SelectUserType -> selectUserType(event.userType)
@@ -105,15 +108,25 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadDrugLicense(license: ByteArray) {
+    private suspend fun uploadDrugLicense(license: String) {
         navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
-            if (withProgress {
-                    userRepo.uploadDrugLicense(
-                        license,
-                        it.registrationStep1.phoneNumber
-                    )
-                }) {
+            val storageKey = withProgress {
+                userRepo.uploadDrugLicense(
+                    license,
+                    it.registrationStep1.phoneNumber
+                )
+            }
+            if (storageKey != null) {
+                cached = SignUpScope.LegalDocuments.DrugLicense(
+                    it.registrationStep1,
+                    it.registrationStep2,
+                    it.registrationStep3,
+                    it.errors,
+                    storageKey = storageKey,
+                )
                 setCurrentScope(ForgetPasswordScope.AwaitVerification(it.registrationStep1.phoneNumber))
+            } else {
+                it.errors.value = ErrorCode.ERROR
             }
         }
     }
@@ -129,7 +142,10 @@ internal class RegistrationEventDelegate(
                 )
             }
             if (isSuccess) {
+                cached = it
                 setCurrentScope(ForgetPasswordScope.AwaitVerification(it.registrationStep1.phoneNumber))
+            } else {
+                it.errors.value = ErrorCode.ERROR
             }
         }
     }

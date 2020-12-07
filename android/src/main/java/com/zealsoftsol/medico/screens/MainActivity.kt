@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
@@ -41,17 +43,22 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
+import com.zealsoftsol.medico.utils.FileUtil
+import kotlinx.coroutines.CompletableDeferred
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
+import java.io.File
 import java.text.SimpleDateFormat
+
 
 class MainActivity : AppCompatActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
     private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
+    private var filePickerCompletable: CompletableDeferred<File>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +99,26 @@ class MainActivity : AppCompatActivity(), DIAware {
     override fun onBackPressed() {
         if (!navigator.handleBack())
             super.onBackPressed()
+    }
+
+    suspend fun openFilePicker(): File {
+        filePickerCompletable = CompletableDeferred()
+        startActivityForResult(FileUtil.createGetContentIntent(), FILE_PICKER)
+        return filePickerCompletable!!.await()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            FILE_PICKER -> filePickerCompletable?.complete(
+                FileUtil.getTempFile(this, data?.data ?: Uri.EMPTY)
+            )
+        }
+    }
+
+    companion object {
+        private const val FILE_PICKER = 1934
     }
 }
 

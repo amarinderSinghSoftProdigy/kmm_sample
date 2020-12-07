@@ -23,12 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ConfigurationAmbient
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +46,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.WithErrors
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 
@@ -155,6 +158,22 @@ fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
     )
 }
 
+@Composable
+inline fun <T : WithErrors> T.showError() {
+    val errorCode = errors.flow.collectAsState()
+    errorCode.value?.let {
+        val resourceId = ContextAmbient.current.runCatching {
+            resources.getIdentifier(it.localizationKey, "string", packageName)
+        }.getOrNull() ?: 0
+        ErrorDialog(
+            title = stringResource(id = R.string.error),
+            text = stringResource(id = resourceId),
+            onDismiss = { dismissError() }
+        )
+    }
+}
+
+@Deprecated("")
 @Composable
 inline fun <T : BaseScope> T.showError(title: String, text: String = "", case: T.() -> Boolean) {
     val state = withState(event = case)

@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -60,7 +61,10 @@ class MockAuthScope : NetworkScope.Auth {
 
     override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = mockBooleanResponse()
 
-    override suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean =
-        mockBooleanResponse()
-
+    override suspend fun uploadDrugLicense(
+        licenseData: String,
+        phoneNumber: String
+    ): StorageKeyResponse? = mockResponse {
+        StorageKeyResponse("key")
+    }
 }

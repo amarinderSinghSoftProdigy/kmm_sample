@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
+import android.util.Base64
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,10 +62,14 @@ import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
+import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.showError
+import kotlinx.coroutines.launch
+import java.io.File
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
@@ -468,11 +474,17 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         color = ConstColors.gray,
                     )
                 }
+                val coroutineScope = rememberCoroutineScope()
+                val activity = ContextAmbient.current as MainActivity
                 Row(
                     modifier = Modifier.height(48.dp)
                         .fillMaxWidth()
                         .clickable {
-                            // open picker
+                            coroutineScope.launch {
+                                val file = activity.openFilePicker()
+                                isShowingBottomSheet.value = false
+                                scope.handleFileUpload(file)
+                            }
                         },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -485,26 +497,34 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         color = ConstColors.gray,
                     )
                 }
-                Row(
-                    modifier = Modifier.height(48.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            // start cam
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        asset = Icons.Filled.CameraAlt,
-                        modifier = Modifier.padding(horizontal = 18.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.use_camera),
-                        color = ConstColors.gray,
-                    )
+                if (scope is SignUpScope.LegalDocuments.DrugLicense) {
+                    Row(
+                        modifier = Modifier.height(48.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                // start cam
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            asset = Icons.Filled.CameraAlt,
+                            modifier = Modifier.padding(horizontal = 18.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.use_camera),
+                            color = ConstColors.gray,
+                        )
+                    }
                 }
             }
         }
     }
+    scope.showError()
+}
+
+private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
+    val bytes = file.readBytes()
+    upload(Base64.encodeToString(bytes, Base64.NO_WRAP))
 }
 
 @Composable

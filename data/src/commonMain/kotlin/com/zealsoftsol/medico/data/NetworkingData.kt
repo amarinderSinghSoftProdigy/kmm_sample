@@ -161,6 +161,19 @@ data class AadhaarUpload(
     val fileString: String,
 )
 
+@Serializable
+data class DrugLicenseUpload(
+    @SerialName("mobileNumber")
+    val phoneNumber: String,
+    val fileString: String,
+)
+
+@Serializable
+data class StorageKeyResponse(
+    @SerialName("uploadStorageKey")
+    val key: String,
+)
+
 sealed class Location {
     @Serializable
     data class Data(

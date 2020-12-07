@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.JustResponseBody
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.MapBody
@@ -12,6 +13,7 @@ import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.ResponseBody
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.TempOtpRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -36,7 +38,6 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -166,15 +167,16 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }.isSuccess
     }
 
-    override suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean =
+    override suspend fun uploadDrugLicense(
+        licenseData: String,
+        phoneNumber: String
+    ): StorageKeyResponse? =
         ktorDispatcher {
-            client.post<JustResponseBody>("$REGISTRATION_URL/api/v1/upload/druglicense") {
+            client.post<ResponseBody<StorageKeyResponse>>("$REGISTRATION_URL/api/v1/upload/druglicense") {
                 withTempToken(TempToken.REGISTRATION)
                 contentType(ContentType.parse("application/json"))
-                formData {
-                    append("file", binary)
-                }
-            }.isSuccess
+                body = DrugLicenseUpload(phoneNumber, licenseData)
+            }.getBodyOrNull()
         }
 
     private inline fun HttpRequestBuilder.withMainToken() {
