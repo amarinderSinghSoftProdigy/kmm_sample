@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
+import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -51,15 +52,15 @@ class MockAuthScope : NetworkScope.Auth {
         password: String
     ): Response.Wrapped<PasswordValidation> = mockResponse { Response.Wrapped(null, true) }
 
-    override suspend fun signUpPart1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> {
+    override suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> {
         return mockResponse { Response.Wrapped(null, true) }
     }
 
-    override suspend fun signUpPart2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> {
+    override suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> {
         return mockResponse { Response.Wrapped(null, true) }
     }
 
-    override suspend fun signUpPart3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> {
+    override suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> {
         return mockResponse { Response.Wrapped(null, true) }
     }
 
@@ -78,5 +79,9 @@ class MockAuthScope : NetworkScope.Auth {
         licenseData: DrugLicenseUpload
     ): Response.Wrapped<StorageKeyResponse> = mockResponse {
         Response.Wrapped(StorageKeyResponse("key"), true)
+    }
+
+    override suspend fun signUp(submitRegistration: SubmitRegistration): Boolean = mockResponse {
+        true
     }
 }

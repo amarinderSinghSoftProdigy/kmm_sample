@@ -15,7 +15,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
-import com.zealsoftsol.medico.data.TempOtpRequest
+import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -90,16 +90,16 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$AUTH_URL/api/v1/medico/forgetpwd") {
-                withTempToken(TempToken.FORGET_PASSWORD)
-                jsonBody(TempOtpRequest(phoneNumber))
+            client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+                withTempToken(TempToken.OTP)
+                jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
         }
 
     override suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
-                withTempToken(TempToken.FORGET_PASSWORD)
+                withTempToken(TempToken.OTP)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
         }
@@ -108,7 +108,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         ktorDispatcher {
             val body =
                 client.post<SimpleBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
-                    withTempToken(TempToken.FORGET_PASSWORD)
+                    withTempToken(TempToken.OTP)
                     jsonBody(VerifyOtpRequest(phoneNumber, otp))
                 }
             if (body.isSuccess) {
@@ -128,7 +128,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> =
+    override suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> =
         ktorDispatcher {
             client.post<Response.Body<MapBody, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
@@ -136,7 +136,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> =
+    override suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> =
         ktorDispatcher {
             client.post<Response.Body<MapBody, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
@@ -144,7 +144,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
+    override suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
         ktorDispatcher {
             client.post<Response.Body<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
                 withTempToken(TempToken.REGISTRATION)
@@ -174,6 +174,13 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getWrappedBody()
         }
 
+    override suspend fun signUp(submitRegistration: SubmitRegistration): Boolean = ktorDispatcher {
+        client.post<Response.Status>("$REGISTRATION_URL/api/v1/registration/submit") {
+            withTempToken(TempToken.REGISTRATION)
+            jsonBody(submitRegistration)
+        }.isSuccess
+    }
+
     private inline fun HttpRequestBuilder.withMainToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
@@ -184,7 +191,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 when (tokenType) {
-                    TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
+                    TempToken.OTP -> fetchOtpToken()
                     TempToken.REGISTRATION -> fetchRegistrationToken()
                     TempToken.UPDATE_PASSWORD -> tokenInfo
                 }?.let {
@@ -196,8 +203,9 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
     }
 
-    private suspend inline fun fetchNoAuthToken(): TokenInfo? {
-        return client.get<SimpleBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd")
+    private suspend inline fun fetchOtpToken(): TokenInfo? {
+        // todo new otp endpoint
+        return client.get<SimpleBody<TokenInfo>>("new url")
             .getBodyOrNull()
     }
 
@@ -213,7 +221,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private enum class TempToken(val serverValue: String) {
         //        MAIN("login"),
-        FORGET_PASSWORD("forgetpwd"),
+        OTP("otp"),
         UPDATE_PASSWORD("updatepwd"),
         REGISTRATION("registration");
     }

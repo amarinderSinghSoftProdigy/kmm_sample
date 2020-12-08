@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -57,7 +58,7 @@ internal class RegistrationEventDelegate(
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
                 val validation = withProgress {
-                    userRepo.signUpPart1(userRegistration)
+                    userRepo.signUpValidation1(userRegistration)
                 }
                 it.validation.value = validation.entity
                 if (validation.isSuccess) {
@@ -73,7 +74,7 @@ internal class RegistrationEventDelegate(
             }
             is UserRegistration2 -> navigator.withScope<SignUpScope.AddressData> {
                 val validation = withProgress {
-                    userRepo.signUpPart2(userRegistration)
+                    userRepo.signUpValidation2(userRegistration)
                 }
                 it.validation.value = validation.entity
                 if (validation.isSuccess) {
@@ -97,7 +98,7 @@ internal class RegistrationEventDelegate(
             }
             is UserRegistration3 -> navigator.withScope<SignUpScope.TraderData> {
                 val validation = withProgress {
-                    userRepo.signUpPart3(userRegistration)
+                    userRepo.signUpValidation3(userRegistration)
                 }
                 it.validation.value = validation.entity
                 if (validation.isSuccess) {
@@ -157,9 +158,23 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
-//        userRepo.signUp() => MainScope
-        cached!!
-        TODO("not implemented")
+        // TODO needs transition to scope
+        val documents = cached!!
+        val signUpSuccess = userRepo.signUp(
+            documents.registrationStep1,
+            documents.registrationStep2,
+            documents.registrationStep3,
+            (documents as? SignUpScope.LegalDocuments.DrugLicense)?.storageKey
+        )
+        if (signUpSuccess) {
+            navigator.setCurrentScope(
+                MainScope(
+                    isLimitedAppAccess = true,
+                )
+            )
+        } else {
+            TODO("what to do in case of a fail?")
+        }
     }
 
     private fun skipUploadDocuments() {

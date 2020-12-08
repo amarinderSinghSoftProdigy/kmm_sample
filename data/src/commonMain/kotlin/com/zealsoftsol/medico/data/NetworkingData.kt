@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.data
 
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -65,88 +64,6 @@ data class TokenInfo(
 
     fun expiresAt() = (createdAt + expiresIn) * 1000L
 }
-
-sealed class UserRegistration
-sealed class UserValidation
-
-@Serializable
-data class UserRegistration1(
-    @SerialName("customerType")
-    @Required
-    val userType: String = "",
-    @Required
-    val firstName: String = "",
-    @Required
-    val lastName: String = "",
-    @Required
-    val email: String = "",
-    @SerialName("mobileNumber")
-    @Required
-    val phoneNumber: String = "",
-    @Required
-    val password: String = "",
-    @Required
-    val verifyPassword: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation1(
-    val email: String? = null,
-    @SerialName("mobileNumber")
-    val phoneNumber: String? = null,
-    val password: String? = null,
-    val verifyPassword: String? = null,
-) : UserValidation()
-
-@Serializable
-data class UserRegistration2(
-    @Required
-    val pincode: String = "",
-    @Required
-    val addressLine1: String = "",
-    @Required
-    val location: String = "",
-    @SerialName("cityTown")
-    @Required
-    val city: String = "",
-    @Required
-    val district: String = "",
-    @Required
-    val state: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation2(
-    val addressLine1: String? = null,
-    val location: String? = null,
-    @SerialName("cityTown")
-    val city: String? = null,
-    val district: String? = null,
-    val state: String? = null,
-) : UserValidation()
-
-@Serializable
-data class UserRegistration3(
-    @Required
-    val tradeName: String = "",
-    @Required
-    val gstin: String = "",
-    @Required
-    val panNumber: String = "",
-    @Required
-    val drugLicenseNo1: String = "",
-    @Required
-    val drugLicenseNo2: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation3(
-    val tradeName: String? = null,
-    val gstin: String? = null,
-    val panNumber: String? = null,
-    val drugLicenseNo1: String? = null,
-    val drugLicenseNo2: String? = null,
-) : UserValidation()
 
 @Serializable
 data class AadhaarUpload(

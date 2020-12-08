@@ -30,7 +30,9 @@ object UiLink {
         val eventCollector = directDI.instance<EventCollector>()
         navigator.setCurrentScope(
             if (userRepo.authState == AuthState.AUTHORIZED) {
-                MainScope()
+                MainScope(
+                    isLimitedAppAccess = userRepo.authState == AuthState.PENDING_VERIFICATION,
+                )
             } else {
                 LogInScope(DataSource(userRepo.getAuthCredentials()))
             }
