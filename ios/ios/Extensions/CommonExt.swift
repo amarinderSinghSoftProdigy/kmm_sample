@@ -60,3 +60,7 @@ extension DataUserType {
         return self.name.lowercased()
     }
 }
+
+extension UIImagePickerController.SourceType: Identifiable {
+    public var id: UIImagePickerController.SourceType { self }
+}

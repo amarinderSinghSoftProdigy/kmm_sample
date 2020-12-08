@@ -24,6 +24,7 @@
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
+		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
 		339C5041257A2E7600AAB45F /* ScrollViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* ScrollViewModifier.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
@@ -111,6 +112,7 @@
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
+		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* ScrollViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewModifier.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 		33789560256E3BBC0034D79F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				338F98EA257F7808002D36FF /* UIKitElements */,
 				33621CF9257125B2004BD4CF /* ActivityView.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				33F151F4256FEAAC00C4C656 /* MedicoButton.swift */,
@@ -258,6 +261,14 @@
 				33289422256537A50003E092 /* Localizable.strings */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		338F98EA257F7808002D36FF /* UIKitElements */ = {
+			isa = PBXGroup;
+			children = (
+				338F98E6257F77C3002D36FF /* ImagePicker.swift */,
+			);
+			path = UIKitElements;
 			sourceTree = "<group>";
 		};
 		33B1B7FE2563F4C6005215A3 /* Authentication */ = {
@@ -659,6 +670,7 @@
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
+				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,

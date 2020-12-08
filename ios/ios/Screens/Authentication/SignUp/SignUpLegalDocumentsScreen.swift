@@ -12,6 +12,9 @@ import core
 struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
     
+    @State private var showingImageSourceTypeActionSheet = false
+    @State private var imageSourceType: UIImagePickerController.SourceType?
+    
     @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
     
     var body: some View {
@@ -49,25 +52,58 @@ struct SignUpLegalDocumentsScreen: View {
         
         return AnyView(
             view
-            .modifier(SignUpButton(isEnabled: canGoNext.value != false,
-                                   buttonTextKey: buttonTextKey,
-                                   skipButtonAction: skip,
-                                   action: uploadDocuments))
-            .keyboardResponder()
-            .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline))
+                .modifier(SignUpButton(isEnabled: canGoNext.value != false,
+                                       buttonTextKey: buttonTextKey,
+                                       skipButtonAction: skip,
+                                       action: uploadDocuments))
+                .keyboardResponder()
+                .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
+            
+                .actionSheet(isPresented: $showingImageSourceTypeActionSheet) {
+                    imageSourceTypeActionSheet
+                }
+                .sheet(item: $imageSourceType) { sourceType in
+                    ImagePicker(sourceType: sourceType) { image in
+                        uploadImage(image)
+                    }
+                })
+    }
+    
+    var imageSourceTypeActionSheet: ActionSheet {
+        ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
+            .default(Text(LocalizedStringKey("take_photo"))) { self.imageSourceType = .camera },
+            .default(Text(LocalizedStringKey("choose_from_library"))) { self.imageSourceType = .photoLibrary },
+            .cancel()
+        ])
     }
     
     private func uploadDocuments() {
-        let base64 = ""
-        
         switch scope {
-        
+
+        case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
+            break
+            
+        case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
+            showingImageSourceTypeActionSheet = true
+            
+        default:
+            break
+        }
+    }
+    
+    private func uploadImage(_ image: UIImage) {
+        guard let imageData = image.pngData() as NSData? else { return }
+
+        let base64Image = imageData.base64EncodedString(options: .lineLength64Characters)
+        switch scope {
+
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            _ = aadhaarScope.upload(base64: base64)
-            
-//        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-//            _ = drugLicenseScope.upload(binary: [0x1])
-            
+            _ = aadhaarScope.upload(base64: base64Image)
+                    
+        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
+//            _ = drugLicenseScope.upload(base64Image)
+            break
+
         default:
             break
         }
