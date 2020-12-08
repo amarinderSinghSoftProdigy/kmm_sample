@@ -36,6 +36,11 @@ struct SignUpLegalDocumentsScreen: View {
             buttonTextKey = "upload_aadhaar_card"
             navigationBarTitle = "personal_data"
             
+        case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
+            view = AnyView(DrugLicenseData())
+            buttonTextKey = "upload_new_document"
+            navigationBarTitle = "legal_documents"
+            
         default:
             view = AnyView(EmptyView())
             buttonTextKey = ""
@@ -43,11 +48,7 @@ struct SignUpLegalDocumentsScreen: View {
         }
         
         return AnyView(
-            VStack(alignment: .leading) {
-                view
-                
-                Spacer()
-            }
+            view
             .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                    buttonTextKey: buttonTextKey,
                                    skipButtonAction: skip,
@@ -63,6 +64,9 @@ struct SignUpLegalDocumentsScreen: View {
         
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
             _ = aadhaarScope.upload(base64: base64)
+            
+//        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
+//            _ = drugLicenseScope.upload(binary: [0x1])
             
         default:
             break
@@ -90,6 +94,8 @@ fileprivate struct AadhaardCardDataFields: View  {
                                          text: aadhaarData.value?.shareCode,
                                          onTextChange: { newValue in scope.changeShareCode(shareCode: newValue)},
                                          keyboardType: .numberPad)
+            
+            Spacer()
         }
     }
     
@@ -98,4 +104,24 @@ fileprivate struct AadhaardCardDataFields: View  {
         
         self.aadhaarData = SwiftDatasource(dataSource: scope.aadhaarData)
     }
+}
+
+fileprivate struct DrugLicenseData: View  {
+    
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 28) {
+                Spacer()
+                
+                Image("UploadDocuments")
+                
+                Text(LocalizedStringKey("drug_license_request"))
+                    .modifier(MedicoText(fontSize: 16, color: .grey))
+                    .padding([.leading, .trailing], geometry.size.width * 0.17)
+                
+                Spacer()
+            }
+        }
+    }
+    
 }
