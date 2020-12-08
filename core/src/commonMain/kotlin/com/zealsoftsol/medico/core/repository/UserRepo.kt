@@ -128,7 +128,6 @@ class UserRepo(
     suspend fun uploadAadhaar(
         aadhaar: AadhaarData,
         fileString: String,
-        mimeType: String,
         email: String,
         phoneNumber: String
     ): Boolean {
@@ -139,7 +138,6 @@ class UserRepo(
                 email = email,
                 phoneNumber = phoneNumber,
                 fileString = fileString,
-                mimeType = mimeType,
             )
         )
     }

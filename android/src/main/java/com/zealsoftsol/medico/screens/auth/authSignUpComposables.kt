@@ -486,6 +486,8 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                                 if (file != null) {
                                     isShowingBottomSheet.value = false
                                     scope.handleFileUpload(file)
+                                } else {
+                                    activity.toast(activity.getString(R.string.something_went_wrong))
                                 }
                             }
                         },
@@ -527,7 +529,14 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
 
 private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
     val bytes = file.readBytes()
-    upload(Base64.encodeToString(bytes, Base64.NO_WRAP), FileType.fromExtension(file.extension)!!)
+    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+    when (this) {
+        is SignUpScope.LegalDocuments.DrugLicense -> upload(
+            base64,
+            FileType.fromExtension(file.extension)
+        )
+        is SignUpScope.LegalDocuments.Aadhaar -> upload(base64)
+    }
 }
 
 @Composable

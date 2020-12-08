@@ -159,13 +159,13 @@ data class AadhaarUpload(
     val shareCode: String,
     @SerialName("uploadAadhaarFile")
     val fileString: String,
-    val mimeType: String,
 )
 
 @Serializable
 data class DrugLicenseUpload(
     @SerialName("mobileNumber")
     val phoneNumber: String,
+    @SerialName("uploadDrugLicenseFile")
     val fileString: String,
     val mimeType: String,
 )
@@ -194,20 +194,21 @@ enum class FileType(val mimeType: String) {
     JPEG("image/jpeg"),
     JPG("image/jpg"),
     PDF("application/pdf"),
-    ZIP("application/zip");
+    ZIP("application/zip"),
+    UNKNOWN("*/*");
 
     companion object {
         fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
         fun forAadhaar() = arrayOf(ZIP)
 
-        fun fromExtension(ext: String): FileType? {
+        fun fromExtension(ext: String): FileType {
             return when (ext) {
                 "png" -> PNG
                 "jpeg" -> JPEG
                 "jpg" -> JPG
                 "pdf" -> PDF
                 "zip" -> ZIP
-                else -> null
+                else -> UNKNOWN
             }
         }
     }

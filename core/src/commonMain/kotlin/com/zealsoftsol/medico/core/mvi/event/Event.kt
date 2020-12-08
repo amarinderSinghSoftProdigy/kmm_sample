@@ -40,7 +40,7 @@ internal sealed class Event {
             data class SelectUserType(val userType: UserType) : Registration()
             data class Validate(val userRegistration: UserRegistration) : Registration()
             data class UpdatePincode(val pincode: String) : Registration()
-            data class UploadAadhaar(val aadhaar: String, val fileType: FileType) : Registration()
+            data class UploadAadhaar(val aadhaar: String) : Registration()
             data class UploadDrugLicense(val license: String, val fileType: FileType) :
                 Registration()
 

@@ -32,7 +32,7 @@ internal class RegistrationEventDelegate(
             event.license,
             event.fileType
         )
-        is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(event.aadhaar, event.fileType)
+        is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(event.aadhaar)
         is Event.Action.Registration.SignUp -> signUp()
         is Event.Action.Registration.Skip -> skipUploadDocuments()
     }
@@ -137,7 +137,7 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadAadhaar(aadhaar: String, fileType: FileType) {
+    private suspend fun uploadAadhaar(aadhaar: String) {
         navigator.withScope<SignUpScope.LegalDocuments.Aadhaar> {
             val isSuccess = withProgress {
                 userRepo.uploadAadhaar(
@@ -145,7 +145,6 @@ internal class RegistrationEventDelegate(
                     fileString = aadhaar,
                     email = it.registrationStep1.email,
                     phoneNumber = it.registrationStep1.phoneNumber,
-                    mimeType = fileType.mimeType,
                 )
             }
             if (isSuccess) {

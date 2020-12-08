@@ -243,8 +243,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
         abstract val supportedFileTypes: Array<FileType>
 
-        abstract fun upload(base64: String, fileType: FileType): Boolean
-
         class DrugLicense(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
@@ -260,14 +258,11 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             }
 
             /**
-             * Transition to [] if successful
+             * Transition to [OtpScope.AwaitVerification] if successful
              */
-            override fun upload(base64: String, fileType: FileType) =
+            fun upload(base64: String, fileType: FileType) =
                 EventCollector.sendEvent(
-                    Event.Action.Registration.UploadDrugLicense(
-                        base64,
-                        fileType
-                    )
+                    Event.Action.Registration.UploadDrugLicense(base64, fileType)
                 )
         }
 
@@ -293,10 +288,10 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             }
 
             /**
-             * Transition to [] if successful
+             * Transition to [OtpScope.AwaitVerification] if successful
              */
-            override fun upload(base64: String, fileType: FileType) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64, fileType))
+            fun upload(base64: String) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
 
             override fun checkCanGoNext() {
                 canGoNext.value = aadhaarData.value.run {
