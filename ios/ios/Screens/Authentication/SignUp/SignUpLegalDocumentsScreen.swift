@@ -12,8 +12,9 @@ import core
 struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
     
-    @State private var showingImageSourceTypeActionSheet = false
+    @State private var showingActionSheet = false
     @State private var imageSourceType: UIImagePickerController.SourceType?
+    @State private var documentPickerType: DocumentsType?
     
     @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
     
@@ -23,7 +24,7 @@ struct SignUpLegalDocumentsScreen: View {
     
     init(scope: SignUpScope.LegalDocuments) {
         self.scope = scope
-        
+
         self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
     }
     
@@ -31,14 +32,14 @@ struct SignUpLegalDocumentsScreen: View {
         let view: AnyView
         let buttonTextKey: String
         let navigationBarTitle: String
-        
+
         switch scope {
-        
+
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
             view = AnyView(AadhaardCardDataFields(scope: aadhaarScope))
             buttonTextKey = "upload_aadhaar_card"
             navigationBarTitle = "personal_data"
-            
+
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             view = AnyView(DrugLicenseData())
             buttonTextKey = "upload_new_document"
@@ -59,17 +60,19 @@ struct SignUpLegalDocumentsScreen: View {
                 .keyboardResponder()
                 .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
             
-                .actionSheet(isPresented: $showingImageSourceTypeActionSheet) {
-                    imageSourceTypeActionSheet
+                .actionSheet(isPresented: $showingActionSheet) {
+                    actionSheet
                 }
                 .sheet(item: $imageSourceType) { sourceType in
-                    ImagePicker(sourceType: sourceType) { image in
-                        uploadImage(image)
-                    }
-                })
+                    ImagePicker(sourceType: sourceType, onImagePicked: uploadImage)
+                }
+                .sheet(item: $documentPickerType) { documentsType in
+                    DocumentPicker(documentTypes: documentsType.getDocumentsTypes(), onDocumentPicked: uploadFile)
+                }
+        )
     }
     
-    var imageSourceTypeActionSheet: ActionSheet {
+    var actionSheet: ActionSheet {
         ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
             .default(Text(LocalizedStringKey("take_photo"))) { self.imageSourceType = .camera },
             .default(Text(LocalizedStringKey("choose_from_library"))) { self.imageSourceType = .photoLibrary },
@@ -81,10 +84,10 @@ struct SignUpLegalDocumentsScreen: View {
         switch scope {
 
         case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            break
-            
+            documentPickerType = .archive
+        
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            showingImageSourceTypeActionSheet = true
+            showingActionSheet = true
             
         default:
             break
@@ -92,16 +95,28 @@ struct SignUpLegalDocumentsScreen: View {
     }
     
     private func uploadImage(_ image: UIImage) {
-        guard let imageData = image.pngData() as NSData? else { return }
+        guard let imageData = image.pngData() else { return }
 
-        let base64Image = imageData.base64EncodedString(options: .lineLength64Characters)
+        uploadData(imageData, withFileExtension: "png")
+    }
+    
+    private func uploadFile(fromPath filePath: URL) {
+        guard let fileData = try? Data(contentsOf: filePath) else { return }
+        
+        let fileExtension = filePath.pathExtension
+        
+        uploadData(fileData, withFileExtension: fileExtension)
+    }
+    
+    private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
+        let base64String = data.base64EncodedString(options: .lineLength64Characters)
         switch scope {
 
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            _ = aadhaarScope.upload(base64: base64Image)
+            _ = aadhaarScope.upload(base64: base64String)
                     
         case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-//            _ = drugLicenseScope.upload(base64Image)
+//            _ = drugLicenseScope.upload(base64String)
             break
 
         default:
@@ -160,4 +175,20 @@ fileprivate struct DrugLicenseData: View  {
         }
     }
     
+}
+
+fileprivate enum DocumentsType: String, Identifiable {
+    case archive
+    case picture
+    
+    var id: String { self.rawValue }
+    
+    func getDocumentsTypes() -> [String] {
+        switch (self) {
+        case .archive:
+            return ["com.pkware.zip-archive"]
+        case .picture:
+            return ["public.jpeg", "public.png", "com.adobe.pdf"]
+        }
+    }
 }
