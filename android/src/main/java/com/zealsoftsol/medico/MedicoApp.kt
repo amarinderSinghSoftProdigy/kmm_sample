@@ -12,11 +12,19 @@ class MedicoApp : Application(), DIAware {
 
     override fun onCreate() {
         super.onCreate()
-        val (di) = UiLink.appStart(
+        val (di, nav) = UiLink.appStart(
             this,
             BuildConfig.FLAVOR == "dev",
             if (BuildConfig.DEBUG) Logger.Level.LOG else Logger.Level.NONE
         )
+//        UiLink.overrideCurrentScope(
+//            nav,
+//            SignUpScope.LegalDocuments.DrugLicense(
+//                UserRegistration1(),
+//                UserRegistration2(),
+//                UserRegistration3()
+//            )
+//        )
         this.di = di
     }
 }

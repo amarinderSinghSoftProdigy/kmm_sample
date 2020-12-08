@@ -30,10 +30,12 @@ import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.UiNavigator
-import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity(), DIAware {
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
     private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
-    private var filePickerCompletable: CompletableDeferred<File>? = null
+    private var filePickerCompletable: CompletableDeferred<File?>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,14 +71,14 @@ class MainActivity : AppCompatActivity(), DIAware {
                     is LogInScope -> AuthScreen(
                         scope = scope,
                     )
-                    is ForgetPasswordScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
+                    is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
                         scope = scope,
                     )
-                    is ForgetPasswordScope.AwaitVerification -> AuthAwaitVerificationScreen(
+                    is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(
                         scope = scope,
                         dateFormat = dateFormat
                     )
-                    is ForgetPasswordScope.EnterNewPassword -> AuthEnterNewPasswordScreen(
+                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(
                         scope = scope,
                     )
                     is SignUpScope.SelectUserType -> AuthUserType(
@@ -101,9 +103,10 @@ class MainActivity : AppCompatActivity(), DIAware {
             super.onBackPressed()
     }
 
-    suspend fun openFilePicker(): File {
+    suspend fun openFilePicker(fileTypes: Array<FileType>): File? {
         filePickerCompletable = CompletableDeferred()
-        startActivityForResult(FileUtil.createGetContentIntent(), FILE_PICKER)
+        val mimeTypes = fileTypes.map { it.mimeType }.toTypedArray()
+        startActivityForResult(FileUtil.createGetContentIntent(mimeTypes), FILE_PICKER)
         return filePickerCompletable!!.await()
     }
 
@@ -111,9 +114,11 @@ class MainActivity : AppCompatActivity(), DIAware {
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-            FILE_PICKER -> filePickerCompletable?.complete(
-                FileUtil.getTempFile(this, data?.data ?: Uri.EMPTY)
-            )
+            FILE_PICKER -> {
+                filePickerCompletable?.complete(
+                    FileUtil.getTempFile(this, data?.data ?: Uri.EMPTY)
+                )
+            }
         }
     }
 

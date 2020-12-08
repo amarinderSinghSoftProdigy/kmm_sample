@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 
 class Navigator : UiNavigator {
 
@@ -39,6 +40,16 @@ class Navigator : UiNavigator {
         val cast = runCatching { currentScope.value as S }
         cast.getOrNull()?.let { block(it) } ?: "error casting scope to ${S::class}".warnIt()
         return cast.isSuccess
+    }
+
+    internal inline fun <reified S : CommonScope> withCommonScope(block: Navigator.(S) -> Unit): Boolean {
+        val cast = runCatching { currentScope.value as S }
+        cast.getOrNull()?.let { block(it) } ?: "error casting common scope to ${S::class}".warnIt()
+        return cast.isSuccess
+    }
+
+    internal inline fun <reified S : CommonScope> searchQueueFor(): S? {
+        return queue.filterIsInstance<S>().firstOrNull()
     }
 
     fun dropCurrentScope(updateDataSource: Boolean = true): BaseScope? {

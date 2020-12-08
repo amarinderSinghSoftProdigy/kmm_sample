@@ -159,6 +159,7 @@ data class AadhaarUpload(
     val shareCode: String,
     @SerialName("uploadAadhaarFile")
     val fileString: String,
+    val mimeType: String,
 )
 
 @Serializable
@@ -166,6 +167,7 @@ data class DrugLicenseUpload(
     @SerialName("mobileNumber")
     val phoneNumber: String,
     val fileString: String,
+    val mimeType: String,
 )
 
 @Serializable
@@ -187,40 +189,65 @@ sealed class Location {
     object Unknown : Location()
 }
 
+enum class FileType(val mimeType: String) {
+    PNG("image/png"),
+    JPEG("image/jpeg"),
+    JPG("image/jpg"),
+    PDF("application/pdf"),
+    ZIP("application/zip");
+
+    companion object {
+        fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
+        fun forAadhaar() = arrayOf(ZIP)
+
+        fun fromExtension(ext: String): FileType? {
+            return when (ext) {
+                "png" -> PNG
+                "jpeg" -> JPEG
+                "jpg" -> JPG
+                "pdf" -> PDF
+                "zip" -> ZIP
+                else -> null
+            }
+        }
+    }
+}
+
+// BASE
+
 @Serializable
-data class ResponseBody<T>(
-    private val body: T? = null,
-    val type: String,
-) {
+sealed class Response {
+    abstract val type: String
+
     val isSuccess: Boolean
         get() = type == "success"
 
-    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
+    @Serializable
+    class Status(override val type: String) : Response()
+
+    @Serializable
+    class Body<T, V>(
+        private val body: T? = null,
+        val error: ErrorCode? = null,
+        val validations: V? = null,
+        override val type: String,
+    ) : Response() {
+
+        fun getBodyOrNull(): T? = body.takeIf { isSuccess }
+
+        fun getWrappedBody(): Wrapped<T> = Wrapped(body, isSuccess)
+
+        inline fun getWrappedValidation(): Wrapped<V> = Wrapped(validations, isSuccess)
+
+        inline fun getWrappedError(): Wrapped<ErrorCode> = Wrapped(error, isSuccess)
+    }
+
+    data class Wrapped<V>(val entity: V?, val isSuccess: Boolean)
 }
+
+typealias SimpleBody<T> = Response.Body<T, MapBody>
 
 typealias MapBody = Map<String, String>
 
 @Serializable
-data class ValidatedResponseBody<T, V>(
-    private val body: T? = null,
-    private val validations: V? = null,
-    val type: String,
-) {
-    val isSuccess: Boolean
-        get() = type == "success"
-
-    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
-
-    fun getValidationData(): ValidationData<V> = ValidationData(validations, isSuccess)
-}
-
-data class ValidationData<V>(val validation: V?, val isSuccess: Boolean)
-
-@Serializable
-data class JustResponseBody(
-    val type: String,
-    val message: String? = null,
-) {
-    val isSuccess: Boolean
-        get() = type == "success"
-}
+data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong")

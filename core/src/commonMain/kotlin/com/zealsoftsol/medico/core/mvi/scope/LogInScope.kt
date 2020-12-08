@@ -23,7 +23,7 @@ data class LogInScope(
     fun tryLogIn() = EventCollector.sendEvent(Event.Action.Auth.LogIn)
 
     /**
-     * Transition to [ForgetPasswordScope.PhoneNumberInput]
+     * Transition to [OtpScope.PhoneNumberInput]
      */
     fun goToForgetPassword() = EventCollector.sendEvent(Event.Transition.ForgetPassword)
 

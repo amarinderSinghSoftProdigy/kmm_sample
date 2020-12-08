@@ -12,6 +12,8 @@ abstract class BaseScope {
     object Root : BaseScope()
 }
 
+interface CommonScope
+
 interface CanGoBack {
     fun goBack() {
         EventCollector.sendEvent(Event.Transition.Back)
@@ -25,3 +27,13 @@ interface WithErrors {
         errors.value = null
     }
 }
+
+interface WithNotifications {
+    val notifications: DataSource<ScopeNotification?>
+
+    fun dismissNotification() {
+        notifications.value = null
+    }
+}
+
+interface ScopeNotification

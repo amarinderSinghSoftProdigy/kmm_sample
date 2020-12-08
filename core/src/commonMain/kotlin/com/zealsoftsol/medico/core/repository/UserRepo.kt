@@ -8,8 +8,12 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -18,7 +22,6 @@ import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidationData
 import kotlinx.serialization.json.Json
 
 class UserRepo(
@@ -40,9 +43,10 @@ class UserRepo(
     suspend fun login(authCredentials: AuthCredentials): Boolean {
         settings.putString(AUTH_ID_KEY, authCredentials.phoneNumberOrEmail)
         settings.putString(AUTH_PASS_KEY, authCredentials.password)
-        return networkAuthScope.login(
+        val (tokenInfo, isSuccess) = networkAuthScope.login(
             UserRequest(authCredentials.phoneNumberOrEmail, authCredentials.password)
-        )?.let {
+        )
+        tokenInfo?.let {
             networkAuthScope.token = it.token
             val json = Json.encodeToString(
                 User.serializer(),
@@ -56,14 +60,15 @@ class UserRepo(
             )
             settings.putString(AUTH_USER_KEY, json)
             true
-        } ?: false
+        }
+        return isSuccess
     }
 
     suspend fun logout(): Boolean {
         return networkAuthScope.logout().also { isSuccess ->
             if (isSuccess) {
                 settings.remove(AUTH_USER_KEY)
-                networkAuthScope.token = null
+                networkAuthScope.clearToken()
             }
         }
     }
@@ -85,44 +90,45 @@ class UserRepo(
         )
     }
 
-    suspend fun sendOtp(phoneNumber: String): Boolean {
+    suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
         return networkAuthScope.sendOtp(phoneNumber)
     }
 
-    suspend fun submitOtp(phoneNumber: String, otp: String): Boolean {
+    suspend fun submitOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> {
         return networkAuthScope.verifyOtp(phoneNumber, otp)
     }
 
     suspend fun changePassword(
         phoneNumber: String,
         newPassword: String
-    ): ValidationData<PasswordValidation> {
+    ): Response.Wrapped<PasswordValidation> {
         return networkAuthScope.changePassword(phoneNumber, newPassword)
     }
 
-    suspend fun resendOtp(phoneNumber: String): Boolean {
+    suspend fun resendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
         return networkAuthScope.retryOtp(phoneNumber)
     }
 
-    suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> {
+    suspend fun signUpPart1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> {
         return networkAuthScope.signUpPart1(userRegistration1)
     }
 
-    suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> {
+    suspend fun signUpPart2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> {
         return networkAuthScope.signUpPart2(userRegistration2)
     }
 
-    suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> {
+    suspend fun signUpPart3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> {
         return networkAuthScope.signUpPart3(userRegistration3)
     }
 
     suspend fun getLocationData(pincode: String): Location {
-        return networkAuthScope.getLocationData(pincode) ?: Location.Unknown
+        return networkAuthScope.getLocationData(pincode).entity ?: Location.Unknown
     }
 
     suspend fun uploadAadhaar(
         aadhaar: AadhaarData,
         fileString: String,
+        mimeType: String,
         email: String,
         phoneNumber: String
     ): Boolean {
@@ -133,12 +139,23 @@ class UserRepo(
                 email = email,
                 phoneNumber = phoneNumber,
                 fileString = fileString,
+                mimeType = mimeType,
             )
         )
     }
 
-    suspend fun uploadDrugLicense(fileString: String, phoneNumber: String): String? {
-        return networkAuthScope.uploadDrugLicense(fileString, phoneNumber)?.key
+    suspend fun uploadDrugLicense(
+        fileString: String,
+        mimeType: String,
+        phoneNumber: String
+    ): Response.Wrapped<StorageKeyResponse> {
+        return networkAuthScope.uploadDrugLicense(
+            DrugLicenseUpload(
+                phoneNumber = phoneNumber,
+                fileString = fileString,
+                mimeType = mimeType,
+            )
+        )
     }
 
     private fun fetchUser(): User? {

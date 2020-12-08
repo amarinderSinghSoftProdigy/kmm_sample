@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
@@ -20,7 +21,8 @@ internal class EventCollector(
 ) {
     private val delegateMap = hashMapOf<KClass<*>, EventDelegate<*>>().apply {
         put(Event.Action.Auth::class, AuthEventDelegate(navigator, userRepo))
-        put(Event.Action.Password::class, PasswordEventDelegate(navigator, userRepo))
+        put(Event.Action.Otp::class, OtpEventDelegate(navigator, userRepo))
+        put(Event.Action.ResetPassword::class, PasswordEventDelegate(navigator, userRepo))
         put(Event.Action.Registration::class, RegistrationEventDelegate(navigator, userRepo))
         put(Event.Transition::class, TransitionEventDelegate(navigator))
     }

@@ -3,12 +3,13 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -25,10 +26,14 @@ internal class RegistrationEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.Registration) = when (event) {
         is Event.Action.Registration.SelectUserType -> selectUserType(event.userType)
-        is Event.Action.Registration.SignUp -> trySignUp(event.userRegistration)
+        is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
-        is Event.Action.Registration.UploadDrugLicense -> uploadDrugLicense(event.license)
-        is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(event.aadhaar)
+        is Event.Action.Registration.UploadDrugLicense -> uploadDrugLicense(
+            event.license,
+            event.fileType
+        )
+        is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(event.aadhaar, event.fileType)
+        is Event.Action.Registration.SignUp -> signUp()
         is Event.Action.Registration.Skip -> skipUploadDocuments()
     }
 
@@ -48,13 +53,13 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun trySignUp(userRegistration: UserRegistration) {
+    private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
                 val validation = withProgress {
                     userRepo.signUpPart1(userRegistration)
                 }
-                it.validation.value = validation.validation
+                it.validation.value = validation.entity
                 if (validation.isSuccess) {
                     setCurrentScope(
                         SignUpScope.AddressData(
@@ -70,7 +75,7 @@ internal class RegistrationEventDelegate(
                 val validation = withProgress {
                     userRepo.signUpPart2(userRegistration)
                 }
-                it.validation.value = validation.validation
+                it.validation.value = validation.entity
                 if (validation.isSuccess) {
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
@@ -94,7 +99,7 @@ internal class RegistrationEventDelegate(
                 val validation = withProgress {
                     userRepo.signUpPart3(userRegistration)
                 }
-                it.validation.value = validation.validation
+                it.validation.value = validation.entity
                 if (validation.isSuccess) {
                     setCurrentScope(
                         SignUpScope.LegalDocuments.DrugLicense(
@@ -108,30 +113,31 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadDrugLicense(license: String) {
+    private suspend fun uploadDrugLicense(license: String, fileType: FileType) {
         navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
-            val storageKey = withProgress {
+            val (storageKey, isSuccess) = withProgress {
                 userRepo.uploadDrugLicense(
-                    license,
-                    it.registrationStep1.phoneNumber
+                    fileString = license,
+                    phoneNumber = it.registrationStep1.phoneNumber,
+                    mimeType = fileType.mimeType,
                 )
             }
-            if (storageKey != null) {
+            if (isSuccess) {
                 cached = SignUpScope.LegalDocuments.DrugLicense(
                     it.registrationStep1,
                     it.registrationStep2,
                     it.registrationStep3,
                     it.errors,
-                    storageKey = storageKey,
+                    storageKey = storageKey?.key,
                 )
-                setCurrentScope(ForgetPasswordScope.AwaitVerification(it.registrationStep1.phoneNumber))
+                startOtp(it.registrationStep1.phoneNumber)
             } else {
-                it.errors.value = ErrorCode.ERROR
+                it.errors.value = ErrorCode()
             }
         }
     }
 
-    private suspend fun uploadAadhaar(aadhaar: String) {
+    private suspend fun uploadAadhaar(aadhaar: String, fileType: FileType) {
         navigator.withScope<SignUpScope.LegalDocuments.Aadhaar> {
             val isSuccess = withProgress {
                 userRepo.uploadAadhaar(
@@ -139,20 +145,28 @@ internal class RegistrationEventDelegate(
                     fileString = aadhaar,
                     email = it.registrationStep1.email,
                     phoneNumber = it.registrationStep1.phoneNumber,
+                    mimeType = fileType.mimeType,
                 )
             }
             if (isSuccess) {
                 cached = it
-                setCurrentScope(ForgetPasswordScope.AwaitVerification(it.registrationStep1.phoneNumber))
+                startOtp(it.registrationStep1.phoneNumber)
             } else {
-                it.errors.value = ErrorCode.ERROR
+                it.errors.value = ErrorCode()
             }
         }
     }
 
+    private suspend fun signUp() {
+//        userRepo.signUp() => MainScope
+        cached!!
+        TODO("not implemented")
+    }
+
     private fun skipUploadDocuments() {
         navigator.withScope<SignUpScope.LegalDocuments> {
-            setCurrentScope(ForgetPasswordScope.AwaitVerification(it.registrationStep1.phoneNumber))
+            cached = it
+            startOtp(it.registrationStep1.phoneNumber)
         }
     }
 
@@ -171,4 +185,7 @@ internal class RegistrationEventDelegate(
             }
         }
     }
+
+    private inline fun startOtp(phoneNumber: String) =
+        EventCollector.sendEvent(Event.Action.Otp.Send(phoneNumber))
 }

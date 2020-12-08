@@ -58,6 +58,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
@@ -67,7 +68,7 @@ import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.showError
+import com.zealsoftsol.medico.screens.showErrorAlert
 import kotlinx.coroutines.launch
 import java.io.File
 import com.zealsoftsol.medico.data.UserType as DataUserType
@@ -132,7 +133,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
         progress = 0.4,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -230,7 +231,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
         progress = 0.6,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -315,7 +316,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
         progress = 0.8,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -481,9 +482,11 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         .fillMaxWidth()
                         .clickable {
                             coroutineScope.launch {
-                                val file = activity.openFilePicker()
-                                isShowingBottomSheet.value = false
-                                scope.handleFileUpload(file)
+                                val file = activity.openFilePicker(scope.supportedFileTypes)
+                                if (file != null) {
+                                    isShowingBottomSheet.value = false
+                                    scope.handleFileUpload(file)
+                                }
                             }
                         },
                     verticalAlignment = Alignment.CenterVertically,
@@ -519,12 +522,12 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             }
         }
     }
-    scope.showError()
+    scope.showErrorAlert()
 }
 
 private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
     val bytes = file.readBytes()
-    upload(Base64.encodeToString(bytes, Base64.NO_WRAP))
+    upload(Base64.encodeToString(bytes, Base64.NO_WRAP), FileType.fromExtension(file.extension)!!)
 }
 
 @Composable

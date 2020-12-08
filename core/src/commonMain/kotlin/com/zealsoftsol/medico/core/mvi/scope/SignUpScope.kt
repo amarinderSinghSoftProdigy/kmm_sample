@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -89,8 +90,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [AddressData] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration1) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration1) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
@@ -139,8 +140,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [TraderData] or [LegalDocuments.Aadhaar] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration2) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration2) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
@@ -214,8 +215,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [LegalDocuments] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration3) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration3) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
@@ -231,21 +232,28 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         }
     }
 
+    /**
+     * Should be handled as a root scope with minor differences in child scopes
+     */
     sealed class LegalDocuments(
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), WithErrors {
+    ) : SignUpScope(), WithErrors, PhoneVerificationEntryPoint {
 
-        abstract fun upload(base64: String): Boolean
+        abstract val supportedFileTypes: Array<FileType>
+
+        abstract fun upload(base64: String, fileType: FileType): Boolean
 
         class DrugLicense(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
-            val storageKey: String? = null,
+            internal val storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
+
+            override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
 
             init {
                 canGoNext.value = true
@@ -254,8 +262,13 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             /**
              * Transition to [] if successful
              */
-            override fun upload(base64: String) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64))
+            override fun upload(base64: String, fileType: FileType) =
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadDrugLicense(
+                        base64,
+                        fileType
+                    )
+                )
         }
 
         class Aadhaar(
@@ -264,6 +277,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             val aadhaarData: DataSource<AadhaarData>,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
+
+            override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
 
             fun changeCard(card: String) {
                 aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
@@ -280,8 +295,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             /**
              * Transition to [] if successful
              */
-            override fun upload(base64: String) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+            override fun upload(base64: String, fileType: FileType) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64, fileType))
 
             override fun checkCanGoNext() {
                 canGoNext.value = aadhaarData.value.run {

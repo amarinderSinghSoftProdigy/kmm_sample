@@ -1,8 +1,9 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 
 internal class TransitionEventDelegate(
@@ -13,7 +14,7 @@ internal class TransitionEventDelegate(
         when (event) {
             is Event.Transition.Back -> navigator.dropCurrentScope()
             is Event.Transition.ForgetPassword -> navigator.setCurrentScope(
-                ForgetPasswordScope.PhoneNumberInput(phoneNumber = "")
+                OtpScope.PhoneNumberInput(phoneNumber = DataSource(""))
             )
             is Event.Transition.SignUp -> navigator.setCurrentScope(
                 SignUpScope.SelectUserType()
