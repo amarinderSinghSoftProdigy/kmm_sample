@@ -158,14 +158,15 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
-        // TODO needs transition to scope
-        val documents = cached!!
-        val signUpSuccess = userRepo.signUp(
-            documents.registrationStep1,
-            documents.registrationStep2,
-            documents.registrationStep3,
-            (documents as? SignUpScope.LegalDocuments.DrugLicense)?.storageKey
-        )
+        val signUpSuccess = navigator.withProgress {
+            val documents = cached!!
+            userRepo.signUp(
+                documents.registrationStep1,
+                documents.registrationStep2,
+                documents.registrationStep3,
+                (documents as? SignUpScope.LegalDocuments.DrugLicense)?.storageKey
+            )
+        }
         if (signUpSuccess) {
             navigator.setCurrentScope(
                 MainScope(
@@ -173,7 +174,8 @@ internal class RegistrationEventDelegate(
                 )
             )
         } else {
-            TODO("what to do in case of a fail?")
+            // TODO show alert
+            navigator.dropScopesToRoot()
         }
     }
 

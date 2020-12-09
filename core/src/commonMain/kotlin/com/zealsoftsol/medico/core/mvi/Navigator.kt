@@ -52,6 +52,17 @@ class Navigator : UiNavigator {
         return queue.filterIsInstance<S>().firstOrNull()
     }
 
+    fun dropScopesToRoot() {
+        if (queue.size > 1) {
+            while (queue.size > 1) {
+                queue.removeFirst()
+            }
+            currentScope.value = queue.first()
+        } else {
+            "can not drop scopes, queue contains single element".errorIt()
+        }
+    }
+
     fun dropCurrentScope(updateDataSource: Boolean = true): BaseScope? {
         return if (queue.size > 1) {
             val removed = queue.removeFirst()
@@ -60,7 +71,7 @@ class Navigator : UiNavigator {
             }
             removed
         } else {
-            "can not go back in Navigator, queue contains single element".errorIt()
+            "can not go back, queue contains single element".errorIt()
             null
         }
     }

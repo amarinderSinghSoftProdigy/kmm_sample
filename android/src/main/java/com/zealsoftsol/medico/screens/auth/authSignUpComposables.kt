@@ -507,7 +507,15 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         modifier = Modifier.height(48.dp)
                             .fillMaxWidth()
                             .clickable {
-                                // start cam
+                                coroutineScope.launch {
+                                    val file = activity.takePicture()
+                                    if (file != null) {
+                                        isShowingBottomSheet.value = false
+                                        scope.handleFileUpload(file)
+                                    } else {
+                                        activity.toast(activity.getString(R.string.something_went_wrong))
+                                    }
+                                }
                             },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {

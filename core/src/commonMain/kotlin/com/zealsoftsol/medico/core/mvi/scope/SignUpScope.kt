@@ -169,7 +169,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
             Fields.GSTIN,
             Fields.LICENSE1,
-            Fields.LICENSE2.takeIf { registrationStep1.userType != UserType.RETAILER.serverValue },
+            Fields.LICENSE2,
         )
 
         init {
@@ -222,8 +222,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             canGoNext.value = registration.value.run {
                 tradeName.isNotEmpty()
                         && (gstin.isNotEmpty() || panNumber.isNotEmpty())
-                        && drugLicenseNo1.isNotEmpty()
-                        && (drugLicenseNo2.isNotEmpty() || Fields.LICENSE2 !in inputFields)
+                        && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
             }
         }
 

@@ -1,9 +1,11 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,9 +28,11 @@ import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
@@ -46,21 +50,20 @@ import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.utils.FileUtil
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import java.io.File
 import java.text.SimpleDateFormat
+import kotlin.coroutines.resume
 
-
-class MainActivity : AppCompatActivity(), DIAware {
+class MainActivity : ComponentActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
     private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
-    private var filePickerCompletable: CompletableDeferred<File?>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,27 +106,27 @@ class MainActivity : AppCompatActivity(), DIAware {
             super.onBackPressed()
     }
 
-    suspend fun openFilePicker(fileTypes: Array<FileType>): File? {
-        filePickerCompletable = CompletableDeferred()
+    suspend fun openFilePicker(fileTypes: Array<FileType>): File? = suspendCancellableCoroutine {
         val mimeTypes = fileTypes.map { it.mimeType }.toTypedArray()
-        startActivityForResult(FileUtil.createGetContentIntent(mimeTypes), FILE_PICKER)
-        return filePickerCompletable!!.await()
+        registerForActivityResult(GetSpecificContent(mimeTypes)) { uri: Uri? ->
+            it.resume(if (uri != null) FileUtil.getTempFile(this, uri) else null)
+        }.launch("*/*")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    suspend fun takePicture(): File? = suspendCancellableCoroutine {
+        val file = FileUtil.getFileForPhoto()
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+            isSuccess.log("photo success")
+            it.resume(file.takeIf { isSuccess })
+        }.launch(file.toUri())
+    }
 
-        when (requestCode) {
-            FILE_PICKER -> {
-                filePickerCompletable?.complete(
-                    FileUtil.getTempFile(this, data?.data ?: Uri.EMPTY)
-                )
-            }
+    private class GetSpecificContent(private val supportedTypes: Array<String>) :
+        ActivityResultContracts.GetContent() {
+        override fun createIntent(context: Context, input: String): Intent {
+            return super.createIntent(context, input)
+                .putExtra(Intent.EXTRA_MIME_TYPES, supportedTypes)
         }
-    }
-
-    companion object {
-        private const val FILE_PICKER = 1934
     }
 }
 

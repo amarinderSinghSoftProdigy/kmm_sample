@@ -91,7 +91,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
-                withTempToken(TempToken.OTP)
+                withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
         }
@@ -99,7 +99,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     override suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
-                withTempToken(TempToken.OTP)
+                withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
         }
@@ -108,7 +108,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         ktorDispatcher {
             val body =
                 client.post<SimpleBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
-                    withTempToken(TempToken.OTP)
+                    withTempToken(TempToken.REGISTRATION)
                     jsonBody(VerifyOtpRequest(phoneNumber, otp))
                 }
             if (body.isSuccess) {
@@ -197,6 +197,8 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
                 }?.let {
                     tempTokenMap[tokenType] = it
                 }
+            } else {
+                tempTokenMap[tokenType] = tokenInfo
             }
             tempTokenMap[tokenType]
         }?.let { header("Authorization", "Bearer ${it.token}") }
@@ -204,7 +206,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
     }
 
     private suspend inline fun fetchOtpToken(): TokenInfo? {
-        // todo new otp endpoint
+        TODO("no url for this type of token")
         return client.get<SimpleBody<TokenInfo>>("new url")
             .getBodyOrNull()
     }
