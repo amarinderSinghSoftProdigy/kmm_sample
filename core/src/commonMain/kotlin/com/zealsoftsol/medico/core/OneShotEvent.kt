@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core
 
+@Deprecated("for auth scope only")
 open class OneShotEvent<T> internal constructor(
     private val internalValue: T,
     private var wasAccessed: Boolean = false
@@ -15,6 +16,7 @@ open class OneShotEvent<T> internal constructor(
         }
 }
 
+@Deprecated("for auth scope only")
 class BooleanEvent private constructor(isTrue: Boolean, wasAccessed: Boolean = false) :
     OneShotEvent<Boolean>(isTrue, wasAccessed) {
 

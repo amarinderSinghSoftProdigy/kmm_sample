@@ -13,8 +13,19 @@ data class AuthCredentials(
     }
 }
 
-enum class AuthState {
-    AUTHORIZED, NOT_AUTHORIZED;
+enum class AuthState(val key: String) {
+    AUTHORIZED("au"), PENDING_VERIFICATION("pe"), NOT_AUTHORIZED("na");
+
+    companion object {
+        fun fromKey(key: String): AuthState {
+            return when (key) {
+                AUTHORIZED.key -> AUTHORIZED
+                PENDING_VERIFICATION.key -> PENDING_VERIFICATION
+                NOT_AUTHORIZED.key -> NOT_AUTHORIZED
+                else -> throw UnsupportedOperationException("unknown auth key $key")
+            }
+        }
+    }
 }
 
 enum class UserType(val serverValue: String) {

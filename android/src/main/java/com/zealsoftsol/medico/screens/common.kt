@@ -23,12 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ConfigurationAmbient
+import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +46,10 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.WithErrors
+import com.zealsoftsol.medico.core.mvi.scope.WithNotifications
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 
@@ -121,7 +127,7 @@ fun IndefiniteProgressBar() {
 }
 
 @Composable
-fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
+private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
@@ -156,18 +162,63 @@ fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
 }
 
 @Composable
-inline fun <T : BaseScope> T.showError(title: String, text: String = "", case: T.() -> Boolean) {
+fun <T : WithErrors> T.showErrorAlert() {
+    val errorCode = errors.flow.collectAsState()
+    errorCode.value?.let {
+        val titleResourceId = ContextAmbient.current.runCatching {
+            resources.getIdentifier(it.title, "string", packageName)
+        }.getOrNull() ?: 0
+        val bodyResourceId = ContextAmbient.current.runCatching {
+            resources.getIdentifier(it.body, "string", packageName)
+        }.getOrNull() ?: 0
+        ErrorDialog(
+            title = stringResource(id = titleResourceId),
+            text = stringResource(id = bodyResourceId),
+            onDismiss = { dismissError() }
+        )
+    }
+}
+
+@Composable
+fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotification() }) {
+    val notification = notifications.flow.collectAsState()
+    notification.value?.let {
+        ErrorDialog(
+            title = it.title,
+            text = it.body,
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@Composable
+private inline val ScopeNotification.title: String
+    get() = when (this) {
+        is EnterNewPasswordScope.PasswordChangedSuccessfully -> stringResource(id = R.string.success)
+        else -> throw UnsupportedOperationException("unknown ScopeNotification")
+    }
+
+@Composable
+private inline val ScopeNotification.body: String
+    get() = when (this) {
+        is EnterNewPasswordScope.PasswordChangedSuccessfully -> stringResource(id = R.string.password_change_success)
+        else -> throw UnsupportedOperationException("unknown ScopeNotification")
+    }
+
+@Composable
+private inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boolean> {
+    return remember(this) { mutableStateOf(event()) }
+}
+
+@Composable
+@Deprecated("only for login")
+fun <T : BaseScope> T.showError(title: String, text: String = "", case: T.() -> Boolean) {
     val state = withState(event = case)
     if (state.value) ErrorDialog(
         title = title,
         text = text,
         onDismiss = { state.value = false },
     )
-}
-
-@Composable
-inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boolean> {
-    return remember(this) { mutableStateOf(event()) }
 }
 
 @Composable

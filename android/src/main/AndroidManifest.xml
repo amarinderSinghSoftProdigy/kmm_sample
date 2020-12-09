@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.zealsoftsol.medico">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.zealsoftsol.medico">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
 
     <application
         android:allowBackup="true"
@@ -8,7 +12,9 @@
         android:name=".MedicoApp"
         android:label="@string/app_name">
 
-        <activity android:name=".SplashActivity" android:theme="@style/SplashTheme">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -17,11 +23,6 @@
 
         <activity android:name=".screens.MainActivity" android:launchMode="singleInstance"/>
 
-        <activity android:name=".screens.auth.AuthActivity" android:launchMode="singleInstance"/>
-
-        <activity android:name=".screens.auth.AuthRestoreActivity" android:launchMode="singleInstance"/>
-
-        <activity android:name=".screens.auth.SignUpActivity" android:launchMode="singleInstance"/>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.data
 
 import kotlinx.datetime.Clock
-import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -66,88 +65,6 @@ data class TokenInfo(
     fun expiresAt() = (createdAt + expiresIn) * 1000L
 }
 
-sealed class UserRegistration
-sealed class UserValidation
-
-@Serializable
-data class UserRegistration1(
-    @SerialName("customerType")
-    @Required
-    val userType: String = "",
-    @Required
-    val firstName: String = "",
-    @Required
-    val lastName: String = "",
-    @Required
-    val email: String = "",
-    @SerialName("mobileNumber")
-    @Required
-    val phoneNumber: String = "",
-    @Required
-    val password: String = "",
-    @Required
-    val verifyPassword: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation1(
-    val email: String? = null,
-    @SerialName("mobileNumber")
-    val phoneNumber: String? = null,
-    val password: String? = null,
-    val verifyPassword: String? = null,
-) : UserValidation()
-
-@Serializable
-data class UserRegistration2(
-    @Required
-    val pincode: String = "",
-    @Required
-    val addressLine1: String = "",
-    @Required
-    val location: String = "",
-    @SerialName("cityTown")
-    @Required
-    val city: String = "",
-    @Required
-    val district: String = "",
-    @Required
-    val state: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation2(
-    val addressLine1: String? = null,
-    val location: String? = null,
-    @SerialName("cityTown")
-    val city: String? = null,
-    val district: String? = null,
-    val state: String? = null,
-) : UserValidation()
-
-@Serializable
-data class UserRegistration3(
-    @Required
-    val tradeName: String = "",
-    @Required
-    val gstin: String = "",
-    @Required
-    val panNumber: String = "",
-    @Required
-    val drugLicenseNo1: String = "",
-    @Required
-    val drugLicenseNo2: String = "",
-) : UserRegistration()
-
-@Serializable
-data class UserValidation3(
-    val tradeName: String? = null,
-    val gstin: String? = null,
-    val panNumber: String? = null,
-    val drugLicenseNo1: String? = null,
-    val drugLicenseNo2: String? = null,
-) : UserValidation()
-
 @Serializable
 data class AadhaarUpload(
     @SerialName("aadhaarCardNumber")
@@ -159,6 +76,21 @@ data class AadhaarUpload(
     val shareCode: String,
     @SerialName("uploadAadhaarFile")
     val fileString: String,
+)
+
+@Serializable
+data class DrugLicenseUpload(
+    @SerialName("mobileNumber")
+    val phoneNumber: String,
+    @SerialName("uploadDrugLicenseFile")
+    val fileString: String,
+    val mimeType: String,
+)
+
+@Serializable
+data class StorageKeyResponse(
+    @SerialName("uploadStorageKey")
+    val key: String,
 )
 
 sealed class Location {
@@ -174,40 +106,67 @@ sealed class Location {
     object Unknown : Location()
 }
 
+enum class FileType(val mimeType: String) {
+    PNG("image/png"),
+    JPEG("image/jpeg"),
+    JPG("image/jpg"),
+    PDF("application/pdf"),
+    ZIP("application/zip"),
+    XZIP("multipart/x-zip"),
+    UNKNOWN("*/*");
+
+    companion object {
+        fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
+        fun forAadhaar() = arrayOf(ZIP, XZIP)
+
+        fun fromExtension(ext: String): FileType {
+            return when (ext) {
+                "png" -> PNG
+                "jpeg" -> JPEG
+                "jpg" -> JPG
+                "pdf" -> PDF
+                "zip" -> ZIP
+                else -> UNKNOWN
+            }
+        }
+    }
+}
+
+// BASE
+
 @Serializable
-data class ResponseBody<T>(
-    private val body: T? = null,
-    val type: String,
-) {
+sealed class Response {
+    abstract val type: String
+
     val isSuccess: Boolean
         get() = type == "success"
 
-    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
+    @Serializable
+    class Status(override val type: String) : Response()
+
+    @Serializable
+    class Body<T, V>(
+        private val body: T? = null,
+        val error: ErrorCode? = null,
+        val validations: V? = null,
+        override val type: String,
+    ) : Response() {
+
+        fun getBodyOrNull(): T? = body.takeIf { isSuccess }
+
+        fun getWrappedBody(): Wrapped<T> = Wrapped(body, isSuccess)
+
+        inline fun getWrappedValidation(): Wrapped<V> = Wrapped(validations, isSuccess)
+
+        inline fun getWrappedError(): Wrapped<ErrorCode> = Wrapped(error, isSuccess)
+    }
+
+    data class Wrapped<V>(val entity: V?, val isSuccess: Boolean)
 }
+
+typealias SimpleBody<T> = Response.Body<T, MapBody>
 
 typealias MapBody = Map<String, String>
 
 @Serializable
-data class ValidatedResponseBody<T, V>(
-    private val body: T? = null,
-    private val validations: V? = null,
-    val type: String,
-) {
-    val isSuccess: Boolean
-        get() = type == "success"
-
-    fun getBodyOrNull(): T? = body?.takeIf { isSuccess }
-
-    fun getValidationData(): ValidationData<V> = ValidationData(validations, isSuccess)
-}
-
-data class ValidationData<V>(val validation: V?, val isSuccess: Boolean)
-
-@Serializable
-data class JustResponseBody(
-    val type: String,
-    val message: String? = null,
-) {
-    val isSuccess: Boolean
-        get() = type == "success"
-}
+data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong")

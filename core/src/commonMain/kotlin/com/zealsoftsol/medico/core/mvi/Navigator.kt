@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.BaseScope
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 
 class Navigator : UiNavigator {
 
@@ -41,6 +42,27 @@ class Navigator : UiNavigator {
         return cast.isSuccess
     }
 
+    internal inline fun <reified S : CommonScope> withCommonScope(block: Navigator.(S) -> Unit): Boolean {
+        val cast = runCatching { currentScope.value as S }
+        cast.getOrNull()?.let { block(it) } ?: "error casting common scope to ${S::class}".warnIt()
+        return cast.isSuccess
+    }
+
+    internal inline fun <reified S : CommonScope> searchQueueFor(): S? {
+        return queue.filterIsInstance<S>().firstOrNull()
+    }
+
+    fun dropScopesToRoot() {
+        if (queue.size > 1) {
+            while (queue.size > 1) {
+                queue.removeFirst()
+            }
+            currentScope.value = queue.first()
+        } else {
+            "can not drop scopes, queue contains single element".errorIt()
+        }
+    }
+
     fun dropCurrentScope(updateDataSource: Boolean = true): BaseScope? {
         return if (queue.size > 1) {
             val removed = queue.removeFirst()
@@ -49,7 +71,7 @@ class Navigator : UiNavigator {
             }
             removed
         } else {
-            "can not go back in Navigator, queue contains single element".errorIt()
+            "can not go back, queue contains single element".errorIt()
             null
         }
     }

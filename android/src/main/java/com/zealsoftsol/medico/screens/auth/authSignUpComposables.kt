@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
+import android.util.Base64
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,14 +58,19 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
+import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.showErrorAlert
+import kotlinx.coroutines.launch
+import java.io.File
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
@@ -126,7 +133,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
         progress = 0.4,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -224,7 +231,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
         progress = 0.6,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -309,7 +316,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
         progress = 0.8,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
-        onButtonClick = { scope.tryToSignUp(registration.value) },
+        onButtonClick = { scope.validate(registration.value) },
         body = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
@@ -379,6 +386,8 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
     val isShowingBottomSheet = remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val activity = ContextAmbient.current as MainActivity
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.legal_documents),
         progress = 1.0,
@@ -395,7 +404,15 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     isShowingBottomSheet.value = true
                 }
                 is SignUpScope.LegalDocuments.Aadhaar -> {
-                    "open picker"
+                    coroutineScope.launch {
+                        val file = activity.openFilePicker(scope.supportedFileTypes)
+                        if (file != null) {
+                            isShowingBottomSheet.value = false
+                            scope.handleFileUpload(file)
+                        } else {
+                            activity.toast(activity.getString(R.string.something_went_wrong))
+                        }
+                    }
                 }
             }
         },
@@ -472,7 +489,15 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     modifier = Modifier.height(48.dp)
                         .fillMaxWidth()
                         .clickable {
-                            // open picker
+                            coroutineScope.launch {
+                                val file = activity.openFilePicker(scope.supportedFileTypes)
+                                if (file != null) {
+                                    isShowingBottomSheet.value = false
+                                    scope.handleFileUpload(file)
+                                } else {
+                                    activity.toast(activity.getString(R.string.something_went_wrong))
+                                }
+                            }
                         },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -485,25 +510,48 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         color = ConstColors.gray,
                     )
                 }
-                Row(
-                    modifier = Modifier.height(48.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            // start cam
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        asset = Icons.Filled.CameraAlt,
-                        modifier = Modifier.padding(horizontal = 18.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.use_camera),
-                        color = ConstColors.gray,
-                    )
+                if (scope is SignUpScope.LegalDocuments.DrugLicense) {
+                    Row(
+                        modifier = Modifier.height(48.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                coroutineScope.launch {
+                                    val file = activity.takePicture()
+                                    if (file != null) {
+                                        isShowingBottomSheet.value = false
+                                        scope.handleFileUpload(file)
+                                    } else {
+                                        activity.toast(activity.getString(R.string.something_went_wrong))
+                                    }
+                                }
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            asset = Icons.Filled.CameraAlt,
+                            modifier = Modifier.padding(horizontal = 18.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.use_camera),
+                            color = ConstColors.gray,
+                        )
+                    }
                 }
             }
         }
+    }
+    scope.showErrorAlert()
+}
+
+private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
+    val bytes = file.readBytes()
+    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+    when (this) {
+        is SignUpScope.LegalDocuments.DrugLicense -> upload(
+            base64,
+            FileType.fromExtension(file.extension)
+        )
+        is SignUpScope.LegalDocuments.Aadhaar -> upload(base64)
     }
 }
 

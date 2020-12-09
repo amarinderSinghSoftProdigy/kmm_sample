@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -18,23 +19,32 @@ internal sealed class Event {
                 Auth()
         }
 
-        sealed class Password : Action() {
-            override val typeClazz: KClass<*> = Password::class
+        sealed class Otp : Action() {
+            override val typeClazz: KClass<*> = Otp::class
 
-            data class SendOtp(val phoneNumber: String) : Password()
-            data class SubmitOtp(val otp: String) : Password()
-            object ResendOtp : Password()
-            data class ChangePassword(val newPassword: String) : Password()
+            data class Send(val phoneNumber: String) : Otp()
+            data class Submit(val otp: String) : Otp()
+            object Resend : Otp()
+        }
+
+        sealed class ResetPassword : Action() {
+            override val typeClazz: KClass<*> = ResetPassword::class
+
+            data class Send(val newPassword: String) : ResetPassword()
+            object Finish : ResetPassword()
         }
 
         sealed class Registration : Action() {
             override val typeClazz: KClass<*> = Registration::class
 
             data class SelectUserType(val userType: UserType) : Registration()
-            data class SignUp(val userRegistration: UserRegistration) : Registration()
+            data class Validate(val userRegistration: UserRegistration) : Registration()
             data class UpdatePincode(val pincode: String) : Registration()
             data class UploadAadhaar(val aadhaar: String) : Registration()
-            data class UploadDrugLicense(val license: ByteArray) : Registration()
+            data class UploadDrugLicense(val license: String, val fileType: FileType) :
+                Registration()
+
+            object SignUp : Registration()
             object Skip : Registration()
         }
     }

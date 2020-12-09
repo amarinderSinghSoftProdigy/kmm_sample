@@ -5,14 +5,17 @@ import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.AadhaarUpload
-import com.zealsoftsol.medico.data.JustResponseBody
+import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.ResponseBody
-import com.zealsoftsol.medico.data.TempOtpRequest
+import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SimpleBody
+import com.zealsoftsol.medico.data.StorageKeyResponse
+import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -21,8 +24,6 @@ import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidatedResponseBody
-import com.zealsoftsol.medico.data.ValidationData
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -36,7 +37,6 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -69,113 +69,117 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         }
     }
     override var token: String? = null
-    private var tempToken: TokenInfo? = null
+    private val tempTokenMap = hashMapOf<TempToken, TokenInfo>()
 
-    override suspend fun login(request: UserRequest): TokenInfo? = ktorDispatcher {
-        client.post<ResponseBody<TokenInfo>>("$AUTH_URL/medico/login") {
-            contentType(ContentType.parse("application/json"))
-            body = request
-        }.getBodyOrNull()
+    override fun clearToken() {
+        token = null
+        tempTokenMap.clear()
+    }
+
+    override suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo> = ktorDispatcher {
+        client.post<SimpleBody<TokenInfo>>("$AUTH_URL/medico/login") {
+            jsonBody(request)
+        }.getWrappedBody()
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$AUTH_URL/medico/logout") {
+        client.post<Response.Status>("$AUTH_URL/medico/logout") {
             withMainToken()
         }.isSuccess
     }
 
-    override suspend fun sendOtp(phoneNumber: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$AUTH_URL/api/v1/medico/forgetpwd") {
-            withTempToken(TempToken.FORGET_PASSWORD)
-            contentType(ContentType.parse("application/json"))
-            body = TempOtpRequest(phoneNumber)
-        }.isSuccess
-    }
-
-    override suspend fun retryOtp(phoneNumber: String): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
-            withTempToken(TempToken.FORGET_PASSWORD)
-            contentType(ContentType.parse("application/json"))
-            body = OtpRequest(phoneNumber)
-        }.isSuccess
-    }
-
-    override suspend fun verifyOtp(phoneNumber: String, otp: String): Boolean = ktorDispatcher {
-        val body =
-            client.post<ResponseBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
-                withTempToken(TempToken.FORGET_PASSWORD)
-                contentType(ContentType.parse("application/json"))
-                body = VerifyOtpRequest(phoneNumber, otp)
-            }
-        if (body.isSuccess) {
-            tempToken = body.getBodyOrNull()
+    override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(OtpRequest(phoneNumber))
+            }.getWrappedError()
         }
-        body.isSuccess
-    }
+
+    override suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(OtpRequest(phoneNumber))
+            }.getWrappedError()
+        }
+
+    override suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            val body =
+                client.post<SimpleBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
+                    withTempToken(TempToken.REGISTRATION)
+                    jsonBody(VerifyOtpRequest(phoneNumber, otp))
+                }
+            if (body.isSuccess) {
+                body.getBodyOrNull()?.let { tempTokenMap[TempToken.UPDATE_PASSWORD] = it }
+            }
+            body.getWrappedError()
+        }
 
     override suspend fun changePassword(
         phoneNumber: String,
         password: String
-    ): ValidationData<PasswordValidation> =
+    ): Response.Wrapped<PasswordValidation> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<MapBody, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
+            client.post<Response.Body<MapBody, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
                 withTempToken(TempToken.UPDATE_PASSWORD)
-                contentType(ContentType.parse("application/json"))
-                body = PasswordResetRequest(phoneNumber, password, password)
-            }.getValidationData()
+                jsonBody(PasswordResetRequest(phoneNumber, password, password))
+            }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart1(userRegistration1: UserRegistration1): ValidationData<UserValidation1> =
+    override suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<MapBody, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
+            client.post<Response.Body<MapBody, UserValidation1>>("$REGISTRATION_URL/api/v1/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
-                contentType(ContentType.parse("application/json"))
-                body = userRegistration1
-            }.getValidationData()
+                jsonBody(userRegistration1)
+            }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart2(userRegistration2: UserRegistration2): ValidationData<UserValidation2> =
+    override suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<MapBody, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
+            client.post<Response.Body<MapBody, UserValidation2>>("$REGISTRATION_URL/api/v1/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
-                contentType(ContentType.parse("application/json"))
-                body = userRegistration2
-            }.getValidationData()
+                jsonBody(userRegistration2)
+            }.getWrappedValidation()
         }
 
-    override suspend fun signUpPart3(userRegistration3: UserRegistration3): ValidationData<UserValidation3> =
+    override suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
         ktorDispatcher {
-            client.post<ValidatedResponseBody<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
+            client.post<Response.Body<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/registration/step3") {
                 withTempToken(TempToken.REGISTRATION)
-                contentType(ContentType.parse("application/json"))
-                body = userRegistration3
-            }.getValidationData()
+                jsonBody(userRegistration3)
+            }.getWrappedValidation()
         }
 
-    override suspend fun getLocationData(pincode: String): Location.Data? = ktorDispatcher {
-        client.get<ResponseBody<Location.Data>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
-            withTempToken(TempToken.REGISTRATION)
-        }.getBodyOrNull()
-    }
+    override suspend fun getLocationData(pincode: String): Response.Wrapped<Location.Data> =
+        ktorDispatcher {
+            client.get<SimpleBody<Location.Data>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
+                withTempToken(TempToken.REGISTRATION)
+            }.getWrappedBody()
+        }
 
     override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = ktorDispatcher {
-        client.post<JustResponseBody>("$REGISTRATION_URL/api/v1/upload/aadhaar") {
+        client.post<Response.Status>("$REGISTRATION_URL/api/v1/upload/aadhaar") {
             withTempToken(TempToken.REGISTRATION)
-            contentType(ContentType.parse("application/json"))
-            body = aadhaarData
+            jsonBody(aadhaarData)
         }.isSuccess
     }
 
-    override suspend fun uploadDrugLicense(binary: ByteArray, phoneNumber: String): Boolean =
+    override suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse> =
         ktorDispatcher {
-            client.post<JustResponseBody>("$REGISTRATION_URL/api/v1/upload/druglicense") {
+            client.post<SimpleBody<StorageKeyResponse>>("$REGISTRATION_URL/api/v1/upload/druglicense") {
                 withTempToken(TempToken.REGISTRATION)
-                contentType(ContentType.parse("application/json"))
-                formData {
-                    append("file", binary)
-                }
-            }.isSuccess
+                jsonBody(licenseData)
+            }.getWrappedBody()
         }
+
+    override suspend fun signUp(submitRegistration: SubmitRegistration): Boolean = ktorDispatcher {
+        client.post<Response.Status>("$REGISTRATION_URL/api/v1/registration/submit") {
+            withTempToken(TempToken.REGISTRATION)
+            jsonBody(submitRegistration)
+        }.isSuccess
+    }
 
     private inline fun HttpRequestBuilder.withMainToken() {
         token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
@@ -183,33 +187,43 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
 
     private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
         retry(Interval.Linear(100, 5)) {
-            val tokenInfo = tempToken
+            val tokenInfo = tempTokenMap.remove(tokenType)
                 ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
-                tempToken = when (tokenType) {
-                    TempToken.FORGET_PASSWORD -> fetchNoAuthToken()
+                when (tokenType) {
+                    TempToken.OTP -> fetchOtpToken()
                     TempToken.REGISTRATION -> fetchRegistrationToken()
-                    TempToken.UPDATE_PASSWORD -> tempToken
+                    TempToken.UPDATE_PASSWORD -> tokenInfo
+                }?.let {
+                    tempTokenMap[tokenType] = it
                 }
+            } else {
+                tempTokenMap[tokenType] = tokenInfo
             }
-            tokenInfo
+            tempTokenMap[tokenType]
         }?.let { header("Authorization", "Bearer ${it.token}") }
             ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
     }
 
-    private suspend inline fun fetchNoAuthToken(): TokenInfo? {
-        return client.get<ResponseBody<TokenInfo>>("$AUTH_URL/api/v1/public/medico/forgetpwd")
+    private suspend inline fun fetchOtpToken(): TokenInfo? {
+        TODO("no url for this type of token")
+        return client.get<SimpleBody<TokenInfo>>("new url")
             .getBodyOrNull()
     }
 
     private suspend inline fun fetchRegistrationToken(): TokenInfo? {
-        return client.get<ResponseBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
+        return client.get<SimpleBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
             .getBodyOrNull()
+    }
+
+    private inline fun HttpRequestBuilder.jsonBody(body: Any) {
+        contentType(ContentType.parse("application/json"))
+        this.body = body
     }
 
     private enum class TempToken(val serverValue: String) {
         //        MAIN("login"),
-        FORGET_PASSWORD("forgetpwd"),
+        OTP("otp"),
         UPDATE_PASSWORD("updatepwd"),
         REGISTRATION("registration");
     }

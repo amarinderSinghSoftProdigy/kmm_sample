@@ -79,6 +79,7 @@ dependencies {
     implementation(project(":core"))
     implementation(Deps.Android.appCompat)
     implementation(Deps.Android.customTabs)
+    implementation(Deps.Android.activity)
     Deps.Android.Compose.all.forEach {
         implementation(it)
     }

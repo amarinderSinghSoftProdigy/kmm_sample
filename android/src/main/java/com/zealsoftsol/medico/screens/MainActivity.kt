@@ -1,7 +1,11 @@
 package com.zealsoftsol.medico.screens
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,14 +28,18 @@ import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.UiNavigator
-import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
@@ -41,13 +49,17 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
+import com.zealsoftsol.medico.utils.FileUtil
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
+import java.io.File
 import java.text.SimpleDateFormat
+import kotlin.coroutines.resume
 
-class MainActivity : AppCompatActivity(), DIAware {
+class MainActivity : ComponentActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
@@ -62,14 +74,14 @@ class MainActivity : AppCompatActivity(), DIAware {
                     is LogInScope -> AuthScreen(
                         scope = scope,
                     )
-                    is ForgetPasswordScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
+                    is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
                         scope = scope,
                     )
-                    is ForgetPasswordScope.AwaitVerification -> AuthAwaitVerificationScreen(
+                    is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(
                         scope = scope,
                         dateFormat = dateFormat
                     )
-                    is ForgetPasswordScope.EnterNewPassword -> AuthEnterNewPasswordScreen(
+                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(
                         scope = scope,
                     )
                     is SignUpScope.SelectUserType -> AuthUserType(
@@ -92,6 +104,29 @@ class MainActivity : AppCompatActivity(), DIAware {
     override fun onBackPressed() {
         if (!navigator.handleBack())
             super.onBackPressed()
+    }
+
+    suspend fun openFilePicker(fileTypes: Array<FileType>): File? = suspendCancellableCoroutine {
+        val mimeTypes = fileTypes.map { it.mimeType }.toTypedArray()
+        registerForActivityResult(GetSpecificContent(mimeTypes)) { uri: Uri? ->
+            it.resume(if (uri != null) FileUtil.getTempFile(this, uri) else null)
+        }.launch("*/*")
+    }
+
+    suspend fun takePicture(): File? = suspendCancellableCoroutine {
+        val file = FileUtil.getFileForPhoto()
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+            isSuccess.log("photo success")
+            it.resume(file.takeIf { isSuccess })
+        }.launch(file.toUri())
+    }
+
+    private class GetSpecificContent(private val supportedTypes: Array<String>) :
+        ActivityResultContracts.GetContent() {
+        override fun createIntent(context: Context, input: String): Intent {
+            return super.createIntent(context, input)
+                .putExtra(Intent.EXTRA_MIME_TYPES, supportedTypes)
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.data.AuthState
 
 internal class AuthEventDelegate(
     navigator: Navigator,
@@ -28,7 +29,11 @@ internal class AuthEventDelegate(
         navigator.withScope<LogInScope> {
             if (withProgress { userRepo.login(it.credentials.value) }) {
                 clearQueue()
-                setCurrentScope(MainScope())
+                setCurrentScope(
+                    MainScope(
+                        isLimitedAppAccess = userRepo.authState == AuthState.PENDING_VERIFICATION,
+                    )
+                )
             } else {
                 setCurrentScope(it.copy(success = BooleanEvent.`false`))
             }

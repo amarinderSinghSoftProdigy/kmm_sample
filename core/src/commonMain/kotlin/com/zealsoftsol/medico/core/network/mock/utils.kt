@@ -2,7 +2,7 @@ package com.zealsoftsol.medico.core.network.mock
 
 import kotlinx.coroutines.delay
 
-private const val DEFAULT_DELAY = 2000L
+private const val DEFAULT_DELAY = 1000L
 
 internal suspend fun mockBooleanResponse(delay: Long = DEFAULT_DELAY, value: Boolean = true) =
     mockResponse { value }

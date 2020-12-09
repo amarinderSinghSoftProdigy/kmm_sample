@@ -3,7 +3,10 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.utils.AadhaarVerification
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -88,8 +91,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [AddressData] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration1) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration1) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
@@ -138,8 +141,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [TraderData] or [LegalDocuments.Aadhaar] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration2) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration2) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
@@ -167,7 +170,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
             Fields.GSTIN,
             Fields.LICENSE1,
-            Fields.LICENSE2.takeIf { registrationStep1.userType != UserType.RETAILER.serverValue },
+            Fields.LICENSE2,
         )
 
         init {
@@ -213,15 +216,14 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         /**
          * Transition to [LegalDocuments] if successful
          */
-        fun tryToSignUp(userRegistration: UserRegistration3) =
-            EventCollector.sendEvent(Event.Action.Registration.SignUp(userRegistration))
+        fun validate(userRegistration: UserRegistration3) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
                 tradeName.isNotEmpty()
                         && (gstin.isNotEmpty() || panNumber.isNotEmpty())
-                        && drugLicenseNo1.isNotEmpty()
-                        && (drugLicenseNo2.isNotEmpty() || Fields.LICENSE2 !in inputFields)
+                        && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
             }
         }
 
@@ -230,38 +232,54 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         }
     }
 
+    /**
+     * Should be handled as a root scope with minor differences in child scopes
+     */
     sealed class LegalDocuments(
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope() {
+    ) : SignUpScope(), WithErrors, PhoneVerificationEntryPoint {
+
+        abstract val supportedFileTypes: Array<FileType>
 
         class DrugLicense(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
+            internal val storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
+
+            override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
 
             init {
                 canGoNext.value = true
             }
 
             /**
-             * Transition to [] if successful
+             * Transition to [OtpScope.AwaitVerification] if successful
              */
-            fun upload(binary: ByteArray) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(binary))
+            fun upload(base64: String, fileType: FileType) =
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadDrugLicense(base64, fileType)
+                )
         }
 
         class Aadhaar(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
-            val aadhaarData: DataSource<AadhaarData>,
+            val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
+            override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
+
             fun changeCard(card: String) {
-                aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
-                checkCanGoNext()
+                if (card.length <= 12) {
+                    aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
+                    checkCanGoNext()
+                }
             }
 
             fun changeShareCode(shareCode: String) {
@@ -272,14 +290,14 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             }
 
             /**
-             * Transition to [] if successful
+             * Transition to [OtpScope.AwaitVerification] if successful
              */
             fun upload(base64: String) =
                 EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
 
             override fun checkCanGoNext() {
                 canGoNext.value = aadhaarData.value.run {
-                    cardNumber.isNotEmpty() && shareCode.isNotEmpty()
+                    cardNumber.length == 12 && AadhaarVerification.isValid(cardNumber) && shareCode.length == 4
                 }
             }
         }

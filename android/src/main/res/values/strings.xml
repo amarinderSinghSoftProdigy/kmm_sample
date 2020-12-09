@@ -71,4 +71,6 @@
     <string name="upload_new">Upload new</string>
     <string name="error">Error</string>
     <string name="tos_url">https://medico.com/tos.html</string>
+    <string name="password_change_success">Password changed successfully</string>
+    <string name="success">Success</string>
 </resources>

@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -16,7 +17,11 @@ import org.kodein.di.instance
 
 object UiLink {
 
-    fun appStart(context: Any, isDebug: Boolean, loggerLevel: Logger.Level): AppStartResult {
+    fun appStart(
+        context: Any,
+        isDebug: Boolean,
+        loggerLevel: Logger.Level,
+    ): AppStartResult {
         logger = logger.copy(level = loggerLevel)
         val di = startKodein(context, isDebug)
         val directDI = di.direct
@@ -25,12 +30,18 @@ object UiLink {
         val eventCollector = directDI.instance<EventCollector>()
         navigator.setCurrentScope(
             if (userRepo.authState == AuthState.AUTHORIZED) {
-                MainScope()
+                MainScope(
+                    isLimitedAppAccess = userRepo.authState == AuthState.PENDING_VERIFICATION,
+                )
             } else {
                 LogInScope(DataSource(userRepo.getAuthCredentials()))
             }
         )
         return AppStartResult(di, navigator)
+    }
+
+    fun overrideCurrentScope(uiNavigator: UiNavigator, scope: BaseScope) {
+        (uiNavigator as Navigator).setCurrentScope(scope)
     }
 
     data class AppStartResult(val di: DI, val navigator: UiNavigator)

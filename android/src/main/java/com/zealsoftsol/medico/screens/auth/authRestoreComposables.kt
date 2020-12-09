@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,17 +29,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.ForgetPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.screens.BasicTabBar
-import com.zealsoftsol.medico.screens.ErrorDialog
 import com.zealsoftsol.medico.screens.InputField
+import com.zealsoftsol.medico.screens.InputWithError
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
-import com.zealsoftsol.medico.screens.showError
-import com.zealsoftsol.medico.screens.withState
+import com.zealsoftsol.medico.screens.showAlert
+import com.zealsoftsol.medico.screens.showErrorAlert
 import java.text.SimpleDateFormat
 
 @Composable
@@ -89,8 +88,8 @@ private fun BasicAuthRestoreScreen(
 }
 
 @Composable
-fun AuthPhoneNumberInputScreen(scope: ForgetPasswordScope.PhoneNumberInput) {
-    val phoneState = remember { mutableStateOf(scope.phoneNumber) }
+fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
+    val phoneState = scope.phoneNumber.flow.collectAsState()
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.password_reset),
         subtitle = stringResource(id = R.string.reset_password_hint),
@@ -99,31 +98,29 @@ fun AuthPhoneNumberInputScreen(scope: ForgetPasswordScope.PhoneNumberInput) {
             PhoneFormatInputField(
                 hint = stringResource(id = R.string.phone_number),
                 text = phoneState.value,
-                onValueChange = { phoneState.value = it },
+                onValueChange = { scope.changePhoneNumber(it) },
             )
         },
         buttonText = stringResource(id = R.string.get_code),
         onButtonClick = { scope.sendOtp(phoneState.value.filter { it.isDigit() }) },
     )
-    scope.showError(
-        title = stringResource(id = R.string.something_went_wrong),
-        case = { success.isFalse },
-    )
+    scope.showErrorAlert()
 }
 
 @Composable
 fun AuthAwaitVerificationScreen(
-    scope: ForgetPasswordScope.AwaitVerification,
+    scope: OtpScope.AwaitVerification,
     dateFormat: SimpleDateFormat,
 ) {
     val code = remember { mutableStateOf("") }
+    val attempts = scope.attemptsLeft.flow.collectAsState()
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.phone_verification),
         subtitle = "${stringResource(id = R.string.verification_code_sent_hint)} ${scope.phoneNumber}",
         back = scope,
         body = {
             val timer = scope.resendTimer.flow.collectAsState()
-            if (timer.value > 0 && scope.attemptsLeft > 0) {
+            if (timer.value > 0 && attempts.value > 0) {
                 Text(
                     text = dateFormat.format(timer.value),
                     style = MaterialTheme.typography.body1,
@@ -147,7 +144,7 @@ fun AuthAwaitVerificationScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { code.value = it },
             )
-            code.value.isNotEmpty() && scope.attemptsLeft > 0
+            code.value.isNotEmpty() && attempts.value > 0
         },
         buttonText = stringResource(id = R.string.submit),
         onButtonClick = { scope.submitOtp(code.value) },
@@ -171,18 +168,14 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    val showDialog = remember(scope.attemptsLeft) { mutableStateOf(scope.codeValidity.isFalse) }
-    if (showDialog.value) ErrorDialog(
-        title = stringResource(id = R.string.wrong_code),
-        onDismiss = { showDialog.value = false },
-    )
-    if (scope.resendSuccess.isFalse) ContextAmbient.current.toast(R.string.something_went_wrong)
+    scope.showErrorAlert()
 }
 
 @Composable
-fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
+fun AuthEnterNewPasswordScreen(scope: EnterNewPasswordScope) {
     val password1 = remember { mutableStateOf("") }
     val password2 = remember { mutableStateOf("") }
+    val validation = scope.passwordValidation.flow.collectAsState()
     BasicAuthRestoreScreen(
         title = stringResource(id = R.string.new_password),
         subtitle = "",
@@ -195,19 +188,15 @@ fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
             )
             Spacer(modifier = Modifier.size(12.dp))
             val isValid = password2.value.isEmpty() || (password1.value == password2.value)
-            PasswordFormatInputField(
-                hint = stringResource(id = R.string.new_password_repeat),
-                text = password2.value,
-                isValid = isValid,
-                onValueChange = { password2.value = it },
-            )
-            if (!isValid) {
-                Spacer(modifier = Modifier.size(4.dp))
-                Text(
-                    text = stringResource(id = R.string.password_doesnt_match),
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.error,
-                    modifier = Modifier.padding(start = 16.dp)
+            val errorText = validation.value?.password ?: run {
+                if (!isValid) stringResource(id = R.string.password_doesnt_match) else null
+            }
+            InputWithError(errorText) {
+                PasswordFormatInputField(
+                    hint = stringResource(id = R.string.new_password_repeat),
+                    text = password2.value,
+                    isValid = isValid,
+                    onValueChange = { password2.value = it },
                 )
             }
             password1.value.isNotEmpty() && password1.value == password2.value
@@ -215,14 +204,5 @@ fun AuthEnterNewPasswordScreen(scope: ForgetPasswordScope.EnterNewPassword) {
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { scope.changePassword(password2.value) }
     )
-    val errorState = scope.withState { success.isFalse }
-    if (errorState.value) {
-        val errorMessage =
-            scope.passwordValidation?.password ?: stringResource(id = R.string.something_went_wrong)
-        ErrorDialog(
-            title = stringResource(id = R.string.error),
-            text = errorMessage,
-            onDismiss = { errorState.value = false },
-        )
-    }
+    scope.showAlert(onDismiss = { scope.finishResetPasswordFlow() })
 }
