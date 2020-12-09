@@ -112,11 +112,12 @@ enum class FileType(val mimeType: String) {
     JPG("image/jpg"),
     PDF("application/pdf"),
     ZIP("application/zip"),
+    XZIP("multipart/x-zip"),
     UNKNOWN("*/*");
 
     companion object {
         fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
-        fun forAadhaar() = arrayOf(ZIP)
+        fun forAadhaar() = arrayOf(ZIP, XZIP)
 
         fun fromExtension(ext: String): FileType {
             return when (ext) {

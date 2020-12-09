@@ -71,6 +71,7 @@ class UserRepo(
             if (isSuccess) {
                 settings.remove(AUTH_USER_KEY)
                 settings.remove(AUTH_STATE)
+                settings.remove(AUTH_PASS_KEY)
                 networkAuthScope.clearToken()
             }
         }

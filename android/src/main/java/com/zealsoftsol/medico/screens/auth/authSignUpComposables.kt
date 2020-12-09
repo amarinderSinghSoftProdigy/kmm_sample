@@ -386,6 +386,8 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
     val isShowingBottomSheet = remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val activity = ContextAmbient.current as MainActivity
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.legal_documents),
         progress = 1.0,
@@ -402,7 +404,15 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     isShowingBottomSheet.value = true
                 }
                 is SignUpScope.LegalDocuments.Aadhaar -> {
-                    "open picker"
+                    coroutineScope.launch {
+                        val file = activity.openFilePicker(scope.supportedFileTypes)
+                        if (file != null) {
+                            isShowingBottomSheet.value = false
+                            scope.handleFileUpload(file)
+                        } else {
+                            activity.toast(activity.getString(R.string.something_went_wrong))
+                        }
+                    }
                 }
             }
         },
@@ -475,8 +485,6 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         color = ConstColors.gray,
                     )
                 }
-                val coroutineScope = rememberCoroutineScope()
-                val activity = ContextAmbient.current as MainActivity
                 Row(
                     modifier = Modifier.height(48.dp)
                         .fillMaxWidth()

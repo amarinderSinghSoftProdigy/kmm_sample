@@ -268,7 +268,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         class Aadhaar(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
-            val aadhaarData: DataSource<AadhaarData>,
+            val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
             override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 

@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Location
@@ -83,7 +82,6 @@ internal class RegistrationEventDelegate(
                             SignUpScope.LegalDocuments.Aadhaar(
                                 registrationStep1 = it.registrationStep1,
                                 registrationStep2 = it.registration.value,
-                                aadhaarData = DataSource(AadhaarData("", ""))
                             )
                         } else {
                             SignUpScope.TraderData(
