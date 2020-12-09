@@ -39,16 +39,9 @@ struct DocumentPicker: UIViewControllerRepresentable {
         
         func documentPicker(_ controller: UIDocumentPickerViewController,
                             didPickDocumentsAt urls: [URL]) {
-            guard //controller.documentPickerMode == .open,
+            guard controller.documentPickerMode == .import,
                   let url = urls.first
-//                , url.startAccessingSecurityScopedResource()
             else { return }
-            
-            defer {
-                DispatchQueue.main.async {
-                    url.stopAccessingSecurityScopedResource()
-                }
-            }
             
             parent.onDocumentPicked(url)
             

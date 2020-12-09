@@ -13,8 +13,8 @@ struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
     
     @State private var showingActionSheet = false
-    @State private var imageSourceType: UIImagePickerController.SourceType?
-    @State private var documentPickerType: DocumentsType?
+    
+    @ObservedObject var fileUploadData = FileUploadData()
     
     @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
     
@@ -63,28 +63,51 @@ struct SignUpLegalDocumentsScreen: View {
                 .actionSheet(isPresented: $showingActionSheet) {
                     actionSheet
                 }
-                .sheet(item: $imageSourceType) { sourceType in
-                    ImagePicker(sourceType: sourceType, onImagePicked: uploadImage)
-                }
-                .sheet(item: $documentPickerType) { documentsType in
-                    DocumentPicker(documentTypes: documentsType.getDocumentsTypes(), onDocumentPicked: uploadFile)
+                .sheet(item: $fileUploadData.activeSheet) { sheet in
+                    getCurrentSheet(sheet)
                 }
         )
     }
     
     var actionSheet: ActionSheet {
         ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
-            .default(Text(LocalizedStringKey("take_photo"))) { self.imageSourceType = .camera },
-            .default(Text(LocalizedStringKey("choose_from_library"))) { self.imageSourceType = .photoLibrary },
+            .default(Text(LocalizedStringKey("take_photo"))) {
+                self.fileUploadData.imageSourceType = .camera
+            },
+            .default(Text(LocalizedStringKey("choose_from_photo_library"))) {
+                self.fileUploadData.imageSourceType = .photoLibrary
+            },
+            .default(Text(LocalizedStringKey("choose_from_device"))) {
+                self.fileUploadData.documentPickerType = .picture
+            },
             .cancel()
         ])
+    }
+    
+    private func getCurrentSheet(_ sheet: ActiveSheet) -> some View {
+        switch sheet {
+        
+        case .documentPicker:
+            guard let documentsType = self.fileUploadData.documentPickerType else { return AnyView(EmptyView()) }
+            
+            return AnyView(
+                DocumentPicker(documentTypes: documentsType.getDocumentsTypes(),
+                               onDocumentPicked: uploadFile))
+            
+        case .imagePicker:
+            guard let sourceType = self.fileUploadData.imageSourceType else { return AnyView(EmptyView()) }
+            
+            return AnyView(
+                ImagePicker(sourceType: sourceType,
+                            onImagePicked: uploadImage))
+        }
     }
     
     private func uploadDocuments() {
         switch scope {
 
         case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            documentPickerType = .archive
+            fileUploadData.documentPickerType = .archive
         
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             showingActionSheet = true
@@ -128,6 +151,8 @@ struct SignUpLegalDocumentsScreen: View {
         scope.skip()
     }
 }
+
+// MARK: Documents specific views
 
 fileprivate struct AadhaardCardDataFields: View  {
     let scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar
@@ -177,11 +202,20 @@ fileprivate struct DrugLicenseData: View  {
     
 }
 
-fileprivate enum DocumentsType: String, Identifiable {
+// MARK: File Upload Data
+
+fileprivate enum ActiveSheet: Identifiable {
+    case documentPicker
+    case imagePicker
+    
+    var id: Int { hashValue }
+}
+
+fileprivate enum DocumentsType: Identifiable {
     case archive
     case picture
     
-    var id: String { self.rawValue }
+    var id: Int { hashValue }
     
     func getDocumentsTypes() -> [String] {
         switch (self) {
@@ -192,3 +226,30 @@ fileprivate enum DocumentsType: String, Identifiable {
         }
     }
 }
+
+final class FileUploadData: ObservableObject {
+    @Published fileprivate var activeSheet: ActiveSheet? {
+        didSet {
+            if activeSheet == nil {
+                self.imageSourceType = nil
+                self.documentPickerType = nil
+            }
+        }
+    }
+    
+    var imageSourceType: UIImagePickerController.SourceType? {
+        didSet {
+            if imageSourceType == nil { return }
+            
+            activeSheet = .imagePicker
+        }
+    }
+    fileprivate var documentPickerType: DocumentsType? {
+        didSet {
+            if documentPickerType == nil { return }
+            
+            activeSheet = .documentPicker
+        }
+    }
+}
+

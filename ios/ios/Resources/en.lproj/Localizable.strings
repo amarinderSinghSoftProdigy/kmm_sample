@@ -94,7 +94,8 @@
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
-"choose_from_library" = "Choose From Library";
+"choose_from_photo_library" = "Choose From Photo Library";
+"choose_from_device" = "Upload From Device";
 
 // MARK: Alert
 "something_went_wrong" = "Something went wrong. Please, try again";
