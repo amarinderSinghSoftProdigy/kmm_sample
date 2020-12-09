@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.utils.AadhaarVerification
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
@@ -275,8 +276,10 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
 
             fun changeCard(card: String) {
-                aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
-                checkCanGoNext()
+                if (card.length <= 12) {
+                    aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
+                    checkCanGoNext()
+                }
             }
 
             fun changeShareCode(shareCode: String) {
@@ -294,7 +297,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
             override fun checkCanGoNext() {
                 canGoNext.value = aadhaarData.value.run {
-                    cardNumber.isNotEmpty() && shareCode.isNotEmpty()
+                    cardNumber.length == 12 && AadhaarVerification.isValid(cardNumber) && shareCode.length == 4
                 }
             }
         }
