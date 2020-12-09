@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import core
 
 extension View {
     @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
@@ -19,17 +20,7 @@ extension View {
         }
     }
     
-    func alert(_ isPresented: Binding<Bool>,
-               withTitleKey titleKey: String,
-               withMessageKey messageKey: String,
-               withButtonTextKey buttonTextKey: String) -> some View {
-        return self.alert(isPresented: isPresented) {
-            Alert(title: Text(LocalizedStringKey(titleKey)),
-                  message: Text(LocalizedStringKey(messageKey)),
-                  dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
-        }
-    }
-    
+    // MARK: Navigation bar
     func backButton(action: @escaping () -> ()) -> some View {
         let backButton = AnyView(
             Button(action: action) {
@@ -48,9 +39,46 @@ extension View {
             .navigationBarItems(leading: backButton)
     }
     
+    // MARK: Alerts
+    func alert(_ isPresented: Binding<Bool>,
+               withTitleKey titleKey: String,
+               withMessageKey messageKey: String,
+               withButtonTextKey buttonTextKey: String) -> some View {
+        return self.alert(isPresented: isPresented) {
+            Alert(title: Text(LocalizedStringKey(titleKey)),
+                  message: Text(LocalizedStringKey(messageKey)),
+                  dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
+        }
+    }
+    
+    func getAlert(withTitleKey titleKey: String,
+                  withMessageKey messageKey: String,
+                  withButtonTextKey buttonTextKey: String = "okay",
+                  withButtonAction buttonAction: (() -> ())? = nil) -> Alert {
+        Alert(title: Text(LocalizedStringKey(titleKey)),
+              message: Text(LocalizedStringKey(messageKey)),
+              dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey)),
+                                                  action: buttonAction))
+    }
+    
+    // MARK: Input Fields
     func hideKeyboardOnTap() -> some View {
         self.onTapGesture {
             UIApplication.shared.endEditing()
         }
+    }
+    
+    // MARK: View Modifiers
+    func errorAlert(withHandler errorsHandler: WithErrors) -> some View {
+        self.modifier(ErrorAlert(errorsHandler: errorsHandler))
+    }
+    
+    func fieldError(withLocalizedKey errorMessageKey: String?,
+                    withPadding padding: CGFloat = 16) -> some View {
+        self.modifier(FieldError(errorMessageKey: errorMessageKey, padding: padding))
+    }
+    
+    func scrollView(withInitialHeight initialHeight: CGFloat = 350) -> some View {
+        self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
 }

@@ -81,8 +81,11 @@ struct BaseScopeView: View {
             case let scopeValue as MainScope:
                 MainScreen(scope: scopeValue)
                 
-            case let scopeValue as ForgetPasswordScope:
-                AuthPasswordRestoreScreen(scope: scopeValue)
+            case let scopeValue as OtpScope:
+                OtpFlowScreen(scope: scopeValue)
+                
+            case let scopeValue as EnterNewPasswordScope:
+                AuthNewPasswordScreen(scope: scopeValue)
                 
             case let scopeValue as SignUpScope:
                 SignUpScreen(scope: scopeValue)

@@ -98,5 +98,6 @@
 "choose_from_device" = "Upload From Device";
 
 // MARK: Alert
+"error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";

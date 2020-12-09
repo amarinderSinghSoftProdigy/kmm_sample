@@ -22,6 +22,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Required to take a photo</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Barlow-Medium.ttf</string>
@@ -63,7 +65,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Required to take a photo</string>
 </dict>
 </plist>

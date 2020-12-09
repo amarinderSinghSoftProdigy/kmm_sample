@@ -11,7 +11,7 @@ import core
 class SwiftDatasource<T: AnyObject> : ObservableObject {
     private var dataSource: DataSource<T>
     
-    @Published private (set) var value: T?
+    @Published private(set) var value: T?
     
     init(dataSource: DataSource<T>) {
         self.dataSource = dataSource

@@ -32,7 +32,7 @@ struct PlaceholderTextView: View {
                 .padding([.leading, .trailing], padding)
         }
         .frame(height: height)
-        .modifier(FieldError(errorMessageKey: errorMessageKey, padding: padding))
+        .fieldError(withLocalizedKey: errorMessageKey, withPadding: padding)
     }
     
     init(placeholder: String, text: String?, errorMessageKey: String? = nil,  height: CGFloat = 50) {
@@ -40,34 +40,5 @@ struct PlaceholderTextView: View {
         self.text = text
         self.errorMessageKey = errorMessageKey
         self.height = height
-    }
-}
-
-struct FieldError: ViewModifier {
-    let padding: CGFloat
-    let errorMessageKey: String?
-    
-    func body(content: Content) -> some View {
-        VStack(spacing: 0) {
-            content
-            
-            if let errorMessageKey = self.errorMessageKey {
-                VStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(appColor: .red)
-                        .frame(height: 1)
-                
-                Text(LocalizedStringKey(errorMessageKey))
-                    .modifier(MedicoText(fontSize: 12, color: .red, multilineTextAlignment: .leading))
-                    .padding(.leading, padding)
-                }
-            }
-        }
-    }
-    
-    init(errorMessageKey: String?, padding: CGFloat = 16) {
-        self.errorMessageKey = errorMessageKey
-        
-        self.padding = padding
     }
 }

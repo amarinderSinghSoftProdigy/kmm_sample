@@ -10,17 +10,18 @@ import SwiftUI
 import core
 
 struct AuthNewPasswordScreen: View {
-    let scope: ForgetPasswordScope.EnterNewPassword
+    let scope: EnterNewPasswordScope
     
     @State var newPassword: String = ""
     @State var confirmationPassword: String = ""
     
     @State var canSubmitPassword: Bool = false
     
-    @Binding var passwordUpdateFailed: Bool
+    @ObservedObject var notification: SwiftDatasource<ScopeNotification>
+    @ObservedObject var passwordValidation: SwiftDatasource<DataPasswordValidation>
     
     var body: some View {
-        let errorMessageKey = scope.passwordValidation?.password ?? "something_went_wrong"
+        let errorMessageKey = self.passwordValidation.value?.password ?? "something_went_wrong"
         
         VStack(spacing: 12) {
             let arePasswordsValid = confirmationPassword.isEmpty || canSubmitPassword
@@ -32,7 +33,8 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: arePasswordsValid)
+                                           isValid: arePasswordsValid,
+                                           errorMessageKey: errorMessageKey)
                 .textContentType(.newPassword)
         
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
@@ -52,16 +54,14 @@ struct AuthNewPasswordScreen: View {
         .navigationBarTitle(LocalizedStringKey("new_password"), displayMode: .inline)
         .padding()
         
-        .alert($passwordUpdateFailed,
-               withTitleKey: "otp_error",
-               withMessageKey: errorMessageKey,
-               withButtonTextKey: "okay")
+        .modifier(NotificationAlertHandler(notification: notification))
     }
     
-    init(scope: ForgetPasswordScope.EnterNewPassword) {
+    init(scope: EnterNewPasswordScope) {
         self.scope = scope
         
-        self._passwordUpdateFailed = Binding.constant(scope.success.isFalse)
+        self.notification = SwiftDatasource(dataSource: scope.notifications)
+        self.passwordValidation = SwiftDatasource(dataSource: scope.passwordValidation)
     }
     
     private func checkPasswordsMatch(_ password: String) {

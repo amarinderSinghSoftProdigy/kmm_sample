@@ -9,8 +9,8 @@
 import SwiftUI
 import core
 
-struct AuthPasswordRestoreScreen: View {
-    let scope: ForgetPasswordScope
+struct OtpFlowScreen: View {
+    let scope: OtpScope
     
     var body: some View {
         GeometryReader { geometry in
@@ -28,14 +28,11 @@ struct AuthPasswordRestoreScreen: View {
     func getCurrentView(with geometry: GeometryProxy) ->  some View {
         switch scope {
         
-        case let scope as ForgetPasswordScope.PhoneNumberInput:
-            return AnyView(AuthPhoneRequestScreen(scope: scope, geometry: geometry))
+        case let scope as OtpScope.PhoneNumberInput:
+            return AnyView(OtpPhoneRequestScreen(scope: scope, geometry: geometry))
                 
-        case let scope as ForgetPasswordScope.AwaitVerification:
-            return AnyView(AuthPhoneVerification(scope: scope, geometry: geometry))
-            
-        case let scope as ForgetPasswordScope.EnterNewPassword:
-            return AnyView(AuthNewPasswordScreen(scope: scope))
+        case let scope as OtpScope.AwaitVerification:
+            return AnyView(OtpPhoneVerification(scope: scope, geometry: geometry))
             
         default:
             break
@@ -44,9 +41,3 @@ struct AuthPasswordRestoreScreen: View {
         return AnyView(Group {})
     }
 }
-
-//struct AuthRestoreScreen_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AuthRestoreScreen()
-//    }
-//}
