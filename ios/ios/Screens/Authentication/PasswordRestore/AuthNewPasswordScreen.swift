@@ -21,9 +21,11 @@ struct AuthNewPasswordScreen: View {
     @ObservedObject var passwordValidation: SwiftDatasource<DataPasswordValidation>
     
     var body: some View {
-        let errorMessageKey = self.passwordValidation.value?.password ?? "something_went_wrong"
+        let errorMessageKey = self.passwordValidation.value?.password
         
         VStack(spacing: 12) {
+            Spacer()
+            
             let arePasswordsValid = confirmationPassword.isEmpty || canSubmitPassword
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
@@ -33,8 +35,8 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: arePasswordsValid,
-                                           errorMessageKey: errorMessageKey)
+                                           isValid: errorMessageKey == nil && arePasswordsValid,
+                                           errorMessageKey: errorMessageKey ?? "something_went_wrong")
                 .textContentType(.newPassword)
         
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
@@ -50,11 +52,13 @@ struct AuthNewPasswordScreen: View {
             MedicoButton(localizedStringKey: "confirm", isEnabled: canSubmitPassword) {
                 scope.changePassword(newPassword: newPassword)
             }
+            
+            Spacer()
         }
+        .keyboardResponder()
         .navigationBarTitle(LocalizedStringKey("new_password"), displayMode: .inline)
         .padding()
-        
-        .modifier(NotificationAlertHandler(notification: notification))
+        .notificationAlert(withHandler: scope) { _ = scope.finishResetPasswordFlow() }
     }
     
     init(scope: EnterNewPasswordScope) {

@@ -87,11 +87,19 @@ struct ErrorAlert: ViewModifier {
     }
 }
 
-struct NotificationAlertHandler: ViewModifier {
-    private var notification: SwiftDatasource<ScopeNotification>
+struct NotificationAlert: ViewModifier {
+    let notificationsHandler: WithNotifications
+    let onDismiss: (() -> ())?
+    
+    @ObservedObject var notification: SwiftDatasource<ScopeNotification>
     private var showsAlert: Binding<Bool>
     
-    init(notification: SwiftDatasource<ScopeNotification>) {
+    init(notificationsHandler: WithNotifications,
+         onDismiss: (() -> ())? = nil) {
+        self.notificationsHandler = notificationsHandler
+        self.onDismiss = onDismiss
+        
+        let notification = SwiftDatasource(dataSource: notificationsHandler.notifications)
         self.notification = notification
         
         showsAlert = Binding(get: { notification.value != nil }, set: { _ in })
@@ -100,11 +108,15 @@ struct NotificationAlertHandler: ViewModifier {
     func body(content: Content) -> some View {
         content
             .alert(isPresented: showsAlert) {
-                let title = "error"
-                let body = "something_went_wrong"
+                let title = notification.value?.title ?? ""
+                let body = notification.value?.body ?? ""
                 
                 return content.getAlert(withTitleKey: title,
-                                        withMessageKey: body)
+                                        withMessageKey: body,
+                                        withButtonAction: {
+                                            notificationsHandler.dismissNotification()
+                                            onDismiss?()
+                                        })
             }
     }
 }

@@ -45,6 +45,7 @@
 "new_password_repeat" = "Repeat New Password";
 "confirm" = "Confirm";
 "password_doesnt_match" = "Password doesn’t match";
+"password_change_success" = "Successfully changed the password";
 
 // MARK: Authentication Sign Up
 "next" = "Next";
@@ -97,6 +98,7 @@
 "choose_from_device" = "Upload From Device";
 
 // MARK: Alert
+"success" = "Success!";
 "error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";

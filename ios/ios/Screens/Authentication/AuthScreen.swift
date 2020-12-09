@@ -41,7 +41,6 @@ struct AuthScreen: View {
                 .padding(.bottom, 30)
         }
         .keyboardResponder()
-        .hideKeyboardOnTap()
     }
     
     var background: some View {

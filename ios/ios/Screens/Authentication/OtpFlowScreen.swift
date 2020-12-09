@@ -14,14 +14,8 @@ struct OtpFlowScreen: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                AppColor.primary.color.edgesIgnoringSafeArea(.all)
-                
-                getCurrentView(with: geometry)
-            }
-            .backButton { scope.goBack() }
+            getCurrentView(with: geometry)
         }
-        .hideKeyboardOnTap()
         .keyboardResponder()
     }
     

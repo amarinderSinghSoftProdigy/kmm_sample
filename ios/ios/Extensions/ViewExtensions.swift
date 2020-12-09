@@ -73,6 +73,12 @@ extension View {
         self.modifier(ErrorAlert(errorsHandler: errorsHandler))
     }
     
+    func notificationAlert(withHandler notificationsHandler: WithNotifications,
+                           onDismiss: (() -> ())? = nil) -> some View {
+        self.modifier(NotificationAlert(notificationsHandler: notificationsHandler,
+                                        onDismiss: onDismiss))
+    }
+    
     func fieldError(withLocalizedKey errorMessageKey: String?,
                     withPadding padding: CGFloat = 16) -> some View {
         self.modifier(FieldError(errorMessageKey: errorMessageKey, padding: padding))

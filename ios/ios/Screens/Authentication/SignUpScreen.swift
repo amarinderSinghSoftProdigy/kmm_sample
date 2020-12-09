@@ -13,13 +13,7 @@ struct SignUpScreen: View {
     let scope: SignUpScope
     
     var body: some View {
-        ZStack {
-            AppColor.primary.color.edgesIgnoringSafeArea(.all)
-        
-            getCurrentView()
-        }
-        .backButton { scope.goBack() }
-        .hideKeyboardOnTap()
+        getCurrentView()
     }
     
     private func getCurrentView() -> some View {

@@ -62,7 +62,12 @@ struct BaseScopeView: View {
     var body: some View {
         ZStack {
             NavigationView {
-                self.currentView
+                ZStack {
+                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                
+                    getCurrentViewWithModifiers()
+                }
+                .hideKeyboardOnTap()
             }
 
             if let isInProgress = self.isInProgress.value, isInProgress == true {
@@ -94,6 +99,20 @@ struct BaseScopeView: View {
                 Group {}
             }
         }
+    }
+    
+    private func getCurrentViewWithModifiers() -> some View {
+        var view = AnyView(self.currentView)
+        
+        if let scopeWithErrors = scope as? WithErrors {
+            view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
+        }
+        
+        if let goBackScope = scope as? CanGoBack {
+            view = AnyView(view.backButton { goBackScope.goBack() })
+        }
+        
+        return view
     }
     
     init(scope: BaseScope) {

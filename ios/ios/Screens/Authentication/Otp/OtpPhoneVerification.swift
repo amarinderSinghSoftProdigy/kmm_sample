@@ -15,12 +15,18 @@ struct OtpPhoneVerification: View {
     
     var body: some View {
         ZStack {
-            let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.phoneNumber)
-            OtpDetailsView(phoneNumber: formattedPhone,
-                           geometry: geometry,
-                           leftAttempts: scope.attemptsLeft,
-                           timerValue: scope.resendTimer) { code in
-                scope.submitOtp(otp: code)
+            VStack {
+                Spacer()
+                
+                let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.phoneNumber)
+                OtpDetailsView(phoneNumber: formattedPhone,
+                               geometry: geometry,
+                               leftAttempts: scope.attemptsLeft,
+                               timerValue: scope.resendTimer) { code in
+                    scope.submitOtp(otp: code)
+                }
+                
+                Spacer()
             }
             
             VStack {
@@ -31,8 +37,6 @@ struct OtpPhoneVerification: View {
                     .frame(height: otpHeight)
             }
         }
-        .errorAlert(withHandler: scope)
-        
         .navigationBarTitle(LocalizedStringKey("phone_verification"), displayMode: .inline)
     }
     

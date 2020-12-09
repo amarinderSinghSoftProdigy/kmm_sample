@@ -20,7 +20,6 @@ struct OtpPhoneRequestScreen: View {
     
     var body: some View {
         self.getView()
-            .errorAlert(withHandler: scope)
     }
     
     init(scope: OtpScope.PhoneNumberInput, geometry: GeometryProxy) {
@@ -38,6 +37,8 @@ struct OtpPhoneRequestScreen: View {
         
         return AnyView(
             VStack {
+                Spacer()
+                
                 Text(LocalizedStringKey("reset_password_hint"))
                     .modifier(MedicoText(textWeight: .medium, color: .textGrey))
                     .multilineTextAlignment(.center)
@@ -51,6 +52,8 @@ struct OtpPhoneRequestScreen: View {
                 MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                     scope.sendOtp(phoneNumber: phone)
                 }
+                
+                Spacer()
             }
             .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
             .padding()
