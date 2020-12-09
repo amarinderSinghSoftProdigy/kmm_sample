@@ -26,13 +26,12 @@
 "log_out" = "Log out";
 
 // MARK: Authentication Password Restore Screen
-"otp_error" = "OTP Error";
-
 "password_reset" = "Password Reset";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
 "phone_number" = "Phone Number";
 "get_code" = "Get Code";
 
+// MARK: OTP Await Verification
 "phone_verification" = "Phone Verification";
 "verification_code_sent_hint %@" = "We sent you a verification code to your phone number %@";
 "attempts_left %lld" = "%lld attempts left";
@@ -40,8 +39,8 @@
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
 "resend" = "Resend";
-"otp_error_description" = "OTP is incorrect. Please, try again";
 
+// MARK: Enter New Password
 "new_password" = "New Password";
 "new_password_repeat" = "Repeat New Password";
 "confirm" = "Confirm";

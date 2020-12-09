@@ -13,47 +13,15 @@ struct OtpPhoneVerification: View {
     let scope: OtpScope.AwaitVerification
     let geometry: GeometryProxy
     
-    @State var code: String = ""
-    
-    @ObservedObject var attemptsLeft: SwiftDatasource<KotlinInt>
-    @ObservedObject var timerValue: SwiftDatasource<KotlinLong>
-    
     var body: some View {
         ZStack {
-            VStack {
-                let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.phoneNumber)
-                Text("verification_code_sent_hint \(formattedPhone)")
-                    .modifier(MedicoText(textWeight: .medium, color: .textGrey))
-                    .multilineTextAlignment(.center)
-                    .padding([.trailing, .leading], geometry.size.width * 0.15)
-                
-                if let attemptsLeft = self.attemptsLeft.value as? Int {
-                    if let timerValue = timerValue.value as? Double,
-                       timerValue > 0 && attemptsLeft > 0 {
-                        Text("\(TimeInterval(milliseconds: timerValue).timeString)")
-                            .modifier(MedicoText(textWeight: .bold, fontSize: 15))
-                            .padding([.top, .bottom])
-                    }
-                    else {
-                        Text("attempts_left \(attemptsLeft)")
-                            .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
-                            .padding([.top, .bottom])
-                    }
-                    
-                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
-                                                 text: code,
-                                                 onTextChange: { newValue in code = newValue},
-                                                 keyboardType: .numberPad)
-                        .padding([.top, .bottom])
-                        .textContentType(.oneTimeCode)
-                    
-                    MedicoButton(localizedStringKey: "submit",
-                                 isEnabled: !code.isEmpty && attemptsLeft > 0) {
-                        scope.submitOtp(otp: code)
-                    }
-                }
+            let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.phoneNumber)
+            OtpDetailsView(phoneNumber: formattedPhone,
+                           geometry: geometry,
+                           leftAttempts: scope.attemptsLeft,
+                           timerValue: scope.resendTimer) { code in
+                scope.submitOtp(otp: code)
             }
-            .padding()
             
             VStack {
                 Spacer()
@@ -63,16 +31,7 @@ struct OtpPhoneVerification: View {
                     .frame(height: otpHeight)
             }
         }
-        
-//        .alert($isCodeIncorrect,
-//               withTitleKey: "otp_error",
-//               withMessageKey: "otp_error_description",
-//               withButtonTextKey: "okay")
-//
-//        .alert($isResendUnsuccessful,
-//               withTitleKey: "otp_error",
-//               withMessageKey: "something_went_wrong",
-//               withButtonTextKey: "okay")
+        .errorAlert(withHandler: scope)
         
         .navigationBarTitle(LocalizedStringKey("phone_verification"), displayMode: .inline)
     }
@@ -80,9 +39,6 @@ struct OtpPhoneVerification: View {
     init(scope: OtpScope.AwaitVerification, geometry: GeometryProxy) {
         self.scope = scope
         self.geometry = geometry
-        
-        self.attemptsLeft = SwiftDatasource(dataSource: scope.attemptsLeft)
-        self.timerValue = SwiftDatasource(dataSource: scope.resendTimer)
     }
     
     private func resendOtp() {
@@ -90,7 +46,69 @@ struct OtpPhoneVerification: View {
     }
 }
 
-struct ResendOtpView: View {
+fileprivate struct OtpDetailsView: View {
+    let phoneNumber: String
+    let geometry: GeometryProxy
+    
+    let buttonAction: (String) -> ()
+    
+    @State private var code: String = ""
+    
+    @ObservedObject var attemptsLeft: SwiftDatasource<KotlinInt>
+    @ObservedObject var timerValue: SwiftDatasource<KotlinLong>
+    
+    var body: some View {
+        VStack {
+            Text("verification_code_sent_hint \(phoneNumber)")
+                .modifier(MedicoText(textWeight: .medium, color: .textGrey))
+                .multilineTextAlignment(.center)
+                .padding([.trailing, .leading], geometry.size.width * 0.15)
+            
+            if let attemptsLeft = self.attemptsLeft.value as? Int {
+                if let timerValue = timerValue.value as? Double,
+                   timerValue > 0 && attemptsLeft > 0 {
+                    Text("\(TimeInterval(milliseconds: timerValue).timeString)")
+                        .modifier(MedicoText(textWeight: .bold, fontSize: 15))
+                        .padding([.top, .bottom])
+                }
+                else {
+                    Text("attempts_left \(attemptsLeft)")
+                        .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
+                        .padding([.top, .bottom])
+                }
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
+                                             text: code,
+                                             onTextChange: { newValue in code = newValue},
+                                             keyboardType: .numberPad)
+                    .padding([.top, .bottom])
+                    .textContentType(.oneTimeCode)
+                
+                MedicoButton(localizedStringKey: "submit",
+                             isEnabled: !code.isEmpty && attemptsLeft > 0) {
+                    buttonAction(code)
+                }
+            }
+        }
+        .padding()
+    }
+    
+    init(phoneNumber: String,
+         geometry: GeometryProxy,
+         leftAttempts: DataSource<KotlinInt>,
+         timerValue: DataSource<KotlinLong>,
+         buttonAction: @escaping (String) -> ()) {
+        self.phoneNumber = phoneNumber
+        self.geometry = geometry
+        
+        self.buttonAction = buttonAction
+        
+        self.attemptsLeft = SwiftDatasource(dataSource: leftAttempts)
+        self.timerValue = SwiftDatasource(dataSource: timerValue)
+    }
+}
+
+fileprivate struct ResendOtpView: View {
     let resendAction: () -> ()
     
     var body: some View {
