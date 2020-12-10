@@ -37,6 +37,7 @@ struct SignUpLegalDocumentsScreen: View {
         let iterator = scope.supportedFileTypes.iterator()
         while iterator.hasNext() {
             guard let fileType = iterator.next() as? DataFileType,
+                  fileType.isMandatory,
                   let uti = fileType.getUniformTypeIdentifier() else { continue }
             
             documentTypes.append(uti)
@@ -150,6 +151,7 @@ struct SignUpLegalDocumentsScreen: View {
     
     private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
         let base64String = data.base64EncodedString(options: .lineLength64Characters)
+        let fileType = DataFileType.Utils().fromExtension(ext: fileExtension)
         
         switch scope {
 
@@ -157,7 +159,7 @@ struct SignUpLegalDocumentsScreen: View {
             _ = aadhaarScope.upload(base64: base64String)
                     
         case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            _ = drugLicenseScope.upload(base64: base64String, fileType: DataFileType.unknown)
+            _ = drugLicenseScope.upload(base64: base64String, fileType: fileType)
 
         default:
             break
