@@ -11,6 +11,7 @@ import core
 
 struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
+    private var documentTypes: [String]!
     
     @State private var showingActionSheet = false
     
@@ -26,6 +27,22 @@ struct SignUpLegalDocumentsScreen: View {
         self.scope = scope
 
         self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        
+        self.documentTypes = getAvailableDocumentTypes(for: scope)
+    }
+    
+    private func getAvailableDocumentTypes(for scope: SignUpScope.LegalDocuments) -> [String] {
+        var documentTypes = [String]()
+        
+        let iterator = scope.supportedFileTypes.iterator()
+        while iterator.hasNext() {
+            guard let fileType = iterator.next() as? DataFileType,
+                  let uti = fileType.getUniformTypeIdentifier() else { continue }
+            
+            documentTypes.append(uti)
+        }
+        
+        return documentTypes
     }
     
     private func getView() -> some View {
@@ -78,7 +95,7 @@ struct SignUpLegalDocumentsScreen: View {
                 self.fileUploadData.imageSourceType = .photoLibrary
             },
             .default(Text(LocalizedStringKey("choose_from_device"))) {
-                self.fileUploadData.documentPickerType = .picture
+                fileUploadData.showDocumentPicker = true
             },
             .cancel()
         ])
@@ -88,10 +105,10 @@ struct SignUpLegalDocumentsScreen: View {
         switch sheet {
         
         case .documentPicker:
-            guard let documentsType = self.fileUploadData.documentPickerType else { return AnyView(EmptyView()) }
+            guard fileUploadData.showDocumentPicker else { return AnyView(EmptyView()) }
             
             return AnyView(
-                DocumentPicker(documentTypes: documentsType.getDocumentsTypes(),
+                DocumentPicker(documentTypes: documentTypes,
                                onDocumentPicked: uploadFile))
             
         case .imagePicker:
@@ -107,7 +124,7 @@ struct SignUpLegalDocumentsScreen: View {
         switch scope {
 
         case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            fileUploadData.documentPickerType = .archive
+            fileUploadData.showDocumentPicker = true
         
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             showingActionSheet = true
@@ -133,14 +150,14 @@ struct SignUpLegalDocumentsScreen: View {
     
     private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
         let base64String = data.base64EncodedString(options: .lineLength64Characters)
+        
         switch scope {
 
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
             _ = aadhaarScope.upload(base64: base64String)
                     
         case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-//            _ = drugLicenseScope.upload(base64String)
-            break
+            _ = drugLicenseScope.upload(base64: base64String, fileType: DataFileType.unknown)
 
         default:
             break
@@ -211,18 +228,29 @@ fileprivate enum ActiveSheet: Identifiable {
     var id: Int { hashValue }
 }
 
-fileprivate enum DocumentsType: Identifiable {
-    case archive
-    case picture
-    
-    var id: Int { hashValue }
-    
-    func getDocumentsTypes() -> [String] {
-        switch (self) {
-        case .archive:
-            return ["com.pkware.zip-archive"]
-        case .picture:
-            return ["public.jpeg", "public.png", "com.adobe.pdf"]
+extension DataFileType {
+    func getUniformTypeIdentifier() -> String? {
+        switch self {
+        case .jpeg, .jpg:
+            return "public.jpeg"
+        
+        case .pdf:
+            return "com.adobe.pdf"
+            
+        case .png:
+            return "public.png"
+            
+        case .xzip:
+            return ""
+            
+        case .zip:
+            return "com.pkware.zip-archive"
+            
+        case .unknown:
+            return "public.content"
+            
+        default:
+            return nil
         }
     }
 }
@@ -232,7 +260,7 @@ final class FileUploadData: ObservableObject {
         didSet {
             if activeSheet == nil {
                 self.imageSourceType = nil
-                self.documentPickerType = nil
+                self.showDocumentPicker = false
             }
         }
     }
@@ -244,9 +272,10 @@ final class FileUploadData: ObservableObject {
             activeSheet = .imagePicker
         }
     }
-    fileprivate var documentPickerType: DocumentsType? {
+    
+    var showDocumentPicker: Bool = false {
         didSet {
-            if documentPickerType == nil { return }
+            if !showDocumentPicker { return }
             
             activeSheet = .documentPicker
         }
