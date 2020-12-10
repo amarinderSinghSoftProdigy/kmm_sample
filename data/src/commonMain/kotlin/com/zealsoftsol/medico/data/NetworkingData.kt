@@ -106,16 +106,16 @@ sealed class Location {
     object Unknown : Location()
 }
 
-enum class FileType(val mimeType: String) {
-    PNG("image/png"),
-    JPEG("image/jpeg"),
-    JPG("image/jpg"),
-    PDF("application/pdf"),
-    ZIP("application/zip"),
-    XZIP("multipart/x-zip"),
-    UNKNOWN("*/*");
+enum class FileType(val mimeType: String, val isMandatory: Boolean) {
+    PNG("image/png", true),
+    JPEG("image/jpeg", true),
+    JPG("image/jpg", true),
+    PDF("application/pdf", true),
+    ZIP("application/zip", true),
+    XZIP("multipart/x-zip", false),
+    UNKNOWN("*/*", false);
 
-    companion object {
+    companion object Utils {
         fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
         fun forAadhaar() = arrayOf(ZIP, XZIP)
 
