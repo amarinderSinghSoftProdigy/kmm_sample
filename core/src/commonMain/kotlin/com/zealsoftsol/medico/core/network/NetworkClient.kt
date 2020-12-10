@@ -76,10 +76,10 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         tempTokenMap.clear()
     }
 
-    override suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo> = ktorDispatcher {
+    override suspend fun login(request: UserRequest): SimpleBody<TokenInfo> = ktorDispatcher {
         client.post<SimpleBody<TokenInfo>>("$AUTH_URL/medico/login") {
             jsonBody(request)
-        }.getWrappedBody()
+        }
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {

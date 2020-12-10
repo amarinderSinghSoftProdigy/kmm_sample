@@ -145,7 +145,7 @@ sealed class Response {
     class Status(override val type: String) : Response()
 
     @Serializable
-    class Body<T, V>(
+    data class Body<T, V>(
         private val body: T? = null,
         val error: ErrorCode? = null,
         val validations: V? = null,

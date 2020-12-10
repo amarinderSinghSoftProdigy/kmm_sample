@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -23,7 +24,7 @@ interface NetworkScope {
     fun clearToken()
 
     interface Auth : NetworkScope {
-        suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo>
+        suspend fun login(request: UserRequest): SimpleBody<TokenInfo>
         suspend fun logout(): Boolean
 
         suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode>

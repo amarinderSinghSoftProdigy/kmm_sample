@@ -41,13 +41,13 @@ class UserRepo(
         }
     }
 
-    suspend fun login(authCredentials: AuthCredentials): Boolean {
+    suspend fun login(authCredentials: AuthCredentials): Response.Wrapped<ErrorCode> {
         settings.putString(AUTH_ID_KEY, authCredentials.phoneNumberOrEmail)
         settings.putString(AUTH_PASS_KEY, authCredentials.password)
-        val (tokenInfo, isSuccess) = networkAuthScope.login(
+        val response = networkAuthScope.login(
             UserRequest(authCredentials.phoneNumberOrEmail, authCredentials.password)
         )
-        tokenInfo?.let {
+        response.getBodyOrNull()?.let {
             networkAuthScope.token = it.token
             val json = Json.encodeToString(
                 User.serializer(),
@@ -61,9 +61,8 @@ class UserRepo(
             )
             settings.putString(AUTH_USER_KEY, json)
             settings.putString(AUTH_STATE, AuthState.AUTHORIZED.key)
-            true
         }
-        return isSuccess
+        return response.getWrappedError()
     }
 
     suspend fun logout(): Boolean {

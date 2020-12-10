@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -30,8 +31,8 @@ class MockAuthScope : NetworkScope.Auth {
 
     }
 
-    override suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo> = mockResponse {
-        Response.Wrapped(TokenInfo("token", 10000000, "", ""), true)
+    override suspend fun login(request: UserRequest): SimpleBody<TokenInfo> = mockResponse {
+        Response.Body(TokenInfo("token", 10000000, "", ""), type = "success")
     }
 
     override suspend fun logout(): Boolean = mockBooleanResponse()

@@ -65,5 +65,10 @@ data class EnterNewPasswordScope(
     fun finishResetPasswordFlow() =
         EventCollector.sendEvent(Event.Action.ResetPassword.Finish)
 
-    object PasswordChangedSuccessfully : ScopeNotification
+    object PasswordChangedSuccessfully : ScopeNotification {
+        override val title: String
+            get() = "success"
+        override val body: String
+            get() = "password_change_success"
+    }
 }

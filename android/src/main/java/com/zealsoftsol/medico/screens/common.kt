@@ -21,7 +21,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,10 +43,7 @@ import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.WithErrors
 import com.zealsoftsol.medico.core.mvi.scope.WithNotifications
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
@@ -183,42 +179,18 @@ fun <T : WithErrors> T.showErrorAlert() {
 fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotification() }) {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
+        val titleResourceId = ContextAmbient.current.runCatching {
+            resources.getIdentifier(it.title, "string", packageName)
+        }.getOrNull() ?: 0
+        val bodyResourceId = ContextAmbient.current.runCatching {
+            resources.getIdentifier(it.body, "string", packageName)
+        }.getOrNull() ?: 0
         ErrorDialog(
-            title = it.title,
-            text = it.body,
+            title = stringResource(id = titleResourceId),
+            text = stringResource(id = bodyResourceId),
             onDismiss = onDismiss
         )
     }
-}
-
-@Composable
-private inline val ScopeNotification.title: String
-    get() = when (this) {
-        is EnterNewPasswordScope.PasswordChangedSuccessfully -> stringResource(id = R.string.success)
-        else -> throw UnsupportedOperationException("unknown ScopeNotification")
-    }
-
-@Composable
-private inline val ScopeNotification.body: String
-    get() = when (this) {
-        is EnterNewPasswordScope.PasswordChangedSuccessfully -> stringResource(id = R.string.password_change_success)
-        else -> throw UnsupportedOperationException("unknown ScopeNotification")
-    }
-
-@Composable
-private inline fun <T : BaseScope> T.withState(event: T.() -> Boolean): MutableState<Boolean> {
-    return remember(this) { mutableStateOf(event()) }
-}
-
-@Composable
-@Deprecated("only for login")
-fun <T : BaseScope> T.showError(title: String, text: String = "", case: T.() -> Boolean) {
-    val state = withState(event = case)
-    if (state.value) ErrorDialog(
-        title = title,
-        text = text,
-        onDismiss = { state.value = false },
-    )
 }
 
 @Composable

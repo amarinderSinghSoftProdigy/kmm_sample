@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.BooleanEvent
 import com.zealsoftsol.medico.core.extensions.ifTrue
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
@@ -10,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.AuthState
+import com.zealsoftsol.medico.data.ErrorCode
 
 internal class AuthEventDelegate(
     navigator: Navigator,
@@ -27,7 +27,8 @@ internal class AuthEventDelegate(
 
     private suspend fun authTryLogin() {
         navigator.withScope<LogInScope> {
-            if (withProgress { userRepo.login(it.credentials.value) }) {
+            val (error, isSuccess) = withProgress { userRepo.login(it.credentials.value) }
+            if (isSuccess) {
                 clearQueue()
                 setCurrentScope(
                     MainScope(
@@ -35,7 +36,7 @@ internal class AuthEventDelegate(
                     )
                 )
             } else {
-                setCurrentScope(it.copy(success = BooleanEvent.`false`))
+                it.errors.value = error ?: ErrorCode()
             }
         }
     }
