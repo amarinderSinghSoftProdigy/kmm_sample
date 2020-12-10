@@ -28,7 +28,8 @@ sealed class OtpScope : BaseScope(), CanGoBack {
     data class AwaitVerification(
         val phoneNumber: String,
         val resendTimer: DataSource<Long> = DataSource(RESEND_TIMER),
-        val attemptsLeft: DataSource<Int> = DataSource(MAX_RESEND_ATTEMPTS),
+        val resendActive: DataSource<Boolean> = DataSource(false),
+        val attemptsLeft: DataSource<Int> = DataSource(MAX_RESEND_ATTEMPTS + 1),
         override val errors: DataSource<ErrorCode?> = DataSource(null),
     ) : OtpScope(), WithErrors {
 
@@ -42,7 +43,7 @@ sealed class OtpScope : BaseScope(), CanGoBack {
         fun resendOtp() = EventCollector.sendEvent(Event.Action.Otp.Resend)
 
         companion object {
-            const val RESEND_TIMER = 3 * 60 * 1000L
+            const val RESEND_TIMER = 1 * 60 * 1000L
             private const val MAX_RESEND_ATTEMPTS = 3
         }
     }

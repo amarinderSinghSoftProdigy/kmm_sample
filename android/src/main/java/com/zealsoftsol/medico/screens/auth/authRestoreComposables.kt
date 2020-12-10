@@ -43,51 +43,6 @@ import com.zealsoftsol.medico.screens.showErrorAlert
 import java.text.SimpleDateFormat
 
 @Composable
-private fun BasicAuthRestoreScreen(
-    title: String,
-    subtitle: String,
-    back: CanGoBack,
-    body: @Composable ColumnScope.() -> Boolean,
-    buttonText: String,
-    onButtonClick: () -> Unit,
-    footer: (@Composable BoxScope.() -> Unit)? = null
-) {
-    Box(modifier = Modifier.fillMaxSize()
-        .background(MaterialTheme.colors.primary)
-    ) {
-        BasicTabBar(back = back, title = title)
-        Column(modifier = Modifier.align(Alignment.Center).padding(16.dp)) {
-            if (subtitle.isNotEmpty()) {
-                Text(
-                    text = subtitle,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.body2,
-                    color = ConstColors.gray,
-                    modifier = Modifier.padding(horizontal = 60.dp),
-                )
-            }
-            Spacer(modifier = Modifier.size(32.dp))
-            val isButtonEnabled = body()
-            Spacer(modifier = Modifier.size(12.dp))
-            MedicoButton(
-                text = buttonText,
-                onClick = onButtonClick,
-                isEnabled = isButtonEnabled,
-            )
-        }
-        footer?.let {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(color = Color.White)
-            ) {
-                it.invoke(this)
-            }
-        }
-    }
-}
-
-@Composable
 fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
     val phoneState = scope.phoneNumber.flow.collectAsState()
     BasicAuthRestoreScreen(
@@ -130,7 +85,7 @@ fun AuthAwaitVerificationScreen(
                 )
             } else {
                 Text(
-                    text = "${scope.attemptsLeft} ${stringResource(id = R.string.attempt_left)}",
+                    text = "${attempts.value} ${stringResource(id = R.string.attempt_left)}",
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight.W600,
                     color = ConstColors.lightBlue,
@@ -144,16 +99,19 @@ fun AuthAwaitVerificationScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 onValueChange = { code.value = it },
             )
-            code.value.isNotEmpty() && attempts.value > 0
+            code.value.isNotEmpty()
         },
         buttonText = stringResource(id = R.string.submit),
         onButtonClick = { scope.submitOtp(code.value) },
         footer = {
+            val isResendActive = scope.resendActive.flow.collectAsState()
             Row(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(vertical = 24.dp)
-                    .clickable(onClick = { scope.resendOtp() })
+                    .run {
+                        if (isResendActive.value) clickable(onClick = { scope.resendOtp() }) else this
+                    }
             ) {
                 Text(
                     text = stringResource(id = R.string.didnt_get_code),
@@ -163,7 +121,7 @@ fun AuthAwaitVerificationScreen(
                 Text(
                     text = stringResource(id = R.string.resend),
                     style = MaterialTheme.typography.subtitle2,
-                    color = ConstColors.lightBlue,
+                    color = if (isResendActive.value) ConstColors.lightBlue else ConstColors.gray,
                 )
             }
         }
@@ -205,4 +163,51 @@ fun AuthEnterNewPasswordScreen(scope: EnterNewPasswordScope) {
         onButtonClick = { scope.changePassword(password2.value) }
     )
     scope.showAlert(onDismiss = { scope.finishResetPasswordFlow() })
+}
+
+@Composable
+private fun BasicAuthRestoreScreen(
+    title: String,
+    subtitle: String,
+    back: CanGoBack,
+    body: @Composable ColumnScope.() -> Boolean,
+    buttonText: String,
+    onButtonClick: () -> Unit,
+    footer: (@Composable BoxScope.() -> Unit)? = null
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colors.primary)
+    ) {
+        BasicTabBar(back = back, title = title)
+        Column(modifier = Modifier.align(Alignment.Center).padding(16.dp)) {
+            if (subtitle.isNotEmpty()) {
+                Text(
+                    text = subtitle,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.body2,
+                    color = ConstColors.gray,
+                    modifier = Modifier.padding(horizontal = 60.dp),
+                )
+            }
+            Spacer(modifier = Modifier.size(32.dp))
+            val isButtonEnabled = body()
+            Spacer(modifier = Modifier.size(12.dp))
+            MedicoButton(
+                text = buttonText,
+                onClick = onButtonClick,
+                isEnabled = isButtonEnabled,
+            )
+        }
+        footer?.let {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(color = Color.White)
+            ) {
+                it.invoke(this)
+            }
+        }
+    }
 }
