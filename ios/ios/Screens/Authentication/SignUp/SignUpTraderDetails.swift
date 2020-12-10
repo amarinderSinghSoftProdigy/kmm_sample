@@ -35,7 +35,7 @@ struct SignUpTraderDetails: View {
                 getInputField(forType: $0)
             }
         }
-        .modifier(ScrollViewModifier())
+        .scrollView()
     }
     
     init(scope: SignUpScope.TraderData) {
@@ -113,6 +113,6 @@ struct SignUpTraderDetails: View {
     private func tryToSignUp() {
         guard let registration = self.registration.value else { return }
         
-        scope.tryToSignUp(userRegistration: registration)
+        _ = scope.validate(userRegistration: registration)
     }
 }

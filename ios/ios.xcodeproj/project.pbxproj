@@ -20,11 +20,13 @@
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
+		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
+		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
-		339C5041257A2E7600AAB45F /* ScrollViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* ScrollViewModifier.swift */; };
+		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
@@ -36,15 +38,16 @@
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
 		33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
-		33F151EB256FE1F000C4C656 /* AuthPhoneRequestScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151EA256FE1F000C4C656 /* AuthPhoneRequestScreen.swift */; };
-		33F151F1256FE7F000C4C656 /* AuthPhoneVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151F0256FE7F000C4C656 /* AuthPhoneVerification.swift */; };
+		33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151EA256FE1F000C4C656 /* OtpPhoneRequestScreen.swift */; };
+		33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */; };
 		33F151F5256FEAAC00C4C656 /* MedicoButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151F4256FEAAC00C4C656 /* MedicoButton.swift */; };
 		33F1520A256FF5D200C4C656 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33F15209256FF5D200C4C656 /* Colors.xcassets */; };
-		33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */; };
+		33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */; };
 		33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */; };
 		33F8DFC525763A91009E98EE /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
 		33F8DFC625763A91009E98EE /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		33F8DFE325764253009E98EE /* Barlow-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33F8DFE225764253009E98EE /* Barlow-Bold.ttf */; };
+		33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */; };
 		3FAAABB6433903C9E319491F /* Pods_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF81242A565900829871 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF80242A565900829871 /* SceneDelegate.swift */; };
@@ -106,11 +109,13 @@
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
+		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
+		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
-		339C5040257A2E7600AAB45F /* ScrollViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewModifier.swift; sourceTree = "<group>"; };
+		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
@@ -122,14 +127,15 @@
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
 		33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhoneNumberUtil.swift; path = ios/utils/PhoneNumberUtil.swift; sourceTree = SOURCE_ROOT; };
-		33F151EA256FE1F000C4C656 /* AuthPhoneRequestScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPhoneRequestScreen.swift; sourceTree = "<group>"; };
-		33F151F0256FE7F000C4C656 /* AuthPhoneVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPhoneVerification.swift; sourceTree = "<group>"; };
+		33F151EA256FE1F000C4C656 /* OtpPhoneRequestScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreen.swift; sourceTree = "<group>"; };
+		33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneVerification.swift; sourceTree = "<group>"; };
 		33F151F4256FEAAC00C4C656 /* MedicoButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoButton.swift; sourceTree = "<group>"; };
 		33F15209256FF5D200C4C656 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthPasswordRestoreScreen.swift; sourceTree = "<group>"; };
+		33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpFlowScreen.swift; sourceTree = "<group>"; };
 		33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUserTypeScreen.swift; sourceTree = "<group>"; };
 		33F8DFC425763A91009E98EE /* core.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = core.framework; path = "../core/build/xcode-frameworks/core.framework"; sourceTree = "<group>"; };
 		33F8DFE225764253009E98EE /* Barlow-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Bold.ttf"; sourceTree = "<group>"; };
+		33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7B242A565900829871 /* Medico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -196,6 +202,7 @@
 			children = (
 				33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */,
 				339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */,
+				336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */,
 				33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */,
 				335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */,
 			);
@@ -222,13 +229,14 @@
 		33789560256E3BBC0034D79F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				338F98EA257F7808002D36FF /* UIKitElements */,
 				33621CF9257125B2004BD4CF /* ActivityView.swift */,
+				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				33F151F4256FEAAC00C4C656 /* MedicoButton.swift */,
 				33621CF52571009D004BD4CF /* MedicoText.swift */,
 				339C5044257A548F00AAB45F /* PickerSelector.swift */,
 				335EE0CE257A749C0004AD42 /* PlaceholderTextView.swift */,
-				339C5040257A2E7600AAB45F /* ScrollViewModifier.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -257,13 +265,32 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		338F98EA257F7808002D36FF /* UIKitElements */ = {
+			isa = PBXGroup;
+			children = (
+				33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */,
+				338F98E6257F77C3002D36FF /* ImagePicker.swift */,
+			);
+			path = UIKitElements;
+			sourceTree = "<group>";
+		};
+		33946A942580E65800A01804 /* Otp */ = {
+			isa = PBXGroup;
+			children = (
+				33F151EA256FE1F000C4C656 /* OtpPhoneRequestScreen.swift */,
+				33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */,
+			);
+			path = Otp;
+			sourceTree = "<group>";
+		};
 		33B1B7FE2563F4C6005215A3 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				33946A942580E65800A01804 /* Otp */,
 				33F151E9256FE1C500C4C656 /* PasswordRestore */,
 				334574EE257629B6002839C5 /* SignUp */,
 				33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */,
-				33F1C07125683FFF0041A890 /* AuthPasswordRestoreScreen.swift */,
+				33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */,
 				334574EF25762A5F002839C5 /* SignUpScreen.swift */,
 			);
 			path = Authentication;
@@ -296,8 +323,6 @@
 			isa = PBXGroup;
 			children = (
 				33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */,
-				33F151EA256FE1F000C4C656 /* AuthPhoneRequestScreen.swift */,
-				33F151F0256FE7F000C4C656 /* AuthPhoneVerification.swift */,
 			);
 			path = PasswordRestore;
 			sourceTree = "<group>";
@@ -654,7 +679,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
+				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
+				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
@@ -668,22 +695,23 @@
 				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
-				33F151F1256FE7F000C4C656 /* AuthPhoneVerification.swift in Sources */,
-				33F151EB256FE1F000C4C656 /* AuthPhoneRequestScreen.swift in Sources */,
-				33F1C07225683FFF0041A890 /* AuthPasswordRestoreScreen.swift in Sources */,
+				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
+				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
+				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33B1B80F2564378E005215A3 /* HostingController.swift in Sources */,
 				33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33621CF62571009D004BD4CF /* MedicoText.swift in Sources */,
 				33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */,
-				339C5041257A2E7600AAB45F /* ScrollViewModifier.swift in Sources */,
+				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
 				336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
+				33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */,
 				33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -860,7 +888,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -889,7 +917,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;

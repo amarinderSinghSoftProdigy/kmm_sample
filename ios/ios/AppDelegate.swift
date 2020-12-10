@@ -10,6 +10,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         let start = UiLink().appStart(context: self, isDebug: false, loggerLevel: Logger.Level.log)
         navigator = start.navigator
+        
+//        UiLink().overrideCurrentScope(uiNavigator: navigator, scope: ScopeCreator().legalDocumentsAadhaar())
+        
         return true
     }
 

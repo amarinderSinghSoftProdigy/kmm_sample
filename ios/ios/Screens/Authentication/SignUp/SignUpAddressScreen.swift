@@ -62,14 +62,14 @@ struct SignUpAddressScreen: View {
                                chosenElement: self.registration.value?.location,
                                data: locations,
                                onChange: { newValue in scope.changeLocation(location: newValue) })
-                    .modifier(FieldError(errorMessageKey: self.validation.value?.location))
+                    .fieldError(withLocalizedKey: self.validation.value?.location)
                 
                 let cities = (locationData.value as? DataLocation.Data)?.cities ?? [String]()
                 PickerSelector(placeholder: "city",
                                chosenElement: self.registration.value?.city,
                                data: cities,
                                onChange: { newValue in scope.changeCity(city: newValue) })
-                    .modifier(FieldError(errorMessageKey: self.validation.value?.city))
+                    .fieldError(withLocalizedKey: self.validation.value?.city)
                 
                 PlaceholderTextView(placeholder: "district",
                                     text: self.registration.value?.district,
@@ -79,7 +79,7 @@ struct SignUpAddressScreen: View {
                                     text: self.registration.value?.state,
                                     errorMessageKey: self.validation.value?.state)
             }
-            .modifier(ScrollViewModifier())
+            .scrollView()
     }
     
     init(scope: SignUpScope.AddressData) {
@@ -97,6 +97,6 @@ struct SignUpAddressScreen: View {
     private func goToTraderDetails() {
         guard let registrationValue = registration.value else { return }
         
-        scope.tryToSignUp(userRegistration: registrationValue)
+        _ = scope.validate(userRegistration: registrationValue)
     }
 }

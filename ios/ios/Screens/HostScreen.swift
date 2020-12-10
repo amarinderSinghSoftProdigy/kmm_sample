@@ -62,7 +62,12 @@ struct BaseScopeView: View {
     var body: some View {
         ZStack {
             NavigationView {
-                self.currentView
+                ZStack {
+                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                
+                    getCurrentViewWithModifiers()
+                }
+                .hideKeyboardOnTap()
             }
 
             if let isInProgress = self.isInProgress.value, isInProgress == true {
@@ -81,8 +86,11 @@ struct BaseScopeView: View {
             case let scopeValue as MainScope:
                 MainScreen(scope: scopeValue)
                 
-            case let scopeValue as ForgetPasswordScope:
-                AuthPasswordRestoreScreen(scope: scopeValue)
+            case let scopeValue as OtpScope:
+                OtpFlowScreen(scope: scopeValue)
+                
+            case let scopeValue as EnterNewPasswordScope:
+                AuthNewPasswordScreen(scope: scopeValue)
                 
             case let scopeValue as SignUpScope:
                 SignUpScreen(scope: scopeValue)
@@ -91,6 +99,20 @@ struct BaseScopeView: View {
                 Group {}
             }
         }
+    }
+    
+    private func getCurrentViewWithModifiers() -> some View {
+        var view = AnyView(self.currentView)
+        
+        if let scopeWithErrors = scope as? WithErrors {
+            view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
+        }
+        
+        if let goBackScope = scope as? CanGoBack {
+            view = AnyView(view.backButton { goBackScope.goBack() })
+        }
+        
+        return view
     }
     
     init(scope: BaseScope) {

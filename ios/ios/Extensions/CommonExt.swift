@@ -60,3 +60,27 @@ extension DataUserType {
         return self.name.lowercased()
     }
 }
+
+extension UIImagePickerController.SourceType: Identifiable {
+    public var id: UIImagePickerController.SourceType { self }
+}
+
+extension ScopeNotification {
+    var title: String? {
+        switch self {
+        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+            return "success"
+        default:
+            return nil
+        }
+    }
+    
+    var body: String? {
+        switch self {
+        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+            return "password_change_success"
+        default:
+            return nil
+        }
+    }
+}

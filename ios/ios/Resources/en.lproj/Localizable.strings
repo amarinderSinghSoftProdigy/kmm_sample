@@ -26,13 +26,12 @@
 "log_out" = "Log out";
 
 // MARK: Authentication Password Restore Screen
-"otp_error" = "OTP Error";
-
 "password_reset" = "Password Reset";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
 "phone_number" = "Phone Number";
 "get_code" = "Get Code";
 
+// MARK: OTP Await Verification
 "phone_verification" = "Phone Verification";
 "verification_code_sent_hint %@" = "We sent you a verification code to your phone number %@";
 "attempts_left %lld" = "%lld attempts left";
@@ -40,12 +39,13 @@
 "submit" = "Submit";
 "didnt_get_code" = "Didn’t get a code?";
 "resend" = "Resend";
-"otp_error_description" = "OTP is incorrect. Please, try again";
 
+// MARK: Enter New Password
 "new_password" = "New Password";
 "new_password_repeat" = "Repeat New Password";
 "confirm" = "Confirm";
 "password_doesnt_match" = "Password doesn’t match";
+"password_change_success" = "Successfully changed the password";
 
 // MARK: Authentication Sign Up
 "next" = "Next";
@@ -83,6 +83,22 @@
 "drug_license_No1" = "Drug License №1";
 "drug_license_No2" = "Drug License №2";
 
+// MARK: Authentication Sign Up Aadhaar Card
+"aadhaar_card" = "Aadhaar Card";
+"share_code" = "Share Code";
+"upload_aadhaar_card" = "Upload Aadhaar Card";
+
+// MARK: Authentication Sign Up Drug License
+"legal_documents" = "Legal Documents";
+"drug_license_request" = "Please provide a drug license to activate the account";
+"upload_new_document" = "Upload new document";
+"image_source" = "Select the image source";
+"take_photo" = "Take Photo";
+"choose_from_photo_library" = "Choose From Photo Library";
+"choose_from_device" = "Upload From Device";
+
 // MARK: Alert
+"success" = "Success!";
+"error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";

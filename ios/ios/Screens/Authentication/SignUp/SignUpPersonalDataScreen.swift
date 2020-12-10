@@ -88,7 +88,7 @@ struct SignUpPersonalDataScreen: View {
                                            isValid: isRepeatPasswordValid,
                                            errorMessageKey: errorMessageKey)
         }
-        .modifier(ScrollViewModifier())
+        .scrollView()
     }
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
@@ -119,7 +119,7 @@ struct SignUpPersonalDataScreen: View {
     private func goToAddress() {
         guard let userRegistration = self.registration.value else { return }
         
-        scope.tryToSignUp(userRegistration: userRegistration)
+        _ = scope.validate(userRegistration: userRegistration)
     }
     
     private func showTermsOfConditionsAndPrivacyPolicy() {
