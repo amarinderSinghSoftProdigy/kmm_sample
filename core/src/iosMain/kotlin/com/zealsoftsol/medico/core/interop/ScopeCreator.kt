@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.interop
 
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -29,5 +30,9 @@ class ScopeCreator {
         aadhaarData = DataSource(
             AadhaarData(cardNumber = "", shareCode = "")
         ),
+    )
+
+    fun limitedAccessMain() = MainScope(
+        isLimitedAppAccess = true
     )
 }

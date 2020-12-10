@@ -23,7 +23,7 @@
 "forgot_password" = "Forgot password?";
 "sign_up" = "Sign up";
 "to_medico" = " to Medico Stores";
-"log_out" = "Log out";
+"log_out" = "Log Out";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";

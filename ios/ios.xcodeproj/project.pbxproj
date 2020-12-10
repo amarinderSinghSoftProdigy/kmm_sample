@@ -25,6 +25,8 @@
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
+		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
+		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
@@ -114,6 +116,8 @@
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBar.swift; sourceTree = "<group>"; };
+		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
@@ -197,6 +201,14 @@
 			path = Utils;
 			sourceTree = "<group>";
 		};
+		333AE3F925821ED000C249C1 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				3308674B2566D441000C3EB8 /* MainScreen.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 		334574EE257629B6002839C5 /* SignUp */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,6 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
+				3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -245,7 +258,7 @@
 			isa = PBXGroup;
 			children = (
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
-				3308674B2566D441000C3EB8 /* MainScreen.swift */,
+				333AE3F925821ED000C249C1 /* Main */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
 			path = Screens;
@@ -268,6 +281,7 @@
 		338F98EA257F7808002D36FF /* UIKitElements */ = {
 			isa = PBXGroup;
 			children = (
+				3395031225824C060080CC88 /* BlurEffectView.swift */,
 				33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */,
 				338F98E6257F77C3002D36FF /* ImagePicker.swift */,
 			);
@@ -684,7 +698,9 @@
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
+				3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
+				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				335EE0CF257A749C0004AD42 /* PlaceholderTextView.swift in Sources */,
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,

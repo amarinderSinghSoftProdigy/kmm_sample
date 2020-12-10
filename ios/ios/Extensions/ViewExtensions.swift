@@ -87,4 +87,12 @@ extension View {
     func scrollView(withInitialHeight initialHeight: CGFloat = 350) -> some View {
         self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
+    
+    func userInfoNavigationBar(isLimitedAppAccess: Bool,
+                               logOutAction: @escaping () -> ()) -> some View {
+        self.modifier(
+            UserInfoNavigationBar(isLimitedAppAccess: isLimitedAppAccess,
+                                   logOutAction: logOutAction)
+        )
+    }
 }

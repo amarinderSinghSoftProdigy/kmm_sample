@@ -5,8 +5,11 @@ struct MainScreen: View {
     let scope: MainScope
     
     var body: some View {
-        Text(LocalizedStringKey("log_out")).onTapGesture {
+        Text(LocalizedStringKey("Welcome!"))
+        .userInfoNavigationBar(isLimitedAppAccess: scope.isLimitedAppAccess) {
             scope.tryLogOut()
         }
     }
+    
+    
 }
