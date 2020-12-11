@@ -11,11 +11,10 @@ import core
 
 struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
+    
     private var documentTypes: [String]!
     
-    @State private var showingActionSheet = false
-    
-    @ObservedObject var fileUploadData = FileUploadData()
+    @State private var filePickerOption: FilePickerOption?
     
     @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
     
@@ -77,82 +76,28 @@ struct SignUpLegalDocumentsScreen: View {
                                        action: uploadDocuments))
                 .keyboardResponder()
                 .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
-            
-                .actionSheet(isPresented: $showingActionSheet) {
-                    actionSheet
-                }
-                .sheet(item: $fileUploadData.activeSheet) { sheet in
-                    getCurrentSheet(sheet)
-                }
+                .filePicker(filePickerOption: $filePickerOption,
+                            forAvailableTypes: documentTypes,
+                            uploadData: uploadData)
         )
-    }
-    
-    var actionSheet: ActionSheet {
-        ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
-            .default(Text(LocalizedStringKey("take_photo"))) {
-                self.fileUploadData.imageSourceType = .camera
-            },
-            .default(Text(LocalizedStringKey("choose_from_photo_library"))) {
-                self.fileUploadData.imageSourceType = .photoLibrary
-            },
-            .default(Text(LocalizedStringKey("choose_from_device"))) {
-                fileUploadData.showDocumentPicker = true
-            },
-            .cancel()
-        ])
-    }
-    
-    private func getCurrentSheet(_ sheet: ActiveSheet) -> some View {
-        switch sheet {
-        
-        case .documentPicker:
-            guard fileUploadData.showDocumentPicker else { return AnyView(EmptyView()) }
-            
-            return AnyView(
-                DocumentPicker(documentTypes: documentTypes,
-                               onDocumentPicked: uploadFile))
-            
-        case .imagePicker:
-            guard let sourceType = self.fileUploadData.imageSourceType else { return AnyView(EmptyView()) }
-            
-            return AnyView(
-                ImagePicker(sourceType: sourceType,
-                            onImagePicked: uploadImage))
-        }
     }
     
     private func uploadDocuments() {
         switch scope {
-
-        case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            fileUploadData.showDocumentPicker = true
         
+        case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
+            self.filePickerOption = .documentPicker
+            
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            showingActionSheet = true
+            self.filePickerOption = .actionSheet
             
         default:
             break
+            
         }
     }
     
-    private func uploadImage(_ image: UIImage) {
-        guard let imageData = image.pngData() else { return }
-
-        uploadData(imageData, withFileExtension: "png")
-    }
-    
-    private func uploadFile(fromPath filePath: URL) {
-        guard let fileData = try? Data(contentsOf: filePath) else { return }
-        
-        let fileExtension = filePath.pathExtension
-        
-        uploadData(fileData, withFileExtension: fileExtension)
-    }
-    
-    private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
-        let base64String = data.base64EncodedString(options: .lineLength64Characters)
-        let fileType = DataFileType.Utils().fromExtension(ext: fileExtension)
-        
+    private func uploadData(_ base64String: String, withFileType fileType: DataFileType) {
         switch scope {
 
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
@@ -220,67 +165,3 @@ fileprivate struct DrugLicenseData: View  {
     }
     
 }
-
-// MARK: File Upload Data
-
-fileprivate enum ActiveSheet: Identifiable {
-    case documentPicker
-    case imagePicker
-    
-    var id: Int { hashValue }
-}
-
-extension DataFileType {
-    func getUniformTypeIdentifier() -> String? {
-        switch self {
-        case .jpeg, .jpg:
-            return "public.jpeg"
-        
-        case .pdf:
-            return "com.adobe.pdf"
-            
-        case .png:
-            return "public.png"
-            
-        case .xzip:
-            return ""
-            
-        case .zip:
-            return "com.pkware.zip-archive"
-            
-        case .unknown:
-            return "public.content"
-            
-        default:
-            return nil
-        }
-    }
-}
-
-final class FileUploadData: ObservableObject {
-    @Published fileprivate var activeSheet: ActiveSheet? {
-        didSet {
-            if activeSheet == nil {
-                self.imageSourceType = nil
-                self.showDocumentPicker = false
-            }
-        }
-    }
-    
-    var imageSourceType: UIImagePickerController.SourceType? {
-        didSet {
-            if imageSourceType == nil { return }
-            
-            activeSheet = .imagePicker
-        }
-    }
-    
-    var showDocumentPicker: Bool = false {
-        didSet {
-            if !showDocumentPicker { return }
-            
-            activeSheet = .documentPicker
-        }
-    }
-}
-

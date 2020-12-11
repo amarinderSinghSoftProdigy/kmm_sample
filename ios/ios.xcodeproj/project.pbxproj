@@ -24,6 +24,7 @@
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */; };
+		3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC792583875900570BB3 /* FilePicker.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
@@ -116,6 +117,7 @@
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScreen.swift; sourceTree = "<group>"; };
+		3376EC792583875900570BB3 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBar.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				338F98EA257F7808002D36FF /* UIKitElements */,
 				33621CF9257125B2004BD4CF /* ActivityView.swift */,
 				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
+				3376EC792583875900570BB3 /* FilePicker.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				33F151F4256FEAAC00C4C656 /* MedicoButton.swift */,
 				33621CF52571009D004BD4CF /* MedicoText.swift */,
@@ -703,6 +706,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,

@@ -7,28 +7,46 @@
 //
 
 import SwiftUI
+import core
 
 struct LimitedAppAccessScreen: View {
     let name = "John Smith"
-    let isDocumentUploaded = true
+    let isDocumentUploaded = false
+    
+    let documentTypes: [String] = ["public.image"]
+    @State private var filePickerOption: FilePickerOption?
     
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 50) {
+            VStack {
                 Spacer()
                 
-                Text(LocalizedStringKey("welcome \(name)"))
-                
-                if isDocumentUploaded {
-                    self.uploadedDocumentView
-                }
-                else {
+                VStack(spacing: 50) {
+                    Text(LocalizedStringKey("welcome \(name)"))
+                        .modifier(MedicoText(textWeight: .medium, fontSize: 20))
                     
+                    if isDocumentUploaded {
+                        self.uploadedDocumentView
+                    }
+                    else {
+                        self.nonUploadedDocumentView
+                    }
                 }
+                .padding([.leading, .trailing], geometry.size.width * 0.19)
                 
                 Spacer()
+                
+                if !isDocumentUploaded {
+                    MedicoButton(localizedStringKey: "upload_new_document") {
+                        filePickerOption = .actionSheet
+                    }
+                    .padding()
+                    .padding(.bottom, geometry.size.height * 0.1)
+                    .filePicker(filePickerOption: $filePickerOption,
+                                forAvailableTypes: documentTypes,
+                                uploadData: uploadData)
+                }
             }
-            .padding([.leading, .trailing], geometry.size.width * 0.19)
         }
     }
     
@@ -44,5 +62,20 @@ struct LimitedAppAccessScreen: View {
                     .modifier(MedicoText(fontSize: 16))
             }
         }
+    }
+    
+    var nonUploadedDocumentView: some View {
+        VStack(spacing: 30) {
+            Image("UploadDocuments")
+            
+            let textKey = false ? "drug_license_request" : "aadhaar_card_request"
+            
+            Text(LocalizedStringKey(textKey))
+                .modifier(MedicoText(fontSize: 16))
+        }
+    }
+    
+    private func uploadData(_ base64: String, withFileType fileType: DataFileType) {
+        
     }
 }

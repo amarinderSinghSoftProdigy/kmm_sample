@@ -95,4 +95,14 @@ extension View {
                                    logOutAction: logOutAction)
         )
     }
+    
+    func filePicker(filePickerOption: Binding<FilePickerOption?>,
+                    forAvailableTypes types: [String],
+                    uploadData: @escaping (String, DataFileType) -> ()) -> some View {
+        self.modifier(
+            FilePicker(filePickerOption: filePickerOption,
+                       documentTypes: types,
+                       uploadData: uploadData)
+        )
+    }
 }

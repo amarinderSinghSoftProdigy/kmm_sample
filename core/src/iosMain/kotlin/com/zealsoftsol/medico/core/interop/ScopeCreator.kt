@@ -28,7 +28,7 @@ class ScopeCreator {
 
         ),
         aadhaarData = DataSource(
-            AadhaarData(cardNumber = "", shareCode = "")
+            AadhaarData(cardNumber = "887489598799", shareCode = "1111")
         ),
     )
 

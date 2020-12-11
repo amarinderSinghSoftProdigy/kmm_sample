@@ -91,6 +91,7 @@
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
 "drug_license_request" = "Please provide a drug license to activate the account";
+"aadhaar_card_request" = "Please upload Aadhaar card";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";

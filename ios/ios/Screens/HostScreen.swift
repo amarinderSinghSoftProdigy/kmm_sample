@@ -111,8 +111,6 @@ struct BaseScopeView: View {
             view = AnyView(view.backButton { goBackScope.goBack() })
         }
         
-        print(scope)
-        
         return view
     }
     
