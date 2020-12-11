@@ -8,10 +8,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        let start = UiLink().appStart(context: self, isDebug: true, loggerLevel: Logger.Level.log)
+        let start = UiLink().appStart(context: self, isDebug: false, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
-        UiLink().overrideCurrentScope(uiNavigator: navigator, scope: ScopeCreator().limitedAccessMain())
+//        UiLink().overrideCurrentScope(uiNavigator: navigator,
+//                                      scope: ScopeCreator().limitedAccessMain(isDocumentUploaded: false))
         
         return true
     }

@@ -6,7 +6,7 @@ struct MainScreen: View {
     
     var body: some View {
         getCurrentView()
-            .userInfoNavigationBar(isLimitedAppAccess: scope.isLimitedAppAccess) {
+            .userInfoNavigationBar(isLimitedAppAccess: scope is MainScope.LimitedAccess) {
                 scope.tryLogOut()
             }
     }
@@ -14,7 +14,14 @@ struct MainScreen: View {
     private func getCurrentView() -> some View {
         let view: AnyView
         
-        view = AnyView(LimitedAppAccessScreen())
+        switch self.scope {
+        
+        case let scope as MainScope.LimitedAccess:
+            view = AnyView(LimitedAppAccessScreen(scope: scope))
+            
+        default:
+            view = AnyView(EmptyView())
+        }
         
         return view
     }

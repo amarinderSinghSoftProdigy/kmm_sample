@@ -6,14 +6,13 @@ struct AuthScreen: View {
     private let blackRectangleHeight: CGFloat = 44
     
     let scope: LogInScope
-    @Binding var isError: Bool
     
     @ObservedObject var credentials: SwiftDatasource<DataAuthCredentials>
     
     init(scope: LogInScope) {
         self.scope = scope
+        
         credentials = SwiftDatasource(dataSource: scope.credentials)
-        _isError = Binding.constant(scope.success.isFalse)
     }
     
     var body: some View {
@@ -29,9 +28,6 @@ struct AuthScreen: View {
                 .background(appColor: .primary)
                 .padding()
                 .padding(.top, blackRectangleHeight)
-                .alert(isPresented: $isError) {
-                    Alert(title: Text("Log in Error"), message: Text("Log in or password is wrong. Please try again or restore your password"), dismissButton: Alert.Button.default(Text("OKAY")))
-                }
                 .frame(maxHeight: .infinity)
             }
             

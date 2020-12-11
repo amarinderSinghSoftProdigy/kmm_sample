@@ -32,7 +32,7 @@ class ScopeCreator {
         ),
     )
 
-    fun limitedAccessMain() = MainScope(
-        isLimitedAppAccess = true
+    fun limitedAccessMain(isDocumentUploaded: Boolean) = MainScope.LimitedAccess(
+        isDocumentUploaded = isDocumentUploaded
     )
 }

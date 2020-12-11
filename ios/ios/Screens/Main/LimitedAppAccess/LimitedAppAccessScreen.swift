@@ -10,6 +10,8 @@ import SwiftUI
 import core
 
 struct LimitedAppAccessScreen: View {
+    let scope: MainScope.LimitedAccess
+    
     let name = "John Smith"
     let isDocumentUploaded = false
     
