@@ -15,74 +15,42 @@ struct UserInfoNavigationBar: ViewModifier {
     @State private var showsSlidingPanel = false
     
     var slidingPanelButton: some View {
-        Button(action: { self.showsSlidingPanel = true }) {
+        Button(action: { self.changeSlidingPanelState(isHidden: false) }) {
             Image("Menu")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         }
     }
     
-    private var slidingPanel: some View {
-        ZStack {
-            BlurEffectView()
-                .onTapGesture { self.showsSlidingPanel = false }
-            
-            GeometryReader { geometry in
-                VStack(spacing: -1) {
-                    ZStack(alignment: .bottomLeading) {
-                        Image("AccountInfoBackground")
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            Image("DefaultUserPhoto")
-                            
-                            Text("John Smith")
-                                .modifier(MedicoText(textWeight: .bold))
-                            
-                            Text("Stockist")
-                                .modifier(MedicoText(textWeight: .medium))
-                        }
-                        .padding()
-                    }
-                    
-                    ZStack {
-                        AppColor.primary.color
-                        
-                        VStack(alignment: .leading, spacing: 20) {
-                            Spacer()
-                            
-                            AppColor.grey.color
-                                .frame(height: 1)
-                            
-                            Button(action: logOutAction) {
-                                HStack(spacing: 24) {
-                                    Image("Exit")
-                                    
-                                    Text(LocalizedStringKey("log_out"))
-                                        .modifier(MedicoText(textWeight: .semiBold, fontSize: 15, color: .grey))
-                                }
-                            }
-                        }
-                        .padding()
-                        .padding(.bottom, 20)
-                    }
-                }
-                .frame(width: geometry.size.width * 0.81)
-                .frame(maxWidth: 400, alignment: .leading)
-                .shadow(radius: 9)
-            }
-        }
-        .navigationBarHidden(true)
+    private var blurView: some View {
+        BlurEffectView()
+            .transition(.identity)
+            .onTapGesture { self.changeSlidingPanelState(isHidden: true) }
     }
     
     func body(content: Content) -> some View {
         let baseNavigationBarView = AnyView(
-            ZStack {
-                content
+            GeometryReader { geometry in
+                ZStack {
+                    AppColor.primary.color
+                    
+                    content
+                        .frame(width: geometry.size.width,
+                                height: geometry.size.height,
+                                alignment: .top)
+                        .zIndex(1)
                 
-                if showsSlidingPanel {
-                    slidingPanel
+                    ZStack {
+                        if showsSlidingPanel {
+                            self.blurView
+                            
+                            self.getSlidingPanel(for: geometry)
+                        }
+                    }
+                    .zIndex(2)
                 }
             }
+            .gesture(getDragGesture())
             .navigationBarTitle("", displayMode: .inline)
             .navigationBarBackButtonHidden(true)
             .navigationBarItems(leading: slidingPanelButton)
@@ -93,5 +61,74 @@ struct UserInfoNavigationBar: ViewModifier {
         }
         
         return baseNavigationBarView
+    }
+    
+    private func changeSlidingPanelState(isHidden: Bool) {
+        withAnimation {
+            self.showsSlidingPanel = !isHidden
+        }
+    }
+    
+    private func getSlidingPanel(for geometry: GeometryProxy) -> some View {
+        return AnyView(
+            VStack(spacing: -1) {
+                ZStack(alignment: .bottomLeading) {
+                    Image("AccountInfoBackground")
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Image("DefaultUserPhoto")
+                        
+                        Text("John Smith")
+                            .modifier(MedicoText(textWeight: .bold))
+                        
+                        Text("Stockist")
+                            .modifier(MedicoText(textWeight: .medium))
+                    }
+                    .padding()
+                }
+                
+                ZStack {
+                    AppColor.primary.color
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Spacer()
+                        
+                        AppColor.grey.color
+                            .frame(height: 1)
+                        
+                        Button(action: logOutAction) {
+                            HStack(spacing: 24) {
+                                Image("Exit")
+                                
+                                Text(LocalizedStringKey("log_out"))
+                                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 15, color: .grey))
+                            }
+                        }
+                    }
+                    .padding()
+                    .padding(.bottom, 20)
+                }
+            }
+            .frame(width: geometry.size.width * 0.81)
+            .frame(maxWidth: 400, alignment: .leading)
+            .shadow(radius: 9)
+            .navigationBarHidden(true)
+            .transition(.move(edge: .leading))
+        )
+    }
+    
+    private func getDragGesture() -> some Gesture {
+        DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            .onEnded({ value in
+                // Left swipe
+                if value.translation.width < 0 {
+                    self.changeSlidingPanelState(isHidden: true)
+                }
+                
+                // Right swipe
+                if value.translation.width > 0 {
+                    self.changeSlidingPanelState(isHidden: false)
+                }
+            })
     }
 }
