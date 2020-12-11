@@ -15,9 +15,11 @@ struct SignUpAddressScreen: View {
     @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
     
     @ObservedObject var registration: SwiftDatasource<DataUserRegistration2>
-    @ObservedObject var validation: SwiftDatasource<DataUserValidation2>
+    
+    @ObservedObject var pincodeValidation: SwiftDatasource<DataPincodeValidation>
+    @ObservedObject var userValidation: SwiftDatasource<DataUserValidation2>
 
-    @ObservedObject var locationData: SwiftDatasource<DataLocation>
+    @ObservedObject var locationData: SwiftDatasource<DataLocationData>
     
     var body: some View {
         VStack {
@@ -34,18 +36,18 @@ struct SignUpAddressScreen: View {
     var addressDataFields: some View {
             VStack(spacing: 12) {
                 
-                let pincode = self.registration.value?.pincode
+                let pincode = self.pincodeValidation.value?.pincode
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
                                              text: pincode,
                                              onTextChange: { newValue in
                                                 scope.changePincode(pincode: newValue)
                                              },
                                              keyboardType: .numberPad,
-                                             isValid: pincode?.isEmpty == false,
-                                             errorMessageKey: "required_field")
+                                             isValid: pincode == nil,
+                                             errorMessageKey: pincode)
                     .textContentType(.postalCode)
                 
-                let addressLineErrorMessageKey = self.validation.value?.addressLine1
+                let addressLineErrorMessageKey = self.userValidation.value?.addressLine1
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
                                              text: self.registration.value?.addressLine1,
                                              onTextChange: { newValue in
@@ -57,27 +59,27 @@ struct SignUpAddressScreen: View {
                     .textContentType(.fullStreetAddress)
                     .autocapitalization(.words)
                 
-                let locations = (locationData.value as? DataLocation.Data)?.locations ?? [String]()
+                let locations = locationData.value?.locations ?? [String]()
                 PickerSelector(placeholder: "location",
                                chosenElement: self.registration.value?.location,
                                data: locations,
                                onChange: { newValue in scope.changeLocation(location: newValue) })
-                    .fieldError(withLocalizedKey: self.validation.value?.location)
+                    .fieldError(withLocalizedKey: self.userValidation.value?.location)
                 
-                let cities = (locationData.value as? DataLocation.Data)?.cities ?? [String]()
+                let cities = locationData.value?.cities ?? [String]()
                 PickerSelector(placeholder: "city",
                                chosenElement: self.registration.value?.city,
                                data: cities,
                                onChange: { newValue in scope.changeCity(city: newValue) })
-                    .fieldError(withLocalizedKey: self.validation.value?.city)
+                    .fieldError(withLocalizedKey: self.userValidation.value?.city)
                 
                 PlaceholderTextView(placeholder: "district",
                                     text: self.registration.value?.district,
-                                    errorMessageKey: self.validation.value?.district)
+                                    errorMessageKey: self.userValidation.value?.district)
                 
                 PlaceholderTextView(placeholder: "state",
                                     text: self.registration.value?.state,
-                                    errorMessageKey: self.validation.value?.state)
+                                    errorMessageKey: self.userValidation.value?.state)
             }
             .scrollView()
     }
@@ -88,7 +90,9 @@ struct SignUpAddressScreen: View {
         self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
         
         self.registration = SwiftDatasource(dataSource: scope.registration)
-        self.validation = SwiftDatasource(dataSource: scope.validation)
+        
+        self.pincodeValidation = SwiftDatasource(dataSource: scope.pincodeValidation)
+        self.userValidation = SwiftDatasource(dataSource: scope.userValidation)
         
         self.locationData = SwiftDatasource(dataSource: scope.locationData)
     }

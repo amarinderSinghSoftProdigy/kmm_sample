@@ -33,7 +33,8 @@ struct OtpPhoneVerification: View {
                 Spacer()
                 
                 let otpHeight: CGFloat = 64
-                ResendOtpView(resendAction: resendOtp)
+                ResendOtpView(isResendActive: scope.resendActive,
+                              resendAction: resendOtp)
                     .frame(height: otpHeight)
             }
         }
@@ -113,6 +114,8 @@ fileprivate struct OtpDetailsView: View {
 }
 
 fileprivate struct ResendOtpView: View {
+    @ObservedObject var isResendActive: SwiftDatasource<KotlinBoolean>
+    
     let resendAction: () -> ()
     
     var body: some View {
@@ -123,12 +126,23 @@ fileprivate struct ResendOtpView: View {
                 Text(LocalizedStringKey("didnt_get_code"))
                     .modifier(MedicoText(textWeight: .medium))
                 
+                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey
+                
                 Text(LocalizedStringKey("resend"))
-                    .modifier(MedicoText(textWeight: .semiBold, color: .lightBlue))
+                    .modifier(MedicoText(textWeight: .semiBold, color: resendColor))
                     .onTapGesture {
+                        if isResendActive.value != true { return }
+                        
                         resendAction()
                     }
             }
         }
+    }
+    
+    init(isResendActive: DataSource<KotlinBoolean>,
+         resendAction: @escaping () -> ()) {
+        self.isResendActive = SwiftDatasource(dataSource: isResendActive)
+        
+        self.resendAction = resendAction
     }
 }
