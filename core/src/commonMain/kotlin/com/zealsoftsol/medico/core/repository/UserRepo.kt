@@ -32,7 +32,7 @@ class UserRepo(
     private val phoneEmailVerifier: PhoneEmailVerifier,
 ) {
     val userAccess: UserAccess
-        get() = fetchUser().let {
+        get() = fetchUser()?.let {
             if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
 
@@ -45,14 +45,14 @@ class UserRepo(
         val response = networkAuthScope.login(
             UserRequest(login, password)
         )
-        response.getBodyOrNull().let {
+        response.getBodyOrNull()?.let {
             networkAuthScope.token = it.token
         }
         return response.getWrappedError()
     }
 
     suspend fun getUser(): User? {
-        return (fetchUser() ?: networkCustomerScope.getCustomerData().entity.let {
+        return fetchUser() ?: networkCustomerScope.getCustomerData().entity?.let {
             val user = User(
                 it.email,
                 it.phoneNumber,
@@ -63,7 +63,7 @@ class UserRepo(
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)
             user
-        }).log("user")
+        }
     }
 
     suspend fun logout(): Boolean {

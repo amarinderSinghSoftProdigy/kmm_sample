@@ -54,11 +54,11 @@ data class CustomerAddressData(
     @SerialName("district")
     val district: String,
     @SerialName("latitidue")
-    val latitidue: Int,
+    val latitidue: Double,
     @SerialName("location")
     val location: String,
     @SerialName("longitude")
-    val longitude: Int,
+    val longitude: Double,
     @SerialName("pincode")
     val pincode: Int,
     @SerialName("placeId")

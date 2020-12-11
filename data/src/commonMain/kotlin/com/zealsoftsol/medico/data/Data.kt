@@ -5,9 +5,6 @@ data class AuthCredentials(
     val type: Type?,
     val password: String,
 ) {
-//    fun getPhoneNumber(): String? = phoneNumberOrEmail.takeIf { type == Type.PHONE }
-//    fun getEmail(): String? = phoneNumberOrEmail.takeIf { type == Type.EMAIL }
-
     enum class Type {
         EMAIL, PHONE;
     }

@@ -1,6 +1,9 @@
 package com.zealsoftsol.medico.core.network
 
+import com.zealsoftsol.medico.core.extensions.Interval
+import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
+import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -111,7 +114,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
                     jsonBody(VerifyOtpRequest(phoneNumber, otp))
                 }
             if (body.isSuccess) {
-                body.getBodyOrNull().let { tempTokenMap[TempToken.UPDATE_PASSWORD] = it }
+                body.getBodyOrNull()?.let { tempTokenMap[TempToken.UPDATE_PASSWORD] = it }
             }
             body.getWrappedError()
         }
@@ -187,7 +190,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
     }
 
     private inline fun HttpRequestBuilder.withMainToken() {
-        token.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
+        token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
     }
 
     private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
@@ -206,7 +209,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
                 tempTokenMap[tokenType] = tokenInfo
             }
             tempTokenMap[tokenType]
-        }.let { header("Authorization", "Bearer ${it.token}") }
+        }?.let { header("Authorization", "Bearer ${it.token}") }
             ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
     }
 

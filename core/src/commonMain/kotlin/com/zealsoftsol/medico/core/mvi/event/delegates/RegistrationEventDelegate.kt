@@ -128,7 +128,7 @@ internal class RegistrationEventDelegate(
                     it.registrationStep2,
                     it.registrationStep3,
                     it.errors,
-                    storageKey = storageKey.key,
+                    storageKey = storageKey?.key,
                 )
                 startOtp(it.registrationStep1.phoneNumber)
             } else {

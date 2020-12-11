@@ -23,7 +23,7 @@ class MockCustomerScope : NetworkScope.Customer {
         Response.Wrapped(
             CustomerData(
                 "",
-                CustomerAddressData("", "", "", 0, "", 0, 0, "", ""),
+                CustomerAddressData("", "", "", 0.0, "", 0.0, 0, "", ""),
                 CustomerMetaData(true, "", ""),
                 "",
                 "",

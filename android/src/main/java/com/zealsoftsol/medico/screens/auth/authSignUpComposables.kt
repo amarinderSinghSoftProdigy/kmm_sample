@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -149,7 +150,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     onValueChange = { scope.changeLastName(it) }
                 )
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value.email) {
+                InputWithError(errorText = validation.value?.email) {
                     InputField(
                         hint = stringResource(id = R.string.email),
                         text = registration.value.email,
@@ -157,7 +158,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value.phoneNumber) {
+                InputWithError(errorText = validation.value?.phoneNumber) {
                     PhoneFormatInputField(
                         hint = stringResource(id = R.string.phone_number),
                         text = registration.value.phoneNumber,
@@ -165,7 +166,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value.password) {
+                InputWithError(errorText = validation.value?.password) {
                     PasswordFormatInputField(
                         hint = stringResource(id = R.string.password),
                         text = registration.value.password,
@@ -236,7 +237,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.Top,
             ) {
-                InputWithError(errorText = pincodeValidation.value.pincode) {
+                InputWithError(errorText = pincodeValidation.value?.pincode) {
                     InputField(
                         hint = stringResource(id = R.string.pincode),
                         text = registration.value.pincode,
@@ -245,7 +246,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = userValidation.value.addressLine1) {
+                InputWithError(errorText = userValidation.value?.addressLine1) {
                     InputField(
                         hint = stringResource(id = R.string.address_line),
                         text = registration.value.addressLine1,
@@ -253,27 +254,27 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = userValidation.value.location) {
+                InputWithError(errorText = userValidation.value?.location) {
                     LocationSelector(
                         chooseRemember = locationData.value,
                         chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
                         defaultName = stringResource(id = R.string.location),
-                        dropDownItems = locationData.value.locations.orEmpty(),
+                        dropDownItems = locationData.value?.locations.orEmpty(),
                         onSelected = { scope.changeLocation(it) }
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = userValidation.value.city) {
+                InputWithError(errorText = userValidation.value?.city) {
                     LocationSelector(
                         chooseRemember = locationData.value,
                         chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
                         defaultName = stringResource(id = R.string.city),
-                        dropDownItems = locationData.value.cities.orEmpty(),
+                        dropDownItems = locationData.value?.cities.orEmpty(),
                         onSelected = { scope.changeCity(it) }
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = userValidation.value.district) {
+                InputWithError(errorText = userValidation.value?.district) {
                     Text(
                         text = if (registration.value.district.isEmpty()) stringResource(id = R.string.district) else registration.value.district,
                         color = if (registration.value.district.isEmpty()) ConstColors.gray else Color.Black,
@@ -285,7 +286,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = userValidation.value.state) {
+                InputWithError(errorText = userValidation.value?.state) {
                     Text(
                         text = if (registration.value.state.isEmpty()) stringResource(id = R.string.state) else registration.value.state,
                         color = if (registration.value.state.isEmpty()) ConstColors.gray else Color.Black,
@@ -317,7 +318,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                 verticalArrangement = Arrangement.Top,
             ) {
                 if (SignUpScope.TraderData.Fields.TRADE_NAME in scope.inputFields) {
-                    InputWithError(errorText = validation.value.tradeName) {
+                    InputWithError(errorText = validation.value?.tradeName) {
                         InputField(
                             hint = stringResource(id = R.string.trade_name),
                             text = registration.value.tradeName,
@@ -327,7 +328,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     Space(dp = 12.dp)
                 }
                 if (SignUpScope.TraderData.Fields.PAN in scope.inputFields) {
-                    InputWithError(errorText = validation.value.panNumber) {
+                    InputWithError(errorText = validation.value?.panNumber) {
                         InputField(
                             hint = stringResource(id = R.string.pan_number),
                             text = registration.value.panNumber,
@@ -340,7 +341,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     Space(dp = 12.dp)
                 }
                 if (SignUpScope.TraderData.Fields.GSTIN in scope.inputFields) {
-                    InputWithError(errorText = validation.value.gstin) {
+                    InputWithError(errorText = validation.value?.gstin) {
                         InputField(
                             hint = stringResource(id = R.string.gstin),
                             text = registration.value.gstin,
@@ -353,7 +354,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     Space(dp = 12.dp)
                 }
                 if (SignUpScope.TraderData.Fields.LICENSE1 in scope.inputFields) {
-                    InputWithError(errorText = validation.value.drugLicenseNo1) {
+                    InputWithError(errorText = validation.value?.drugLicenseNo1) {
                         InputField(
                             hint = stringResource(id = R.string.drug_license_1),
                             text = registration.value.drugLicenseNo1,
@@ -363,7 +364,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     Space(dp = 12.dp)
                 }
                 if (SignUpScope.TraderData.Fields.LICENSE2 in scope.inputFields) {
-                    InputWithError(errorText = validation.value.drugLicenseNo2) {
+                    InputWithError(errorText = validation.value?.drugLicenseNo2) {
                         InputField(
                             hint = stringResource(id = R.string.drug_license_2),
                             text = registration.value.drugLicenseNo2,

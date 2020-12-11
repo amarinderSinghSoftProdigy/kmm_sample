@@ -34,13 +34,13 @@ internal class AuthEventDelegate(
             }
             if (isSuccess) {
                 val user = userRepo.getUser()
-                val isFullAccess = user.isVerified == true
+                val isFullAccess = user?.isVerified == true
                 clearQueue()
                 setCurrentScope(
                     if (isFullAccess)
                         MainScope.FullAccess()
                     else
-                        MainScope.LimitedAccess(isDocumentUploaded = !user.documentUrl.isNullOrEmpty())
+                        MainScope.LimitedAccess(isDocumentUploaded = !user?.documentUrl.isNullOrEmpty())
                 )
             } else {
                 it.errors.value = error ?: ErrorCode()
