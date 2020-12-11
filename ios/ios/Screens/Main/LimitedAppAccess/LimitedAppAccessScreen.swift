@@ -13,7 +13,6 @@ struct LimitedAppAccessScreen: View {
     let scope: MainScope.LimitedAccess
     
     let name = "John Smith"
-    let isDocumentUploaded = false
     
     let documentTypes: [String] = ["public.image"]
     @State private var filePickerOption: FilePickerOption?
@@ -21,6 +20,8 @@ struct LimitedAppAccessScreen: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
+                let isDocumentUploaded = scope.isDocumentUploaded
+                
                 Spacer()
                 
                 VStack(spacing: 50) {
