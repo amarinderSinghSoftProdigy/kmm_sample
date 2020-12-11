@@ -19,9 +19,9 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.setContent
@@ -173,6 +173,8 @@ fun MainView(scope: MainScope) {
                 }
             }
         },
-        bodyContent = { },
+        bodyContent = {
+            Text("current scope $scope")
+        },
     )
 }

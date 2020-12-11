@@ -1,12 +1,16 @@
 package com.zealsoftsol.medico.data
 
-
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed class UserRegistration
 sealed class UserValidation
+
+@Serializable
+data class PincodeValidation(
+    val pincode: String,
+)
 
 @Serializable
 data class UserRegistration1(
@@ -103,10 +107,10 @@ data class SubmitRegistration(
     val panNumber: String,
     val drugLicenseNo1: String,
     val drugLicenseNo2: String,
-    @SerialName("receiveMarketingMails")
-    val receiveMarketingMails: Boolean,
-    @SerialName("termsAndConditions")
-    val termsAndConditions: Boolean,
+    @Required
+    val receiveMarketingMails: Boolean = true,
+    @Required
+    val termsAndConditions: Boolean = true,
     val pincode: String,
     val addressLine1: String,
     val location: String,
@@ -114,10 +118,10 @@ data class SubmitRegistration(
     val city: String,
     val district: String,
     val state: String,
-    @SerialName("ipAddress")
-    val ipAddress: String,
-    @SerialName("channel")
-    val channel: String,
+    @Required
+    val ipAddress: String = "",
+    @Required
+    val channel: String = "MOBILE",
     val drugLicenseStorageKey: String,
 ) {
     companion object {
@@ -139,16 +143,12 @@ data class SubmitRegistration(
             panNumber = userRegistration3.panNumber,
             drugLicenseNo1 = userRegistration3.drugLicenseNo1,
             drugLicenseNo2 = userRegistration3.drugLicenseNo2,
-            receiveMarketingMails = true,
-            termsAndConditions = true,
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
-            ipAddress = "",
-            channel = "",
             drugLicenseStorageKey = storageKey.orEmpty(),
         )
     }

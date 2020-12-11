@@ -40,20 +40,6 @@ data class VerifyOtpRequest(
 )
 
 @Serializable
-data class UserInfo(
-    val token: String,
-    val tokenType: String,
-    val userType: String,
-    val traderHeader: String,
-    val traderFooter: String,
-    val expiresIn: Int,
-    val stockistLogo: String,
-    val retailerLogo: String,
-    val seasonBoyLogo: String,
-    val medicoStoresLogo: String,
-)
-
-@Serializable
 data class TokenInfo(
     val token: String,
     private val expiresIn: Long,
@@ -93,18 +79,14 @@ data class StorageKeyResponse(
     val key: String,
 )
 
-sealed class Location {
-    @Serializable
-    data class Data(
-        val locations: List<String>,
-        @SerialName("cityTowns")
-        val cities: List<String>,
-        val district: String,
-        val state: String,
-    ) : Location()
-
-    object Unknown : Location()
-}
+@Serializable
+data class LocationData(
+    val locations: List<String>,
+    @SerialName("cityTowns")
+    val cities: List<String>,
+    val district: String,
+    val state: String,
+)
 
 enum class FileType(val mimeType: String, val isMandatory: Boolean) {
     PNG("image/png", true),
