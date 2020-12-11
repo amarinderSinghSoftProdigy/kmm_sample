@@ -5,13 +5,15 @@ import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Location
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -46,7 +48,7 @@ import kotlinx.coroutines.invoke
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 
-class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
+class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, NetworkScope.Customer {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
@@ -76,10 +78,10 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
         tempTokenMap.clear()
     }
 
-    override suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo> = ktorDispatcher {
+    override suspend fun login(request: UserRequest): SimpleBody<TokenInfo> = ktorDispatcher {
         client.post<SimpleBody<TokenInfo>>("$AUTH_URL/medico/login") {
             jsonBody(request)
-        }.getWrappedBody()
+        }
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {
@@ -152,11 +154,11 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             }.getWrappedValidation()
         }
 
-    override suspend fun getLocationData(pincode: String): Response.Wrapped<Location.Data> =
+    override suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> =
         ktorDispatcher {
-            client.get<SimpleBody<Location.Data>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
+            client.get<Response.Body<LocationData, PincodeValidation>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
                 withTempToken(TempToken.REGISTRATION)
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = ktorDispatcher {
@@ -179,6 +181,12 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth {
             withTempToken(TempToken.REGISTRATION)
             jsonBody(submitRegistration)
         }.isSuccess
+    }
+
+    override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = ktorDispatcher {
+        client.get<SimpleBody<CustomerData>>("$AUTH_URL/api/v1/medico/customer/details") {
+            withMainToken()
+        }.getWrappedBody()
     }
 
     private inline fun HttpRequestBuilder.withMainToken() {

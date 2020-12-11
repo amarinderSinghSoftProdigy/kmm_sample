@@ -36,4 +36,14 @@ interface WithNotifications {
     }
 }
 
-interface ScopeNotification
+interface ScopeNotification {
+    /**
+     * Localized string key
+     */
+    val title: String
+
+    /**
+     * Localized string key
+     */
+    val body: String
+}

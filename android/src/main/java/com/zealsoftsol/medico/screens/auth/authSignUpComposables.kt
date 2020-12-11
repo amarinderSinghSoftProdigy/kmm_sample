@@ -59,7 +59,6 @@ import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
@@ -224,7 +223,8 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
 @Composable
 fun AuthAddressData(scope: SignUpScope.AddressData) {
     val registration = scope.registration.flow.collectAsState()
-    val validation = scope.validation.flow.collectAsState()
+    val userValidation = scope.userValidation.flow.collectAsState()
+    val pincodeValidation = scope.pincodeValidation.flow.collectAsState()
     val locationData = scope.locationData.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.address),
@@ -237,12 +237,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.Top,
             ) {
-                InputWithError(
-                    errorText = if (locationData.value == Location.Unknown)
-                        stringResource(id = R.string.wrong_code)
-                    else
-                        null
-                ) {
+                InputWithError(errorText = pincodeValidation.value?.pincode) {
                     InputField(
                         hint = stringResource(id = R.string.pincode),
                         text = registration.value.pincode,
@@ -251,7 +246,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value?.addressLine1) {
+                InputWithError(errorText = userValidation.value?.addressLine1) {
                     InputField(
                         hint = stringResource(id = R.string.address_line),
                         text = registration.value.addressLine1,
@@ -259,27 +254,27 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value?.location) {
+                InputWithError(errorText = userValidation.value?.location) {
                     LocationSelector(
                         chooseRemember = locationData.value,
                         chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
                         defaultName = stringResource(id = R.string.location),
-                        dropDownItems = (locationData.value as? Location.Data)?.locations.orEmpty(),
+                        dropDownItems = locationData.value?.locations.orEmpty(),
                         onSelected = { scope.changeLocation(it) }
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value?.city) {
+                InputWithError(errorText = userValidation.value?.city) {
                     LocationSelector(
                         chooseRemember = locationData.value,
                         chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
                         defaultName = stringResource(id = R.string.city),
-                        dropDownItems = (locationData.value as? Location.Data)?.cities.orEmpty(),
+                        dropDownItems = locationData.value?.cities.orEmpty(),
                         onSelected = { scope.changeCity(it) }
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value?.district) {
+                InputWithError(errorText = userValidation.value?.district) {
                     Text(
                         text = if (registration.value.district.isEmpty()) stringResource(id = R.string.district) else registration.value.district,
                         color = if (registration.value.district.isEmpty()) ConstColors.gray else Color.Black,
@@ -291,7 +286,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     )
                 }
                 Space(dp = 12.dp)
-                InputWithError(errorText = validation.value?.state) {
+                InputWithError(errorText = userValidation.value?.state) {
                     Text(
                         text = if (registration.value.state.isEmpty()) stringResource(id = R.string.state) else registration.value.state,
                         color = if (registration.value.state.isEmpty()) ConstColors.gray else Color.Black,

@@ -4,18 +4,20 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.isDocumentUploaded
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.Location
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import kotlinx.coroutines.delay
 
 internal class RegistrationEventDelegate(
     navigator: Navigator,
@@ -66,7 +68,6 @@ internal class RegistrationEventDelegate(
                             registrationStep1 = it.registration.value,
                             locationData = DataSource(null),
                             registration = DataSource(UserRegistration2()),
-                            validation = DataSource(null)
                         )
                     )
                 }
@@ -75,7 +76,7 @@ internal class RegistrationEventDelegate(
                 val validation = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
-                it.validation.value = validation.entity
+                it.userValidation.value = validation.entity
                 if (validation.isSuccess) {
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
@@ -147,7 +148,13 @@ internal class RegistrationEventDelegate(
                 )
             }
             if (isSuccess) {
-                cached = it
+                cached = SignUpScope.LegalDocuments.Aadhaar(
+                    it.registrationStep1,
+                    it.registrationStep2,
+                    it.aadhaarData,
+                    it.errors,
+                    aadhaarUploaded = true,
+                )
                 startOtp(it.registrationStep1.phoneNumber)
             } else {
                 it.errors.value = ErrorCode()
@@ -156,8 +163,8 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
+        val documents = cached!!
         val signUpSuccess = navigator.withProgress {
-            val documents = cached!!
             userRepo.signUp(
                 documents.registrationStep1,
                 documents.registrationStep2,
@@ -166,14 +173,30 @@ internal class RegistrationEventDelegate(
             )
         }
         if (signUpSuccess) {
-            navigator.setCurrentScope(
-                MainScope(
-                    isLimitedAppAccess = true,
+            val (error, isSuccess) = navigator.withProgress {
+                // TODO temporary measure to avoid server race condition
+                delay(5000)
+                userRepo.login(
+                    documents.registrationStep1.email,
+                    documents.registrationStep1.password
                 )
-            )
+            }
+            if (isSuccess) {
+                navigator.setCurrentScope(
+                    MainScope.LimitedAccess(isDocumentUploaded = documents.isDocumentUploaded)
+                )
+                userRepo.getUser()
+            } else {
+                navigator.dropScopesToRoot()
+                navigator.withScope<LogInScope> {
+                    it.errors.value = error
+                }
+            }
         } else {
-            // TODO show alert
             navigator.dropScopesToRoot()
+            navigator.withScope<LogInScope> {
+                it.errors.value = ErrorCode()
+            }
         }
     }
 
@@ -188,13 +211,18 @@ internal class RegistrationEventDelegate(
         navigator.withScope<SignUpScope.AddressData> {
             it.registration.value = it.registration.value.copy(pincode = pincode)
             if (pincode.length == 6) {
-                val locationData = withProgress { userRepo.getLocationData(pincode) }
-                it.locationData.value = locationData
-                if (locationData is Location.Data) {
-                    it.registration.value = it.registration.value.copy(
-                        district = locationData.district,
-                        state = locationData.state,
-                    )
+                val locationResponse = withProgress { userRepo.getLocationData(pincode) }
+                val (location, isSuccess) = locationResponse.getWrappedBody()
+                if (isSuccess) {
+                    it.locationData.value = location
+                    if (location != null) {
+                        it.registration.value = it.registration.value.copy(
+                            district = location.district,
+                            state = location.state,
+                        )
+                    }
+                } else {
+                    it.pincodeValidation.value = locationResponse.validations
                 }
             }
         }

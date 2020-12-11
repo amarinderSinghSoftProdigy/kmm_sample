@@ -38,7 +38,7 @@ import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneOrEmailFormatInputField
 import com.zealsoftsol.medico.screens.TabBar
-import com.zealsoftsol.medico.screens.showError
+import com.zealsoftsol.medico.screens.showErrorAlert
 
 @Composable
 fun AuthScreen(scope: LogInScope) {
@@ -90,11 +90,7 @@ fun AuthScreen(scope: LogInScope) {
         }
         AuthTab(Modifier.align(Alignment.Center), scope)
 
-        scope.showError(
-            title = stringResource(id = R.string.error_log_in_title),
-            text = stringResource(id = R.string.error_log_in_text),
-            case = { success.isFalse },
-        )
+        scope.showErrorAlert()
     }
 }
 

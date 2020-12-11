@@ -5,9 +5,11 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Location
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -30,8 +32,8 @@ class MockAuthScope : NetworkScope.Auth {
 
     }
 
-    override suspend fun login(request: UserRequest): Response.Wrapped<TokenInfo> = mockResponse {
-        Response.Wrapped(TokenInfo("token", 10000000, "", ""), true)
+    override suspend fun login(request: UserRequest): SimpleBody<TokenInfo> = mockResponse {
+        Response.Body(TokenInfo("token", 10000000, "", ""), type = "success")
     }
 
     override suspend fun logout(): Boolean = mockBooleanResponse()
@@ -64,11 +66,11 @@ class MockAuthScope : NetworkScope.Auth {
         return mockResponse { Response.Wrapped(null, true) }
     }
 
-    override suspend fun getLocationData(pincode: String): Response.Wrapped<Location.Data> {
+    override suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> {
         return mockResponse {
-            Response.Wrapped(
-                Location.Data(listOf("location"), listOf("city"), "district", "state"),
-                true
+            Response.Body(
+                LocationData(listOf("location"), listOf("city"), "district", "state"),
+                type = "success",
             )
         }
     }
