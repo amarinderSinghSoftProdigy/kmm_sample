@@ -7,11 +7,11 @@ import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.AuthState
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Location
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -27,62 +27,61 @@ import kotlinx.serialization.json.Json
 
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
+    private val networkCustomerScope: NetworkScope.Customer,
     private val settings: Settings,
     private val phoneEmailVerifier: PhoneEmailVerifier,
 ) {
-    val authState: AuthState
-        get() = AuthState.fromKey(settings.getString(AUTH_STATE, AuthState.NOT_AUTHORIZED.key))
+    val userAccess: UserAccess
+        get() = fetchUser()?.let {
+            if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
+        } ?: UserAccess.NO_ACCESS
 
     init {
-        if (authState == AuthState.AUTHORIZED) {
-            fetchUser()?.let {
-                networkAuthScope.token = it.token
-            }
-        }
+        networkAuthScope.token = settings.getStringOrNull(AUTH_TOKEN_KEY)
     }
 
-    suspend fun login(authCredentials: AuthCredentials): Boolean {
-        settings.putString(AUTH_ID_KEY, authCredentials.phoneNumberOrEmail)
-        settings.putString(AUTH_PASS_KEY, authCredentials.password)
-        val (tokenInfo, isSuccess) = networkAuthScope.login(
-            UserRequest(authCredentials.phoneNumberOrEmail, authCredentials.password)
+    suspend fun login(login: String, password: String): Response.Wrapped<ErrorCode> {
+        settings.putString(AUTH_LOGIN_KEY, login)
+        val response = networkAuthScope.login(
+            UserRequest(login, password)
         )
-        tokenInfo?.let {
+        response.getBodyOrNull()?.let {
             networkAuthScope.token = it.token
-            val json = Json.encodeToString(
-                User.serializer(),
-                User(
-                    authCredentials.getEmail(),
-                    authCredentials.getPhoneNumber().orEmpty(),
-                    it.token,
-                    "",
-                    authCredentials.password
-                )
-            )
-            settings.putString(AUTH_USER_KEY, json)
-            settings.putString(AUTH_STATE, AuthState.AUTHORIZED.key)
-            true
         }
-        return isSuccess
+        return response.getWrappedError()
+    }
+
+    suspend fun getUser(): User? {
+        return fetchUser() ?: networkCustomerScope.getCustomerData().entity?.let {
+            val user = User(
+                it.email,
+                it.phoneNumber,
+                it.customerType,
+                it.customerMetaData.activated,
+                it.drugLicenseUrl
+            )
+            val json = Json.encodeToString(User.serializer(), user)
+            settings.putString(AUTH_USER_KEY, json)
+            user
+        }
     }
 
     suspend fun logout(): Boolean {
         return networkAuthScope.logout().also { isSuccess ->
             if (isSuccess) {
                 settings.remove(AUTH_USER_KEY)
-                settings.remove(AUTH_STATE)
-                settings.remove(AUTH_PASS_KEY)
+                settings.remove(AUTH_TOKEN_KEY)
                 networkAuthScope.clearToken()
             }
         }
     }
 
     fun getAuthCredentials(): AuthCredentials {
-        val id = settings.getString(AUTH_ID_KEY, "")
+        val login = settings.getString(AUTH_LOGIN_KEY, "")
         return AuthCredentials(
-            id,
-            phoneEmailVerifier.verify(id),
-            settings.getString(AUTH_PASS_KEY, ""),
+            login,
+            phoneEmailVerifier.verify(login),
+            "",
         )
     }
 
@@ -125,8 +124,8 @@ class UserRepo(
         return networkAuthScope.signUpValidation3(userRegistration3)
     }
 
-    suspend fun getLocationData(pincode: String): Location {
-        return networkAuthScope.getLocationData(pincode).entity ?: Location.Unknown
+    suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> {
+        return networkAuthScope.getLocationData(pincode)
     }
 
     suspend fun signUp(
@@ -135,7 +134,7 @@ class UserRepo(
         userRegistration3: UserRegistration3,
         storageKey: String?,
     ): Boolean {
-        val isSuccess = networkAuthScope.signUp(
+        return networkAuthScope.signUp(
             SubmitRegistration.from(
                 userRegistration1,
                 userRegistration2,
@@ -143,10 +142,6 @@ class UserRepo(
                 storageKey
             )
         )
-        if (isSuccess) {
-            settings.putString(AUTH_STATE, AuthState.PENDING_VERIFICATION.key)
-        }
-        return isSuccess
     }
 
     suspend fun uploadAadhaar(
@@ -188,11 +183,14 @@ class UserRepo(
         return user
     }
 
+    enum class UserAccess {
+        FULL_ACCESS, LIMITED_ACCESS, NO_ACCESS
+    }
+
     companion object {
         // TODO make secure
-        private const val AUTH_ID_KEY = "auid"
-        private const val AUTH_PASS_KEY = "apass"
+        private const val AUTH_LOGIN_KEY = "auid"
+        private const val AUTH_TOKEN_KEY = "atok"
         private const val AUTH_USER_KEY = "ukey"
-        private const val AUTH_STATE = "ast"
     }
 }

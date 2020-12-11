@@ -38,7 +38,7 @@ internal class OtpEventDelegate(
             }
             if (isSuccess) {
                 val nextScope = OtpScope.AwaitVerification(phoneNumber = phoneNumber)
-                startResetPasswordTimer(nextScope.resendTimer)
+                startResetPasswordTimer(nextScope)
                 setCurrentScope(nextScope)
             } else {
                 (it as? WithErrors)?.errors?.let { errors ->
@@ -72,17 +72,18 @@ internal class OtpEventDelegate(
                 }
             } else {
                 it.errors.value = errorCode ?: ErrorCode()
-                it.attemptsLeft.value = it.attemptsLeft.value - 1
             }
         }
     }
 
     private suspend fun resendOtp() {
         navigator.withScope<OtpScope.AwaitVerification> {
+            it.resendActive.value = false
             val (errorCode, isSuccess) = userRepo.resendOtp(it.phoneNumber)
             if (isSuccess) {
-                startResetPasswordTimer(it.resendTimer)
+                startResetPasswordTimer(it)
             } else {
+                it.resendActive.value = true
                 it.errors.value = errorCode ?: ErrorCode()
             }
         }
@@ -92,8 +93,11 @@ internal class OtpEventDelegate(
         resetPasswordTimerJob?.cancel()
     }
 
-    private fun startResetPasswordTimer(timer: DataSource<Long>) {
+    private fun startResetPasswordTimer(scope: OtpScope.AwaitVerification) {
         stopResetPasswordTimer()
+        scope.resendActive.value = false
+        scope.attemptsLeft.value = scope.attemptsLeft.value - 1
+        val timer = scope.resendTimer
         resetPasswordTimerJob = GlobalScope.launch(compatDispatcher) {
             timer.value = OtpScope.AwaitVerification.RESEND_TIMER
             var remainingTime = timer.value
@@ -102,6 +106,7 @@ internal class OtpEventDelegate(
                 remainingTime -= 1000
                 timer.value = remainingTime
             }
+            scope.resendActive.value = true
         }
     }
 }

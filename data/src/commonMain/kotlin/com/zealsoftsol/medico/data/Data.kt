@@ -5,26 +5,8 @@ data class AuthCredentials(
     val type: Type?,
     val password: String,
 ) {
-    fun getPhoneNumber(): String? = phoneNumberOrEmail.takeIf { type == Type.PHONE }
-    fun getEmail(): String? = phoneNumberOrEmail.takeIf { type == Type.EMAIL }
-
     enum class Type {
         EMAIL, PHONE;
-    }
-}
-
-enum class AuthState(val key: String) {
-    AUTHORIZED("au"), PENDING_VERIFICATION("pe"), NOT_AUTHORIZED("na");
-
-    companion object {
-        fun fromKey(key: String): AuthState {
-            return when (key) {
-                AUTHORIZED.key -> AUTHORIZED
-                PENDING_VERIFICATION.key -> PENDING_VERIFICATION
-                NOT_AUTHORIZED.key -> NOT_AUTHORIZED
-                else -> throw UnsupportedOperationException("unknown auth key $key")
-            }
-        }
     }
 }
 

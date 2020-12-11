@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class User(
     val email: String?,
     val phoneNumber: String,
-    val token: String,
     val type: String,
-    val password: String,
+    val isVerified: Boolean,
+    val documentUrl: String?
 )

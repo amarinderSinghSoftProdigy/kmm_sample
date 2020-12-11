@@ -7,7 +7,8 @@ import com.zealsoftsol.medico.core.utils.AadhaarVerification
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.Location
+import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -105,9 +106,10 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
     data class AddressData(
         internal val registrationStep1: UserRegistration1,
-        val locationData: DataSource<Location?>,
+        val locationData: DataSource<LocationData?>,
         val registration: DataSource<UserRegistration2>,
-        val validation: DataSource<UserValidation2?>,
+        val userValidation: DataSource<UserValidation2?> = DataSource(null),
+        val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
     ) : SignUpScope() {
 
         init {
@@ -271,6 +273,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             registrationStep2: UserRegistration2,
             val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
             override val errors: DataSource<ErrorCode?> = DataSource(null),
+            internal val aadhaarUploaded: Boolean = false,
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
@@ -305,3 +308,9 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
     }
 }
+
+internal inline val SignUpScope.LegalDocuments.isDocumentUploaded: Boolean
+    get() = when (this) {
+        is SignUpScope.LegalDocuments.Aadhaar -> aadhaarUploaded
+        is SignUpScope.LegalDocuments.DrugLicense -> storageKey != null
+    }

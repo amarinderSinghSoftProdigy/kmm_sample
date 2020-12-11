@@ -10,7 +10,6 @@ import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.data.AuthState
 import org.kodein.di.DI
 import org.kodein.di.direct
 import org.kodein.di.instance
@@ -29,12 +28,11 @@ object UiLink {
         val userRepo = directDI.instance<UserRepo>()
         val eventCollector = directDI.instance<EventCollector>()
         navigator.setCurrentScope(
-            if (userRepo.authState == AuthState.AUTHORIZED) {
-                MainScope(
-                    isLimitedAppAccess = userRepo.authState == AuthState.PENDING_VERIFICATION,
-                )
-            } else {
-                LogInScope(DataSource(userRepo.getAuthCredentials()))
+            when (userRepo.userAccess) {
+                UserRepo.UserAccess.FULL_ACCESS -> MainScope.FullAccess()
+                // TODO fetch tight value for isDocumentUploaded
+                UserRepo.UserAccess.LIMITED_ACCESS -> MainScope.LimitedAccess(true)
+                UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
             }
         )
         return AppStartResult(di, navigator)

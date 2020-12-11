@@ -1,15 +1,15 @@
 package com.zealsoftsol.medico.core.mvi.scope
 
-import com.zealsoftsol.medico.core.BooleanEvent
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.ErrorCode
 
 data class LogInScope(
     val credentials: DataSource<AuthCredentials>,
-    val success: BooleanEvent = BooleanEvent.none,
-) : BaseScope() {
+    override val errors: DataSource<ErrorCode?> = DataSource(null),
+) : BaseScope(), WithErrors {
 
     /**
      * Updates current scope, result posted to [credentials]
