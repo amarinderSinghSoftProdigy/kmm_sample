@@ -102,3 +102,8 @@
 "error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
+
+// MARK: Limited App Access
+"welcome %@" = "Welcome, %@!";
+"thank_you_for_registration" = "Thank you for registration!";
+"documents_under_review" = "Your documents are under review. We will update you.";

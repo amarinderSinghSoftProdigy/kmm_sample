@@ -5,11 +5,17 @@ struct MainScreen: View {
     let scope: MainScope
     
     var body: some View {
-        Text(LocalizedStringKey("Welcome!"))
-        .userInfoNavigationBar(isLimitedAppAccess: scope.isLimitedAppAccess) {
-            scope.tryLogOut()
-        }
+        getCurrentView()
+            .userInfoNavigationBar(isLimitedAppAccess: scope.isLimitedAppAccess) {
+                scope.tryLogOut()
+            }
     }
     
-    
+    private func getCurrentView() -> some View {
+        let view: AnyView
+        
+        view = AnyView(LimitedAppAccessScreen())
+        
+        return view
+    }
 }

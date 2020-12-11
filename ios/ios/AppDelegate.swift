@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let start = UiLink().appStart(context: self, isDebug: true, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
-//        UiLink().overrideCurrentScope(uiNavigator: navigator, scope: ScopeCreator().limitedAccessMain())
+        UiLink().overrideCurrentScope(uiNavigator: navigator, scope: ScopeCreator().limitedAccessMain())
         
         return true
     }
