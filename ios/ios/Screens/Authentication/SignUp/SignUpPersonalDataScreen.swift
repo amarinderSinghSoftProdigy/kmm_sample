@@ -12,10 +12,10 @@ import core
 struct SignUpPersonalDataScreen: View {
     let scope: SignUpScope.PersonalData
     
-    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
-    @ObservedObject var registration: SwiftDatasource<DataUserRegistration1>
-    @ObservedObject var validation: SwiftDatasource<DataUserValidation1>
+    @ObservedObject var registration: SwiftDataSource<DataUserRegistration1>
+    @ObservedObject var validation: SwiftDataSource<DataUserValidation1>
     
     @State var isPhoneValid: Bool = true
     
@@ -108,10 +108,10 @@ struct SignUpPersonalDataScreen: View {
     init(scope: SignUpScope.PersonalData) {
         self.scope = scope
         
-        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
-        self.registration = SwiftDatasource(dataSource: scope.registration)
-        self.validation = SwiftDatasource(dataSource: scope.validation)
+        self.registration = SwiftDataSource(dataSource: scope.registration)
+        self.validation = SwiftDataSource(dataSource: scope.validation)
         
         self._isPhoneValid = State(initialValue: self.validation.value?.phoneNumber == nil)
     }

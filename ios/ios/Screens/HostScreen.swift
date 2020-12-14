@@ -4,7 +4,7 @@ import core
 struct HostScreen: View {
     @State var isSplashScreenActive = true
     
-    @ObservedObject var currentScope: SwiftDatasource<BaseScope>
+    @ObservedObject var currentScope: SwiftDataSource<BaseScope>
     
     var body: some View {
         if isSplashScreenActive {
@@ -34,7 +34,7 @@ struct HostScreen: View {
     }
     
     init() {
-        currentScope = SwiftDatasource(dataSource: navigator.scope)
+        currentScope = SwiftDataSource(dataSource: navigator.scope)
         
         setUpNavigationBar()
     }
@@ -57,7 +57,7 @@ struct HostScreen: View {
 
 struct BaseScopeView: View {
     let scope: BaseScope
-    @ObservedObject var isInProgress: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
         ZStack {
@@ -118,7 +118,7 @@ struct BaseScopeView: View {
     init(scope: BaseScope) {
         self.scope = scope
         
-        self.isInProgress = SwiftDatasource(dataSource: scope.isInProgress)
+        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
     }
 }
 

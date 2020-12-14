@@ -13,8 +13,8 @@ struct OtpPhoneRequestScreen: View {
     let scope: OtpScope.PhoneNumberInput
     let geometry: GeometryProxy
     
-    @ObservedObject var phone: SwiftDatasource<NSString>
-    @ObservedObject var error: SwiftDatasource<DataErrorCode>
+    @ObservedObject var phone: SwiftDataSource<NSString>
+    @ObservedObject var error: SwiftDataSource<DataErrorCode>
     
     @State var canSubmitPhone = false
     
@@ -26,8 +26,8 @@ struct OtpPhoneRequestScreen: View {
         self.scope = scope
         self.geometry = geometry
         
-        self.phone = SwiftDatasource(dataSource: scope.phoneNumber)
-        self.error = SwiftDatasource(dataSource: scope.errors)
+        self.phone = SwiftDataSource(dataSource: scope.phoneNumber)
+        self.error = SwiftDataSource(dataSource: scope.errors)
     }
     
     private func getView() -> some View {

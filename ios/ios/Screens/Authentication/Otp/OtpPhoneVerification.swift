@@ -33,7 +33,8 @@ struct OtpPhoneVerification: View {
                 Spacer()
                 
                 let otpHeight: CGFloat = 64
-                ResendOtpView(resendAction: resendOtp)
+                ResendOtpView(isResendActive: scope.resendActive,
+                              resendAction: resendOtp)
                     .frame(height: otpHeight)
             }
         }
@@ -58,8 +59,8 @@ fileprivate struct OtpDetailsView: View {
     
     @State private var code: String = ""
     
-    @ObservedObject var attemptsLeft: SwiftDatasource<KotlinInt>
-    @ObservedObject var timerValue: SwiftDatasource<KotlinLong>
+    @ObservedObject var attemptsLeft: SwiftDataSource<KotlinInt>
+    @ObservedObject var timerValue: SwiftDataSource<KotlinLong>
     
     var body: some View {
         VStack {
@@ -107,12 +108,14 @@ fileprivate struct OtpDetailsView: View {
         
         self.buttonAction = buttonAction
         
-        self.attemptsLeft = SwiftDatasource(dataSource: leftAttempts)
-        self.timerValue = SwiftDatasource(dataSource: timerValue)
+        self.attemptsLeft = SwiftDataSource(dataSource: leftAttempts)
+        self.timerValue = SwiftDataSource(dataSource: timerValue)
     }
 }
 
 fileprivate struct ResendOtpView: View {
+    @ObservedObject var isResendActive: SwiftDataSource<KotlinBoolean>
+    
     let resendAction: () -> ()
     
     var body: some View {
@@ -123,12 +126,23 @@ fileprivate struct ResendOtpView: View {
                 Text(LocalizedStringKey("didnt_get_code"))
                     .modifier(MedicoText(textWeight: .medium))
                 
+                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey
+                
                 Text(LocalizedStringKey("resend"))
-                    .modifier(MedicoText(textWeight: .semiBold, color: .lightBlue))
+                    .modifier(MedicoText(textWeight: .semiBold, color: resendColor))
                     .onTapGesture {
+                        if isResendActive.value != true { return }
+                        
                         resendAction()
                     }
             }
         }
+    }
+    
+    init(isResendActive: DataSource<KotlinBoolean>,
+         resendAction: @escaping () -> ()) {
+        self.isResendActive = SwiftDataSource(dataSource: isResendActive)
+        
+        self.resendAction = resendAction
     }
 }

@@ -17,8 +17,8 @@ struct AuthNewPasswordScreen: View {
     
     @State var canSubmitPassword: Bool = false
     
-    @ObservedObject var notification: SwiftDatasource<ScopeNotification>
-    @ObservedObject var passwordValidation: SwiftDatasource<DataPasswordValidation>
+    @ObservedObject var notification: SwiftDataSource<ScopeNotification>
+    @ObservedObject var passwordValidation: SwiftDataSource<DataPasswordValidation>
     
     var body: some View {
         let errorMessageKey = self.passwordValidation.value?.password
@@ -64,8 +64,8 @@ struct AuthNewPasswordScreen: View {
     init(scope: EnterNewPasswordScope) {
         self.scope = scope
         
-        self.notification = SwiftDatasource(dataSource: scope.notifications)
-        self.passwordValidation = SwiftDatasource(dataSource: scope.passwordValidation)
+        self.notification = SwiftDataSource(dataSource: scope.notifications)
+        self.passwordValidation = SwiftDataSource(dataSource: scope.passwordValidation)
     }
     
     private func checkPasswordsMatch(_ password: String) {

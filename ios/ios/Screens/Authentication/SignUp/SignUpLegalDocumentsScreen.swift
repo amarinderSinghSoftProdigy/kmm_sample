@@ -17,7 +17,7 @@ struct SignUpLegalDocumentsScreen: View {
     
     @ObservedObject var fileUploadData = FileUploadData()
     
-    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
         self.getView()
@@ -26,7 +26,7 @@ struct SignUpLegalDocumentsScreen: View {
     init(scope: SignUpScope.LegalDocuments) {
         self.scope = scope
 
-        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
         self.documentTypes = getAvailableDocumentTypes(for: scope)
     }
@@ -176,7 +176,7 @@ struct SignUpLegalDocumentsScreen: View {
 fileprivate struct AadhaardCardDataFields: View  {
     let scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar
     
-    @ObservedObject var aadhaarData: SwiftDatasource<DataAadhaarData>
+    @ObservedObject var aadhaarData: SwiftDataSource<DataAadhaarData>
     
     var body: some View {
         VStack(spacing: 12) {
@@ -197,7 +197,7 @@ fileprivate struct AadhaardCardDataFields: View  {
     init(scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar) {
         self.scope = scope
         
-        self.aadhaarData = SwiftDatasource(dataSource: scope.aadhaarData)
+        self.aadhaarData = SwiftDataSource(dataSource: scope.aadhaarData)
     }
 }
 
