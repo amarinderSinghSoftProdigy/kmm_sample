@@ -27,9 +27,6 @@ struct HostScreen: View {
         ZStack {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
             Image("medico_logo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 150)
         }
     }
     
