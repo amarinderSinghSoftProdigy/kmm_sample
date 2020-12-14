@@ -36,15 +36,15 @@ struct SignUpAddressScreen: View {
     var addressDataFields: some View {
             VStack(spacing: 12) {
                 
-                let pincode = self.pincodeValidation.value?.pincode
+                let pincodeError = self.pincodeValidation.value?.pincode
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
-                                             text: pincode,
+                                             text: self.registration.value?.pincode,
                                              onTextChange: { newValue in
                                                 scope.changePincode(pincode: newValue)
                                              },
                                              keyboardType: .numberPad,
-                                             isValid: pincode == nil,
-                                             errorMessageKey: pincode)
+                                             isValid: pincodeError == nil,
+                                             errorMessageKey: pincodeError)
                     .textContentType(.postalCode)
                 
                 let addressLineErrorMessageKey = self.userValidation.value?.addressLine1
