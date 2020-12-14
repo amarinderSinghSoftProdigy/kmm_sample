@@ -7,12 +7,12 @@ struct AuthScreen: View {
     
     let scope: LogInScope
     
-    @ObservedObject var credentials: SwiftDatasource<DataAuthCredentials>
+    @ObservedObject var credentials: SwiftDataSource<DataAuthCredentials>
     
     init(scope: LogInScope) {
         self.scope = scope
         
-        credentials = SwiftDatasource(dataSource: scope.credentials)
+        credentials = SwiftDataSource(dataSource: scope.credentials)
     }
     
     var body: some View {

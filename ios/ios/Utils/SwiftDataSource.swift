@@ -8,7 +8,7 @@
 
 import core
 
-class SwiftDatasource<T: AnyObject> : ObservableObject {
+class SwiftDataSource<T: AnyObject> : ObservableObject {
     private var dataSource: DataSource<T>
     
     @Published private(set) var value: T?
@@ -17,17 +17,6 @@ class SwiftDatasource<T: AnyObject> : ObservableObject {
         self.dataSource = dataSource
         self.dataSource.observeOnUi { newValue in
             self.value = newValue
-        }
-    }
-}
-
-class SwiftCompletable<T: AnyObject>: ObservableObject{
-    @Published private (set) var value: T?
-    
-    init(initial: T?, deferred: Kotlinx_coroutines_coreDeferred) {
-        value = initial
-        deferred.await { newValue, err in
-            self.value = newValue as? T
         }
     }
 }

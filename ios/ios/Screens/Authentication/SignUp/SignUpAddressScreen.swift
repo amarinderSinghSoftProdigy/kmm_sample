@@ -12,14 +12,14 @@ import core
 struct SignUpAddressScreen: View {
     let scope: SignUpScope.AddressData
     
-    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
-    @ObservedObject var registration: SwiftDatasource<DataUserRegistration2>
+    @ObservedObject var registration: SwiftDataSource<DataUserRegistration2>
     
-    @ObservedObject var pincodeValidation: SwiftDatasource<DataPincodeValidation>
-    @ObservedObject var userValidation: SwiftDatasource<DataUserValidation2>
+    @ObservedObject var pincodeValidation: SwiftDataSource<DataPincodeValidation>
+    @ObservedObject var userValidation: SwiftDataSource<DataUserValidation2>
 
-    @ObservedObject var locationData: SwiftDatasource<DataLocationData>
+    @ObservedObject var locationData: SwiftDataSource<DataLocationData>
     
     var body: some View {
         VStack {
@@ -87,14 +87,14 @@ struct SignUpAddressScreen: View {
     init(scope: SignUpScope.AddressData) {
         self.scope = scope
         
-        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
-        self.registration = SwiftDatasource(dataSource: scope.registration)
+        self.registration = SwiftDataSource(dataSource: scope.registration)
         
-        self.pincodeValidation = SwiftDatasource(dataSource: scope.pincodeValidation)
-        self.userValidation = SwiftDatasource(dataSource: scope.userValidation)
+        self.pincodeValidation = SwiftDataSource(dataSource: scope.pincodeValidation)
+        self.userValidation = SwiftDataSource(dataSource: scope.userValidation)
         
-        self.locationData = SwiftDatasource(dataSource: scope.locationData)
+        self.locationData = SwiftDataSource(dataSource: scope.locationData)
     }
     
     

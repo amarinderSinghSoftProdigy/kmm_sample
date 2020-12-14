@@ -12,10 +12,10 @@ import core
 struct SignUpTraderDetails: View {
     let scope: SignUpScope.TraderData
     
-    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
-    @ObservedObject var registration: SwiftDatasource<DataUserRegistration3>
-    @ObservedObject var validation: SwiftDatasource<DataUserValidation3>
+    @ObservedObject var registration: SwiftDataSource<DataUserRegistration3>
+    @ObservedObject var validation: SwiftDataSource<DataUserValidation3>
     
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -41,10 +41,10 @@ struct SignUpTraderDetails: View {
     init(scope: SignUpScope.TraderData) {
         self.scope = scope
         
-        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
-        self.registration = SwiftDatasource(dataSource: scope.registration)
-        self.validation = SwiftDatasource(dataSource: scope.validation)
+        self.registration = SwiftDataSource(dataSource: scope.registration)
+        self.validation = SwiftDataSource(dataSource: scope.validation)
     }
     
     private func getInputField(forType type: SignUpScope.TraderDataFields) -> some View {
