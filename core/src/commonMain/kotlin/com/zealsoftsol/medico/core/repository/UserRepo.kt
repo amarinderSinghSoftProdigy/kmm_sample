@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
-import com.zealsoftsol.medico.core.extensions.errorIt
+import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -35,6 +36,8 @@ class UserRepo(
         get() = fetchUser()?.let {
             if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
+    val user: User?
+        get() = fetchUser()
 
     init {
         networkAuthScope.token = settings.getStringOrNull(AUTH_TOKEN_KEY)
@@ -51,12 +54,14 @@ class UserRepo(
         return response.getWrappedError()
     }
 
-    suspend fun getUser(): User? {
-        return fetchUser() ?: networkCustomerScope.getCustomerData().entity?.let {
+    suspend fun loadUserFromServer(): User? {
+        return networkCustomerScope.getCustomerData().entity?.let {
             val user = User(
+                it.firstName,
+                it.lastName,
                 it.email,
                 it.phoneNumber,
-                it.customerType,
+                UserType.parse(it.customerType),
                 it.customerMetaData.activated,
                 it.drugLicenseUrl
             )
@@ -179,7 +184,7 @@ class UserRepo(
         val user = runCatching {
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
-        if (user == null) "error fetching user".errorIt()
+        if (user == null) "no cached user".warnIt()
         return user
     }
 

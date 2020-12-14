@@ -6,32 +6,24 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.zealsoftsol.medico.AppTheme
-import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.UiNavigator
@@ -50,6 +42,11 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
+import com.zealsoftsol.medico.screens.auth.DocumentUploadBottomSheet
+import com.zealsoftsol.medico.screens.auth.Welcome
+import com.zealsoftsol.medico.screens.auth.handleFileUpload
+import com.zealsoftsol.medico.screens.nav.NavigationColumn
+import com.zealsoftsol.medico.screens.nav.NavigationSection
 import com.zealsoftsol.medico.utils.FileUtil
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.kodein.di.DI
@@ -134,31 +131,21 @@ class MainActivity : ComponentActivity(), DIAware {
 @Composable
 fun MainView(scope: MainScope) {
     val scaffoldState = rememberScaffoldState()
+    val user = scope.user.flow.collectAsState()
+    val isShowingDocumentUploadBottomSheet = remember { mutableStateOf(false) }
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerContent = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(1.dp)
-                        .padding(horizontal = 16.dp)
-                        .background(ConstColors.gray)
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable(onClick = { scope.tryLogOut() })
-                        .padding(vertical = 12.dp)
-                ) {
-                    Icon(
-                        asset = vectorResource(id = R.drawable.ic_exit),
-                        modifier = Modifier.padding(start = 18.dp),
-                    )
-                    BasicText(
-                        text = stringResource(R.string.log_out),
-                        style = MaterialTheme.typography.body2.copy(color = ConstColors.gray),
-                        modifier = Modifier.padding(start = 32.dp),
-                    )
+            NavigationColumn(
+                userName = user.value.fullName(),
+                userType = user.value.type,
+                isLimittedAccess = scope is MainScope.LimitedAccess,
+            ) { clickedSection ->
+                when (clickedSection) {
+                    NavigationSection.SETTINGS -> {
+                    }
+                    NavigationSection.LOGOUT -> scope.tryLogOut()
                 }
             }
         },
@@ -175,7 +162,24 @@ fun MainView(scope: MainScope) {
             }
         },
         bodyContent = {
-            Text("current scope $scope")
+            if (scope is MainScope.LimitedAccess) {
+                Welcome(
+                    fullName = user.value.fullName(),
+                    onUploadClick = if (!scope.isDocumentUploaded) {
+                        { isShowingDocumentUploadBottomSheet.value = true }
+                    } else null,
+                )
+            } else {
+
+            }
         },
     )
+    if (scope is MainScope.LimitedAccess) {
+        DocumentUploadBottomSheet(
+            isShowingBottomSheet = isShowingDocumentUploadBottomSheet,
+            supportedFileTypes = scope.supportedFileTypes,
+            useCamera = scope.isCameraOptionAvailable,
+            onFileReady = { scope.handleFileUpload(it) },
+        )
+    }
 }

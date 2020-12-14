@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.compatDispatcher
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
@@ -8,6 +9,9 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
+import com.zealsoftsol.medico.core.mvi.scope.BaseScope
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -32,6 +36,18 @@ internal class EventCollector(
             for (event in events.openSubscription()) {
                 delegateMap[event.typeClazz]!!.genericHandle(event)
             }
+        }
+    }
+
+    fun getStartingScope(): BaseScope {
+        return when (userRepo.userAccess) {
+            UserRepo.UserAccess.FULL_ACCESS -> MainScope.FullAccess(
+                user = DataSource(userRepo.user!!)
+            )
+            UserRepo.UserAccess.LIMITED_ACCESS -> MainScope.LimitedAccess(
+                user = DataSource(userRepo.user!!),
+            )
+            UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
         }
     }
 

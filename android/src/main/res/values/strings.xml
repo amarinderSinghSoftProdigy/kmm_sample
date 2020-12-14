@@ -73,4 +73,5 @@
     <string name="tos_url">https://medico.com/tos.html</string>
     <string name="password_change_success">Password changed successfully</string>
     <string name="success">Success</string>
+    <string name="settings">Settings</string>
 </resources>

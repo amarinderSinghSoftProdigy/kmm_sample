@@ -4,10 +4,10 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.isDocumentUploaded
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
@@ -114,23 +114,40 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun uploadDrugLicense(license: String, fileType: FileType) {
-        navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
+        navigator.withCommonScope<CommonScope.UploadDocument> {
             val (storageKey, isSuccess) = withProgress {
+                val phoneNumber = when (it) {
+                    is SignUpScope.LegalDocuments -> it.registrationStep1.phoneNumber
+                    is MainScope.LimitedAccess -> it.user.value.phoneNumber
+                    else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
+                }
                 userRepo.uploadDrugLicense(
                     fileString = license,
-                    phoneNumber = it.registrationStep1.phoneNumber,
+                    phoneNumber = phoneNumber,
                     mimeType = fileType.mimeType,
                 )
             }
             if (isSuccess) {
-                cached = SignUpScope.LegalDocuments.DrugLicense(
-                    it.registrationStep1,
-                    it.registrationStep2,
-                    it.registrationStep3,
-                    it.errors,
-                    storageKey = storageKey?.key,
-                )
-                startOtp(it.registrationStep1.phoneNumber)
+                when (it) {
+                    is SignUpScope.LegalDocuments -> {
+                        cached = SignUpScope.LegalDocuments.DrugLicense(
+                            it.registrationStep1,
+                            it.registrationStep2,
+                            it.registrationStep3,
+                            it.errors,
+                            storageKey = storageKey?.key,
+                        )
+                        startOtp(it.registrationStep1.phoneNumber)
+                    }
+                    is MainScope.LimitedAccess -> {
+                        userRepo.loadUserFromServer()?.let { user ->
+                            it.user.value = user
+                        } ?: run {
+                            it.errors.value = ErrorCode()
+                        }
+                    }
+                    else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
+                }
             } else {
                 it.errors.value = ErrorCode()
             }
@@ -139,6 +156,7 @@ internal class RegistrationEventDelegate(
 
     private suspend fun uploadAadhaar(aadhaar: String) {
         navigator.withScope<SignUpScope.LegalDocuments.Aadhaar> {
+            // TODO support upload from main screen
             val isSuccess = withProgress {
                 userRepo.uploadAadhaar(
                     aadhaar = it.aadhaarData.value,
@@ -182,21 +200,26 @@ internal class RegistrationEventDelegate(
                 )
             }
             if (isSuccess) {
-                navigator.setCurrentScope(
-                    MainScope.LimitedAccess(isDocumentUploaded = documents.isDocumentUploaded)
-                )
-                userRepo.getUser()
-            } else {
-                navigator.dropScopesToRoot()
-                navigator.withScope<LogInScope> {
-                    it.errors.value = error
+                val user = navigator.withProgress { userRepo.loadUserFromServer() }
+                if (user != null) {
+                    navigator.setCurrentScope(
+                        MainScope.LimitedAccess(user = DataSource(user))
+                    )
+                } else {
+                    dropToLogin(ErrorCode())
                 }
+            } else {
+                dropToLogin(error)
             }
         } else {
-            navigator.dropScopesToRoot()
-            navigator.withScope<LogInScope> {
-                it.errors.value = ErrorCode()
-            }
+            dropToLogin(ErrorCode())
+        }
+    }
+
+    private fun dropToLogin(errorCode: ErrorCode?) {
+        navigator.dropScopesToRoot()
+        navigator.withScope<LogInScope> {
+            it.errors.value = errorCode ?: ErrorCode()
         }
     }
 
@@ -212,6 +235,7 @@ internal class RegistrationEventDelegate(
             it.registration.value = it.registration.value.copy(pincode = pincode)
             if (pincode.length == 6) {
                 val locationResponse = withProgress { userRepo.getLocationData(pincode) }
+                it.pincodeValidation.value = locationResponse.validations
                 val (location, isSuccess) = locationResponse.getWrappedBody()
                 if (isSuccess) {
                     it.locationData.value = location
@@ -221,8 +245,6 @@ internal class RegistrationEventDelegate(
                             state = location.state,
                         )
                     }
-                } else {
-                    it.pincodeValidation.value = locationResponse.validations
                 }
             }
         }

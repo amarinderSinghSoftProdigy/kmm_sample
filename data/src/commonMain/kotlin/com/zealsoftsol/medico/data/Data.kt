@@ -15,6 +15,16 @@ enum class UserType(val serverValue: String) {
     RETAILER("retailer"),
     SEASON_BOY("season_boy"),
     HOSPITAL("hospital");
+
+    companion object {
+        fun parse(value: String): UserType = when (value) {
+            STOCKIST.serverValue -> STOCKIST
+            RETAILER.serverValue -> RETAILER
+            SEASON_BOY.serverValue -> SEASON_BOY
+            HOSPITAL.serverValue -> HOSPITAL
+            else -> throw UnsupportedOperationException("unknown user type string")
+        }
+    }
 }
 
 data class AadhaarData(

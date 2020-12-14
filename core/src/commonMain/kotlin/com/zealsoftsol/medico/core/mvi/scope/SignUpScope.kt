@@ -241,7 +241,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), WithErrors, PhoneVerificationEntryPoint {
+    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint,
+        CommonScope.UploadDocument {
 
         abstract val supportedFileTypes: Array<FileType>
 

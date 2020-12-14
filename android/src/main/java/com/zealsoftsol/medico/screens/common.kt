@@ -1,9 +1,13 @@
 package com.zealsoftsol.medico.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.VectorAsset
 import androidx.compose.ui.platform.ConfigurationAmbient
 import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
@@ -194,6 +200,13 @@ fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotific
 }
 
 @Composable
+fun stringResource(resourceName: String): String {
+    return stringResource(id = ContextAmbient.current.runCatching {
+        resources.getIdentifier(resourceName, "string", packageName)
+    }.getOrNull() ?: 0)
+}
+
+@Composable
 fun PhoneFormatInputField(
     hint: String,
     text: String,
@@ -316,4 +329,57 @@ fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
         state.value = await()
     }
     return state
+}
+
+data class BottomSheetCell(val stringId: Int, val iconAsset: VectorAsset)
+
+@Composable
+fun BottomSheet(
+    title: String,
+    cells: List<BottomSheetCell>,
+    onClick: (BottomSheetCell) -> Unit,
+    isShowingBottomSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
+) {
+    if (isShowingBottomSheet.value) Box(
+        modifier = Modifier.fillMaxSize()
+            .background(color = Color.Black.copy(alpha = 0.5f))
+            .clickable(indication = null) { isShowingBottomSheet.value = false }
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+            color = Color.White,
+            elevation = 8.dp,
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.height(52.dp)
+                        .padding(start = 18.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = title,
+                        color = ConstColors.gray,
+                    )
+                }
+                cells.forEach {
+                    Row(
+                        modifier = Modifier.height(48.dp)
+                            .fillMaxWidth()
+                            .clickable { onClick(it) },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            asset = it.iconAsset,
+                            modifier = Modifier.padding(horizontal = 18.dp)
+                        )
+                        Text(
+                            text = stringResource(id = it.stringId),
+                            color = ConstColors.gray,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,12 +26,12 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,9 +56,12 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.BasicTabBar
+import com.zealsoftsol.medico.screens.BottomSheet
+import com.zealsoftsol.medico.screens.BottomSheetCell
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
 import com.zealsoftsol.medico.screens.MainActivity
@@ -68,6 +70,7 @@ import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.showErrorAlert
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import com.zealsoftsol.medico.data.UserType as DataUserType
@@ -458,84 +461,52 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             }
         }
     )
-    if (isShowingBottomSheet.value) Box(
-        modifier = Modifier.fillMaxSize()
-            .background(color = Color.Black.copy(alpha = 0.5f))
-            .clickable(indication = null) { isShowingBottomSheet.value = false }
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            color = Color.White,
-            elevation = 8.dp,
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.height(52.dp)
-                        .padding(start = 18.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.actions),
-                        color = ConstColors.gray,
-                    )
+    DocumentUploadBottomSheet(
+        supportedFileTypes = scope.supportedFileTypes,
+        useCamera = scope is SignUpScope.LegalDocuments.DrugLicense,
+        activity = activity,
+        coroutineScope = coroutineScope,
+        isShowingBottomSheet = isShowingBottomSheet,
+        onFileReady = { scope.handleFileUpload(it) }
+    )
+    scope.showErrorAlert()
+}
+
+@Composable
+fun DocumentUploadBottomSheet(
+    supportedFileTypes: Array<FileType>,
+    useCamera: Boolean,
+    activity: MainActivity = ContextAmbient.current as MainActivity,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    isShowingBottomSheet: MutableState<Boolean> = remember { mutableStateOf(false) },
+    onFileReady: (File) -> Unit,
+) {
+    BottomSheet(
+        isShowingBottomSheet = isShowingBottomSheet,
+        title = stringResource(id = R.string.actions),
+        cells = listOfNotNull(
+            BottomSheetCell(R.string.upload, Icons.Filled.CloudUpload),
+            if (useCamera)
+                BottomSheetCell(R.string.use_camera, Icons.Filled.CameraAlt)
+            else
+                null
+        ),
+        onClick = { (stringId, _) ->
+            coroutineScope.launch {
+                val file = when (stringId) {
+                    R.string.upload -> activity.openFilePicker(supportedFileTypes)
+                    R.string.use_camera -> activity.takePicture()
+                    else -> null
                 }
-                Row(
-                    modifier = Modifier.height(48.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            coroutineScope.launch {
-                                val file = activity.openFilePicker(scope.supportedFileTypes)
-                                if (file != null) {
-                                    isShowingBottomSheet.value = false
-                                    scope.handleFileUpload(file)
-                                } else {
-                                    activity.toast(activity.getString(R.string.something_went_wrong))
-                                }
-                            }
-                        },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        asset = Icons.Filled.CloudUpload,
-                        modifier = Modifier.padding(horizontal = 18.dp)
-                    )
-                    Text(
-                        text = stringResource(id = R.string.upload),
-                        color = ConstColors.gray,
-                    )
-                }
-                if (scope is SignUpScope.LegalDocuments.DrugLicense) {
-                    Row(
-                        modifier = Modifier.height(48.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                coroutineScope.launch {
-                                    val file = activity.takePicture()
-                                    if (file != null) {
-                                        isShowingBottomSheet.value = false
-                                        scope.handleFileUpload(file)
-                                    } else {
-                                        activity.toast(activity.getString(R.string.something_went_wrong))
-                                    }
-                                }
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            asset = Icons.Filled.CameraAlt,
-                            modifier = Modifier.padding(horizontal = 18.dp)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.use_camera),
-                            color = ConstColors.gray,
-                        )
-                    }
+                if (file != null) {
+                    isShowingBottomSheet.value = false
+                    onFileReady(file)
+                } else {
+                    activity.toast(activity.getString(R.string.something_went_wrong))
                 }
             }
         }
-    }
-    scope.showErrorAlert()
+    )
 }
 
 private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
@@ -547,6 +518,19 @@ private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
             FileType.fromExtension(file.extension)
         )
         is SignUpScope.LegalDocuments.Aadhaar -> upload(base64)
+    }
+}
+
+inline fun MainScope.LimitedAccess.handleFileUpload(file: File) {
+    val bytes = file.readBytes()
+    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+    if (isCameraOptionAvailable) {
+        uploadDrugLicense(
+            base64,
+            FileType.fromExtension(file.extension)
+        )
+    } else {
+        uploadAadhaar(base64)
     }
 }
 

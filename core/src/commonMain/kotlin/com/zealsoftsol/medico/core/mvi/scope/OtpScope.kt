@@ -11,7 +11,7 @@ sealed class OtpScope : BaseScope(), CanGoBack {
     data class PhoneNumberInput(
         val phoneNumber: DataSource<String>,
         override val errors: DataSource<ErrorCode?> = DataSource(null),
-    ) : OtpScope(), WithErrors, PhoneVerificationEntryPoint {
+    ) : OtpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint {
 
         fun changePhoneNumber(phoneNumber: String) {
             this.phoneNumber.value = phoneNumber
@@ -48,8 +48,6 @@ sealed class OtpScope : BaseScope(), CanGoBack {
         }
     }
 }
-
-interface PhoneVerificationEntryPoint : CommonScope
 
 data class EnterNewPasswordScope(
     internal val phoneNumber: String,
