@@ -50,6 +50,7 @@ class UserRepo(
         )
         response.getBodyOrNull()?.let {
             networkAuthScope.token = it.token
+            settings.putString(AUTH_TOKEN_KEY, it.token)
         }
         return response.getWrappedError()
     }
@@ -90,12 +91,20 @@ class UserRepo(
         )
     }
 
-    fun updateAuthCredentials(current: AuthCredentials, emailOrPhone: String, password: String): AuthCredentials {
+    fun updateAuthCredentials(
+        current: AuthCredentials,
+        emailOrPhone: String,
+        password: String
+    ): AuthCredentials {
         return current.copy(
             emailOrPhone,
             phoneEmailVerifier.verify(emailOrPhone),
             password,
         )
+    }
+
+    suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> {
+        return networkAuthScope.checkCanResetPassword(phoneNumber)
     }
 
     suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
@@ -138,7 +147,7 @@ class UserRepo(
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
         storageKey: String?,
-    ): Boolean {
+    ): Response.Wrapped<ErrorCode> {
         return networkAuthScope.signUp(
             SubmitRegistration.from(
                 userRegistration1,

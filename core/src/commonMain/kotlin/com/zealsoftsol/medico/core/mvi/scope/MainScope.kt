@@ -24,15 +24,15 @@ sealed class MainScope : BaseScope() {
         val isDocumentUploaded: Boolean
             get() = !user.value.documentUrl.isNullOrEmpty()
 
+        val isCameraOptionAvailable: Boolean
+            get() = user.value.type != UserType.SEASON_BOY
+
         val supportedFileTypes: Array<FileType>
             get() = when {
                 isDocumentUploaded -> emptyArray()
                 user.value.type == UserType.SEASON_BOY -> FileType.forAadhaar()
                 else -> FileType.forDrugLicense()
             }
-
-        val isCameraOptionAvailable: Boolean
-            get() = user.value.type != UserType.SEASON_BOY
 
         fun uploadAadhaar(base64: String) =
             EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))

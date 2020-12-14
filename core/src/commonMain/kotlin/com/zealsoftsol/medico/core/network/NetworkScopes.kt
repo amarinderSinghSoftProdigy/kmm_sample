@@ -29,6 +29,7 @@ interface NetworkScope {
         suspend fun login(request: UserRequest): SimpleBody<TokenInfo>
         suspend fun logout(): Boolean
 
+        suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode>
@@ -44,7 +45,7 @@ interface NetworkScope {
         suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation>
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
-        suspend fun signUp(submitRegistration: SubmitRegistration): Boolean
+        suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
     }
 
     interface Customer : NetworkScope {

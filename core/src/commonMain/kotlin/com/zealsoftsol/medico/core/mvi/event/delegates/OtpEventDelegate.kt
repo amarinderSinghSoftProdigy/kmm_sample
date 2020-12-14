@@ -33,6 +33,15 @@ internal class OtpEventDelegate(
 
     private suspend fun sendOtp(phoneNumber: String) {
         navigator.withCommonScope<CommonScope.PhoneVerificationEntryPoint> {
+            if (it is OtpScope.PhoneNumberInput && it.isForRegisteredUsersOnly) {
+                val (errorCode, isSuccess) = withProgress {
+                    userRepo.checkCanResetPassword(phoneNumber)
+                }
+                if (!isSuccess) {
+                    it.errors.value = errorCode ?: ErrorCode()
+                    return
+                }
+            }
             val (errorCode, isSuccess) = withProgress {
                 userRepo.sendOtp(phoneNumber = phoneNumber)
             }

@@ -182,7 +182,7 @@ internal class RegistrationEventDelegate(
 
     private suspend fun signUp() {
         val documents = cached!!
-        val signUpSuccess = navigator.withProgress {
+        val (signUpError, signUpSuccess) = navigator.withProgress {
             userRepo.signUp(
                 documents.registrationStep1,
                 documents.registrationStep2,
@@ -212,7 +212,7 @@ internal class RegistrationEventDelegate(
                 dropToLogin(error)
             }
         } else {
-            dropToLogin(ErrorCode())
+            dropToLogin(signUpError)
         }
     }
 

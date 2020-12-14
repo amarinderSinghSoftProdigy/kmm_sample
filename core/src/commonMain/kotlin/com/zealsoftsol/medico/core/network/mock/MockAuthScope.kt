@@ -38,6 +38,11 @@ class MockAuthScope : NetworkScope.Auth {
 
     override suspend fun logout(): Boolean = mockBooleanResponse()
 
+    override suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> =
+        mockResponse {
+            Response.Wrapped(null, true)
+        }
+
     override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> = mockResponse {
         Response.Wrapped(null, true)
     }
@@ -83,7 +88,8 @@ class MockAuthScope : NetworkScope.Auth {
         Response.Wrapped(StorageKeyResponse("key"), true)
     }
 
-    override suspend fun signUp(submitRegistration: SubmitRegistration): Boolean = mockResponse {
-        true
-    }
+    override suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode> =
+        mockResponse {
+            Response.Wrapped(null, true)
+        }
 }

@@ -10,6 +10,7 @@ sealed class OtpScope : BaseScope(), CanGoBack {
 
     data class PhoneNumberInput(
         val phoneNumber: DataSource<String>,
+        internal val isForRegisteredUsersOnly: Boolean,
         override val errors: DataSource<ErrorCode?> = DataSource(null),
     ) : OtpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint {
 
