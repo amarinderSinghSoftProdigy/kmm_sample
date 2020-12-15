@@ -39,7 +39,8 @@ struct SignUpPersonalDataScreen: View {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
                                          text: firstName,
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
-                                         isValid: self.validation.value == nil || firstName?.isEmpty == false,
+                                         isValid: self.validation.value == nil ||
+                                            firstName?.isEmpty == false,
                                          errorMessageKey: "required_field")
                 .disableAutocorrection(true)
                 .textContentType(.givenName)
@@ -49,7 +50,8 @@ struct SignUpPersonalDataScreen: View {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
                                          text: lastName,
                                          onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
-                                         isValid: self.validation.value == nil || lastName?.isEmpty == false,
+                                         isValid: self.validation.value == nil ||
+                                            lastName?.isEmpty == false,
                                          errorMessageKey: "required_field")
                 .disableAutocorrection(true)
                 .textContentType(.familyName)
@@ -79,8 +81,7 @@ struct SignUpPersonalDataScreen: View {
                                            errorMessageKey: passwordErrorMessageKey)
                 .textContentType(.newPassword)
             
-            let isRepeatPasswordValid = registration.value?.password.isEmpty == true ||
-                registration.value?.password == registration.value?.verifyPassword
+            let isRepeatPasswordValid = registration.value?.password == registration.value?.verifyPassword
             let errorMessageKey: String? = !isRepeatPasswordValid ? "password_doesnt_match" : nil
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "repeat_password",
                                            text: self.registration.value?.verifyPassword,
