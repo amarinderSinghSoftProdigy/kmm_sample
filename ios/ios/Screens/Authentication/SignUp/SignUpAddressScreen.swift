@@ -34,54 +34,54 @@ struct SignUpAddressScreen: View {
     }
     
     var addressDataFields: some View {
-            VStack(spacing: 12) {
-                
-                let pincodeError = self.pincodeValidation.value?.pincode
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
-                                             text: self.registration.value?.pincode,
-                                             onTextChange: { newValue in
-                                                scope.changePincode(pincode: newValue)
-                                             },
-                                             keyboardType: .numberPad,
-                                             isValid: pincodeError == nil,
-                                             errorMessageKey: pincodeError)
-                    .textContentType(.postalCode)
-                
-                let addressLineErrorMessageKey = self.userValidation.value?.addressLine1
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
-                                             text: self.registration.value?.addressLine1,
-                                             onTextChange: { newValue in
-                                                scope.changeAddressLine(address: newValue)
-                                             },
-                                             isValid: addressLineErrorMessageKey == nil,
-                                             errorMessageKey: addressLineErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .textContentType(.fullStreetAddress)
-                    .autocapitalization(.words)
-                
-                let locations = locationData.value?.locations ?? [String]()
-                PickerSelector(placeholder: "location",
-                               chosenElement: self.registration.value?.location,
-                               data: locations,
-                               onChange: { newValue in scope.changeLocation(location: newValue) })
-                    .fieldError(withLocalizedKey: self.userValidation.value?.location)
-                
-                let cities = locationData.value?.cities ?? [String]()
-                PickerSelector(placeholder: "city",
-                               chosenElement: self.registration.value?.city,
-                               data: cities,
-                               onChange: { newValue in scope.changeCity(city: newValue) })
-                    .fieldError(withLocalizedKey: self.userValidation.value?.city)
-                
-                PlaceholderTextView(placeholder: "district",
-                                    text: self.registration.value?.district,
-                                    errorMessageKey: self.userValidation.value?.district)
-                
-                PlaceholderTextView(placeholder: "state",
-                                    text: self.registration.value?.state,
-                                    errorMessageKey: self.userValidation.value?.state)
-            }
-            .scrollView()
+        VStack(spacing: 12) {
+            
+            let pincodeError = self.pincodeValidation.value?.pincode
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
+                                         text: self.registration.value?.pincode,
+                                         onTextChange: { newValue in
+                                            scope.changePincode(pincode: newValue)
+                                         },
+                                         keyboardType: .numberPad,
+                                         isValid: pincodeError == nil,
+                                         errorMessageKey: pincodeError)
+                .textContentType(.postalCode)
+            
+            let addressLineErrorMessageKey = self.userValidation.value?.addressLine1
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
+                                         text: self.registration.value?.addressLine1,
+                                         onTextChange: { newValue in
+                                            scope.changeAddressLine(address: newValue)
+                                         },
+                                         isValid: addressLineErrorMessageKey == nil,
+                                         errorMessageKey: addressLineErrorMessageKey)
+                .disableAutocorrection(true)
+                .textContentType(.fullStreetAddress)
+                .autocapitalization(.words)
+            
+            let locations = locationData.value?.locations ?? [String]()
+            PickerSelector(placeholder: "location",
+                           chosenElement: self.registration.value?.location,
+                           data: locations,
+                           onChange: { newValue in scope.changeLocation(location: newValue) })
+                .fieldError(withLocalizedKey: self.userValidation.value?.location)
+            
+            let cities = locationData.value?.cities ?? [String]()
+            PickerSelector(placeholder: "city",
+                           chosenElement: self.registration.value?.city,
+                           data: cities,
+                           onChange: { newValue in scope.changeCity(city: newValue) })
+                .fieldError(withLocalizedKey: self.userValidation.value?.city)
+            
+            PlaceholderTextView(placeholder: "district",
+                                text: self.registration.value?.district,
+                                errorMessageKey: self.userValidation.value?.district)
+            
+            PlaceholderTextView(placeholder: "state",
+                                text: self.registration.value?.state,
+                                errorMessageKey: self.userValidation.value?.state)
+        }
+        .scrollView()
     }
     
     init(scope: SignUpScope.AddressData) {

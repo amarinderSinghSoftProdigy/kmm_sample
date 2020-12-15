@@ -87,4 +87,24 @@ extension View {
     func scrollView(withInitialHeight initialHeight: CGFloat = 350) -> some View {
         self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
+    
+    func userInfoNavigationBar(isLimitedAppAccess: Bool,
+                               forUser user: DataUser,
+                               logOutAction: @escaping () -> ()) -> some View {
+        self.modifier(
+            UserInfoNavigationBar(isLimitedAppAccess: isLimitedAppAccess,
+                                  user: user,
+                                  logOutAction: logOutAction)
+        )
+    }
+    
+    func filePicker(filePickerOption: Binding<FilePickerOption?>,
+                    forAvailableTypes types: [String],
+                    uploadData: @escaping (String, DataFileType) -> ()) -> some View {
+        self.modifier(
+            FilePicker(filePickerOption: filePickerOption,
+                       documentTypes: types,
+                       uploadData: uploadData)
+        )
+    }
 }

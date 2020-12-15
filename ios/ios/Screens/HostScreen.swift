@@ -42,7 +42,6 @@ struct HostScreen: View {
     private func setUpNavigationBar() {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = UIColor(hex: 0xD9EDF9)
-        appearance.shadowColor = .clear
         
         var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
         if let titleFont = UIFont(name: "Barlow-SemiBold", size: 17) {
@@ -119,13 +118,5 @@ struct BaseScopeView: View {
         self.scope = scope
         
         self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
-    }
-}
-
-struct VisualEffectView: UIViewRepresentable {
-    var effect: UIVisualEffect?
-    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
-    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) {
-        uiView.effect = effect
     }
 }

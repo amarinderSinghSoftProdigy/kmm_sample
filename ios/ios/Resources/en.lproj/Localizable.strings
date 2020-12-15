@@ -23,7 +23,7 @@
 "forgot_password" = "Forgot password?";
 "sign_up" = "Sign up";
 "to_medico" = " to Medico Stores";
-"log_out" = "Log out";
+"log_out" = "Log Out";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";
@@ -91,6 +91,7 @@
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
 "drug_license_request" = "Please provide a drug license to activate the account";
+"aadhaar_card_request" = "Please upload Aadhaar card";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
@@ -102,3 +103,8 @@
 "error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
+
+// MARK: Limited App Access
+"welcome %@" = "Welcome, %@!";
+"thank_you_for_registration" = "Thank you for registration!";
+"documents_under_review" = "Your documents are under review. We will update you.";
