@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
+import core
 
 struct UserInfoNavigationBar: ViewModifier {
     let isLimitedAppAccess: Bool
+    let user: DataUser
     let logOutAction: () -> ()
     
     @State private var showsSlidingPanel = false
@@ -78,10 +80,10 @@ struct UserInfoNavigationBar: ViewModifier {
                     VStack(alignment: .leading, spacing: 6) {
                         Image("DefaultUserPhoto")
                         
-                        Text("John Smith")
+                        Text(user.fullName())
                             .modifier(MedicoText(textWeight: .bold))
                         
-                        Text("Stockist")
+                        Text(LocalizedStringKey(user.type.localizedName))
                             .modifier(MedicoText(textWeight: .medium))
                     }
                     .padding()

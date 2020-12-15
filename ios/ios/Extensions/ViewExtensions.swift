@@ -89,10 +89,12 @@ extension View {
     }
     
     func userInfoNavigationBar(isLimitedAppAccess: Bool,
+                               forUser user: DataUser,
                                logOutAction: @escaping () -> ()) -> some View {
         self.modifier(
             UserInfoNavigationBar(isLimitedAppAccess: isLimitedAppAccess,
-                                   logOutAction: logOutAction)
+                                  user: user,
+                                  logOutAction: logOutAction)
         )
     }
     

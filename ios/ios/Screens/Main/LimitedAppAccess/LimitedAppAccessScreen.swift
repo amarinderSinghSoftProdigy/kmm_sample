@@ -11,10 +11,9 @@ import core
 
 struct LimitedAppAccessScreen: View {
     let scope: MainScope.LimitedAccess
+    let user: DataUser
     
-    let name = "John Smith"
-    
-    let documentTypes: [String] = ["public.image"]
+    private let documentTypes: [String]!
     @State private var filePickerOption: FilePickerOption?
     
     var body: some View {
@@ -25,7 +24,7 @@ struct LimitedAppAccessScreen: View {
                 Spacer()
                 
                 VStack(spacing: 50) {
-                    Text(LocalizedStringKey("welcome \(name)"))
+                    Text(LocalizedStringKey("welcome \(user.fullName())"))
                         .modifier(MedicoText(textWeight: .medium, fontSize: 20))
                     
                     if isDocumentUploaded {
@@ -41,7 +40,7 @@ struct LimitedAppAccessScreen: View {
                 
                 if !isDocumentUploaded {
                     MedicoButton(localizedStringKey: "upload_new_document") {
-                        filePickerOption = .actionSheet
+                        filePickerOption = scope.isCameraOptionAvailable ? .actionSheet : .documentPicker
                     }
                     .padding()
                     .padding(.bottom, geometry.size.height * 0.1)
@@ -71,14 +70,28 @@ struct LimitedAppAccessScreen: View {
         VStack(spacing: 30) {
             Image("UploadDocuments")
             
-            let textKey = false ? "drug_license_request" : "aadhaar_card_request"
+            let textKey = scope.isCameraOptionAvailable ? "drug_license_request" : "aadhaar_card_request"
             
             Text(LocalizedStringKey(textKey))
                 .modifier(MedicoText(fontSize: 16))
         }
     }
     
-    private func uploadData(_ base64: String, withFileType fileType: DataFileType) {
+    init(scope: MainScope.LimitedAccess,
+         user: DataUser) {
+        self.scope = scope
+        self.user = user
         
+        self.documentTypes = scope.getAvailableDocumentTypes(from: scope.supportedFileTypes)
+    }
+    
+    private func uploadData(_ base64: String, withFileType fileType: DataFileType) {
+        if scope.isCameraOptionAvailable {
+            scope.uploadDrugLicense(base64: base64, fileType: fileType)
+            
+            return
+        }
+        
+        scope.uploadAadhaar(base64: base64)
     }
 }

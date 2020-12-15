@@ -84,3 +84,20 @@ extension ScopeNotification {
         }
     }
 }
+
+extension BaseScope {
+    func getAvailableDocumentTypes(from fileTypes: KotlinArray<DataFileType>) -> [String] {
+        var documentTypes = [String]()
+        
+        let iterator = fileTypes.iterator()
+        while iterator.hasNext() {
+            guard let fileType = iterator.next() as? DataFileType,
+                  fileType.isMandatory,
+                  let uti = fileType.getUniformTypeIdentifier() else { continue }
+            
+            documentTypes.append(uti)
+        }
+        
+        return documentTypes
+    }
+}

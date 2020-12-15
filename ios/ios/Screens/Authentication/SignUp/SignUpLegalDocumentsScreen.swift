@@ -27,22 +27,7 @@ struct SignUpLegalDocumentsScreen: View {
 
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
-        self.documentTypes = getAvailableDocumentTypes(for: scope)
-    }
-    
-    private func getAvailableDocumentTypes(for scope: SignUpScope.LegalDocuments) -> [String] {
-        var documentTypes = [String]()
-        
-        let iterator = scope.supportedFileTypes.iterator()
-        while iterator.hasNext() {
-            guard let fileType = iterator.next() as? DataFileType,
-                  fileType.isMandatory,
-                  let uti = fileType.getUniformTypeIdentifier() else { continue }
-            
-            documentTypes.append(uti)
-        }
-        
-        return documentTypes
+        self.documentTypes = scope.getAvailableDocumentTypes(from: scope.supportedFileTypes)
     }
     
     private func getView() -> some View {
