@@ -57,12 +57,13 @@ class UserRepo(
 
     suspend fun loadUserFromServer(): User? {
         return networkCustomerScope.getCustomerData().entity?.let {
+            val parsedType = UserType.parse(it.customerType) ?: return null
             val user = User(
                 it.firstName,
                 it.lastName,
                 it.email,
                 it.phoneNumber,
-                UserType.parse(it.customerType),
+                parsedType,
                 it.customerMetaData.activated,
                 it.drugLicenseUrl
             )
@@ -142,18 +143,34 @@ class UserRepo(
         return networkAuthScope.getLocationData(pincode)
     }
 
-    suspend fun signUp(
+    suspend fun signUpNonSeasonBoy(
         userRegistration1: UserRegistration1,
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
         storageKey: String?,
     ): Response.Wrapped<ErrorCode> {
         return networkAuthScope.signUp(
-            SubmitRegistration.from(
+            SubmitRegistration.nonSeasonBoy(
                 userRegistration1,
                 userRegistration2,
                 userRegistration3,
-                storageKey
+                storageKey,
+            )
+        )
+    }
+
+    suspend fun signUpSeasonBoy(
+        userRegistration1: UserRegistration1,
+        userRegistration2: UserRegistration2,
+        aadhaarData: AadhaarData,
+        aadhaar: String,
+    ): Response.Wrapped<ErrorCode> {
+        return networkAuthScope.signUp(
+            SubmitRegistration.seasonBoy(
+                userRegistration1,
+                userRegistration2,
+                aadhaarData,
+                aadhaar,
             )
         )
     }

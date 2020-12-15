@@ -40,7 +40,7 @@ internal class EventCollector(
     }
 
     fun getStartingScope(): BaseScope {
-        return when (userRepo.userAccess) {
+        val startScope = when (userRepo.userAccess) {
             UserRepo.UserAccess.FULL_ACCESS -> MainScope.FullAccess(
                 user = DataSource(userRepo.user!!)
             )
@@ -49,6 +49,13 @@ internal class EventCollector(
             )
             UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
         }
+        if (startScope is MainScope) GlobalScope.launch(compatDispatcher) {
+            userRepo.loadUserFromServer()?.let {
+                startScope.user.value = it
+            }
+        }
+
+        return startScope
     }
 
     companion object {

@@ -414,7 +414,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 }
             }
         },
-        onSkip = { scope.skip() },
+        onSkip = (scope as? SignUpScope.LegalDocuments.DrugLicense)?.let { { it.skip() } },
         body = {
             when (scope) {
                 is SignUpScope.LegalDocuments.DrugLicense -> {

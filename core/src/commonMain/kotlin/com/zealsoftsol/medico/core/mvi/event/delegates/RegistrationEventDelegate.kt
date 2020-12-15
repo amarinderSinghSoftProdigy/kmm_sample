@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -156,7 +157,6 @@ internal class RegistrationEventDelegate(
 
     private suspend fun uploadAadhaar(aadhaar: String) {
         navigator.withScope<SignUpScope.LegalDocuments.Aadhaar> {
-            // TODO support upload from main screen
             val isSuccess = withProgress {
                 userRepo.uploadAadhaar(
                     aadhaar = it.aadhaarData.value,
@@ -171,7 +171,7 @@ internal class RegistrationEventDelegate(
                     it.registrationStep2,
                     it.aadhaarData,
                     it.errors,
-                    aadhaarUploaded = true,
+                    aadhaarFile = aadhaar,
                 )
                 startOtp(it.registrationStep1.phoneNumber)
             } else {
@@ -181,22 +181,30 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
-        val documents = cached!!
         val (signUpError, signUpSuccess) = navigator.withProgress {
-            userRepo.signUp(
-                documents.registrationStep1,
-                documents.registrationStep2,
-                documents.registrationStep3,
-                (documents as? SignUpScope.LegalDocuments.DrugLicense)?.storageKey
-            )
+            when (val documents = cached) {
+                is SignUpScope.LegalDocuments.DrugLicense -> userRepo.signUpNonSeasonBoy(
+                    documents.registrationStep1,
+                    documents.registrationStep2,
+                    documents.registrationStep3,
+                    documents.storageKey,
+                )
+                is SignUpScope.LegalDocuments.Aadhaar -> userRepo.signUpSeasonBoy(
+                    documents.registrationStep1,
+                    documents.registrationStep2,
+                    documents.aadhaarData.value,
+                    documents.aadhaarFile!!,
+                )
+                else -> Response.Wrapped(ErrorCode(), false)
+            }
         }
         if (signUpSuccess) {
             val (error, isSuccess) = navigator.withProgress {
                 // TODO temporary measure to avoid server race condition
                 delay(5000)
                 userRepo.login(
-                    documents.registrationStep1.email,
-                    documents.registrationStep1.password
+                    cached!!.registrationStep1.email,
+                    cached!!.registrationStep1.password,
                 )
             }
             if (isSuccess) {
@@ -205,6 +213,7 @@ internal class RegistrationEventDelegate(
                     navigator.setCurrentScope(
                         MainScope.LimitedAccess(user = DataSource(user))
                     )
+                    cached = null
                 } else {
                     dropToLogin(ErrorCode())
                 }
@@ -224,7 +233,7 @@ internal class RegistrationEventDelegate(
     }
 
     private fun skipUploadDocuments() {
-        navigator.withScope<SignUpScope.LegalDocuments> {
+        navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
             cached = it
             startOtp(it.registrationStep1.phoneNumber)
         }

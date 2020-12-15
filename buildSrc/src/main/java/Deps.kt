@@ -14,7 +14,6 @@ object Versions {
 
 object Deps {
     object Kotlin {
-//        const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
         const val time = "org.jetbrains.kotlinx:kotlinx-datetime:0.1.0"
         object Kserialize {
             const val core = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kserialize}"

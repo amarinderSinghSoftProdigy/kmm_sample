@@ -186,7 +186,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$REGISTRATION_URL/api/v1/registration/submit") {
+            client.post<SimpleBody<MapBody>>("$REGISTRATION_URL/api/v1/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(submitRegistration)
             }.getWrappedError()

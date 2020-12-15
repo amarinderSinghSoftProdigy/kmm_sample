@@ -70,7 +70,7 @@ fun NavigationColumn(
             )
             Space(4.dp)
             Text(
-                text = com.zealsoftsol.medico.screens.stringResource(userType.serverValue),
+                text = com.zealsoftsol.medico.screens.stringResource(userType.stringId),
                 color = Color.White,
             )
         }

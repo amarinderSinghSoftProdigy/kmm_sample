@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 sealed class UserRegistration
 sealed class UserValidation
@@ -102,11 +103,19 @@ data class SubmitRegistration(
     val phoneNumber: String,
     val password: String,
     val verifyPassword: String,
-    val tradeName: String,
-    val gstin: String,
-    val panNumber: String,
-    val drugLicenseNo1: String,
-    val drugLicenseNo2: String,
+    // Season boy
+    val aadhaarCardNo: String? = null,
+    val shareCode: String? = null,
+    val consent: Boolean? = null,
+    val aadhaarUploadFile: String? = null,
+    // Stockist, Retailer, Hospital
+    val tradeName: String? = null,
+    val gstin: String? = null,
+    val panNumber: String? = null,
+    val drugLicenseNo1: String? = null,
+    val drugLicenseNo2: String? = null,
+    val drugLicenseStorageKey: String? = null,
+    // End
     @Required
     val receiveMarketingMails: Boolean = true,
     @Required
@@ -122,10 +131,14 @@ data class SubmitRegistration(
     val ipAddress: String = "",
     @Required
     val channel: String = "MOBILE",
-    val drugLicenseStorageKey: String,
 ) {
+    @Transient
+    val isSeasonBoy: Boolean
+        get() = !aadhaarUploadFile.isNullOrEmpty()
+
     companion object {
-        fun from(
+
+        fun nonSeasonBoy(
             userRegistration1: UserRegistration1,
             userRegistration2: UserRegistration2,
             userRegistration3: UserRegistration3,
@@ -143,13 +156,38 @@ data class SubmitRegistration(
             panNumber = userRegistration3.panNumber,
             drugLicenseNo1 = userRegistration3.drugLicenseNo1,
             drugLicenseNo2 = userRegistration3.drugLicenseNo2,
+            drugLicenseStorageKey = storageKey,
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
-            drugLicenseStorageKey = storageKey.orEmpty(),
+        )
+
+        fun seasonBoy(
+            userRegistration1: UserRegistration1,
+            userRegistration2: UserRegistration2,
+            aadhaarData: AadhaarData,
+            aadhaar: String,
+        ) = SubmitRegistration(
+            userType = userRegistration1.userType,
+            firstName = userRegistration1.firstName,
+            lastName = userRegistration1.lastName,
+            email = userRegistration1.email,
+            phoneNumber = userRegistration1.phoneNumber,
+            password = userRegistration1.password,
+            verifyPassword = userRegistration1.verifyPassword,
+            aadhaarCardNo = aadhaarData.cardNumber,
+            shareCode = aadhaarData.shareCode,
+            aadhaarUploadFile = aadhaar,
+            consent = true,
+            pincode = userRegistration2.pincode,
+            addressLine1 = userRegistration2.addressLine1,
+            location = userRegistration2.location,
+            city = userRegistration2.city,
+            district = userRegistration2.district,
+            state = userRegistration2.state,
         )
     }
 }

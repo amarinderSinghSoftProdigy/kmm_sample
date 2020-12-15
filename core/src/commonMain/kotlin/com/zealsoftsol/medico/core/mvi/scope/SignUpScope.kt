@@ -241,8 +241,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint,
-        CommonScope.UploadDocument {
+    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint {
 
         abstract val supportedFileTypes: Array<FileType>
 
@@ -252,7 +251,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             registrationStep3: UserRegistration3,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
             internal val storageKey: String? = null,
-        ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
+        ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3),
+            CommonScope.UploadDocument {
 
             override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
 
@@ -267,6 +267,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
                 EventCollector.sendEvent(
                     Event.Action.Registration.UploadDrugLicense(base64, fileType)
                 )
+
+            fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
         }
 
         class Aadhaar(
@@ -274,7 +276,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             registrationStep2: UserRegistration2,
             val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
             override val errors: DataSource<ErrorCode?> = DataSource(null),
-            internal val aadhaarUploaded: Boolean = false,
+            internal val aadhaarFile: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
@@ -305,13 +307,11 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
                 }
             }
         }
-
-        fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
     }
 }
 
 internal inline val SignUpScope.LegalDocuments.isDocumentUploaded: Boolean
     get() = when (this) {
-        is SignUpScope.LegalDocuments.Aadhaar -> aadhaarUploaded
+        is SignUpScope.LegalDocuments.Aadhaar -> aadhaarFile != null
         is SignUpScope.LegalDocuments.DrugLicense -> storageKey != null
     }
