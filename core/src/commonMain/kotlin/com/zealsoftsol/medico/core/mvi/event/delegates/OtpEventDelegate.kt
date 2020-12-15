@@ -5,9 +5,9 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.OtpScope
-import com.zealsoftsol.medico.core.mvi.scope.PhoneVerificationEntryPoint
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.WithErrors
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -32,7 +32,16 @@ internal class OtpEventDelegate(
     }
 
     private suspend fun sendOtp(phoneNumber: String) {
-        navigator.withCommonScope<PhoneVerificationEntryPoint> {
+        navigator.withCommonScope<CommonScope.PhoneVerificationEntryPoint> {
+            if (it is OtpScope.PhoneNumberInput && it.isForRegisteredUsersOnly) {
+                val (errorCode, isSuccess) = withProgress {
+                    userRepo.checkCanResetPassword(phoneNumber)
+                }
+                if (!isSuccess) {
+                    it.errors.value = errorCode ?: ErrorCode()
+                    return
+                }
+            }
             val (errorCode, isSuccess) = withProgress {
                 userRepo.sendOtp(phoneNumber = phoneNumber)
             }
@@ -56,7 +65,7 @@ internal class OtpEventDelegate(
             if (isSuccess) {
                 stopResetPasswordTimer()
                 dropCurrentScope(updateDataSource = false)
-                when (searchQueueFor<PhoneVerificationEntryPoint>()) {
+                when (searchQueueFor<CommonScope.PhoneVerificationEntryPoint>()) {
                     is OtpScope.PhoneNumberInput -> {
                         setCurrentScope(
                             EnterNewPasswordScope(

@@ -90,6 +90,14 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
         }.isSuccess
     }
 
+    override suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleBody<MapBody>>("$AUTH_URL/api/v1/medico/forgetpwd") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(OtpRequest(phoneNumber))
+            }.getWrappedError()
+        }
+
     override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
@@ -176,12 +184,13 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
             }.getWrappedBody()
         }
 
-    override suspend fun signUp(submitRegistration: SubmitRegistration): Boolean = ktorDispatcher {
-        client.post<Response.Status>("$REGISTRATION_URL/api/v1/registration/submit") {
-            withTempToken(TempToken.REGISTRATION)
-            jsonBody(submitRegistration)
-        }.isSuccess
-    }
+    override suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleBody<MapBody>>("$REGISTRATION_URL/api/v1/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(submitRegistration)
+            }.getWrappedError()
+        }
 
     override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = ktorDispatcher {
         client.get<SimpleBody<CustomerData>>("$AUTH_URL/api/v1/medico/customer/details") {

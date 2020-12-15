@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
-import com.zealsoftsol.medico.core.extensions.errorIt
+import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -35,6 +36,8 @@ class UserRepo(
         get() = fetchUser()?.let {
             if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
+    val user: User?
+        get() = fetchUser()
 
     init {
         networkAuthScope.token = settings.getStringOrNull(AUTH_TOKEN_KEY)
@@ -47,16 +50,20 @@ class UserRepo(
         )
         response.getBodyOrNull()?.let {
             networkAuthScope.token = it.token
+            settings.putString(AUTH_TOKEN_KEY, it.token)
         }
         return response.getWrappedError()
     }
 
-    suspend fun getUser(): User? {
-        return fetchUser() ?: networkCustomerScope.getCustomerData().entity?.let {
+    suspend fun loadUserFromServer(): User? {
+        return networkCustomerScope.getCustomerData().entity?.let {
+            val parsedType = UserType.parse(it.customerType) ?: return null
             val user = User(
+                it.firstName,
+                it.lastName,
                 it.email,
                 it.phoneNumber,
-                it.customerType,
+                parsedType,
                 it.customerMetaData.activated,
                 it.drugLicenseUrl
             )
@@ -85,12 +92,20 @@ class UserRepo(
         )
     }
 
-    fun updateAuthCredentials(current: AuthCredentials, emailOrPhone: String, password: String): AuthCredentials {
+    fun updateAuthCredentials(
+        current: AuthCredentials,
+        emailOrPhone: String,
+        password: String
+    ): AuthCredentials {
         return current.copy(
             emailOrPhone,
             phoneEmailVerifier.verify(emailOrPhone),
             password,
         )
+    }
+
+    suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> {
+        return networkAuthScope.checkCanResetPassword(phoneNumber)
     }
 
     suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
@@ -128,18 +143,34 @@ class UserRepo(
         return networkAuthScope.getLocationData(pincode)
     }
 
-    suspend fun signUp(
+    suspend fun signUpNonSeasonBoy(
         userRegistration1: UserRegistration1,
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
         storageKey: String?,
-    ): Boolean {
+    ): Response.Wrapped<ErrorCode> {
         return networkAuthScope.signUp(
-            SubmitRegistration.from(
+            SubmitRegistration.nonSeasonBoy(
                 userRegistration1,
                 userRegistration2,
                 userRegistration3,
-                storageKey
+                storageKey,
+            )
+        )
+    }
+
+    suspend fun signUpSeasonBoy(
+        userRegistration1: UserRegistration1,
+        userRegistration2: UserRegistration2,
+        aadhaarData: AadhaarData,
+        aadhaar: String,
+    ): Response.Wrapped<ErrorCode> {
+        return networkAuthScope.signUp(
+            SubmitRegistration.seasonBoy(
+                userRegistration1,
+                userRegistration2,
+                aadhaarData,
+                aadhaar,
             )
         )
     }
@@ -179,7 +210,7 @@ class UserRepo(
         val user = runCatching {
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
-        if (user == null) "error fetching user".errorIt()
+        if (user == null) "no cached user".warnIt()
         return user
     }
 

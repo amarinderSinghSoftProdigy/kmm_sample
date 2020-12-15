@@ -11,10 +11,23 @@ data class AuthCredentials(
 }
 
 enum class UserType(val serverValue: String) {
-    STOCKIST("stockist"),
-    RETAILER("retailer"),
-    SEASON_BOY("season_boy"),
-    HOSPITAL("hospital");
+    STOCKIST("STOCKIST"),
+    RETAILER("RETAILER"),
+    SEASON_BOY("SEASON_BOY"),
+    HOSPITAL("HOSPITAL");
+
+    val stringId: String
+        get() = serverValue.toLowerCase()
+
+    companion object {
+        fun parse(value: String): UserType? = when (value) {
+            STOCKIST.serverValue -> STOCKIST
+            RETAILER.serverValue -> RETAILER
+            SEASON_BOY.serverValue -> SEASON_BOY
+            HOSPITAL.serverValue -> HOSPITAL
+            else -> null
+        }
+    }
 }
 
 data class AadhaarData(

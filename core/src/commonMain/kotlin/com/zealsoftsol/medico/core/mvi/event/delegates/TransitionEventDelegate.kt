@@ -14,7 +14,10 @@ internal class TransitionEventDelegate(
         when (event) {
             is Event.Transition.Back -> navigator.dropCurrentScope()
             is Event.Transition.ForgetPassword -> navigator.setCurrentScope(
-                OtpScope.PhoneNumberInput(phoneNumber = DataSource(""))
+                OtpScope.PhoneNumberInput(
+                    phoneNumber = DataSource(""),
+                    isForRegisteredUsersOnly = true,
+                )
             )
             is Event.Transition.SignUp -> navigator.setCurrentScope(
                 SignUpScope.SelectUserType()
