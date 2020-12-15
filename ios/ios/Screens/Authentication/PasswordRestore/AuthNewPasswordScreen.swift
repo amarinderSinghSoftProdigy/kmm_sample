@@ -26,8 +26,6 @@ struct AuthNewPasswordScreen: View {
         VStack(spacing: 12) {
             Spacer()
             
-            let arePasswordsValid = confirmationPassword.isEmpty || canSubmitPassword
-            
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
                                            text: newPassword,
                                            onTextChange: { newValue in
@@ -35,7 +33,7 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: errorMessageKey == nil && arePasswordsValid,
+                                           isValid: errorMessageKey == nil && canSubmitPassword,
                                            errorMessageKey: errorMessageKey ?? "something_went_wrong")
                 .textContentType(.newPassword)
         
@@ -46,7 +44,7 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: arePasswordsValid,
+                                           isValid: canSubmitPassword,
                                            errorMessageKey: "password_doesnt_match")
             
             MedicoButton(localizedStringKey: "confirm", isEnabled: canSubmitPassword) {

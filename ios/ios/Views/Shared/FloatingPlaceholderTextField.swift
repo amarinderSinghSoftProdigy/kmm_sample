@@ -202,7 +202,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
         self.height = height
         
         self.fieldSelected =  fieldSelected
-        self.isValid = isValid
+        self.isValid = text.isEmpty || isValid
         self.showPlaceholderWithText = showPlaceholderWithText
         
         self.errorMessageKey = errorMessageKey
