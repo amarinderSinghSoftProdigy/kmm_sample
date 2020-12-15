@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 
 final class KeyboardResponder: ObservableObject {
-    private let extraPadding: CGFloat = 120
+    private let extraPadding: CGFloat = 20
     
     //2. Keeping track off the keyboard's current height
     @Published private(set) var currentBottomPadding: CGFloat = 0
@@ -53,6 +53,7 @@ final class KeyboardResponder: ObservableObject {
     //5.2 Update the currentHeight variable when the keyboards collapses
     @objc func keyBoardWillHide(notification: Notification) {
         currentBottomPadding = 0
+        KeyboardResponder.padding = .zero
     }
     
     private func calculatePaddingValue(for responder: UIResponder?, withKeyboardSize keyboardSize: CGRect) {

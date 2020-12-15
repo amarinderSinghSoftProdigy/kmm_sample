@@ -12,8 +12,6 @@ abstract class BaseScope {
     object Root : BaseScope()
 }
 
-interface CommonScope
-
 interface CanGoBack {
     fun goBack() {
         EventCollector.sendEvent(Event.Transition.Back)
@@ -34,6 +32,11 @@ interface WithNotifications {
     fun dismissNotification() {
         notifications.value = null
     }
+}
+
+internal interface CommonScope {
+    interface PhoneVerificationEntryPoint : CommonScope
+    interface UploadDocument : CommonScope, WithErrors
 }
 
 interface ScopeNotification {

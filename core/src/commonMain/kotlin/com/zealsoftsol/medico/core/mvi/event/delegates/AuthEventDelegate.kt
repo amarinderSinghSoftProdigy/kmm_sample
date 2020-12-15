@@ -29,19 +29,22 @@ internal class AuthEventDelegate(
             val (error, isSuccess) = withProgress {
                 userRepo.login(
                     it.credentials.value.phoneNumberOrEmail,
-                    it.credentials.value.password
+                    it.credentials.value.password,
                 )
             }
             if (isSuccess) {
-                val user = userRepo.getUser()
-                val isFullAccess = user?.isVerified == true
-                clearQueue()
-                setCurrentScope(
-                    if (isFullAccess)
-                        MainScope.FullAccess()
-                    else
-                        MainScope.LimitedAccess(isDocumentUploaded = !user?.documentUrl.isNullOrEmpty())
-                )
+                val user = withProgress { userRepo.loadUserFromServer() }
+                if (user != null) {
+                    clearQueue()
+                    setCurrentScope(
+                        if (user.isVerified)
+                            MainScope.FullAccess(DataSource(user))
+                        else
+                            MainScope.LimitedAccess(DataSource(user))
+                    )
+                } else {
+                    it.errors.value = ErrorCode()
+                }
             } else {
                 it.errors.value = error ?: ErrorCode()
             }

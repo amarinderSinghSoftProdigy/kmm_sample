@@ -17,16 +17,14 @@ struct AuthNewPasswordScreen: View {
     
     @State var canSubmitPassword: Bool = false
     
-    @ObservedObject var notification: SwiftDatasource<ScopeNotification>
-    @ObservedObject var passwordValidation: SwiftDatasource<DataPasswordValidation>
+    @ObservedObject var notification: SwiftDataSource<ScopeNotification>
+    @ObservedObject var passwordValidation: SwiftDataSource<DataPasswordValidation>
     
     var body: some View {
         let errorMessageKey = self.passwordValidation.value?.password
         
         VStack(spacing: 12) {
             Spacer()
-            
-            let arePasswordsValid = confirmationPassword.isEmpty || canSubmitPassword
             
             FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
                                            text: newPassword,
@@ -35,7 +33,7 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: errorMessageKey == nil && arePasswordsValid,
+                                           isValid: errorMessageKey == nil && canSubmitPassword,
                                            errorMessageKey: errorMessageKey ?? "something_went_wrong")
                 .textContentType(.newPassword)
         
@@ -46,7 +44,7 @@ struct AuthNewPasswordScreen: View {
                                             checkPasswordsMatch(newValue)
                                            },
                                            showPlaceholderWithText: true,
-                                           isValid: arePasswordsValid,
+                                           isValid: canSubmitPassword,
                                            errorMessageKey: "password_doesnt_match")
             
             MedicoButton(localizedStringKey: "confirm", isEnabled: canSubmitPassword) {
@@ -64,8 +62,8 @@ struct AuthNewPasswordScreen: View {
     init(scope: EnterNewPasswordScope) {
         self.scope = scope
         
-        self.notification = SwiftDatasource(dataSource: scope.notifications)
-        self.passwordValidation = SwiftDatasource(dataSource: scope.passwordValidation)
+        self.notification = SwiftDataSource(dataSource: scope.notifications)
+        self.passwordValidation = SwiftDataSource(dataSource: scope.passwordValidation)
     }
     
     private func checkPasswordsMatch(_ password: String) {

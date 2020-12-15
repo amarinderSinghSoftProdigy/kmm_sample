@@ -62,13 +62,13 @@ struct FieldError: ViewModifier {
 struct ErrorAlert: ViewModifier {
     let errorsHandler: WithErrors
     
-    @ObservedObject var error: SwiftDatasource<DataErrorCode>
+    @ObservedObject var error: SwiftDataSource<DataErrorCode>
     private var showsAlert: Binding<Bool>
     
     init(errorsHandler: WithErrors) {
         self.errorsHandler = errorsHandler
         
-        let error = SwiftDatasource(dataSource: errorsHandler.errors)
+        let error = SwiftDataSource(dataSource: errorsHandler.errors)
         self.error = error
         
         showsAlert = Binding(get: { error.value != nil }, set: { _ in })
@@ -91,7 +91,7 @@ struct NotificationAlert: ViewModifier {
     let notificationsHandler: WithNotifications
     let onDismiss: (() -> ())?
     
-    @ObservedObject var notification: SwiftDatasource<ScopeNotification>
+    @ObservedObject var notification: SwiftDataSource<ScopeNotification>
     private var showsAlert: Binding<Bool>
     
     init(notificationsHandler: WithNotifications,
@@ -99,7 +99,7 @@ struct NotificationAlert: ViewModifier {
         self.notificationsHandler = notificationsHandler
         self.onDismiss = onDismiss
         
-        let notification = SwiftDatasource(dataSource: notificationsHandler.notifications)
+        let notification = SwiftDataSource(dataSource: notificationsHandler.notifications)
         self.notification = notification
         
         showsAlert = Binding(get: { notification.value != nil }, set: { _ in })

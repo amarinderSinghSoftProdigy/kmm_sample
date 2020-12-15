@@ -11,9 +11,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let start = UiLink().appStart(context: self, isDebug: false, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
-//        UiLink().overrideCurrentScope(uiNavigator: navigator,
-//                                      scope: ScopeCreator().limitedAccessMain(isDocumentUploaded: false))
-        
         return true
     }
 

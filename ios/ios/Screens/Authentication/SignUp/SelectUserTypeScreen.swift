@@ -12,7 +12,7 @@ import core
 struct SelectUserTypeScreen: View {
     let scope: SignUpScope.SelectUserType
     
-    @ObservedObject var selectedUserType: SwiftDatasource<DataUserType>
+    @ObservedObject var selectedUserType: SwiftDataSource<DataUserType>
     
     private let userTypesOrder = [
         [DataUserType.stockist, DataUserType.retailer],
@@ -48,7 +48,7 @@ struct SelectUserTypeScreen: View {
     init(scope: SignUpScope.SelectUserType) {
         self.scope = scope
         
-        selectedUserType = SwiftDatasource(dataSource: scope.userType)
+        selectedUserType = SwiftDataSource(dataSource: scope.userType)
     }
     
     private func goToPersonalData() {

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct PhoneTextField: View {
     private var phone: Binding<String>
@@ -16,6 +17,23 @@ struct PhoneTextField: View {
     let errorMessageKey: String?
     
     var body: some View {
+        if #available(iOS 14.0, *) {
+            textField
+                .onAppear {
+                    updatePhoneValidationState(for: phone.wrappedValue)
+                }
+                .onChange(of: phone.wrappedValue) { value in
+                    updatePhoneValidationState(for: value)
+                }
+        } else {
+            textField
+                .onReceive(Just(phone.wrappedValue)) { value in
+                    updatePhoneValidationState(for: value)
+                }
+        }
+    }
+    
+    var textField: some View {
         FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number",
                                      text: phone.wrappedValue,
                                      onTextChange: { newValue in
@@ -25,10 +43,6 @@ struct PhoneTextField: View {
                                      isValid: canSubmitPhone.wrappedValue,
                                      errorMessageKey: errorMessageKey)
             .textContentType(.telephoneNumber)
-            .onAppear {
-                let isValid = PhoneNumberUtil.shared.isValidNumber(phone.wrappedValue).isValid
-                canSubmitPhone.wrappedValue = isValid
-            }
     }
     
     init(phone: String?,
@@ -46,10 +60,15 @@ struct PhoneTextField: View {
         },
         set: {
             let isValid = PhoneNumberUtil.shared.isValidNumber($0).isValid
-            canSubmitPhone.wrappedValue = isValid
                                 
             let rawPhoneNumber = isValid ? PhoneNumberUtil.shared.getRawPhoneNumber($0) : $0
             onTextChange(rawPhoneNumber)
         })
+    }
+    
+    private func updatePhoneValidationState(for phone: String) {
+        let isValid = PhoneNumberUtil.shared.isValidNumber(phone).isValid
+        
+        canSubmitPhone.wrappedValue = isValid
     }
 }

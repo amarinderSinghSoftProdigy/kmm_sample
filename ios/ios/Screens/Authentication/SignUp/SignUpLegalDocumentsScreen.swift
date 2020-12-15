@@ -16,7 +16,7 @@ struct SignUpLegalDocumentsScreen: View {
     
     @State private var filePickerOption: FilePickerOption?
     
-    @ObservedObject var canGoNext: SwiftDatasource<KotlinBoolean>
+    @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
         self.getView()
@@ -25,7 +25,7 @@ struct SignUpLegalDocumentsScreen: View {
     init(scope: SignUpScope.LegalDocuments) {
         self.scope = scope
 
-        self.canGoNext = SwiftDatasource(dataSource: scope.canGoNext)
+        self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
         self.documentTypes = getAvailableDocumentTypes(for: scope)
     }
@@ -49,6 +49,7 @@ struct SignUpLegalDocumentsScreen: View {
         let view: AnyView
         let buttonTextKey: String
         let navigationBarTitle: String
+        let skipAction: (() -> ())?
 
         switch scope {
 
@@ -56,23 +57,26 @@ struct SignUpLegalDocumentsScreen: View {
             view = AnyView(AadhaardCardDataFields(scope: aadhaarScope))
             buttonTextKey = "upload_aadhaar_card"
             navigationBarTitle = "personal_data"
+            skipAction = nil
 
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             view = AnyView(DrugLicenseData())
             buttonTextKey = "upload_new_document"
             navigationBarTitle = "legal_documents"
+            skipAction = skip
             
         default:
             view = AnyView(EmptyView())
             buttonTextKey = ""
             navigationBarTitle = ""
+            skipAction = nil
         }
         
         return AnyView(
             view
                 .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                        buttonTextKey: buttonTextKey,
-                                       skipButtonAction: skip,
+                                       skipButtonAction: skipAction,
                                        action: uploadDocuments))
                 .keyboardResponder()
                 .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
@@ -112,6 +116,8 @@ struct SignUpLegalDocumentsScreen: View {
     }
     
     private func skip() {
+        guard let scope = self.scope as? SignUpScope.LegalDocuments.LegalDocumentsDrugLicense else { return }
+            
         scope.skip()
     }
 }
@@ -121,7 +127,7 @@ struct SignUpLegalDocumentsScreen: View {
 fileprivate struct AadhaardCardDataFields: View  {
     let scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar
     
-    @ObservedObject var aadhaarData: SwiftDatasource<DataAadhaarData>
+    @ObservedObject var aadhaarData: SwiftDataSource<DataAadhaarData>
     
     var body: some View {
         VStack(spacing: 12) {
@@ -142,7 +148,7 @@ fileprivate struct AadhaardCardDataFields: View  {
     init(scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar) {
         self.scope = scope
         
-        self.aadhaarData = SwiftDatasource(dataSource: scope.aadhaarData)
+        self.aadhaarData = SwiftDataSource(dataSource: scope.aadhaarData)
     }
 }
 
