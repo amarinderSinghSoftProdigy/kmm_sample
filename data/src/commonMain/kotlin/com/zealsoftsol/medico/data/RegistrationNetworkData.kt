@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 sealed class UserRegistration
 sealed class UserValidation
@@ -127,12 +126,10 @@ data class SubmitRegistration(
     val city: String,
     val district: String,
     val state: String,
-    @Required
-    val ipAddress: String = "",
+    val ipAddress: String,
     @Required
     val channel: String = "MOBILE",
 ) {
-    @Transient
     val isSeasonBoy: Boolean
         get() = !aadhaarUploadFile.isNullOrEmpty()
 
@@ -143,6 +140,7 @@ data class SubmitRegistration(
             userRegistration2: UserRegistration2,
             userRegistration3: UserRegistration3,
             storageKey: String?,
+            ipAddress: String,
         ) = SubmitRegistration(
             userType = userRegistration1.userType,
             firstName = userRegistration1.firstName,
@@ -163,6 +161,7 @@ data class SubmitRegistration(
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
+            ipAddress = ipAddress,
         )
 
         fun seasonBoy(
@@ -170,6 +169,7 @@ data class SubmitRegistration(
             userRegistration2: UserRegistration2,
             aadhaarData: AadhaarData,
             aadhaar: String,
+            ipAddress: String,
         ) = SubmitRegistration(
             userType = userRegistration1.userType,
             firstName = userRegistration1.firstName,
@@ -188,6 +188,7 @@ data class SubmitRegistration(
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
+            ipAddress = ipAddress,
         )
     }
 }

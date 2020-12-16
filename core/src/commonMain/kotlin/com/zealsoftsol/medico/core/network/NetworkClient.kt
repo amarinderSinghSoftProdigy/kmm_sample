@@ -45,7 +45,6 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.invoke
-import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 
 class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, NetworkScope.Customer {
@@ -204,8 +203,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
         retry(Interval.Linear(100, 5)) {
-            val tokenInfo = tempTokenMap.remove(tokenType)
-                ?.takeIf { Clock.System.now().toEpochMilliseconds() < it.expiresAt() }
+            val tokenInfo = tempTokenMap.remove(tokenType)?.takeIf { !it.isExpired }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 when (tokenType) {
                     TempToken.OTP -> fetchOtpToken()

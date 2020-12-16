@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core
 
+import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.network.NetworkClient
@@ -30,10 +31,19 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
             MockCustomerScope()
         }
     }
-    bind<UserRepo>() with singleton { UserRepo(instance(), instance(), instance(), instance()) }
+    bind<UserRepo>() with singleton {
+        UserRepo(
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+            instance()
+        )
+    }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator() }
     bind<EventCollector>() with singleton { EventCollector(instance(), instance()) }
+    bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
 }
 
 expect fun DI.MainBuilder.platformDependencies(context: Any, isDebugBuild: Boolean)

@@ -216,7 +216,7 @@ fun PhoneFormatInputField(
         if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null
+    val isValid = formatted != null || text.isEmpty()
     InputField(
         hint = hint,
         text = formatted ?: text,
@@ -243,7 +243,7 @@ fun PhoneOrEmailFormatInputField(
     InputField(
         hint = hint,
         text = formatted ?: text,
-        isValid = if (isPhoneNumber) formatted != null else true,
+        isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
         maxLines = 1,
         onValueChange = onValueChange,
     )
