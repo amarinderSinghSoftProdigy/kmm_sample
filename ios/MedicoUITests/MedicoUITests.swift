@@ -19,17 +19,17 @@ class MedicoUITests: XCTestCase {
         
         app.launch()
         
-        let credentials = DataAuthCredentials(phoneNumberOrEmail: "",
-                                              type: .none,
-                                              password: "")
-        
-        let errors: DataSource<DataErrorCode> = DataSource(initialValue: nil)
-        
-        UiLink().overrideCurrentScope(
-            uiNavigator: navigator,
-            scope: LogInScope(credentials: DataSource(initialValue: credentials),
-                              errors: errors)
-        )
+//        let credentials = DataAuthCredentials(phoneNumberOrEmail: "",
+//                                              type: .none,
+//                                              password: "")
+//
+//        let errors: DataSource<DataErrorCode> = DataSource(initialValue: nil)
+//
+//        UiLink().overrideCurrentScope(
+//            uiNavigator: navigator,
+//            scope: LogInScope(credentials: DataSource(initialValue: credentials),
+//                              errors: errors)
+//        )
     }
     
     func testAuthScreenInitialState() {

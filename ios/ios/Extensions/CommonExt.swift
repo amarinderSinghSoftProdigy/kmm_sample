@@ -13,6 +13,12 @@ var navigator: UiNavigator {
     (UIApplication.shared.delegate as! AppDelegate).navigator
 }
 
+class Helper {
+    static var navigator: UiNavigator {
+        (UIApplication.shared.delegate as! AppDelegate).navigator
+    }
+}
+
 extension String {
     func capitalizeFirstLetter() -> String {
         return prefix(1).capitalized + dropFirst()

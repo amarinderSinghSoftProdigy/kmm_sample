@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Architecture
 
-val iosArchitecture = Architecture.X64
+val iosArchitecture = Architecture.ARM64
 
 plugins {
     id("com.android.library")

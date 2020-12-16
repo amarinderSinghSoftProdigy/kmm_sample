@@ -28,6 +28,7 @@
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
 		337DE57D258A069B00614951 /* MedicoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE57C258A069B00614951 /* MedicoUITests.swift */; };
 		337DE5A3258A0FAE00614951 /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
+		337DE625258A44B900614951 /* core.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
@@ -74,6 +75,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		337DE624258A44AA00614951 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				337DE625258A44B900614951 /* core.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7555FFB4242A642300829871 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -430,6 +441,7 @@
 				337DE577258A069B00614951 /* Frameworks */,
 				337DE578258A069B00614951 /* Resources */,
 				5E6B4CEF20BD55232851E4EB /* [CP] Embed Pods Frameworks */,
+				337DE624258A44AA00614951 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -714,12 +726,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C8CE4B53F1A750E698218246 /* Pods-ios-MedicoUITests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = QHQT856493;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
@@ -727,13 +740,14 @@
 				INFOPLIST_FILE = MedicoUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
+					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.MedicoUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				PROVISIONING_PROFILE_SPECIFIER = "Medico UI Tests";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -745,11 +759,12 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F7876013866135021AB68298 /* Pods-ios-MedicoUITests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = QHQT856493;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
@@ -757,13 +772,14 @@
 				INFOPLIST_FILE = MedicoUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
+					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.MedicoUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				PROVISIONING_PROFILE_SPECIFIER = "Medico UI Tests";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
