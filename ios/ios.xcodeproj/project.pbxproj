@@ -60,6 +60,7 @@
 		7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF87242A565B00829871 /* Preview Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		E196B03EACB4EE497277BA66 /* Pods_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0DF918E28D88878DE572A81 /* Pods_ios.framework */; };
+		E6A12AF80DED6FE5AF4B4980 /* Pods_ios_MedicoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7516046D95DD9D0A2FDC7F /* Pods_ios_MedicoUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +140,7 @@
 		33F8DFE225764253009E98EE /* Barlow-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Bold.ttf"; sourceTree = "<group>"; };
 		33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F7516046D95DD9D0A2FDC7F /* Pods_ios_MedicoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_MedicoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7B242A565900829871 /* Medico.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Medico.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF80242A565900829871 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -149,6 +151,8 @@
 		889F3A4D3291A9E6CD8FC2F2 /* Pods-ios-iosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-iosUITests.debug.xcconfig"; path = "Target Support Files/Pods-ios-iosUITests/Pods-ios-iosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A0DF918E28D88878DE572A81 /* Pods_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65A07C3273E1A13DF427E58 /* Pods-ios-iosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-iosUITests.release.xcconfig"; path = "Target Support Files/Pods-ios-iosUITests/Pods-ios-iosUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C8CE4B53F1A750E698218246 /* Pods-ios-MedicoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-MedicoUITests.debug.xcconfig"; path = "Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		F7876013866135021AB68298 /* Pods-ios-MedicoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-MedicoUITests.release.xcconfig"; path = "Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		FD3AEE810C39CCDB26FE95BA /* Pods-ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios.debug.xcconfig"; path = "Target Support Files/Pods-ios/Pods-ios.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -158,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				337DE5A3258A0FAE00614951 /* core.framework in Frameworks */,
+				E6A12AF80DED6FE5AF4B4980 /* Pods_ios_MedicoUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,6 +398,7 @@
 				A0DF918E28D88878DE572A81 /* Pods_ios.framework */,
 				5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */,
 				2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */,
+				5F7516046D95DD9D0A2FDC7F /* Pods_ios_MedicoUITests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -406,6 +412,8 @@
 				B65A07C3273E1A13DF427E58 /* Pods-ios-iosUITests.release.xcconfig */,
 				0173AFE2E760A52B7A03B65F /* Pods-iosTests.debug.xcconfig */,
 				01998AE6153115D7A99CC100 /* Pods-iosTests.release.xcconfig */,
+				C8CE4B53F1A750E698218246 /* Pods-ios-MedicoUITests.debug.xcconfig */,
+				F7876013866135021AB68298 /* Pods-ios-MedicoUITests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -417,9 +425,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 337DE581258A069B00614951 /* Build configuration list for PBXNativeTarget "MedicoUITests" */;
 			buildPhases = (
+				B5A6F4C2972F56D21FE9BFDF /* [CP] Check Pods Manifest.lock */,
 				337DE576258A069B00614951 /* Sources */,
 				337DE577258A069B00614951 /* Frameworks */,
 				337DE578258A069B00614951 /* Resources */,
+				5E6B4CEF20BD55232851E4EB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -539,6 +549,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		5E6B4CEF20BD55232851E4EB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		7555FFB5242A651A00829871 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -556,6 +583,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\n";
+		};
+		B5A6F4C2972F56D21FE9BFDF /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ios-MedicoUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 		D56BEB1B90779AF1E4EB6534 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -663,11 +712,18 @@
 /* Begin XCBuildConfiguration section */
 		337DE582258A069B00614951 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C8CE4B53F1A750E698218246 /* Pods-ios-MedicoUITests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../core/build/xcode-frameworks";
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/../core/build/xcode-frameworks",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = MedicoUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -677,6 +733,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.MedicoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ios;
@@ -685,10 +743,17 @@
 		};
 		337DE583258A069B00614951 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F7876013866135021AB68298 /* Pods-ios-MedicoUITests.release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/../core/build/xcode-frameworks";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/../core/build/xcode-frameworks",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = MedicoUITests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -698,6 +763,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.MedicoUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ios;
