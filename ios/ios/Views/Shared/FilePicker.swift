@@ -77,9 +77,9 @@ struct FilePicker: ViewModifier {
     }
     
     private func uploadImage(_ image: UIImage) {
-        guard let imageData = image.pngData() else { return }
+        guard let imageData = image.jpegData(compressionQuality: 0.85) else { return }
 
-        uploadData(imageData, withFileExtension: "png")
+        uploadData(imageData, withFileExtension: "jpeg")
     }
     
     private func uploadFile(fromPath filePath: URL) {
@@ -91,7 +91,7 @@ struct FilePicker: ViewModifier {
     }
     
     private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
-        let base64String = data.base64EncodedString(options: .lineLength64Characters)
+        let base64String = data.base64EncodedString()
         let fileType = DataFileType.Utils().fromExtension(ext: fileExtension)
         
         self.uploadData(base64String, fileType)
