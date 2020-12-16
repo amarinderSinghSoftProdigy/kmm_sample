@@ -26,9 +26,11 @@
 		3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */; };
 		3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC792583875900570BB3 /* FilePicker.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
-		337DE57D258A069B00614951 /* MedicoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE57C258A069B00614951 /* MedicoUITests.swift */; };
+		337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE57C258A069B00614951 /* AuthScreenTests.swift */; };
 		337DE5A3258A0FAE00614951 /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
 		337DE625258A44B900614951 /* core.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		337DE628258A523800614951 /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
+		337DE62A258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
@@ -36,6 +38,8 @@
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
+		33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
+		33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
 		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
@@ -123,8 +127,10 @@
 		3376EC792583875900570BB3 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
 		337DE57A258A069B00614951 /* MedicoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MedicoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		337DE57C258A069B00614951 /* MedicoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoUITests.swift; sourceTree = "<group>"; };
+		337DE57C258A069B00614951 /* AuthScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreenTests.swift; sourceTree = "<group>"; };
 		337DE57E258A069B00614951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		337DE627258A523800614951 /* TestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsHelper.swift; sourceTree = "<group>"; };
+		337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestsHelper+ScopeInfoClasses.swift"; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBar.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
@@ -291,10 +297,19 @@
 		337DE57B258A069B00614951 /* MedicoUITests */ = {
 			isa = PBXGroup;
 			children = (
-				337DE57C258A069B00614951 /* MedicoUITests.swift */,
+				337DE57C258A069B00614951 /* AuthScreenTests.swift */,
 				337DE57E258A069B00614951 /* Info.plist */,
 			);
 			path = MedicoUITests;
+			sourceTree = "<group>";
+		};
+		337DE626258A522100614951 /* Testing */ = {
+			isa = PBXGroup;
+			children = (
+				337DE627258A523800614951 /* TestsHelper.swift */,
+				337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */,
+			);
+			path = Testing;
 			sourceTree = "<group>";
 		};
 		338F98EA257F7808002D36FF /* UIKitElements */ = {
@@ -388,6 +403,7 @@
 				337C0A36256D426900C3F0A5 /* Resources */,
 				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				337C0A35256D423D00C3F0A5 /* Screens */,
+				337DE626258A522100614951 /* Testing */,
 				33016394255999F200835961 /* Utils */,
 				3378955F256E3B970034D79F /* Views */,
 			);
@@ -453,9 +469,9 @@
 			productReference = 337DE57A258A069B00614951 /* MedicoUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		7555FF7A242A565900829871 /* ios */ = {
+		7555FF7A242A565900829871 /* Medico */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "ios" */;
+			buildConfigurationList = 7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "Medico" */;
 			buildPhases = (
 				09DF2A296B4A29D1C3C82ECC /* [CP] Check Pods Manifest.lock */,
 				7555FFB5242A651A00829871 /* Run Script */,
@@ -469,7 +485,7 @@
 			);
 			dependencies = (
 			);
-			name = ios;
+			name = Medico;
 			productName = ios;
 			productReference = 7555FF7B242A565900829871 /* Medico.app */;
 			productType = "com.apple.product-type.application";
@@ -506,7 +522,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7555FF7A242A565900829871 /* ios */,
+				7555FF7A242A565900829871 /* Medico */,
 				337DE579258A069B00614951 /* MedicoUITests */,
 			);
 		};
@@ -642,7 +658,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				337DE57D258A069B00614951 /* MedicoUITests.swift in Sources */,
+				33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */,
+				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
+				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,7 +698,9 @@
 				33621CF62571009D004BD4CF /* MedicoText.swift in Sources */,
 				33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */,
 				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
+				337DE62A258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
+				337DE628258A523800614951 /* TestsHelper.swift in Sources */,
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
@@ -697,7 +717,7 @@
 /* Begin PBXTargetDependency section */
 		337DE580258A069B00614951 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 7555FF7A242A565900829871 /* ios */;
+			target = 7555FF7A242A565900829871 /* Medico */;
 			targetProxy = 337DE57F258A069B00614951 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -727,6 +747,7 @@
 			baseConfigurationReference = C8CE4B53F1A750E698218246 /* Pods-ios-MedicoUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUNDLE_LOADER = "";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -747,11 +768,12 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico UI Tests";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ios;
+				TEST_TARGET_NAME = Medico;
 			};
 			name = Debug;
 		};
@@ -760,6 +782,7 @@
 			baseConfigurationReference = F7876013866135021AB68298 /* Pods-ios-MedicoUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				BUNDLE_LOADER = "";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -779,11 +802,12 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico UI Tests";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = ios;
+				TEST_TARGET_NAME = Medico;
 			};
 			name = Release;
 		};
@@ -906,6 +930,7 @@
 			baseConfigurationReference = FD3AEE810C39CCDB26FE95BA /* Pods-ios.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 7;
@@ -922,6 +947,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
 				PRODUCT_NAME = Medico;
 				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
@@ -935,6 +961,7 @@
 			baseConfigurationReference = 1646DD83415E626B134F3755 /* Pods-ios.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 7;
@@ -951,6 +978,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
 				PRODUCT_NAME = Medico;
 				PROVISIONING_PROFILE_SPECIFIER = medicodistribution;
@@ -980,7 +1008,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "ios" */ = {
+		7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "Medico" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7555FFA6242A565B00829871 /* Debug */,

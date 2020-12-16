@@ -11,6 +11,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let start = UiLink().appStart(context: self, isDebug: false, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
+        #if DEBUG
+        if let overrideScope = TestsHelper().getCurrentScope() {
+            UiLink().overrideCurrentScope(uiNavigator: navigator, scope: overrideScope)
+        }
+        #endif
+        
         return true
     }
 

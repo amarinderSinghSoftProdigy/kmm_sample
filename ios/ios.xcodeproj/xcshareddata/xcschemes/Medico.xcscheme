@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7555FF7A242A565900829871"
                BuildableName = "Medico.app"
-               BlueprintName = "ios"
+               BlueprintName = "Medico"
                ReferencedContainer = "container:ios.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,36 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7555FF90242A565B00829871"
-               BuildableName = "iosTests.xctest"
-               BlueprintName = "iosTests"
-               ReferencedContainer = "container:ios.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7555FF9B242A565B00829871"
-               BuildableName = "iosUITests.xctest"
-               BlueprintName = "iosUITests"
-               ReferencedContainer = "container:ios.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "337DE579258A069B00614951"
-               BuildableName = "MedicoUITests.xctest"
-               BlueprintName = "MedicoUITests"
-               ReferencedContainer = "container:ios.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -76,7 +46,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7555FF7A242A565900829871"
             BuildableName = "Medico.app"
-            BlueprintName = "ios"
+            BlueprintName = "Medico"
             ReferencedContainer = "container:ios.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -93,7 +63,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7555FF7A242A565900829871"
             BuildableName = "Medico.app"
-            BlueprintName = "ios"
+            BlueprintName = "Medico"
             ReferencedContainer = "container:ios.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
