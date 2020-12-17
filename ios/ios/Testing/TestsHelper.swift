@@ -20,39 +20,36 @@ class TestsHelper {
         case password
     }
     
-    func getCurrentScope() -> BaseScope? {
+    let scopeCreator = ScopeCreator.Shortcuts()
+    
+    func overrideCurrentScope() {
         let testEnvironment = ProcessInfo.processInfo.environment
         
-        guard let scope = testEnvironment[EnvironmentProperty.scope.rawValue] else { return nil }
+        guard let scope = testEnvironment[EnvironmentProperty.scope.rawValue] else { return }
         
         switch scope {
         case LogInScopeInfo.name:
-            return getLogInScope(for: testEnvironment)
+            setLogInScope(for: testEnvironment)
             
         default:
-            return nil
+            return
         }
     }
     
-    private func getLogInScope(for testEnvironment: [String: String]) -> LogInScope? {
+    private func setLogInScope(for testEnvironment: [String: String]) {
         guard let phoneNumberOrEmail = testEnvironment[EnvironmentProperty.phoneNumberOrEmail.rawValue]
-            else { return nil }
+            else { return }
         
         guard let typeStringValue = testEnvironment[EnvironmentProperty.logInUserNameType.rawValue],
               let type = DataAuthCredentials.Type_.getValue(from: typeStringValue)
-            else { return nil }
+            else { return }
         
         guard let password = testEnvironment[EnvironmentProperty.password.rawValue]
-            else { return nil }
+            else { return }
         
-        let credentials = DataAuthCredentials(phoneNumberOrEmail: phoneNumberOrEmail,
-                                              type: type,
-                                              password: password)
-        
-        let logInScope = LogInScope(credentials: DataSource(initialValue: credentials),
-                                    errors: DataSource(initialValue: nil))
-        
-        return logInScope
+        scopeCreator.createLogInShortcut(phoneNumberOrEmail: phoneNumberOrEmail,
+                                         type: type,
+                                         password: password)
     }
 }
 #endif

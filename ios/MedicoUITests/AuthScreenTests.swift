@@ -7,7 +7,7 @@
 //
 
 import XCTest
-//import core
+import core
 //@testable import Medico
 
 class AuthScreenTests: XCTestCase {

@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -12,12 +13,33 @@ import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import org.kodein.di.instance
+import com.zealsoftsol.medico.data.AuthCredentials
 
 object ScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
     object Shortcuts {
+
+        fun createLogInShortcut(
+            phoneNumberOrEmail: String,
+            type: AuthCredentials.Type,
+            password: String
+        ) {
+            
+            nav.setCurrentScope(
+                LogInScope(
+                    credentials = DataSource(
+                        AuthCredentials(
+                            phoneNumberOrEmail = phoneNumberOrEmail,
+                            type = type,
+                            password = password,
+                    )),
+                    errors = DataSource(null)
+                )
+            )
+
+        }
 
         /**
          * Shortcut to [SignUpScope.LegalDocuments.DrugLicense] with filled data

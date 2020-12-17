@@ -213,8 +213,8 @@
 		332F7DF9258B39BD00C5BF6B /* KotlinSources */ = {
 			isa = PBXGroup;
 			children = (
-				332F7E03258B3A8700C5BF6B /* Data */,
 				332F7E02258B3A1500C5BF6B /* Core */,
+				332F7E03258B3A8700C5BF6B /* Data */,
 			);
 			name = KotlinSources;
 			sourceTree = "<group>";
@@ -427,9 +427,9 @@
 		7555FF7D242A565900829871 /* ios */ = {
 			isa = PBXGroup;
 			children = (
-				332F7DF9258B39BD00C5BF6B /* KotlinSources */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				33B1B80725642192005215A3 /* Extensions */,
+				332F7DF9258B39BD00C5BF6B /* KotlinSources */,
 				337C0A36256D426900C3F0A5 /* Resources */,
 				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				337C0A35256D423D00C3F0A5 /* Screens */,
