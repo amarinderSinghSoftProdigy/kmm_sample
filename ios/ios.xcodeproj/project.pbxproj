@@ -103,6 +103,9 @@
 		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
+		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
+		332F7E0E258B3BC100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../core/src/commonMain; sourceTree = "<group>"; };
 		33385A7A256FB66B00DACD7C /* ColorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ColorExt.swift; path = ios/extensions/ColorExt.swift; sourceTree = SOURCE_ROOT; };
 		33385A7B256FB66B00DACD7C /* CommonExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonExt.swift; path = ios/extensions/CommonExt.swift; sourceTree = SOURCE_ROOT; };
 		33385A85256FB7C200DACD7C /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = ios/extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
@@ -203,6 +206,32 @@
 				33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		332F7DF9258B39BD00C5BF6B /* KotlinSources */ = {
+			isa = PBXGroup;
+			children = (
+				332F7E03258B3A8700C5BF6B /* Data */,
+				332F7E02258B3A1500C5BF6B /* Core */,
+			);
+			name = KotlinSources;
+			sourceTree = "<group>";
+		};
+		332F7E02258B3A1500C5BF6B /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				332F7E0E258B3BC100C5BF6B /* commonMain */,
+				332F7E0D258B3BC100C5BF6B /* iosMain */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		332F7E03258B3A8700C5BF6B /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				332F7E0C258B3BB100C5BF6B /* commonMain */,
+			);
+			name = Data;
 			sourceTree = "<group>";
 		};
 		333AE3F925821ED000C249C1 /* Main */ = {
@@ -380,6 +409,7 @@
 		7555FF7D242A565900829871 /* ios */ = {
 			isa = PBXGroup;
 			children = (
+				332F7DF9258B39BD00C5BF6B /* KotlinSources */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				33B1B80725642192005215A3 /* Extensions */,
 				337C0A36256D426900C3F0A5 /* Resources */,

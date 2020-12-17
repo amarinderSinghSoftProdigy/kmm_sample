@@ -17,7 +17,6 @@ class MedicoApp : Application(), DIAware {
             BuildConfig.FLAVOR == "dev",
             if (BuildConfig.DEBUG) Logger.Level.LOG else Logger.Level.NONE
         )
-//        UiLink.overrideCurrentScope()
         this.di = di
     }
 }

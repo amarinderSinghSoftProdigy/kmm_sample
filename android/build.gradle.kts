@@ -49,11 +49,11 @@ android {
         create("dev") {
             dimension = "default"
             applicationIdSuffix = ".dev"
-            buildConfigField("String", "SERVER_URL", "\"url\"")
+            buildConfigField("boolean", "ANDROID_DEV", "${Config.isAndroidDev}")
         }
         create("prod") {
             dimension = "default"
-            buildConfigField("String", "SERVER_URL", "\"url\"")
+            buildConfigField("boolean", "ANDROID_DEV", "false")
         }
     }
     buildFeatures {

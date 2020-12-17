@@ -26,14 +26,12 @@ class Navigator : UiNavigator {
         queue.clear()
     }
 
-    fun setCurrentScope(scope: BaseScope, updateDataSource: Boolean = true) {
+    fun setCurrentScope(scope: BaseScope) {
         if (queue.firstOrNull()?.queueId == scope.queueId) {
             queue.removeFirst()
         }
         queue.addFirst(scope)
-        if (updateDataSource) {
-            currentScope.value = scope
-        }
+        currentScope.value = scope
     }
 
     internal inline fun <reified S : BaseScope> withScope(block: Navigator.(S) -> Unit): Boolean {

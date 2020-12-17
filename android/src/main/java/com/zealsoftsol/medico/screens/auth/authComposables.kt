@@ -132,7 +132,10 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
                 scope.goToForgetPassword()
             })
         )
-        MedicoButton(text = stringResource(id = R.string.log_in), isEnabled = true) {
+        MedicoButton(
+            text = stringResource(id = R.string.log_in),
+            isEnabled = !credentialsState.value.isEmpty
+        ) {
             scope.tryLogIn()
         }
         val string = AnnotatedString.Builder(stringResource(id = R.string.sign_up_to_medico)).apply {
