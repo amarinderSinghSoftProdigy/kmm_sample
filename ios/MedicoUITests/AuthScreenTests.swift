@@ -8,24 +8,44 @@
 
 import XCTest
 import core
-//@testable import Medico
 
-class AuthScreenTests: XCTestCase {
+class AuthScreenTests: BaseTests {
     
-    private let app = XCUIApplication()
-
-    override func setUp() {
-        continueAfterFailure = false
+    private let phoneNumberOrEmail = "+1234567890"
+    private let password = ""
+    
+    override func launchApp(with environment: [String: String]? = nil) {
+        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneNumberOrEmail,
+                                                    type: .phone,
+                                                    password: password)
+        
+        super.launchApp(with: logInScope.getLaunchEnvironment())
     }
     
     func testAuthScreenInitialState() {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "+1234567890",
-                                                    type: .phone,
-                                                    password: "qweASD123")
-        app.launchEnvironment = logInScope.getLaunchEnvironment()
+        self.testLocalizedText(with: "log_in")
         
-        app.launch()
+        self.testFloatingTextField(with: "phone_number_or_email", equals: phoneNumberOrEmail)
         
+        self.testFloatingTextField(with: "password", equals: password)
         
+        self.testLocalizedText(with: "forgot_password")
+        
+        self.testButton(with: "log_in",
+                        isEnabled: !phoneNumberOrEmail.isEmpty && !password.isEmpty)
+        
+        let signUpText = app.staticTexts["sign_up_to_medico"]
+        
+        let signUpKey = "sign_up"
+        let toMedicoKey = "to_medico"
+        
+        let signUpString = self.getLocalizedString(for: signUpKey)
+        let toMedicoString = self.getLocalizedString(for: toMedicoKey)
+        
+        XCTAssertTrue(signUpText.isHittable)
+        XCTAssertTrue(signUpText.label == signUpString + toMedicoString)
+        XCTAssertFalse(signUpText.label == signUpKey + toMedicoKey)
+        
+        self.testLocalizedText(with: "copyright")
     }
 }

@@ -20,6 +20,7 @@ struct MedicoButton: View {
                           fontSize: 17)
                 .frame(maxWidth: .infinity)
         }
+        .accessibility(identifier: "\(localizedStringKey)_button")
         .frame(maxWidth: .infinity)
         .padding()
         .disabled(!isEnabled)

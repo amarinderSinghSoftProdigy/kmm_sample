@@ -37,6 +37,9 @@
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
+		33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECA258B8FE90061F63C /* Extensions.swift */; };
+		33ABAECC258B90850061F63C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
+		33ABAECE258B93370061F63C /* BaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECD258B93370061F63C /* BaseTests.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
 		33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */; };
@@ -139,6 +142,8 @@
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
+		33ABAECA258B8FE90061F63C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		33ABAECD258B93370061F63C /* BaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTests.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
 		33B1B80E2564378E005215A3 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
@@ -322,8 +327,10 @@
 		337DE57B258A069B00614951 /* MedicoUITests */ = {
 			isa = PBXGroup;
 			children = (
+				33ABAEC9258B8F810061F63C /* Utils */,
 				337DE57C258A069B00614951 /* AuthScreenTests.swift */,
 				337DE57E258A069B00614951 /* Info.plist */,
+				33ABAECD258B93370061F63C /* BaseTests.swift */,
 			);
 			path = MedicoUITests;
 			sourceTree = "<group>";
@@ -355,6 +362,14 @@
 				33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */,
 			);
 			path = Otp;
+			sourceTree = "<group>";
+		};
+		33ABAEC9258B8F810061F63C /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				33ABAECA258B8FE90061F63C /* Extensions.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		33B1B7FE2563F4C6005215A3 /* Authentication */ = {
@@ -560,6 +575,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33ABAECC258B90850061F63C /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -688,6 +704,8 @@
 				33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */,
 				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
 				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
+				33ABAECE258B93370061F63C /* BaseTests.swift in Sources */,
+				33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
