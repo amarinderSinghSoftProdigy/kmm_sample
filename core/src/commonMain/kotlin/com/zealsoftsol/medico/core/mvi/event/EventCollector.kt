@@ -40,7 +40,7 @@ internal class EventCollector(
     }
 
     fun getStartingScope(): BaseScope {
-        val startScope = when (userRepo.userAccess) {
+        val startScope = when (userRepo.checkUserAccess()) {
             UserRepo.UserAccess.FULL_ACCESS -> MainScope.FullAccess(
                 user = DataSource(userRepo.user!!)
             )

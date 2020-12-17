@@ -212,11 +212,14 @@ fun PhoneFormatInputField(
     text: String,
     onValueChange: (String) -> Unit,
 ): Boolean {
-    val countryCode =
-        if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val countryCode = when {
+        !BuildConfig.DEBUG -> "IN"
+        BuildConfig.ANDROID_DEV -> "RU"
+        else -> ConfigurationAmbient.current.locale.country
+    }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null
+    val isValid = formatted != null || text.isEmpty()
     InputField(
         hint = hint,
         text = formatted ?: text,
@@ -236,14 +239,17 @@ fun PhoneOrEmailFormatInputField(
     isPhoneNumber: Boolean,
     onValueChange: (String) -> Unit,
 ) {
-    val countryCode =
-        if (BuildConfig.DEBUG) ConfigurationAmbient.current.locale.country else "IN"
+    val countryCode = when {
+        !BuildConfig.DEBUG -> "IN"
+        BuildConfig.ANDROID_DEV -> "RU"
+        else -> ConfigurationAmbient.current.locale.country
+    }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
         text = formatted ?: text,
-        isValid = if (isPhoneNumber) formatted != null else true,
+        isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
         maxLines = 1,
         onValueChange = onValueChange,
     )

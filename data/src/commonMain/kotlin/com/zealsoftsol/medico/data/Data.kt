@@ -5,6 +5,9 @@ data class AuthCredentials(
     val type: Type?,
     val password: String,
 ) {
+    inline val isEmpty: Boolean
+        get() = phoneNumberOrEmail.isEmpty() && password.isEmpty()
+
     enum class Type {
         EMAIL, PHONE;
     }

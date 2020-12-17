@@ -107,10 +107,17 @@ object Deps {
 
 
 object Config {
+    var isAndroidDev = false
+
+    init {
+        isAndroidDev = File("android_dev").exists()
+        if (isAndroidDev) println("ANDROID DEV")
+    }
 
     object Version {
         var code: Int = 1
         var name: String = "1"
+        internal var isDevBuild: Boolean = false
 
         init {
             try {
@@ -119,9 +126,9 @@ object Config {
                 val major = version["major"].toString().toInt()
                 val minor = version["minor"].toString().toInt()
                 val patch = version["patch"].toString().toInt()
-                val isBuild = version["build"].toString().toBoolean()
-                code = major * 10000 + minor * 1000 + patch * 10 + (if (isBuild) 1 else 0)
-                name = "${major}.${minor}.${patch}${if (isBuild) "[dev]" else ""}"
+                isDevBuild = version["build"].toString().toBoolean()
+                code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
+                name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
                 println("APP VERSION $name")
             } catch (e: Exception) {
                 println("COULD NOT PARSE config.json")
@@ -133,5 +140,10 @@ object Config {
         const val minSdk = 21
         const val targetSdk = 30
         const val buildTools = "30.0.2"
+    }
+
+    object Ios {
+        val isForSimulator: Boolean
+            get() = isAndroidDev && Version.isDevBuild
     }
 }

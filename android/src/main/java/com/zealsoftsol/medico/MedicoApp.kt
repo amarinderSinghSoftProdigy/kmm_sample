@@ -17,14 +17,6 @@ class MedicoApp : Application(), DIAware {
             BuildConfig.FLAVOR == "dev",
             if (BuildConfig.DEBUG) Logger.Level.LOG else Logger.Level.NONE
         )
-//        UiLink.overrideCurrentScope(
-//            nav,
-//            SignUpScope.LegalDocuments.DrugLicense(
-//                UserRegistration1(),
-//                UserRegistration2(),
-//                UserRegistration3()
-//            )
-//        )
         this.di = di
     }
 }
