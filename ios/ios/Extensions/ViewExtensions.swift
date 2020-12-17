@@ -29,8 +29,8 @@ extension View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                     
-                    Text(LocalizedStringKey("back"))
-                        .modifier(MedicoText(fontSize: 17))
+                    LocalizedText(localizedStringKey: "back",
+                                  fontSize: 17)
                 }
             }
         )

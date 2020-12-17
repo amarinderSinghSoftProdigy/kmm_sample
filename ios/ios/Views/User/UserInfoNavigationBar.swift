@@ -83,8 +83,8 @@ struct UserInfoNavigationBar: ViewModifier {
                         Text(user.fullName())
                             .modifier(MedicoText(textWeight: .bold))
                         
-                        Text(LocalizedStringKey(user.type.localizedName))
-                            .modifier(MedicoText(textWeight: .medium))
+                        LocalizedText(localizedStringKey: user.type.localizedName,
+                                      textWeight: .medium)
                     }
                     .padding()
                 }
@@ -102,8 +102,10 @@ struct UserInfoNavigationBar: ViewModifier {
                             HStack(spacing: 24) {
                                 Image("Exit")
                                 
-                                Text(LocalizedStringKey("log_out"))
-                                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 15, color: .grey))
+                                LocalizedText(localizedStringKey: "log_out",
+                                              textWeight: .semiBold,
+                                              fontSize: 15,
+                                              color: .grey)
                             }
                         }
                     }

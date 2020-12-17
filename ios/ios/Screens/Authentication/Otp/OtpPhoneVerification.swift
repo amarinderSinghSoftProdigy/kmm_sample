@@ -66,7 +66,7 @@ fileprivate struct OtpDetailsView: View {
         VStack {
             Text("verification_code_sent_hint \(phoneNumber)")
                 .modifier(MedicoText(textWeight: .medium, color: .textGrey))
-                .multilineTextAlignment(.center)
+                .accessibility(identifier: "verification_code_sent_hint")
                 .padding([.trailing, .leading], geometry.size.width * 0.15)
             
             if let attemptsLeft = self.attemptsLeft.value as? Int {
@@ -79,6 +79,7 @@ fileprivate struct OtpDetailsView: View {
                 else {
                     Text("attempts_left \(attemptsLeft)")
                         .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
+                        .accessibility(identifier: "attempts_left")
                         .padding([.top, .bottom])
                 }
                 
@@ -123,13 +124,14 @@ fileprivate struct ResendOtpView: View {
             AppColor.white.color
                 
             HStack(alignment: .center) {
-                Text(LocalizedStringKey("didnt_get_code"))
-                    .modifier(MedicoText(textWeight: .medium))
+                LocalizedText(localizedStringKey: "didnt_get_code",
+                              textWeight: .medium)
                 
                 let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey
                 
-                Text(LocalizedStringKey("resend"))
-                    .modifier(MedicoText(textWeight: .semiBold, color: resendColor))
+                LocalizedText(localizedStringKey: "resend",
+                              textWeight: .semiBold,
+                              color: resendColor)
                     .onTapGesture {
                         if isResendActive.value != true { return }
                         

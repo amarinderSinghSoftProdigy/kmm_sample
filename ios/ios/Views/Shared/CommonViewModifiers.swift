@@ -44,8 +44,10 @@ struct FieldError: ViewModifier {
                         .fill(appColor: .red)
                         .frame(height: 1)
                 
-                Text(LocalizedStringKey(errorMessageKey))
-                    .modifier(MedicoText(fontSize: 12, color: .red, multilineTextAlignment: .leading))
+                    LocalizedText(localizedStringKey: errorMessageKey,
+                                  fontSize: 12,
+                                  color: .red,
+                                  multilineTextAlignment: .leading)
                     .padding(.leading, padding)
                 }
             }

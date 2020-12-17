@@ -19,12 +19,13 @@ class AuthScreenTests: XCTestCase {
     }
     
     func testAuthScreenInitialState() {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "+37529134670",
+        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "+1234567890",
                                                     type: .phone,
                                                     password: "qweASD123")
         app.launchEnvironment = logInScope.getLaunchEnvironment()
         
         app.launch()
+        
         
     }
 }

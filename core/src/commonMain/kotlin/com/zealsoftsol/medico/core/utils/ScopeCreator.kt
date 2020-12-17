@@ -12,8 +12,9 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
-import org.kodein.di.instance
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.AuthCredentials
+import org.kodein.di.instance
 
 object ScopeCreator {
     private inline val nav: Navigator
@@ -24,7 +25,8 @@ object ScopeCreator {
         fun createLogInShortcut(
             phoneNumberOrEmail: String,
             type: AuthCredentials.Type,
-            password: String
+            password: String,
+            error: ErrorCode?
         ) {
             
             nav.setCurrentScope(
@@ -35,7 +37,7 @@ object ScopeCreator {
                             type = type,
                             password = password,
                     )),
-                    errors = DataSource(null)
+                    errors = DataSource(error)
                 )
             )
 

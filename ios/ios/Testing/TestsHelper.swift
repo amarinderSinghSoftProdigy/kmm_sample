@@ -49,7 +49,8 @@ class TestsHelper {
         
         scopeCreator.createLogInShortcut(phoneNumberOrEmail: phoneNumberOrEmail,
                                          type: type,
-                                         password: password)
+                                         password: password,
+                                         error: nil)
     }
 }
 #endif
