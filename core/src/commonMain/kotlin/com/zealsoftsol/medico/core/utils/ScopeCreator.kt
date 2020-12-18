@@ -22,6 +22,9 @@ object ScopeCreator {
 
     object Shortcuts {
 
+        /**
+         * Shortcut to [LogInScope] with filled data
+         */
         fun createLogInShortcut(
             phoneNumberOrEmail: String,
             type: AuthCredentials.Type,
@@ -38,6 +41,31 @@ object ScopeCreator {
                             password = password,
                     )),
                     errors = DataSource(error)
+                )
+            )
+
+        }
+
+        fun createLimitedAppAccessShortcut(
+            firstName: String,
+            lastName: String,
+            type: UserType,
+            isDocumentUploaded: Boolean
+        ) {
+
+            nav.setCurrentScope(
+                MainScope.LimitedAccess(
+                    user = DataSource(
+                        User(
+                            firstName,
+                            lastName,
+                            "email@example.com",
+                            "+1234567890",
+                            type,
+                            false,
+                            if (!isDocumentUploaded) null else "url"
+                        )
+                    )
                 )
             )
 

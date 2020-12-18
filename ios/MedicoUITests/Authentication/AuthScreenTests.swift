@@ -17,6 +17,18 @@ class AuthScreenTests: BaseTests {
     override func setUp() {
         continueAfterFailure = false
     }
+
+    private func launchApp(withPhoneOrEmail phoneOrEmail: String,
+                           withType type: DataAuthCredentials.Type_,
+                           withPassword password: String,
+                           withErrorCode errorCode: DataErrorCode? = nil) {
+        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneOrEmail,
+                                                    type: type,
+                                                    password: password,
+                                                    errorCode: errorCode)
+        
+        super.launchApp(with: logInScope.getLaunchEnvironment())
+    }
     
     // MARK: Initial State
     func testInitialStateWithEmptyValues() {
@@ -52,23 +64,22 @@ class AuthScreenTests: BaseTests {
     private func testInitialState(withPhoneNumberOrEmail phoneNumberOrEmail: String,
                                   withType type: DataAuthCredentials.Type_,
                                   withPassword password: String) {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneNumberOrEmail,
-                                                    type: type,
-                                                    password: password)
-        self.launchApp(with: logInScope.getLaunchEnvironment())
+        launchApp(withPhoneOrEmail: phoneNumberOrEmail,
+                  withType: type,
+                  withPassword: password)
         
         self.testLocalizedText(with: "log_in")
         
         self.testFloatingTextField(with: "phone_number_or_email",
-                                   equals: logInScope.phoneNumberOrEmail)
+                                   equals: phoneNumberOrEmail)
         
         self.testFloatingSecureField(with: "password",
-                                     equals: logInScope.password)
+                                     equals: password)
         
         self.testLocalizedText(with: "forgot_password")
         
         self.testButton(with: "log_in",
-                        isEnabled: !logInScope.phoneNumberOrEmail.isEmpty && !logInScope.password.isEmpty)
+                        isEnabled: !phoneNumberOrEmail.isEmpty && !password.isEmpty)
         
         let signUpText = app.staticTexts["sign_up_to_medico"]
         
@@ -87,10 +98,9 @@ class AuthScreenTests: BaseTests {
     
     // MARK: Actions
     func testForgetPasswordNavigation() {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "",
-                                                    type: .phone,
-                                                    password: "")
-        self.launchApp(with: logInScope.getLaunchEnvironment())
+        launchApp(withPhoneOrEmail: "",
+                  withType: .phone,
+                  withPassword: "")
         
         let forgotPasswordLink = app.staticTexts["forgot_password"]
         forgotPasswordLink.tap()
@@ -104,10 +114,9 @@ class AuthScreenTests: BaseTests {
     }
     
     func testLogInNavigation() {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phone,
-                                                    type: .phone,
-                                                    password: password)
-        self.launchApp(with: logInScope.getLaunchEnvironment())
+        launchApp(withPhoneOrEmail: phone,
+                  withType: .phone,
+                  withPassword: password)
         
         let logInButton = app.buttons["log_in_button"]
         logInButton.tap()
@@ -125,10 +134,9 @@ class AuthScreenTests: BaseTests {
     }
     
     func testSignUpNavigation() {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "",
-                                                    type: .phone,
-                                                    password: "")
-        self.launchApp(with: logInScope.getLaunchEnvironment())
+        launchApp(withPhoneOrEmail: "",
+                  withType: .phone,
+                  withPassword: "")
         
         let signUpLink = app.staticTexts["sign_up_to_medico"]
         signUpLink.tap()
@@ -146,11 +154,10 @@ class AuthScreenTests: BaseTests {
     func testErrorAlert() {
         let errorCode = DataErrorCode(title: "error", body: "something_went_wrong")
         
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "",
-                                                    type: .phone,
-                                                    password: "",
-                                                    errorCode: errorCode)
-        self.launchApp(with: logInScope.getLaunchEnvironment())
+        launchApp(withPhoneOrEmail: "",
+                  withType: .phone,
+                  withPassword: "",
+                  withErrorCode: errorCode)
         
         self.testAlert(withTitleKey: errorCode.title,
                        withMessageKey: errorCode.body)

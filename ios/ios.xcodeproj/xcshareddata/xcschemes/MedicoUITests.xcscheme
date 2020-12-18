@@ -21,6 +21,17 @@
                BlueprintName = "MedicoUITests"
                ReferencedContainer = "container:ios.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "BaseTests">
+               </Test>
+               <Test
+                  Identifier = "LimitedAppAccessTests/testSlidingPanelUserInterfaceForSeasonBoy()">
+               </Test>
+               <Test
+                  Identifier = "UserInfoNavigationBarScreenTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

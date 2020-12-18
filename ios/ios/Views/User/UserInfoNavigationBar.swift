@@ -26,6 +26,7 @@ struct UserInfoNavigationBar: ViewModifier {
     
     private var blurView: some View {
         BlurEffectView()
+            .testingIdentifier("blur_view")
             .transition(.identity)
             .onTapGesture { self.changeSlidingPanelState(isHidden: true) }
     }
@@ -79,9 +80,11 @@ struct UserInfoNavigationBar: ViewModifier {
                     
                     VStack(alignment: .leading, spacing: 6) {
                         Image("DefaultUserPhoto")
+                            .testingIdentifier("user_photo")
                         
                         Text(user.fullName())
                             .modifier(MedicoText(textWeight: .bold))
+                            .testingIdentifier("user_name")
                         
                         LocalizedText(localizedStringKey: user.type.localizedName,
                                       textWeight: .medium)
@@ -91,6 +94,7 @@ struct UserInfoNavigationBar: ViewModifier {
                 
                 ZStack {
                     AppColor.primary.color
+                        .testingIdentifier("sliding_panel")
                     
                     VStack(alignment: .leading, spacing: 20) {
                         Spacer()
@@ -108,6 +112,7 @@ struct UserInfoNavigationBar: ViewModifier {
                                               color: .grey)
                             }
                         }
+                        .testingIdentifier("log_out_button")
                     }
                     .padding()
                     .padding(.bottom, 20)

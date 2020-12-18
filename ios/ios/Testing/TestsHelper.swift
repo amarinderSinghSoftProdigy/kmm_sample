@@ -23,6 +23,12 @@ class TestsHelper {
         case phoneNumberOrEmail
         case logInUserNameType
         case password
+        
+        case firstName
+        case lastName
+        case email
+        case phoneNumber
+        case userType
     }
     
     let scopeCreator = ScopeCreator.Shortcuts()
@@ -41,6 +47,9 @@ class TestsHelper {
         switch scope {
         case LogInScopeInfo.name:
             setLogInScope(for: testEnvironment)
+            
+        case LimitedAppAccessScopeInfo.name:
+            setLimitedAppAccessScope(for: testEnvironment)
             
         default:
             return
@@ -62,6 +71,23 @@ class TestsHelper {
                                          type: type,
                                          password: password,
                                          error: getErrorCode(for: testEnvironment))
+    }
+    
+    private func setLimitedAppAccessScope(for testEnvironment: [String: String]) {
+        guard let firstName = testEnvironment[EnvironmentProperty.firstName.rawValue]
+            else { return }
+        
+        guard let lastName = testEnvironment[EnvironmentProperty.lastName.rawValue]
+            else { return }
+    
+        guard let typeString = testEnvironment[EnvironmentProperty.userType.rawValue],
+              let type = DataUserType.getValue(from: typeString)
+            else { return }
+        
+        scopeCreator.createLimitedAppAccessShortcut(firstName: firstName,
+                                                    lastName: lastName,
+                                                    type: type,
+                                                    isDocumentUploaded: true)
     }
     
     private func getErrorCode(for testEnvironment: [String: String]) -> DataErrorCode? {

@@ -60,6 +60,32 @@ extension TestsHelper {
             return environment
         }
     }
+    
+    class LimitedAppAccessScopeInfo: BaseScopeInfo {
+        override class var name: String { return "LimitedAppAccessScope" }
+    
+        let firstName: String
+        let lastName: String
+        let userType: DataUserType
+        
+        init(firstName: String,
+             lastName: String,
+             userType: DataUserType) {
+            self.firstName = firstName
+            self.lastName = lastName
+            self.userType = userType
+        }
+        
+        override func getLaunchEnvironment() -> [String: String] {
+            var environment = super.getLaunchEnvironment()
+            
+            environment[EnvironmentProperty.firstName.rawValue] = firstName
+            environment[EnvironmentProperty.lastName.rawValue] = lastName
+            environment[EnvironmentProperty.userType.rawValue] = userType.name
+            
+            return environment
+        }
+    }
 }
 
 extension DataAuthCredentials.Type_ {
@@ -85,6 +111,28 @@ extension DataAuthCredentials.Type_ {
             
         case "phone":
             return .phone
+            
+        default:
+            return nil
+        }
+    }
+}
+
+extension DataUserType {
+    static func getValue(from rawValue: String) -> DataUserType? {
+        switch rawValue {
+        
+        case "STOCKIST":
+            return DataUserType.stockist
+            
+        case "RETAILER":
+            return DataUserType.retailer
+            
+        case "SEASONBOY":
+            return DataUserType.seasonBoy
+            
+        case "HOSPITAL":
+            return DataUserType.hospital
             
         default:
             return nil
