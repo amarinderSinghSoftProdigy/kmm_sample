@@ -2,7 +2,7 @@ import SwiftUI
 import core
 
 struct HostScreen: View {
-    @State var isSplashScreenActive = true
+    @State private var isSplashScreenActive = true
     
     @ObservedObject var currentScope: SwiftDataSource<BaseScope>
     
@@ -27,9 +27,6 @@ struct HostScreen: View {
         ZStack {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
             Image("medico_logo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 150)
         }
     }
     
@@ -69,39 +66,38 @@ struct BaseScopeView: View {
                 .hideKeyboardOnTap()
             }
 
-            if let isInProgress = self.isInProgress.value, isInProgress == true {
+            if let isInProgress = self.isInProgress.value,
+               isInProgress == true {
                 ActivityView()
             }
         }
     }
     
-    var currentView: some View {
-        Group {
-            switch scope {
+    var currentView: AnyView {
+        switch scope {
             
-            case let scopeValue as LogInScope:
-                AuthScreen(scope: scopeValue)
-                
-            case let scopeValue as MainScope:
-                MainScreen(scope: scopeValue)
-                
-            case let scopeValue as OtpScope:
-                OtpFlowScreen(scope: scopeValue)
-                
-            case let scopeValue as EnterNewPasswordScope:
-                AuthNewPasswordScreen(scope: scopeValue)
-                
-            case let scopeValue as SignUpScope:
-                SignUpScreen(scope: scopeValue)
-                
-            default:
-                Group {}
-            }
+        case let scopeValue as LogInScope:
+            return AnyView(AuthScreen(scope: scopeValue))
+            
+        case let scopeValue as MainScope:
+            return AnyView(MainScreen(scope: scopeValue))
+            
+        case let scopeValue as OtpScope:
+            return AnyView(OtpFlowScreen(scope: scopeValue))
+            
+        case let scopeValue as EnterNewPasswordScope:
+            return AnyView(AuthNewPasswordScreen(scope: scopeValue))
+            
+        case let scopeValue as SignUpScope:
+            return AnyView(SignUpScreen(scope: scopeValue))
+            
+        default:
+            return AnyView(EmptyView())
         }
     }
     
     private func getCurrentViewWithModifiers() -> some View {
-        var view = AnyView(self.currentView)
+        var view = self.currentView
         
         if let scopeWithErrors = scope as? WithErrors {
             view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
