@@ -29,12 +29,15 @@ class BaseTests: XCTestCase {
         app.launch()
     }
 
-    func testLocalizedText(with localizationKey: String) {
+    func testLocalizedText(with localizationKey: String,
+                           isShown: Bool = true) {
         let text = app.staticTexts[localizationKey]
         
-        XCTAssertTrue(text.isHittable)
+        XCTAssertTrue(text.isHittable == isShown)
         
-        self.testLocalizedText(for: text, with: localizationKey)
+        if isShown {
+            self.testLocalizedText(for: text, with: localizationKey)
+        }
     }
 
     func testFloatingTextField(with localizationKey: String,
@@ -43,12 +46,24 @@ class BaseTests: XCTestCase {
         
         let textField = app.textFields["\(localizationKey)_input"]
         
-        XCTAssertTrue(textField.isHittable == !text.isEmpty)
+        XCTAssertTrue(textField.isHittable)
         
-        if textField.isHittable {
-            XCTAssertTrue(textField.value as! String == text)
-        }
+        XCTAssertTrue(textField.value as! String == text)
     }
+    
+    func testFloatingSecureField(with localizationKey: String,
+                                 equals text: String) {
+        testLocalizedText(with: localizationKey,
+                          isShown: text.isEmpty)
+        
+        let secureField = app.secureTextFields["\(localizationKey)_input"]
+        
+        XCTAssertTrue(secureField.isHittable)
+        
+        let secureText = String(repeating: "•", count: text.count)
+        XCTAssertTrue(secureField.value as! String == secureText)
+    }
+
     
     func testButton(with localizationKey: String, isEnabled: Bool) {
         let button = app.buttons["\(localizationKey)_button"]

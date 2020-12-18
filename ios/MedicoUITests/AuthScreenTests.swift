@@ -10,29 +10,64 @@ import XCTest
 import core
 
 class AuthScreenTests: BaseTests {
+    let phone = "1234567890"
+    let email = "email@example.com"
+    let password = "qweASD123"
     
-    private let phoneNumberOrEmail = "+1234567890"
-    private let password = ""
-    
-    override func launchApp(with environment: [String: String]? = nil) {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneNumberOrEmail,
-                                                    type: .phone,
-                                                    password: password)
-        
-        super.launchApp(with: logInScope.getLaunchEnvironment())
+    override func setUp() {
+        continueAfterFailure = false
     }
     
-    func testAuthScreenInitialState() {
+    func testAuthScreenInitialStateWithEmptyValues() {
+        testAuthScreenInitialState(withPhoneNumberOrEmail: "",
+                                   withType: .phone,
+                                   withPassword: "")
+    }
+    
+    func testAuthScreenInitialStateWithEmptyPassword() {
+        testAuthScreenInitialState(withPhoneNumberOrEmail: phone,
+                                   withType: .phone,
+                                   withPassword: "")
+    }
+    
+    func testAuthScreenInitialStateWithEmptyPhoneOrEmail() {
+        testAuthScreenInitialState(withPhoneNumberOrEmail: "",
+                                   withType: .phone,
+                                   withPassword: password)
+    }
+    
+    func testAuthScreenInitialStateWithPhoneAndPassword() {
+        testAuthScreenInitialState(withPhoneNumberOrEmail: phone,
+                                   withType: .phone,
+                                   withPassword: password)
+    }
+    
+    func testAuthScreenInitialStateWithEmailAndPassword() {
+        testAuthScreenInitialState(withPhoneNumberOrEmail: email,
+                                   withType: .email,
+                                   withPassword: password)
+    }
+    
+    private func testAuthScreenInitialState(withPhoneNumberOrEmail phoneNumberOrEmail: String,
+                                            withType type: DataAuthCredentials.Type_,
+                                            withPassword password: String) {
+        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneNumberOrEmail,
+                                                    type: type,
+                                                    password: password)
+        self.launchApp(with: logInScope.getLaunchEnvironment())
+        
         self.testLocalizedText(with: "log_in")
         
-        self.testFloatingTextField(with: "phone_number_or_email", equals: phoneNumberOrEmail)
+        self.testFloatingTextField(with: "phone_number_or_email",
+                                   equals: logInScope.phoneNumberOrEmail)
         
-        self.testFloatingTextField(with: "password", equals: password)
+        self.testFloatingSecureField(with: "password",
+                                     equals: logInScope.password)
         
         self.testLocalizedText(with: "forgot_password")
         
         self.testButton(with: "log_in",
-                        isEnabled: !phoneNumberOrEmail.isEmpty && !password.isEmpty)
+                        isEnabled: !logInScope.phoneNumberOrEmail.isEmpty && !logInScope.password.isEmpty)
         
         let signUpText = app.staticTexts["sign_up_to_medico"]
         
