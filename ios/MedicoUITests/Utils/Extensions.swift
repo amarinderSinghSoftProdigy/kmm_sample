@@ -9,7 +9,7 @@
 import XCTest
 
 extension XCTestCase {
-    private var currentLanguage: (languageCode: String, localeCode: String)? {
+    var currentLanguage: (languageCode: String, localeCode: String)? {
         guard let preferredLanguage = Locale.preferredLanguages.first else { return nil }
         
         let currentLocale = Locale(identifier: preferredLanguage)

@@ -14,8 +14,19 @@ extension TestsHelper {
     class BaseScopeInfo {
         class var name: String { return "BaseScope" }
         
+        let errorCode: DataErrorCode?
+        
+        init(errorCode: DataErrorCode? = nil) {
+            self.errorCode = errorCode
+        }
+        
         func getLaunchEnvironment() -> [String: String] {
-            let environment = [EnvironmentProperty.scope.rawValue: type(of: self).name]
+            var environment = [EnvironmentProperty.scope.rawValue: type(of: self).name]
+            
+            if let errorCode = self.errorCode {
+                environment[EnvironmentProperty.errorTitle.rawValue] = errorCode.title
+                environment[EnvironmentProperty.errorBody.rawValue] = errorCode.body
+            }
             
             return environment
         }
@@ -30,10 +41,13 @@ extension TestsHelper {
         
         init(phoneNumberOrEmail: String,
              type: DataAuthCredentials.Type_,
-             password: String) {
+             password: String,
+             errorCode: DataErrorCode? = nil) {
             self.phoneNumberOrEmail = phoneNumberOrEmail
             self.type = type
             self.password = password
+            
+           super.init(errorCode: errorCode)
         }
         
         override func getLaunchEnvironment() -> [String: String] {

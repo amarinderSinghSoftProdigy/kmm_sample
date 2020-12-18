@@ -19,39 +19,39 @@ class AuthScreenTests: BaseTests {
     }
     
     // MARK: Initial State
-    func testAuthScreenInitialStateWithEmptyValues() {
-        testAuthScreenInitialState(withPhoneNumberOrEmail: "",
-                                   withType: .phone,
-                                   withPassword: "")
+    func testInitialStateWithEmptyValues() {
+        testInitialState(withPhoneNumberOrEmail: "",
+                         withType: .phone,
+                         withPassword: "")
     }
     
-    func testAuthScreenInitialStateWithEmptyPassword() {
-        testAuthScreenInitialState(withPhoneNumberOrEmail: phone,
-                                   withType: .phone,
-                                   withPassword: "")
+    func testInitialStateWithEmptyPassword() {
+        testInitialState(withPhoneNumberOrEmail: phone,
+                         withType: .phone,
+                         withPassword: "")
     }
     
-    func testAuthScreenInitialStateWithEmptyPhoneOrEmail() {
-        testAuthScreenInitialState(withPhoneNumberOrEmail: "",
-                                   withType: .phone,
-                                   withPassword: password)
+    func testInitialStateWithEmptyPhoneOrEmail() {
+        testInitialState(withPhoneNumberOrEmail: "",
+                         withType: .phone,
+                         withPassword: password)
     }
     
-    func testAuthScreenInitialStateWithPhoneAndPassword() {
-        testAuthScreenInitialState(withPhoneNumberOrEmail: phone,
-                                   withType: .phone,
-                                   withPassword: password)
+    func testInitialStateWithPhoneAndPassword() {
+        testInitialState(withPhoneNumberOrEmail: phone,
+                         withType: .phone,
+                         withPassword: password)
     }
     
-    func testAuthScreenInitialStateWithEmailAndPassword() {
-        testAuthScreenInitialState(withPhoneNumberOrEmail: email,
-                                   withType: .email,
-                                   withPassword: password)
+    func testInitialStateWithEmailAndPassword() {
+        testInitialState(withPhoneNumberOrEmail: email,
+                         withType: .email,
+                         withPassword: password)
     }
     
-    private func testAuthScreenInitialState(withPhoneNumberOrEmail phoneNumberOrEmail: String,
-                                            withType type: DataAuthCredentials.Type_,
-                                            withPassword password: String) {
+    private func testInitialState(withPhoneNumberOrEmail phoneNumberOrEmail: String,
+                                  withType type: DataAuthCredentials.Type_,
+                                  withPassword password: String) {
         let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneNumberOrEmail,
                                                     type: type,
                                                     password: password)
@@ -140,5 +140,19 @@ class AuthScreenTests: BaseTests {
         XCTAssertFalse(activityView.exists)
         
         XCTAssertTrue(whoAreYouText.exists)
+    }
+    
+    // MARK: Error
+    func testErrorAlert() {
+        let errorCode = DataErrorCode(title: "error", body: "something_went_wrong")
+        
+        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: "",
+                                                    type: .phone,
+                                                    password: "",
+                                                    errorCode: errorCode)
+        self.launchApp(with: logInScope.getLaunchEnvironment())
+        
+        self.testAlert(withTitleKey: errorCode.title,
+                       withMessageKey: errorCode.body)
     }
 }

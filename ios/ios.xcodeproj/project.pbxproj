@@ -329,8 +329,8 @@
 			children = (
 				33ABAEC9258B8F810061F63C /* Utils */,
 				337DE57C258A069B00614951 /* AuthScreenTests.swift */,
-				337DE57E258A069B00614951 /* Info.plist */,
 				33ABAECD258B93370061F63C /* BaseTests.swift */,
+				337DE57E258A069B00614951 /* Info.plist */,
 			);
 			path = MedicoUITests;
 			sourceTree = "<group>";

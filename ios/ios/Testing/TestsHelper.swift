@@ -17,6 +17,9 @@ class TestsHelper {
         
         case scope
         
+        case errorTitle
+        case errorBody
+        
         case phoneNumberOrEmail
         case logInUserNameType
         case password
@@ -58,7 +61,15 @@ class TestsHelper {
         scopeCreator.createLogInShortcut(phoneNumberOrEmail: phoneNumberOrEmail,
                                          type: type,
                                          password: password,
-                                         error: nil)
+                                         error: getErrorCode(for: testEnvironment))
+    }
+    
+    private func getErrorCode(for testEnvironment: [String: String]) -> DataErrorCode? {
+        guard let errorTitle = testEnvironment[EnvironmentProperty.errorTitle.rawValue],
+              let errorBody = testEnvironment[EnvironmentProperty.errorBody.rawValue]
+            else { return nil }
+        
+        return DataErrorCode(title: errorTitle, body: errorBody)
     }
 }
 #endif
