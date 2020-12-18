@@ -21,6 +21,7 @@ struct ActivityView: View {
                 $0.color = .white
             }
         }
+        .testingIdentifier("ActivityView")
     }
 }
 

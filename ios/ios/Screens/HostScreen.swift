@@ -34,7 +34,7 @@ struct HostScreen: View {
     }
     
     init() {
-        currentScope = SwiftDataSource(dataSource: navigator.scope)
+        currentScope = SwiftDataSource(dataSource: UIApplication.shared.navigator.scope)
         
         setUpNavigationBar()
     }

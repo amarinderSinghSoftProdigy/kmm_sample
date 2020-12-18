@@ -39,4 +39,12 @@ extension XCTestCase {
         
         return result
     }
+    
+    func waitForElementToDisappear(_ element: XCUIElement,
+                                   timeout: TimeInterval) {
+        let exists = NSPredicate(format: "exists == FALSE")
+
+        expectation(for: exists, evaluatedWith: element, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
+    }
 }

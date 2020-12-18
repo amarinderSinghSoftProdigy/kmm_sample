@@ -66,7 +66,7 @@ fileprivate struct OtpDetailsView: View {
         VStack {
             Text("verification_code_sent_hint \(phoneNumber)")
                 .modifier(MedicoText(textWeight: .medium, color: .textGrey))
-                .accessibility(identifier: "verification_code_sent_hint")
+                .testingIdentifier("verification_code_sent_hint")
                 .padding([.trailing, .leading], geometry.size.width * 0.15)
             
             if let attemptsLeft = self.attemptsLeft.value as? Int {
@@ -79,7 +79,7 @@ fileprivate struct OtpDetailsView: View {
                 else {
                     Text("attempts_left \(attemptsLeft)")
                         .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
-                        .accessibility(identifier: "attempts_left")
+                        .testingIdentifier("attempts_left")
                         .padding([.top, .bottom])
                 }
                 

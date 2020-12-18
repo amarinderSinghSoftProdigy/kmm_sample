@@ -26,7 +26,7 @@ struct LimitedAppAccessScreen: View {
                 VStack(spacing: 50) {
                     Text(LocalizedStringKey("welcome \(user.fullName())"))
                         .modifier(MedicoText(textWeight: .medium, fontSize: 20))
-                        .accessibility(identifier: "welcome")
+                        .testingIdentifier("welcome")
                     
                     if isDocumentUploaded {
                         self.uploadedDocumentView

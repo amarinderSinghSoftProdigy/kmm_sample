@@ -122,3 +122,15 @@ struct NotificationAlert: ViewModifier {
             }
     }
 }
+
+struct TestingIdentifier: ViewModifier {
+    let identifier: String
+    
+    func body(content: Content) -> some View {
+        #if DEBUG
+        return AnyView(content.accessibility(identifier: identifier))
+        #endif
+        
+        return AnyView(content)
+    }
+}

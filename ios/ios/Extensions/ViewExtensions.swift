@@ -10,6 +10,7 @@ import SwiftUI
 import core
 
 extension View {
+    
     @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
         if hidden {
             if !remove {
@@ -105,6 +106,12 @@ extension View {
             FilePicker(filePickerOption: filePickerOption,
                        documentTypes: types,
                        uploadData: uploadData)
+        )
+    }
+    
+    func testingIdentifier(_ id: String) -> some View {
+        self.modifier(
+            TestingIdentifier(identifier: id)
         )
     }
 }

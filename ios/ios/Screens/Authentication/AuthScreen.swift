@@ -114,7 +114,7 @@ struct AuthTab: View {
             + Text(LocalizedStringKey("to_medico")))
                 .underline()
                 .modifier(MedicoText(color: .lightBlue))
-                .accessibility(identifier: "sign_up_to_medico")
+                .testingIdentifier("sign_up_to_medico")
                 .padding(.top, 4)
                 .padding(.bottom)
                 .onTapGesture {

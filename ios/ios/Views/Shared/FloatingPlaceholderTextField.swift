@@ -175,7 +175,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                 let textFieldAlignment: Alignment = placeholderMoved ? .bottomLeading : .leading
                 content
                     .modifier(MedicoText(fontSize: 15, multilineTextAlignment: .leading))
-                    .accessibility(identifier: "\(placeholderLocalizedStringKey)_input")
+                    .testingIdentifier("\(placeholderLocalizedStringKey)_input")
                     .frame(height: textFieldHeight, alignment: textFieldAlignment)
                     .padding([.leading, .trailing], padding)
             }

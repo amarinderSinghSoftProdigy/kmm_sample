@@ -13,6 +13,8 @@ import core
 class TestsHelper {
     
     enum EnvironmentProperty: String {
+        case testingEnabled
+        
         case scope
         
         case phoneNumberOrEmail
@@ -21,6 +23,12 @@ class TestsHelper {
     }
     
     let scopeCreator = ScopeCreator.Shortcuts()
+    
+    var testingEnabled: Bool {
+        let testEnvironment = ProcessInfo.processInfo.arguments
+        
+        return testEnvironment.contains(EnvironmentProperty.testingEnabled.rawValue)
+    }
     
     func overrideCurrentScope() {
         let testEnvironment = ProcessInfo.processInfo.environment
