@@ -5,12 +5,15 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.AuthCredentials
 import org.kodein.di.instance
 
 object ScopeCreator {
@@ -18,6 +21,55 @@ object ScopeCreator {
         get() = directDI.instance()
 
     object Shortcuts {
+
+        /**
+         * Shortcut to [LogInScope] with filled data
+         */
+        fun createLogInShortcut(
+            phoneNumberOrEmail: String,
+            type: AuthCredentials.Type,
+            password: String,
+            error: ErrorCode?
+        ) {
+            
+            nav.setCurrentScope(
+                LogInScope(
+                    credentials = DataSource(
+                        AuthCredentials(
+                            phoneNumberOrEmail = phoneNumberOrEmail,
+                            type = type,
+                            password = password,
+                    )),
+                    errors = DataSource(error)
+                )
+            )
+
+        }
+
+        fun createLimitedAppAccessShortcut(
+            firstName: String,
+            lastName: String,
+            type: UserType,
+            isDocumentUploaded: Boolean
+        ) {
+
+            nav.setCurrentScope(
+                MainScope.LimitedAccess(
+                    user = DataSource(
+                        User(
+                            firstName,
+                            lastName,
+                            "email@example.com",
+                            "+1234567890",
+                            type,
+                            false,
+                            if (!isDocumentUploaded) null else "url"
+                        )
+                    )
+                )
+            )
+
+        }
 
         /**
          * Shortcut to [SignUpScope.LegalDocuments.DrugLicense] with filled data

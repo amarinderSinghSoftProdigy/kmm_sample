@@ -26,6 +26,7 @@ struct UserInfoNavigationBar: ViewModifier {
     
     private var blurView: some View {
         BlurEffectView()
+            .testingIdentifier("blur_view")
             .transition(.identity)
             .onTapGesture { self.changeSlidingPanelState(isHidden: true) }
     }
@@ -79,18 +80,21 @@ struct UserInfoNavigationBar: ViewModifier {
                     
                     VStack(alignment: .leading, spacing: 6) {
                         Image("DefaultUserPhoto")
+                            .testingIdentifier("user_photo")
                         
                         Text(user.fullName())
                             .modifier(MedicoText(textWeight: .bold))
+                            .testingIdentifier("user_name")
                         
-                        Text(LocalizedStringKey(user.type.localizedName))
-                            .modifier(MedicoText(textWeight: .medium))
+                        LocalizedText(localizedStringKey: user.type.localizedName,
+                                      textWeight: .medium)
                     }
                     .padding()
                 }
                 
                 ZStack {
                     AppColor.primary.color
+                        .testingIdentifier("sliding_panel")
                     
                     VStack(alignment: .leading, spacing: 20) {
                         Spacer()
@@ -102,10 +106,13 @@ struct UserInfoNavigationBar: ViewModifier {
                             HStack(spacing: 24) {
                                 Image("Exit")
                                 
-                                Text(LocalizedStringKey("log_out"))
-                                    .modifier(MedicoText(textWeight: .semiBold, fontSize: 15, color: .grey))
+                                LocalizedText(localizedStringKey: "log_out",
+                                              textWeight: .semiBold,
+                                              fontSize: 15,
+                                              color: .grey)
                             }
                         }
+                        .testingIdentifier("log_out_button")
                     }
                     .padding()
                     .padding(.bottom, 20)

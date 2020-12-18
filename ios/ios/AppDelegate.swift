@@ -7,11 +7,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var navigator: UiNavigator!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        let start = UiLink().appStart(context: self, isDebug: false, loggerLevel: Logger.Level.log)
-        navigator = start.navigator
+        setUpAppNavigator()
         
         return true
+    }
+    
+    private func setUpAppNavigator() {
+        #if DEBUG
+        let testsHelper = TestsHelper()
+        let isDebug = testsHelper.testingEnabled
+        #else
+        let isDebug = false
+        #endif
+        
+        let start = UiLink().appStart(context: self, isDebug: isDebug, loggerLevel: Logger.Level.log)
+        navigator = start.navigator
+        
+        #if DEBUG
+        testsHelper.overrideCurrentScope()
+        #endif
     }
 
     // MARK: UISceneSession Lifecycle

@@ -44,8 +44,10 @@ struct FieldError: ViewModifier {
                         .fill(appColor: .red)
                         .frame(height: 1)
                 
-                Text(LocalizedStringKey(errorMessageKey))
-                    .modifier(MedicoText(fontSize: 12, color: .red, multilineTextAlignment: .leading))
+                    LocalizedText(localizedStringKey: errorMessageKey,
+                                  fontSize: 12,
+                                  color: .red,
+                                  multilineTextAlignment: .leading)
                     .padding(.leading, padding)
                 }
             }
@@ -118,5 +120,17 @@ struct NotificationAlert: ViewModifier {
                                             onDismiss?()
                                         })
             }
+    }
+}
+
+struct TestingIdentifier: ViewModifier {
+    let identifier: String
+    
+    func body(content: Content) -> some View {
+        #if DEBUG
+        return AnyView(content.accessibility(identifier: identifier))
+        #endif
+        
+        return AnyView(content)
     }
 }

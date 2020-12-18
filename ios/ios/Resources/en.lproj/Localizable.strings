@@ -24,6 +24,7 @@
 "sign_up" = "Sign up";
 "to_medico" = " to Medico Stores";
 "log_out" = "Log Out";
+"copyright" = "© Copyright mediostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";

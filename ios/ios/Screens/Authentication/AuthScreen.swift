@@ -31,8 +31,10 @@ struct AuthScreen: View {
                 .frame(maxHeight: .infinity)
             }
             
-            Text("© Copyright mediostores.com 2021")
-                .modifier(MedicoText(textWeight: .semiBold, fontSize: 16, color: .white))
+            LocalizedText(localizedStringKey: "copyright",
+                          textWeight: .semiBold,
+                          fontSize: 16,
+                          color: .white)
                 .opacity(0.8)
                 .padding(.bottom, 30)
         }
@@ -70,8 +72,9 @@ struct AuthTab: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(LocalizedStringKey("log_in"))
-                    .modifier(MedicoText(textWeight: .bold, fontSize: 24))
+                LocalizedText(localizedStringKey: "log_in",
+                              textWeight: .bold,
+                              fontSize: 24)
                 
                 Spacer()
                 
@@ -93,8 +96,8 @@ struct AuthTab: View {
                                            onTextChange: updatePassword)
                 .textContentType(.password)
             
-            Text(LocalizedStringKey("forgot_password"))
-                .modifier(MedicoText(color: .lightBlue))
+            LocalizedText(localizedStringKey: "forgot_password",
+                          color: .lightBlue)
                 .padding(.top, 4)
                 .onTapGesture {
                     scope.goToForgetPassword()
@@ -111,6 +114,7 @@ struct AuthTab: View {
             + Text(LocalizedStringKey("to_medico")))
                 .underline()
                 .modifier(MedicoText(color: .lightBlue))
+                .testingIdentifier("sign_up_to_medico")
                 .padding(.top, 4)
                 .padding(.bottom)
                 .onTapGesture {

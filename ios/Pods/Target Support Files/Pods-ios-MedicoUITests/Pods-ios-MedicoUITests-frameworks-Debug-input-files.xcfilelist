@@ -1,4 +1,4 @@
-${PODS_ROOT}/Target Support Files/Pods-ios-iosUITests/Pods-ios-iosUITests-frameworks.sh
+${PODS_ROOT}/Target Support Files/Pods-ios-MedicoUITests/Pods-ios-MedicoUITests-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework
 ${BUILT_PRODUCTS_DIR}/FirebaseCoreDiagnostics/FirebaseCoreDiagnostics.framework
 ${BUILT_PRODUCTS_DIR}/FirebaseCrashlytics/FirebaseCrashlytics.framework

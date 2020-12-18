@@ -9,8 +9,10 @@
 import core
 import SwiftUI
 
-var navigator: UiNavigator {
-    (UIApplication.shared.delegate as! AppDelegate).navigator
+extension UIApplication {
+    var navigator: UiNavigator {
+        (self.delegate as! AppDelegate).navigator
+    }
 }
 
 extension String {

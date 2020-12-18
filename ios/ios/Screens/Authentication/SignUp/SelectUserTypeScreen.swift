@@ -21,8 +21,9 @@ struct SelectUserTypeScreen: View {
     
     var body: some View {
         VStack(spacing: 32) {
-            Text(LocalizedStringKey("who_are_you"))
-                .modifier(MedicoText(textWeight: .bold, fontSize: 24))
+            LocalizedText(localizedStringKey: "who_are_you",
+                          textWeight: .bold,
+                          fontSize: 24)
             
             let spacing: CGFloat = 20
             VStack(spacing: spacing) {
@@ -78,8 +79,8 @@ fileprivate struct UserTypeView: View {
                 }
             }.frame(maxHeight: .infinity)
             
-            Text(LocalizedStringKey(userType.localizedName))
-                .modifier(MedicoText(textWeight: .bold))
+            LocalizedText(localizedStringKey: userType.localizedName,
+                          textWeight: .bold)
                 .padding(.bottom, 20)
         }
         .aspectRatio(1, contentMode: .fit)

@@ -31,9 +31,12 @@ struct PickerSelector: View {
                     HStack {
                         let text = chosenElement?.isEmpty == false ? chosenElement! : placeholder
                         
-                        Text(LocalizedStringKey(text))
-                            .modifier(MedicoText(fontSize: 15, color: .black, multilineTextAlignment: .leading))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        LocalizedText(localizedStringKey: text,
+                                      fontSize: 15,
+                                      color: .black,
+                                      multilineTextAlignment: .leading)
+                            .frame(maxWidth: .infinity,
+                                   alignment: .leading)
                         
                         Spacer()
                         

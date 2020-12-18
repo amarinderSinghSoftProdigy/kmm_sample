@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerMetaData
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.UserType
 
 class MockCustomerScope : NetworkScope.Customer {
 
@@ -25,7 +26,7 @@ class MockCustomerScope : NetworkScope.Customer {
                 "",
                 CustomerAddressData("", "", "", 0.0, "", 0.0, 0, "", ""),
                 CustomerMetaData(true, "", ""),
-                "",
+                UserType.STOCKIST.serverValue,
                 "",
                 "",
                 "",

@@ -146,8 +146,9 @@ fileprivate struct DrugLicenseData: View  {
                 
                 Image("UploadDocuments")
                 
-                Text(LocalizedStringKey("drug_license_request"))
-                    .modifier(MedicoText(fontSize: 16, color: .grey))
+                LocalizedText(localizedStringKey: "drug_license_request",
+                              fontSize: 16,
+                              color: .grey)
                     .padding([.leading, .trailing], geometry.size.width * 0.17)
                 
                 Spacer()

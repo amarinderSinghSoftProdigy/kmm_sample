@@ -11,13 +11,8 @@ target 'ios' do
   
   pod 'libPhoneNumber-iOS'
 
-  target 'iosTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'iosUITests' do
-    # Pods for testing
+  target 'MedicoUITests' do
+    pod 'libPhoneNumber-iOS'
   end
 
 end

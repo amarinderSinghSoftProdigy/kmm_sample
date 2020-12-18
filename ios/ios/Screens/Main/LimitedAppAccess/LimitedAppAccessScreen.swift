@@ -26,6 +26,7 @@ struct LimitedAppAccessScreen: View {
                 VStack(spacing: 50) {
                     Text(LocalizedStringKey("welcome \(user.fullName())"))
                         .modifier(MedicoText(textWeight: .medium, fontSize: 20))
+                        .testingIdentifier("welcome")
                     
                     if isDocumentUploaded {
                         self.uploadedDocumentView
@@ -57,11 +58,11 @@ struct LimitedAppAccessScreen: View {
             Image("Welcome")
             
             VStack(spacing: 19) {
-                Text(LocalizedStringKey("thank_you_for_registration"))
-                    .modifier(MedicoText(fontSize: 16))
+                LocalizedText(localizedStringKey: "thank_you_for_registration",
+                              fontSize: 16)
                 
-                Text(LocalizedStringKey("documents_under_review"))
-                    .modifier(MedicoText(fontSize: 16))
+                LocalizedText(localizedStringKey: "documents_under_review",
+                              fontSize: 16)
             }
         }
     }
@@ -72,8 +73,8 @@ struct LimitedAppAccessScreen: View {
             
             let textKey = scope.isCameraOptionAvailable ? "drug_license_request" : "aadhaar_card_request"
             
-            Text(LocalizedStringKey(textKey))
-                .modifier(MedicoText(fontSize: 16))
+            LocalizedText(localizedStringKey: textKey,
+                          fontSize: 16)
         }
     }
     

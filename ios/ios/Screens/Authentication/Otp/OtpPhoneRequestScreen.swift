@@ -39,8 +39,9 @@ struct OtpPhoneRequestScreen: View {
             VStack {
                 Spacer()
                 
-                Text(LocalizedStringKey("reset_password_hint"))
-                    .modifier(MedicoText(textWeight: .medium, color: .textGrey))
+                LocalizedText(localizedStringKey: "reset_password_hint",
+                              textWeight: .medium,
+                              color: .textGrey)
                     .multilineTextAlignment(.center)
                     .padding([.trailing, .leading], geometry.size.width * 0.15)
                 

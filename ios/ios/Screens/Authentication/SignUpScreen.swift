@@ -131,8 +131,8 @@ struct SignUpButton: ViewModifier {
             MedicoButton(localizedStringKey: buttonTextKey, isEnabled: isEnabled, action: action)
             
             if let skipButtonAction = self.skipButtonAction {
-                Text(LocalizedStringKey("skip_for_now"))
-                    .modifier(MedicoText(color: .lightBlue))
+                LocalizedText(localizedStringKey: "skip_for_now",
+                              color: .lightBlue)
                     .onTapGesture {
                         skipButtonAction()
                     }
