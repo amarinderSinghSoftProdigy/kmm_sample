@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let isDebug = false
         #endif
         
-        let start = UiLink().appStart(context: self, isDebug: isDebug, loggerLevel: Logger.Level.log)
+        let start = UiLink().appStart(context: self, isDebug: true, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
         #if DEBUG

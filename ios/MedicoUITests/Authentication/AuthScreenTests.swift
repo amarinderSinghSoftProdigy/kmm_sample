@@ -105,12 +105,11 @@ class AuthScreenTests: BaseTests {
         let forgotPasswordLink = app.staticTexts["forgot_password"]
         forgotPasswordLink.tap()
         
-        let activityView = app.otherElements["ActivityView"]
         let phoneNumberInput = app.textFields["phone_number_input"]
         
-        XCTAssertFalse(forgotPasswordLink.exists)
-        XCTAssertFalse(activityView.exists)
-        XCTAssertTrue(phoneNumberInput.exists)
+        self.testActivityView(activityViewShown: false,
+                              withHiddenElements: [forgotPasswordLink],
+                              withShownElements: [phoneNumberInput])
     }
     
     func testLogInNavigation() {
@@ -121,16 +120,10 @@ class AuthScreenTests: BaseTests {
         let logInButton = app.buttons["log_in_button"]
         logInButton.tap()
         
-        let activityView = app.otherElements["ActivityView"]
         let menuNavigationBarButton = app.buttons["Menu"]
-        
-        XCTAssertTrue(activityView.exists)
-        
-        let timeout: TimeInterval = 5
-        
-        waitForElementToDisappear(activityView, timeout: timeout)
-        waitForElementToDisappear(logInButton, timeout: timeout)
-        XCTAssertTrue(menuNavigationBarButton.waitForExistence(timeout: timeout))
+        self.testActivityView(activityViewShown: true,
+                              withHiddenElements: [logInButton],
+                              withShownElements: [menuNavigationBarButton])
     }
     
     func testSignUpNavigation() {
@@ -141,13 +134,11 @@ class AuthScreenTests: BaseTests {
         let signUpLink = app.staticTexts["sign_up_to_medico"]
         signUpLink.tap()
         
-        let activityView = app.otherElements["ActivityView"]
         let whoAreYouText = app.staticTexts["who_are_you"]
         
-        XCTAssertFalse(signUpLink.exists)
-        XCTAssertFalse(activityView.exists)
-        
-        XCTAssertTrue(whoAreYouText.exists)
+        self.testActivityView(activityViewShown: false,
+                              withHiddenElements: [signUpLink],
+                              withShownElements: [whoAreYouText])
     }
     
     // MARK: Error

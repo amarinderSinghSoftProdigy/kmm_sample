@@ -48,6 +48,9 @@ class TestsHelper {
         case LogInScopeInfo.name:
             setLogInScope(for: testEnvironment)
             
+        case OtpScopeNumberInputInfo.name:
+            setOtpNumberInputScope(for: testEnvironment)
+            
         case LimitedAppAccessScopeInfo.name:
             setLimitedAppAccessScope(for: testEnvironment)
             
@@ -71,6 +74,14 @@ class TestsHelper {
                                          type: type,
                                          password: password,
                                          error: getErrorCode(for: testEnvironment))
+    }
+    
+    private func setOtpNumberInputScope(for testEnvironment: [String: String]) {
+        guard let phoneNumber = testEnvironment[EnvironmentProperty.phoneNumber.rawValue]
+            else { return }
+        
+        scopeCreator.createOtpPhoneNumberInputShortcut(phoneNumber: phoneNumber,
+                                                       error: getErrorCode(for: testEnvironment))
     }
     
     private func setLimitedAppAccessScope(for testEnvironment: [String: String]) {

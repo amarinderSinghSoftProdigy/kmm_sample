@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -46,6 +47,27 @@ object ScopeCreator {
 
         }
 
+        /**
+         * Shortcut to [OtpScope.PhoneNumberInput] with filled data
+         */
+        fun createOtpPhoneNumberInputShortcut(
+            phoneNumber: String,
+            error: ErrorCode?
+        ) {
+
+            nav.setCurrentScope(
+                OtpScope.PhoneNumberInput(
+                    phoneNumber = DataSource(phoneNumber),
+                    isForRegisteredUsersOnly = true,
+                    errors = DataSource(error)
+                )
+            )
+
+        }
+
+        /**
+         * Shortcut to [MainScope.LimitedAccess] with filled data
+         */
         fun createLimitedAppAccessShortcut(
             firstName: String,
             lastName: String,
@@ -70,6 +92,7 @@ object ScopeCreator {
             )
 
         }
+
 
         /**
          * Shortcut to [SignUpScope.LegalDocuments.DrugLicense] with filled data

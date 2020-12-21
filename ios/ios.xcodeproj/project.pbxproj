@@ -49,6 +49,8 @@
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
 		33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA2B256E55AB001C189A /* AppColor.swift */; };
 		33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */; };
+		33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */; };
+		33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
@@ -153,6 +155,7 @@
 		33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPersonalDataScreen.swift; sourceTree = "<group>"; };
 		33CDAA2B256E55AB001C189A /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColor.swift; path = ios/utils/AppColor.swift; sourceTree = SOURCE_ROOT; };
 		33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColorViewsExtensions.swift; path = ios/extensions/AppColorViewsExtensions.swift; sourceTree = SOURCE_ROOT; };
+		33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreenTests.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -411,6 +414,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		33CE886B2590C84400E4D316 /* Otp */ = {
+			isa = PBXGroup;
+			children = (
+				33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */,
+			);
+			path = Otp;
+			sourceTree = "<group>";
+		};
 		33E7682D256D5F6D00B35FDF /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -433,6 +444,7 @@
 		33F51B20258CD13000DA2F9F /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				33CE886B2590C84400E4D316 /* Otp */,
 				337DE57C258A069B00614951 /* AuthScreenTests.swift */,
 			);
 			path = Authentication;
@@ -731,10 +743,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */,
 				33F51B23258CD15200DA2F9F /* LimitedAppAccessTests.swift in Sources */,
 				331A23CB258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift in Sources */,
 				33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */,
 				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
+				33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */,
 				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
 				33ABAECE258B93370061F63C /* BaseTests.swift in Sources */,
 				33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */,
