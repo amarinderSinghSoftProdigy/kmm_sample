@@ -24,7 +24,14 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        
+      - shell: bash
+        env:
+          SUPER_SECRET: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          example-command "$SUPER_SECRET"
 
-      # Build Android apks
-      - name: Run a multi-line script
+      - name: Build Android apks
+        env: 
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: ./gradlew :android:assembleDev
