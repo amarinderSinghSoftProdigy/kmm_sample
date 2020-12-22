@@ -24,14 +24,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        
-      - shell: bash
-        env:
-          SUPER_SECRET: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: |
-          echo $SUPER_SECRET
 
       - name: Build Android apks
         env: 
+          CI_BUILD: ${{ secrets.CI_BUILD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: ./gradlew :android:assembleDev
