@@ -61,6 +61,31 @@ extension TestsHelper {
         }
     }
     
+    class OtpScopeInfo: BaseScopeInfo {
+        override class var name: String { return "OtpScopeInfo" }
+        
+        let phone: String
+        
+        init(phone: String,
+             errorCode: DataErrorCode? = nil) {
+            self.phone = phone
+            
+           super.init(errorCode: errorCode)
+        }
+        
+        override func getLaunchEnvironment() -> [String: String] {
+            var environment = super.getLaunchEnvironment()
+            
+            environment[EnvironmentProperty.phoneNumber.rawValue] = phone
+            
+            return environment
+        }
+    }
+    
+    class OtpScopeNumberInputInfo: OtpScopeInfo {
+        override class var name: String { return "OtpScopeNumberInput" }
+    }
+    
     class LimitedAppAccessScopeInfo: BaseScopeInfo {
         override class var name: String { return "LimitedAppAccessScope" }
     

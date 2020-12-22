@@ -82,10 +82,10 @@ class BaseTests: XCTestCase {
     }
     
     func testAlert(withTitleKey titleKey: String,
-                   withMessageKey messageKey: String) {
+                   withMessageKey messageKey: String,
+                   withTimeout timeout: TimeInterval = 5) {
         let alert = app.alerts.firstMatch
         
-        let timeout: TimeInterval = 5
         XCTAssertTrue(alert.waitForExistence(timeout: timeout),
                       "Alert wasn't shown in \(timeout) seconds")
         
@@ -98,6 +98,54 @@ class BaseTests: XCTestCase {
                        "The alert message doesn't equal \(localizedMessage)")
     }
     
+    func testNavigationBar(withTitleKey titleKey: String,
+                           hasBackButton: Bool) {
+        let backButton = app.buttons["back"]
+        XCTAssertTrue(backButton.isHittable == hasBackButton)
+        
+        if hasBackButton {
+            XCTAssertTrue(backButton.isEnabled)
+        }
+    
+        let localizatedNavigationBarTitle = self.getLocalizedString(for: titleKey)
+        let navigationBarTitle = app.staticTexts[localizatedNavigationBarTitle]
+        
+        XCTAssertTrue(navigationBarTitle.isHittable)
+        XCTAssertTrue(navigationBarTitle.label == localizatedNavigationBarTitle)
+        XCTAssertFalse(navigationBarTitle.label == titleKey)
+    }
+    
+    func testActivityView(activityViewShown: Bool,
+                          withHiddenElements hiddenElements: [XCUIElement],
+                          withShownElements shownElements: [XCUIElement],
+                          withTimeout timeout: TimeInterval = 5) {
+        let activityView = app.otherElements["ActivityView"]
+        
+        XCTAssertTrue(activityView.exists == activityViewShown)
+        
+        if (!activityViewShown) {
+            for element in hiddenElements {
+                XCTAssertFalse(element.exists)
+            }
+            
+            for element in shownElements {
+                XCTAssertTrue(element.exists)
+            }
+            
+            return
+        }
+        
+        waitForElementToDisappear(activityView, timeout: timeout)
+        
+        for element in hiddenElements {
+            waitForElementToDisappear(element, timeout: timeout)
+        }
+        
+        for element in shownElements {
+            XCTAssertTrue(element.waitForExistence(timeout: timeout))
+        }
+    }
+    
     private func testLocalizedText(for element: XCUIElement,
                                    with localizationKey: String) {
         let localizedText = self.getLocalizedString(for: localizationKey)
@@ -106,5 +154,16 @@ class BaseTests: XCTestCase {
                        "'\(localizationKey)' doesn't have a localization for '\(self.currentLanguage?.languageCode ?? "unknown")' locale")
         XCTAssertTrue(element.label == localizedText,
                       "The element text doesn't equal \(localizedText)")
+    }
+    
+    // MARK: Actions
+    func testBackButton(withHiddenElements hiddenElements: [XCUIElement],
+                        withShownElements shownElements: [XCUIElement]) {
+        let backButton = app.buttons["back"]
+        backButton.tap()
+        
+        self.testActivityView(activityViewShown: false,
+                              withHiddenElements: hiddenElements,
+                              withShownElements: shownElements)
     }
 }
