@@ -21,6 +21,7 @@ data class CustomerData(
     val drugLicenseNo2: String,
     @SerialName("drugLicenseUrl")
     val drugLicenseUrl: String?,
+    val isDocumentUploaded: Boolean,
     @SerialName("email")
     val email: String,
     @SerialName("firstName")

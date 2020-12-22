@@ -14,7 +14,7 @@ sealed class MainScope : BaseScope() {
     /**
      * Transition to [LogInScope] if successful
      */
-    fun tryLogOut() = EventCollector.sendEvent(Event.Action.Auth.LogOut)
+    fun tryLogOut() = EventCollector.sendEvent(Event.Action.Auth.LogOut(true))
 
     data class LimitedAccess(
         override val user: DataSource<User>,
@@ -22,7 +22,7 @@ sealed class MainScope : BaseScope() {
     ) : MainScope(), CommonScope.UploadDocument {
 
         val isDocumentUploaded: Boolean
-            get() = !user.value.documentUrl.isNullOrEmpty()
+            get() = user.value.isDocumentUploaded
 
         val isCameraOptionAvailable: Boolean
             get() = user.value.type != UserType.SEASON_BOY

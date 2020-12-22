@@ -11,7 +11,6 @@ kotlin {
             dependencies {
                 api(Deps.Kotlin.Kserialize.core)
                 api(Deps.Kotlin.Kserialize.json)
-                api(Deps.Kotlin.time)
             }
         }
     }

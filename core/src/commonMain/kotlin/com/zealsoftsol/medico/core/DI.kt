@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.network.mock.MockAuthScope
 import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
@@ -20,7 +21,7 @@ internal lateinit var directDI: DirectDI
 
 fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
     platformDependencies(context, isDebugBuild)
-    bind<NetworkClient>() with singleton { NetworkClient(instance()) }
+    bind<NetworkClient>() with singleton { NetworkClient(instance(), instance()) }
     bind<NetworkScope.Auth>() with singleton {
         if (!isDebugBuild) {
             instance<NetworkClient>()
@@ -41,6 +42,7 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
             instance(),
             instance(),
             instance(),
+            instance(),
             instance()
         )
     }
@@ -48,6 +50,7 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
     bind<Navigator>() with singleton { Navigator() }
     bind<EventCollector>() with singleton { EventCollector(instance(), instance()) }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
+    bind<TokenStorage>() with singleton { TokenStorage(instance()) }
 }.also {
     directDI = it.direct
 }

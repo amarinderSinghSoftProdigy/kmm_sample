@@ -4,6 +4,7 @@ import com.russhwolf.settings.Settings
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
@@ -16,7 +17,6 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -32,52 +32,30 @@ class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
     private val networkCustomerScope: NetworkScope.Customer,
     private val settings: Settings,
+    private val tokenStorage: TokenStorage,
     private val phoneEmailVerifier: PhoneEmailVerifier,
     private val ipAddressFetcher: IpAddressFetcher,
 ) {
     val user: User?
         get() = fetchUser()
 
-    init {
-        networkAuthScope.token = settings.getStringOrNull(AUTH_TOKEN_KEY)
-    }
-
-    fun checkUserAccess(): UserAccess {
-        val tokenJson = settings.getString(AUTH_TOKEN_KEY)
-        val access = runCatching {
-            Json.decodeFromString(TokenInfo.serializer(), tokenJson)
-        }.getOrNull()?.let { tokenInfo ->
-            if (!tokenInfo.isExpired) {
-                fetchUser()?.let {
-                    if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
-                } ?: UserAccess.NO_ACCESS
-            } else {
-                UserAccess.NO_ACCESS
-            }
+    fun getUserAccess(): UserAccess {
+        return fetchUser()?.let {
+            if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
-
-        if (access == UserAccess.NO_ACCESS) {
-            clearUserData()
-        }
-
-        return access
     }
 
     suspend fun login(login: String, password: String): Response.Wrapped<ErrorCode> {
         settings.putString(AUTH_LOGIN_KEY, login)
-        val response = networkAuthScope.login(
-            UserRequest(login, password)
-        )
-        response.getBodyOrNull()?.let {
-            networkAuthScope.token = it.token
-            settings.putString(AUTH_TOKEN_KEY, Json.encodeToString(TokenInfo.serializer(), it))
-        }
-        return response.getWrappedError()
+        return networkAuthScope.login(UserRequest(login, password))
     }
 
     suspend fun loadUserFromServer(): User? {
         return networkCustomerScope.getCustomerData().entity?.let {
-            val parsedType = UserType.parse(it.customerType) ?: return null
+            val parsedType = UserType.parse(it.customerType) ?: run {
+                "unknown user type".warnIt()
+                return null
+            }
             val user = User(
                 it.firstName,
                 it.lastName,
@@ -85,7 +63,7 @@ class UserRepo(
                 it.phoneNumber,
                 parsedType,
                 it.customerMetaData.activated,
-                it.drugLicenseUrl
+                it.isDocumentUploaded,
             )
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)
@@ -228,8 +206,7 @@ class UserRepo(
 
     private fun clearUserData() {
         settings.remove(AUTH_USER_KEY)
-        settings.remove(AUTH_TOKEN_KEY)
-        networkAuthScope.clearToken()
+        tokenStorage.clear()
     }
 
     private fun fetchUser(): User? {
@@ -247,7 +224,6 @@ class UserRepo(
     companion object {
         // TODO make secure
         private const val AUTH_LOGIN_KEY = "auid"
-        private const val AUTH_TOKEN_KEY = "atok"
         private const val AUTH_USER_KEY = "ukey"
     }
 }

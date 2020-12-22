@@ -8,10 +8,8 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SimpleBody
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -21,12 +19,9 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
 interface NetworkScope {
-    var token: String?
-
-    fun clearToken()
 
     interface Auth : NetworkScope {
-        suspend fun login(request: UserRequest): SimpleBody<TokenInfo>
+        suspend fun login(request: UserRequest): Response.Wrapped<ErrorCode>
         suspend fun logout(): Boolean
 
         suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode>

@@ -17,7 +17,7 @@ internal class AuthEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.Auth) = when (event) {
         is Event.Action.Auth.LogIn -> authTryLogin()
-        is Event.Action.Auth.LogOut -> authTryLogOut()
+        is Event.Action.Auth.LogOut -> authTryLogOut(event.notifyServer)
         is Event.Action.Auth.UpdateAuthCredentials -> authUpdateCredentials(
             event.emailOrPhone,
             event.password
@@ -51,9 +51,9 @@ internal class AuthEventDelegate(
         }
     }
 
-    private suspend fun authTryLogOut() {
+    private suspend fun authTryLogOut(notifyServer: Boolean) {
         navigator.withProgress {
-            userRepo.logout()
+            if (notifyServer) userRepo.logout() else true
         }.ifTrue {
             navigator.clearQueue()
             navigator.setCurrentScope(LogInScope(DataSource(userRepo.getAuthCredentials())))

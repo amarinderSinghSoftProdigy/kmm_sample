@@ -10,7 +10,7 @@ data class User(
     val phoneNumber: String,
     val type: UserType,
     val isVerified: Boolean,
-    val documentUrl: String?
+    val isDocumentUploaded: Boolean,
 ) {
     fun fullName() = "$firstName $lastName"
 }
