@@ -37,11 +37,13 @@ android {
         getByName("debug") {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("debug")
+            buildConfigField("boolean", "ANDROID_DEV", "${Config.isAndroidDev}")
         }
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
             signingConfig = signingConfigs.getByName("release")
+            buildConfigField("boolean", "ANDROID_DEV", "false")
         }
     }
     flavorDimensions("default")
@@ -49,11 +51,9 @@ android {
         create("dev") {
             dimension = "default"
             applicationIdSuffix = ".dev"
-            buildConfigField("boolean", "ANDROID_DEV", "${Config.isAndroidDev}")
         }
         create("prod") {
             dimension = "default"
-            buildConfigField("boolean", "ANDROID_DEV", "false")
         }
     }
     buildFeatures {

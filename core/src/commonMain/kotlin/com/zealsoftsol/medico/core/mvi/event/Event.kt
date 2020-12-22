@@ -14,7 +14,7 @@ internal sealed class Event {
             override val typeClazz: KClass<*> = Auth::class
 
             object LogIn : Auth()
-            object LogOut : Auth()
+            data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
         }

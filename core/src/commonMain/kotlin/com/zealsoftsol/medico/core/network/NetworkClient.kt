@@ -1,9 +1,13 @@
 package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.extensions.Interval
+import com.zealsoftsol.medico.core.extensions.isExpired
 import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -14,8 +18,9 @@ import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SimpleBody
+import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -47,11 +52,14 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
 
-class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, NetworkScope.Customer {
+class NetworkClient(
+    engine: HttpClientEngineFactory<*>,
+    private val tokenStorage: TokenStorage,
+) : NetworkScope.Auth, NetworkScope.Customer {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
-        expectSuccess = false
+        expectSuccess = true
         install(JsonFeature) {
             serializer = KotlinxSerializer(
                 Json {
@@ -69,18 +77,13 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
             level = LogLevel.ALL
         }
     }
-    override var token: String? = null
-    private val tempTokenMap = hashMapOf<TempToken, TokenInfo>()
 
-    override fun clearToken() {
-        token = null
-        tempTokenMap.clear()
-    }
-
-    override suspend fun login(request: UserRequest): SimpleBody<TokenInfo> = ktorDispatcher {
-        client.post<SimpleBody<TokenInfo>>("$AUTH_URL/medico/login") {
+    override suspend fun login(request: UserRequest): Response.Wrapped<ErrorCode> = ktorDispatcher {
+        client.post<SimpleResponse<TokenInfo>>("$AUTH_URL/medico/login") {
             jsonBody(request)
-        }
+        }.also {
+            it.getBodyOrNull()?.let(tokenStorage::saveMainToken)
+        }.getWrappedError()
     }
 
     override suspend fun logout(): Boolean = ktorDispatcher {
@@ -91,7 +94,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$AUTH_URL/api/v1/medico/forgetpwd") {
+            client.post<SimpleResponse<MapBody>>("$AUTH_URL/api/v1/medico/forgetpwd") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
@@ -99,7 +102,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
+            client.post<SimpleResponse<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/sendOTP") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
@@ -107,7 +110,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
+            client.post<SimpleResponse<MapBody>>("$NOTIFICATIONS_URL/api/v1/notifications/retryOTP") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
             }.getWrappedError()
@@ -116,12 +119,13 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
     override suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             val body =
-                client.post<SimpleBody<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
+                client.post<SimpleResponse<TokenInfo>>("$NOTIFICATIONS_URL/api/v1/notifications/verifyOTP") {
                     withTempToken(TempToken.REGISTRATION)
                     jsonBody(VerifyOtpRequest(phoneNumber, otp))
                 }
             if (body.isSuccess) {
-                body.getBodyOrNull()?.let { tempTokenMap[TempToken.UPDATE_PASSWORD] = it }
+                body.getBodyOrNull()
+                    ?.let { tokenStorage.saveTempToken(TempToken.UPDATE_PASSWORD.serverValue, it) }
             }
             body.getWrappedError()
         }
@@ -177,7 +181,7 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse> =
         ktorDispatcher {
-            client.post<SimpleBody<StorageKeyResponse>>("$REGISTRATION_URL/api/v1/upload/druglicense") {
+            client.post<SimpleResponse<StorageKeyResponse>>("$REGISTRATION_URL/api/v1/upload/druglicense") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(licenseData)
             }.getWrappedBody()
@@ -185,50 +189,82 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
 
     override suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleBody<MapBody>>("$REGISTRATION_URL/api/v1/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
+            client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(submitRegistration)
             }.getWrappedError()
         }
 
     override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = ktorDispatcher {
-        client.get<SimpleBody<CustomerData>>("$AUTH_URL/api/v1/medico/customer/details") {
+        client.get<SimpleResponse<CustomerData>>("$AUTH_URL/api/v1/medico/customer/details") {
             withMainToken()
         }.getWrappedBody()
     }
 
-    private inline fun HttpRequestBuilder.withMainToken() {
-        token?.let { header("Authorization", "Bearer $it") } ?: "no token for request".warnIt()
+    private suspend inline fun HttpRequestBuilder.withMainToken() {
+        val finalToken = tokenStorage.getMainToken()?.let { _ ->
+            retry(Interval.Linear(100, 5)) {
+                val tokenInfo = requireNotNull(tokenStorage.getMainToken())
+                if (tokenInfo.isExpired) {
+                    fetchMainToken(tokenInfo)?.also(tokenStorage::saveMainToken)
+                } else {
+                    tokenInfo
+                }
+            }
+        }
+
+        if (finalToken != null) {
+            applyHeader(finalToken)
+        } else {
+            "no main token for request".warnIt()
+            EventCollector.sendEvent(Event.Action.Auth.LogOut(false))
+        }
     }
 
     private suspend inline fun HttpRequestBuilder.withTempToken(tokenType: TempToken) {
-        retry(Interval.Linear(100, 5)) {
-            val tokenInfo = tempTokenMap.remove(tokenType)?.takeIf { !it.isExpired }
+        val finalToken = retry(Interval.Linear(100, 5)) {
+            val tokenInfo =
+                tokenStorage.getTempTokenOnce(tokenType.serverValue)?.takeIf { !it.isExpired }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 when (tokenType) {
                     TempToken.OTP -> fetchOtpToken()
                     TempToken.REGISTRATION -> fetchRegistrationToken()
                     TempToken.UPDATE_PASSWORD -> tokenInfo
-                }?.let {
-                    tempTokenMap[tokenType] = it
+                }?.also {
+                    tokenStorage.saveTempToken(tokenType.serverValue, it)
                 }
             } else {
-                tempTokenMap[tokenType] = tokenInfo
+                tokenStorage.saveTempToken(tokenType.serverValue, tokenInfo)
+                tokenInfo
             }
-            tempTokenMap[tokenType]
-        }?.let { header("Authorization", "Bearer ${it.token}") }
-            ?: "no temp token (${tokenType.serverValue}) for request".warnIt()
+        }
+        if (finalToken != null) {
+            applyHeader(finalToken)
+        } else {
+            "no temp token (${tokenType.serverValue}) for request".warnIt()
+        }
+    }
+
+    private suspend fun fetchMainToken(currentToken: TokenInfo): TokenInfo? {
+        return client.post<SimpleResponse<TokenInfo>>("$AUTH_URL/api/v1/medico/refresh-token") {
+            applyHeader(currentToken)
+            jsonBody(RefreshTokenRequest(currentToken.refreshToken))
+        }.getBodyOrNull()
+    }
+
+    private suspend inline fun fetchRegistrationToken(): TokenInfo? {
+        return client.get<SimpleResponse<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
+            .getBodyOrNull()
     }
 
     private suspend inline fun fetchOtpToken(): TokenInfo? {
         TODO("no url for this type of token")
-        return client.get<SimpleBody<TokenInfo>>("new url")
+        return client.get<SimpleResponse<TokenInfo>>("new url")
             .getBodyOrNull()
     }
 
-    private suspend inline fun fetchRegistrationToken(): TokenInfo? {
-        return client.get<SimpleBody<TokenInfo>>("$REGISTRATION_URL/api/v1/registration")
-            .getBodyOrNull()
+    private inline fun HttpRequestBuilder.applyHeader(tokenInfo: TokenInfo) {
+        header("Authorization", "Bearer ${tokenInfo.token}")
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {
@@ -236,8 +272,20 @@ class NetworkClient(engine: HttpClientEngineFactory<*>) : NetworkScope.Auth, Net
         this.body = body
     }
 
-    private enum class TempToken(val serverValue: String) {
-        //        MAIN("login"),
+//    private suspend inline fun <T> request(
+//        dispatcher: CoroutineDispatcher = ktorDispatcher,
+//        crossinline call: HttpClient.() -> T
+//    ) = dispatcher {
+//        val result = runCatching { client.call() }
+//        if (result.isSuccess) {
+//            result.getOrThrow()
+//        } else {
+//            if (result.exceptionOrNull() is )
+//            null
+//        }
+//    }
+
+    enum class TempToken(val serverValue: String) {
         OTP("otp"),
         UPDATE_PASSWORD("updatepwd"),
         REGISTRATION("registration");

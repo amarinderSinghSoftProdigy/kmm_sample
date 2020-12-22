@@ -3,17 +3,17 @@ package com.zealsoftsol.medico.core.utils
 import com.zealsoftsol.medico.core.directDI
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
+import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.AuthCredentials
 import org.kodein.di.instance
 
 object ScopeCreator {
@@ -190,7 +190,7 @@ object ScopeCreator {
                             "000",
                             UserType.STOCKIST,
                             false,
-                            if (isDocumentUploaded) null else "url"
+                            isDocumentUploaded,
                         )
                     )
                 )
@@ -208,7 +208,7 @@ object ScopeCreator {
                             "000",
                             UserType.STOCKIST,
                             true,
-                            null
+                            true,
                         )
                     )
                 )

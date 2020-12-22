@@ -10,14 +10,8 @@ import com.zealsoftsol.medico.data.UserType
 
 class MockCustomerScope : NetworkScope.Customer {
 
-    override var token: String? = null
-
     init {
         "USING MOCK CUSTOMER SCOPE".logIt()
-    }
-
-    override fun clearToken() {
-
     }
 
     override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = mockResponse {
@@ -31,6 +25,7 @@ class MockCustomerScope : NetworkScope.Customer {
                 "",
                 "",
                 "",
+                true,
                 "",
                 "",
                 "",

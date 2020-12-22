@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.data
 
-import kotlinx.datetime.Clock
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -40,17 +39,18 @@ data class VerifyOtpRequest(
 )
 
 @Serializable
+data class RefreshTokenRequest(
+    val refreshToken: String,
+)
+
+@Serializable
 data class TokenInfo(
     val token: String,
-    private val expiresIn: Long,
+    val expiresAt: Long,
     val tokenType: String,
     val id: String,
-) {
-    private val createdAt = Clock.System.now().epochSeconds
-
-    val isExpired: Boolean
-        get() = Clock.System.now().toEpochMilliseconds() > ((createdAt + expiresIn) * 1000L)
-}
+    val refreshToken: String,
+)
 
 @Serializable
 data class AadhaarUpload(
@@ -147,7 +147,7 @@ sealed class Response {
     data class Wrapped<V>(val entity: V?, val isSuccess: Boolean)
 }
 
-typealias SimpleBody<T> = Response.Body<T, MapBody>
+typealias SimpleResponse<T> = Response.Body<T, MapBody>
 
 typealias MapBody = Map<String, String>
 
