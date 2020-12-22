@@ -134,10 +134,9 @@ fileprivate struct ResendOtpView: View {
                               textWeight: .semiBold,
                               color: resendColor)
                     .onTapGesture {
-                        if isResendActive.value != true { return }
-                        
                         resendAction()
                     }
+                    .disabled(isResendActive.value != true)
             }
         }
     }

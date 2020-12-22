@@ -47,4 +47,13 @@ extension XCTestCase {
         expectation(for: exists, evaluatedWith: element, handler: nil)
         waitForExpectations(timeout: timeout, handler: nil)
     }
+    
+    func waitForElementToChangeEnableState(_ element: XCUIElement,
+                                           isEnabled: Bool,
+                                           timeout: TimeInterval) {
+        let enabled = NSPredicate(format: "enabled == \(isEnabled)")
+
+        expectation(for: enabled, evaluatedWith: element, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
+    }
 }

@@ -8,16 +8,14 @@
 
 import XCTest
 
+/// Parent class to test the OTP phone verification screen in different flows
+///
+/// - Warning: ALL tests should be executed from the CHILD classes
 class OtpPhoneVerificationScreenTests: BaseTests {
-
-    let phoneNumber = "+9102222870456"
+    var phoneNumber: String = "+9102222870456"
     
-    override func launchApp(with environment: [String : String]? = nil) {
-        let phoneVerificationInfo = TestsHelper.OtpAwaitVerificationInputInfo(phone: phoneNumber)
-        
-        super.launchApp(with: phoneVerificationInfo.getLaunchEnvironment())
-    }
-
+    private let resendTimeout: TimeInterval = 70
+    
     // MARK: Initial State
     func testInitialState() {
         self.testNavigationBar(withTitleKey: "phone_verification", hasBackButton: true)
@@ -44,6 +42,38 @@ class OtpPhoneVerificationScreenTests: BaseTests {
         
         self.testLocalizedText(with: "didnt_get_code")
         self.testLocalizedText(with: "resend")
+        
+        let resendText = app.staticTexts["resend"]
+        XCTAssertFalse(resendText.isEnabled)
+    }
+    
+    // MARK: Resend
+    func testTimerRunOut() {
+        let timerText = app.staticTexts["timer"]
+        let attemptsLeftText = app.staticTexts["attempts_left"]
+        
+        waitForElementToDisappear(timerText, timeout: resendTimeout)
+        XCTAssertTrue(attemptsLeftText.waitForExistence(timeout: resendTimeout))
+    }
+    
+    func testResendTextEnable() {
+        let resendText = app.staticTexts["resend"]
+        
+        waitForElementToChangeEnableState(resendText,
+                                          isEnabled: true,
+                                          timeout: resendTimeout)
+    }
+    
+    func testResend() {
+        let resendText = app.staticTexts["resend"]
+        
+        waitForElementToChangeEnableState(resendText,
+                                          isEnabled: true,
+                                          timeout: resendTimeout)
+        
+        resendText.tap()
+        
+        self.testInitialState()
     }
 
     // MARK: Actions
@@ -62,7 +92,11 @@ class OtpPhoneVerificationScreenTests: BaseTests {
     }
     
     func testBackButton() {
+        let submitButton = app.buttons["submit_button"]
         let getCodeButton = app.buttons["get_code_button"]
-        self.testBackButton(withShownElements: [getCodeButton])
+        
+        self.testBackButton(withHiddenElements: [submitButton],
+                            withShownElements: [getCodeButton])
     }
+
 }

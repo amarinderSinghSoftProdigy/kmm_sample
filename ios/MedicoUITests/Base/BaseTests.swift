@@ -157,13 +157,13 @@ class BaseTests: XCTestCase {
     }
     
     // MARK: Actions
-    func testBackButton(withShownElements shownElements: [XCUIElement]) {
+    func testBackButton(withHiddenElements hiddenElements: [XCUIElement],
+                        withShownElements shownElements: [XCUIElement]) {
         let backButton = app.buttons["back"]
         backButton.tap()
         
-        let logInButton = app.buttons["log_in_button"]
         self.testActivityView(activityViewShown: false,
-                              withHiddenElements: [backButton],
+                              withHiddenElements: hiddenElements,
                               withShownElements: shownElements)
     }
 }

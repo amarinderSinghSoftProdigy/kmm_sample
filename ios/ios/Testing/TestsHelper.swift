@@ -29,6 +29,8 @@ class TestsHelper {
         case email
         case phoneNumber
         case userType
+        
+        case resendTimer
     }
     
     let scopeCreator = ScopeCreator.Shortcuts()
@@ -50,9 +52,6 @@ class TestsHelper {
             
         case OtpScopeNumberInputInfo.name:
             setOtpNumberInputScope(for: testEnvironment)
-            
-        case OtpAwaitVerificationInputInfo.name:
-            setAwaitVerificationInputScope(for: testEnvironment)
             
         case LimitedAppAccessScopeInfo.name:
             setLimitedAppAccessScope(for: testEnvironment)
@@ -85,14 +84,6 @@ class TestsHelper {
         
         scopeCreator.createOtpPhoneNumberInputShortcut(phoneNumber: phoneNumber,
                                                        error: getErrorCode(for: testEnvironment))
-    }
-    
-    private func setAwaitVerificationInputScope(for testEnvironment: [String: String]) {
-        guard let phoneNumber = testEnvironment[EnvironmentProperty.phoneNumber.rawValue]
-            else { return }
-        
-        scopeCreator.createOtpAwaitVerificationInputShortcut(phoneNumber: phoneNumber,
-                                                             error: getErrorCode(for: testEnvironment))
     }
     
     private func setLimitedAppAccessScope(for testEnvironment: [String: String]) {

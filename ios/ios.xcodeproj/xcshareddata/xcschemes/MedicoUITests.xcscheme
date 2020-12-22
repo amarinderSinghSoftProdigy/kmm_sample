@@ -30,6 +30,9 @@
                   Identifier = "LimitedAppAccessTests/testSlidingPanelUserInterfaceForSeasonBoy()">
                </Test>
                <Test
+                  Identifier = "OtpPhoneVerificationScreenTests">
+               </Test>
+               <Test
                   Identifier = "UserInfoNavigationBarScreenTests">
                </Test>
             </SkippedTests>

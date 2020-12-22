@@ -50,8 +50,10 @@ class OtpPhoneRequestScreenTests: BaseTests {
         let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: "")
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
+        let getCodeButton = app.buttons["get_code_button"]
         let logInButton = app.buttons["log_in_button"]
-        self.testBackButton(withShownElements: [logInButton])
+        self.testBackButton(withHiddenElements: [getCodeButton],
+                            withShownElements: [logInButton])
     }
     
     func testSendOtpButton() {
