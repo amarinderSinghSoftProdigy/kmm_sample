@@ -7,6 +7,9 @@ plugins {
     kotlin("android")
 }
 
+val isCiBuild = !System.getenv("CI_BUILD").isNullOrEmpty()
+println("CI Build: $isCiBuild")
+
 android {
     compileSdkVersion(Config.Android.targetSdk)
     buildToolsVersion(Config.Android.buildTools)
@@ -26,8 +29,14 @@ android {
         }
         create("release") {
             val properties = Properties()
-            properties.load(project.rootProject.file("local.properties").inputStream())
-            storeFile = File(properties.getProperty("store.file"))
+            if (isCiBuild) {
+                properties["key.alias"] = System.getenv("ANDROID_KEY_ALIAS")
+                properties["key.password"] = System.getenv("ANDROID_KEY_PASSWORD")
+                properties["store.password"] = System.getenv("ANDROID_STORE_PASSWORD")
+            } else {
+                properties.load(project.rootProject.file("local.properties").inputStream())
+            }
+            storeFile = File("${rootDir.absolutePath}/${project.name}/release.key")
             keyAlias = properties.getProperty("key.alias")
             keyPassword = properties.getProperty("key.password")
             storePassword = properties.getProperty("store.password")
