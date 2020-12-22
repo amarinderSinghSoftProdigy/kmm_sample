@@ -63,7 +63,7 @@ object ScopeCreator {
                             "+1234567890",
                             type,
                             false,
-                            if (!isDocumentUploaded) null else "url"
+                            !isDocumentUploaded,
                         )
                     )
                 )
