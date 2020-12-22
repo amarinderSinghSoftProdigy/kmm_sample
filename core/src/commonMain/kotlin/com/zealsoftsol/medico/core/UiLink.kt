@@ -12,11 +12,11 @@ object UiLink {
 
     fun appStart(
         context: Any,
-        isDebug: Boolean,
+        useMocks: Boolean,
         loggerLevel: Logger.Level,
     ): AppStartResult {
         logger = logger.copy(level = loggerLevel)
-        val di = startKodein(context, isDebug)
+        val di = startKodein(context, useMocks)
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
         navigator.setCurrentScope(eventCollector.getStartingScope())

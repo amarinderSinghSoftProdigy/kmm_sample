@@ -19,18 +19,18 @@ import org.kodein.di.singleton
 
 internal lateinit var directDI: DirectDI
 
-fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
-    platformDependencies(context, isDebugBuild)
+fun startKodein(context: Any, useMocks: Boolean) = DI {
+    platformDependencies(context, useMocks)
     bind<NetworkClient>() with singleton { NetworkClient(instance(), instance()) }
     bind<NetworkScope.Auth>() with singleton {
-        if (!isDebugBuild) {
+        if (!useMocks) {
             instance<NetworkClient>()
         } else {
             MockAuthScope()
         }
     }
     bind<NetworkScope.Customer>() with singleton {
-        if (!isDebugBuild) {
+        if (!useMocks) {
             instance<NetworkClient>()
         } else {
             MockCustomerScope()
@@ -55,4 +55,4 @@ fun startKodein(context: Any, isDebugBuild: Boolean) = DI {
     directDI = it.direct
 }
 
-expect fun DI.MainBuilder.platformDependencies(context: Any, isDebugBuild: Boolean)
+expect fun DI.MainBuilder.platformDependencies(context: Any, useMocks: Boolean)

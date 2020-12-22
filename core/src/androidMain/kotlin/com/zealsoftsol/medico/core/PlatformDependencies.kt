@@ -9,7 +9,7 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
 
-actual fun DI.MainBuilder.platformDependencies(context: Any, isDebugBuild: Boolean) {
+actual fun DI.MainBuilder.platformDependencies(context: Any, useMocks: Boolean) {
     context as Context
     bind<HttpClientEngineFactory<*>>() with singleton { OkHttp }
     bind<Settings>() with singleton {

@@ -1,6 +1,6 @@
 package com.zealsoftsol.medico.core.network
 
-import com.zealsoftsol.medico.BuildConfig
+import com.zealsoftsol.medico.core.BuildConfig
 import com.zealsoftsol.medico.core.extensions.logIt
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig

@@ -213,8 +213,8 @@ fun PhoneFormatInputField(
     onValueChange: (String) -> Unit,
 ): Boolean {
     val countryCode = when {
-        !BuildConfig.DEBUG -> "IN"
-        BuildConfig.ANDROID_DEV -> "RU"
+        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
+        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
         else -> ConfigurationAmbient.current.locale.country
     }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
@@ -240,8 +240,8 @@ fun PhoneOrEmailFormatInputField(
     onValueChange: (String) -> Unit,
 ) {
     val countryCode = when {
-        !BuildConfig.DEBUG -> "IN"
-        BuildConfig.ANDROID_DEV -> "RU"
+        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
+        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
         else -> ConfigurationAmbient.current.locale.country
     }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
