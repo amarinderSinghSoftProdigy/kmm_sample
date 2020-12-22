@@ -50,13 +50,8 @@ class OtpPhoneRequestScreenTests: BaseTests {
         let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: "")
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
-        let backButton = app.buttons["back"]
-        backButton.tap()
-        
-        XCTAssertFalse(backButton.exists)
-        
         let logInButton = app.buttons["log_in_button"]
-        XCTAssertTrue(logInButton.isHittable)
+        self.testBackButton(withShownElements: [logInButton])
     }
     
     func testSendOtpButton() {

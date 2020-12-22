@@ -66,6 +66,23 @@ object ScopeCreator {
         }
 
         /**
+         * Shortcut to [OtpScope.AwaitVerification] with filled data
+         */
+        fun createOtpAwaitVerificationInputShortcut(
+            phoneNumber: String,
+            error: ErrorCode?
+        ) {
+
+            nav.setCurrentScope(
+                OtpScope.AwaitVerification(
+                    phoneNumber = phoneNumber,
+                    errors = DataSource(error)
+                )
+            )
+
+        }
+
+        /**
          * Shortcut to [MainScope.LimitedAccess] with filled data
          */
         fun createLimitedAppAccessShortcut(

@@ -155,4 +155,15 @@ class BaseTests: XCTestCase {
         XCTAssertTrue(element.label == localizedText,
                       "The element text doesn't equal \(localizedText)")
     }
+    
+    // MARK: Actions
+    func testBackButton(withShownElements shownElements: [XCUIElement]) {
+        let backButton = app.buttons["back"]
+        backButton.tap()
+        
+        let logInButton = app.buttons["log_in_button"]
+        self.testActivityView(activityViewShown: false,
+                              withHiddenElements: [backButton],
+                              withShownElements: shownElements)
+    }
 }

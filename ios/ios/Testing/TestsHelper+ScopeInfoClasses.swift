@@ -61,9 +61,7 @@ extension TestsHelper {
         }
     }
     
-    class OtpScopeNumberInputInfo: BaseScopeInfo {
-        override class var name: String { return "OtpScopeNumberInput" }
-        
+    class OtpScopeInfo: BaseScopeInfo {
         let phone: String
         
         init(phone: String,
@@ -80,6 +78,14 @@ extension TestsHelper {
             
             return environment
         }
+    }
+    
+    class OtpScopeNumberInputInfo: OtpScopeInfo {
+        override class var name: String { return "OtpScopeNumberInput" }
+    }
+    
+    class OtpAwaitVerificationInputInfo: OtpScopeInfo {
+        override class var name: String { return "OtpAwaitVerificationInput" }
     }
     
     class LimitedAppAccessScopeInfo: BaseScopeInfo {

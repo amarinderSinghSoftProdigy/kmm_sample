@@ -74,6 +74,7 @@ fileprivate struct OtpDetailsView: View {
                    timerValue > 0 && attemptsLeft > 0 {
                     Text("\(TimeInterval(milliseconds: timerValue).timeString)")
                         .modifier(MedicoText(textWeight: .bold, fontSize: 15))
+                        .testingIdentifier("timer")
                         .padding([.top, .bottom])
                 }
                 else {
