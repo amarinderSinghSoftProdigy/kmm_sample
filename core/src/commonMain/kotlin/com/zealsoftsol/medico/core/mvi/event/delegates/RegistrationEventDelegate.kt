@@ -210,6 +210,7 @@ internal class RegistrationEventDelegate(
             if (isSuccess) {
                 val user = navigator.withProgress { userRepo.loadUserFromServer() }
                 if (user != null) {
+                    navigator.clearQueue()
                     navigator.setCurrentScope(
                         MainScope.LimitedAccess(user = DataSource(user))
                     )
