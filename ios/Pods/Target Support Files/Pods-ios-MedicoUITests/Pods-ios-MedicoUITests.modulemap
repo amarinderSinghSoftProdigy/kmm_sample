@@ -1,6 +1,0 @@
-framework module Pods_ios_MedicoUITests {
-  umbrella header "Pods-ios-MedicoUITests-umbrella.h"
-
-  export *
-  module * { export * }
-}

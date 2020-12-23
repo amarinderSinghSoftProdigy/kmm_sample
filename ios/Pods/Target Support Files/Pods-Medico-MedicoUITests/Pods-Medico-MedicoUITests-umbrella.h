@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_ios_MedicoUITestsVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_ios_MedicoUITestsVersionString[];
+FOUNDATION_EXPORT double Pods_Medico_MedicoUITestsVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_Medico_MedicoUITestsVersionString[];
 
