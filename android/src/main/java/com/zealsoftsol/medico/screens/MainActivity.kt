@@ -22,10 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
+import androidx.core.content.FileProvider
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
@@ -48,20 +47,36 @@ import com.zealsoftsol.medico.screens.auth.handleFileUpload
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.nav.NavigationSection
 import com.zealsoftsol.medico.utils.FileUtil
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import java.io.File
 import java.text.SimpleDateFormat
-import kotlin.coroutines.resume
 
 class MainActivity : ComponentActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
     private val dateFormat by lazy { SimpleDateFormat("mm:ss") }
+
+    private var cameraCompletion: CompletableDeferred<Boolean> = CompletableDeferred()
+    private val camera by lazy {
+        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
+            cameraCompletion.complete(isSuccess)
+            cameraCompletion = CompletableDeferred()
+        }
+    }
+    private var pickerCompletion: CompletableDeferred<Uri?> = CompletableDeferred()
+    private val picker by lazy {
+        registerForActivityResult(GetSpecificContent) { uri: Uri? ->
+            pickerCompletion.complete(uri)
+            pickerCompletion = CompletableDeferred()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +112,8 @@ class MainActivity : ComponentActivity(), DIAware {
                 if (isInProgress.value) IndefiniteProgressBar()
             }
         }
+        camera
+        picker
     }
 
     override fun onBackPressed() {
@@ -104,23 +121,31 @@ class MainActivity : ComponentActivity(), DIAware {
             super.onBackPressed()
     }
 
-    suspend fun openFilePicker(fileTypes: Array<FileType>): File? = suspendCancellableCoroutine {
-        val mimeTypes = fileTypes.map { it.mimeType }.toTypedArray()
-        registerForActivityResult(GetSpecificContent(mimeTypes)) { uri: Uri? ->
-            it.resume(if (uri != null) FileUtil.getTempFile(this, uri) else null)
-        }.launch("*/*")
+    suspend fun openFilePicker(fileTypes: Array<FileType>): File? {
+        GetSpecificContent.supportedTypes = fileTypes.map { it.mimeType }.toTypedArray()
+        picker.launch("*/*")
+        val uri = pickerCompletion.await()
+        return if (uri != null) FileUtil.getTempFile(this, uri) else null
     }
 
-    suspend fun takePicture(): File? = suspendCancellableCoroutine {
-        val file = FileUtil.getFileForPhoto()
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-            isSuccess.log("photo success")
-            it.resume(file.takeIf { isSuccess })
-        }.launch(file.toUri())
+    suspend fun takePicture(): File? = withContext(Dispatchers.IO) {
+        val photos = File(filesDir, "photos")
+        if (!photos.exists()) photos.mkdirs()
+        val image = File(photos, "image.jpg")
+        if (image.exists()) image.delete()
+        image.createNewFile()
+        camera.launch(
+            FileProvider.getUriForFile(
+                this@MainActivity, "$packageName.provider", image
+            )
+        )
+        cameraCompletion.await()
+        image.takeIf { image.length() > 0 }
     }
 
-    private class GetSpecificContent(private val supportedTypes: Array<String>) :
-        ActivityResultContracts.GetContent() {
+    private object GetSpecificContent : ActivityResultContracts.GetContent() {
+        var supportedTypes: Array<String> = emptyArray()
+
         override fun createIntent(context: Context, input: String): Intent {
             return super.createIntent(context, input)
                 .putExtra(Intent.EXTRA_MIME_TYPES, supportedTypes)
