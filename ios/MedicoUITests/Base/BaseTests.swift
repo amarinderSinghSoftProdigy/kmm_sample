@@ -90,7 +90,8 @@ class BaseTests: XCTestCase {
     
     func testAlert(withTitleKey titleKey: String,
                    withMessageKey messageKey: String,
-                   withTimeout timeout: TimeInterval = 5) {
+                   withTimeout timeout: TimeInterval = 5,
+                   withClickButtonKey clickButtonKey: String? = nil) {
         let alert = app.alerts.firstMatch
         
         XCTAssertTrue(alert.waitForExistence(timeout: timeout),
@@ -103,6 +104,11 @@ class BaseTests: XCTestCase {
                       "'\(messageKey)' doesn't have a localization for '\(self.currentLanguage?.languageCode ?? "unknown")' locale")
         XCTAssertFalse(alert.staticTexts[messageKey].exists,
                        "The alert message doesn't equal \(localizedMessage)")
+        
+        guard let clickButtonKey = clickButtonKey else { return }
+        
+        let clickButton = alert.buttons[self.getLocalizedString(for: clickButtonKey)]
+        clickButton.tap()
     }
     
     func testNavigationBar(withTitleKey titleKey: String,
@@ -115,7 +121,8 @@ class BaseTests: XCTestCase {
         }
     
         let localizatedNavigationBarTitle = self.getLocalizedString(for: titleKey)
-        let navigationBarTitle = app.staticTexts[localizatedNavigationBarTitle]
+        let navigationBarTitle = app.navigationBars[localizatedNavigationBarTitle]
+            .staticTexts[localizatedNavigationBarTitle]
         
         XCTAssertTrue(navigationBarTitle.isHittable)
         XCTAssertTrue(navigationBarTitle.label == localizatedNavigationBarTitle)
@@ -130,7 +137,7 @@ class BaseTests: XCTestCase {
         
         XCTAssertTrue(activityView.exists == activityViewShown)
         
-        if (!activityViewShown) {
+        if !activityViewShown {
             for element in hiddenElements {
                 XCTAssertFalse(element.exists)
             }

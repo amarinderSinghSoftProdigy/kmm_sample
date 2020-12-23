@@ -10,6 +10,7 @@
 		3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3308674B2566D441000C3EB8 /* MainScreen.swift */; };
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
 		331A23CB258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */; };
+		331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
 		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
@@ -118,6 +119,7 @@
 		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBarScreenTests.swift; sourceTree = "<group>"; };
+		331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreenTests.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
 		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
@@ -422,6 +424,7 @@
 		33CE886B2590C84400E4D316 /* PasswordRestore */ = {
 			isa = PBXGroup;
 			children = (
+				331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */,
 				33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */,
 				33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */,
 			);
@@ -755,6 +758,7 @@
 				33FD1266259238A700B956CC /* OtpPhoneVerificationScreenTests.swift in Sources */,
 				33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */,
 				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
+				331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */,
 				33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */,
 				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
 				33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */,
