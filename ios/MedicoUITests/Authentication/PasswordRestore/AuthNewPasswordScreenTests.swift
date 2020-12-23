@@ -76,6 +76,9 @@ class AuthNewPasswordScreenTests: BaseTests {
         
         self.testBackButton(withHiddenElements: [confirmButton],
                             withShownElements: [getCodeButton])
+        
+        let formattedNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+        self.testFloatingTextField(withLocalizationKey: "phone_number", equals: formattedNumber)
     }
     
     func testSubmitButton() {

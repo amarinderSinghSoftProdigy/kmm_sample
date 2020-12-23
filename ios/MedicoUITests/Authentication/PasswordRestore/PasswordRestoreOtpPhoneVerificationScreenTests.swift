@@ -20,4 +20,11 @@ class PasswordRestoreOtpPhoneVerificationScreenTests: OtpPhoneVerificationScreen
         let activityView = app.otherElements["ActivityView"]
         waitForElementToDisappear(activityView, timeout: 5)
     }
+    
+    override func testBackButton() {
+        super.testBackButton()
+        
+        let formattedNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+        self.testFloatingTextField(withLocalizationKey: "phone_number", equals: formattedNumber)
+    }
 }
