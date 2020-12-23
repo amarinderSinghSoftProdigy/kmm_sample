@@ -24,11 +24,11 @@ class OtpPhoneRequestScreenTests: BaseTests {
         
         self.testNavigationBar(withTitleKey: "password_reset", hasBackButton: true)
         
-        self.testLocalizedText(with: "reset_password_hint")
+        self.testLocalizedText(withLocalizationKey: "reset_password_hint")
         
-        self.testFloatingTextField(with: "phone_number", equals: otpNumberInputInfo.phone)
+        self.testFloatingTextField(withLocalizationKey: "phone_number", equals: otpNumberInputInfo.phone)
         
-        self.testButton(with: "get_code", isEnabled: false)
+        self.testButton(withLocalizationKey: "get_code", isEnabled: false)
     }
     
     func testInitialStateWithValidPhoneNumber() {
@@ -37,12 +37,12 @@ class OtpPhoneRequestScreenTests: BaseTests {
         
         self.testNavigationBar(withTitleKey: "password_reset", hasBackButton: true)
         
-        self.testLocalizedText(with: "reset_password_hint")
+        self.testLocalizedText(withLocalizationKey: "reset_password_hint")
         
         let formattedNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(otpNumberInputInfo.phone)
-        self.testFloatingTextField(with: "phone_number", equals: formattedNumber)
+        self.testFloatingTextField(withLocalizationKey: "phone_number", equals: formattedNumber)
         
-        self.testButton(with: "get_code", isEnabled: true)
+        self.testButton(withLocalizationKey: "get_code", isEnabled: true)
     }
     
     // MARK: Button Actions

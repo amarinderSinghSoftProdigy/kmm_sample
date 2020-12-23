@@ -92,9 +92,9 @@ class UserInfoNavigationBarScreenTests: BaseTests {
                       getErrorMessage("The 'user_name' text value doesn't match '\(userName)'"))
         
         let userTypeLocalizationKey = userType.name.lowercased()
-        self.testLocalizedText(with: userTypeLocalizationKey)
+        self.testLocalizedText(withLocalizationKey: userTypeLocalizationKey)
         
-        self.testButton(with: "log_out", isEnabled: true)
+        self.testButton(withLocalizationKey: "log_out", isEnabled: true)
     }
     
     // MARK: Actions

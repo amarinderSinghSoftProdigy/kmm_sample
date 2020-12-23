@@ -46,8 +46,8 @@ class LimitedAppAccessTests: UserInfoNavigationBarScreenTests {
         let image = app.images["Welcome"]
         XCTAssertTrue(image.isHittable)
         
-        self.testLocalizedText(with: "thank_you_for_registration")
-        self.testLocalizedText(with: "documents_under_review")
+        self.testLocalizedText(withLocalizationKey: "thank_you_for_registration")
+        self.testLocalizedText(withLocalizationKey: "documents_under_review")
     }
     
     func testSlidingPanelUserInterfaceForStockist() {

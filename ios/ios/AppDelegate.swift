@@ -15,12 +15,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setUpAppNavigator() {
         #if DEBUG
         let testsHelper = TestsHelper()
-        let isDebug = testsHelper.testingEnabled
+        let useMocks = testsHelper.testingEnabled
         #else
-        let isDebug = false
+        let useMocks = false
         #endif
         
-        let start = UiLink().appStart(context: self, isDebug: isDebug, loggerLevel: Logger.Level.log)
+        let start = UiLink().appStart(context: self, useMocks: useMocks, loggerLevel: Logger.Level.log)
         navigator = start.navigator
         
         #if DEBUG
