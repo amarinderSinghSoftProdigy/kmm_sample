@@ -17,22 +17,27 @@ import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import org.kodein.di.instance
 
+/**
+ * For debug purposes only! For testing use [BaseTestScope]
+ */
+@Deprecated("rename to DebugScopeCreator")
 object ScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
+    @Deprecated("remove")
     object Shortcuts {
 
         /**
          * Shortcut to [LogInScope] with filled data
          */
+        @Deprecated("remove, use test scopes")
         fun createLogInShortcut(
             phoneNumberOrEmail: String,
             type: AuthCredentials.Type,
             password: String,
             error: ErrorCode?
         ) {
-            
             nav.setCurrentScope(
                 LogInScope(
                     credentials = DataSource(
@@ -40,21 +45,20 @@ object ScopeCreator {
                             phoneNumberOrEmail = phoneNumberOrEmail,
                             type = type,
                             password = password,
-                    )),
+                        )),
                     errors = DataSource(error)
                 )
             )
-
         }
 
         /**
          * Shortcut to [OtpScope.PhoneNumberInput] with filled data
          */
+        @Deprecated("remove, use test scopes")
         fun createOtpPhoneNumberInputShortcut(
             phoneNumber: String,
             error: ErrorCode?
         ) {
-
             nav.setCurrentScope(
                 OtpScope.PhoneNumberInput(
                     phoneNumber = DataSource(phoneNumber),
@@ -62,105 +66,25 @@ object ScopeCreator {
                     errors = DataSource(error)
                 )
             )
-
         }
 
         /**
          * Shortcut to [MainScope.LimitedAccess] with filled data
          */
+        @Deprecated("leave only type and document upload fields, rename to limitedAppAccess")
         fun createLimitedAppAccessShortcut(
             firstName: String,
             lastName: String,
             type: UserType,
             isDocumentUploaded: Boolean
         ) {
-
             nav.setCurrentScope(
                 MainScope.LimitedAccess(
                     user = DataSource(
-                        User(
-                            firstName,
-                            lastName,
-                            "email@example.com",
-                            "+1234567890",
-                            type,
-                            false,
-                            !isDocumentUploaded,
-                        )
-                    )
-                )
-            )
-
-        }
-
-
-        /**
-         * Shortcut to [SignUpScope.LegalDocuments.DrugLicense] with filled data
-         */
-        fun createUserNonSeasonBoyShortcut(
-            userType: UserType,
-            email: String,
-            phone: String
-        ) {
-            require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
-
-            nav.setCurrentScope(
-                SignUpScope.LegalDocuments.DrugLicense(
-                    UserRegistration1(
-                        userType.serverValue,
-                        "Test",
-                        "User",
-                        email,
-                        phone,
-                        "Qwerty12345",
-                        "Qwerty12345",
-                    ),
-                    UserRegistration2(
-                        "520001",
-                        "qq",
-                        "Vijayawada",
-                        "Vijayawada (Urban)",
-                        "Krishna",
-                        "Andhra Pradesh",
-                    ),
-                    UserRegistration3(
-                        "q",
-                        "37AADCB2230M2ZR",
-                        "",
-                        "qq",
-                        "qq",
-                    )
-                )
-            )
-        }
-
-        /**
-         * Shortcut to [SignUpScope.LegalDocuments.Aadhaar] with filled data
-         */
-        fun createUserSeasonBoyShortcut(email: String, phone: String) {
-            nav.setCurrentScope(
-                SignUpScope.LegalDocuments.Aadhaar(
-                    UserRegistration1(
-                        UserType.SEASON_BOY.serverValue,
-                        "Test",
-                        "User",
-                        email,
-                        phone,
-                        "Qwerty12345",
-                        "Qwerty12345",
-                    ),
-                    UserRegistration2(
-                        "520001",
-                        "qq",
-                        "Vijayawada",
-                        "Vijayawada (Urban)",
-                        "Krishna",
-                        "Andhra Pradesh",
-                    ),
-                    DataSource(
-                        AadhaarData(
-                            "887489598799",
-                            "1111",
+                        testUser.copy(
+                            type = type,
+                            isVerified = false,
+                            isDocumentUploaded = isDocumentUploaded
                         )
                     )
                 )
@@ -168,78 +92,93 @@ object ScopeCreator {
         }
     }
 
-    object Dummy {
+    fun uploadDrugLicense(
+        userType: UserType,
+        email: String,
+        phone: String
+    ) {
+        require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
 
-        fun legalDocumentsDrugLicense() {
-            nav.setCurrentScope(
-                SignUpScope.LegalDocuments.DrugLicense(
-                    registrationStep1 = UserRegistration1(
-                        phoneNumber = "",
-                    ),
-                    registrationStep2 = UserRegistration2(
-
-                    ),
-                    registrationStep3 = UserRegistration3(
-
-                    ),
+        nav.setCurrentScope(
+            SignUpScope.LegalDocuments.DrugLicense(
+                UserRegistration1(
+                    userType.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
+                UserRegistration3(
+                    "q",
+                    "37AADCB2230M2ZR",
+                    "",
+                    "qq",
+                    "qq",
                 )
             )
-        }
+        )
+    }
 
-        fun legalDocumentsAadhaar() {
-            nav.setCurrentScope(
-                SignUpScope.LegalDocuments.Aadhaar(
-                    registrationStep1 = UserRegistration1(
-                        phoneNumber = "",
-                    ),
-                    registrationStep2 = UserRegistration2(
-
-                    ),
-                    aadhaarData = DataSource(
-                        AadhaarData(cardNumber = "", shareCode = "")
-                    ),
-                )
-            )
-        }
-
-        fun welcomeScreen() {
-            nav.setCurrentScope(SignUpScope.Welcome("Test User"))
-        }
-
-        fun limitedAccessMainScreen(isDocumentUploaded: Boolean) {
-            nav.setCurrentScope(
-                MainScope.LimitedAccess(
-                    user = DataSource(
-                        User(
-                            "Test",
-                            "User",
-                            null,
-                            "000",
-                            UserType.STOCKIST,
-                            false,
-                            isDocumentUploaded,
-                        )
+    fun uploadAadhaar(email: String, phone: String) {
+        nav.setCurrentScope(
+            SignUpScope.LegalDocuments.Aadhaar(
+                UserRegistration1(
+                    UserType.SEASON_BOY.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
+                DataSource(
+                    AadhaarData(
+                        "887489598799",
+                        "1111",
                     )
                 )
             )
-        }
+        )
+    }
 
-        fun fullAccessMainScreen() {
-            nav.setCurrentScope(
-                MainScope.FullAccess(
-                    user = DataSource(
-                        User(
-                            "Test",
-                            "User",
-                            null,
-                            "000",
-                            UserType.STOCKIST,
-                            true,
-                            true,
-                        )
-                    )
-                )
+    fun welcomeScreen() {
+        nav.setCurrentScope(SignUpScope.Welcome(testUser.fullName()))
+    }
+
+    fun fullAccessMainScreen() {
+        nav.setCurrentScope(
+            MainScope.FullAccess(
+                user = DataSource(testUser)
             )
-        }
+        )
     }
 }
+
+private inline val testUser
+    get() = User(
+        "Test",
+        "User",
+        "test@mail.com",
+        "000",
+        UserType.STOCKIST,
+        true,
+        true,
+    )

@@ -317,9 +317,3 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         fun accept() = EventCollector.sendEvent(Event.Action.Registration.AcceptWelcome)
     }
 }
-
-internal inline val SignUpScope.LegalDocuments.isDocumentUploaded: Boolean
-    get() = when (this) {
-        is SignUpScope.LegalDocuments.Aadhaar -> aadhaarFile != null
-        is SignUpScope.LegalDocuments.DrugLicense -> storageKey != null
-    }
