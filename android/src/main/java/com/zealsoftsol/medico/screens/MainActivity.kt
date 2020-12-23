@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +44,7 @@ import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.DocumentUploadBottomSheet
 import com.zealsoftsol.medico.screens.auth.Welcome
+import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.handleFileUpload
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.nav.NavigationSection
@@ -84,28 +86,24 @@ class MainActivity : ComponentActivity(), DIAware {
             AppTheme {
                 val currentScope = navigator.scope.flow.collectAsState()
                 when (val scope = currentScope.value) {
-                    is LogInScope -> AuthScreen(
-                        scope = scope,
-                    )
-                    is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(
-                        scope = scope,
-                    )
+                    is LogInScope -> AuthScreen(scope = scope)
+                    is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(scope = scope)
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(
                         scope = scope,
                         dateFormat = dateFormat
                     )
-                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(
-                        scope = scope,
-                    )
-                    is SignUpScope.SelectUserType -> AuthUserType(
-                        scope = scope,
-                    )
-                    is SignUpScope.PersonalData -> AuthPersonalData(
-                        scope = scope,
-                    )
+                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(scope = scope)
+                    is SignUpScope.SelectUserType -> AuthUserType(scope = scope)
+                    is SignUpScope.PersonalData -> AuthPersonalData(scope = scope)
                     is SignUpScope.AddressData -> AuthAddressData(scope = scope)
                     is SignUpScope.TraderData -> AuthTraderDetails(scope = scope)
                     is SignUpScope.LegalDocuments -> AuthLegalDocuments(scope = scope)
+                    is SignUpScope.Welcome -> Surface {
+                        Welcome(
+                            fullName = scope.fullName,
+                            option = WelcomeOption.Thanks { scope.accept() }
+                        )
+                    }
                     is MainScope -> MainView(scope = scope)
                 }
                 val isInProgress = currentScope.value.isInProgress.flow.collectAsState()
@@ -190,9 +188,10 @@ fun MainView(scope: MainScope) {
             if (scope is MainScope.LimitedAccess) {
                 Welcome(
                     fullName = user.value.fullName(),
-                    onUploadClick = if (!scope.isDocumentUploaded) {
-                        { isShowingDocumentUploadBottomSheet.value = true }
-                    } else null,
+                    option = if (!scope.isDocumentUploaded) {
+                        WelcomeOption.Upload { isShowingDocumentUploadBottomSheet.value = true }
+                    } else
+                        WelcomeOption.Thanks(null),
                 )
             } else {
 

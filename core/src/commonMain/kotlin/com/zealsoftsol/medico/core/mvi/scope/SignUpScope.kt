@@ -308,6 +308,14 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             }
         }
     }
+
+    class Welcome(val fullName: String) : SignUpScope() {
+        init {
+            canGoNext.value = false
+        }
+
+        fun accept() = EventCollector.sendEvent(Event.Action.Registration.AcceptWelcome)
+    }
 }
 
 internal inline val SignUpScope.LegalDocuments.isDocumentUploaded: Boolean
