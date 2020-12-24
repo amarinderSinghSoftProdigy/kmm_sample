@@ -22,10 +22,10 @@ class AuthScreenTests: BaseTests {
                            withType type: DataAuthCredentials.Type_,
                            withPassword password: String,
                            withErrorCode errorCode: DataErrorCode? = nil) {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneOrEmail,
-                                                    type: type,
-                                                    password: password,
-                                                    errorCode: errorCode)
+        let logInScope = LogInScopeInfo(phoneNumberOrEmail: phoneOrEmail,
+                                        type: type,
+                                        password: password,
+                                        errorCode: errorCode)
         
         super.launchApp(with: logInScope.getLaunchEnvironment())
     }
@@ -68,17 +68,17 @@ class AuthScreenTests: BaseTests {
                   withType: type,
                   withPassword: password)
         
-        self.testLocalizedText(with: "log_in")
+        self.testLocalizedText(withLocalizationKey: "log_in")
         
-        self.testFloatingTextField(with: "phone_number_or_email",
+        self.testFloatingTextField(withLocalizationKey: "phone_number_or_email",
                                    equals: phoneNumberOrEmail)
         
-        self.testFloatingSecureField(with: "password",
+        self.testFloatingSecureField(withLocalizationKey: "password",
                                      equals: password)
         
-        self.testLocalizedText(with: "forgot_password")
+        self.testLocalizedText(withLocalizationKey: "forgot_password")
         
-        self.testButton(with: "log_in",
+        self.testButton(withLocalizationKey: "log_in",
                         isEnabled: !phoneNumberOrEmail.isEmpty && !password.isEmpty)
         
         let signUpText = app.staticTexts["sign_up_to_medico"]
@@ -93,7 +93,7 @@ class AuthScreenTests: BaseTests {
         XCTAssertTrue(signUpText.label == signUpString + toMedicoString)
         XCTAssertFalse(signUpText.label == signUpKey + toMedicoKey)
         
-        self.testLocalizedText(with: "copyright")
+        self.testLocalizedText(withLocalizationKey: "copyright")
     }
     
     // MARK: Actions

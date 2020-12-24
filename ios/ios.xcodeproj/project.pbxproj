@@ -10,6 +10,7 @@
 		3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3308674B2566D441000C3EB8 /* MainScreen.swift */; };
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
 		331A23CB258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */; };
+		331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
 		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
@@ -23,6 +24,10 @@
 		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
+		336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */; };
+		336EE4FC259490E400D354C8 /* OtpScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */; };
+		336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */; };
+		336EE5012594A09200D354C8 /* LogInScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */; };
 		3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */; };
 		3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC792583875900570BB3 /* FilePicker.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
@@ -30,7 +35,7 @@
 		337DE5A3258A0FAE00614951 /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
 		337DE625258A44B900614951 /* core.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		337DE628258A523800614951 /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
-		337DE62A258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */; };
+		337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
@@ -44,7 +49,7 @@
 		33ABAECE258B93370061F63C /* BaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECD258B93370061F63C /* BaseTests.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
-		33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */; };
+		33B15820258A637D009B69AB /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
 		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
@@ -118,6 +123,7 @@
 		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBarScreenTests.swift; sourceTree = "<group>"; };
+		331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreenTests.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
 		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
@@ -134,6 +140,8 @@
 		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
+		336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpScopeInfo.swift; sourceTree = "<group>"; };
+		336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInScopeInfo.swift; sourceTree = "<group>"; };
 		3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScreen.swift; sourceTree = "<group>"; };
 		3376EC792583875900570BB3 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
@@ -141,7 +149,7 @@
 		337DE57C258A069B00614951 /* AuthScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreenTests.swift; sourceTree = "<group>"; };
 		337DE57E258A069B00614951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		337DE627258A523800614951 /* TestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsHelper.swift; sourceTree = "<group>"; };
-		337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestsHelper+ScopeInfoClasses.swift"; sourceTree = "<group>"; };
+		337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScopeInfo.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBar.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
@@ -280,6 +288,23 @@
 			path = User;
 			sourceTree = "<group>";
 		};
+		336EE4FD2594A05600D354C8 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */,
+				336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		336EE5022594A1B000D354C8 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 		3376EC742583736200570BB3 /* LimitedAppAccess */ = {
 			isa = PBXGroup;
 			children = (
@@ -350,8 +375,9 @@
 		337DE626258A522100614951 /* Testing */ = {
 			isa = PBXGroup;
 			children = (
+				336EE4FD2594A05600D354C8 /* Authentication */,
+				336EE5022594A1B000D354C8 /* Main */,
 				337DE627258A523800614951 /* TestsHelper.swift */,
-				337DE629258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift */,
 			);
 			path = Testing;
 			sourceTree = "<group>";
@@ -422,6 +448,7 @@
 		33CE886B2590C84400E4D316 /* PasswordRestore */ = {
 			isa = PBXGroup;
 			children = (
+				331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */,
 				33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */,
 				33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */,
 			);
@@ -750,13 +777,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */,
+				336EE4FC259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
 				33F51B23258CD15200DA2F9F /* LimitedAppAccessTests.swift in Sources */,
 				331A23CB258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift in Sources */,
 				33FD1266259238A700B956CC /* OtpPhoneVerificationScreenTests.swift in Sources */,
-				33B15820258A637D009B69AB /* TestsHelper+ScopeInfoClasses.swift in Sources */,
+				33B15820258A637D009B69AB /* LimitedAppAccessScopeInfo.swift in Sources */,
 				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
+				331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */,
 				33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */,
 				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
+				336EE5012594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */,
 				33ABAECE258B93370061F63C /* BaseTests.swift in Sources */,
 				33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */,
@@ -775,7 +805,9 @@
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
+				336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
 				3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */,
+				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
@@ -796,7 +828,7 @@
 				33621CF62571009D004BD4CF /* MedicoText.swift in Sources */,
 				33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */,
 				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
-				337DE62A258A55DA00614951 /* TestsHelper+ScopeInfoClasses.swift in Sources */,
+				337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				337DE628258A523800614951 /* TestsHelper.swift in Sources */,
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,

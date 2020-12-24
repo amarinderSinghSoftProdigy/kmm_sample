@@ -20,61 +20,11 @@ import org.kodein.di.instance
 /**
  * For debug purposes only! For testing use [BaseTestScope]
  */
-@Deprecated("rename to DebugScopeCreator")
-object ScopeCreator {
+object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
-    @Deprecated("remove")
-    object Shortcuts {
-
-        /**
-         * Shortcut to [LogInScope] with filled data
-         */
-        @Deprecated("remove, use test scopes")
-        fun createLogInShortcut(
-            phoneNumberOrEmail: String,
-            type: AuthCredentials.Type,
-            password: String,
-            error: ErrorCode?
-        ) {
-            nav.setCurrentScope(
-                LogInScope(
-                    credentials = DataSource(
-                        AuthCredentials(
-                            phoneNumberOrEmail = phoneNumberOrEmail,
-                            type = type,
-                            password = password,
-                        )),
-                    errors = DataSource(error)
-                )
-            )
-        }
-
-        /**
-         * Shortcut to [OtpScope.PhoneNumberInput] with filled data
-         */
-        @Deprecated("remove, use test scopes")
-        fun createOtpPhoneNumberInputShortcut(
-            phoneNumber: String,
-            error: ErrorCode?
-        ) {
-            nav.setCurrentScope(
-                OtpScope.PhoneNumberInput(
-                    phoneNumber = DataSource(phoneNumber),
-                    isForRegisteredUsersOnly = true,
-                    errors = DataSource(error)
-                )
-            )
-        }
-
-        /**
-         * Shortcut to [MainScope.LimitedAccess] with filled data
-         */
-        @Deprecated("leave only type and document upload fields, rename to limitedAppAccess")
-        fun createLimitedAppAccessShortcut(
-            firstName: String,
-            lastName: String,
+    fun createLimitedAppAccessShortcut(
             type: UserType,
             isDocumentUploaded: Boolean
         ) {
@@ -90,7 +40,6 @@ object ScopeCreator {
                 )
             )
         }
-    }
 
     fun uploadDrugLicense(
         userType: UserType,

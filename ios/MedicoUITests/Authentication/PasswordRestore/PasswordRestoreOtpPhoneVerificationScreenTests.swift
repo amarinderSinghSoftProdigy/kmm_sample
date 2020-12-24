@@ -10,7 +10,7 @@ import XCTest
 
 class PasswordRestoreOtpPhoneVerificationScreenTests: OtpPhoneVerificationScreenTests {
     override func launchApp(with environment: [String : String]? = nil) {
-        let phoneInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: phoneNumber)
+        let phoneInputInfo = OtpScopePhoneNumberInputInfo(phone: phoneNumber)
         
         super.launchApp(with: phoneInputInfo.getLaunchEnvironment())
         
@@ -19,5 +19,12 @@ class PasswordRestoreOtpPhoneVerificationScreenTests: OtpPhoneVerificationScreen
         
         let activityView = app.otherElements["ActivityView"]
         waitForElementToDisappear(activityView, timeout: 5)
+    }
+    
+    override func testBackButton() {
+        super.testBackButton()
+        
+        let formattedNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+        self.testFloatingTextField(withLocalizationKey: "phone_number", equals: formattedNumber)
     }
 }
