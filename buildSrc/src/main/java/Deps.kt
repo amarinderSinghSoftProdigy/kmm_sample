@@ -38,7 +38,7 @@ object Deps {
         const val swipe = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
         const val playcore = "com.google.android.play:core:1.7.3"
         const val playcorektx = "com.google.android.play:core-ktx:1.7.0"
-        const val activity = "androidx.activity:activity-ktx:1.2.0-rc01"
+        const val activity = "androidx.activity:activity-ktx:1.1.0"
 
         object Ktx {
             const val core = "androidx.core:core-ktx:1.3.2"
