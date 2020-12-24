@@ -115,24 +115,20 @@ object Config {
     }
 
     object Version {
-        var code: Int = 1
-        var name: String = "1"
+        var code: Int = -1
+        var name: String = "na"
         internal var isDevBuild: Boolean = false
 
-        init {
-            try {
-                val map = JsonSlurper().parse(File("config.json")) as Map<String, Map<String, Any>>
-                val version = map["version"]!!
-                val major = version["major"].toString().toInt()
-                val minor = version["minor"].toString().toInt()
-                val patch = version["patch"].toString().toInt()
-                isDevBuild = version["build"].toString().toBoolean()
-                code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
-                name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
-                println("APP VERSION $name")
-            } catch (e: Exception) {
-                println("COULD NOT PARSE config.json")
-            }
+        fun parseConfig() {
+            val map = JsonSlurper().parse(File("config.json")) as Map<String, Map<String, Any>>
+            val version = map["version"]!!
+            val major = version["major"].toString().toInt()
+            val minor = version["minor"].toString().toInt()
+            val patch = version["patch"].toString().toInt()
+            isDevBuild = version["build"].toString().toBoolean()
+            code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
+            name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
+            println("APP VERSION $name")
         }
     }
 
