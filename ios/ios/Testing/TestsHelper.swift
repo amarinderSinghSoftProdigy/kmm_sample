@@ -10,31 +10,27 @@
 import Foundation
 import core
 
+struct EnvironmentProperty: RawRepresentable {
+    typealias RawValue = String
+    
+    var rawValue: String
+    
+    static let testingEnabled = EnvironmentProperty(rawValue: "testingEnabled")
+    
+    static let scope = EnvironmentProperty(rawValue: "scope")
+    
+    static let errorTitle = EnvironmentProperty(rawValue: "errorTitle")
+    static let errorBody = EnvironmentProperty(rawValue: "errorBody")
+    
+    static let userType = EnvironmentProperty(rawValue: "userType")
+    static let firstName = EnvironmentProperty(rawValue: "firstName")
+    static let lastName = EnvironmentProperty(rawValue: "lastName")
+    static let email = EnvironmentProperty(rawValue: "email")
+    static let phoneNumber = EnvironmentProperty(rawValue: "phoneNumber")
+    static let password = EnvironmentProperty(rawValue: "password")
+}
+
 class TestsHelper {
-    
-    enum EnvironmentProperty: String {
-        case testingEnabled
-        
-        case scope
-        
-        case errorTitle
-        case errorBody
-        
-        case phoneNumberOrEmail
-        case logInUserNameType
-        case password
-        
-        case firstName
-        case lastName
-        case email
-        case phoneNumber
-        case userType
-        
-        case resendTimer
-    }
-    
-    let scopeCreator = ScopeCreator.Shortcuts()
-    
     var testingEnabled: Bool {
         let testEnvironment = ProcessInfo.processInfo.arguments
         
@@ -44,71 +40,101 @@ class TestsHelper {
     func overrideCurrentScope() {
         let testEnvironment = ProcessInfo.processInfo.environment
         
-        guard let scope = testEnvironment[EnvironmentProperty.scope.rawValue] else { return }
+        guard let scope = testEnvironment[EnvironmentProperty.scope.rawValue],
+              let infoDictionary = Bundle.main.infoDictionary,
+              let namespace = infoDictionary["CFBundleExecutable"] as? String,
+              let baseScopeInfoClass = NSClassFromString("\(namespace).\(scope)") as? BaseScopeInfo.Type else { return }
         
-        switch scope {
-        case LogInScopeInfo.name:
-            setLogInScope(for: testEnvironment)
-            
-        case OtpScopeNumberInputInfo.name:
-            setOtpNumberInputScope(for: testEnvironment)
-            
-        case LimitedAppAccessScopeInfo.name:
-            setLimitedAppAccessScope(for: testEnvironment)
-            
-        default:
-            return
+        baseScopeInfoClass.overrideScope(for: testEnvironment)
+    }
+}
+    
+class BaseScopeInfo {
+    final class var name: String { String(describing: self) }
+    
+    let errorCode: DataErrorCode?
+    
+    init(errorCode: DataErrorCode? = nil) {
+        self.errorCode = errorCode
+    }
+    
+    func getLaunchEnvironment() -> [String: String] {
+        var environment = [EnvironmentProperty.scope.rawValue: type(of: self).name]
+        
+        if let errorCode = self.errorCode {
+            environment[EnvironmentProperty.errorTitle.rawValue] = errorCode.title
+            environment[EnvironmentProperty.errorBody.rawValue] = errorCode.body
         }
+        
+        return environment
     }
     
-    private func setLogInScope(for testEnvironment: [String: String]) {
-        guard let phoneNumberOrEmail = testEnvironment[EnvironmentProperty.phoneNumberOrEmail.rawValue]
-            else { return }
-        
-        guard let typeStringValue = testEnvironment[EnvironmentProperty.logInUserNameType.rawValue],
-              let type = DataAuthCredentials.Type_.getValue(from: typeStringValue)
-            else { return }
-        
-        guard let password = testEnvironment[EnvironmentProperty.password.rawValue]
-            else { return }
-        
-        scopeCreator.createLogInShortcut(phoneNumberOrEmail: phoneNumberOrEmail,
-                                         type: type,
-                                         password: password,
-                                         error: getErrorCode(for: testEnvironment))
+    class func overrideScope(for environment: [String: String]) {
+        return
     }
     
-    private func setOtpNumberInputScope(for testEnvironment: [String: String]) {
-        guard let phoneNumber = testEnvironment[EnvironmentProperty.phoneNumber.rawValue]
-            else { return }
-        
-        scopeCreator.createOtpPhoneNumberInputShortcut(phoneNumber: phoneNumber,
-                                                       error: getErrorCode(for: testEnvironment))
+    class func getScopeInfo(from environment: [String: String]) -> BaseScopeInfo? {
+        return BaseScopeInfo(errorCode: getErrorCode(for: environment))
     }
     
-    private func setLimitedAppAccessScope(for testEnvironment: [String: String]) {
-        guard let firstName = testEnvironment[EnvironmentProperty.firstName.rawValue]
-            else { return }
-        
-        guard let lastName = testEnvironment[EnvironmentProperty.lastName.rawValue]
-            else { return }
-    
-        guard let typeString = testEnvironment[EnvironmentProperty.userType.rawValue],
-              let type = DataUserType.getValue(from: typeString)
-            else { return }
-        
-        scopeCreator.createLimitedAppAccessShortcut(firstName: firstName,
-                                                    lastName: lastName,
-                                                    type: type,
-                                                    isDocumentUploaded: true)
-    }
-    
-    private func getErrorCode(for testEnvironment: [String: String]) -> DataErrorCode? {
+    private class func getErrorCode(for testEnvironment: [String: String]) -> DataErrorCode? {
         guard let errorTitle = testEnvironment[EnvironmentProperty.errorTitle.rawValue],
               let errorBody = testEnvironment[EnvironmentProperty.errorBody.rawValue]
             else { return nil }
         
         return DataErrorCode(title: errorTitle, body: errorBody)
+    }
+}
+
+extension DataAuthCredentials.Type_ {
+    var rawValue: String {
+        switch self {
+        
+        case .email:
+            return "email"
+            
+        case .phone:
+            return "phone"
+            
+        default:
+            return ""
+        }
+    }
+    
+    static func getValue(from rawValue: String) -> DataAuthCredentials.Type_? {
+        switch rawValue {
+        
+        case "email":
+            return .email
+            
+        case "phone":
+            return .phone
+            
+        default:
+            return nil
+        }
+    }
+}
+
+extension DataUserType {
+    static func getValue(from rawValue: String) -> DataUserType? {
+        switch rawValue {
+        
+        case "STOCKIST":
+            return DataUserType.stockist
+            
+        case "RETAILER":
+            return DataUserType.retailer
+            
+        case "SEASONBOY":
+            return DataUserType.seasonBoy
+            
+        case "HOSPITAL":
+            return DataUserType.hospital
+            
+        default:
+            return nil
+        }
     }
 }
 #endif

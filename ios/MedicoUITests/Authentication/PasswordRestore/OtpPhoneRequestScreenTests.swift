@@ -19,7 +19,7 @@ class OtpPhoneRequestScreenTests: BaseTests {
     
     // MARK: Initial State
     func testInitialStateWithInvalidPhoneNumber() {
-        let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: "")
+        let otpNumberInputInfo = OtpScopePhoneNumberInputInfo(phone: "")
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
         self.testNavigationBar(withTitleKey: "password_reset", hasBackButton: true)
@@ -32,7 +32,7 @@ class OtpPhoneRequestScreenTests: BaseTests {
     }
     
     func testInitialStateWithValidPhoneNumber() {
-        let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: phoneNumber)
+        let otpNumberInputInfo = OtpScopePhoneNumberInputInfo(phone: phoneNumber)
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
         self.testNavigationBar(withTitleKey: "password_reset", hasBackButton: true)
@@ -47,7 +47,7 @@ class OtpPhoneRequestScreenTests: BaseTests {
     
     // MARK: Button Actions
     func testBackButton() {
-        let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: "")
+        let otpNumberInputInfo = OtpScopePhoneNumberInputInfo(phone: "")
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
         let getCodeButton = app.buttons["get_code_button"]
@@ -57,7 +57,7 @@ class OtpPhoneRequestScreenTests: BaseTests {
     }
     
     func testSendOtpButton() {
-        let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: phoneNumber)
+        let otpNumberInputInfo = OtpScopePhoneNumberInputInfo(phone: phoneNumber)
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
         let getCodeButton = app.buttons["get_code_button"]
@@ -88,7 +88,7 @@ class OtpPhoneRequestScreenTests: BaseTests {
     
     private func testNumberEnter(_ number: String,
                                  isValid: Bool) {
-        let otpNumberInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: "")
+        let otpNumberInputInfo = OtpScopePhoneNumberInputInfo(phone: "")
         self.launchApp(with: otpNumberInputInfo.getLaunchEnvironment())
         
         let input = app.textFields["phone_number_input"]

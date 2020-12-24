@@ -10,7 +10,7 @@ import XCTest
 
 class PasswordRestoreOtpPhoneVerificationScreenTests: OtpPhoneVerificationScreenTests {
     override func launchApp(with environment: [String : String]? = nil) {
-        let phoneInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: phoneNumber)
+        let phoneInputInfo = OtpScopePhoneNumberInputInfo(phone: phoneNumber)
         
         super.launchApp(with: phoneInputInfo.getLaunchEnvironment())
         

@@ -25,7 +25,7 @@ class BaseTests: XCTestCase {
         }
         
         app.launchEnvironment = initialEnvironvent
-        app.launchArguments = [TestsHelper.EnvironmentProperty.testingEnabled.rawValue]
+        app.launchArguments = [EnvironmentProperty.testingEnabled.rawValue]
         
         app.launch()
     }

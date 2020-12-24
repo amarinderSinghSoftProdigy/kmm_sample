@@ -21,7 +21,6 @@ class OtpPhoneVerificationScreenTests: BaseTests {
     func testInitialState() {
         self.testNavigationBar(withTitleKey: "phone_verification", hasBackButton: true)
         
-        
         let timerText = app.staticTexts["timer"]
         XCTAssertTrue(timerText.isHittable)
         

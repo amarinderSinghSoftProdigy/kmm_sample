@@ -22,10 +22,10 @@ class AuthScreenTests: BaseTests {
                            withType type: DataAuthCredentials.Type_,
                            withPassword password: String,
                            withErrorCode errorCode: DataErrorCode? = nil) {
-        let logInScope = TestsHelper.LogInScopeInfo(phoneNumberOrEmail: phoneOrEmail,
-                                                    type: type,
-                                                    password: password,
-                                                    errorCode: errorCode)
+        let logInScope = LogInScopeInfo(phoneNumberOrEmail: phoneOrEmail,
+                                        type: type,
+                                        password: password,
+                                        errorCode: errorCode)
         
         super.launchApp(with: logInScope.getLaunchEnvironment())
     }

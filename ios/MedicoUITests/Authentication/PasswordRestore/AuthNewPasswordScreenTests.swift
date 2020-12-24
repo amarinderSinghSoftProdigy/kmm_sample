@@ -13,7 +13,7 @@ class AuthNewPasswordScreenTests: BaseTests {
     let phoneNumber = "+9102222870456"
 
     override func launchApp(with environment: [String : String]? = nil) {
-        let phoneInputInfo = TestsHelper.OtpScopeNumberInputInfo(phone: phoneNumber)
+        let phoneInputInfo = OtpScopePhoneNumberInputInfo(phone: phoneNumber)
         
         super.launchApp(with: phoneInputInfo.getLaunchEnvironment())
         
@@ -49,7 +49,7 @@ class AuthNewPasswordScreenTests: BaseTests {
     
     // MARK: Passwords input
     func testIdenticalPasswordInput() {
-        let password = "qweASD123"
+        let password = "123456789"
         
         enterPasswords(password: password, repeatPassword: password)
         
@@ -61,7 +61,7 @@ class AuthNewPasswordScreenTests: BaseTests {
     }
     
     func testDifferentPasswordInput() {
-        enterPasswords(password: "qweASD123", repeatPassword: "password")
+        enterPasswords(password: "123456789", repeatPassword: "password")
         
         self.testLocalizedText(withLocalizationKey: "password_doesnt_match")
         
@@ -82,7 +82,7 @@ class AuthNewPasswordScreenTests: BaseTests {
     }
     
     func testSubmitButton() {
-        let password = "qweASD123"
+        let password = "123456789"
         enterPasswords(password: password, repeatPassword: password)
         
         let confirmButton = app.buttons["confirm_button"]

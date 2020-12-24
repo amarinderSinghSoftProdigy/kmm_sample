@@ -21,9 +21,9 @@ class UserInfoNavigationBarScreenTests: BaseTests {
     
     override func launchApp(with environment: [String : String]? = nil) {
         if let properties = environment {
-            userFirstName = properties[TestsHelper.EnvironmentProperty.firstName.rawValue] ?? ""
-            userLastName = properties[TestsHelper.EnvironmentProperty.lastName.rawValue] ?? ""
-            userType = DataUserType.getValue(from:  properties[TestsHelper.EnvironmentProperty.userType.rawValue] ?? "")
+            userFirstName = properties[EnvironmentProperty.firstName.rawValue] ?? ""
+            userLastName = properties[EnvironmentProperty.lastName.rawValue] ?? ""
+            userType = DataUserType.getValue(from:  properties[EnvironmentProperty.userType.rawValue] ?? "")
         }
         
         super.launchApp(with: environment)

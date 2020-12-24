@@ -19,16 +19,18 @@ class LimitedAppAccessTests: UserInfoNavigationBarScreenTests {
         self.launchApp(forUserType: userType)
     }
     
-    private func launchApp(forUserType userType: DataUserType) {
+    private func launchApp(forUserType userType: DataUserType,
+                           isDocumentUploaded: Bool = true) {
         let limitedAppAccessScopeInfo =
-            TestsHelper.LimitedAppAccessScopeInfo(firstName: firstName,
-                                                  lastName: lastName,
-                                                  userType: userType)
+            LimitedAppAccessScopeInfo(firstName: firstName,
+                                      lastName: lastName,
+                                      userType: userType,
+                                      isDocumentUploaded: isDocumentUploaded)
         
         super.launchApp(with: limitedAppAccessScopeInfo.getLaunchEnvironment())
     }
 
-    func testInitialState() {
+    func testInitialStateWithUploadedDocument() {
         launchApp(forUserType: userType)
         
         self.testNavigationBarInitialState(hasOnlyMenuButton: true)
