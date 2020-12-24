@@ -31,3 +31,5 @@ allprojects {
 //        }
     }
 }
+
+Config.Version.parseConfig()
