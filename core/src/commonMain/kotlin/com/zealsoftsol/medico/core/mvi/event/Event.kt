@@ -46,6 +46,7 @@ internal sealed class Event {
 
             object SignUp : Registration()
             object Skip : Registration()
+            object AcceptWelcome : Registration()
         }
     }
 

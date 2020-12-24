@@ -18,7 +18,6 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
-import kotlinx.coroutines.delay
 
 internal class RegistrationEventDelegate(
     navigator: Navigator,
@@ -38,6 +37,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(event.aadhaar)
         is Event.Action.Registration.SignUp -> signUp()
         is Event.Action.Registration.Skip -> skipUploadDocuments()
+        is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
     }
 
     private fun selectUserType(userType: UserType) {
@@ -181,7 +181,7 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
-        val (signUpError, signUpSuccess) = navigator.withProgress {
+        val (error, isSuccess) = navigator.withProgress {
             when (val documents = cached) {
                 is SignUpScope.LegalDocuments.DrugLicense -> userRepo.signUpNonSeasonBoy(
                     documents.registrationStep1,
@@ -198,38 +198,24 @@ internal class RegistrationEventDelegate(
                 else -> Response.Wrapped(ErrorCode(), false)
             }
         }
-        if (signUpSuccess) {
-            val (error, isSuccess) = navigator.withProgress {
-                // TODO temporary measure to avoid server race condition
-                delay(5000)
-                userRepo.login(
-                    cached!!.registrationStep1.email,
-                    cached!!.registrationStep1.password,
-                )
-            }
-            if (isSuccess) {
-                val user = navigator.withProgress { userRepo.loadUserFromServer() }
-                if (user != null) {
-                    navigator.clearQueue()
-                    navigator.setCurrentScope(
-                        MainScope.LimitedAccess(user = DataSource(user))
-                    )
-                    cached = null
-                } else {
-                    dropToLogin(ErrorCode())
-                }
-            } else {
-                dropToLogin(error)
-            }
+        if (isSuccess) {
+            navigator.setCurrentScope(
+                SignUpScope.Welcome(cached!!.registrationStep1.run { "$firstName $lastName" })
+            )
+            cached = null
         } else {
-            dropToLogin(signUpError)
+            dropToLogin(error)
         }
+    }
+
+    private fun acceptWelcome() {
+        dropToLogin(null)
     }
 
     private fun dropToLogin(errorCode: ErrorCode?) {
         navigator.dropScopesToRoot()
         navigator.withScope<LogInScope> {
-            it.errors.value = errorCode ?: ErrorCode()
+            it.errors.value = errorCode
         }
     }
 
