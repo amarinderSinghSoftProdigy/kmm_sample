@@ -24,7 +24,7 @@ struct MainScreen: View {
         switch self.scope {
         
         case let scope as MainScope.LimitedAccess:
-            view = AnyView(LimitedAppAccessScreen(scope: scope, user: user))
+            view = AnyView(LimitedAppAccessScreen(scope: scope, userName: user.fullName()))
             
         default:
             view = AnyView(EmptyView())

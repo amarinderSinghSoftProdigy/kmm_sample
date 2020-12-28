@@ -42,6 +42,10 @@ struct SignUpScreen: View {
             progressFill = 1.0
             scopeView = AnyView(SignUpLegalDocumentsScreen(scope: scope))
             
+        case let scope as SignUpScope.Welcome:
+            return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scope.accept() },
+                                         userName: scope.fullName))
+            
         default:
             progressFill = 0
             scopeView = AnyView(EmptyView())
