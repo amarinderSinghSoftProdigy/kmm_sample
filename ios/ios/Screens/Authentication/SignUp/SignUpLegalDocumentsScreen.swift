@@ -34,34 +34,36 @@ struct SignUpLegalDocumentsScreen: View {
         let view: AnyView
         let buttonTextKey: String
         let navigationBarTitle: String
-        let skipAction: (() -> ())?
-
+        
         switch scope {
 
         case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            view = AnyView(AadhaardCardDataFields(scope: aadhaarScope))
+            view = AnyView(
+                VStack {
+                    AadhaardCardDataFields(aadhaarData: aadhaarScope.aadhaarData,
+                                           changeCard: aadhaarScope.changeCard,
+                                           changeShareCode: aadhaarScope.changeShareCode)
+                    Spacer()
+                })
             buttonTextKey = "upload_aadhaar_card"
             navigationBarTitle = "personal_data"
-            skipAction = nil
 
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             view = AnyView(DrugLicenseData())
             buttonTextKey = "upload_new_document"
             navigationBarTitle = "legal_documents"
-            skipAction = skip
             
         default:
             view = AnyView(EmptyView())
             buttonTextKey = ""
             navigationBarTitle = ""
-            skipAction = nil
         }
         
         return AnyView(
             view
                 .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                        buttonTextKey: buttonTextKey,
-                                       skipButtonAction: skipAction,
+                                       skipButtonAction: { scope.skip() },
                                        action: uploadDocuments))
                 .keyboardResponder()
                 .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
@@ -99,18 +101,13 @@ struct SignUpLegalDocumentsScreen: View {
             break
         }
     }
-    
-    private func skip() {
-        guard let scope = self.scope as? SignUpScope.LegalDocuments.LegalDocumentsDrugLicense else { return }
-            
-        scope.skip()
-    }
 }
 
 // MARK: Documents specific views
 
-fileprivate struct AadhaardCardDataFields: View  {
-    let scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar
+struct AadhaardCardDataFields: View  {
+    let changeCard: (String) -> ()
+    let changeShareCode: (String) -> ()
     
     @ObservedObject var aadhaarData: SwiftDataSource<DataAadhaarData>
     
@@ -118,22 +115,23 @@ fileprivate struct AadhaardCardDataFields: View  {
         VStack(spacing: 12) {
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "aadhaar_card",
                                          text: aadhaarData.value?.cardNumber,
-                                         onTextChange: { newValue in scope.changeCard(card: newValue) },
+                                         onTextChange: { newValue in self.changeCard(newValue) },
                                          keyboardType: .numberPad)
             
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "share_code",
                                          text: aadhaarData.value?.shareCode,
-                                         onTextChange: { newValue in scope.changeShareCode(shareCode: newValue)},
+                                         onTextChange: { newValue in self.changeShareCode(newValue)},
                                          keyboardType: .numberPad)
-            
-            Spacer()
         }
     }
     
-    init(scope: SignUpScope.LegalDocuments.LegalDocumentsAadhaar) {
-        self.scope = scope
+    init(aadhaarData: DataSource<DataAadhaarData>,
+         changeCard: @escaping (String) -> (),
+         changeShareCode: @escaping (String) -> ()) {
+        self.aadhaarData = SwiftDataSource(dataSource: aadhaarData)
         
-        self.aadhaarData = SwiftDataSource(dataSource: scope.aadhaarData)
+        self.changeCard = changeCard
+        self.changeShareCode = changeShareCode
     }
 }
 
