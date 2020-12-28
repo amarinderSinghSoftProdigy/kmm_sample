@@ -193,11 +193,13 @@ class UserRepo(
     suspend fun uploadDrugLicense(
         fileString: String,
         mimeType: String,
-        phoneNumber: String
+        phoneNumber: String,
+        email: String,
     ): Response.Wrapped<StorageKeyResponse> {
         return networkAuthScope.uploadDrugLicense(
             DrugLicenseUpload(
                 phoneNumber = phoneNumber,
+                email = email,
                 fileString = fileString,
                 mimeType = mimeType,
             )

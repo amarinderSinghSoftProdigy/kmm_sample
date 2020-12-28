@@ -117,14 +117,15 @@ internal class RegistrationEventDelegate(
     private suspend fun uploadDrugLicense(license: String, fileType: FileType) {
         navigator.withCommonScope<CommonScope.UploadDocument> {
             val (storageKey, isSuccess) = withProgress {
-                val phoneNumber = when (it) {
-                    is SignUpScope.LegalDocuments -> it.registrationStep1.phoneNumber
-                    is MainScope.LimitedAccess -> it.user.value.phoneNumber
+                val (phoneNumber, email) = when (it) {
+                    is SignUpScope.LegalDocuments -> it.registrationStep1.run { phoneNumber to email }
+                    is MainScope.LimitedAccess -> it.user.value.run { phoneNumber to email }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }
                 userRepo.uploadDrugLicense(
                     fileString = license,
                     phoneNumber = phoneNumber,
+                    email = email,
                     mimeType = fileType.mimeType,
                 )
             }

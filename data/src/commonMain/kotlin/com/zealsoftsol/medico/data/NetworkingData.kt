@@ -67,6 +67,7 @@ data class AadhaarUpload(
 
 @Serializable
 data class DrugLicenseUpload(
+    val email: String,
     @SerialName("mobileNumber")
     val phoneNumber: String,
     @SerialName("uploadDrugLicenseFile")
