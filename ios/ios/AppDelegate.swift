@@ -1,3 +1,4 @@
+import Firebase
 import UIKit
 import core
 
@@ -7,6 +8,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var navigator: UiNavigator!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
+        
         setUpAppNavigator()
         
         return true
