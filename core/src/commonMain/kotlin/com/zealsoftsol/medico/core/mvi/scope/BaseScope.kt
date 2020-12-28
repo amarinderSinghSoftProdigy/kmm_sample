@@ -7,7 +7,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 
 abstract class BaseScope {
     val isInProgress: DataSource<Boolean> = DataSource(false)
-    val queueId: String = this::class.simpleName.orEmpty()
+    val queueId: String = this::class.qualifiedName.orEmpty()
 
     object Root : BaseScope()
 }

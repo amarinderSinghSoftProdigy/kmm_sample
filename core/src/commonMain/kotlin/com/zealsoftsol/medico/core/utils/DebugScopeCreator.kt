@@ -20,17 +20,59 @@ object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
-    fun createLimitedAppAccessShortcut(
-        type: UserType,
-        isDocumentUploaded: Boolean
+    fun signUpDetailsNonSeasonBoy(
+        userType: UserType,
+        email: String,
+        phone: String,
+    ) {
+        require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
+
+        nav.setCurrentScope(
+            SignUpScope.Details.TraderData(
+                UserRegistration1(
+                    userType.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
+            )
+        )
+    }
+
+    fun signUpDetailsSeasonBoy(
+        email: String,
+        phone: String,
     ) {
         nav.setCurrentScope(
-            MainScope.LimitedAccess.from(
-                testUser.copy(
-                    type = type,
-                    isVerified = false,
-                    isDocumentUploaded = isDocumentUploaded
-                )
+            SignUpScope.Details.Aadhaar(
+                UserRegistration1(
+                    UserType.SEASON_BOY.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
             )
         )
     }
@@ -38,7 +80,7 @@ object DebugScopeCreator {
     fun uploadDrugLicense(
         userType: UserType,
         email: String,
-        phone: String
+        phone: String,
     ) {
         require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
 
@@ -92,12 +134,10 @@ object DebugScopeCreator {
                     "Krishna",
                     "Andhra Pradesh",
                 ),
-                DataSource(
-                    AadhaarData(
-                        "887489598799",
-                        "1111",
-                    )
-                )
+                AadhaarData(
+                    "887489598799",
+                    "1111",
+                ),
             )
         )
     }
@@ -113,6 +153,21 @@ object DebugScopeCreator {
             )
         )
     }
+
+    fun limitedAccessMainScreen(
+        type: UserType,
+        isDocumentUploaded: Boolean
+    ) {
+        nav.setCurrentScope(
+            MainScope.LimitedAccess.from(
+                testUser.copy(
+                    type = type,
+                    isVerified = false,
+                    isDocumentUploaded = isDocumentUploaded
+                )
+            )
+        )
+    }
 }
 
 private inline val testUser
@@ -122,6 +177,7 @@ private inline val testUser
         "test@mail.com",
         "000",
         UserType.STOCKIST,
+        User.Details.DrugLicense("url"),
         true,
         true,
     )

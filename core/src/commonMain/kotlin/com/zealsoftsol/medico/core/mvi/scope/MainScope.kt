@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
@@ -35,6 +36,8 @@ sealed class MainScope : BaseScope() {
             fun uploadDrugLicense(base64: String, fileType: FileType) =
                 EventCollector.sendEvent(
                     Event.Action.Registration.UploadDrugLicense(
+                        user.value.phoneNumber,
+                        user.value.email,
                         base64,
                         fileType
                     )
@@ -44,15 +47,22 @@ sealed class MainScope : BaseScope() {
         data class SeasonBoy(
             override val user: DataSource<User>,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
-            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            override val aadhaarData: DataSource<AadhaarData> = DataSource(
+                AadhaarData((user.value.details as User.Details.Aadhaar).cardNumber, "")
+            ),
             override val isVerified: DataSource<Boolean> = DataSource(false),
-        ) : LimitedAccess(), CommonScope.AadhaarDataHolder {
+        ) : LimitedAccess(), AadhaarDataHolder {
 
             override val supportedFileTypes: Array<FileType> =
                 if (isDocumentUploaded) emptyArray() else FileType.forAadhaar()
 
-            fun uploadAadhaar(base64: String) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+            fun uploadAadhaar(base64: String) = EventCollector.sendEvent(
+                Event.Action.Registration.UploadAadhaar(
+                    user.value.phoneNumber,
+                    user.value.email,
+                    base64,
+                )
+            )
         }
 
         companion object {

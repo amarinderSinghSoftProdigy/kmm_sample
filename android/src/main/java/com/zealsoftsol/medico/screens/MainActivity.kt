@@ -35,12 +35,13 @@ import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
+import com.zealsoftsol.medico.screens.auth.AuthDetailsAadhaar
+import com.zealsoftsol.medico.screens.auth.AuthDetailsTraderData
 import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.auth.AuthLegalDocuments
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
-import com.zealsoftsol.medico.screens.auth.AuthTraderDetails
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.DocumentUploadBottomSheet
 import com.zealsoftsol.medico.screens.auth.Welcome
@@ -96,7 +97,8 @@ class MainActivity : ComponentActivity(), DIAware {
                     is SignUpScope.SelectUserType -> AuthUserType(scope = scope)
                     is SignUpScope.PersonalData -> AuthPersonalData(scope = scope)
                     is SignUpScope.AddressData -> AuthAddressData(scope = scope)
-                    is SignUpScope.TraderData -> AuthTraderDetails(scope = scope)
+                    is SignUpScope.Details.TraderData -> AuthDetailsTraderData(scope = scope)
+                    is SignUpScope.Details.Aadhaar -> AuthDetailsAadhaar(scope = scope)
                     is SignUpScope.LegalDocuments -> AuthLegalDocuments(scope = scope)
                     is SignUpScope.Welcome -> Surface {
                         Welcome(

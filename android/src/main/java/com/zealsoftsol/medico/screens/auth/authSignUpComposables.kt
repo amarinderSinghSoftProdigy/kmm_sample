@@ -58,6 +58,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.BasicTabBar
@@ -307,7 +308,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
 }
 
 @Composable
-fun AuthTraderDetails(scope: SignUpScope.TraderData) {
+fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
@@ -321,7 +322,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.Top,
             ) {
-                if (SignUpScope.TraderData.Fields.TRADE_NAME in scope.inputFields) {
+                if (SignUpScope.Details.Fields.TRADE_NAME in scope.inputFields) {
                     InputWithError(errorText = validation.value?.tradeName) {
                         InputField(
                             hint = stringResource(id = R.string.trade_name),
@@ -331,12 +332,12 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     }
                     Space(dp = 12.dp)
                 }
-                if (SignUpScope.TraderData.Fields.PAN in scope.inputFields) {
+                if (SignUpScope.Details.Fields.PAN in scope.inputFields) {
                     InputWithError(errorText = validation.value?.panNumber) {
                         InputField(
                             hint = stringResource(id = R.string.pan_number),
                             text = registration.value.panNumber,
-                            isValid = scope.isPanValid,
+                            isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber),
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
                             onValueChange = { scope.changePan(it) },
@@ -344,12 +345,12 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     }
                     Space(dp = 12.dp)
                 }
-                if (SignUpScope.TraderData.Fields.GSTIN in scope.inputFields) {
+                if (SignUpScope.Details.Fields.GSTIN in scope.inputFields) {
                     InputWithError(errorText = validation.value?.gstin) {
                         InputField(
                             hint = stringResource(id = R.string.gstin),
                             text = registration.value.gstin,
-                            isValid = scope.isGstinValid,
+                            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
                             onValueChange = { scope.changeGstin(it) },
@@ -357,7 +358,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     }
                     Space(dp = 12.dp)
                 }
-                if (SignUpScope.TraderData.Fields.LICENSE1 in scope.inputFields) {
+                if (SignUpScope.Details.Fields.LICENSE1 in scope.inputFields) {
                     InputWithError(errorText = validation.value?.drugLicenseNo1) {
                         InputField(
                             hint = stringResource(id = R.string.drug_license_1),
@@ -367,7 +368,7 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     }
                     Space(dp = 12.dp)
                 }
-                if (SignUpScope.TraderData.Fields.LICENSE2 in scope.inputFields) {
+                if (SignUpScope.Details.Fields.LICENSE2 in scope.inputFields) {
                     InputWithError(errorText = validation.value?.drugLicenseNo2) {
                         InputField(
                             hint = stringResource(id = R.string.drug_license_2),
@@ -377,6 +378,25 @@ fun AuthTraderDetails(scope: SignUpScope.TraderData) {
                     }
                 }
             }
+        }
+    )
+}
+
+@Composable
+fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
+    BasicAuthSignUpScreenWithButton(
+        title = stringResource(id = R.string.aadhaar_card),
+        progress = 0.8,
+        baseScope = scope,
+        buttonText = stringResource(id = R.string.next),
+        onButtonClick = { scope.addAadhaar() },
+        body = {
+            AadhaarInputFields(
+                aadhaarData = scope.aadhaarData,
+                onCardChange = scope::changeCard,
+                onCodeChange = scope::changeShareCode,
+                modifier = Modifier.padding(vertical = 32.dp, horizontal = 16.dp),
+            )
         }
     )
 }
@@ -416,31 +436,25 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
         },
         onSkip = { scope.skip() },
         body = {
-            when (scope) {
-                is SignUpScope.LegalDocuments.DrugLicense -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                            .padding(vertical = 32.dp, horizontal = 16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            asset = vectorResource(id = R.drawable.ic_upload),
-                            tint = ConstColors.gray,
-                            modifier = Modifier.padding(bottom = 16.dp),
-                        )
-                        Text(
-                            text = stringResource(id = R.string.provide_drug_license_hint),
-                            color = ConstColors.gray,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-                is SignUpScope.LegalDocuments.Aadhaar -> AadhaarInputFields(
-                    aadhaarData = scope.aadhaarData,
-                    onCardChange = { scope.changeCard(it) },
-                    onCodeChange = { scope.changeShareCode(it) },
-                    modifier = Modifier.padding(vertical = 32.dp, horizontal = 16.dp),
+            val stringId = when (scope) {
+                is SignUpScope.LegalDocuments.DrugLicense -> R.string.provide_drug_license_hint
+                is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
+            }
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(vertical = 32.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    asset = vectorResource(id = R.drawable.ic_upload),
+                    tint = ConstColors.gray,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+                Text(
+                    text = stringResource(id = stringId),
+                    color = ConstColors.gray,
+                    textAlign = TextAlign.Center,
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -39,10 +40,20 @@ internal sealed class Event {
 
             data class SelectUserType(val userType: UserType) : Registration()
             data class Validate(val userRegistration: UserRegistration) : Registration()
+            data class AddAadhaar(val aadhaarData: AadhaarData) : Registration()
             data class UpdatePincode(val pincode: String) : Registration()
-            data class UploadAadhaar(val aadhaar: String) : Registration()
-            data class UploadDrugLicense(val license: String, val fileType: FileType) :
-                Registration()
+            data class UploadAadhaar(
+                val phoneNumber: String,
+                val email: String,
+                val aadhaarAsBase64: String,
+            ) : Registration()
+
+            data class UploadDrugLicense(
+                val phoneNumber: String,
+                val email: String,
+                val licenseAsBase64: String,
+                val fileType: FileType,
+            ) : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()

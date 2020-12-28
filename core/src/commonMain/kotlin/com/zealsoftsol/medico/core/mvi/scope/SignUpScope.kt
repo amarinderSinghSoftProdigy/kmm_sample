@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
@@ -22,12 +23,6 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
     protected open fun checkCanGoNext() {
 
-    }
-
-    companion object {
-        private val PAN_REGEX = Regex("^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?\$")
-        private val GSTIN_REGEX =
-            Regex("([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+")
     }
 
     data class SelectUserType(
@@ -153,83 +148,106 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         }
     }
 
-    data class TraderData(
+    sealed class Details(
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
-        val registration: DataSource<UserRegistration3>,
-        val validation: DataSource<UserValidation3?>,
     ) : SignUpScope() {
 
-        val isPanValid: Boolean
-            get() = registration.value.panNumber.isEmpty() || PAN_REGEX.matches(registration.value.panNumber)
+        abstract val inputFields: List<Fields>
 
-        val isGstinValid: Boolean
-            get() = registration.value.gstin.isEmpty() || GSTIN_REGEX.matches(registration.value.gstin)
+        class TraderData(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
+            val validation: DataSource<UserValidation3?> = DataSource(null),
+        ) : Details(registrationStep1, registrationStep2) {
 
-        val inputFields: List<Fields> = listOfNotNull(
-            Fields.TRADE_NAME,
-            Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
-            Fields.GSTIN,
-            Fields.LICENSE1,
-            Fields.LICENSE2,
-        )
+            override val inputFields: List<Fields> = listOfNotNull(
+                Fields.TRADE_NAME,
+                Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
+                Fields.GSTIN,
+                Fields.LICENSE1,
+                Fields.LICENSE2,
+            )
 
-        init {
-            checkCanGoNext()
-            require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
-                "trader data not available for season boy"
+            init {
+                checkCanGoNext()
+                require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
+                    "trader data not available for season boy"
+                }
             }
-        }
 
-        fun changeTradeName(tradeName: String) {
-            registration.value = registration.value.copy(tradeName = tradeName)
-            checkCanGoNext()
-        }
-
-        fun changeGstin(gstin: String) {
-            if (gstin.length <= 15) {
-                registration.value = registration.value.copy(gstin = gstin)
+            fun changeTradeName(tradeName: String) {
+                registration.value = registration.value.copy(tradeName = tradeName)
                 checkCanGoNext()
             }
-        }
 
-        fun changePan(panNumber: String) {
-            if (panNumber.length <= 10) {
-                registration.value = registration.value.copy(panNumber = panNumber)
-                checkCanGoNext()
+            fun changeGstin(gstin: String) {
+                if (gstin.length <= 15) {
+                    registration.value = registration.value.copy(gstin = gstin)
+                    checkCanGoNext()
+                }
+            }
+
+            fun changePan(panNumber: String) {
+                if (panNumber.length <= 10) {
+                    registration.value = registration.value.copy(panNumber = panNumber)
+                    checkCanGoNext()
+                }
+            }
+
+            fun changeDrugLicense1(drugLicenseNo: String) {
+                if (drugLicenseNo.length <= 30) {
+                    registration.value = registration.value.copy(drugLicenseNo1 = drugLicenseNo)
+                    checkCanGoNext()
+                }
+            }
+
+            fun changeDrugLicense2(drugLicenseNo: String) {
+                if (drugLicenseNo.length <= 30) {
+                    registration.value = registration.value.copy(drugLicenseNo2 = drugLicenseNo)
+                    checkCanGoNext()
+                }
+            }
+
+            /**
+             * Transition to [LegalDocuments] if successful
+             */
+            fun validate(userRegistration: UserRegistration3) =
+                EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
+
+            override fun checkCanGoNext() {
+                canGoNext.value = registration.value.run {
+                    tradeName.isNotEmpty()
+                            && (gstin.isNotEmpty() || panNumber.isNotEmpty())
+                            && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
+                }
             }
         }
 
-        fun changeDrugLicense1(drugLicenseNo: String) {
-            if (drugLicenseNo.length <= 30) {
-                registration.value = registration.value.copy(drugLicenseNo1 = drugLicenseNo)
-                checkCanGoNext()
-            }
-        }
+        class Aadhaar(
+            registrationStep1: UserRegistration1,
+            registrationStep2: UserRegistration2,
+            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
+        ) : Details(registrationStep1, registrationStep2), AadhaarDataHolder {
 
-        fun changeDrugLicense2(drugLicenseNo: String) {
-            if (drugLicenseNo.length <= 30) {
-                registration.value = registration.value.copy(drugLicenseNo2 = drugLicenseNo)
-                checkCanGoNext()
-            }
-        }
+            override val isVerified: DataSource<Boolean> = canGoNext
 
-        /**
-         * Transition to [LegalDocuments] if successful
-         */
-        fun validate(userRegistration: UserRegistration3) =
-            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
+            override val inputFields: List<Fields> = listOf(
+                Fields.AADHAAR_CARD,
+                Fields.SHARE_CODE,
+            )
 
-        override fun checkCanGoNext() {
-            canGoNext.value = registration.value.run {
-                tradeName.isNotEmpty()
-                        && (gstin.isNotEmpty() || panNumber.isNotEmpty())
-                        && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
-            }
+            /**
+             * Transition to [LegalDocuments] if successful
+             */
+            fun addAadhaar() =
+                EventCollector.sendEvent(Event.Action.Registration.AddAadhaar(aadhaarData.value))
         }
 
         enum class Fields {
-            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2;
+            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE;
         }
     }
 
@@ -240,7 +258,12 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint {
+    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint,
+        CommonScope.UploadDocument {
+
+        init {
+            canGoNext.value = true
+        }
 
         abstract val supportedFileTypes: Array<FileType>
 
@@ -251,42 +274,45 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
-            internal val storageKey: String? = null,
-        ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3),
-            CommonScope.UploadDocument {
+            internal var storageKey: String? = null,
+        ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
-
-            init {
-                canGoNext.value = true
-            }
 
             /**
              * Transition to [OtpScope.AwaitVerification] if successful
              */
             fun upload(base64: String, fileType: FileType) =
                 EventCollector.sendEvent(
-                    Event.Action.Registration.UploadDrugLicense(base64, fileType)
+                    Event.Action.Registration.UploadDrugLicense(
+                        registrationStep1.phoneNumber,
+                        registrationStep1.email,
+                        base64,
+                        fileType
+                    )
                 )
         }
 
         class Aadhaar(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
-            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            internal val aadhaarData: AadhaarData,
+            internal var aadhaarFile: String? = null,
             override val errors: DataSource<ErrorCode?> = DataSource(null),
-            internal val aadhaarFile: String? = null,
-        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()),
-            CommonScope.AadhaarDataHolder {
+        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
-            override val isVerified: DataSource<Boolean> = canGoNext
 
             /**
              * Transition to [OtpScope.AwaitVerification] if successful
              */
-            fun upload(base64: String) =
-                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+            fun upload(base64: String) = EventCollector.sendEvent(
+                Event.Action.Registration.UploadAadhaar(
+                    registrationStep1.phoneNumber,
+                    registrationStep1.email,
+                    base64,
+                )
+            )
         }
     }
 

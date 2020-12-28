@@ -22,8 +22,14 @@ class Navigator : UiNavigator {
         currentScope.value.isInProgress.value = value
     }
 
-    fun clearQueue() {
-        queue.clear()
+    fun clearQueue(withRoot: Boolean = true) {
+        if (withRoot) {
+            queue.clear()
+        } else {
+            while (queue.size > 1) {
+                queue.removeFirst()
+            }
+        }
     }
 
     fun setCurrentScope(scope: BaseScope) {
@@ -46,8 +52,8 @@ class Navigator : UiNavigator {
         return cast.isSuccess
     }
 
-    internal inline fun <reified S : CommonScope> searchQueueFor(): S? {
-        return queue.filterIsInstance<S>().firstOrNull()
+    internal inline fun <reified T> searchQueueFor(): T? {
+        return queue.filterIsInstance<T>().firstOrNull()
     }
 
     fun dropScopesToRoot() {
