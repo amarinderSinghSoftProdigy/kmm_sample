@@ -44,9 +44,7 @@ internal class EventCollector(
             UserRepo.UserAccess.FULL_ACCESS -> MainScope.FullAccess(
                 user = DataSource(userRepo.user!!)
             )
-            UserRepo.UserAccess.LIMITED_ACCESS -> MainScope.LimitedAccess(
-                user = DataSource(userRepo.user!!),
-            )
+            UserRepo.UserAccess.LIMITED_ACCESS -> MainScope.LimitedAccess.from(userRepo.user!!)
             UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
         }
         if (startScope is MainScope) GlobalScope.launch(compatDispatcher) {

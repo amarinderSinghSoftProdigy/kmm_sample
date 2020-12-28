@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.Space
 
@@ -77,19 +80,48 @@ private fun ThanksForRegistration(option: WelcomeOption.Thanks) {
 @Composable
 private fun UploadDocuments(option: WelcomeOption.Upload) {
     Text(
-        text = stringResource(id = R.string.provide_drug_license_hint),
+        text = stringResource(id = option.hintStringResource),
         textAlign = TextAlign.Center,
         color = ConstColors.gray,
     )
+    val isEnabled = if (option is WelcomeOption.Upload.Aadhaar) {
+        Space(50.dp)
+        AadhaarInputFields(
+            aadhaarData = option.dataHolder.aadhaarData,
+            onCardChange = { option.dataHolder.changeCard(it) },
+            onCodeChange = { option.dataHolder.changeShareCode(it) },
+        )
+        option.dataHolder.isVerified.flow.collectAsState()
+    } else {
+        mutableStateOf(true)
+    }
     Space(50.dp)
     MedicoButton(
-        text = stringResource(id = R.string.upload_new_document),
-        isEnabled = true,
+        text = stringResource(id = option.buttonStringResource),
+        isEnabled = isEnabled.value,
         onClick = option.onUpload
     )
 }
 
 sealed class WelcomeOption {
-    data class Upload(val onUpload: () -> Unit) : WelcomeOption()
+    sealed class Upload : WelcomeOption() {
+        abstract val onUpload: () -> Unit
+        abstract val buttonStringResource: Int
+        abstract val hintStringResource: Int
+
+        data class DrugLicense(
+            override val buttonStringResource: Int = R.string.upload_new_document,
+            override val hintStringResource: Int = R.string.provide_drug_license_hint,
+            override val onUpload: () -> Unit,
+        ) : Upload()
+
+        data class Aadhaar(
+            val dataHolder: CommonScope.AadhaarDataHolder,
+            override val buttonStringResource: Int = R.string.upload_aadhaar,
+            override val hintStringResource: Int = R.string.provide_aadhaar_hint,
+            override val onUpload: () -> Unit
+        ) : Upload()
+    }
+
     data class Thanks(val onAccept: (() -> Unit)?) : WelcomeOption()
 }

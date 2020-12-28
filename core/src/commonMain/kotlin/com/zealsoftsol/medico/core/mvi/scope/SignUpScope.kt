@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.utils.AadhaarVerification
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
@@ -245,6 +244,8 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
 
         abstract val supportedFileTypes: Array<FileType>
 
+        fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
+
         class DrugLicense(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
@@ -267,45 +268,25 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
                 EventCollector.sendEvent(
                     Event.Action.Registration.UploadDrugLicense(base64, fileType)
                 )
-
-            fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
         }
 
         class Aadhaar(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
-            val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
             override val errors: DataSource<ErrorCode?> = DataSource(null),
             internal val aadhaarFile: String? = null,
-        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
+        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()),
+            CommonScope.AadhaarDataHolder {
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
-
-            fun changeCard(card: String) {
-                if (card.length <= 12) {
-                    aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
-                    checkCanGoNext()
-                }
-            }
-
-            fun changeShareCode(shareCode: String) {
-                if (shareCode.length <= 4) {
-                    aadhaarData.value = aadhaarData.value.copy(shareCode = shareCode)
-                    checkCanGoNext()
-                }
-            }
+            override val isVerified: DataSource<Boolean> = canGoNext
 
             /**
              * Transition to [OtpScope.AwaitVerification] if successful
              */
             fun upload(base64: String) =
                 EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
-
-            override fun checkCanGoNext() {
-                canGoNext.value = aadhaarData.value.run {
-                    cardNumber.length == 12 && AadhaarVerification.isValid(cardNumber) && shareCode.length == 4
-                }
-            }
         }
     }
 

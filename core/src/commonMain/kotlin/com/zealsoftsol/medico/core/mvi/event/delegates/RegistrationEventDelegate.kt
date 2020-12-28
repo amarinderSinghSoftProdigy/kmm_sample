@@ -157,24 +157,41 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun uploadAadhaar(aadhaar: String) {
-        navigator.withScope<SignUpScope.LegalDocuments.Aadhaar> {
+        navigator.withCommonScope<CommonScope.AadhaarDataHolder> {
             val isSuccess = withProgress {
+                val (phoneNumber, email) = when (it) {
+                    is SignUpScope.LegalDocuments.Aadhaar -> it.registrationStep1.run { phoneNumber to email }
+                    is MainScope.LimitedAccess -> it.user.value.run { phoneNumber to email }
+                    else -> throw UnsupportedOperationException("unknown AadhaarDataHolder common scope")
+                }
                 userRepo.uploadAadhaar(
                     aadhaar = it.aadhaarData.value,
                     fileString = aadhaar,
-                    email = it.registrationStep1.email,
-                    phoneNumber = it.registrationStep1.phoneNumber,
+                    phoneNumber = phoneNumber,
+                    email = email,
                 )
             }
             if (isSuccess) {
-                cached = SignUpScope.LegalDocuments.Aadhaar(
-                    it.registrationStep1,
-                    it.registrationStep2,
-                    it.aadhaarData,
-                    it.errors,
-                    aadhaarFile = aadhaar,
-                )
-                startOtp(it.registrationStep1.phoneNumber)
+                when (it) {
+                    is SignUpScope.LegalDocuments.Aadhaar -> {
+                        cached = SignUpScope.LegalDocuments.Aadhaar(
+                            it.registrationStep1,
+                            it.registrationStep2,
+                            it.aadhaarData,
+                            it.errors,
+                            aadhaarFile = aadhaar,
+                        )
+                        startOtp(it.registrationStep1.phoneNumber)
+                    }
+                    is MainScope.LimitedAccess -> {
+                        userRepo.loadUserFromServer()?.let { user ->
+                            it.user.value = user
+                        } ?: run {
+                            it.errors.value = ErrorCode()
+                        }
+                    }
+                    else -> throw UnsupportedOperationException("unknown AadhaarDataHolder common scope")
+                }
             } else {
                 it.errors.value = ErrorCode()
             }
@@ -194,7 +211,7 @@ internal class RegistrationEventDelegate(
                     documents.registrationStep1,
                     documents.registrationStep2,
                     documents.aadhaarData.value,
-                    documents.aadhaarFile!!,
+                    documents.aadhaarFile,
                 )
                 else -> Response.Wrapped(ErrorCode(), false)
             }
@@ -221,7 +238,7 @@ internal class RegistrationEventDelegate(
     }
 
     private fun skipUploadDocuments() {
-        navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
+        navigator.withScope<SignUpScope.LegalDocuments> {
             cached = it
             startOtp(it.registrationStep1.phoneNumber)
         }

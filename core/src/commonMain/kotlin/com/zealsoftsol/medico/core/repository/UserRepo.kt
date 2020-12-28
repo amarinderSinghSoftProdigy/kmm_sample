@@ -160,7 +160,7 @@ class UserRepo(
         userRegistration1: UserRegistration1,
         userRegistration2: UserRegistration2,
         aadhaarData: AadhaarData,
-        aadhaar: String,
+        aadhaar: String?,
     ): Response.Wrapped<ErrorCode> {
         return networkAuthScope.signUp(
             SubmitRegistration.seasonBoy(

@@ -40,7 +40,7 @@ internal class AuthEventDelegate(
                         if (user.isVerified)
                             MainScope.FullAccess(DataSource(user))
                         else
-                            MainScope.LimitedAccess(DataSource(user))
+                            MainScope.LimitedAccess.from(user)
                     )
                 } else {
                     it.errors.value = ErrorCode()

@@ -3,13 +3,9 @@ package com.zealsoftsol.medico.core.utils
 import com.zealsoftsol.medico.core.directDI
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -25,21 +21,19 @@ object DebugScopeCreator {
         get() = directDI.instance()
 
     fun createLimitedAppAccessShortcut(
-            type: UserType,
-            isDocumentUploaded: Boolean
-        ) {
-            nav.setCurrentScope(
-                MainScope.LimitedAccess(
-                    user = DataSource(
-                        testUser.copy(
-                            type = type,
-                            isVerified = false,
-                            isDocumentUploaded = isDocumentUploaded
-                        )
-                    )
+        type: UserType,
+        isDocumentUploaded: Boolean
+    ) {
+        nav.setCurrentScope(
+            MainScope.LimitedAccess.from(
+                testUser.copy(
+                    type = type,
+                    isVerified = false,
+                    isDocumentUploaded = isDocumentUploaded
                 )
             )
-        }
+        )
+    }
 
     fun uploadDrugLicense(
         userType: UserType,

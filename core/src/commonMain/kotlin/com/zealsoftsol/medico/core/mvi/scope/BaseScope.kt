@@ -34,11 +34,6 @@ interface WithNotifications {
     }
 }
 
-internal interface CommonScope {
-    interface PhoneVerificationEntryPoint : CommonScope
-    interface UploadDocument : CommonScope, WithErrors
-}
-
 interface ScopeNotification {
     /**
      * Localized string key

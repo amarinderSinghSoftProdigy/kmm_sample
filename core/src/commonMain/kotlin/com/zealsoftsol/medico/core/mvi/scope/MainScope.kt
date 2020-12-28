@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
@@ -16,29 +17,52 @@ sealed class MainScope : BaseScope() {
      */
     fun tryLogOut() = EventCollector.sendEvent(Event.Action.Auth.LogOut(true))
 
-    data class LimitedAccess(
-        override val user: DataSource<User>,
-        override val errors: DataSource<ErrorCode?> = DataSource(null),
-    ) : MainScope(), CommonScope.UploadDocument {
+    sealed class LimitedAccess : MainScope(), CommonScope.UploadDocument {
 
         val isDocumentUploaded: Boolean
             get() = user.value.isDocumentUploaded
 
-        val isCameraOptionAvailable: Boolean
-            get() = user.value.type != UserType.SEASON_BOY
+        abstract val supportedFileTypes: Array<FileType>
 
-        val supportedFileTypes: Array<FileType>
-            get() = when {
-                isDocumentUploaded -> emptyArray()
-                user.value.type == UserType.SEASON_BOY -> FileType.forAadhaar()
-                else -> FileType.forDrugLicense()
+        data class NonSeasonBoy(
+            override val user: DataSource<User>,
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
+        ) : LimitedAccess() {
+
+            override val supportedFileTypes: Array<FileType> =
+                if (isDocumentUploaded) emptyArray() else FileType.forDrugLicense()
+
+            fun uploadDrugLicense(base64: String, fileType: FileType) =
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadDrugLicense(
+                        base64,
+                        fileType
+                    )
+                )
+        }
+
+        data class SeasonBoy(
+            override val user: DataSource<User>,
+            override val errors: DataSource<ErrorCode?> = DataSource(null),
+            override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
+            override val isVerified: DataSource<Boolean> = DataSource(false),
+        ) : LimitedAccess(), CommonScope.AadhaarDataHolder {
+
+            override val supportedFileTypes: Array<FileType> =
+                if (isDocumentUploaded) emptyArray() else FileType.forAadhaar()
+
+            fun uploadAadhaar(base64: String) =
+                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+        }
+
+        companion object {
+            fun from(user: User): LimitedAccess {
+                return if (user.type == UserType.SEASON_BOY)
+                    SeasonBoy(DataSource(user))
+                else
+                    NonSeasonBoy(DataSource(user))
             }
-
-        fun uploadAadhaar(base64: String) =
-            EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
-
-        fun uploadDrugLicense(base64: String, fileType: FileType) =
-            EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64, fileType))
+        }
     }
 
     data class FullAccess(

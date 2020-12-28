@@ -58,6 +58,7 @@
     <string name="aadhaar_card">Aadhaar Card</string>
     <string name="share_code">Share Code</string>
     <string name="provide_drug_license_hint">Please provide drug license to activate the account</string>
+    <string name="provide_aadhaar_hint">Please upload Aadhaar card</string>
     <string name="upload_new_document">Upload new document</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="actions">Actions</string>

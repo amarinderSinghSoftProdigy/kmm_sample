@@ -54,9 +54,11 @@ import androidx.core.net.toUri
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.BasicTabBar
 import com.zealsoftsol.medico.screens.BottomSheet
@@ -412,7 +414,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 }
             }
         },
-        onSkip = (scope as? SignUpScope.LegalDocuments.DrugLicense)?.let { { it.skip() } },
+        onSkip = { scope.skip() },
         body = {
             when (scope) {
                 is SignUpScope.LegalDocuments.DrugLicense -> {
@@ -434,28 +436,12 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         )
                     }
                 }
-                is SignUpScope.LegalDocuments.Aadhaar -> {
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(vertical = 32.dp, horizontal = 16.dp),
-                        verticalArrangement = Arrangement.Top,
-                    ) {
-                        val aadhaar = scope.aadhaarData.flow.collectAsState()
-                        InputField(
-                            hint = stringResource(id = R.string.aadhaar_card),
-                            text = aadhaar.value.cardNumber,
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            onValueChange = { scope.changeCard(it) },
-                        )
-                        Space(dp = 12.dp)
-                        InputField(
-                            hint = stringResource(id = R.string.share_code),
-                            text = aadhaar.value.shareCode,
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            onValueChange = { scope.changeShareCode(it) },
-                        )
-                    }
-                }
+                is SignUpScope.LegalDocuments.Aadhaar -> AadhaarInputFields(
+                    aadhaarData = scope.aadhaarData,
+                    onCardChange = { scope.changeCard(it) },
+                    onCodeChange = { scope.changeShareCode(it) },
+                    modifier = Modifier.padding(vertical = 32.dp, horizontal = 16.dp),
+                )
             }
         }
     )
@@ -468,6 +454,34 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
         onFileReady = { scope.handleFileUpload(it) }
     )
     scope.showErrorAlert()
+}
+
+@Composable
+fun AadhaarInputFields(
+    aadhaarData: DataSource<AadhaarData>,
+    onCardChange: (String) -> Unit,
+    onCodeChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
+    ) {
+        val aadhaar = aadhaarData.flow.collectAsState()
+        InputField(
+            hint = stringResource(id = R.string.aadhaar_card),
+            text = aadhaar.value.cardNumber,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            onValueChange = onCardChange,
+        )
+        Space(dp = 12.dp)
+        InputField(
+            hint = stringResource(id = R.string.share_code),
+            text = aadhaar.value.shareCode,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            onValueChange = onCodeChange,
+        )
+    }
 }
 
 @Composable
@@ -522,13 +536,12 @@ private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
 inline fun MainScope.LimitedAccess.handleFileUpload(file: File) {
     val bytes = file.readBytes()
     val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-    if (isCameraOptionAvailable) {
-        uploadDrugLicense(
+    when (this) {
+        is MainScope.LimitedAccess.NonSeasonBoy -> uploadDrugLicense(
             base64,
             FileType.fromExtension(file.extension)
         )
-    } else {
-        uploadAadhaar(base64)
+        is MainScope.LimitedAccess.SeasonBoy -> uploadAadhaar(base64)
     }
 }
 

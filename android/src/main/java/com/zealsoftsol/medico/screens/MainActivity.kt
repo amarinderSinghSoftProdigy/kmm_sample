@@ -189,9 +189,18 @@ fun MainView(scope: MainScope) {
                 Welcome(
                     fullName = user.value.fullName(),
                     option = if (!scope.isDocumentUploaded) {
-                        WelcomeOption.Upload { isShowingDocumentUploadBottomSheet.value = true }
-                    } else
-                        WelcomeOption.Thanks(null),
+                        if (scope is MainScope.LimitedAccess.SeasonBoy) {
+                            WelcomeOption.Upload.Aadhaar(scope) {
+                                isShowingDocumentUploadBottomSheet.value = true
+                            }
+                        } else {
+                            WelcomeOption.Upload.DrugLicense {
+                                isShowingDocumentUploadBottomSheet.value = true
+                            }
+                        }
+                    } else {
+                        WelcomeOption.Thanks(null)
+                    },
                 )
             } else {
 
@@ -202,7 +211,7 @@ fun MainView(scope: MainScope) {
         DocumentUploadBottomSheet(
             isShowingBottomSheet = isShowingDocumentUploadBottomSheet,
             supportedFileTypes = scope.supportedFileTypes,
-            useCamera = scope.isCameraOptionAvailable,
+            useCamera = scope is MainScope.LimitedAccess.NonSeasonBoy,
             onFileReady = { scope.handleFileUpload(it) },
         )
     }
