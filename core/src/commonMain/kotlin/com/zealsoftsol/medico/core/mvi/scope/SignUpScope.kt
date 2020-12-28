@@ -308,10 +308,12 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
             }
         }
     }
-}
 
-internal inline val SignUpScope.LegalDocuments.isDocumentUploaded: Boolean
-    get() = when (this) {
-        is SignUpScope.LegalDocuments.Aadhaar -> aadhaarFile != null
-        is SignUpScope.LegalDocuments.DrugLicense -> storageKey != null
+    class Welcome(val fullName: String) : SignUpScope() {
+        init {
+            canGoNext.value = false
+        }
+
+        fun accept() = EventCollector.sendEvent(Event.Action.Registration.AcceptWelcome)
     }
+}

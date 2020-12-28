@@ -19,16 +19,18 @@ class LimitedAppAccessTests: UserInfoNavigationBarScreenTests {
         self.launchApp(forUserType: userType)
     }
     
-    private func launchApp(forUserType userType: DataUserType) {
+    private func launchApp(forUserType userType: DataUserType,
+                           isDocumentUploaded: Bool = true) {
         let limitedAppAccessScopeInfo =
-            TestsHelper.LimitedAppAccessScopeInfo(firstName: firstName,
-                                                  lastName: lastName,
-                                                  userType: userType)
+            LimitedAppAccessScopeInfo(firstName: firstName,
+                                      lastName: lastName,
+                                      userType: userType,
+                                      isDocumentUploaded: isDocumentUploaded)
         
         super.launchApp(with: limitedAppAccessScopeInfo.getLaunchEnvironment())
     }
 
-    func testInitialState() {
+    func testInitialStateWithUploadedDocument() {
         launchApp(forUserType: userType)
         
         self.testNavigationBarInitialState(hasOnlyMenuButton: true)
@@ -46,8 +48,8 @@ class LimitedAppAccessTests: UserInfoNavigationBarScreenTests {
         let image = app.images["Welcome"]
         XCTAssertTrue(image.isHittable)
         
-        self.testLocalizedText(with: "thank_you_for_registration")
-        self.testLocalizedText(with: "documents_under_review")
+        self.testLocalizedText(withLocalizationKey: "thank_you_for_registration")
+        self.testLocalizedText(withLocalizationKey: "documents_under_review")
     }
     
     func testSlidingPanelUserInterfaceForStockist() {

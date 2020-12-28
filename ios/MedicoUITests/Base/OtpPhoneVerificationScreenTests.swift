@@ -15,33 +15,29 @@ class OtpPhoneVerificationScreenTests: BaseTests {
     var phoneNumber: String = "+9102222870456"
     
     private let resendTimeout: TimeInterval = 70
+    private let attemptsNumber = 3
     
     // MARK: Initial State
     func testInitialState() {
         self.testNavigationBar(withTitleKey: "phone_verification", hasBackButton: true)
         
-        let localizedKey = "verification_code_sent_hint %@"
-        let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
-        let localizedHint = self.getLocalizedString(for: localizedKey)
-            .replacingOccurrences(of: "%@", with: formattedPhone)
-        
         let timerText = app.staticTexts["timer"]
         XCTAssertTrue(timerText.isHittable)
         
-        let attemptsLeftText = app.staticTexts["attempts_left"]
-        XCTAssertFalse(attemptsLeftText.isHittable)
+        let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+        self.testLocalizedText(withLocalizationKey: "verification_code_sent_hint %@",
+                               withParameter: formattedPhone,
+                               withElementKey: "verification_code_sent_hint")
         
-        let hintText = app.staticTexts["verification_code_sent_hint"]
-        XCTAssertTrue(hintText.isHittable)
-        XCTAssertTrue(hintText.label == localizedHint)
-        XCTAssertFalse(hintText.label == localizedKey)
+        self.testLocalizedText(withLocalizationKey: "attempts_left",
+                               isShown: false)
         
-        self.testFloatingTextField(with: "verification_code", equals: "")
+        self.testFloatingTextField(withLocalizationKey: "verification_code", equals: "")
         
-        self.testButton(with: "submit", isEnabled: false)
+        self.testButton(withLocalizationKey: "submit", isEnabled: false)
         
-        self.testLocalizedText(with: "didnt_get_code")
-        self.testLocalizedText(with: "resend")
+        self.testLocalizedText(withLocalizationKey: "didnt_get_code")
+        self.testLocalizedText(withLocalizationKey: "resend")
         
         let resendText = app.staticTexts["resend"]
         XCTAssertFalse(resendText.isEnabled)
@@ -54,6 +50,17 @@ class OtpPhoneVerificationScreenTests: BaseTests {
         
         waitForElementToDisappear(timerText, timeout: resendTimeout)
         XCTAssertTrue(attemptsLeftText.waitForExistence(timeout: resendTimeout))
+    }
+    
+    func testResendAttempsLeftText() {
+        let attemptsLeftText = app.staticTexts["attempts_left"]
+        
+        XCTAssertTrue(attemptsLeftText.waitForExistence(timeout: resendTimeout))
+        
+        self.testLocalizedText(withLocalizationKey: "attempts_left %lld",
+                               withParameter: String(attemptsNumber),
+                               withParameterSymbol: "%lld",
+                               withElementKey: "attempts_left")
     }
     
     func testResendTextEnable() {

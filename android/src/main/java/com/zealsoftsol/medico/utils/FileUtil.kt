@@ -22,6 +22,4 @@ object FileUtil {
             if (tempFile.length() > 0) tempFile else null
         }.getOrNull()
     }
-
-    fun getFileForPhoto(): File = File.createTempFile("temp", ".jpg")
 }

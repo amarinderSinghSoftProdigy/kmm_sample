@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.environment
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.ErrorCode
@@ -28,9 +29,9 @@ sealed class OtpScope : BaseScope(), CanGoBack {
 
     data class AwaitVerification(
         val phoneNumber: String,
-        val resendTimer: DataSource<Long> = DataSource(RESEND_TIMER),
+        val resendTimer: DataSource<Long> = DataSource(environment.otp.resendTimer),
         val resendActive: DataSource<Boolean> = DataSource(false),
-        val attemptsLeft: DataSource<Int> = DataSource(MAX_RESEND_ATTEMPTS + 1),
+        val attemptsLeft: DataSource<Int> = DataSource(environment.otp.maxResendAttempts + 1),
         override val errors: DataSource<ErrorCode?> = DataSource(null),
     ) : OtpScope(), WithErrors {
 
@@ -42,11 +43,6 @@ sealed class OtpScope : BaseScope(), CanGoBack {
             EventCollector.sendEvent(Event.Action.Otp.Submit(otp))
 
         fun resendOtp() = EventCollector.sendEvent(Event.Action.Otp.Resend)
-
-        companion object {
-            const val RESEND_TIMER = 1 * 60 * 1000L
-            private const val MAX_RESEND_ATTEMPTS = 3
-        }
     }
 }
 
