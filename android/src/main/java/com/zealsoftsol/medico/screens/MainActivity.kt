@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.utils.DebugScopeCreator
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DebugScopeCreator.dashboardScreen()
         setContent {
             AppTheme {
                 val currentScope = navigator.scope.flow.collectAsState()
@@ -90,7 +92,7 @@ class MainActivity : ComponentActivity(), DIAware {
                         )
                     }
                     is MainScope -> MainView(scope = scope)
-                    is SearchScope.Query -> SearchQueryScreen(scope = scope)
+                    is SearchScope.Query -> Surface { SearchQueryScreen(scope = scope) }
                     is SearchScope.Result -> {
                     }
                 }

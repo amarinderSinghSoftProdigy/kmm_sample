@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
@@ -204,19 +205,21 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
-    override suspend fun search(value: String): Response.Wrapped<SearchResponse> = ktorDispatcher {
+    override suspend fun search(
+        product: String,
+        manufacturer: String,
+        query: List<Pair<String, String>>
+    ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
             withMainToken()
             url {
                 parameters.apply {
-                    if (value.isNotEmpty()) {
-                        append("fullText", value)
+                    if (product.isNotEmpty()) append("fullText", product)
+                    if (manufacturer.isNotEmpty()) append(Filter.MANUFACTURER_ID, manufacturer)
+                    query.forEach { (name, value) ->
+                        set(name, value)
                     }
-//                    append("baseProducts", "")
-//                    append("compositions", "")
                     append("currentPage", "0")
-//                    append("drugForms", "")
-//                    append("manufacturers", "")
                     append("pageSize", "10")
                     append("sort", "ASC")
                 }

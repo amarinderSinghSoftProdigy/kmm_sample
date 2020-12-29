@@ -50,6 +50,10 @@ interface NetworkScope {
     }
 
     interface Search : NetworkScope {
-        suspend fun search(value: String): Response.Wrapped<SearchResponse>
+        suspend fun search(
+            product: String,
+            manufacturer: String,
+            query: List<Pair<String, String>>
+        ): Response.Wrapped<SearchResponse>
     }
 }

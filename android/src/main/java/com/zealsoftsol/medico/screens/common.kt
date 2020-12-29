@@ -330,11 +330,11 @@ fun Space(dp: Dp) {
 }
 
 @Composable
-fun Separator(modifier: Modifier = Modifier) {
+fun Separator(modifier: Modifier = Modifier, padding: Dp = 16.dp) {
     Box(
         modifier = modifier.fillMaxWidth()
             .height(1.dp)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = padding)
             .background(ConstColors.gray)
     )
 }

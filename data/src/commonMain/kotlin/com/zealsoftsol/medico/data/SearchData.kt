@@ -11,7 +11,8 @@ data class SearchResponse(
 
 @Serializable
 data class Facet(
-    val name: String,
+    val displayName: String,
+    val queryId: String,
     val values: List<Value>,
 )
 
@@ -46,3 +47,15 @@ data class Product(
     val uom: String,
     val uomId: String,
 )
+
+data class Filter(
+    val name: String,
+    val queryName: String,
+    val options: List<Option<String>>,
+) {
+    companion object {
+        const val MANUFACTURER_ID = "manufacturers"
+    }
+}
+
+data class Option<T>(val value: T, val isSelected: Boolean)
