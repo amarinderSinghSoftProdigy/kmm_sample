@@ -24,6 +24,7 @@ import platform.posix.NI_MAXHOST
 import platform.posix.in_addr
 import platform.posix.sockaddr_in
 import platform.posix.NI_NUMERICHOST
+import com.zealsoftsol.medico.core.extensions.logIt
 
 actual class IpAddressFetcher {
 
@@ -60,6 +61,9 @@ actual class IpAddressFetcher {
         }
 
         freeifaddrs(ifaddr.value)
+
+        "IP address: $address".logIt()
+
         return address
     }
 }
