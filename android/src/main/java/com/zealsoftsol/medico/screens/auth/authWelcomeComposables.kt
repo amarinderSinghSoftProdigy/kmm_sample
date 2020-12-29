@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.Space
 
@@ -116,7 +116,7 @@ sealed class WelcomeOption {
         ) : Upload()
 
         data class Aadhaar(
-            val dataHolder: CommonScope.AadhaarDataHolder,
+            val dataHolder: AadhaarDataHolder,
             override val buttonStringResource: Int = R.string.upload_aadhaar,
             override val hintStringResource: Int = R.string.provide_aadhaar_hint,
             override val onUpload: () -> Unit

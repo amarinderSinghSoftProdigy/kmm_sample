@@ -36,6 +36,13 @@ fun startKodein(context: Any, useMocks: Boolean) = DI {
             MockCustomerScope()
         }
     }
+    bind<NetworkScope.Search>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            TODO()
+        }
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -48,7 +55,7 @@ fun startKodein(context: Any, useMocks: Boolean) = DI {
     }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator() }
-    bind<EventCollector>() with singleton { EventCollector(instance(), instance()) }
+    bind<EventCollector>() with singleton { EventCollector(instance(), instance(), instance()) }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
     bind<TokenStorage>() with singleton { TokenStorage(instance()) }
 }.also {

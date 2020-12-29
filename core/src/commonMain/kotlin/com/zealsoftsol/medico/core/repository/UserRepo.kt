@@ -62,6 +62,10 @@ class UserRepo(
                 it.email,
                 it.phoneNumber,
                 parsedType,
+                when (parsedType) {
+                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
+                    else -> User.Details.DrugLicense(it.drugLicenseUrl)
+                },
                 it.customerMetaData.activated,
                 it.isDocumentUploaded,
             )

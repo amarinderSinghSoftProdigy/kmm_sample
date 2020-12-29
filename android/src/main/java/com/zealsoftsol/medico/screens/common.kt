@@ -200,9 +200,9 @@ fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotific
 }
 
 @Composable
-fun stringResource(resourceName: String): String {
+fun stringResourceByName(name: String): String {
     return stringResource(id = ContextAmbient.current.runCatching {
-        resources.getIdentifier(resourceName, "string", packageName)
+        resources.getIdentifier(name, "string", packageName)
     }.getOrNull() ?: 0)
 }
 
@@ -282,6 +282,7 @@ fun InputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     TextField(
         value = text,
@@ -305,7 +306,7 @@ fun InputField(
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         maxLines = maxLines,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 
@@ -326,6 +327,16 @@ fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
 @Composable
 fun Space(dp: Dp) {
     Spacer(modifier = Modifier.size(dp))
+}
+
+@Composable
+fun Separator(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+            .height(1.dp)
+            .padding(horizontal = 16.dp)
+            .background(ConstColors.gray)
+    )
 }
 
 @Composable

@@ -38,7 +38,7 @@ internal class AuthEventDelegate(
                     clearQueue()
                     setCurrentScope(
                         if (user.isVerified)
-                            MainScope.FullAccess(DataSource(user))
+                            MainScope.Dashboard(DataSource(user))
                         else
                             MainScope.LimitedAccess.from(user)
                     )

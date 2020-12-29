@@ -15,7 +15,7 @@ class MedicoApp : Application(), DIAware {
         val (di, nav) = UiLink.appStart(
             context = this,
             useMocks = false,
-            loggerLevel = if (BuildConfig.DEBUG) Logger.Level.LOG else Logger.Level.NONE,
+            loggerLevel = if (BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
         )
         this.di = di
     }

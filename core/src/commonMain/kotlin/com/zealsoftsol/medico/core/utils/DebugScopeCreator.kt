@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.directDI
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.User
@@ -20,17 +21,59 @@ object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
-    fun createLimitedAppAccessShortcut(
-        type: UserType,
-        isDocumentUploaded: Boolean
+    fun signUpDetailsNonSeasonBoy(
+        userType: UserType,
+        email: String,
+        phone: String,
+    ) {
+        require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
+
+        nav.setCurrentScope(
+            SignUpScope.Details.TraderData(
+                UserRegistration1(
+                    userType.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
+            )
+        )
+    }
+
+    fun signUpDetailsSeasonBoy(
+        email: String,
+        phone: String,
     ) {
         nav.setCurrentScope(
-            MainScope.LimitedAccess.from(
-                testUser.copy(
-                    type = type,
-                    isVerified = false,
-                    isDocumentUploaded = isDocumentUploaded
-                )
+            SignUpScope.Details.Aadhaar(
+                UserRegistration1(
+                    UserType.SEASON_BOY.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                UserRegistration2(
+                    "520001",
+                    "qq",
+                    "Vijayawada",
+                    "Vijayawada (Urban)",
+                    "Krishna",
+                    "Andhra Pradesh",
+                ),
             )
         )
     }
@@ -38,7 +81,7 @@ object DebugScopeCreator {
     fun uploadDrugLicense(
         userType: UserType,
         email: String,
-        phone: String
+        phone: String,
     ) {
         require(userType != UserType.SEASON_BOY) { "season boy not allowed" }
 
@@ -92,12 +135,10 @@ object DebugScopeCreator {
                     "Krishna",
                     "Andhra Pradesh",
                 ),
-                DataSource(
-                    AadhaarData(
-                        "887489598799",
-                        "1111",
-                    )
-                )
+                AadhaarData(
+                    "887489598799",
+                    "1111",
+                ),
             )
         )
     }
@@ -106,11 +147,32 @@ object DebugScopeCreator {
         nav.setCurrentScope(SignUpScope.Welcome(testUser.fullName()))
     }
 
-    fun fullAccessMainScreen() {
+    fun limitedAccessMainScreen(
+        type: UserType,
+        isDocumentUploaded: Boolean
+    ) {
         nav.setCurrentScope(
-            MainScope.FullAccess(
+            MainScope.LimitedAccess.from(
+                testUser.copy(
+                    type = type,
+                    isVerified = false,
+                    isDocumentUploaded = isDocumentUploaded
+                )
+            )
+        )
+    }
+
+    fun dashboardScreen() {
+        nav.setCurrentScope(
+            MainScope.Dashboard(
                 user = DataSource(testUser)
             )
+        )
+    }
+
+    fun searchQueryScreen() {
+        nav.setCurrentScope(
+            SearchScope.Query()
         )
     }
 }
@@ -122,6 +184,7 @@ private inline val testUser
         "test@mail.com",
         "000",
         UserType.STOCKIST,
+        User.Details.DrugLicense("url"),
         true,
         true,
     )
