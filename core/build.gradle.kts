@@ -35,6 +35,9 @@ kotlin {
             framework {
                 baseName = "core"
                 transitiveExport = true
+
+                val mode = if (System.getenv("CONFIGURATION") == "Release") "bitcode" else "marker"
+                embedBitcode(mode)
             }
         }
     }
