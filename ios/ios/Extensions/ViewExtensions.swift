@@ -89,13 +89,11 @@ extension View {
         self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
     
-    func userInfoNavigationBar(isLimitedAppAccess: Bool,
-                               forUser user: DataUser,
-                               logOutAction: @escaping () -> ()) -> some View {
+    func userInfoNavigationBar(withScope scope: NavAndSearchMainScope,
+                               withNavigationSection navigationSection: NavigationSection) -> some View {
         self.modifier(
-            UserInfoNavigationBar(isLimitedAppAccess: isLimitedAppAccess,
-                                  user: user,
-                                  logOutAction: logOutAction)
+            UserInfoNavigationBar(scope: scope,
+                                  navigationSection: navigationSection)
         )
     }
     

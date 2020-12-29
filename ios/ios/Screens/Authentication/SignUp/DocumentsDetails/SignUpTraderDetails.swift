@@ -10,7 +10,7 @@ import SwiftUI
 import core
 
 struct SignUpTraderDetails: View {
-    let scope: SignUpScope.TraderData
+    let scope: SignUpScope.Details.DetailsTraderData
     
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
@@ -38,7 +38,7 @@ struct SignUpTraderDetails: View {
         .scrollView()
     }
     
-    init(scope: SignUpScope.TraderData) {
+    init(scope: SignUpScope.Details.DetailsTraderData) {
         self.scope = scope
         
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
@@ -47,10 +47,10 @@ struct SignUpTraderDetails: View {
         self.validation = SwiftDataSource(dataSource: scope.validation)
     }
     
-    private func getInputField(forType type: SignUpScope.TraderDataFields) -> some View {
+    private func getInputField(forType type: SignUpScope.Details.DetailsFields) -> some View {
         switch type {
         
-        case SignUpScope.TraderDataFields.tradeName:
+        case SignUpScope.Details.DetailsFields.tradeName:
             let tradeNameErrorMessageKey = self.validation.value?.tradeName
             return AnyView(
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
@@ -61,7 +61,7 @@ struct SignUpTraderDetails: View {
                 .disableAutocorrection(true)
                 .autocapitalization(.words))
             
-        case SignUpScope.TraderDataFields.pan:
+        case SignUpScope.Details.DetailsFields.pan:
             let panNumberErrorMessageKey = self.validation.value?.panNumber
             return AnyView(
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pan_number",
@@ -72,7 +72,7 @@ struct SignUpTraderDetails: View {
                     .disableAutocorrection(true)
                     .autocapitalization(.none))
             
-        case SignUpScope.TraderDataFields.gstin:
+        case SignUpScope.Details.DetailsFields.gstin:
             let gstinErrorMessageKey = self.validation.value?.gstin
             return AnyView(
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
@@ -83,7 +83,7 @@ struct SignUpTraderDetails: View {
                     .disableAutocorrection(true)
                     .autocapitalization(.none))
             
-        case SignUpScope.TraderDataFields.license1:
+        case SignUpScope.Details.DetailsFields.license1:
             let drugLicenseNo1ErrorMessageKey = self.validation.value?.drugLicenseNo1
             return AnyView(
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
@@ -94,7 +94,7 @@ struct SignUpTraderDetails: View {
                     .disableAutocorrection(true)
                     .autocapitalization(.none))
             
-        case SignUpScope.TraderDataFields.license2:
+        case SignUpScope.Details.DetailsFields.license2:
             let drugLicenseNo2ErrorMessageKey = self.validation.value?.drugLicenseNo2
             return AnyView(
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",

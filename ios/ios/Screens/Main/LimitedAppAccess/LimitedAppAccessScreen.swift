@@ -11,22 +11,25 @@ import core
 
 struct LimitedAppAccessScreen: View {
     let scope: MainScope.LimitedAccess
-    let userName: String
+    
+    @ObservedObject var user: SwiftDataSource<DataUser>
     
     var body: some View {
         self.getView()
     }
     
-    init(scope: MainScope.LimitedAccess,
-         userName: String) {
+    init(scope: MainScope.LimitedAccess) {
         self.scope = scope
-        self.userName = userName
+        
+        self.user = SwiftDataSource(dataSource: scope.user)
     }
     
     private func getView() -> some View {
+        guard let user = self.user.value else { return AnyView(EmptyView()) }
+        
         let welcomeOption: WelcomeOption
         
-        if scope.isDocumentUploaded {
+        if user.isDocumentUploaded {
             welcomeOption = WelcomeOption.Thanks()
         }
         else {
@@ -49,7 +52,7 @@ struct LimitedAppAccessScreen: View {
         
         return AnyView(
             WelcomeScreen(welcomeOption: welcomeOption,
-                          userName: userName)
+                          userName: user.fullName())
         )
     }
     

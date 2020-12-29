@@ -90,6 +90,7 @@ struct WelcomeScreen: View {
                 MedicoButton(localizedStringKey: "okay") {
                     thanksButtonAction()
                 }
+                .navigationBarHidden(true)
             )
         }
         else if let uploadOption = self.welcomeOption as? WelcomeOption.Upload {

@@ -31,45 +31,53 @@ struct SignUpLegalDocumentsScreen: View {
     }
     
     private func getView() -> some View {
-        let view: AnyView
+        let documentRequestTextKey: String
         let buttonTextKey: String
-        let navigationBarTitle: String
         
         switch scope {
 
-        case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            view = AnyView(
-                VStack {
-                    AadhaardCardDataFields(aadhaarData: aadhaarScope.aadhaarData,
-                                           changeCard: aadhaarScope.changeCard,
-                                           changeShareCode: aadhaarScope.changeShareCode)
-                    Spacer()
-                })
+        case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
+            documentRequestTextKey = "aadhaar_card_request"
             buttonTextKey = "upload_aadhaar_card"
-            navigationBarTitle = "personal_data"
 
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            view = AnyView(DrugLicenseData())
+            documentRequestTextKey = "drug_license_request"
             buttonTextKey = "upload_new_document"
-            navigationBarTitle = "legal_documents"
             
         default:
-            view = AnyView(EmptyView())
+            documentRequestTextKey = ""
             buttonTextKey = ""
-            navigationBarTitle = ""
         }
         
         return AnyView(
-            view
-                .modifier(SignUpButton(isEnabled: canGoNext.value != false,
-                                       buttonTextKey: buttonTextKey,
-                                       skipButtonAction: { scope.skip() },
-                                       action: uploadDocuments))
-                .keyboardResponder()
-                .navigationBarTitle(LocalizedStringKey(navigationBarTitle), displayMode: .inline)
-                .filePicker(filePickerOption: $filePickerOption,
-                            forAvailableTypes: documentTypes,
-                            uploadData: uploadData)
+            GeometryReader { geometry in
+                HStack {
+                    Spacer()
+                    
+                    VStack(spacing: 28) {
+                        Spacer()
+                        
+                        Image("UploadDocuments")
+                        
+                        LocalizedText(localizedStringKey: documentRequestTextKey,
+                                      fontSize: 16,
+                                      color: .grey)
+                        
+                        Spacer()
+                    }
+                    .padding([.leading, .trailing], geometry.size.width * 0.17)
+                    
+                    Spacer()
+                }
+            }
+            .modifier(SignUpButton(isEnabled: canGoNext.value != false,
+                                   buttonTextKey: buttonTextKey,
+                                   skipButtonAction: { scope.skip() },
+                                   action: uploadDocuments))
+            .navigationBarTitle(LocalizedStringKey("legal_documents"), displayMode: .inline)
+            .filePicker(filePickerOption: $filePickerOption,
+                        forAvailableTypes: documentTypes,
+                        uploadData: uploadData)
         )
     }
     
@@ -101,57 +109,4 @@ struct SignUpLegalDocumentsScreen: View {
             break
         }
     }
-}
-
-// MARK: Documents specific views
-
-struct AadhaardCardDataFields: View  {
-    let changeCard: (String) -> ()
-    let changeShareCode: (String) -> ()
-    
-    @ObservedObject var aadhaarData: SwiftDataSource<DataAadhaarData>
-    
-    var body: some View {
-        VStack(spacing: 12) {
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "aadhaar_card",
-                                         text: aadhaarData.value?.cardNumber,
-                                         onTextChange: { newValue in self.changeCard(newValue) },
-                                         keyboardType: .numberPad)
-            
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "share_code",
-                                         text: aadhaarData.value?.shareCode,
-                                         onTextChange: { newValue in self.changeShareCode(newValue)},
-                                         keyboardType: .numberPad)
-        }
-    }
-    
-    init(aadhaarData: DataSource<DataAadhaarData>,
-         changeCard: @escaping (String) -> (),
-         changeShareCode: @escaping (String) -> ()) {
-        self.aadhaarData = SwiftDataSource(dataSource: aadhaarData)
-        
-        self.changeCard = changeCard
-        self.changeShareCode = changeShareCode
-    }
-}
-
-fileprivate struct DrugLicenseData: View  {
-    
-    var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 28) {
-                Spacer()
-                
-                Image("UploadDocuments")
-                
-                LocalizedText(localizedStringKey: "drug_license_request",
-                              fontSize: 16,
-                              color: .grey)
-                    .padding([.leading, .trailing], geometry.size.width * 0.17)
-                
-                Spacer()
-            }
-        }
-    }
-    
 }

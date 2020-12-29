@@ -52,22 +52,22 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
     override class func overrideScope(for environment: [String: String]) {
         guard let scopeInfo = getScopeInfo(from: environment) else { return }
         
-        let user = DataUser(firstName: scopeInfo.firstName,
-                            lastName: scopeInfo.lastName,
-                            email: "email@example.com",
-                            phoneNumber: "1234567890",
-                            type: scopeInfo.userType,
-                            isVerified: false,
-                            isDocumentUploaded: scopeInfo.isDocumentUploaded)
-        
-        if scopeInfo.userType == DataUserType.seasonBoy {
-            testScope.limitedAccessSeasonBoy(user: user,
-                                             error: scopeInfo.errorCode)
-        }
-        else {
-            testScope.limitedAccessNonSeasonBoy(user: user,
-                                                error: scopeInfo.errorCode)
-        }
+//        let user = DataUser(firstName: scopeInfo.firstName,
+//                            lastName: scopeInfo.lastName,
+//                            email: "email@example.com",
+//                            phoneNumber: "1234567890",
+//                            type: scopeInfo.userType,
+//                            isVerified: false,
+//                            isDocumentUploaded: scopeInfo.isDocumentUploaded)
+//
+//        if scopeInfo.userType == DataUserType.seasonBoy {
+//            testScope.limitedAccessSeasonBoy(user: user,
+//                                             error: scopeInfo.errorCode)
+//        }
+//        else {
+//            testScope.limitedAccessNonSeasonBoy(user: user,
+//                                                error: scopeInfo.errorCode)
+//        }
     }
 
     override class func getScopeInfo(from environment: [String: String]) -> LimitedAppAccessScopeInfo? {

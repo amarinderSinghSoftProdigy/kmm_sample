@@ -28,10 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         #if DEBUG
         testsHelper.overrideCurrentScope()
-        
-//        DebugScopeCreator().uploadDrugLicense(userType: .hospital,
-//                                              email: "d1@qwe.by",
-//                                              phone: "375291341670")
         #endif
     }
 

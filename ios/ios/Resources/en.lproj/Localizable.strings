@@ -78,6 +78,7 @@
 
 // MARK: Authentication Sign Up Trader Details
 "trader_details" = "Trader Details";
+"aadhaar_details" = "Aadhaar Card Details";
 "trade_name" = "Trade Name";
 "pan_number" = "PAN Number";
 "gstin" = "GSTIN";
