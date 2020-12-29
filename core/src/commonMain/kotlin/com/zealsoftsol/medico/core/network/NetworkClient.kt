@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -55,7 +56,9 @@ import kotlinx.serialization.json.Json
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
     private val tokenStorage: TokenStorage,
-) : NetworkScope.Auth, NetworkScope.Customer {
+) : NetworkScope.Auth,
+    NetworkScope.Customer,
+    NetworkScope.Search {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
@@ -201,6 +204,26 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
+    override suspend fun search(value: String): Response.Wrapped<SearchResponse> = ktorDispatcher {
+        client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    if (value.isNotEmpty()) {
+                        append("fullText", value)
+                    }
+//                    append("baseProducts", "")
+//                    append("compositions", "")
+                    append("currentPage", "0")
+//                    append("drugForms", "")
+//                    append("manufacturers", "")
+                    append("pageSize", "10")
+                    append("sort", "ASC")
+                }
+            }
+        }.getWrappedBody()
+    }
+
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
             retry(Interval.Linear(100, 5)) {
@@ -296,6 +319,7 @@ class NetworkClient(
         private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com"
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
         private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
+        private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
     }
 }
 

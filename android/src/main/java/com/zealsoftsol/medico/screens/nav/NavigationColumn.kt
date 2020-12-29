@@ -1,15 +1,12 @@
 package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ConstraintLayout
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
@@ -30,15 +27,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.NavigationOption
+import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.Separator
 import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.stringResourceByName
 
 @Composable
 fun NavigationColumn(
     userName: String,
     userType: UserType,
-    isLimittedAccess: Boolean,
-    onClick: (NavigationSection) -> Unit,
+    navigationSection: NavigationSection,
 ) {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
@@ -70,7 +70,7 @@ fun NavigationColumn(
             )
             Space(4.dp)
             Text(
-                text = com.zealsoftsol.medico.screens.stringResource(userType.stringId),
+                text = stringResourceByName(userType.stringId),
                 color = Color.White,
             )
         }
@@ -80,14 +80,13 @@ fun NavigationColumn(
                 centerHorizontallyTo(parent)
             }
         ) {
-            if (isLimittedAccess) {
+            navigationSection.main.forEach {
+                val (icon, text) = it.iconAndText
                 NavigationCell(
-                    icon = Icons.Filled.Settings,
-                    text = stringResource(R.string.settings),
-                    onClick = { onClick(NavigationSection.SETTINGS) },
+                    icon = icon,
+                    text = text,
+                    onClick = { it.select() },
                 )
-            } else {
-
             }
         }
         Column(
@@ -96,25 +95,26 @@ fun NavigationColumn(
                 centerHorizontallyTo(parent)
             }
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(1.dp)
-                    .padding(horizontal = 16.dp)
-                    .background(ConstColors.gray)
-            )
-            NavigationCell(
-                icon = vectorResource(id = R.drawable.ic_exit),
-                text = stringResource(R.string.log_out),
-                color = ConstColors.gray,
-                onClick = { onClick(NavigationSection.LOGOUT) }
-            )
+            Separator()
+            navigationSection.footer.forEach {
+                val (icon, text) = it.iconAndText
+                NavigationCell(
+                    icon = icon,
+                    text = text,
+                    color = ConstColors.gray,
+                    onClick = { it.select() }
+                )
+            }
         }
     }
 }
 
-enum class NavigationSection {
-    SETTINGS, LOGOUT
-}
+@Composable
+private inline val NavigationOption.iconAndText: Pair<VectorAsset, String>
+    get() = when (this) {
+        NavigationOption.Settings -> Icons.Filled.Settings to stringResource(R.string.settings)
+        NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit) to stringResource(R.string.log_out)
+    }
 
 @Composable
 private fun NavigationCell(

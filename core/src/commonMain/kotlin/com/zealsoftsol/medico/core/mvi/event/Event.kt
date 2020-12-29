@@ -59,13 +59,20 @@ internal sealed class Event {
             object Skip : Registration()
             object AcceptWelcome : Registration()
         }
+
+        sealed class Search : Action() {
+            override val typeClazz: KClass<*> = Search::class
+
+            data class Query(val value: String) : Search()
+        }
     }
 
     sealed class Transition : Event() {
         override val typeClazz: KClass<*> = Transition::class
 
-        object ForgetPassword : Transition()
-        object SignUp : Transition()
         object Back : Transition()
+        object SignUp : Transition()
+        object ForgetPassword : Transition()
+        object Search : Transition()
     }
 }

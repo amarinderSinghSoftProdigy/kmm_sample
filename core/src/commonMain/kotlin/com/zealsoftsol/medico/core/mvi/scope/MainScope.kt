@@ -1,6 +1,8 @@
 package com.zealsoftsol.medico.core.mvi.scope
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.NavigationOption
+import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
@@ -10,18 +12,14 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 
-sealed class MainScope : BaseScope() {
-    abstract val user: DataSource<User>
+abstract class MainScope : BaseScope() {
+    open val navigationSection: NavigationSection =
+        NavigationSection(NavigationOption.default(), NavigationOption.footer())
 
-    /**
-     * Transition to [LogInScope] if successful
-     */
-    fun tryLogOut() = EventCollector.sendEvent(Event.Action.Auth.LogOut(true))
+    sealed class LimitedAccess : MainScope(), CommonScope.UploadDocument, NavAndSearchMainScope {
 
-    sealed class LimitedAccess : MainScope(), CommonScope.UploadDocument {
-
-        val isDocumentUploaded: Boolean
-            get() = user.value.isDocumentUploaded
+        override val navigationSection: NavigationSection =
+            NavigationSection(NavigationOption.limited(), NavigationOption.footer())
 
         abstract val supportedFileTypes: Array<FileType>
 
@@ -30,8 +28,7 @@ sealed class MainScope : BaseScope() {
             override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LimitedAccess() {
 
-            override val supportedFileTypes: Array<FileType> =
-                if (isDocumentUploaded) emptyArray() else FileType.forDrugLicense()
+            override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
 
             fun uploadDrugLicense(base64: String, fileType: FileType) =
                 EventCollector.sendEvent(
@@ -53,8 +50,7 @@ sealed class MainScope : BaseScope() {
             override val isVerified: DataSource<Boolean> = DataSource(false),
         ) : LimitedAccess(), AadhaarDataHolder {
 
-            override val supportedFileTypes: Array<FileType> =
-                if (isDocumentUploaded) emptyArray() else FileType.forAadhaar()
+            override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
 
             fun uploadAadhaar(base64: String) = EventCollector.sendEvent(
                 Event.Action.Registration.UploadAadhaar(
@@ -75,7 +71,13 @@ sealed class MainScope : BaseScope() {
         }
     }
 
-    data class FullAccess(
+    data class Dashboard(
         override val user: DataSource<User>,
-    ) : MainScope()
+    ) : MainScope(), NavAndSearchMainScope
+}
+
+interface NavAndSearchMainScope {
+    val user: DataSource<User>
+
+    fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search)
 }

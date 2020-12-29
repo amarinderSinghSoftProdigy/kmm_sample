@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -20,6 +21,7 @@ import com.zealsoftsol.medico.data.UserValidation3
 
 interface NetworkScope {
 
+    @Deprecated("break down")
     interface Auth : NetworkScope {
         suspend fun login(request: UserRequest): Response.Wrapped<ErrorCode>
         suspend fun logout(): Boolean
@@ -45,5 +47,9 @@ interface NetworkScope {
 
     interface Customer : NetworkScope {
         suspend fun getCustomerData(): Response.Wrapped<CustomerData>
+    }
+
+    interface Search : NetworkScope {
+        suspend fun search(value: String): Response.Wrapped<SearchResponse>
     }
 }

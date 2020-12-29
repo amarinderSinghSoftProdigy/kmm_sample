@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 
 internal class TransitionEventDelegate(
@@ -21,6 +22,9 @@ internal class TransitionEventDelegate(
             )
             is Event.Transition.SignUp -> navigator.setCurrentScope(
                 SignUpScope.SelectUserType()
+            )
+            is Event.Transition.Search -> navigator.setCurrentScope(
+                SearchScope.Query()
             )
         }
     }
