@@ -599,13 +599,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "Medico" */;
 			buildPhases = (
+				7555FFB5242A651A00829871 /* Run Script */,
 				09DF2A296B4A29D1C3C82ECC /* [CP] Check Pods Manifest.lock */,
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				D56BEB1B90779AF1E4EB6534 /* [CP] Embed Pods Frameworks */,
-				7555FFB5242A651A00829871 /* Run Script */,
 				331BECFF25934DC300757694 /* ShellScript */,
 			);
 			buildRules = (

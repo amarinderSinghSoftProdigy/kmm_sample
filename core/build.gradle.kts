@@ -77,7 +77,7 @@ val packForXcode by tasks.creating(Sync::class) {
         .map { it.binaries.getFramework(mode) }
         .first()
         .let { framework ->
-            println("Building $iosArchitecture framework")
+            println("Building $iosArchitecture framework for $mode")
             inputs.property("mode", mode)
             dependsOn(framework.linkTask)
             val targetDir = File(buildDir, "xcode-frameworks")
