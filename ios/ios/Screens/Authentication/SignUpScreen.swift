@@ -34,13 +34,21 @@ struct SignUpScreen: View {
             progressFill = 0.6
             scopeView = AnyView(SignUpAddressScreen(scope: scope))
             
-        case let scope as SignUpScope.TraderData:
+        case let scope as SignUpScope.Details.DetailsTraderData:
             progressFill = 0.8
             scopeView = AnyView(SignUpTraderDetails(scope: scope))
+            
+        case let scope as SignUpScope.Details.DetailsAadhaar:
+            progressFill = 0.8
+            scopeView = AnyView(SignUpAadhaarCardDetailsScreen(scope: scope))
             
         case let scope as SignUpScope.LegalDocuments:
             progressFill = 1.0
             scopeView = AnyView(SignUpLegalDocumentsScreen(scope: scope))
+            
+        case let scope as SignUpScope.Welcome:
+            return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scope.accept() },
+                                         userName: scope.fullName))
             
         default:
             progressFill = 0

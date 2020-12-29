@@ -29,6 +29,7 @@
 		336EE4FC259490E400D354C8 /* OtpScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */; };
 		336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */; };
 		336EE5012594A09200D354C8 /* LogInScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */; };
+		3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */; };
 		3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */; };
 		3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC792583875900570BB3 /* FilePicker.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
@@ -58,6 +59,7 @@
 		33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */; };
 		33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */; };
 		33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
+		33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
@@ -143,6 +145,7 @@
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpScopeInfo.swift; sourceTree = "<group>"; };
 		336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInScopeInfo.swift; sourceTree = "<group>"; };
+		3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpWelcomeScreen.swift; sourceTree = "<group>"; };
 		3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScreen.swift; sourceTree = "<group>"; };
 		3376EC792583875900570BB3 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
@@ -168,6 +171,7 @@
 		33CDAA2B256E55AB001C189A /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColor.swift; path = ios/utils/AppColor.swift; sourceTree = SOURCE_ROOT; };
 		33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColorViewsExtensions.swift; path = ios/extensions/AppColorViewsExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreenTests.swift; sourceTree = "<group>"; };
+		33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAadhaarCardDetailsScreen.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -268,11 +272,12 @@
 		334574EE257629B6002839C5 /* SignUp */ = {
 			isa = PBXGroup;
 			children = (
+				33D57336259B37B200A9B5C5 /* DocumentsDetails */,
 				33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */,
+				33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */,
 				339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */,
 				336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */,
-				33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */,
-				335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */,
+				3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */,
 			);
 			path = SignUp;
 			sourceTree = "<group>";
@@ -452,6 +457,15 @@
 				33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */,
 			);
 			path = PasswordRestore;
+			sourceTree = "<group>";
+		};
+		33D57336259B37B200A9B5C5 /* DocumentsDetails */ = {
+			isa = PBXGroup;
+			children = (
+				33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */,
+				335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */,
+			);
+			path = DocumentsDetails;
 			sourceTree = "<group>";
 		};
 		33E7682D256D5F6D00B35FDF /* Fonts */ = {
@@ -824,6 +838,7 @@
 				336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
 				3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */,
 				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
+				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
@@ -848,6 +863,7 @@
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				337DE628258A523800614951 /* TestsHelper.swift in Sources */,
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
+				3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
@@ -1079,7 +1095,7 @@
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1110,7 +1126,7 @@
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
