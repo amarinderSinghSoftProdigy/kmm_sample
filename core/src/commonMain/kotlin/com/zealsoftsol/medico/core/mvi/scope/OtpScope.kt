@@ -7,13 +7,13 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.PasswordValidation
 
-sealed class OtpScope : BaseScope(), CanGoBack {
+sealed class OtpScope : BaseScope(), CommonScope.CanGoBack {
 
     data class PhoneNumberInput(
         val phoneNumber: DataSource<String>,
         internal val isForRegisteredUsersOnly: Boolean,
         override val errors: DataSource<ErrorCode?> = DataSource(null),
-    ) : OtpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint {
+    ) : OtpScope(), CommonScope.WithErrors, CommonScope.PhoneVerificationEntryPoint {
 
         fun changePhoneNumber(phoneNumber: String) {
             this.phoneNumber.value = phoneNumber
@@ -33,7 +33,7 @@ sealed class OtpScope : BaseScope(), CanGoBack {
         val resendActive: DataSource<Boolean> = DataSource(false),
         val attemptsLeft: DataSource<Int> = DataSource(environment.otp.maxResendAttempts + 1),
         override val errors: DataSource<ErrorCode?> = DataSource(null),
-    ) : OtpScope(), WithErrors {
+    ) : OtpScope(), CommonScope.WithErrors {
 
         /**
          * Transition to [EnterNewPasswordScope] if successful
@@ -50,7 +50,7 @@ data class EnterNewPasswordScope(
     internal val phoneNumber: String,
     val passwordValidation: DataSource<PasswordValidation?>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
-) : BaseScope(), CanGoBack, WithNotifications {
+) : BaseScope(), CommonScope.CanGoBack, CommonScope.WithNotifications {
 
     fun changePassword(newPassword: String) =
         EventCollector.sendEvent(Event.Action.ResetPassword.Send(newPassword))

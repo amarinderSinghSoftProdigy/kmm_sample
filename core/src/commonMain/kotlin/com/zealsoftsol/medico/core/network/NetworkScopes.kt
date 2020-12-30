@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -47,6 +48,10 @@ interface NetworkScope {
 
     interface Customer : NetworkScope {
         suspend fun getCustomerData(): Response.Wrapped<CustomerData>
+    }
+
+    interface Product : NetworkScope {
+        suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse>
     }
 
     interface Search : NetworkScope {

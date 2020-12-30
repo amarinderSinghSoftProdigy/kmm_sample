@@ -49,9 +49,9 @@ import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.WithErrors
-import com.zealsoftsol.medico.core.mvi.scope.WithNotifications
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithErrors
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 

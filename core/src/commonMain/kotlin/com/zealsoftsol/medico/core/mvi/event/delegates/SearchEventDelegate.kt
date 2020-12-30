@@ -3,17 +3,14 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.extensions.warnIt
-import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,7 +30,6 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SearchManufacturer -> searchManufacturer(event.value)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
-        is Event.Action.Search.SelectProduct -> selectProduct(event.product)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
     }
 
@@ -105,15 +101,6 @@ internal class SearchEventDelegate(
             if (filter == null) it.productSearch.value = ""
             it.search()
         }
-    }
-
-    private fun selectProduct(product: Product) {
-        navigator.setCurrentScope(
-            MainScope.ProductInfo(
-                user = DataSource(userRepo.user!!),
-                product = product,
-            )
-        )
     }
 
     private suspend fun loadMoreProducts() {

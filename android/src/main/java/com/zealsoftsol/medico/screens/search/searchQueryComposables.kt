@@ -52,7 +52,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.screens.Separator
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.TabBar
@@ -114,7 +114,7 @@ fun SearchQueryScreen(scope: SearchScope) {
 }
 
 @Composable
-private fun ProductItem(product: Product, onClick: () -> Unit) {
+private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)

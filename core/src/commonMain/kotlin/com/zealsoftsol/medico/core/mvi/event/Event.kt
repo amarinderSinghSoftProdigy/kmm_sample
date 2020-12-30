@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -70,8 +69,13 @@ internal sealed class Event {
             data class SelectFilter(val filter: Filter, val option: Option<String>) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SearchManufacturer(val value: String) : Search()
-            data class SelectProduct(val product: Product) : Search()
             object LoadMoreProducts : Search()
+        }
+
+        sealed class Product : Action() {
+            override val typeClazz: KClass<*> = Product::class
+
+            data class Select(val productCode: String) : Product()
         }
     }
 

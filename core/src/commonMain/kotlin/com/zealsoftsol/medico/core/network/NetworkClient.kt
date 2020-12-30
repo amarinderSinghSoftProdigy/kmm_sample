@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -60,7 +61,8 @@ class NetworkClient(
     private val tokenStorage: TokenStorage,
 ) : NetworkScope.Auth,
     NetworkScope.Customer,
-    NetworkScope.Search {
+    NetworkScope.Search,
+    NetworkScope.Product {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
@@ -229,6 +231,13 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
+    override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
+        ktorDispatcher {
+            client.get<SimpleResponse<ProductResponse>>("$PRODUCTS_URL/api/v1/product/$productCode") {
+                withMainToken()
+            }.getWrappedBody()
+        }
+
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
             retry(Interval.Linear(100, 5)) {
@@ -325,6 +334,7 @@ class NetworkClient(
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
         private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
+        private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
     }
 }
 

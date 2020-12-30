@@ -55,7 +55,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
