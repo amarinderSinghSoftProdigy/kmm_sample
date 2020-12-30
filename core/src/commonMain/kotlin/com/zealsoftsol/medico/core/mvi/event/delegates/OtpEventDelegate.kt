@@ -7,10 +7,10 @@ import com.zealsoftsol.medico.core.mvi.environment
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithErrors
 import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.WithErrors
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode

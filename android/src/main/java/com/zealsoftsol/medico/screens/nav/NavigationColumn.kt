@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +44,7 @@ fun NavigationColumn(
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
 
         Image(
-            asset = imageResource(id = R.drawable.nav_bg),
+            bitmap = imageResource(id = R.drawable.nav_bg),
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth()
                 .constrainAs(bg) {
@@ -59,7 +59,7 @@ fun NavigationColumn(
             }.padding(start = 16.dp)
         ) {
             Image(
-                asset = imageResource(id = R.drawable.avatar),
+                bitmap = imageResource(id = R.drawable.avatar),
                 modifier = Modifier.size(64.dp),
             )
             Space(8.dp)
@@ -110,7 +110,7 @@ fun NavigationColumn(
 }
 
 @Composable
-private inline val NavigationOption.iconAndText: Pair<VectorAsset, String>
+private inline val NavigationOption.iconAndText: Pair<ImageVector, String>
     get() = when (this) {
         NavigationOption.Settings -> Icons.Filled.Settings to stringResource(R.string.settings)
         NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit) to stringResource(R.string.log_out)
@@ -118,7 +118,7 @@ private inline val NavigationOption.iconAndText: Pair<VectorAsset, String>
 
 @Composable
 private fun NavigationCell(
-    icon: VectorAsset,
+    icon: ImageVector,
     text: String,
     color: Color = MaterialTheme.colors.onPrimary,
     onClick: () -> Unit
@@ -130,7 +130,7 @@ private fun NavigationCell(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            asset = icon,
+            imageVector = icon,
             tint = color,
             modifier = Modifier.padding(start = 18.dp),
         )

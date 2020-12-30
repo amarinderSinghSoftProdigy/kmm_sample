@@ -5,13 +5,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SearchResponse(
     val facets: List<Facet>,
-    val products: List<Product>,
+    val products: List<ProductSearch>,
     val totalResults: Int,
 )
 
 @Serializable
 data class Facet(
-    val name: String,
+    val displayName: String,
+    val queryId: String,
     val values: List<Value>,
 )
 
@@ -22,7 +23,7 @@ data class Value(
 )
 
 @Serializable
-data class Product(
+data class ProductSearch(
     val baseProduct: String,
     val baseProductId: String,
     val composition: List<String>,
@@ -46,3 +47,15 @@ data class Product(
     val uom: String,
     val uomId: String,
 )
+
+data class Filter(
+    val name: String,
+    val queryName: String,
+    val options: List<Option<String>>,
+) {
+    companion object {
+        const val MANUFACTURER_ID = "manufacturers"
+    }
+}
+
+data class Option<T>(val value: T, val isSelected: Boolean)

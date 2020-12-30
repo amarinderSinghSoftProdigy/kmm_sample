@@ -90,9 +90,7 @@ class MainActivity : ComponentActivity(), DIAware {
                         )
                     }
                     is MainScope -> MainView(scope = scope)
-                    is SearchScope.Query -> SearchQueryScreen(scope = scope)
-                    is SearchScope.Result -> {
-                    }
+                    is SearchScope -> Surface { SearchQueryScreen(scope = scope) }
                 }
                 val isInProgress = currentScope.value.isInProgress.flow.collectAsState()
                 if (isInProgress.value) IndefiniteProgressBar()

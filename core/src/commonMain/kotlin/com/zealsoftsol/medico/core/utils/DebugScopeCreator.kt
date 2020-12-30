@@ -172,9 +172,7 @@ object DebugScopeCreator {
     }
 
     fun searchQueryScreen() {
-        nav.setCurrentScope(
-            SearchScope.Query()
-        )
+        nav.setCurrentScope(SearchScope())
     }
 }
 

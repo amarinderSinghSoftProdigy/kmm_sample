@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
@@ -14,7 +15,7 @@ import com.zealsoftsol.medico.core.mvi.scope.BaseScope
 import com.zealsoftsol.medico.core.mvi.scope.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.NavAndSearchMainScope
-import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.repository.UserRepo
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -24,17 +25,18 @@ import kotlin.reflect.KClass
 internal class EventCollector(
     private val navigator: Navigator,
 
-    private val networkSearchScope: NetworkScope.Search,
+    private val networkClient: NetworkClient,
     private val userRepo: UserRepo,
 ) {
-    private val delegateMap = hashMapOf<KClass<*>, EventDelegate<*>>().apply {
-        put(Event.Transition::class, TransitionEventDelegate(navigator))
-        put(Event.Action.Auth::class, AuthEventDelegate(navigator, userRepo))
-        put(Event.Action.Otp::class, OtpEventDelegate(navigator, userRepo))
-        put(Event.Action.ResetPassword::class, PasswordEventDelegate(navigator, userRepo))
-        put(Event.Action.Registration::class, RegistrationEventDelegate(navigator, userRepo))
-        put(Event.Action.Search::class, SearchEventDelegate(navigator, networkSearchScope))
-    }
+    private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
+        Event.Transition::class to TransitionEventDelegate(navigator),
+        Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo),
+        Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
+        Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
+        Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
+        Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, networkClient),
+        Event.Action.Product::class to ProductEventDelegate(navigator, userRepo, networkClient),
+    )
 
     init {
         GlobalScope.launch(compatDispatcher) {

@@ -7,17 +7,20 @@ import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -58,7 +61,8 @@ class NetworkClient(
     private val tokenStorage: TokenStorage,
 ) : NetworkScope.Auth,
     NetworkScope.Customer,
-    NetworkScope.Search {
+    NetworkScope.Search,
+    NetworkScope.Product {
 
     private val client = HttpClient(engine) {
         addInterceptor(this)
@@ -204,25 +208,35 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
-    override suspend fun search(value: String): Response.Wrapped<SearchResponse> = ktorDispatcher {
+    override suspend fun search(
+        product: String,
+        manufacturer: String,
+        page: Int,
+        query: List<Pair<String, String>>,
+    ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
             withMainToken()
             url {
                 parameters.apply {
-                    if (value.isNotEmpty()) {
-                        append("fullText", value)
+                    if (product.isNotEmpty()) append("fullText", product)
+                    if (manufacturer.isNotEmpty()) append(Filter.MANUFACTURER_ID, manufacturer)
+                    query.forEach { (name, value) ->
+                        set(name, value)
                     }
-//                    append("baseProducts", "")
-//                    append("compositions", "")
-                    append("currentPage", "0")
-//                    append("drugForms", "")
-//                    append("manufacturers", "")
-                    append("pageSize", "10")
+                    append("currentPage", page.toString())
+                    append("pageSize", SearchScope.DEFAULT_ITEMS_PER_PAGE.toString())
                     append("sort", "ASC")
                 }
             }
         }.getWrappedBody()
     }
+
+    override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
+        ktorDispatcher {
+            client.get<SimpleResponse<ProductResponse>>("$PRODUCTS_URL/api/v1/product/$productCode") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
@@ -320,6 +334,7 @@ class NetworkClient(
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
         private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
+        private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
     }
 }
 

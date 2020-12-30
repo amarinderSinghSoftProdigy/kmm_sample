@@ -38,8 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ConfigurationAmbient
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientConfiguration
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +55,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
@@ -197,7 +197,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     color = ConstColors.gray,
                     style = MaterialTheme.typography.caption,
                 )
-                val context = ContextAmbient.current
+                val context = AmbientContext.current
                 Text(
                     text = stringResource(id = R.string.tos_line_2),
                     color = ConstColors.lightBlue,
@@ -405,7 +405,7 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
     val isShowingBottomSheet = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-    val activity = ContextAmbient.current as MainActivity
+    val activity = AmbientContext.current as MainActivity
     BasicAuthSignUpScreenWithButton(
         title = stringResource(id = R.string.legal_documents),
         progress = 1.0,
@@ -447,7 +447,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
-                    asset = vectorResource(id = R.drawable.ic_upload),
+                    imageVector = vectorResource(id = R.drawable.ic_upload),
                     tint = ConstColors.gray,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
@@ -502,7 +502,7 @@ fun AadhaarInputFields(
 fun DocumentUploadBottomSheet(
     supportedFileTypes: Array<FileType>,
     useCamera: Boolean,
-    activity: MainActivity = ContextAmbient.current as MainActivity,
+    activity: MainActivity = AmbientContext.current as MainActivity,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     isShowingBottomSheet: MutableState<Boolean> = remember { mutableStateOf(false) },
     onFileReady: (File) -> Unit,
@@ -587,7 +587,7 @@ private fun LocationSelector(
                     modifier = Modifier.align(Alignment.CenterStart),
                 )
                 Icon(
-                    asset = vectorResource(id = R.drawable.ic_drop_down),
+                    imageVector = vectorResource(id = R.drawable.ic_drop_down),
                     modifier = Modifier.align(Alignment.CenterEnd),
                     tint = ConstColors.gray,
                 )
@@ -624,7 +624,7 @@ private fun BasicAuthSignUpScreen(
         Box(
             modifier = Modifier
                 .background(ConstColors.yellow)
-                .size((ConfigurationAmbient.current.screenWidthDp * progress).dp, 4.dp)
+                .size((AmbientConfiguration.current.screenWidthDp * progress).dp, 4.dp)
         )
         Box(modifier = Modifier.fillMaxSize()) {
             body()
@@ -683,7 +683,7 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(asset = vectorResource(id = iconRes))
+        Image(imageVector = vectorResource(id = iconRes))
         Text(text = stringResource(id = textRes), modifier = Modifier.padding(4.dp))
     }
 }

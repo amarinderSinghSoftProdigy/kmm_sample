@@ -16,7 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonConstants
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -33,9 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.VectorAsset
-import androidx.compose.ui.platform.ConfigurationAmbient
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.AmbientConfiguration
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -49,9 +49,9 @@ import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.WithErrors
-import com.zealsoftsol.medico.core.mvi.scope.WithNotifications
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithErrors
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 
@@ -61,7 +61,7 @@ fun BasicTabBar(back: CanGoBack?, title: String) {
         Row {
             if (back != null) {
                 Icon(
-                    asset = vectorResource(id = R.drawable.ic_arrow_back),
+                    imageVector = vectorResource(id = R.drawable.ic_arrow_back),
                     modifier = Modifier.align(Alignment.CenterVertically)
                         .fillMaxHeight()
                         .padding(16.dp)
@@ -103,7 +103,7 @@ fun MedicoButton(
 ) {
     Button(
         onClick = onClick,
-        colors = ButtonConstants.defaultButtonColors(
+        colors = ButtonDefaults.buttonColors(
             backgroundColor = ConstColors.yellow,
             disabledBackgroundColor = Color.LightGray,
             contentColor = MaterialTheme.colors.onPrimary,
@@ -111,7 +111,7 @@ fun MedicoButton(
         ),
         enabled = isEnabled,
         shape = RoundedCornerShape(2.dp),
-        elevation = ButtonConstants.defaultElevation(),
+        elevation = ButtonDefaults.elevation(),
         modifier = modifier.fillMaxWidth().height(48.dp),
     ) {
         Text(
@@ -151,8 +151,8 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonConstants.defaultTextButtonColors(contentColor = ConstColors.lightBlue),
-                elevation = ButtonConstants.defaultElevation(0.dp, 0.dp, 0.dp),
+                colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
             ) {
                 Text(
                     text = stringResource(id = R.string.okay),
@@ -167,10 +167,10 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
 fun <T : WithErrors> T.showErrorAlert() {
     val errorCode = errors.flow.collectAsState()
     errorCode.value?.let {
-        val titleResourceId = ContextAmbient.current.runCatching {
+        val titleResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
         }.getOrNull() ?: 0
-        val bodyResourceId = ContextAmbient.current.runCatching {
+        val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
         ErrorDialog(
@@ -185,10 +185,10 @@ fun <T : WithErrors> T.showErrorAlert() {
 fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotification() }) {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
-        val titleResourceId = ContextAmbient.current.runCatching {
+        val titleResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
         }.getOrNull() ?: 0
-        val bodyResourceId = ContextAmbient.current.runCatching {
+        val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
         ErrorDialog(
@@ -201,7 +201,7 @@ fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotific
 
 @Composable
 fun stringResourceByName(name: String): String {
-    return stringResource(id = ContextAmbient.current.runCatching {
+    return stringResource(id = AmbientContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
     }.getOrNull() ?: 0)
 }
@@ -215,7 +215,7 @@ fun PhoneFormatInputField(
     val countryCode = when {
         BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
         BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> ConfigurationAmbient.current.locale.country
+        else -> AmbientConfiguration.current.locale.country
     }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = formatter.verifyNumber(text)
@@ -242,7 +242,7 @@ fun PhoneOrEmailFormatInputField(
     val countryCode = when {
         BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
         BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> ConfigurationAmbient.current.locale.country
+        else -> AmbientConfiguration.current.locale.country
     }
     val formatter = remember { PhoneNumberFormatter(countryCode) }
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
@@ -275,6 +275,7 @@ fun PasswordFormatInputField(
 
 @Composable
 fun InputField(
+    modifier: Modifier = Modifier,
     hint: String,
     text: String,
     isValid: Boolean = true,
@@ -282,7 +283,6 @@ fun InputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     TextField(
         value = text,
@@ -330,11 +330,11 @@ fun Space(dp: Dp) {
 }
 
 @Composable
-fun Separator(modifier: Modifier = Modifier) {
+fun Separator(modifier: Modifier = Modifier, padding: Dp = 16.dp) {
     Box(
         modifier = modifier.fillMaxWidth()
             .height(1.dp)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = padding)
             .background(ConstColors.gray)
     )
 }
@@ -348,7 +348,7 @@ fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
     return state
 }
 
-data class BottomSheetCell(val stringId: Int, val iconAsset: VectorAsset)
+data class BottomSheetCell(val stringId: Int, val iconAsset: ImageVector)
 
 @Composable
 fun BottomSheet(
@@ -387,7 +387,7 @@ fun BottomSheet(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            asset = it.iconAsset,
+                            imageVector = it.iconAsset,
                             modifier = Modifier.padding(horizontal = 18.dp)
                         )
                         Text(

@@ -9,7 +9,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 data class LogInScope(
     val credentials: DataSource<AuthCredentials>,
     override val errors: DataSource<ErrorCode?> = DataSource(null),
-) : BaseScope(), WithErrors {
+) : BaseScope(), CommonScope.WithErrors {
 
     /**
      * Updates current scope, result posted to [credentials]
