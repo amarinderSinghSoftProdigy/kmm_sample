@@ -3,7 +3,7 @@ import java.io.File
 
 object Versions {
     const val kotlin = "1.4.20"
-    const val ktor = "1.4.1"
+    const val ktor = "1.4.3"
     const val coroutines = "1.3.9-native-mt-2"
     const val kserialize = "1.0.1"
     const val work = "2.0.1"

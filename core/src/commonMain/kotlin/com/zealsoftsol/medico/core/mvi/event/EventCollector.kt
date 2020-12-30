@@ -27,14 +27,14 @@ internal class EventCollector(
     private val networkSearchScope: NetworkScope.Search,
     private val userRepo: UserRepo,
 ) {
-    private val delegateMap = hashMapOf<KClass<*>, EventDelegate<*>>().apply {
-        put(Event.Transition::class, TransitionEventDelegate(navigator))
-        put(Event.Action.Auth::class, AuthEventDelegate(navigator, userRepo))
-        put(Event.Action.Otp::class, OtpEventDelegate(navigator, userRepo))
-        put(Event.Action.ResetPassword::class, PasswordEventDelegate(navigator, userRepo))
-        put(Event.Action.Registration::class, RegistrationEventDelegate(navigator, userRepo))
-        put(Event.Action.Search::class, SearchEventDelegate(navigator, networkSearchScope))
-    }
+    private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
+        Event.Transition::class to TransitionEventDelegate(navigator),
+        Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo),
+        Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
+        Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
+        Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
+        Event.Action.Search::class to SearchEventDelegate(navigator, networkSearchScope),
+    )
 
     init {
         GlobalScope.launch(compatDispatcher) {
