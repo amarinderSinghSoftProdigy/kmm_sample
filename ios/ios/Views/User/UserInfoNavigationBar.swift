@@ -14,42 +14,34 @@ struct UserInfoNavigationBar: ViewModifier {
     let navigationSection: NavigationSection
     
     @State private var showsSlidingPanel = false
+    @State private var text = ""
+    
     @ObservedObject var user: SwiftDataSource<DataUser>
     
-    var slidingPanelButton: some View {
+    private var slidingPanelButton: some View {
         Button(action: { self.changeSlidingPanelState(isHidden: false) }) {
             Image("Menu")
-                .resizable()
                 .aspectRatio(contentMode: .fit)
         }
     }
     
-    private var blurView: some View {
-        BlurEffectView()
-            .testingIdentifier("blur_view")
-            .transition(.identity)
-            .onTapGesture { self.changeSlidingPanelState(isHidden: true) }
-    }
-    
-    var bottomOptionsView: some View {
-        ForEach(navigationSection.footer, id: \.self) { option in
-            Group {
-                if let localizedStringKey = option.textLocalizationKey {
-                    Button(action: { _ = option.select() }) {
-                        HStack(spacing: 24) {
-                            if let imageName = option.imageName {
-                                Image(imageName)
-                            }
-                            
-                            LocalizedText(localizedStringKey: localizedStringKey,
-                                          textWeight: .semiBold,
-                                          fontSize: 15,
-                                          color: .grey)
-                        }
-                    }
-                    .testingIdentifier("\(localizedStringKey)_button")
+    private var navigationBar: some View {
+        VStack(spacing: 0){
+            ZStack {
+                AppColor.navigationBar.color
+                    .edgesIgnoringSafeArea(.all)
+                
+                HStack {
+                    self.slidingPanelButton
+                    
+                    TextField("Search", text: $text)
                 }
+                .padding([.leading, .trailing], 19)
             }
+            .frame(height: 44)
+            
+            AppColor.lightGrey.color
+                .frame(height: 1)
         }
     }
     
@@ -67,26 +59,23 @@ struct UserInfoNavigationBar: ViewModifier {
                 ZStack {
                     AppColor.primary.color
                     
-                    content
-                        .frame(width: geometry.size.width,
-                                height: geometry.size.height,
-                                alignment: .top)
-                        .zIndex(1)
-                
-                    ZStack {
-                        if showsSlidingPanel {
-                            self.blurView
-                            
-                            self.getSlidingPanel(for: geometry)
-                        }
+                    VStack(spacing: 0) {
+                        navigationBar
+                        
+                        content
                     }
-                    .zIndex(2)
+                    .zIndex(1)
+                
+                    SlidingPanelView(navigationSection: navigationSection,
+                                     user: user.value,
+                                     geometry: geometry,
+                                     isShown: showsSlidingPanel,
+                                     changeSlidingPanelState: changeSlidingPanelState)
+                        .zIndex(2)
                 }
             }
             .gesture(getDragGesture())
-            .navigationBarTitle("", displayMode: .inline)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading: slidingPanelButton)
+            .navigationBarHidden(true)
         )
         
         return baseNavigationBarView
@@ -96,52 +85,6 @@ struct UserInfoNavigationBar: ViewModifier {
         withAnimation {
             self.showsSlidingPanel = !isHidden
         }
-    }
-    
-    private func getSlidingPanel(for geometry: GeometryProxy) -> some View {
-        return AnyView(
-            VStack(spacing: -1) {
-                if let user = self.user.value {
-                    ZStack(alignment: .bottomLeading) {
-                        Image("AccountInfoBackground")
-                        
-                        VStack(alignment: .leading, spacing: 6) {
-                            Image("DefaultUserPhoto")
-                                .testingIdentifier("user_photo")
-                            
-                            Text(user.fullName())
-                                .modifier(MedicoText(textWeight: .bold))
-                                .testingIdentifier("user_name")
-                            
-                            LocalizedText(localizedStringKey: user.type.localizedName,
-                                          textWeight: .medium)
-                        }
-                        .padding()
-                    }
-                }
-                
-                ZStack {
-                    AppColor.primary.color
-                        .testingIdentifier("sliding_panel")
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        Spacer()
-                        
-                        AppColor.grey.color
-                            .frame(height: 1)
-                        
-                        self.bottomOptionsView
-                    }
-                    .padding()
-                    .padding(.bottom, 20)
-                }
-            }
-            .frame(width: geometry.size.width * 0.81)
-            .frame(maxWidth: 400, alignment: .leading)
-            .shadow(radius: 9)
-            .navigationBarHidden(true)
-            .transition(.move(edge: .leading))
-        )
     }
     
     private func getDragGesture() -> some Gesture {
@@ -185,5 +128,113 @@ extension NavigationOption {
         default:
             return nil
         }
+    }
+}
+
+struct SlidingPanelView: View {
+    let navigationSection: NavigationSection
+    let changeSlidingPanelState: (Bool) -> ()
+    
+    let geometry: GeometryProxy
+    let isShown: Bool
+    
+    let user: DataUser?
+    
+    var body: some View {
+        ZStack {
+            if isShown {
+                self.blurView
+                    
+                self.getSlidingPanel(for: geometry)
+            }
+        }
+    }
+    
+    init(navigationSection: NavigationSection,
+         user: DataUser?,
+         geometry: GeometryProxy,
+         isShown: Bool,
+         changeSlidingPanelState: @escaping (Bool) -> ()) {
+        self.navigationSection = navigationSection
+        self.changeSlidingPanelState = changeSlidingPanelState
+        
+        self.geometry = geometry
+        self.isShown = isShown
+        
+        self.user = user
+    }
+    
+    private var blurView: some View {
+        BlurEffectView()
+            .testingIdentifier("blur_view")
+            .transition(.identity)
+            .onTapGesture { self.changeSlidingPanelState(true) }
+    }
+    
+    private var bottomOptionsView: some View {
+        ForEach(navigationSection.footer, id: \.self) { option in
+            Group {
+                if let localizedStringKey = option.textLocalizationKey {
+                    Button(action: { _ = option.select() }) {
+                        HStack(spacing: 24) {
+                            if let imageName = option.imageName {
+                                Image(imageName)
+                            }
+                            
+                            LocalizedText(localizedStringKey: localizedStringKey,
+                                          textWeight: .semiBold,
+                                          fontSize: 15,
+                                          color: .grey)
+                        }
+                    }
+                    .testingIdentifier("\(localizedStringKey)_button")
+                }
+            }
+        }
+    }
+    
+    private func getSlidingPanel(for geometry: GeometryProxy) -> some View {
+        return AnyView(
+            VStack(spacing: -1) {
+                if let user = self.user {
+                    ZStack(alignment: .bottomLeading) {
+                        Image("AccountInfoBackground")
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Image("DefaultUserPhoto")
+                                .testingIdentifier("user_photo")
+
+                            Text(user.fullName())
+                                .modifier(MedicoText(textWeight: .bold))
+                                .testingIdentifier("user_name")
+
+                            LocalizedText(localizedStringKey: user.type.localizedName,
+                                          textWeight: .medium)
+                        }
+                        .padding()
+                    }
+                }
+                
+                ZStack {
+                    AppColor.primary.color
+                        .testingIdentifier("sliding_panel")
+                    
+                    VStack(alignment: .leading, spacing: 20) {
+                        Spacer()
+                        
+                        AppColor.grey.color
+                            .frame(height: 1)
+                        
+                        self.bottomOptionsView
+                    }
+                    .padding()
+                    .padding(.bottom, 20)
+                }
+            }
+            .frame(width: geometry.size.width * 0.81)
+            .frame(maxWidth: 400, alignment: .leading)
+            .shadow(radius: 9)
+            .transition(.move(edge: .leading))
+        )
     }
 }

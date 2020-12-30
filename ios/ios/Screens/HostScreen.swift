@@ -38,7 +38,7 @@ struct HostScreen: View {
     
     private func setUpNavigationBar() {
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = UIColor(hex: 0xD9EDF9)
+        appearance.backgroundColor = UIColor(named: "NavigationBar")
         
         var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
         if let titleFont = UIFont(name: "Barlow-SemiBold", size: 17) {

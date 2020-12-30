@@ -11,6 +11,7 @@ import SwiftUI
 
 enum AppColor: String {
     case primary
+    case navigationBar
     
     case white
     case yellow
