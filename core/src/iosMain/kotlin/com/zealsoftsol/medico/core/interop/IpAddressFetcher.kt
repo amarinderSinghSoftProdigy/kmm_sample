@@ -62,8 +62,6 @@ actual class IpAddressFetcher {
 
         freeifaddrs(ifaddr.value)
 
-        "IP address: $address".logIt()
-
         return address
     }
 }
