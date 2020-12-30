@@ -31,12 +31,17 @@ struct UserInfoNavigationBar: ViewModifier {
                 AppColor.navigationBar.color
                     .edgesIgnoringSafeArea(.all)
                 
-                HStack {
+                let spacing: CGFloat = 19
+                HStack(spacing: spacing) {
                     self.slidingPanelButton
                     
-                    TextField("Search", text: $text)
+                    SearchBar(placeholder: "search".localized,
+                              text: $text,
+                              onEditingChanged: { _ in })
+                        .padding(.horizontal, -8)
+                        .padding(.vertical, -10)
                 }
-                .padding([.leading, .trailing], 19)
+                .padding([.leading, .trailing], spacing)
             }
             .frame(height: 44)
             
@@ -184,7 +189,7 @@ struct SlidingPanelView: View {
                             LocalizedText(localizedStringKey: localizedStringKey,
                                           textWeight: .semiBold,
                                           fontSize: 15,
-                                          color: .grey)
+                                          color: .grey1)
                         }
                     }
                     .testingIdentifier("\(localizedStringKey)_button")
@@ -222,7 +227,7 @@ struct SlidingPanelView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         Spacer()
                         
-                        AppColor.grey.color
+                        AppColor.grey1.color
                             .frame(height: 1)
                         
                         self.bottomOptionsView

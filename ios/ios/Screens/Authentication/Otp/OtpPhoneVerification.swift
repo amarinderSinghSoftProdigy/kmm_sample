@@ -128,7 +128,7 @@ fileprivate struct ResendOtpView: View {
                 LocalizedText(localizedStringKey: "didnt_get_code",
                               textWeight: .medium)
                 
-                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey
+                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey1
                 
                 LocalizedText(localizedStringKey: "resend",
                               textWeight: .semiBold,

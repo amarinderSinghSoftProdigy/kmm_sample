@@ -20,7 +20,8 @@ enum AppColor: String {
     case lightBlue
     case darkBlue
     
-    case grey
+    case grey1
+    case grey2
     case placeholderGrey
     case textGrey
     case lightGrey

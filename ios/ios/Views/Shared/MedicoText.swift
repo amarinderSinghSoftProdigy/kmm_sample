@@ -42,7 +42,7 @@ enum TextWeight: String {
     case semiBold // 600
     case bold // 700
     
-    fileprivate var fontName: String {
+    var fontName: String {
         return "Barlow-\(self.rawValue.capitalizeFirstLetter())"
     }
 }

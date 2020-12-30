@@ -110,7 +110,7 @@ struct AuthTab: View {
             .padding(.top)
             
             (Text(LocalizedStringKey("sign_up"))
-                .font(.custom("Barlow-Bold", size: 14))
+                .font(.custom(TextWeight.bold.fontName, size: 14))
             + Text(LocalizedStringKey("to_medico")))
                 .underline()
                 .modifier(MedicoText(color: .lightBlue))

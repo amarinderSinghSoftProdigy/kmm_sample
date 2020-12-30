@@ -61,7 +61,7 @@ struct SignUpLegalDocumentsScreen: View {
                         
                         LocalizedText(localizedStringKey: documentRequestTextKey,
                                       fontSize: 16,
-                                      color: .grey)
+                                      color: .grey1)
                         
                         Spacer()
                     }

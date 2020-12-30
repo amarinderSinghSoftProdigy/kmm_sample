@@ -110,3 +110,6 @@
 "welcome %@" = "Welcome, %@!";
 "thank_you_for_registration" = "Thank you for registration!";
 "documents_under_review" = "Your documents are under review. We will update you.";
+
+// MARK: Global Search
+"search" = "Search";

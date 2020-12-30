@@ -63,7 +63,7 @@ struct WelcomeScreen: View {
             
             LocalizedText(localizedStringKey: optionView.uploadDocumentTextKey,
                           fontSize: 16,
-                          color: .grey)
+                          color: .grey1)
         }
     }
     

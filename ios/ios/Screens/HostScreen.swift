@@ -41,7 +41,7 @@ struct HostScreen: View {
         appearance.backgroundColor = UIColor(named: "NavigationBar")
         
         var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
-        if let titleFont = UIFont(name: "Barlow-SemiBold", size: 17) {
+        if let titleFont = UIFont(name: TextWeight.semiBold.fontName, size: 17) {
             titleTextAttributes[.font] = titleFont
         }
         appearance.titleTextAttributes = titleTextAttributes
