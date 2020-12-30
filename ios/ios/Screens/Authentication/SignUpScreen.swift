@@ -9,6 +9,14 @@
 import SwiftUI
 import core
 
+extension SignUpScope {
+    override var navigationBarTintColor: UIColor? { return nil }
+}
+
+extension SignUpScope.Welcome {
+    override var navigationBarTintColor: UIColor? { return BaseScope.baseNavigationBarTintColor }
+}
+
 struct SignUpScreen: View {
     let scope: SignUpScope
     

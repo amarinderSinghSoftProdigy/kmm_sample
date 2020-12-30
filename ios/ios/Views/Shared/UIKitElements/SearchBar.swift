@@ -9,14 +9,26 @@
 import SwiftUI
 
 struct SearchBar: UIViewRepresentable {
-    let placeholder: String
-    @Binding var text: String
-    let onEditingChanged: (Bool) -> Void
+    let placeholderLocalizationKey: String
+    
+    let onTextChange: ((String) -> Void)?
+    let onEditingChanged: ((Bool) -> Void)?
+    
+    init(placeholderLocalizationKey: String = "search",
+         onTextChange: ((String) -> Void)? = nil,
+         onEditingChanged: ((Bool) -> Void)? = nil) {
+        self.placeholderLocalizationKey = placeholderLocalizationKey
+        
+        self.onTextChange = onTextChange
+        self.onEditingChanged = onEditingChanged
+    }
     
     func makeUIView(context: UIViewRepresentableContext<Self>) -> UISearchBar {
         let searchBar = UISearchBar(frame: .zero)
         
-        searchBar.placeholder = placeholder
+        searchBar.searchTextField.isEnabled = onTextChange != nil
+        
+        searchBar.placeholder = placeholderLocalizationKey.localized
         searchBar.delegate = context.coordinator
         
         setUpUserInterface(for: searchBar)
@@ -24,12 +36,11 @@ struct SearchBar: UIViewRepresentable {
         return searchBar
     }
     
-    func updateUIView(_ searchBar: UISearchBar, context: UIViewRepresentableContext<Self>) {
-        searchBar.text = text
-    }
+    func updateUIView(_ searchBar: UISearchBar, context: UIViewRepresentableContext<Self>) { }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self, text: $text)
+        Coordinator(onTextChange: onTextChange,
+                    onEditingChanged: onEditingChanged)
     }
     
     private func setUpUserInterface(for searchBar: UISearchBar) {
@@ -57,27 +68,33 @@ struct SearchBar: UIViewRepresentable {
     }
     
     final class Coordinator: NSObject, UISearchBarDelegate {
-        private let parent: SearchBar
-        @Binding var text: String
+        private let onTextChange: (String) -> Void
+        private let onEditingChanged: ((Bool) -> Void)?
 
-        init(parent: SearchBar, text: Binding<String>) {
-            self.parent = parent
-            _text = text
+        init(onTextChange: ((String) -> Void)?,
+             onEditingChanged: ((Bool) -> Void)?) {
+            self.onTextChange = onTextChange ?? { _ in }
+            
+            self.onEditingChanged = onEditingChanged
         }
 
         func searchBar(
             _ searchBar: UISearchBar,
             textDidChange searchText: String
         ) {
-            text = searchText
+            onTextChange(searchText)
         }
 
         func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-            parent.onEditingChanged(true)
+            guard let onEditingChanged = self.onEditingChanged else { return }
+            
+            onEditingChanged(true)
         }
 
         func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-            parent.onEditingChanged(false)
+            guard let onEditingChanged = self.onEditingChanged else { return }
+            
+            onEditingChanged(false)
         }
     }
 }

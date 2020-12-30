@@ -112,4 +112,17 @@ extension View {
             TestingIdentifier(identifier: id)
         )
     }
+    
+    func medicoText(textWeight: TextWeight = .regular,
+                    fontSize: CGFloat = 14,
+                    color: AppColor = .darkBlue,
+                    multilineTextAlignment: TextAlignment = .center) -> some View {
+        self.modifier(
+            MedicoText(textWeight: textWeight,
+                       fontSize: fontSize,
+                       color: color,
+                       multilineTextAlignment: multilineTextAlignment)
+        )
+    }
 }
+

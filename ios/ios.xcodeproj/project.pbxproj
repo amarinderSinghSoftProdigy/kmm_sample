@@ -75,6 +75,7 @@
 		33F8DFE325764253009E98EE /* Barlow-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33F8DFE225764253009E98EE /* Barlow-Bold.ttf */; };
 		33FD1266259238A700B956CC /* OtpPhoneVerificationScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD1265259238A700B956CC /* OtpPhoneVerificationScreenTests.swift */; };
 		33FD6A40259CAD640092887D /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A3F259CAD640092887D /* SearchBar.swift */; };
+		33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */; };
 		33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */; };
 		4BA0007DEC69B01DBC21A4C4 /* Pods_Medico.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AA80CF33BE2304862146BEE /* Pods_Medico.framework */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -187,6 +188,7 @@
 		33F8DFE225764253009E98EE /* Barlow-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Bold.ttf"; sourceTree = "<group>"; };
 		33FD1265259238A700B956CC /* OtpPhoneVerificationScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneVerificationScreenTests.swift; sourceTree = "<group>"; };
 		33FD6A3F259CAD640092887D /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
+		33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchScreen.swift; sourceTree = "<group>"; };
 		33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D65B56B42EA12578B135D16 /* Pods-Medico.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.release.xcconfig"; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 			isa = PBXGroup;
 			children = (
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
+				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333AE3F925821ED000C249C1 /* Main */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
@@ -505,6 +508,14 @@
 				33F51B22258CD15200DA2F9F /* LimitedAppAccessTests.swift */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		33FD6A42259CBE7E0092887D /* GlobalSearch */ = {
+			isa = PBXGroup;
+			children = (
+				33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */,
+			);
+			path = GlobalSearch;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -870,6 +881,7 @@
 				3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
+				33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
 				336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,

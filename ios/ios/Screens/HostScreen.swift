@@ -1,10 +1,22 @@
 import SwiftUI
 import core
 
+@objc protocol NavigationBarHandler {
+    var navigationBarTintColor: UIColor? { get }
+}
+
+extension BaseScope: NavigationBarHandler {
+    static var baseNavigationBarTintColor: UIColor? { return UIColor(named: "LightGrey") }
+    
+    var navigationBarTintColor: UIColor? { return BaseScope.baseNavigationBarTintColor }
+}
+
 struct HostScreen: View {
     @State private var isSplashScreenActive = true
     
     @ObservedObject var currentScope: SwiftDataSource<BaseScope>
+    
+    private let appearance = UINavigationBarAppearance()
     
     var body: some View {
         if isSplashScreenActive {
@@ -18,7 +30,7 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-                BaseScopeView(scope: scope)
+                getBaseScopeView(fromScope: scope)
             }
         }
     }
@@ -37,7 +49,6 @@ struct HostScreen: View {
     }
     
     private func setUpNavigationBar() {
-        let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = UIColor(named: "NavigationBar")
         
         var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
@@ -48,6 +59,12 @@ struct HostScreen: View {
         
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
+    private func getBaseScopeView(fromScope scope: BaseScope) -> some View {
+        appearance.shadowColor = scope.navigationBarTintColor
+            
+        return BaseScopeView(scope: scope)
     }
 }
 
@@ -90,6 +107,9 @@ struct BaseScopeView: View {
             
         case let scopeValue as SignUpScope:
             return AnyView(SignUpScreen(scope: scopeValue))
+            
+        case let scopeValue as SearchScope:
+            return AnyView(GlobalSearchScreen(scope: scopeValue))
             
         default:
             return AnyView(EmptyView())

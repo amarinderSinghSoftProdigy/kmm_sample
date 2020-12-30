@@ -14,7 +14,6 @@ struct UserInfoNavigationBar: ViewModifier {
     let navigationSection: NavigationSection
     
     @State private var showsSlidingPanel = false
-    @State private var text = ""
     
     @ObservedObject var user: SwiftDataSource<DataUser>
     
@@ -35,11 +34,17 @@ struct UserInfoNavigationBar: ViewModifier {
                 HStack(spacing: spacing) {
                     self.slidingPanelButton
                     
-                    SearchBar(placeholder: "search".localized,
-                              text: $text,
-                              onEditingChanged: { _ in })
-                        .padding(.horizontal, -8)
-                        .padding(.vertical, -10)
+                    if user.value?.isVerified == true {
+                        SearchBar()
+                            .padding(.horizontal, -8)
+                            .padding(.vertical, -10)
+                            .onTapGesture {
+                                scope.goToSearch()
+                            }
+                    }
+                    else {
+                        Spacer()
+                    }
                 }
                 .padding([.leading, .trailing], spacing)
             }
@@ -69,6 +74,9 @@ struct UserInfoNavigationBar: ViewModifier {
                         
                         content
                     }
+                    .frame(maxWidth: geometry.size.width,
+                           maxHeight: geometry.size.height,
+                           alignment: .topLeading)
                     .zIndex(1)
                 
                     SlidingPanelView(navigationSection: navigationSection,
