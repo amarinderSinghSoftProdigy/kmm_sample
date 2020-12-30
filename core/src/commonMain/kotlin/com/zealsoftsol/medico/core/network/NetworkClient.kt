@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
@@ -208,7 +209,8 @@ class NetworkClient(
     override suspend fun search(
         product: String,
         manufacturer: String,
-        query: List<Pair<String, String>>
+        page: Int,
+        query: List<Pair<String, String>>,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
             withMainToken()
@@ -219,8 +221,8 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
-                    append("currentPage", "0")
-                    append("pageSize", "10")
+                    append("currentPage", page.toString())
+                    append("pageSize", SearchScope.DEFAULT_ITEMS_PER_PAGE.toString())
                     append("sort", "ASC")
                 }
             }

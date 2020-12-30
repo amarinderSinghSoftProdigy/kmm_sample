@@ -53,7 +53,8 @@ interface NetworkScope {
         suspend fun search(
             product: String,
             manufacturer: String,
-            query: List<Pair<String, String>>
+            page: Int,
+            query: List<Pair<String, String>>,
         ): Response.Wrapped<SearchResponse>
     }
 }

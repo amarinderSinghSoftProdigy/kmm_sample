@@ -71,6 +71,7 @@ internal sealed class Event {
             data class ClearFilter(val filter: Filter?) : Search()
             data class SearchManufacturer(val value: String) : Search()
             data class SelectProduct(val product: Product) : Search()
+            object LoadMoreProducts : Search()
         }
     }
 

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Icon
@@ -66,6 +67,7 @@ fun SearchQueryScreen(scope: SearchScope) {
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
+        val listState = rememberLazyListState()
         TabBar {
             BasicSearchBar(
                 input = product.value,
@@ -96,38 +98,19 @@ fun SearchQueryScreen(scope: SearchScope) {
                 }
             }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(
+            LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                itemsIndexed(
                     items = products.value,
-                    itemContent = { ProductItem(it) { scope.selectProduct(it) } },
+                    itemContent = { index, item ->
+                        ProductItem(item) { scope.selectProduct(item) }
+                        if (index == products.value.lastIndex && scope.canLoadMore()) {
+                            scope.loadMoreProducts()
+                        }
+                    },
                 )
             }
         }
     }
-}
-
-private object YellowOutlineIndication : Indication {
-
-    private object YellowOutlineIndicationInstance : IndicationInstance {
-
-        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
-            drawContent()
-            if (interactionState.contains(Interaction.Pressed)) {
-                drawRoundRect(
-                    color = ConstColors.yellow,
-                    cornerRadius = CornerRadius(2.dp.toPx()),
-                    style = Stroke(
-                        width = 2.dp.toPx(),
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
-                    ),
-                    size = size
-                )
-            }
-        }
-    }
-
-    override fun createInstance() = YellowOutlineIndicationInstance
 }
 
 @Composable
@@ -357,4 +340,28 @@ private fun SearchBarBox(body: @Composable RowScope.() -> Unit) {
             body()
         }
     }
+}
+
+private object YellowOutlineIndication : Indication {
+
+    private object YellowOutlineIndicationInstance : IndicationInstance {
+
+        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
+            drawContent()
+            if (interactionState.contains(Interaction.Pressed)) {
+                drawRoundRect(
+                    color = ConstColors.yellow,
+                    cornerRadius = CornerRadius(2.dp.toPx()),
+                    style = Stroke(
+                        width = 2.dp.toPx(),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round
+                    ),
+                    size = size
+                )
+            }
+        }
+    }
+
+    override fun createInstance() = YellowOutlineIndicationInstance
 }

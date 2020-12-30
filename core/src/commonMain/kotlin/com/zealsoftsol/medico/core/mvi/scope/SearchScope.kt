@@ -12,12 +12,16 @@ data class SearchScope(
     val manufacturerSearch: DataSource<String> = DataSource(""),
     val isFilterOpened: DataSource<Boolean> = DataSource(false),
     val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-    val products: DataSource<List<Product>> = DataSource(emptyList())
+    val products: DataSource<List<Product>> = DataSource(emptyList()),
+    internal var currentProductPage: Int = 0,
+    internal var totalProducts: Int = 0,
 ) : BaseScope(), CanGoBack {
 
     init {
         searchProduct("")
     }
+
+    fun canLoadMore() = (currentProductPage + 1) * DEFAULT_ITEMS_PER_PAGE < totalProducts
 
     fun toggleFilter() {
         isFilterOpened.value = !isFilterOpened.value
@@ -37,4 +41,11 @@ data class SearchScope(
 
     fun selectProduct(product: Product) =
         EventCollector.sendEvent(Event.Action.Search.SelectProduct(product))
+
+    fun loadMoreProducts() =
+        EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+
+    companion object {
+        internal const val DEFAULT_ITEMS_PER_PAGE = 20
+    }
 }

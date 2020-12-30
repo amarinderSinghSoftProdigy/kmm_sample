@@ -111,7 +111,7 @@ fun MedicoButton(
         ),
         enabled = isEnabled,
         shape = RoundedCornerShape(2.dp),
-        elevation = ButtonDefaults.elevation(elevation),
+        elevation = ButtonDefaults.elevation(),
         modifier = modifier.fillMaxWidth().height(48.dp),
     ) {
         Text(
@@ -151,14 +151,8 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    Color.Transparent,
-                    disabledBackgroundColor,
-                    ConstColors.lightBlue,
-                    MaterialTheme.colors.onSurface
-                        .copy(alpha = ContentAlpha.disabled)
-                ),
-                elevation = ButtonDefaults.elevation(elevation, 0.dp, 0.dp),
+                colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
+                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
             ) {
                 Text(
                     text = stringResource(id = R.string.okay),
