@@ -75,6 +75,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     composeOptions {
+        kotlinCompilerVersion = Versions.kotlin
         kotlinCompilerExtensionVersion = Versions.compose
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
@@ -93,6 +94,7 @@ dependencies {
     Deps.Android.Compose.all.forEach {
         implementation(it)
     }
+    implementation(Deps.Android.accompanist)
     implementation(platform(Deps.Firebase.BOM))
     implementation(Deps.Firebase.analytics)
     implementation(Deps.Firebase.crashlytics)

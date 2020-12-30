@@ -55,7 +55,7 @@ fun MainView(scope: MainScope) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val isFullTabBar = user?.value?.isVerified == true
                     Icon(
-                        asset = vectorResource(id = R.drawable.ic_menu),
+                        imageVector = vectorResource(id = R.drawable.ic_menu),
                         modifier = Modifier
                             .run { if (isFullTabBar) weight(0.15f) else this }
                             .padding(16.dp)
@@ -73,7 +73,7 @@ fun MainView(scope: MainScope) {
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Icon(
-                                asset = Icons.Default.Search,
+                                imageVector = Icons.Default.Search,
                                 tint = ConstColors.gray,
                                 modifier = Modifier.size(24.dp),
                             )
@@ -84,7 +84,7 @@ fun MainView(scope: MainScope) {
                             )
                         }
                         Icon(
-                            asset = vectorResource(id = R.drawable.ic_cart),
+                            imageVector = vectorResource(id = R.drawable.ic_cart),
                             modifier = Modifier
                                 .weight(0.15f)
                                 .padding(16.dp),

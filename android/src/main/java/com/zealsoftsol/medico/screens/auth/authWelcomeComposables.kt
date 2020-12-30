@@ -45,7 +45,7 @@ fun Welcome(
             is WelcomeOption.Upload -> R.drawable.ic_upload
         }
         Icon(
-            asset = vectorResource(id = resource),
+            imageVector = vectorResource(id = resource),
             tint = Color.Unspecified,
         )
         Space(30.dp)

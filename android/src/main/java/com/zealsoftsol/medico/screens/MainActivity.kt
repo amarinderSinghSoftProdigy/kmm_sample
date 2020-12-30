@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DebugScopeCreator.dashboardScreen()
+        DebugScopeCreator.searchQueryScreen()
         setContent {
             AppTheme {
                 val currentScope = navigator.scope.flow.collectAsState()
