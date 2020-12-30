@@ -68,7 +68,8 @@ fun SearchQueryScreen(scope: SearchScope) {
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
-        val listState = rememberLazyListState()
+        val listState =
+            rememberLazyListState(initialFirstVisibleItemIndex = scope.getVisibleProductIndex())
         TabBar {
             BasicSearchBar(
                 input = product.value,
@@ -103,8 +104,8 @@ fun SearchQueryScreen(scope: SearchScope) {
                 itemsIndexed(
                     items = products.value,
                     itemContent = { index, item ->
-                        ProductItem(item) { scope.selectProduct(item) }
-                        if (index == products.value.lastIndex && scope.canLoadMore()) {
+                        ProductItem(item) { scope.selectProduct(item, index) }
+                        if (index == products.value.lastIndex && scope.canLoadMore() && !scope.isInProgress.flow.value) {
                             scope.loadMoreProducts()
                         }
                     },

@@ -15,6 +15,7 @@ data class SearchScope(
     val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
     internal var currentProductPage: Int = 0,
     internal var totalProducts: Int = 0,
+    internal var clickedProductIndex: Int = 0,
 ) : BaseScope(), CommonScope.CanGoBack {
 
     init {
@@ -22,6 +23,8 @@ data class SearchScope(
     }
 
     fun canLoadMore() = (currentProductPage + 1) * DEFAULT_ITEMS_PER_PAGE < totalProducts
+
+    fun getVisibleProductIndex() = clickedProductIndex
 
     fun toggleFilter() {
         isFilterOpened.value = !isFilterOpened.value
@@ -39,8 +42,10 @@ data class SearchScope(
     fun searchProduct(input: String) =
         EventCollector.sendEvent(Event.Action.Search.SearchProduct(input))
 
-    fun selectProduct(product: ProductSearch) =
+    fun selectProduct(product: ProductSearch, index: Int) {
+        clickedProductIndex = index
         EventCollector.sendEvent(Event.Action.Product.Select(product.productCode))
+    }
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
