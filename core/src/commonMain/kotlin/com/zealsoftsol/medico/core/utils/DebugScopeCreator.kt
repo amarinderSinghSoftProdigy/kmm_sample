@@ -155,6 +155,7 @@ object DebugScopeCreator {
             MainScope.LimitedAccess.from(
                 testUser.copy(
                     type = type,
+                    details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar("", "") else User.Details.DrugLicense("url"),
                     isVerified = false,
                     isDocumentUploaded = isDocumentUploaded
                 )

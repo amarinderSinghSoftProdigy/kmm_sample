@@ -24,16 +24,21 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
     
     let userType: DataUserType
     
+    let aadhaarNumber: String?
+    
     let isDocumentUploaded: Bool
     
     init(firstName: String,
          lastName: String,
          userType: DataUserType,
+         aadhaarNumber: String? = nil,
          isDocumentUploaded: Bool) {
         self.firstName = firstName
         self.lastName = lastName
         
         self.userType = userType
+        
+        self.aadhaarNumber = aadhaarNumber
         
         self.isDocumentUploaded = isDocumentUploaded
     }
@@ -46,6 +51,10 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
         environment[EnvironmentProperty.userType.rawValue] = userType.name
         environment[EnvironmentProperty.isDocumentUploaded.rawValue] = String(isDocumentUploaded)
         
+        if let aadhaarNumber = self.aadhaarNumber {
+            environment[EnvironmentProperty.aadhaarNumber.rawValue] = aadhaarNumber
+        }
+        
         return environment
     }
     
@@ -53,8 +62,10 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
         guard let scopeInfo = getScopeInfo(from: environment) else { return }
         
         let details: DataUser.Details
-        if scopeInfo.userType == DataUserType.seasonBoy {
-            details = DataUser.DetailsAadhaar(cardNumber: "887489598799", shareCode: "1111")
+        if scopeInfo.userType == .seasonBoy {
+            let cardNumber = environment[EnvironmentProperty.aadhaarNumber.rawValue] ?? ""
+            
+            details = DataUser.DetailsAadhaar(cardNumber: cardNumber, shareCode: "")
         }
         else {
             details = DataUser.DetailsDrugLicense(url: nil)
@@ -69,7 +80,7 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
                             isVerified: false,
                             isDocumentUploaded: scopeInfo.isDocumentUploaded)
 
-        if scopeInfo.userType == DataUserType.seasonBoy {
+        if scopeInfo.userType == .seasonBoy {
             testScope.limitedAccessSeasonBoy(user: user,
                                              error: scopeInfo.errorCode)
         }
@@ -90,9 +101,9 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
               let type = DataUserType.getValue(from: typeString)
             else { return nil }
         
-            guard let isDocumentUploadedString = environment[EnvironmentProperty.isDocumentUploaded.rawValue],
-                  let isDocumentUploaded = Bool(isDocumentUploadedString)
-                else { return nil }
+        guard let isDocumentUploadedString = environment[EnvironmentProperty.isDocumentUploaded.rawValue],
+              let isDocumentUploaded = Bool(isDocumentUploadedString)
+            else { return nil }
         
         return LimitedAppAccessScopeInfo(firstName: firstName,
                                          lastName: lastName,

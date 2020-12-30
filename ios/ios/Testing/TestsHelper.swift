@@ -28,6 +28,7 @@ struct EnvironmentProperty: RawRepresentable {
     static let email = EnvironmentProperty(rawValue: "email")
     static let phoneNumber = EnvironmentProperty(rawValue: "phoneNumber")
     static let password = EnvironmentProperty(rawValue: "password")
+    static let aadhaarNumber = EnvironmentProperty(rawValue: "aadhaarNumber")
 }
 
 class TestsHelper {
@@ -126,7 +127,7 @@ extension DataUserType {
         case "RETAILER":
             return DataUserType.retailer
             
-        case "SEASONBOY":
+        case "SEASON_BOY":
             return DataUserType.seasonBoy
             
         case "HOSPITAL":
