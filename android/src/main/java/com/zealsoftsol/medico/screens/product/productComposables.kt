@@ -78,7 +78,7 @@ fun ProductScreen(scope: MainScope.ProductInfo) {
         )
         Space(4.dp)
         Text(
-            text = "PTR: ",
+            text = "PTR: ${scope.product.ptr}",
             color = ConstColors.gray,
             fontSize = 12.sp,
         )
