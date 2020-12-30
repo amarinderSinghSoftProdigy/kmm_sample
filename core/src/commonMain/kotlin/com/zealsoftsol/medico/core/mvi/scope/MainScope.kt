@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.Product
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 
@@ -74,6 +75,21 @@ abstract class MainScope : BaseScope() {
     data class Dashboard(
         override val user: DataSource<User>,
     ) : MainScope(), NavAndSearchMainScope
+
+    data class ProductInfo(
+        override val user: DataSource<User>,
+        val product: Product,
+        val isDetailsOpened: DataSource<Boolean> = DataSource(false),
+    ) : MainScope(), NavAndSearchMainScope, CanGoBack {
+
+        fun toggleDetails() {
+            isDetailsOpened.value = !isDetailsOpened.value
+        }
+
+        fun addToCart() {
+
+        }
+    }
 }
 
 interface NavAndSearchMainScope {

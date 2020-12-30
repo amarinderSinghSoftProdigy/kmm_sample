@@ -107,7 +107,7 @@ fun MedicoButton(
             backgroundColor = ConstColors.yellow,
             disabledBackgroundColor = Color.LightGray,
             contentColor = MaterialTheme.colors.onPrimary,
-            disabledContentColor = MaterialTheme.colors.onPrimary
+            disabledContentColor = MaterialTheme.colors.onPrimary,
         ),
         enabled = isEnabled,
         shape = RoundedCornerShape(2.dp),

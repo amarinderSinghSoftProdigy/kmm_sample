@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.screens.auth.Welcome
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.handleFileUpload
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
+import com.zealsoftsol.medico.screens.product.ProductScreen
 
 @Composable
 fun MainView(scope: MainScope) {
@@ -95,8 +96,6 @@ fun MainView(scope: MainScope) {
         },
         bodyContent = {
             when (scope) {
-                is MainScope.Dashboard -> {
-                }
                 is MainScope.LimitedAccess -> user?.value?.let {
                     Welcome(
                         fullName = it.fullName(),
@@ -115,6 +114,9 @@ fun MainView(scope: MainScope) {
                         },
                     )
                 }
+                is MainScope.Dashboard -> {
+                }
+                is MainScope.ProductInfo -> ProductScreen(scope)
             }
         },
     )

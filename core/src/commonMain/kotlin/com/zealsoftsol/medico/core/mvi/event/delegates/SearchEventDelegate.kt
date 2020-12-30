@@ -3,10 +3,13 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.extensions.warnIt
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.MainScope
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
@@ -18,6 +21,7 @@ import kotlin.coroutines.coroutineContext
 
 internal class SearchEventDelegate(
     navigator: Navigator,
+    private val userRepo: UserRepo,
     private val networkSearchScope: NetworkScope.Search,
 ) : EventDelegate<Event.Action.Search>(navigator) {
 
@@ -103,8 +107,13 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun selectProduct(product: Product) {
-
+    private fun selectProduct(product: Product) {
+        navigator.setCurrentScope(
+            MainScope.ProductInfo(
+                user = DataSource(userRepo.user!!),
+                product = product,
+            )
+        )
     }
 
     private suspend fun loadMoreProducts() {

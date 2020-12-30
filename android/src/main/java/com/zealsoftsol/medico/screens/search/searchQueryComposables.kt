@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.search
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.Interaction
@@ -57,6 +56,7 @@ import com.zealsoftsol.medico.data.Product
 import com.zealsoftsol.medico.screens.Separator
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.product.ProductPlaceholder
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -127,10 +127,9 @@ private fun ProductItem(product: Product, onClick: () -> Unit) {
                 data = "",
                 error = { ProductPlaceholder() },
                 loading = { ProductPlaceholder() },
-                modifier = Modifier
             )
             Space(10.dp)
-            Column(modifier = Modifier) {
+            Column {
                 Text(
                     text = product.name,
                     color = MaterialTheme.colors.background,
@@ -173,13 +172,6 @@ private fun ProductItem(product: Product, onClick: () -> Unit) {
             fontSize = 14.sp,
         )
     }
-}
-
-@Composable
-private fun ProductPlaceholder() {
-    Image(
-        imageVector = vectorResource(R.drawable.ic_product),
-    )
 }
 
 @OptIn(ExperimentalLayout::class)

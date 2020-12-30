@@ -81,4 +81,6 @@
     <string name="relevance">Relevance</string>
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
+    <string name="add_to_cart">Add to cart</string>
+    <string name="details">Details</string>
 </resources>

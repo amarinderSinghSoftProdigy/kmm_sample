@@ -33,7 +33,7 @@ internal class EventCollector(
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
-        Event.Action.Search::class to SearchEventDelegate(navigator, networkSearchScope),
+        Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, networkSearchScope),
     )
 
     init {
