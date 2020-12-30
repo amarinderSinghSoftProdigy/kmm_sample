@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.Space
@@ -42,7 +43,7 @@ fun ProductScreen(scope: MainScope.ProductInfo) {
         Space(12.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
-                data = "",
+                data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
                 error = { ProductPlaceholder() },
                 loading = { ProductPlaceholder() },
             )

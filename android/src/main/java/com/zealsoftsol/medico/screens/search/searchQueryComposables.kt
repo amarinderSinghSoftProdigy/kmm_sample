@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -124,7 +125,7 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
-                data = "",
+                data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
                 error = { ProductPlaceholder() },
                 loading = { ProductPlaceholder() },
             )

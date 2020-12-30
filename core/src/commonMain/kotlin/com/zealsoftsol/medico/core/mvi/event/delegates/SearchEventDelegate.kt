@@ -106,6 +106,7 @@ internal class SearchEventDelegate(
     private suspend fun loadMoreProducts() {
         navigator.withScope<SearchScope> {
             if (it.canLoadMore()) {
+                setProgress(true)
                 it.currentProductPage++
                 it.search(addPage = true)
             }
@@ -115,7 +116,8 @@ internal class SearchEventDelegate(
     private suspend fun SearchScope.search(addPage: Boolean = false) {
         searchJob?.cancel()
         searchJob = coroutineContext.toScope().launch {
-            delay(500)
+            if (!addPage) delay(500)
+            if (addPage) navigator.setProgress(true)
             val (result, isSuccess) = networkSearchScope.search(
                 productSearch.value,
                 manufacturerSearch.value,
@@ -135,6 +137,7 @@ internal class SearchEventDelegate(
                     it.logIt()
                 }
             }
+            if (addPage) navigator.setProgress(false)
         }
     }
 
