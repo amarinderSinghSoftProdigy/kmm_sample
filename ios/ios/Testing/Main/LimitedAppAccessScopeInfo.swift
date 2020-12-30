@@ -24,16 +24,21 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
     
     let userType: DataUserType
     
+    let aadhaarNumber: String?
+    
     let isDocumentUploaded: Bool
     
     init(firstName: String,
          lastName: String,
          userType: DataUserType,
+         aadhaarNumber: String? = nil,
          isDocumentUploaded: Bool) {
         self.firstName = firstName
         self.lastName = lastName
         
         self.userType = userType
+        
+        self.aadhaarNumber = aadhaarNumber
         
         self.isDocumentUploaded = isDocumentUploaded
     }
@@ -46,28 +51,43 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
         environment[EnvironmentProperty.userType.rawValue] = userType.name
         environment[EnvironmentProperty.isDocumentUploaded.rawValue] = String(isDocumentUploaded)
         
+        if let aadhaarNumber = self.aadhaarNumber {
+            environment[EnvironmentProperty.aadhaarNumber.rawValue] = aadhaarNumber
+        }
+        
         return environment
     }
     
     override class func overrideScope(for environment: [String: String]) {
         guard let scopeInfo = getScopeInfo(from: environment) else { return }
         
-//        let user = DataUser(firstName: scopeInfo.firstName,
-//                            lastName: scopeInfo.lastName,
-//                            email: "email@example.com",
-//                            phoneNumber: "1234567890",
-//                            type: scopeInfo.userType,
-//                            isVerified: false,
-//                            isDocumentUploaded: scopeInfo.isDocumentUploaded)
-//
-//        if scopeInfo.userType == DataUserType.seasonBoy {
-//            testScope.limitedAccessSeasonBoy(user: user,
-//                                             error: scopeInfo.errorCode)
-//        }
-//        else {
-//            testScope.limitedAccessNonSeasonBoy(user: user,
-//                                                error: scopeInfo.errorCode)
-//        }
+        let details: DataUser.Details
+        if scopeInfo.userType == .seasonBoy {
+            let cardNumber = environment[EnvironmentProperty.aadhaarNumber.rawValue] ?? ""
+            
+            details = DataUser.DetailsAadhaar(cardNumber: cardNumber, shareCode: "")
+        }
+        else {
+            details = DataUser.DetailsDrugLicense(url: nil)
+        }
+        
+        let user = DataUser(firstName: scopeInfo.firstName,
+                            lastName: scopeInfo.lastName,
+                            email: "email@example.com",
+                            phoneNumber: "1234567890",
+                            type: scopeInfo.userType,
+                            details: details,
+                            isVerified: false,
+                            isDocumentUploaded: scopeInfo.isDocumentUploaded)
+
+        if scopeInfo.userType == .seasonBoy {
+            testScope.limitedAccessSeasonBoy(user: user,
+                                             error: scopeInfo.errorCode)
+        }
+        else {
+            testScope.limitedAccessNonSeasonBoy(user: user,
+                                                error: scopeInfo.errorCode)
+        }
     }
 
     override class func getScopeInfo(from environment: [String: String]) -> LimitedAppAccessScopeInfo? {
@@ -81,9 +101,9 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
               let type = DataUserType.getValue(from: typeString)
             else { return nil }
         
-            guard let isDocumentUploadedString = environment[EnvironmentProperty.isDocumentUploaded.rawValue],
-                  let isDocumentUploaded = Bool(isDocumentUploadedString)
-                else { return nil }
+        guard let isDocumentUploadedString = environment[EnvironmentProperty.isDocumentUploaded.rawValue],
+              let isDocumentUploaded = Bool(isDocumentUploadedString)
+            else { return nil }
         
         return LimitedAppAccessScopeInfo(firstName: firstName,
                                          lastName: lastName,

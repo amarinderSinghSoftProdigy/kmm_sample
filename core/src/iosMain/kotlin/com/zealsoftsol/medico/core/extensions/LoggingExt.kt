@@ -1,21 +1,23 @@
 package com.zealsoftsol.medico.core.extensions
 
+import platform.Foundation.NSLog
+
 actual fun <T> T.logIt(): T = also {
-    if (logger.isLogEnabled()) println("KMP LOG: $this")
+    if (logger.isLogEnabled()) NSLog("KMP LOG: $this")
 }
 
 actual fun <T> T.warnIt(): T = also {
-    if (logger.isWarnEnabled()) println("KMP WARN: $this")
+    if (logger.isWarnEnabled()) NSLog("KMP WARN: $this")
 }
 
 actual fun <T> T.errorIt(): T = also {
-    if (logger.isErrorEnabled()) println("KMP ERROR: $this")
+    if (logger.isErrorEnabled()) NSLog("KMP ERROR: $this")
 }
 
 actual inline fun <T> T.log(header: String, dumpStack: Boolean): T {
     if (logger.isLogEnabled()) {
-        println("KMP LOG: $header")
-        println("KMP LOG: $this")
+        NSLog("KMP LOG: $header")
+        NSLog("KMP LOG: $this")
     }
     return this
 }
