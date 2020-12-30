@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.setContent
@@ -69,28 +71,30 @@ class MainActivity : ComponentActivity(), DIAware {
         setContent {
             AppTheme {
                 val currentScope = navigator.scope.flow.collectAsState()
-                when (val scope = currentScope.value) {
-                    is LogInScope -> AuthScreen(scope = scope)
-                    is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(scope = scope)
-                    is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(
-                        scope = scope,
-                        dateFormat = dateFormat
-                    )
-                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(scope = scope)
-                    is SignUpScope.SelectUserType -> AuthUserType(scope = scope)
-                    is SignUpScope.PersonalData -> AuthPersonalData(scope = scope)
-                    is SignUpScope.AddressData -> AuthAddressData(scope = scope)
-                    is SignUpScope.Details.TraderData -> AuthDetailsTraderData(scope = scope)
-                    is SignUpScope.Details.Aadhaar -> AuthDetailsAadhaar(scope = scope)
-                    is SignUpScope.LegalDocuments -> AuthLegalDocuments(scope = scope)
-                    is SignUpScope.Welcome -> Surface {
-                        Welcome(
-                            fullName = scope.fullName,
-                            option = WelcomeOption.Thanks { scope.accept() }
+                Crossfade(currentScope.value, animation = tween(durationMillis = 200)) {
+                    when (it) {
+                        is LogInScope -> AuthScreen(it)
+                        is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
+                        is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(
+                            scope = it,
+                            dateFormat = dateFormat,
                         )
+                        is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(it)
+                        is SignUpScope.SelectUserType -> AuthUserType(it)
+                        is SignUpScope.PersonalData -> AuthPersonalData(it)
+                        is SignUpScope.AddressData -> AuthAddressData(it)
+                        is SignUpScope.Details.TraderData -> AuthDetailsTraderData(it)
+                        is SignUpScope.Details.Aadhaar -> AuthDetailsAadhaar(it)
+                        is SignUpScope.LegalDocuments -> AuthLegalDocuments(it)
+                        is SignUpScope.Welcome -> Surface {
+                            Welcome(
+                                fullName = it.fullName,
+                                option = WelcomeOption.Thanks { it.accept() }
+                            )
+                        }
+                        is MainScope -> MainView(it)
+                        is SearchScope -> Surface { SearchQueryScreen(it) }
                     }
-                    is MainScope -> MainView(scope = scope)
-                    is SearchScope -> Surface { SearchQueryScreen(scope = scope) }
                 }
                 val isInProgress = currentScope.value.isInProgress.flow.collectAsState()
                 if (isInProgress.value) IndefiniteProgressBar()
