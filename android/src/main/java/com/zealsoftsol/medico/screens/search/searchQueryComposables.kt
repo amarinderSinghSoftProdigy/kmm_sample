@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.search
 
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +27,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,24 +46,24 @@ import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.TabBar
 
 @Composable
-fun SearchQueryScreen(scope: SearchScope.Query) {
+fun SearchQueryScreen(scope: SearchScope) {
     Column(modifier = Modifier.fillMaxSize()) {
         val product = scope.productSearch.flow.collectAsState()
         val manufacturer = scope.manufacturerSearch.flow.collectAsState()
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
-        val showFilter = remember { mutableStateOf(false) }
+        val showFilter = scope.isFilterOpened.flow.collectAsState()
         TabBar {
             BasicSearchBar(
                 input = product.value,
                 icon = Icons.Default.ArrowBack,
-                searchBarEnd = SearchBarEnd.Filter { showFilter.value = !showFilter.value },
+                searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
                 onSearch = { scope.searchProduct(it) }
             )
         }
         if (showFilter.value) {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 Text(
                     text = stringResource(id = R.string.clear_all),
                     modifier = Modifier.align(Alignment.End)

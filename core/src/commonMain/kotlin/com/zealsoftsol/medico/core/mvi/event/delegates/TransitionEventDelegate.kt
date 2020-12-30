@@ -24,7 +24,7 @@ internal class TransitionEventDelegate(
                 SignUpScope.SelectUserType()
             )
             is Event.Transition.Search -> navigator.setCurrentScope(
-                SearchScope.Query()
+                SearchScope()
             )
         }
     }

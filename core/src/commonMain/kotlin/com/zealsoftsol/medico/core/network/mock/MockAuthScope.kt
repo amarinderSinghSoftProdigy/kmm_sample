@@ -29,7 +29,7 @@ class MockAuthScope : NetworkScope.Auth {
         Response.Wrapped(null, true)
     }
 
-    override suspend fun logout(): Boolean = mockBooleanResponse()
+    override suspend fun logout(): Boolean = mockResponse { true }
 
     override suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> =
         mockResponse {
@@ -73,7 +73,7 @@ class MockAuthScope : NetworkScope.Auth {
         }
     }
 
-    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = mockBooleanResponse()
+    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = mockResponse { true }
 
     override suspend fun uploadDrugLicense(
         licenseData: DrugLicenseUpload
