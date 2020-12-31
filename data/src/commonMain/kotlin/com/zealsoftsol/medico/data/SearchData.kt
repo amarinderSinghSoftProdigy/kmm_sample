@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SearchResponse(
     val facets: List<Facet>,
-    val products: List<Product>,
+    val products: List<ProductSearch>,
     val totalResults: Int,
 )
 
@@ -23,7 +23,7 @@ data class Value(
 )
 
 @Serializable
-data class Product(
+data class ProductSearch(
     val baseProduct: String,
     val baseProductId: String,
     val composition: List<String>,

@@ -7,10 +7,10 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -18,6 +18,7 @@ import kotlin.coroutines.coroutineContext
 
 internal class SearchEventDelegate(
     navigator: Navigator,
+    private val userRepo: UserRepo,
     private val networkSearchScope: NetworkScope.Search,
 ) : EventDelegate<Event.Action.Search>(navigator) {
 
@@ -29,11 +30,12 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SearchManufacturer -> searchManufacturer(event.value)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
-        is Event.Action.Search.SelectProduct -> selectProduct(event.product)
+        is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
     }
 
     private suspend fun searchProduct(value: String) {
         navigator.withScope<SearchScope> {
+            it.currentProductPage = 0
             it.productSearch.value = value
             it.search()
         }
@@ -41,6 +43,7 @@ internal class SearchEventDelegate(
 
     private suspend fun searchManufacturer(value: String) {
         navigator.withScope<SearchScope> {
+            it.currentProductPage = 0
             it.manufacturerSearch.value = value
             it.search()
         }
@@ -48,6 +51,7 @@ internal class SearchEventDelegate(
 
     private suspend fun selectFilter(filter: Filter, option: Option<String>) {
         navigator.withScope<SearchScope> {
+            it.currentProductPage = 0
             it.filters.value = it.filters.value.map { f ->
                 if (filter.name == f.name) {
                     f.copy(options = f.options.map { op ->
@@ -75,6 +79,7 @@ internal class SearchEventDelegate(
 
     private suspend fun clearFilter(filter: Filter?) {
         navigator.withScope<SearchScope> {
+            it.currentProductPage = 0
             it.filters.value = it.filters.value.map { f ->
                 when {
                     filter == null || filter.name == f.name -> {
@@ -98,22 +103,31 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun selectProduct(product: Product) {
-
+    private suspend fun loadMoreProducts() {
+        navigator.withScope<SearchScope> {
+            if (it.canLoadMore()) {
+                setProgress(true)
+                it.currentProductPage++
+                it.search(addPage = true)
+            }
+        }
     }
 
-    private suspend fun SearchScope.search() {
+    private suspend fun SearchScope.search(addPage: Boolean = false) {
         searchJob?.cancel()
         searchJob = coroutineContext.toScope().launch {
-            delay(500)
+            if (!addPage) delay(500)
+            if (addPage) navigator.setProgress(true)
             val (result, isSuccess) = networkSearchScope.search(
                 productSearch.value,
                 manufacturerSearch.value,
+                currentProductPage,
                 activeFilters.map { (queryName, option) -> queryName to option.value },
             )
             if (isSuccess && result != null) {
+                totalProducts = result.totalResults
                 filters.value = result.facets.toFilter()
-                products.value = result.products
+                products.value = if (!addPage) result.products else products.value + result.products
                 "facets".warnIt()
                 result.facets.forEach {
                     it.logIt()
@@ -123,6 +137,7 @@ internal class SearchEventDelegate(
                     it.logIt()
                 }
             }
+            if (addPage) navigator.setProgress(false)
         }
     }
 

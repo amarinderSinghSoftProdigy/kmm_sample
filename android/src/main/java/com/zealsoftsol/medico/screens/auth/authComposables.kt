@@ -18,10 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.VerticalGradient
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -51,7 +52,7 @@ fun AuthScreen(scope: LogInScope) {
             val (image, gradient, solid) = createRefs()
 
             Image(
-                asset = imageResource(id = R.drawable.auth_logo),
+                bitmap = imageResource(id = R.drawable.auth_logo),
                 modifier = Modifier.constrainAs(image) {
                     top.linkTo(parent.top)
                     centerHorizontallyTo(parent)
@@ -65,11 +66,12 @@ fun AuthScreen(scope: LogInScope) {
                     centerHorizontallyTo(parent)
                 }.fillMaxWidth().aspectRatio(1.0925f)
                     .background(
-                        VerticalGradient(
+                        Brush.verticalGradient(
                             0f to MaterialTheme.colors.background.copy(alpha = 0f),
                             1f to MaterialTheme.colors.background,
                             startY = 0f,
-                            endY = ContextAmbient.current.screenWidth / 1.0925f
+                            endY = AmbientContext.current.screenWidth / 1.0925f,
+                            tileMode = TileMode.Clamp
                         )
                     )
             )
@@ -83,7 +85,7 @@ fun AuthScreen(scope: LogInScope) {
         TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(
-                    asset = imageResource(id = R.drawable.medico_logo),
+                    bitmap = imageResource(id = R.drawable.medico_logo),
                     modifier = Modifier.align(Alignment.CenterStart),
                 )
             }

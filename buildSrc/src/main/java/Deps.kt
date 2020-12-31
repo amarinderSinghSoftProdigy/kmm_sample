@@ -2,14 +2,14 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
-    const val kotlin = "1.4.20"
+    const val kotlin = "1.4.21"
     const val ktor = "1.4.3"
-    const val coroutines = "1.3.9-native-mt-2"
+    const val coroutines = "1.4.2-native-mt"
     const val kserialize = "1.0.1"
     const val work = "2.0.1"
     const val kodeinDi = "7.1.0"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-alpha07"
+    const val compose = "1.0.0-alpha09"
 }
 
 object Deps {
@@ -46,22 +46,28 @@ object Deps {
 
         object Compose {
             const val ui = "androidx.compose.ui:ui:${Versions.compose}"
+
             // Tooling support (Previews, etc.)
-            const val tooling = "androidx.ui:ui-tooling:${Versions.compose}"
+            const val tooling = "androidx.compose.ui:ui-tooling:${Versions.compose}"
+
             // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
             const val foundation = "androidx.compose.foundation:foundation:${Versions.compose}"
             // Material Design
             const val material = "androidx.compose.material:material:${Versions.compose}"
+
             // Material design icons
-            const val iconsCore = "androidx.compose.material:material-icons-core:${Versions.compose}"
-            const val iconsExtended = "androidx.compose.material:material-icons-extended:${Versions.compose}"
+            const val iconsCore =
+                "androidx.compose.material:material-icons-core:${Versions.compose}"
+            const val iconsExtended =
+                "androidx.compose.material:material-icons-extended:${Versions.compose}"
             // Integration with observables
 //            const val livedata = "androidx.compose.runtime:runtime-livedata:${Versions.compose}"
 //            const val rx = "androidx.compose.runtime:runtime-rxjava2:${Versions.compose}"
-            const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.2.1"
 
-            val all = listOf(ui, tooling, foundation, material, iconsCore, iconsExtended, accompanist)
+            val all = listOf(ui, tooling, foundation, material, iconsCore, iconsExtended)
         }
+
+        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.4.1"
     }
 
     object Kodein {

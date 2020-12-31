@@ -17,7 +17,7 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class SignUpScope : BaseScope(), CanGoBack {
+sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
@@ -258,7 +258,7 @@ sealed class SignUpScope : BaseScope(), CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), WithErrors, CommonScope.PhoneVerificationEntryPoint,
+    ) : SignUpScope(), CommonScope.WithErrors, CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
         init {

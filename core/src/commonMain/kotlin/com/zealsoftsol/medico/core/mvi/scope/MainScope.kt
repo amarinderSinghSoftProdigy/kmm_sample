@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 
@@ -74,6 +75,30 @@ abstract class MainScope : BaseScope() {
     data class Dashboard(
         override val user: DataSource<User>,
     ) : MainScope(), NavAndSearchMainScope
+
+    data class ProductInfo(
+        override val user: DataSource<User>,
+        val product: ProductData,
+        val alternativeBrands: List<Any>,
+        val isDetailsOpened: DataSource<Boolean> = DataSource(false),
+    ) : MainScope(), NavAndSearchMainScope, CommonScope.CanGoBack {
+
+        val compositionsString: String
+            get() = product.compositionsData
+                .map { "${it.composition.name} ${it.strength.name}" }
+                .reduce { acc, s -> "$acc\n$s" }
+
+        fun addToCart() {
+
+        }
+
+        fun toggleDetails() {
+            isDetailsOpened.value = !isDetailsOpened.value
+        }
+
+        fun selectAlternativeProduct(product: Any) =
+            EventCollector.sendEvent(Event.Action.Product.Select(TODO("backend not ready")))
+    }
 }
 
 interface NavAndSearchMainScope {

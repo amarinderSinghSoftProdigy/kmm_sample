@@ -9,6 +9,7 @@ class MockSearchScope : NetworkScope.Search {
     override suspend fun search(
         product: String,
         manufacturer: String,
+        page: Int,
         query: List<Pair<String, String>>
     ): Response.Wrapped<SearchResponse> = mockResponse {
         Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0), true)

@@ -5,19 +5,26 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
+import com.zealsoftsol.medico.data.ProductSearch
 
 data class SearchScope(
     val productSearch: DataSource<String> = DataSource(""),
     val manufacturerSearch: DataSource<String> = DataSource(""),
     val isFilterOpened: DataSource<Boolean> = DataSource(false),
     val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-    val products: DataSource<List<Product>> = DataSource(emptyList())
-) : BaseScope(), CanGoBack {
+    val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
+    internal var currentProductPage: Int = 0,
+    internal var totalProducts: Int = 0,
+    internal var clickedProductIndex: Int = 0,
+) : BaseScope(), CommonScope.CanGoBack {
 
     init {
         searchProduct("")
     }
+
+    fun canLoadMore() = (currentProductPage + 1) * DEFAULT_ITEMS_PER_PAGE < totalProducts
+
+    fun getVisibleProductIndex() = clickedProductIndex
 
     fun toggleFilter() {
         isFilterOpened.value = !isFilterOpened.value
@@ -35,6 +42,15 @@ data class SearchScope(
     fun searchProduct(input: String) =
         EventCollector.sendEvent(Event.Action.Search.SearchProduct(input))
 
-    fun selectProduct(product: Product) =
-        EventCollector.sendEvent(Event.Action.Search.SelectProduct(product))
+    fun selectProduct(product: ProductSearch, index: Int) {
+        clickedProductIndex = index
+        EventCollector.sendEvent(Event.Action.Product.Select(product.productCode))
+    }
+
+    fun loadMoreProducts() =
+        EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+
+    companion object {
+        internal const val DEFAULT_ITEMS_PER_PAGE = 20
+    }
 }

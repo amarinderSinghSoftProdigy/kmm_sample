@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CanGoBack
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
 import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.OtpScope
 import com.zealsoftsol.medico.screens.BasicTabBar

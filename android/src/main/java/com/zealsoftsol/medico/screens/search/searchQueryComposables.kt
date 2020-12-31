@@ -1,6 +1,11 @@
 package com.zealsoftsol.medico.screens.search
 
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.IndicationInstance
+import androidx.compose.foundation.Interaction
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +18,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Icon
@@ -29,21 +35,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.VectorAsset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.SearchScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Product
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.screens.Separator
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.product.ProductPlaceholder
+import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun SearchQueryScreen(scope: SearchScope) {
@@ -53,6 +68,8 @@ fun SearchQueryScreen(scope: SearchScope) {
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
+        val listState =
+            rememberLazyListState(initialFirstVisibleItemIndex = scope.getVisibleProductIndex())
         TabBar {
             BasicSearchBar(
                 input = product.value,
@@ -83,19 +100,80 @@ fun SearchQueryScreen(scope: SearchScope) {
                 }
             }
         } else {
-            LazyColumnFor(
-                items = products.value,
-                modifier = Modifier.fillMaxSize().padding(16.dp)
-            ) {
-                ProductItem(it)
+            LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                itemsIndexed(
+                    items = products.value,
+                    itemContent = { index, item ->
+                        ProductItem(item) { scope.selectProduct(item, index) }
+                        if (index == products.value.lastIndex && scope.canLoadMore() && !scope.isInProgress.flow.value) {
+                            scope.loadMoreProducts()
+                        }
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun ProductItem(product: Product) {
-    Text(product.baseProduct)
+private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .background(color = Color.White, shape = MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick, indication = YellowOutlineIndication)
+            .padding(10.dp),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            CoilImage(
+                data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
+                error = { ProductPlaceholder() },
+                loading = { ProductPlaceholder() },
+            )
+            Space(10.dp)
+            Column {
+                Text(
+                    text = product.name,
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Space(4.dp)
+                Text(
+                    text = product.formattedPrice,
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W900,
+                    fontSize = 16.sp,
+                )
+                Space(4.dp)
+                Row {
+                    Text(
+                        text = "MRP: ${product.mrp}",
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = "PTR: ${product.ptrPercentage}",
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                }
+                Space(4.dp)
+                Text(
+                    text = "Code: ${product.productCode}",
+                    color = ConstColors.gray,
+                    fontSize = 12.sp,
+                )
+            }
+        }
+        Space(10.dp)
+        Text(
+            text = product.packageForm,
+            color = ConstColors.lightBlue,
+            fontSize = 14.sp,
+        )
+    }
 }
 
 @OptIn(ExperimentalLayout::class)
@@ -158,7 +236,7 @@ private fun Chip(option: Option<String>, onClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (option.isSelected) {
                 Icon(
-                    asset = Icons.Default.Check,
+                    imageVector = Icons.Default.Check,
                     tint = MaterialTheme.colors.background,
                     modifier = Modifier.padding(start = 10.dp).size(20.dp),
                 )
@@ -182,20 +260,20 @@ private fun Chip(option: Option<String>, onClick: () -> Unit) {
 fun BasicSearchBar(
     input: String,
     searchBarEnd: SearchBarEnd = SearchBarEnd.Eraser,
-    icon: VectorAsset = Icons.Default.Search,
+    icon: ImageVector = Icons.Default.Search,
     onIconClick: (() -> Unit)? = null,
     onSearch: (String) -> Unit
 ) {
     SearchBarBox {
         Icon(
-            asset = icon,
+            imageVector = icon,
             tint = ConstColors.gray,
             modifier = Modifier.size(24.dp)
                 .run { if (onIconClick != null) clickable(onClick = onIconClick) else this },
         )
         Box(
             modifier = Modifier.padding(start = 24.dp).fillMaxWidth(),
-            alignment = Alignment.CenterStart
+            contentAlignment = Alignment.CenterStart,
         ) {
             if (input.isEmpty()) {
                 Text(
@@ -215,7 +293,7 @@ fun BasicSearchBar(
                 is SearchBarEnd.Eraser -> {
                     if (input.isNotEmpty()) {
                         Icon(
-                            asset = Icons.Default.Close,
+                            imageVector = Icons.Default.Close,
                             tint = ConstColors.gray,
                             modifier = modifier.clickable(onClick = { onSearch("") })
                         )
@@ -223,7 +301,7 @@ fun BasicSearchBar(
                 }
                 is SearchBarEnd.Filter -> {
                     Icon(
-                        asset = vectorResource(id = R.drawable.ic_filter),
+                        imageVector = vectorResource(id = R.drawable.ic_filter),
                         tint = ConstColors.gray,
                         modifier = modifier.clickable(onClick = { searchBarEnd.onClick() })
                     )
@@ -256,4 +334,28 @@ private fun SearchBarBox(body: @Composable RowScope.() -> Unit) {
             body()
         }
     }
+}
+
+private object YellowOutlineIndication : Indication {
+
+    private object YellowOutlineIndicationInstance : IndicationInstance {
+
+        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
+            drawContent()
+            if (interactionState.contains(Interaction.Pressed)) {
+                drawRoundRect(
+                    color = ConstColors.yellow,
+                    cornerRadius = CornerRadius(2.dp.toPx()),
+                    style = Stroke(
+                        width = 2.dp.toPx(),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round
+                    ),
+                    size = size
+                )
+            }
+        }
+    }
+
+    override fun createInstance() = YellowOutlineIndicationInstance
 }

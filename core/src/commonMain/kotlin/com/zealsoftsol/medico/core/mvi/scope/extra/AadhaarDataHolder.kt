@@ -2,11 +2,10 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.WithErrors
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 
-interface AadhaarDataHolder : CommonScope, WithErrors {
+interface AadhaarDataHolder : CommonScope.WithErrors {
     val aadhaarData: DataSource<AadhaarData>
     val isVerified: DataSource<Boolean>
 
