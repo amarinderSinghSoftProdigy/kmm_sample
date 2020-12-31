@@ -36,8 +36,6 @@ struct UserInfoNavigationBar: ViewModifier {
                     
                     if user.value?.isVerified == true {
                         SearchBar()
-                            .padding(.horizontal, -8)
-                            .padding(.vertical, -10)
                             .onTapGesture {
                                 scope.goToSearch()
                             }

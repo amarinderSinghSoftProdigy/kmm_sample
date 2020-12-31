@@ -17,36 +17,21 @@ struct GlobalSearchScreen: View {
     let scope: SearchScope
     
     var body: some View {
-        VStack(spacing: 0) {
-            searchBarPanel
-            
-            Text("Hello!")
-        }
+        Text("Hello!")
         .keyboardResponder()
-        .navigationBarTitle("", displayMode: .inline)
+        .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
     }
     
     private var searchBarPanel: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                AppColor.navigationBar.color
-                    .edgesIgnoringSafeArea(.all)
-                
-                HStack {
-                    SearchBar(onTextChange: { value in scope.searchProduct(input: value) })
-                    
-                    Button(LocalizedStringKey("cancel")) {
-                        
-                    }
-                    .medicoText(fontSize: 17,
-                                color: .blue)
-                }
-                .padding([.leading, .trailing], 20)
-                .padding([.bottom], 10)
-            }
-            .frame(height: 66)
+        HStack {
+            SearchBar(trailingButton: .filter({ scope.toggleFilter() }),
+                      onTextChange: { value in scope.searchProduct(input: value) })
             
-            AppColor.lightGrey.color.frame(height: 1)
+            Button(LocalizedStringKey("cancel")) {
+                scope.goBack()
+            }
+            .medicoText(fontSize: 17,
+                        color: .blue)
         }
     }
 }

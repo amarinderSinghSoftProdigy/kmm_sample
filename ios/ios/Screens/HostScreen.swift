@@ -119,11 +119,11 @@ struct BaseScopeView: View {
     private func getCurrentViewWithModifiers() -> some View {
         var view = self.currentView
         
-        if let scopeWithErrors = scope as? WithErrors {
+        if let scopeWithErrors = scope as? CommonScopeWithErrors {
             view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
         }
         
-        if let goBackScope = scope as? CanGoBack {
+        if let goBackScope = scope as? CommonScopeCanGoBack {
             view = AnyView(view.backButton { goBackScope.goBack() })
         }
         

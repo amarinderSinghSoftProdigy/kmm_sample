@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if DEBUG
         testsHelper.overrideCurrentScope()
         
-//        DebugScopeCreator().dashboardScreen()
+        DebugScopeCreator().dashboardScreen()
         #endif
     }
 

@@ -339,6 +339,7 @@
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				33621CF52571009D004BD4CF /* MedicoText.swift */,
 				339C5044257A548F00AAB45F /* PickerSelector.swift */,
+				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -408,7 +409,6 @@
 				3395031225824C060080CC88 /* BlurEffectView.swift */,
 				33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */,
 				338F98E6257F77C3002D36FF /* ImagePicker.swift */,
-				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = UIKitElements;
 			sourceTree = "<group>";

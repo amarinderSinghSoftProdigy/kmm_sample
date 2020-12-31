@@ -62,12 +62,12 @@ struct FieldError: ViewModifier {
 }
 
 struct ErrorAlert: ViewModifier {
-    let errorsHandler: WithErrors
+    let errorsHandler: CommonScopeWithErrors
     
     @ObservedObject var error: SwiftDataSource<DataErrorCode>
     private var showsAlert: Binding<Bool>
     
-    init(errorsHandler: WithErrors) {
+    init(errorsHandler: CommonScopeWithErrors) {
         self.errorsHandler = errorsHandler
         
         let error = SwiftDataSource(dataSource: errorsHandler.errors)
@@ -90,13 +90,13 @@ struct ErrorAlert: ViewModifier {
 }
 
 struct NotificationAlert: ViewModifier {
-    let notificationsHandler: WithNotifications
+    let notificationsHandler: CommonScopeWithNotifications
     let onDismiss: (() -> ())?
     
     @ObservedObject var notification: SwiftDataSource<ScopeNotification>
     private var showsAlert: Binding<Bool>
     
-    init(notificationsHandler: WithNotifications,
+    init(notificationsHandler: CommonScopeWithNotifications,
          onDismiss: (() -> ())? = nil) {
         self.notificationsHandler = notificationsHandler
         self.onDismiss = onDismiss
@@ -133,4 +133,27 @@ struct TestingIdentifier: ViewModifier {
         
         return AnyView(content)
     }
+}
+
+struct NavigationBar: ViewModifier {
+    let navigationBarContent: AnyView
+    
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            ZStack {
+                AppColor.navigationBar.color
+                    .edgesIgnoringSafeArea(.all)
+                
+                navigationBarContent
+                    .padding([.leading, .trailing], 20)
+            }
+            .frame(height: 44)
+            
+            AppColor.lightGrey.color.frame(height: 1)
+            
+            content
+        }
+        .navigationBarHidden(true)
+    }
+    
 }

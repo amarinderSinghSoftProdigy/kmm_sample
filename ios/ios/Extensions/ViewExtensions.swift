@@ -70,11 +70,11 @@ extension View {
     }
     
     // MARK: View Modifiers
-    func errorAlert(withHandler errorsHandler: WithErrors) -> some View {
+    func errorAlert(withHandler errorsHandler: CommonScopeWithErrors) -> some View {
         self.modifier(ErrorAlert(errorsHandler: errorsHandler))
     }
     
-    func notificationAlert(withHandler notificationsHandler: WithNotifications,
+    func notificationAlert(withHandler notificationsHandler: CommonScopeWithNotifications,
                            onDismiss: (() -> ())? = nil) -> some View {
         self.modifier(NotificationAlert(notificationsHandler: notificationsHandler,
                                         onDismiss: onDismiss))
@@ -122,6 +122,12 @@ extension View {
                        fontSize: fontSize,
                        color: color,
                        multilineTextAlignment: multilineTextAlignment)
+        )
+    }
+    
+    func navigationBar(withNavigationBarContent content: AnyView) -> some View {
+        self.modifier(
+            NavigationBar(navigationBarContent: content)
         )
     }
 }
