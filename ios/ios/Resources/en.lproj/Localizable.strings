@@ -114,3 +114,5 @@
 // MARK: Global Search
 "search" = "Search";
 "cancel" = "Cancel";
+"clear_all" = "Clear All";
+"clear" = "Clear";
