@@ -12,12 +12,12 @@ import SwiftUI
 struct SearchBar: View {
     let placeholderLocalizationKey: String
     
+    let height: CGFloat
     let trailingButton: SearchBarButton?
     
-    let onTextChange: ((String) -> Void)?
-    let onEditingChanged: ((Bool) -> Void)?
+    let isDisabled: Bool
     
-    @State private var text: String = ""
+    @Binding private var text: String
     
     // TECHNICAL DEBT
     //
@@ -30,21 +30,19 @@ struct SearchBar: View {
             AppColor.white.color
                 .cornerRadius(10)
             
-            let hasTrailingButton = trailingButton != nil
+            let hasTrailingButton = trailingButton != nil &&
+                !(trailingButton == .clear && text.isEmpty)
             
             HStack() {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppColor.placeholderGrey.color)
                 
                 TextField(LocalizedStringKey(placeholderLocalizationKey),
-                          text: $text,
-                          onEditingChanged: { (changed) in onEditingChanged?(changed) },
-                          onCommit: { onEditingChanged?(false) })
+                          text: $text)
                     .medicoText(fontSize: 17, color: .grey2, multilineTextAlignment: .leading)
                     .textFieldStyle(PlainTextFieldStyle())
                     .disableAutocorrection(true)
-                    .disabled(onTextChange == nil)
-                    .onReceive(Just(text), perform: { searchText in onTextChange?(searchText) })
+                    .disabled(isDisabled)
                 
                 if hasTrailingButton {
                     self.trailingButtonView
@@ -52,7 +50,7 @@ struct SearchBar: View {
             }
             .padding(.horizontal, 8)
         }
-        .padding(.vertical, 5)
+        .frame(height: height)
     }
     
     private var trailingButtonView: some View {
@@ -76,19 +74,24 @@ struct SearchBar: View {
     }
     
     init(placeholderLocalizationKey: String = "search",
+         searchText: NSString? = nil,
+         height: CGFloat = 36,
          trailingButton: SearchBarButton? = nil,
          onTextChange: ((String) -> Void)? = nil,
          onEditingChanged: ((Bool) -> Void)? = nil) {
         self.placeholderLocalizationKey = placeholderLocalizationKey
         
+        self.height = height
         self.trailingButton = trailingButton
         
-        self.onTextChange = onTextChange
-        self.onEditingChanged = onEditingChanged
+        self.isDisabled = onTextChange == nil
+        
+        self._text = Binding.init(get: { (searchText ?? "") as String },
+                                  set: { value in onTextChange?(value) })
     }
 }
 
-enum SearchBarButton {
+enum SearchBarButton: Equatable {
     case clear
     
     case filter(() -> ())
@@ -99,6 +102,17 @@ enum SearchBarButton {
             return "Clear"
         case .filter:
             return "Filter"
+        }
+    }
+    
+    static func == (lhs: SearchBarButton, rhs: SearchBarButton) -> Bool {
+        switch (lhs, rhs) {
+        case (.clear, .clear),
+             (.filter, .filter):
+            return true
+            
+        default:
+            return false
         }
     }
 }

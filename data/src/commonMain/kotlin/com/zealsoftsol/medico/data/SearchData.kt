@@ -53,7 +53,7 @@ data class Filter(
     val queryName: String,
     val options: List<Option<String>>,
 ) {
-    companion object {
+    companion object Ids {
         const val MANUFACTURER_ID = "manufacturers"
     }
 }

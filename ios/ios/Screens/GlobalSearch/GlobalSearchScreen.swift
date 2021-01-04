@@ -18,8 +18,10 @@ struct GlobalSearchScreen: View {
     let scope: SearchScope
     
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
-    
     @ObservedObject var filters: SwiftDataSource<NSArray>
+    
+    @ObservedObject var productSearch: SwiftDataSource<NSString>
+    @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -50,11 +52,15 @@ struct GlobalSearchScreen: View {
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
+        
+        self.manufucturerSearch = SwiftDataSource(dataSource: scope.manufacturerSearch)
+        self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
     
     private var searchBarPanel: some View {
         HStack {
-            SearchBar(trailingButton: .filter({ scope.toggleFilter() }),
+            SearchBar(searchText: productSearch.value,
+                      trailingButton: .filter({ scope.toggleFilter() }),
                       onTextChange: { value in scope.searchProduct(input: value) })
             
             Button(LocalizedStringKey("cancel")) {
@@ -82,49 +88,70 @@ struct GlobalSearchScreen: View {
             
             if let filters = self.filters.value as? [DataFilter] {
                 ForEach(filters, id: \.self.name) { filter in
-                    getFilterView(for: filter)
+                    let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
+                        SearchOption(text: manufucturerSearch.value,
+                                     onSearch: { value in scope.searchManufacturer(input: value) }) : nil
+                    
+                    FilterView(filter: filter,
+                               searchOption: searchOption,
+                               onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                    option: option) },
+                               onClearFilter: { scope.clearFilter(filter: filter) })
                 }
             }
         }
     }
     
-    private func getFilterView(for filter: DataFilter) -> AnyView {
-        AnyView(
-            VStack {
-                AppColor.lightGrey.color
-                    .frame(height: 1)
-                
-                HStack {
-                    LocalizedText(localizedStringKey: filter.name,
-                                  textWeight: .semiBold,
-                                  fontSize: 16)
-                    
-                    Spacer()
-                    
-                    LocalizedText(localizedStringKey: "clear",
-                                  textWeight: .medium,
-                                  fontSize: 16,
-                                  color: .textGrey)
-                        .onTapGesture {
-                            scope.clearFilter(filter: filter)
-                        }
-                }
-                
-                FlexibleView(data: filter.options,
-                             spacing: 8,
-                             alignment: .leading) { option in
-                    FilterOption(option: option)
-                        .onTapGesture {
-                            scope.selectFilter(filter: filter,
-                                               option: option)
-                        }
-                }
-            }
-        )
-    }
-    
     private var productsView: some View {
         Text("Products")
+    }
+}
+
+private struct FilterView: View {
+    let filter: DataFilter
+    
+    let searchOption: SearchOption?
+    
+    let onSelectFilterOption: (DataOption<NSString>) -> ()
+    let onClearFilter: () -> ()
+    
+    var body: some View {
+        VStack {
+            AppColor.lightGrey.color
+                .frame(height: 1)
+            
+            HStack {
+                LocalizedText(localizedStringKey: filter.name,
+                              textWeight: .semiBold,
+                              fontSize: 16)
+                
+                Spacer()
+                
+                LocalizedText(localizedStringKey: "clear",
+                              textWeight: .medium,
+                              fontSize: 16,
+                              color: .textGrey)
+                    .onTapGesture {
+                        self.onClearFilter()
+                    }
+            }
+            
+            if let searchOption = self.searchOption {
+                SearchBar(placeholderLocalizationKey: "search_manufacturer",
+                          searchText: searchOption.text,
+                          trailingButton: .clear,
+                          onTextChange: searchOption.onSearch)
+            }
+            
+            FlexibleView(data: filter.options,
+                         spacing: 8,
+                         alignment: .leading) { option in
+                FilterOption(option: option)
+                    .onTapGesture {
+                        self.onSelectFilterOption(option)
+                    }
+            }
+        }
     }
 }
 
@@ -159,4 +186,9 @@ private struct FilterOption: View {
         )
     }
     
+}
+
+private struct SearchOption {
+    let text: NSString?
+    let onSearch: (String) -> ()
 }
