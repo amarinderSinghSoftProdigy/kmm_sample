@@ -37,6 +37,7 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
+                .padding(.bottom, 10)
                 .scrollView()
                 .padding([.horizontal, .top], 16)
                 .keyboardResponder()
@@ -109,15 +110,14 @@ struct GlobalSearchScreen: View {
                         }
                 }
                 
-                // Remove the scroll bar
-                GridStack(minCellWidth: 100,
-                          spacing: 20,
-                          numItems: filter.options.count) { index, cellWidth in
-                    ZStack {
-                        AppColor.yellow.color
-                        LocalizedText(localizedStringKey: filter.options[index].value! as String)
-                    }
-                        .frame(width: cellWidth, height: 30)
+                FlexibleView(data: filter.options,
+                             spacing: 8,
+                             alignment: .leading) { option in
+                    FilterOption(option: option)
+                        .onTapGesture {
+                            scope.selectFilter(filter: filter,
+                                               option: option)
+                        }
                 }
             }
         )
@@ -126,4 +126,37 @@ struct GlobalSearchScreen: View {
     private var productsView: some View {
         Text("Products")
     }
+}
+
+private struct FilterOption: View {
+    private let height: CGFloat = 32
+    
+    let option: DataOption<NSString>
+    
+    var body: some View {
+        guard let optionValue = option.value else { return AnyView(EmptyView()) }
+        
+        return AnyView(
+            ZStack {
+                let backgroundColor: AppColor = option.isSelected ? .yellow : .white
+                
+                backgroundColor.color
+                    .cornerRadius(height / 2)
+                
+                HStack {
+                    if option.isSelected {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(appColor: .darkBlue)
+                    }
+                    
+                    let textWeight: TextWeight = option.isSelected ? .semiBold : .regular
+                    LocalizedText(localizedStringKey: optionValue as String,
+                                  textWeight: textWeight)
+                }
+                .padding(.horizontal, 10)
+            }
+            .frame(height: height)
+        )
+    }
+    
 }
