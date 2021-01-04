@@ -67,7 +67,7 @@ fileprivate struct OtpDetailsView: View {
             Text("verification_code_sent_hint \(phoneNumber)")
                 .modifier(MedicoText(textWeight: .medium, color: .textGrey))
                 .testingIdentifier("verification_code_sent_hint")
-                .padding([.trailing, .leading], geometry.size.width * 0.15)
+                .padding(.horizontal, geometry.size.width * 0.15)
             
             if let attemptsLeft = self.attemptsLeft.value as? Int {
                 if let timerValue = timerValue.value as? Double,
@@ -75,20 +75,20 @@ fileprivate struct OtpDetailsView: View {
                     Text("\(TimeInterval(milliseconds: timerValue).timeString)")
                         .modifier(MedicoText(textWeight: .bold, fontSize: 15))
                         .testingIdentifier("timer")
-                        .padding([.top, .bottom])
+                        .padding(.vertical)
                 }
                 else {
                     Text("attempts_left \(attemptsLeft)")
                         .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
                         .testingIdentifier("attempts_left")
-                        .padding([.top, .bottom])
+                        .padding(.vertical)
                 }
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
                                              text: code,
                                              onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
-                    .padding([.top, .bottom])
+                    .padding(.vertical)
                     .textContentType(.oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",

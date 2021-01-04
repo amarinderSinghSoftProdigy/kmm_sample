@@ -65,7 +65,7 @@ struct SignUpLegalDocumentsScreen: View {
                         
                         Spacer()
                     }
-                    .padding([.leading, .trailing], geometry.size.width * 0.17)
+                    .padding(.horizontal, geometry.size.width * 0.17)
                     
                     Spacer()
                 }

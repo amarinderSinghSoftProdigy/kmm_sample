@@ -194,6 +194,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                         .padding(.leading, padding)
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
     

@@ -43,12 +43,12 @@ struct OtpPhoneRequestScreen: View {
                               textWeight: .medium,
                               color: .textGrey)
                     .multilineTextAlignment(.center)
-                    .padding([.trailing, .leading], geometry.size.width * 0.15)
+                    .padding(.horizontal, geometry.size.width * 0.15)
                 
                 PhoneTextField(phone: phone, canSubmitPhone: $canSubmitPhone) { newValue in
                     scope.changePhoneNumber(phoneNumber: newValue)
                 }
-                .padding([.top, .bottom])
+                .padding(.vertical)
                 
                 MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                     scope.sendOtp(phoneNumber: phone)

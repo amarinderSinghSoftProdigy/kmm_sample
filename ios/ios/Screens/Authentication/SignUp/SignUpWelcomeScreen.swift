@@ -34,7 +34,7 @@ struct WelcomeScreen: View {
                         self.getUploadDocumentCenterView(for: uploadOption)
                     }
                 }
-                .padding([.leading, .trailing], geometry.size.width * 0.19)
+                .padding(.horizontal, geometry.size.width * 0.19)
                 
                 Spacer()
                 
@@ -54,16 +54,7 @@ struct WelcomeScreen: View {
                 LocalizedText(localizedStringKey: "documents_under_review",
                               fontSize: 16)
             }
-        }
-    }
-    
-    func getUploadDocumentCenterView(for optionView: WelcomeOption.Upload) -> some View {
-        VStack(spacing: 30) {
-            Image("UploadDocuments")
-            
-            LocalizedText(localizedStringKey: optionView.uploadDocumentTextKey,
-                          fontSize: 16,
-                          color: .grey1)
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
     
@@ -77,6 +68,16 @@ struct WelcomeScreen: View {
         }
         else {
             self.uploadButtonEnabled = SwiftDataSource(dataSource: DataSource(initialValue: true))
+        }
+    }
+    
+    private func getUploadDocumentCenterView(for optionView: WelcomeOption.Upload) -> some View {
+        VStack(spacing: 30) {
+            Image("UploadDocuments")
+            
+            LocalizedText(localizedStringKey: optionView.uploadDocumentTextKey,
+                          fontSize: 16,
+                          color: .grey1)
         }
     }
     
