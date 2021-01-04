@@ -117,3 +117,8 @@
 "clear_all" = "Clear All";
 "clear" = "Clear";
 "search_manufacturer" = "Search Manufacturer";
+
+// MARK: Product Details
+"mrp %@" = "MRP: %@";
+"ptr %@" = "PTR: %@";
+"code %@" = "Code: %@";

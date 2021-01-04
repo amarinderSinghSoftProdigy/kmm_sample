@@ -41,6 +41,7 @@ enum TextWeight: String {
     case medium // 500
     case semiBold // 600
     case bold // 700
+    case black // 900
     
     var fontName: String {
         return "Barlow-\(self.rawValue.capitalizeFirstLetter())"

@@ -8,7 +8,7 @@
 
 import SwiftUI
 import core
-import GridStack
+import Combine
 
 extension SearchScope {
     override var navigationBarTintColor: UIColor? { return nil }
@@ -19,9 +19,10 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var filters: SwiftDataSource<NSArray>
-    
-    @ObservedObject var productSearch: SwiftDataSource<NSString>
     @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
+    
+    @ObservedObject var products: SwiftDataSource<NSArray>
+    @ObservedObject var productSearch: SwiftDataSource<NSString>
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -52,8 +53,9 @@ struct GlobalSearchScreen: View {
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
-        
         self.manufucturerSearch = SwiftDataSource(dataSource: scope.manufacturerSearch)
+        
+        self.products = SwiftDataSource(dataSource: scope.products)
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
     
@@ -103,10 +105,23 @@ struct GlobalSearchScreen: View {
     }
     
     private var productsView: some View {
-        Text("Products")
+        guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
+        
+        return AnyView (
+            VStack {
+                ForEach(products, id: \.self.id) { product in
+                    ProductView(product: product)
+                        .onTapGesture {
+                            scope.selectProduct(product: product, index: 0)
+                        }
+                }
+            }
+        )
+        
     }
 }
 
+// MARK: Filter
 private struct FilterView: View {
     let filter: DataFilter
     
@@ -191,4 +206,110 @@ private struct FilterOption: View {
 private struct SearchOption {
     let text: NSString?
     let onSearch: (String) -> ()
+}
+
+// MARK: Products
+private struct ProductView: View {
+    private let alignment: HorizontalAlignment = .leading
+    private let textAlignment: TextAlignment = .leading
+    
+    let product: DataProductSearch
+    
+    var body: some View {
+        ZStack(alignment: Alignment(horizontal: alignment, vertical: .center)) {
+            AppColor.white.color
+                .cornerRadius(5)
+            
+            VStack(alignment: alignment) {
+                HStack(spacing: 17) {
+                    UrlImage(withURL: CdnUrlProvider().urlFor(medicineId: product.medicineId,
+                                                              size: .px123),
+                             withDefaultImageName: "DefaultProduct")
+                        .frame(width: 81, height: 81)
+                    
+                    VStack(alignment: alignment, spacing: 10) {
+                        VStack(alignment: alignment, spacing: 5) {
+                            Text(product.name)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: textAlignment)
+                            
+                            Text(product.formattedPrice)
+                                .medicoText(textWeight: .black,
+                                            fontSize: 16,
+                                            multilineTextAlignment: textAlignment)
+                        }
+                        
+                        VStack(alignment: alignment, spacing: 5) {
+                            HStack(spacing: 20) {
+                                Text(LocalizedStringKey("mrp \(String(format: "%.2f", product.mrp))"))
+                                    .medicoText(fontSize: 12,
+                                                color: .grey3,
+                                                multilineTextAlignment: textAlignment)
+                                
+                                Text(LocalizedStringKey("ptr \(product.ptrPercentage)"))
+                                    .medicoText(fontSize: 12,
+                                                color: .grey3,
+                                                multilineTextAlignment: textAlignment)
+                            }
+                            
+                            Text(LocalizedStringKey("code \(product.productCode)"))
+                                .medicoText(fontSize: 12,
+                                            color: .grey3,
+                                            multilineTextAlignment: textAlignment)
+                        }
+                    }
+                }
+                
+                Text(product.packageForm)
+                    .medicoText(color: .lightBlue,
+                                multilineTextAlignment: textAlignment)
+            }
+            .padding(11)
+        }
+    }
+}
+
+class ImageLoader: ObservableObject {
+    var didChange = PassthroughSubject<Data, Never>()
+    var data = Data() {
+        didSet {
+            didChange.send(data)
+        }
+    }
+
+    init(urlString: String) {
+        guard let url = URL(string: urlString) else { return }
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data else { return }
+            DispatchQueue.main.async {
+                self.data = data
+            }
+        }
+        task.resume()
+    }
+}
+
+private struct UrlImage: View {
+    @ObservedObject var imageLoader: ImageLoader
+    
+    @State var image: UIImage
+    
+    init(withURL url: String,
+         withDefaultImageName defaultImageName: String) {
+        imageLoader = ImageLoader(urlString: url)
+        
+        self._image = State(initialValue: UIImage(named: defaultImageName) ?? UIImage())
+    }
+
+    var body: some View {
+        Image(uiImage: image)
+            .aspectRatio(contentMode: .fit)
+            .onReceive(imageLoader.didChange) { data in
+                guard !data.isEmpty,
+                      let image = UIImage(data: data) else { return }
+                
+                self.image = image
+            }
+    }
 }
