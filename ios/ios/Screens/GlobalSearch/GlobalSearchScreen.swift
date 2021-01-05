@@ -8,7 +8,7 @@
 
 import SwiftUI
 import core
-import Combine
+import Introspect
 
 extension SearchScope {
     override var navigationBarTintColor: UIColor? { return nil }
@@ -25,6 +25,11 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
+    
+    @State private var productsListTableView: UITableView?
+    
+    @State private var scrollElementIndex: Int = 0
+    @State private var elementToScrollTo: Int?
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -111,32 +116,70 @@ struct GlobalSearchScreen: View {
         guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
         
         return AnyView (
-            List {
-                ForEach(Array(products.enumerated()), id: \.element) { index, product in
-                    let topPadding: CGFloat = index == 0 ? 0 : 16
+            ZStack {
+                List {
+                    ForEach(Array(products.enumerated()), id: \.element) { index, product in
+                        let topPadding: CGFloat = index == 0 ? 0 : 16
 
-                    ProductView(product: product)
-                        .padding(.top, topPadding)
-                        .listRowInsets(.init())
-                        .listRowBackground(Color.clear)
-                        .background(appColor: .primary)
-                        .onTapGesture {
-                            scope.selectProduct(product: product, index: Int32(index))
-                        }
-                        .onAppear {
-                            if index == products.count - 1 &&
-                                scope.canLoadMore() &&
-                                isInProgress.value == false {
-                                scope.loadMoreProducts()
+                        ProductView(product: product)
+                            .padding(.top, topPadding)
+                            .listRowInsets(.init())
+                            .listRowBackground(Color.clear)
+                            .background(appColor: .primary)
+                            .id(index)
+                            .onTapGesture {
+                                scope.selectProduct(product: product, index: Int32(index))
                             }
-                        }
+                            .onAppear {
+                                if index == products.count - 1 &&
+                                    scope.canLoadMore() &&
+                                    isInProgress.value == false {
+                                    scope.loadMoreProducts()
+
+                                    self.scrollElementIndex = index
+                                }
+                            }
+                    }
                 }
-            }
-            .onAppear() {
-                UITableView.appearance().backgroundColor = UIColor.clear
-                UITableViewCell.appearance().backgroundColor = UIColor.clear
+                .introspectTableView { (tableView) in
+                    tableView.backgroundColor = UIColor.clear
+                    
+                    if self.productsListTableView == nil {
+                        self.productsListTableView = tableView
+                    }
+                    
+                    if let elementToScrollTo = self.elementToScrollTo {
+                        scrollToCell(elementToScrollTo)
+                    }
+                }
+                .onAppear {
+                    let visibleProductIndex = scope.getVisibleProductIndex()
+                    
+                    self.elementToScrollTo = visibleProductIndex != 0 ? Int(visibleProductIndex) :
+                        self.scrollElementIndex != 0 ? self.scrollElementIndex : nil
+                }
+                .onReceive(self.products.$value) { value in
+                    guard let value = value, value.count > 0 else { return }
+                    
+                    self.productsListTableView = nil
+                }
+                
+//                if elementToScrollTo != nil {
+//                    ActivityView()
+//                }
             }
         )
+    }
+    
+    private func scrollToCell(_ index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        
+        guard let productsListTableView = self.productsListTableView,
+           productsListTableView.dataSource != nil,
+           productsListTableView.hasRowAtIndexPath(indexPath) else { return }
+        
+        productsListTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        self.elementToScrollTo = nil
     }
 }
 
@@ -286,50 +329,5 @@ private struct ProductView: View {
             }
             .padding(11)
         }
-    }
-}
-
-class ImageLoader: ObservableObject {
-    var didChange = PassthroughSubject<Data, Never>()
-    var data = Data() {
-        didSet {
-            didChange.send(data)
-        }
-    }
-
-    init(urlString: String) {
-        guard let url = URL(string: urlString) else { return }
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data else { return }
-            DispatchQueue.main.async {
-                self.data = data
-            }
-        }
-        task.resume()
-    }
-}
-
-private struct UrlImage: View {
-    @ObservedObject var imageLoader: ImageLoader
-    
-    @State var image: UIImage
-    
-    init(withURL url: String,
-         withDefaultImageName defaultImageName: String) {
-        imageLoader = ImageLoader(urlString: url)
-        
-        self._image = State(initialValue: UIImage(named: defaultImageName) ?? UIImage())
-    }
-
-    var body: some View {
-        Image(uiImage: image)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .onReceive(imageLoader.didChange) { data in
-                guard !data.isEmpty,
-                      let image = UIImage(data: data) else { return }
-                
-                self.image = image
-            }
     }
 }

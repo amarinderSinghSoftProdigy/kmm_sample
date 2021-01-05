@@ -15,9 +15,10 @@ extension UIApplication {
     }
 }
 
-extension String {
-    func capitalizeFirstLetter() -> String {
-        return prefix(1).capitalized + dropFirst()
+extension UITableView {
+    func hasRowAtIndexPath(_ indexPath: IndexPath) -> Bool {
+        return indexPath.section < self.numberOfSections &&
+            indexPath.row < self.numberOfRows(inSection: indexPath.section)
     }
 }
 
@@ -33,7 +34,6 @@ extension TimeInterval{
         let minutes = (time / 60)
 
         return String(format: "%1d:%0.2d", minutes, seconds)
-
     }
 }
 
@@ -87,7 +87,6 @@ extension ScopeNotification {
     }
 }
 
-
 extension BaseScope {
     func getAvailableDocumentTypes(from fileTypes: KotlinArray<DataFileType>) -> [String] {
         var documentTypes = [String]()
@@ -106,6 +105,10 @@ extension BaseScope {
 }
 
 extension String {
+    func capitalizeFirstLetter() -> String {
+        return prefix(1).capitalized + dropFirst()
+    }
+    
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: "")
     }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,8 @@
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
 		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
 		33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A85256FB7C200DACD7C /* ViewExtensions.swift */; };
+		333F45D125A49AC8008DE1D2 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 333F45D025A49AC8008DE1D2 /* Introspect */; };
+		333F45D325A4B5A8008DE1D2 /* UrlImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F45D225A4B5A8008DE1D2 /* UrlImage.swift */; };
 		334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334574EF25762A5F002839C5 /* SignUpScreen.swift */; };
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
 		33621CF62571009D004BD4CF /* MedicoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF52571009D004BD4CF /* MedicoText.swift */; };
@@ -138,6 +140,7 @@
 		33385A7A256FB66B00DACD7C /* ColorExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ColorExt.swift; path = ios/extensions/ColorExt.swift; sourceTree = SOURCE_ROOT; };
 		33385A7B256FB66B00DACD7C /* CommonExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonExt.swift; path = ios/extensions/CommonExt.swift; sourceTree = SOURCE_ROOT; };
 		33385A85256FB7C200DACD7C /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = ios/extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
+		333F45D225A4B5A8008DE1D2 /* UrlImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UrlImage.swift; sourceTree = "<group>"; };
 		334574EF25762A5F002839C5 /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
 		33621CF52571009D004BD4CF /* MedicoText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoText.swift; sourceTree = "<group>"; };
@@ -223,6 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				33F8DFC525763A91009E98EE /* core.framework in Frameworks */,
+				333F45D125A49AC8008DE1D2 /* Introspect in Frameworks */,
 				4BA0007DEC69B01DBC21A4C4 /* Pods_Medico.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,6 +280,40 @@
 				3308674B2566D441000C3EB8 /* MainScreen.swift */,
 			);
 			path = Main;
+			sourceTree = "<group>";
+		};
+		333F45D425A4B608008DE1D2 /* Pickers */ = {
+			isa = PBXGroup;
+			children = (
+				3376EC792583875900570BB3 /* FilePicker.swift */,
+				339C5044257A548F00AAB45F /* PickerSelector.swift */,
+			);
+			path = Pickers;
+			sourceTree = "<group>";
+		};
+		333F45D525A4B616008DE1D2 /* Inputs */ = {
+			isa = PBXGroup;
+			children = (
+				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
+				33FD6A3F259CAD640092887D /* SearchBar.swift */,
+			);
+			path = Inputs;
+			sourceTree = "<group>";
+		};
+		333F45D625A4B636008DE1D2 /* Texts */ = {
+			isa = PBXGroup;
+			children = (
+				33621CF52571009D004BD4CF /* MedicoText.swift */,
+			);
+			path = Texts;
+			sourceTree = "<group>";
+		};
+		333F45D725A4B63C008DE1D2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				333F45D225A4B5A8008DE1D2 /* UrlImage.swift */,
+			);
+			path = Images;
 			sourceTree = "<group>";
 		};
 		334574EE257629B6002839C5 /* SignUp */ = {
@@ -337,14 +375,13 @@
 		33789560256E3BBC0034D79F /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				333F45D725A4B63C008DE1D2 /* Images */,
+				333F45D525A4B616008DE1D2 /* Inputs */,
+				333F45D425A4B608008DE1D2 /* Pickers */,
+				333F45D625A4B636008DE1D2 /* Texts */,
 				338F98EA257F7808002D36FF /* UIKitElements */,
 				33ABAEC7258B826A0061F63C /* CommonViews.swift */,
 				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
-				3376EC792583875900570BB3 /* FilePicker.swift */,
-				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
-				33621CF52571009D004BD4CF /* MedicoText.swift */,
-				339C5044257A548F00AAB45F /* PickerSelector.swift */,
-				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -634,6 +671,7 @@
 			);
 			name = Medico;
 			packageProductDependencies = (
+				333F45D025A49AC8008DE1D2 /* Introspect */,
 			);
 			productName = ios;
 			productReference = 7555FF7B242A565900829871 /* Medico.app */;
@@ -668,6 +706,7 @@
 			);
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
+				333F45BF25A499B8008DE1D2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -867,6 +906,7 @@
 				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
+				333F45D325A4B5A8008DE1D2 /* UrlImage.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
@@ -1208,6 +1248,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		333F45BF25A499B8008DE1D2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		333F45D025A49AC8008DE1D2 /* Introspect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 333F45BF25A499B8008DE1D2 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = Introspect;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7555FF73242A565900829871 /* Project object */;
 }
