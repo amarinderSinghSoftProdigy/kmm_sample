@@ -37,12 +37,16 @@ struct SearchBar: View {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(AppColor.placeholderGrey.color)
                 
-                TextField(LocalizedStringKey(placeholderLocalizationKey),
-                          text: $text)
+                TextField("", text: $text)
                     .medicoText(fontSize: 17, color: .grey2, multilineTextAlignment: .leading)
                     .textFieldStyle(PlainTextFieldStyle())
                     .disableAutocorrection(true)
                     .disabled(isDisabled)
+                    .introspectTextField { uiTextField in
+                        uiTextField.attributedPlaceholder =
+                            NSAttributedString(string: placeholderLocalizationKey.localized,
+                                               attributes: [NSAttributedString.Key.foregroundColor: UIColor(named: "Grey2") ?? UIColor.gray])
+                    }
                 
                 if hasTrailingButton {
                     self.trailingButtonView

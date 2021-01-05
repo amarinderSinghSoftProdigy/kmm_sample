@@ -30,6 +30,7 @@ struct GlobalSearchScreen: View {
     
     @State private var scrollElementIndex: Int = 0
     @State private var elementToScrollTo: Int?
+    @State private var scrollPostion: UITableView.ScrollPosition = .none
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -126,7 +127,6 @@ struct GlobalSearchScreen: View {
                             .listRowInsets(.init())
                             .listRowBackground(Color.clear)
                             .background(appColor: .primary)
-                            .id(index)
                             .onTapGesture {
                                 scope.selectProduct(product: product, index: Int32(index))
                             }
@@ -142,8 +142,6 @@ struct GlobalSearchScreen: View {
                     }
                 }
                 .introspectTableView { (tableView) in
-                    tableView.backgroundColor = UIColor.clear
-                    
                     if self.productsListTableView == nil {
                         self.productsListTableView = tableView
                     }
@@ -153,32 +151,47 @@ struct GlobalSearchScreen: View {
                     }
                 }
                 .onAppear {
-                    let visibleProductIndex = scope.getVisibleProductIndex()
+                    UITableView.appearance().backgroundColor = UIColor.clear
+                    UITableViewCell.appearance().backgroundColor = UIColor.clear
                     
-                    self.elementToScrollTo = visibleProductIndex != 0 ? Int(visibleProductIndex) :
-                        self.scrollElementIndex != 0 ? self.scrollElementIndex : nil
+                    setUpInitialScrollData()
                 }
                 .onReceive(self.products.$value) { value in
                     guard let value = value, value.count > 0 else { return }
                     
                     self.productsListTableView = nil
                 }
-                
-//                if elementToScrollTo != nil {
-//                    ActivityView()
-//                }
             }
         )
     }
     
-    private func scrollToCell(_ index: Int) {
+    private func setUpInitialScrollData() {
+        let visibleProductIndex = scope.getVisibleProductIndex()
+        
+        if visibleProductIndex != 0 {
+            self.elementToScrollTo = Int(visibleProductIndex)
+            self.scrollPostion = .top
+        }
+        else if self.scrollElementIndex != 0 {
+            self.elementToScrollTo = self.scrollElementIndex
+            self.scrollPostion = .bottom
+        }
+        else {
+            self.elementToScrollTo = nil
+            self.scrollPostion = .none
+        }
+    }
+    
+    private func scrollToCell(_ index: Int, animated: Bool = false) {
         let indexPath = IndexPath(row: index, section: 0)
         
         guard let productsListTableView = self.productsListTableView,
            productsListTableView.dataSource != nil,
            productsListTableView.hasRowAtIndexPath(indexPath) else { return }
         
-        productsListTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        productsListTableView.scrollToRow(at: indexPath,
+                                          at: scrollPostion,
+                                          animated: animated)
         self.elementToScrollTo = nil
     }
 }
