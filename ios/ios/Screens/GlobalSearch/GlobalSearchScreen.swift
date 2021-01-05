@@ -17,6 +17,8 @@ extension SearchScope {
 struct GlobalSearchScreen: View {
     let scope: SearchScope
     
+    @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
+    
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var filters: SwiftDataSource<NSArray>
     @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
@@ -40,9 +42,6 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
-                .padding(.bottom, 10)
-                .scrollView()
-                .padding([.horizontal, .top], 16)
                 .keyboardResponder()
                 .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
         )
@@ -50,6 +49,8 @@ struct GlobalSearchScreen: View {
     
     init(scope: SearchScope) {
         self.scope = scope
+        
+        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
@@ -102,22 +103,40 @@ struct GlobalSearchScreen: View {
                 }
             }
         }
+        .padding([.horizontal, .vertical], 16)
+        .scrollView()
     }
     
     private var productsView: some View {
         guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
         
         return AnyView (
-            VStack {
-                ForEach(products, id: \.self.id) { product in
+            List {
+                ForEach(Array(products.enumerated()), id: \.element) { index, product in
+                    let topPadding: CGFloat = index == 0 ? 0 : 16
+
                     ProductView(product: product)
+                        .padding(.top, topPadding)
+                        .listRowInsets(.init())
+                        .listRowBackground(Color.clear)
+                        .background(appColor: .primary)
                         .onTapGesture {
-                            scope.selectProduct(product: product, index: 0)
+                            scope.selectProduct(product: product, index: Int32(index))
+                        }
+                        .onAppear {
+                            if index == products.count - 1 &&
+                                scope.canLoadMore() &&
+                                isInProgress.value == false {
+                                scope.loadMoreProducts()
+                            }
                         }
                 }
             }
+            .onAppear() {
+                UITableView.appearance().backgroundColor = UIColor.clear
+                UITableViewCell.appearance().backgroundColor = UIColor.clear
+            }
         )
-        
     }
 }
 
@@ -304,6 +323,7 @@ private struct UrlImage: View {
 
     var body: some View {
         Image(uiImage: image)
+            .resizable()
             .aspectRatio(contentMode: .fit)
             .onReceive(imageLoader.didChange) { data in
                 guard !data.isEmpty,
