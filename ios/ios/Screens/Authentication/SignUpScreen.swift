@@ -22,6 +22,7 @@ struct SignUpScreen: View {
     
     var body: some View {
         getCurrentView()
+            .backButton { scope.goBack() }
     }
     
     private func getCurrentView() -> some View {

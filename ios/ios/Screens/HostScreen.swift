@@ -123,10 +123,6 @@ struct BaseScopeView: View {
             view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
         }
         
-        if let goBackScope = scope as? CommonScopeCanGoBack {
-            view = AnyView(view.backButton { goBackScope.goBack() })
-        }
-        
         return view
     }
     
