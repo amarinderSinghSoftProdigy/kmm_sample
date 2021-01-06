@@ -114,34 +114,6 @@ struct UserInfoNavigationBar: ViewModifier {
     }
 }
 
-extension NavigationOption {
-    var imageName: String? {
-        switch self {
-        case .LogOut():
-            return "Exit"
-            
-        case .Settings():
-            return "Settings"
-            
-        default:
-            return nil
-        }
-    }
-    
-    var textLocalizationKey: String? {
-        switch self {
-        case .LogOut():
-            return "log_out"
-            
-        case .Settings():
-            return "settings"
-            
-        default:
-            return nil
-        }
-    }
-}
-
 struct SlidingPanelView: View {
     let navigationSection: NavigationSection
     let changeSlidingPanelState: (Bool) -> ()
@@ -156,7 +128,15 @@ struct SlidingPanelView: View {
             if isShown {
                 self.blurView
                     
-                self.getSlidingPanel(for: geometry)
+                VStack(spacing: -1) {
+                    self.userPanel
+                    
+                    self.optionsPanel
+                }
+                .frame(width: geometry.size.width * 0.81)
+                .frame(maxWidth: 400, alignment: .leading)
+                .shadow(radius: 9)
+                .transition(.move(edge: .leading))
             }
         }
     }
@@ -182,70 +162,144 @@ struct SlidingPanelView: View {
             .onTapGesture { self.changeSlidingPanelState(true) }
     }
     
-    private var bottomOptionsView: some View {
-        ForEach(navigationSection.footer, id: \.self) { option in
-            Group {
-                if let localizedStringKey = option.textLocalizationKey {
-                    Button(action: { _ = option.select() }) {
-                        HStack(spacing: 24) {
-                            if let imageName = option.imageName {
-                                Image(imageName)
-                            }
+    private var userPanel: some View {
+        guard let user = self.user else { return AnyView(EmptyView()) }
+        
+        return AnyView(
+            ZStack(alignment: .bottomLeading) {
+                Image("AccountInfoBackground")
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Image("DefaultUserPhoto")
+                        .testingIdentifier("user_photo")
+
+                    Text(user.fullName())
+                        .medicoText(textWeight: .bold,
+                                    testingIdentifier: "user_name")
+
+                    LocalizedText(localizationKey: user.type.localizedName,
+                                  textWeight: .medium)
+                }
+                .padding()
+            }
+        )
+    }
+    
+    private var optionsPanel: some View {
+        ZStack {
+            AppColor.primary.color
+                .testingIdentifier("sliding_panel")
+            
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(spacing: 20) {
+                    ForEach(navigationSection.main, id: \.self) { option in
+                        NavigationCell(navigationOption: option, style: .main)
+                    }
+                }
+                
+                Spacer()
+                
+                AppColor.grey1.color
+                    .frame(height: 1)
+                
+                VStack(spacing: 20) {
+                    ForEach(navigationSection.footer, id: \.self) { option in
+                        NavigationCell(navigationOption: option, style: .bottom)
+                    }
+                }
+            }
+            .padding()
+            .padding(.bottom, 20)
+        }
+    }
+    
+    private struct NavigationCell: View {
+        let navigationOption: NavigationOption
+        
+        let style: Style
+        
+        var body: some View {
+            guard let localizationKey = navigationOption.textLocalizationKey else {
+                return AnyView(EmptyView())
+            }
+            
+            return AnyView(
+                Button(action: { _ = navigationOption.select() }) {
+                    HStack(spacing: 24) {
+                        if let imageName = navigationOption.imageName {
+                            Image(imageName)
+                        }
+                        
+                        LocalizedText(localizationKey: localizationKey,
+                                      textWeight: style.textWeight,
+                                      fontSize: 15,
+                                      color: style.foregroundColor)
+                        
+                        if style.hasNavigationArrow {
+                            Spacer()
                             
-                            LocalizedText(localizationKey: localizedStringKey,
-                                          textWeight: .semiBold,
-                                          fontSize: 15,
-                                          color: .grey1)
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(appColor: style.foregroundColor)
                         }
                     }
-                    .testingIdentifier("\(localizedStringKey)_button")
+                }
+                .testingIdentifier("\(localizationKey)_button")
+            )
+        }
+        
+        enum Style {
+            case main
+            case bottom
+            
+            var hasNavigationArrow: Bool {
+                return self == .main
+            }
+            
+            var textWeight: TextWeight {
+                switch self {
+                case .main:
+                    return .medium
+                case .bottom:
+                    return .semiBold
+                }
+            }
+            
+            var foregroundColor: AppColor {
+                switch self {
+                case .main:
+                    return .darkBlue
+                case .bottom:
+                    return .grey1
                 }
             }
         }
     }
+}
+
+extension NavigationOption {
+    var imageName: String? {
+        switch self {
+        case .LogOut():
+            return "Exit"
+            
+        case .Settings():
+            return "Settings"
+            
+        default:
+            return nil
+        }
+    }
     
-    private func getSlidingPanel(for geometry: GeometryProxy) -> some View {
-        return AnyView(
-            VStack(spacing: -1) {
-                if let user = self.user {
-                    ZStack(alignment: .bottomLeading) {
-                        Image("AccountInfoBackground")
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            Image("DefaultUserPhoto")
-                                .testingIdentifier("user_photo")
-
-                            Text(user.fullName())
-                                .medicoText(textWeight: .bold,
-                                            testingIdentifier: "user_name")
-
-                            LocalizedText(localizationKey: user.type.localizedName,
-                                          textWeight: .medium)
-                        }
-                        .padding()
-                    }
-                }
-                
-                ZStack {
-                    AppColor.primary.color
-                        .testingIdentifier("sliding_panel")
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        Spacer()
-                        
-                        AppColor.grey1.color
-                            .frame(height: 1)
-                        
-                        self.bottomOptionsView
-                    }
-                    .padding()
-                    .padding(.bottom, 20)
-                }
-            }
-            .frame(width: geometry.size.width * 0.81)
-            .frame(maxWidth: 400, alignment: .leading)
-            .shadow(radius: 9)
-            .transition(.move(edge: .leading))
-        )
+    var textLocalizationKey: String? {
+        switch self {
+        case .LogOut():
+            return "log_out"
+            
+        case .Settings():
+            return "settings"
+            
+        default:
+            return nil
+        }
     }
 }

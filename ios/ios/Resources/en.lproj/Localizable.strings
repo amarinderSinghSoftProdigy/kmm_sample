@@ -23,7 +23,6 @@
 "forgot_password" = "Forgot password?";
 "sign_up" = "Sign up";
 "to_medico" = " to Medico Stores";
-"log_out" = "Log Out";
 "copyright" = "© Copyright mediostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
@@ -105,6 +104,10 @@
 "error" = "Error";
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
+
+// MARK: Navigation Bar
+"log_out" = "Log Out";
+"settings" = "Settings";
 
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
