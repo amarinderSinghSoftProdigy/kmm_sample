@@ -31,7 +31,7 @@ struct AuthScreen: View {
                 .frame(maxHeight: .infinity)
             }
             
-            LocalizedText(localizedStringKey: "copyright",
+            LocalizedText(localizationKey: "copyright",
                           textWeight: .semiBold,
                           fontSize: 16,
                           color: .white)
@@ -72,7 +72,7 @@ struct AuthTab: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                LocalizedText(localizedStringKey: "log_in",
+                LocalizedText(localizationKey: "log_in",
                               textWeight: .bold,
                               fontSize: 24)
                 
@@ -96,7 +96,7 @@ struct AuthTab: View {
                                            onTextChange: updatePassword)
                 .textContentType(.password)
             
-            LocalizedText(localizedStringKey: "forgot_password",
+            LocalizedText(localizationKey: "forgot_password",
                           color: .lightBlue)
                 .padding(.top, 4)
                 .onTapGesture {
@@ -113,8 +113,8 @@ struct AuthTab: View {
                 .font(.custom(TextWeight.bold.fontName, size: 14))
             + Text(LocalizedStringKey("to_medico")))
                 .underline()
-                .modifier(MedicoText(color: .lightBlue))
-                .testingIdentifier("sign_up_to_medico")
+                .medicoText(color: .lightBlue,
+                            testingIdentifier: "sign_up_to_medico")
                 .padding(.top, 4)
                 .padding(.bottom)
                 .onTapGesture {

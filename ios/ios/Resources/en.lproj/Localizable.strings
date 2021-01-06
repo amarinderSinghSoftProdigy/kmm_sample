@@ -122,3 +122,10 @@
 "mrp %@" = "MRP: %@";
 "ptr %@" = "PTR: %@";
 "code %@" = "Code: %@";
+"description %@" = "Description: %@";
+"add_to_cart" = "Add to cart";
+"details" = "Details";
+"manufacturer" = "Manufacturer";
+"compositions" = "Compositions";
+"storage" = "Storage";
+"storage_description" = "Store at room temperature (10–30°C)";

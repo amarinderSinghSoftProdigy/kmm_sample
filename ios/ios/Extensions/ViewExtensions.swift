@@ -30,7 +30,7 @@ extension View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                     
-                    LocalizedText(localizedStringKey: "back",
+                    LocalizedText(localizationKey: "back",
                                   fontSize: 17)
                 }
             }
@@ -116,12 +116,21 @@ extension View {
     func medicoText(textWeight: TextWeight = .regular,
                     fontSize: CGFloat = 14,
                     color: AppColor = .darkBlue,
-                    multilineTextAlignment: TextAlignment = .center) -> some View {
-        self.modifier(
-            MedicoText(textWeight: textWeight,
-                       fontSize: fontSize,
-                       color: color,
-                       multilineTextAlignment: multilineTextAlignment)
+                    multilineTextAlignment: TextAlignment = .center,
+                    testingIdentifier: String? = nil) -> some View {
+        let view = AnyView(
+            self.modifier(
+                MedicoText(textWeight: textWeight,
+                           fontSize: fontSize,
+                           color: color,
+                           multilineTextAlignment: multilineTextAlignment)
+            )
+        )
+        
+        guard let testingIdentifier = testingIdentifier else { return view }
+        
+        return AnyView(
+            view.testingIdentifier(testingIdentifier)
         )
     }
     

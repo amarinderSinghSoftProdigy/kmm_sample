@@ -85,7 +85,7 @@ struct GlobalSearchScreen: View {
             HStack {
                 Spacer()
                 
-                LocalizedText(localizedStringKey: "clear_all",
+                LocalizedText(localizationKey: "clear_all",
                               textWeight: .medium,
                               fontSize: 16,
                               color: .textGrey,
@@ -146,6 +146,10 @@ struct GlobalSearchScreen: View {
                         self.productsListTableView = tableView
                     }
                     
+                    if self.isInProgress.value == true { return }
+                    
+                    setUpInitialScrollData()
+                    
                     if let elementToScrollTo = self.elementToScrollTo {
                         scrollToCell(elementToScrollTo)
                     }
@@ -153,8 +157,6 @@ struct GlobalSearchScreen: View {
                 .onAppear {
                     UITableView.appearance().backgroundColor = UIColor.clear
                     UITableViewCell.appearance().backgroundColor = UIColor.clear
-                    
-                    setUpInitialScrollData()
                 }
                 .onReceive(self.products.$value) { value in
                     guard let value = value, value.count > 0 else { return }
@@ -211,13 +213,13 @@ private struct FilterView: View {
                 .frame(height: 1)
             
             HStack {
-                LocalizedText(localizedStringKey: filter.name,
+                LocalizedText(localizationKey: filter.name,
                               textWeight: .semiBold,
                               fontSize: 16)
                 
                 Spacer()
                 
-                LocalizedText(localizedStringKey: "clear",
+                LocalizedText(localizationKey: "clear",
                               textWeight: .medium,
                               fontSize: 16,
                               color: .textGrey)
@@ -267,7 +269,7 @@ private struct FilterOption: View {
                     }
                     
                     let textWeight: TextWeight = option.isSelected ? .semiBold : .regular
-                    LocalizedText(localizedStringKey: optionValue as String,
+                    LocalizedText(localizationKey: optionValue as String,
                                   textWeight: textWeight)
                 }
                 .padding(.horizontal, 10)
@@ -297,9 +299,8 @@ private struct ProductView: View {
             
             VStack(alignment: alignment) {
                 HStack(spacing: 17) {
-                    UrlImage(withURL: CdnUrlProvider().urlFor(medicineId: product.medicineId,
-                                                              size: .px123),
-                             withDefaultImageName: "DefaultProduct")
+                    ProductImage(medicineId: product.medicineId,
+                                 size: .px123)
                         .frame(width: 81, height: 81)
                     
                     VStack(alignment: alignment, spacing: 10) {
@@ -317,21 +318,24 @@ private struct ProductView: View {
                         
                         VStack(alignment: alignment, spacing: 5) {
                             HStack(spacing: 20) {
-                                Text(LocalizedStringKey("mrp \(String(format: "%.2f", product.mrp))"))
-                                    .medicoText(fontSize: 12,
-                                                color: .grey3,
-                                                multilineTextAlignment: textAlignment)
+                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(String(format: "%.2f", product.mrp))"),
+                                              testingIdentifier: "mrp",
+                                              fontSize: 12,
+                                              color: .grey3,
+                                              multilineTextAlignment: textAlignment)
                                 
-                                Text(LocalizedStringKey("ptr \(product.ptrPercentage)"))
-                                    .medicoText(fontSize: 12,
-                                                color: .grey3,
-                                                multilineTextAlignment: textAlignment)
+                                LocalizedText(localizedStringKey: LocalizedStringKey("ptr \(product.ptrPercentage)"),
+                                              testingIdentifier: "ptr",
+                                              fontSize: 12,
+                                              color: .grey3,
+                                              multilineTextAlignment: .leading)
                             }
                             
-                            Text(LocalizedStringKey("code \(product.productCode)"))
-                                .medicoText(fontSize: 12,
-                                            color: .grey3,
-                                            multilineTextAlignment: textAlignment)
+                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.productCode)"),
+                                          testingIdentifier: "code",
+                                          fontSize: 12,
+                                          color: .grey3,
+                                          multilineTextAlignment: textAlignment)
                         }
                     }
                 }

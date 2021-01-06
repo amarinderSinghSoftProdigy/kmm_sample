@@ -16,6 +16,9 @@ struct MainScreen: View {
         case let scope as MainScope.LimitedAccess:
             view = AnyView(LimitedAppAccessScreen(scope: scope))
             
+        case let scope as MainScope.ProductInfo:
+            view = AnyView(ProductDetails(scope: scope))
+            
         default:
             view = AnyView(EmptyView())
         }

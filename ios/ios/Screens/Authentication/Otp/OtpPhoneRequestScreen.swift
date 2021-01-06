@@ -39,7 +39,7 @@ struct OtpPhoneRequestScreen: View {
             VStack {
                 Spacer()
                 
-                LocalizedText(localizedStringKey: "reset_password_hint",
+                LocalizedText(localizationKey: "reset_password_hint",
                               textWeight: .medium,
                               color: .textGrey)
                     .multilineTextAlignment(.center)

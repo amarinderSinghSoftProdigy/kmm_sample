@@ -9,7 +9,7 @@
 import SwiftUI
 import Combine
 
-struct UrlImage: View {
+struct URLImage: View {
     @ObservedObject var imageLoader: ImageLoader
     
     @State var image: UIImage

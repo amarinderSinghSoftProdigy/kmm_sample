@@ -163,7 +163,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                 let textColor: AppColor = placeholderMoved ?
                     (isValid ? .lightBlue : .red) : .placeholderGrey
 
-                LocalizedText(localizedStringKey: placeholderLocalizedStringKey,
+                LocalizedText(localizationKey: placeholderLocalizedStringKey,
                               fontSize: fontSize,
                               color: textColor)
                     .padding([.leading, .trailing], padding)
@@ -174,8 +174,9 @@ struct FloatingPlaceholderModifier: ViewModifier {
                 let textFieldHeight = height - 12
                 let textFieldAlignment: Alignment = placeholderMoved ? .bottomLeading : .leading
                 content
-                    .modifier(MedicoText(fontSize: 15, multilineTextAlignment: .leading))
-                    .testingIdentifier("\(placeholderLocalizedStringKey)_input")
+                    .medicoText(fontSize: 15,
+                                multilineTextAlignment: .leading,
+                                testingIdentifier: "\(placeholderLocalizedStringKey)_input")
                     .frame(height: textFieldHeight, alignment: textFieldAlignment)
                     .padding([.leading, .trailing], padding)
             }
@@ -187,7 +188,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                     .isHidden(!fieldSelected && (self.errorMessageKey == nil || isValid))
                 
                 if !isValid, let errorMessageKey = self.errorMessageKey {
-                    LocalizedText(localizedStringKey: errorMessageKey,
+                    LocalizedText(localizationKey: errorMessageKey,
                                   fontSize: 12,
                                   color: .red,
                                   multilineTextAlignment: .leading)

@@ -15,7 +15,7 @@ struct MedicoButton: View {
     
     var body: some View {
         Button(action: action) {
-            LocalizedText(localizedStringKey: localizedStringKey,
+            LocalizedText(localizationKey: localizedStringKey,
                           textWeight: .semiBold,
                           fontSize: 17)
                 .frame(maxWidth: .infinity)
@@ -55,7 +55,7 @@ struct PlaceholderTextView: View {
             let currentText = showsPlaceholder ? placeholder : text!
             let color: AppColor = showsPlaceholder ? .placeholderGrey : .darkBlue
             
-            LocalizedText(localizedStringKey: currentText,
+            LocalizedText(localizationKey: currentText,
                           fontSize: 15,
                           color: color)
                 .padding([.leading, .trailing], padding)
@@ -73,7 +73,7 @@ struct PlaceholderTextView: View {
 }
 
 struct LocalizedText: View {
-    let localizedStringKey: String
+    let localizationKey: String
     
     let textWeight: TextWeight
     let fontSize: CGFloat
@@ -84,36 +84,74 @@ struct LocalizedText: View {
     
     let underlined: Bool
     
+    let localizedStringKey: LocalizedStringKey?
+    
     var initialText: some View {
-        let text = Text(LocalizedStringKey(localizedStringKey))
+        let text = Text(localizedStringKey ?? LocalizedStringKey(localizationKey))
         
         return underlined ? text.underline() : text
     }
     
     var body: some View {
         initialText
-            .modifier(MedicoText(textWeight: textWeight,
-                                 fontSize: fontSize,
-                                 color: color,
-                                 multilineTextAlignment: multilineTextAlignment))
-            .testingIdentifier(localizedStringKey)
+            .medicoText(textWeight: textWeight,
+                        fontSize: fontSize,
+                        color: color,
+                        multilineTextAlignment: multilineTextAlignment,
+                        testingIdentifier: localizationKey)
     }
     
-    init(localizedStringKey: String,
-         textWeight: TextWeight = .regular,
-         fontSize: CGFloat = 14,
-         color: AppColor = .darkBlue,
-         multilineTextAlignment: TextAlignment = .center,
-         underlined: Bool = false) {
+    init(localizationKey: String,
+         textWeight: TextWeight? = nil,
+         fontSize: CGFloat? = nil,
+         color: AppColor? = nil,
+         multilineTextAlignment: TextAlignment? = nil,
+         underlined: Bool? = nil) {
+        
+        self.init(localizationKey: localizationKey,
+                  textWeight: textWeight,
+                  fontSize: fontSize,
+                  color: color,
+                  multilineTextAlignment: multilineTextAlignment,
+                  underlined: underlined,
+                  localizedStringKey: nil)
+    }
+    
+    init(localizedStringKey: LocalizedStringKey,
+         testingIdentifier: String,
+         textWeight: TextWeight? = nil,
+         fontSize: CGFloat? = nil,
+         color: AppColor? = nil,
+         multilineTextAlignment: TextAlignment? = nil,
+         underlined: Bool? = nil) {
+        
+        self.init(localizationKey: testingIdentifier,
+                  textWeight: textWeight,
+                  fontSize: fontSize,
+                  color: color,
+                  multilineTextAlignment: multilineTextAlignment,
+                  underlined: underlined,
+                  localizedStringKey: localizedStringKey)
+    }
+    
+    private init(localizationKey: String,
+                 textWeight: TextWeight?,
+                 fontSize: CGFloat?,
+                 color: AppColor?,
+                 multilineTextAlignment: TextAlignment?,
+                 underlined: Bool?,
+                 localizedStringKey: LocalizedStringKey?) {
+        self.localizationKey = localizationKey
+        
+        self.textWeight = textWeight ?? .regular
+        self.fontSize = fontSize ?? 14
+        
+        self.color = color ?? .darkBlue
+        
+        self.multilineTextAlignment = multilineTextAlignment ?? .center
+        
+        self.underlined = underlined ?? false
+        
         self.localizedStringKey = localizedStringKey
-        
-        self.textWeight = textWeight
-        self.fontSize = fontSize
-        
-        self.color = color
-        
-        self.multilineTextAlignment = multilineTextAlignment
-        
-        self.underlined = underlined
     }
 }

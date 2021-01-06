@@ -59,7 +59,7 @@ struct SignUpLegalDocumentsScreen: View {
                         
                         Image("UploadDocuments")
                         
-                        LocalizedText(localizedStringKey: documentRequestTextKey,
+                        LocalizedText(localizationKey: documentRequestTextKey,
                                       fontSize: 16,
                                       color: .grey1)
                         

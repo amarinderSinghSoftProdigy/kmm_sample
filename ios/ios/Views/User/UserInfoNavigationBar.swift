@@ -192,7 +192,7 @@ struct SlidingPanelView: View {
                                 Image(imageName)
                             }
                             
-                            LocalizedText(localizedStringKey: localizedStringKey,
+                            LocalizedText(localizationKey: localizedStringKey,
                                           textWeight: .semiBold,
                                           fontSize: 15,
                                           color: .grey1)
@@ -216,10 +216,10 @@ struct SlidingPanelView: View {
                                 .testingIdentifier("user_photo")
 
                             Text(user.fullName())
-                                .modifier(MedicoText(textWeight: .bold))
-                                .testingIdentifier("user_name")
+                                .medicoText(textWeight: .bold,
+                                            testingIdentifier: "user_name")
 
-                            LocalizedText(localizedStringKey: user.type.localizedName,
+                            LocalizedText(localizationKey: user.type.localizedName,
                                           textWeight: .medium)
                         }
                         .padding()

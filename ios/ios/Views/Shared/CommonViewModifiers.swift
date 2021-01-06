@@ -44,7 +44,7 @@ struct FieldError: ViewModifier {
                         .fill(appColor: .red)
                         .frame(height: 1)
                 
-                    LocalizedText(localizedStringKey: errorMessageKey,
+                    LocalizedText(localizationKey: errorMessageKey,
                                   fontSize: 12,
                                   color: .red,
                                   multilineTextAlignment: .leading)

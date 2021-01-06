@@ -31,7 +31,7 @@ struct PickerSelector: View {
                     HStack {
                         let text = chosenElement?.isEmpty == false ? chosenElement! : placeholder
                         
-                        LocalizedText(localizedStringKey: text,
+                        LocalizedText(localizationKey: text,
                                       fontSize: 15,
                                       color: .black,
                                       multilineTextAlignment: .leading)
@@ -43,7 +43,7 @@ struct PickerSelector: View {
                         Image(systemName: "chevron.right")
                             .foregroundColor(appColor: .lightGrey)
                             .rotationEffect(.degrees(expanded ? 90 : 0))
-                            .animation(.linear)
+                            .animation(.linear(duration: 0.2))
                     }
                     .padding([.leading, .trailing], padding)
                 }
@@ -71,7 +71,7 @@ struct PickerSelector: View {
                             .frame(height: 1)
                         
                         Text(text)
-                            .modifier(MedicoText(fontSize: 15))
+                            .medicoText(fontSize: 15)
                             .padding([.top, .bottom], 8)
                             .padding([.leading, .trailing], padding)
                     }

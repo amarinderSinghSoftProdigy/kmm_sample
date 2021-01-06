@@ -64,23 +64,27 @@ fileprivate struct OtpDetailsView: View {
     
     var body: some View {
         VStack {
-            Text("verification_code_sent_hint \(phoneNumber)")
-                .modifier(MedicoText(textWeight: .medium, color: .textGrey))
-                .testingIdentifier("verification_code_sent_hint")
+            LocalizedText(localizedStringKey: LocalizedStringKey("verification_code_sent_hint \(phoneNumber)"),
+                          testingIdentifier: "verification_code_sent_hint",
+                          textWeight: .medium,
+                          color: .textGrey)
                 .padding(.horizontal, geometry.size.width * 0.15)
             
             if let attemptsLeft = self.attemptsLeft.value as? Int {
                 if let timerValue = timerValue.value as? Double,
                    timerValue > 0 && attemptsLeft > 0 {
                     Text("\(TimeInterval(milliseconds: timerValue).timeString)")
-                        .modifier(MedicoText(textWeight: .bold, fontSize: 15))
-                        .testingIdentifier("timer")
+                        .medicoText(textWeight: .bold,
+                                    fontSize: 15,
+                                    testingIdentifier: "timer")
                         .padding(.vertical)
                 }
                 else {
-                    Text("attempts_left \(attemptsLeft)")
-                        .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
-                        .testingIdentifier("attempts_left")
+                    LocalizedText(localizedStringKey: LocalizedStringKey("attempts_left \(attemptsLeft)"),
+                                  testingIdentifier: "attempts_left",
+                                  textWeight: .bold,
+                                  fontSize: 15,
+                                  color: .lightBlue)
                         .padding(.vertical)
                 }
                 
@@ -125,12 +129,12 @@ fileprivate struct ResendOtpView: View {
             AppColor.white.color
                 
             HStack(alignment: .center) {
-                LocalizedText(localizedStringKey: "didnt_get_code",
+                LocalizedText(localizationKey: "didnt_get_code",
                               textWeight: .medium)
                 
                 let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey1
                 
-                LocalizedText(localizedStringKey: "resend",
+                LocalizedText(localizationKey: "resend",
                               textWeight: .semiBold,
                               color: resendColor)
                     .onTapGesture {

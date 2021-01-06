@@ -21,7 +21,7 @@ struct SelectUserTypeScreen: View {
     
     var body: some View {
         VStack(spacing: 32) {
-            LocalizedText(localizedStringKey: "who_are_you",
+            LocalizedText(localizationKey: "who_are_you",
                           textWeight: .bold,
                           fontSize: 24)
             
@@ -79,7 +79,7 @@ fileprivate struct UserTypeView: View {
                 }
             }.frame(maxHeight: .infinity)
             
-            LocalizedText(localizedStringKey: userType.localizedName,
+            LocalizedText(localizationKey: userType.localizedName,
                           textWeight: .bold)
                 .padding(.bottom, 20)
         }

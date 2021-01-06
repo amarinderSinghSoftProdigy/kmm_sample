@@ -23,9 +23,10 @@ struct WelcomeScreen: View {
                 Spacer()
                 
                 VStack(spacing: 50) {
-                    Text(LocalizedStringKey("welcome \(userName)"))
-                        .modifier(MedicoText(textWeight: .medium, fontSize: 20))
-                        .testingIdentifier("welcome")
+                    LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
+                                  testingIdentifier: "welcome",
+                                  textWeight: .medium,
+                                  fontSize: 20)
                     
                     if welcomeOption is WelcomeOption.Thanks {
                         self.uploadedDocumentCenterView
@@ -48,10 +49,10 @@ struct WelcomeScreen: View {
             Image("Welcome")
             
             VStack(spacing: 19) {
-                LocalizedText(localizedStringKey: "thank_you_for_registration",
+                LocalizedText(localizationKey: "thank_you_for_registration",
                               fontSize: 16)
                 
-                LocalizedText(localizedStringKey: "documents_under_review",
+                LocalizedText(localizationKey: "documents_under_review",
                               fontSize: 16)
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -75,7 +76,7 @@ struct WelcomeScreen: View {
         VStack(spacing: 30) {
             Image("UploadDocuments")
             
-            LocalizedText(localizedStringKey: optionView.uploadDocumentTextKey,
+            LocalizedText(localizationKey: optionView.uploadDocumentTextKey,
                           fontSize: 16,
                           color: .grey1)
         }

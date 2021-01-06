@@ -94,11 +94,11 @@ struct SignUpPersonalDataScreen: View {
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
         VStack(alignment: .leading, spacing: 3) {
-            LocalizedText(localizedStringKey: "continueing_i_accept",
+            LocalizedText(localizationKey: "continueing_i_accept",
                           fontSize: 12,
                           color: .textGrey)
             
-            LocalizedText(localizedStringKey: "terms_of_conditions_and_privacy_policy",
+            LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
                           textWeight: .semiBold,
                           fontSize: 12,
                           color: .lightBlue,
