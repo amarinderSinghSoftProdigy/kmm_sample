@@ -35,10 +35,33 @@ struct UserInfoNavigationBar: ViewModifier {
                     self.slidingPanelButton
                     
                     if user.value?.isVerified == true {
-                        SearchBar()
-                            .onTapGesture {
-                                scope.goToSearch()
+                        HStack(spacing: spacing - 4) {
+                            SearchBar()
+                                .onTapGesture {
+                                    scope.goToSearch()
+                                }
+                            
+                            Button(action: { }) {
+                                let cartObjectsNumberPadding: CGFloat = 6
+                                
+                                ZStack(alignment: .topTrailing) {
+                                    Image("Cart")
+                                        .padding(cartObjectsNumberPadding)
+                                    
+                                    ZStack {
+                                        AppColor.white.color
+                                            .cornerRadius(7)
+                                        
+                                        Text("10")
+                                            .medicoText(textWeight: .bold,
+                                                        fontSize: 12,
+                                                        color: .red)
+                                    }
+                                    .frame(width: 14, height: 14)
+                                }
+                                .padding(-cartObjectsNumberPadding)
                             }
+                        }
                     }
                     else {
                         Spacer()

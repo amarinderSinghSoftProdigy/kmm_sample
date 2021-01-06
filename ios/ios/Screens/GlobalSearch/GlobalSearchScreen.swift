@@ -81,7 +81,7 @@ struct GlobalSearchScreen: View {
     }
     
     private var filtersView: some View {
-        VStack {
+        VStack(spacing: 12) {
             HStack {
                 Spacer()
                 
@@ -109,7 +109,8 @@ struct GlobalSearchScreen: View {
                 }
             }
         }
-        .padding([.horizontal, .vertical], 16)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 32)
         .scrollView()
     }
     
@@ -208,7 +209,7 @@ private struct FilterView: View {
     let onClearFilter: () -> ()
     
     var body: some View {
-        VStack {
+        VStack(spacing: 14) {
             AppColor.lightGrey.color
                 .frame(height: 1)
             
