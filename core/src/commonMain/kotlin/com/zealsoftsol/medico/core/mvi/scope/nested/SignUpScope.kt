@@ -1,11 +1,14 @@
-package com.zealsoftsol.medico.core.mvi.scope
+package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -17,17 +20,17 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
+sealed class SignUpScope(titleId: String) :
+    Scope.Child.TabBar(ScopeIcon.BACK, titleId),
+    CommonScope.CanGoBack {
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
-    protected open fun checkCanGoNext() {
+    protected open fun checkCanGoNext() = Unit
 
-    }
-
-    data class SelectUserType(
-        val userType: DataSource<UserType> = DataSource(UserType.STOCKIST),
-    ) : SignUpScope() {
+    class SelectUserType private constructor(
+        val userType: DataSource<UserType>,
+    ) : SignUpScope("who_are_you") {
 
         init {
             canGoNext.value = true
@@ -42,12 +45,21 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
          */
         fun goToPersonalData() =
             EventCollector.sendEvent(Event.Action.Registration.SelectUserType(userType.value))
+
+        companion object {
+            fun get(userType: DataSource<UserType> = DataSource(UserType.STOCKIST)) =
+                Host.TabBar(
+                    childScope = SelectUserType(userType),
+                    tabBarInfo = TabBarInfo.Simple(),
+                    navigationSection = null,
+                )
+        }
     }
 
-    data class PersonalData(
+    class PersonalData(
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?>,
-    ) : SignUpScope() {
+    ) : SignUpScope("personal_data") {
 
         init {
             checkCanGoNext()
@@ -98,13 +110,13 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
         }
     }
 
-    data class AddressData(
+    class AddressData(
         internal val registrationStep1: UserRegistration1,
         val locationData: DataSource<LocationData?>,
         val registration: DataSource<UserRegistration2>,
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
         val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
-    ) : SignUpScope() {
+    ) : SignUpScope("address") {
 
         init {
             checkCanGoNext()
@@ -149,9 +161,10 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
     }
 
     sealed class Details(
+        titleId: String,
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
-    ) : SignUpScope() {
+    ) : SignUpScope(titleId) {
 
         abstract val inputFields: List<Fields>
 
@@ -160,7 +173,7 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
             registrationStep2: UserRegistration2,
             val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
             val validation: DataSource<UserValidation3?> = DataSource(null),
-        ) : Details(registrationStep1, registrationStep2) {
+        ) : Details("trader_details", registrationStep1, registrationStep2) {
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,
@@ -229,8 +242,8 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
-            override val errors: DataSource<ErrorCode?> = DataSource(null),
-        ) : Details(registrationStep1, registrationStep2), AadhaarDataHolder {
+        ) : Details("details", registrationStep1, registrationStep2),
+            AadhaarDataHolder {
 
             override val isVerified: DataSource<Boolean> = canGoNext
 
@@ -258,14 +271,13 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
         internal val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
-    ) : SignUpScope(), CommonScope.WithErrors, CommonScope.PhoneVerificationEntryPoint,
+    ) : SignUpScope("legal_documents"),
+        CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
         init {
             canGoNext.value = true
         }
-
-        abstract val supportedFileTypes: Array<FileType>
 
         fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
 
@@ -273,24 +285,10 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             registrationStep3: UserRegistration3,
-            override val errors: DataSource<ErrorCode?> = DataSource(null),
             internal var storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
-
-            /**
-             * Transition to [OtpScope.AwaitVerification] if successful
-             */
-            fun upload(base64: String, fileType: FileType) =
-                EventCollector.sendEvent(
-                    Event.Action.Registration.UploadDrugLicense(
-                        registrationStep1.phoneNumber,
-                        registrationStep1.email,
-                        base64,
-                        fileType
-                    )
-                )
         }
 
         class Aadhaar(
@@ -298,29 +296,11 @@ sealed class SignUpScope : BaseScope(), CommonScope.CanGoBack {
             registrationStep2: UserRegistration2,
             internal val aadhaarData: AadhaarData,
             internal var aadhaarFile: String? = null,
-            override val errors: DataSource<ErrorCode?> = DataSource(null),
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
-
-            /**
-             * Transition to [OtpScope.AwaitVerification] if successful
-             */
-            fun upload(base64: String) = EventCollector.sendEvent(
-                Event.Action.Registration.UploadAadhaar(
-                    registrationStep1.phoneNumber,
-                    registrationStep1.email,
-                    base64,
-                )
-            )
+            override val isSeasonBoy = true
         }
-    }
-
-    class Welcome(val fullName: String) : SignUpScope() {
-        init {
-            canGoNext.value = false
-        }
-
-        fun accept() = EventCollector.sendEvent(Event.Action.Registration.AcceptWelcome)
     }
 }
+

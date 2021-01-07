@@ -4,10 +4,13 @@ import com.zealsoftsol.medico.core.extensions.ifTrue
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.ErrorCode
 
 internal class AuthEventDelegate(
@@ -33,20 +36,20 @@ internal class AuthEventDelegate(
                 )
             }
             if (isSuccess) {
-                val user = withProgress { userRepo.loadUserFromServer() }
-                if (user != null) {
-                    clearQueue()
-                    setCurrentScope(
+                if (withProgress { userRepo.loadUserFromServer() }) {
+                    dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+                    val user = userRepo.requireUser()
+                    setScope(
                         if (user.isVerified)
-                            MainScope.Dashboard(DataSource(user))
+                            DashboardScope.get(userRepo.getUserDataSource())
                         else
-                            MainScope.LimitedAccess.from(user)
+                            LimitedAccessScope.get(user, userRepo.getUserDataSource())
                     )
                 } else {
-                    it.errors.value = ErrorCode()
+                    setHostError(ErrorCode())
                 }
             } else {
-                it.errors.value = error ?: ErrorCode()
+                setHostError(error ?: ErrorCode())
             }
         }
     }
@@ -55,8 +58,8 @@ internal class AuthEventDelegate(
         navigator.withProgress {
             if (notifyServer) userRepo.logout() else true
         }.ifTrue {
-            navigator.clearQueue()
-            navigator.setCurrentScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+            navigator.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+            navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }
 

@@ -1,15 +1,14 @@
-package com.zealsoftsol.medico.core.mvi.scope
+package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.ErrorCode
 
-data class LogInScope(
+class LogInScope(
     val credentials: DataSource<AuthCredentials>,
-    override val errors: DataSource<ErrorCode?> = DataSource(null),
-) : BaseScope(), CommonScope.WithErrors {
+) : Scope.Host.Regular() {
 
     /**
      * Updates current scope, result posted to [credentials]

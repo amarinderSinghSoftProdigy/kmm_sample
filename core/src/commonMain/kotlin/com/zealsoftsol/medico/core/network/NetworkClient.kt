@@ -7,7 +7,7 @@ import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData

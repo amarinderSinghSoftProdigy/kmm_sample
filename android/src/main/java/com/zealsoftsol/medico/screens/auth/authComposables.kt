@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField

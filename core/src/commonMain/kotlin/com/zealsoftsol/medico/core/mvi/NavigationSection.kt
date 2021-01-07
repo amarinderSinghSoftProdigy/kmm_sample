@@ -1,9 +1,15 @@
 package com.zealsoftsol.medico.core.mvi
 
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.User
 
-data class NavigationSection(val main: List<NavigationOption>, val footer: List<NavigationOption>)
+data class NavigationSection(
+    val user: ReadOnlyDataSource<User>,
+    val main: List<NavigationOption> = NavigationOption.empty(),
+    val footer: List<NavigationOption> = NavigationOption.empty(),
+)
 
 sealed class NavigationOption(private val event: Event) {
 

@@ -1,10 +1,12 @@
 package com.zealsoftsol.medico.core.network.mock
 
+import com.zealsoftsol.medico.core.mvi.environment
 import kotlinx.coroutines.delay
 
-private const val DEFAULT_DELAY = 1000L
-
-internal suspend fun <T> mockResponse(delay: Long = DEFAULT_DELAY, response: () -> T): T {
+internal suspend fun <T> mockResponse(
+    delay: Long = environment.requireMocks().delay,
+    response: () -> T,
+): T {
     delay(delay)
     return response()
 }

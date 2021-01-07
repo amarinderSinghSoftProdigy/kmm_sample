@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core
 
 import com.zealsoftsol.medico.core.extensions.Logger
 import com.zealsoftsol.medico.core.extensions.logger
+import com.zealsoftsol.medico.core.mvi.Environment
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -13,14 +14,22 @@ object UiLink {
     fun appStart(
         context: Any,
         useMocks: Boolean,
+        navigatorSafeCasts: Boolean,
         loggerLevel: Logger.Level,
     ): AppStartResult {
         logger = logger.copy(level = loggerLevel)
-        val di = startKodein(context, useMocks)
+        if (useMocks) Environment.Override.mocks(Environment.Mocks())
+        val di = startKodein(context, useMocks, navigatorSafeCasts)
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
-        navigator.setCurrentScope(eventCollector.getStartingScope())
+        eventCollector.checkUser()
         return AppStartResult(di, navigator)
+    }
+
+    fun setStartingScope() {
+        val navigator = directDI.instance<Navigator>()
+        val eventCollector = directDI.instance<EventCollector>()
+        navigator.setScope(eventCollector.getStartingScope())
     }
 
     data class AppStartResult(val di: DI, val navigator: UiNavigator)

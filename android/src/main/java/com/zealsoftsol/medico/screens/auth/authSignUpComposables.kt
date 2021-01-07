@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
-import android.util.Base64
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,14 +26,11 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,33 +51,21 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.screens.BasicTabBar
-import com.zealsoftsol.medico.screens.BottomSheet
-import com.zealsoftsol.medico.screens.BottomSheetCell
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
-import com.zealsoftsol.medico.screens.MainActivity
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.showErrorAlert
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import java.io.File
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
 fun AuthUserType(scope: SignUpScope.SelectUserType) {
     val selectedType = scope.userType.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.who_are_you),
         progress = 0.2,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -133,7 +117,6 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.personal_data),
         progress = 0.4,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -232,7 +215,6 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val pincodeValidation = scope.pincodeValidation.flow.collectAsState()
     val locationData = scope.locationData.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.address),
         progress = 0.6,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -312,7 +294,6 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.trader_details),
         progress = 0.8,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -385,7 +366,6 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
 @Composable
 fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.aadhaar_card),
         progress = 0.8,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -403,11 +383,7 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
-    val isShowingBottomSheet = remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val activity = AmbientContext.current as MainActivity
     BasicAuthSignUpScreenWithButton(
-        title = stringResource(id = R.string.legal_documents),
         progress = 1.0,
         baseScope = scope,
         buttonText = stringResource(
@@ -416,24 +392,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             else
                 R.string.upload_new_document
         ),
-        onButtonClick = {
-            when (scope) {
-                is SignUpScope.LegalDocuments.DrugLicense -> {
-                    isShowingBottomSheet.value = true
-                }
-                is SignUpScope.LegalDocuments.Aadhaar -> {
-                    coroutineScope.launch {
-                        val file = activity.openFilePicker(scope.supportedFileTypes)
-                        if (file != null) {
-                            isShowingBottomSheet.value = false
-                            scope.handleFileUpload(file)
-                        } else {
-                            activity.toast(activity.getString(R.string.something_went_wrong))
-                        }
-                    }
-                }
-            }
-        },
+        onButtonClick = { scope.showBottomSheet() },
         onSkip = { scope.skip() },
         body = {
             val stringId = when (scope) {
@@ -459,15 +418,6 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             }
         }
     )
-    DocumentUploadBottomSheet(
-        supportedFileTypes = scope.supportedFileTypes,
-        useCamera = scope is SignUpScope.LegalDocuments.DrugLicense,
-        activity = activity,
-        coroutineScope = coroutineScope,
-        isShowingBottomSheet = isShowingBottomSheet,
-        onFileReady = { scope.handleFileUpload(it) }
-    )
-    scope.showErrorAlert()
 }
 
 @Composable
@@ -499,67 +449,6 @@ fun AadhaarInputFields(
 }
 
 @Composable
-fun DocumentUploadBottomSheet(
-    supportedFileTypes: Array<FileType>,
-    useCamera: Boolean,
-    activity: MainActivity = AmbientContext.current as MainActivity,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    isShowingBottomSheet: MutableState<Boolean> = remember { mutableStateOf(false) },
-    onFileReady: (File) -> Unit,
-) {
-    BottomSheet(
-        isShowingBottomSheet = isShowingBottomSheet,
-        title = stringResource(id = R.string.actions),
-        cells = listOfNotNull(
-            BottomSheetCell(R.string.upload, Icons.Filled.CloudUpload),
-            if (useCamera)
-                BottomSheetCell(R.string.use_camera, Icons.Filled.CameraAlt)
-            else
-                null
-        ),
-        onClick = { (stringId, _) ->
-            coroutineScope.launch {
-                val file = when (stringId) {
-                    R.string.upload -> activity.openFilePicker(supportedFileTypes)
-                    R.string.use_camera -> activity.takePicture()
-                    else -> null
-                }
-                if (file != null) {
-                    isShowingBottomSheet.value = false
-                    onFileReady(file)
-                } else {
-                    activity.toast(activity.getString(R.string.something_went_wrong))
-                }
-            }
-        }
-    )
-}
-
-private inline fun SignUpScope.LegalDocuments.handleFileUpload(file: File) {
-    val bytes = file.readBytes()
-    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-    when (this) {
-        is SignUpScope.LegalDocuments.DrugLicense -> upload(
-            base64,
-            FileType.fromExtension(file.extension)
-        )
-        is SignUpScope.LegalDocuments.Aadhaar -> upload(base64)
-    }
-}
-
-inline fun MainScope.LimitedAccess.handleFileUpload(file: File) {
-    val bytes = file.readBytes()
-    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-    when (this) {
-        is MainScope.LimitedAccess.NonSeasonBoy -> uploadDrugLicense(
-            base64,
-            FileType.fromExtension(file.extension)
-        )
-        is MainScope.LimitedAccess.SeasonBoy -> uploadAadhaar(base64)
-    }
-}
-
-@Composable
 private fun LocationSelector(
     chooseRemember: Any?,
     chosenValue: String?,
@@ -587,7 +476,7 @@ private fun LocationSelector(
                     modifier = Modifier.align(Alignment.CenterStart),
                 )
                 Icon(
-                    imageVector = vectorResource(id = R.drawable.ic_drop_down),
+                    imageVector = Icons.Default.ArrowDropDown,
                     modifier = Modifier.align(Alignment.CenterEnd),
                     tint = ConstColors.gray,
                 )
@@ -611,16 +500,13 @@ private fun LocationSelector(
 
 @Composable
 private fun BasicAuthSignUpScreen(
-    title: String,
     progress: Double,
-    back: CanGoBack,
     body: @Composable BoxScope.() -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colors.primary)
     ) {
-        BasicTabBar(back = back, title = title)
         Box(
             modifier = Modifier
                 .background(ConstColors.yellow)
@@ -634,7 +520,6 @@ private fun BasicAuthSignUpScreen(
 
 @Composable
 private fun BasicAuthSignUpScreenWithButton(
-    title: String,
     progress: Double,
     baseScope: SignUpScope,
     body: @Composable BoxScope.() -> Unit,
@@ -642,7 +527,7 @@ private fun BasicAuthSignUpScreenWithButton(
     onSkip: (() -> Unit)? = null,
     onButtonClick: () -> Unit,
 ) {
-    BasicAuthSignUpScreen(title, progress, baseScope) {
+    BasicAuthSignUpScreen(progress) {
         body()
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {

@@ -21,7 +21,7 @@ import org.kodein.di.singleton
 
 internal lateinit var directDI: DirectDI
 
-fun startKodein(context: Any, useMocks: Boolean) = DI {
+fun startKodein(context: Any, useMocks: Boolean, navigatorSafeCasts: Boolean) = DI {
     platformDependencies(context, useMocks)
     bind<NetworkClient>() with singleton { NetworkClient(instance(), instance()) }
     bind<NetworkScope.Auth>() with singleton {
@@ -63,7 +63,7 @@ fun startKodein(context: Any, useMocks: Boolean) = DI {
         )
     }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
-    bind<Navigator>() with singleton { Navigator() }
+    bind<Navigator>() with singleton { Navigator(navigatorSafeCasts) }
     bind<EventCollector>() with singleton { EventCollector(instance(), instance(), instance()) }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
     bind<TokenStorage>() with singleton { TokenStorage(instance()) }

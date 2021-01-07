@@ -1,13 +1,15 @@
-package com.zealsoftsol.medico.core.mvi.scope
+package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 
-data class SearchScope(
+class SearchScope(
     val productSearch: DataSource<String> = DataSource(""),
     val manufacturerSearch: DataSource<String> = DataSource(""),
     val isFilterOpened: DataSource<Boolean> = DataSource(false),
@@ -15,8 +17,8 @@ data class SearchScope(
     val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
     internal var currentProductPage: Int = 0,
     internal var totalProducts: Int = 0,
-    internal var clickedProductIndex: Int = 0,
-) : BaseScope(), CommonScope.CanGoBack {
+    private var clickedProductIndex: Int = 0,
+) : Scope.Host.Regular(), CommonScope.CanGoBack {
 
     init {
         searchProduct("")

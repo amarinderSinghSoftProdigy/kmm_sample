@@ -12,9 +12,10 @@ class MedicoApp : Application(), DIAware {
 
     override fun onCreate() {
         super.onCreate()
-        val (di, nav) = UiLink.appStart(
+        val (di) = UiLink.appStart(
             context = this,
             useMocks = false,
+            navigatorSafeCasts = !BuildConfig.DEBUG,
             loggerLevel = if (BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
         )
         this.di = di

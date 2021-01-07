@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.test
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.ErrorCode
 
@@ -11,12 +11,12 @@ class LogInTestScope : BaseTestScope() {
         credentials: AuthCredentials,
         error: ErrorCode?
     ) {
-        nav.setCurrentScope(
+        nav.setScope(
             LogInScope(
                 credentials = DataSource(credentials),
-                errors = DataSource(error)
             )
         )
+        nav.setHostError(error)
     }
     
 }

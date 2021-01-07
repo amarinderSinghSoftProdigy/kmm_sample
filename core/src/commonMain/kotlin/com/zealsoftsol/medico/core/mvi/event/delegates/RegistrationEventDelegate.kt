@@ -5,15 +5,16 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -30,27 +31,19 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.SelectUserType -> selectUserType(event.userType)
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
-        is Event.Action.Registration.UploadDrugLicense -> uploadDrugLicense(
-            event.phoneNumber,
-            event.email,
-            event.licenseAsBase64,
-            event.fileType,
-        )
+        is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
-        is Event.Action.Registration.UploadAadhaar -> uploadAadhaar(
-            event.phoneNumber,
-            event.email,
-            event.aadhaarAsBase64,
-        )
+        is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
         is Event.Action.Registration.SignUp -> signUp()
         is Event.Action.Registration.Skip -> skipUploadDocuments()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
+        is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
     }
 
     private fun selectUserType(userType: UserType) {
         navigator.withScope<SignUpScope.SelectUserType> {
             it.userType.value = userType
-            setCurrentScope(
+            setScope(
                 SignUpScope.PersonalData(
                     registration = DataSource(
                         UserRegistration1(
@@ -71,7 +64,7 @@ internal class RegistrationEventDelegate(
                 }
                 it.validation.value = validation.entity
                 if (validation.isSuccess) {
-                    setCurrentScope(
+                    setScope(
                         SignUpScope.AddressData(
                             registrationStep1 = it.registration.value,
                             locationData = DataSource(null),
@@ -98,7 +91,7 @@ internal class RegistrationEventDelegate(
                                 registrationStep2 = it.registration.value,
                             )
                         }
-                    setCurrentScope(nextScope)
+                    setScope(nextScope)
                 }
             }
             is UserRegistration3 -> navigator.withScope<SignUpScope.Details.TraderData> {
@@ -107,7 +100,7 @@ internal class RegistrationEventDelegate(
                 }
                 it.validation.value = validation.entity
                 if (validation.isSuccess) {
-                    setCurrentScope(
+                    setScope(
                         SignUpScope.LegalDocuments.DrugLicense(
                             registrationStep1 = it.registrationStep1,
                             registrationStep2 = it.registrationStep2,
@@ -122,7 +115,7 @@ internal class RegistrationEventDelegate(
     private fun addAadhaar(aadhaarData: AadhaarData) {
         navigator.withScope<SignUpScope.Details.Aadhaar> {
             it.aadhaarData.value = aadhaarData
-            setCurrentScope(
+            setScope(
                 SignUpScope.LegalDocuments.Aadhaar(
                     registrationStep1 = it.registrationStep1,
                     registrationStep2 = it.registrationStep2,
@@ -132,80 +125,67 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadDrugLicense(
-        phoneNumber: String,
-        email: String,
-        license: String,
-        fileType: FileType,
-    ) {
-        navigator.withCommonScope<CommonScope.UploadDocument> {
-            val (storageKey, isSuccess) = withProgress {
-                userRepo.uploadDrugLicense(
-                    fileString = license,
-                    phoneNumber = phoneNumber,
-                    email = email,
-                    mimeType = fileType.mimeType,
-                )
+    private suspend fun uploadDocument(event: Event.Action.Registration) {
+        navigator.withScope<CommonScope.UploadDocument> {
+            var storageKey: String? = null
+            val isSuccess = withProgress {
+                when (event) {
+                    is Event.Action.Registration.UploadDrugLicense -> {
+                        val userReg =
+                            (it as? SignUpScope.LegalDocuments.DrugLicense)?.registrationStep1
+                        val response = userRepo.uploadDrugLicense(
+                            fileString = event.licenseAsBase64,
+                            phoneNumber = userReg?.phoneNumber
+                                ?: userRepo.requireUser().phoneNumber,
+                            email = userReg?.email ?: userRepo.requireUser().email,
+                            mimeType = event.fileType.mimeType,
+                        )
+                        storageKey = response.entity?.key
+                        response.isSuccess
+                    }
+                    is Event.Action.Registration.UploadAadhaar -> {
+                        val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
+                        userRepo.uploadAadhaar(
+                            aadhaar = requireNotNull(searchQueuesFor<AadhaarDataHolder>()).aadhaarData.value,
+                            fileString = event.aadhaarAsBase64,
+                            phoneNumber = userReg?.phoneNumber
+                                ?: userRepo.requireUser().phoneNumber,
+                            email = userReg?.email ?: userRepo.requireUser().email,
+                        )
+                    }
+                    else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
+                }
+
             }
             if (isSuccess) {
                 when (it) {
-                    is SignUpScope.LegalDocuments.DrugLicense -> {
-                        it.storageKey = storageKey?.key
+                    is SignUpScope.LegalDocuments -> {
+                        when (it) {
+                            is SignUpScope.LegalDocuments.DrugLicense -> {
+                                it.storageKey = storageKey
+                            }
+                            is SignUpScope.LegalDocuments.Aadhaar -> {
+                                it.aadhaarFile =
+                                    (event as Event.Action.Registration.UploadAadhaar).aadhaarAsBase64
+                            }
+                        }
                         startOtp(it.registrationStep1.phoneNumber)
                     }
-                    is MainScope.LimitedAccess -> {
-                        userRepo.loadUserFromServer()?.let { user ->
-                            it.user.value = user
-                        } ?: run {
-                            it.errors.value = ErrorCode()
+                    is LimitedAccessScope -> {
+                        if (!userRepo.loadUserFromServer()) {
+                            setHostError(ErrorCode())
                         }
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }
             } else {
-                it.errors.value = ErrorCode()
-            }
-        }
-    }
-
-    private suspend fun uploadAadhaar(
-        phoneNumber: String,
-        email: String,
-        aadhaar: String,
-    ) {
-        navigator.withCommonScope<CommonScope.UploadDocument> {
-            val aadhaarData = requireNotNull(searchQueueFor<AadhaarDataHolder>()).aadhaarData.value
-            val isSuccess = withProgress {
-                userRepo.uploadAadhaar(
-                    aadhaar = aadhaarData,
-                    fileString = aadhaar,
-                    phoneNumber = phoneNumber,
-                    email = email,
-                )
-            }
-            if (isSuccess) {
-                when (it) {
-                    is SignUpScope.LegalDocuments.Aadhaar -> {
-                        it.aadhaarFile = aadhaar
-                        startOtp(it.registrationStep1.phoneNumber)
-                    }
-                    is MainScope.LimitedAccess -> {
-                        userRepo.loadUserFromServer()?.let { user ->
-                            it.user.value = user
-                        } ?: run {
-                            it.errors.value = ErrorCode()
-                        }
-                    }
-                    else -> throw UnsupportedOperationException("unknown AadhaarDataHolder common scope")
-                }
-            } else {
-                it.errors.value = ErrorCode()
+                setHostError(ErrorCode())
             }
         }
     }
 
     private suspend fun signUp() {
-        val documents = navigator.searchQueueFor<SignUpScope.LegalDocuments>()
+        val documents = navigator.searchQueuesFor<SignUpScope.LegalDocuments>()
         val (error, isSuccess) = navigator.withProgress {
             when (documents) {
                 is SignUpScope.LegalDocuments.DrugLicense -> userRepo.signUpNonSeasonBoy(
@@ -224,9 +204,9 @@ internal class RegistrationEventDelegate(
             }
         }
         if (isSuccess) {
-            navigator.clearQueue(withRoot = false)
-            navigator.setCurrentScope(
-                SignUpScope.Welcome(documents!!.registrationStep1.run { "$firstName $lastName" })
+            navigator.dropScope(Navigator.DropStrategy.TO_ROOT, updateDataSource = false)
+            navigator.setScope(
+                WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
             )
         } else {
             dropToLogin(error)
@@ -237,11 +217,19 @@ internal class RegistrationEventDelegate(
         dropToLogin(null)
     }
 
-    private fun dropToLogin(errorCode: ErrorCode?) {
-        navigator.dropScopesToRoot()
-        navigator.withScope<LogInScope> {
-            it.errors.value = errorCode
+    private fun showUploadBottomSheet() {
+        navigator.withScope<CommonScope.UploadDocument> {
+            val scope = scope.value
+            scope.bottomSheet.value = BottomSheet.UploadDocuments(
+                it.supportedFileTypes,
+                it.isSeasonBoy,
+            )
         }
+    }
+
+    private fun dropToLogin(errorCode: ErrorCode?) {
+        navigator.dropScope(Navigator.DropStrategy.TO_ROOT)
+        navigator.setHostError(errorCode)
     }
 
     private fun skipUploadDocuments() {

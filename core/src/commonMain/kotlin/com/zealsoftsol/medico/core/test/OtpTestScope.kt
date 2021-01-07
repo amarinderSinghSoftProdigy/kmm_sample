@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.test
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.scope.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.data.ErrorCode
 
 class OtpTestScope : BaseTestScope() {
@@ -11,13 +11,13 @@ class OtpTestScope : BaseTestScope() {
         isForRegisteredUsers: Boolean,
         error: ErrorCode?,
     ) {
-        nav.setCurrentScope(
-            OtpScope.PhoneNumberInput(
+        nav.setScope(
+            OtpScope.PhoneNumberInput.get(
                 phoneNumber = DataSource(phoneNumber),
                 isForRegisteredUsersOnly = isForRegisteredUsers,
-                errors = DataSource(error),
             )
         )
+        nav.setHostError(error)
     }
 
 }
