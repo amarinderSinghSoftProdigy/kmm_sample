@@ -122,7 +122,6 @@ struct AuthTab: View {
                 }
         }
         .padding(20)
-        .navigationBarHidden(true)
     }
     
     init(scope: LogInScope,

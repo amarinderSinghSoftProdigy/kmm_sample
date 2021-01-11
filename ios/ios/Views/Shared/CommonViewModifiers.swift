@@ -62,15 +62,15 @@ struct FieldError: ViewModifier {
 }
 
 struct ErrorAlert: ViewModifier {
-    let errorsHandler: CommonScopeWithErrors
+    let errorsHandler: Scope.Host
     
     @ObservedObject var error: SwiftDataSource<DataErrorCode>
     private var showsAlert: Binding<Bool>
     
-    init(errorsHandler: CommonScopeWithErrors) {
+    init(errorsHandler: Scope.Host) {
         self.errorsHandler = errorsHandler
         
-        let error = SwiftDataSource(dataSource: errorsHandler.errors)
+        let error = SwiftDataSource(dataSource: errorsHandler.alertError)
         self.error = error
         
         showsAlert = Binding(get: { error.value != nil }, set: { _ in })
@@ -84,7 +84,7 @@ struct ErrorAlert: ViewModifier {
                 
                 return content.getAlert(withTitleKey: title,
                                         withMessageKey: body,
-                                        withButtonAction: { errorsHandler.dismissError() })
+                                        withButtonAction: { errorsHandler.dismissAlertError() })
             }
     }
 }
@@ -133,27 +133,4 @@ struct TestingIdentifier: ViewModifier {
         
         return AnyView(content)
     }
-}
-
-struct NavigationBar: ViewModifier {
-    let navigationBarContent: AnyView
-    
-    func body(content: Content) -> some View {
-        VStack(spacing: 0) {
-            ZStack {
-                AppColor.navigationBar.color
-                    .edgesIgnoringSafeArea(.all)
-                
-                navigationBarContent
-                    .padding([.leading, .trailing], 20)
-            }
-            .frame(height: 44)
-            
-            AppColor.lightGrey.color.frame(height: 1)
-            
-            content
-        }
-        .navigationBarHidden(true)
-    }
-    
 }

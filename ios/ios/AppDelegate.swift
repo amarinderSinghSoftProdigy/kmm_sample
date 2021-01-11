@@ -19,12 +19,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if DEBUG
         let testsHelper = TestsHelper()
         let useMocks = testsHelper.testingEnabled
+        let navigatorSafeCasts = false
         #else
         let useMocks = false
+        let navigatorSafeCasts = true
         #endif
         
-        let start = UiLink().appStart(context: self, useMocks: useMocks, loggerLevel: Logger.Level.log)
+        let link = UiLink()
+        let start = link.appStart(context: self,
+                                  useMocks: useMocks,
+                                  navigatorSafeCasts: navigatorSafeCasts,
+                                  loggerLevel: Logger.Level.log)
         navigator = start.navigator
+        link.setStartingScope()
         
         #if DEBUG
         testsHelper.overrideCurrentScope()

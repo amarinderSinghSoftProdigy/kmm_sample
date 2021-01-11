@@ -1,5 +1,5 @@
 //
-//  UserInfoNavigationBar.swift
+//  SlidingNavigationPanelView.swift
 //  ios
 //
 //  Created by Dasha Gurinovich on 10.12.20.
@@ -9,79 +9,19 @@
 import SwiftUI
 import core
 
-struct UserInfoNavigationBar: ViewModifier {
-    let scope: NavAndSearchMainScope
+struct SlidingNavigationPanelView: ViewModifier {
     let navigationSection: NavigationSection
     
-    @State private var showsSlidingPanel = false
+    let showsSlidingPanel: Bool
+    let changeSlidingPanelState: (Bool) -> ()
     
-    @ObservedObject var user: SwiftDataSource<DataUser>
-    
-    private var slidingPanelButton: some View {
-        Button(action: { self.changeSlidingPanelState(isHidden: false) }) {
-            Image("Menu")
-                .aspectRatio(contentMode: .fit)
-        }
-    }
-    
-    private var navigationBar: some View {
-        VStack(spacing: 0){
-            ZStack {
-                AppColor.navigationBar.color
-                    .edgesIgnoringSafeArea(.all)
-                
-                let spacing: CGFloat = 19
-                HStack(spacing: spacing) {
-                    self.slidingPanelButton
-                    
-                    if user.value?.isVerified == true {
-                        HStack(spacing: spacing - 4) {
-                            SearchBar()
-                                .onTapGesture {
-                                    scope.goToSearch()
-                                }
-                            
-                            Button(action: { }) {
-                                let cartObjectsNumberPadding: CGFloat = 6
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    Image("Cart")
-                                        .padding(cartObjectsNumberPadding)
-                                    
-                                    ZStack {
-                                        AppColor.white.color
-                                            .cornerRadius(7)
-                                        
-                                        Text("10")
-                                            .medicoText(textWeight: .bold,
-                                                        fontSize: 12,
-                                                        color: .red)
-                                    }
-                                    .frame(width: 14, height: 14)
-                                }
-                                .padding(-cartObjectsNumberPadding)
-                            }
-                        }
-                    }
-                    else {
-                        Spacer()
-                    }
-                }
-                .padding([.leading, .trailing], spacing)
-            }
-            .frame(height: 44)
-            
-            AppColor.lightGrey.color
-                .frame(height: 1)
-        }
-    }
-    
-    init(scope: NavAndSearchMainScope,
-         navigationSection: NavigationSection) {
-        self.scope = scope
+    init(navigationSection: NavigationSection,
+         showsSlidingPanel: Bool,
+         changeSlidingPanelState: @escaping (Bool) -> ()) {
         self.navigationSection = navigationSection
         
-        self.user = SwiftDataSource(dataSource: scope.user)
+        self.showsSlidingPanel = showsSlidingPanel
+        self.changeSlidingPanelState = changeSlidingPanelState
     }
     
     func body(content: Content) -> some View {
@@ -90,35 +30,23 @@ struct UserInfoNavigationBar: ViewModifier {
                 ZStack {
                     AppColor.primary.color
                     
-                    VStack(spacing: 0) {
-                        navigationBar
-                        
-                        content
-                    }
-                    .frame(maxWidth: geometry.size.width,
-                           maxHeight: geometry.size.height,
-                           alignment: .topLeading)
-                    .zIndex(1)
+                    content
+                        .frame(maxWidth: geometry.size.width,
+                               maxHeight: geometry.size.height,
+                               alignment: .topLeading)
+                        .zIndex(1)
                 
-                    SlidingPanelView(navigationSection: navigationSection,
-                                     user: user.value,
-                                     geometry: geometry,
-                                     isShown: showsSlidingPanel,
-                                     changeSlidingPanelState: changeSlidingPanelState)
+                    _SlidingPanelView(navigationSection: navigationSection,
+                                      geometry: geometry,
+                                      isShown: showsSlidingPanel,
+                                      changeSlidingPanelState: changeSlidingPanelState)
                         .zIndex(2)
                 }
             }
             .gesture(getDragGesture())
-            .navigationBarHidden(true)
         )
         
         return baseNavigationBarView
-    }
-    
-    private func changeSlidingPanelState(isHidden: Bool) {
-        withAnimation {
-            self.showsSlidingPanel = !isHidden
-        }
     }
     
     private func getDragGesture() -> some Gesture {
@@ -126,25 +54,25 @@ struct UserInfoNavigationBar: ViewModifier {
             .onEnded({ value in
                 // Left swipe
                 if value.translation.width < 0 {
-                    self.changeSlidingPanelState(isHidden: true)
+                    self.changeSlidingPanelState(true)
                 }
                 
                 // Right swipe
                 if value.translation.width > 0 {
-                    self.changeSlidingPanelState(isHidden: false)
+                    self.changeSlidingPanelState(false)
                 }
             })
     }
 }
 
-struct SlidingPanelView: View {
+private struct _SlidingPanelView: View {
     let navigationSection: NavigationSection
     let changeSlidingPanelState: (Bool) -> ()
     
     let geometry: GeometryProxy
     let isShown: Bool
     
-    let user: DataUser?
+    let user: SwiftDataSource<DataUser>
     
     var body: some View {
         ZStack {
@@ -165,17 +93,16 @@ struct SlidingPanelView: View {
     }
     
     init(navigationSection: NavigationSection,
-         user: DataUser?,
          geometry: GeometryProxy,
          isShown: Bool,
          changeSlidingPanelState: @escaping (Bool) -> ()) {
+        self.user = SwiftDataSource(dataSource: navigationSection.user)
         self.navigationSection = navigationSection
-        self.changeSlidingPanelState = changeSlidingPanelState
         
         self.geometry = geometry
         self.isShown = isShown
         
-        self.user = user
+        self.changeSlidingPanelState = changeSlidingPanelState
     }
     
     private var blurView: some View {
@@ -186,7 +113,7 @@ struct SlidingPanelView: View {
     }
     
     private var userPanel: some View {
-        guard let user = self.user else { return AnyView(EmptyView()) }
+        guard let user = self.user.value else { return AnyView(EmptyView()) }
         
         return AnyView(
             ZStack(alignment: .bottomLeading) {

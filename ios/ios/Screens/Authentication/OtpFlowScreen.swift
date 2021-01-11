@@ -15,7 +15,6 @@ struct OtpFlowScreen: View {
     var body: some View {
         GeometryReader { geometry in
             getCurrentView(with: geometry)
-                .backButton { scope.goBack() }
         }
         .keyboardResponder()
     }

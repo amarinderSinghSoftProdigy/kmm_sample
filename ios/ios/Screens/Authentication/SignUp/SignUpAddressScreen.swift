@@ -30,7 +30,6 @@ struct SignUpAddressScreen: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToTraderDetails))
         .keyboardResponder()
-        .navigationBarTitle(LocalizedStringKey("address"), displayMode: .inline)
     }
     
     var addressDataFields: some View {

@@ -21,25 +21,6 @@ extension View {
         }
     }
     
-    // MARK: Navigation bar
-    func backButton(action: @escaping () -> ()) -> some View {
-        let backButton = AnyView(
-            Button(action: action) {
-                HStack(spacing: 3) {
-                    Image("Back")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    
-                    LocalizedText(localizationKey: "back",
-                                  fontSize: 17)
-                }
-            }
-        )
-        
-        return self.navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading: backButton)
-    }
-    
     // MARK: Alerts
     func alert(_ isPresented: Binding<Bool>,
                withTitleKey titleKey: String,
@@ -70,7 +51,7 @@ extension View {
     }
     
     // MARK: View Modifiers
-    func errorAlert(withHandler errorsHandler: CommonScopeWithErrors) -> some View {
+    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
         self.modifier(ErrorAlert(errorsHandler: errorsHandler))
     }
     
@@ -89,11 +70,13 @@ extension View {
         self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
     
-    func userInfoNavigationBar(withScope scope: NavAndSearchMainScope,
-                               withNavigationSection navigationSection: NavigationSection) -> some View {
+    func slidingNavigationPanelView(withNavigationSection navigationSection: NavigationSection,
+                                    showsSlidingPanel: Bool,
+                                    changeSlidingPanelState: @escaping (Bool) -> ()) -> some View {
         self.modifier(
-            UserInfoNavigationBar(scope: scope,
-                                  navigationSection: navigationSection)
+            SlidingNavigationPanelView(navigationSection: navigationSection,
+                                       showsSlidingPanel: showsSlidingPanel,
+                                       changeSlidingPanelState: changeSlidingPanelState)
         )
     }
     
@@ -134,9 +117,13 @@ extension View {
         )
     }
     
-    func navigationBar(withNavigationBarContent content: AnyView) -> some View {
+    func navigationBar(withNavigationSection navigationSection: NavigationSection?,
+                       withNavigationBarInfo navigationBarInfo: DataSource<TabBarInfo>,
+                       handleGoBack: @escaping () -> ()) -> some View {
         self.modifier(
-            NavigationBar(navigationBarContent: content)
+            NavigationBar(navigationSection: navigationSection,
+                          navigationBarInfo: navigationBarInfo,
+                          handleGoBack: handleGoBack)
         )
     }
 }

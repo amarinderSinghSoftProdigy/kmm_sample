@@ -74,7 +74,6 @@ struct SignUpLegalDocumentsScreen: View {
                                    buttonTextKey: buttonTextKey,
                                    skipButtonAction: { scope.skip() },
                                    action: uploadDocuments))
-            .navigationBarTitle(LocalizedStringKey("legal_documents"), displayMode: .inline)
             .filePicker(filePickerOption: $filePickerOption,
                         forAvailableTypes: documentTypes,
                         uploadData: uploadData)
@@ -99,11 +98,11 @@ struct SignUpLegalDocumentsScreen: View {
     private func uploadData(_ base64String: String, withFileType fileType: DataFileType) {
         switch scope {
 
-        case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            _ = aadhaarScope.upload(base64: base64String)
-                    
-        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            _ = drugLicenseScope.upload(base64: base64String, fileType: fileType)
+//        case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
+//            _ = aadhaarScope.upload(base64: base64String)
+//
+//        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
+//            _ = drugLicenseScope.upload(base64: base64String, fileType: fileType)
 
         default:
             break

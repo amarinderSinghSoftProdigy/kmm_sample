@@ -43,7 +43,6 @@ struct SelectUserTypeScreen: View {
             }
         }
         .modifier(SignUpButton(isEnabled: selectedUserType.value != nil, action: goToPersonalData))
-        .navigationBarTitle(LocalizedStringKey("user_type"), displayMode: .inline)
     }
     
     init(scope: SignUpScope.SelectUserType) {

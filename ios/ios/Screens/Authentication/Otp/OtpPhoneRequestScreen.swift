@@ -14,7 +14,6 @@ struct OtpPhoneRequestScreen: View {
     let geometry: GeometryProxy
     
     @ObservedObject var phone: SwiftDataSource<NSString>
-    @ObservedObject var error: SwiftDataSource<DataErrorCode>
     
     @State var canSubmitPhone = false
     
@@ -27,7 +26,6 @@ struct OtpPhoneRequestScreen: View {
         self.geometry = geometry
         
         self.phone = SwiftDataSource(dataSource: scope.phoneNumber)
-        self.error = SwiftDataSource(dataSource: scope.errors)
     }
     
     private func getView() -> some View {
@@ -56,7 +54,6 @@ struct OtpPhoneRequestScreen: View {
                 
                 Spacer()
             }
-            .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
             .padding()
         )
     }

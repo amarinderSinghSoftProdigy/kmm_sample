@@ -10,7 +10,7 @@ import core
 import SwiftUI
 
 struct ProductDetails: View {
-    let scope: MainScope.ProductInfo
+    let scope: ProductInfoScope
     
     var body: some View {
         VStack(spacing: 32) {

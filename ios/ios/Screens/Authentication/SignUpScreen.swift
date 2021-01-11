@@ -9,20 +9,11 @@
 import SwiftUI
 import core
 
-extension SignUpScope {
-    override var navigationBarTintColor: UIColor? { return nil }
-}
-
-extension SignUpScope.Welcome {
-    override var navigationBarTintColor: UIColor? { return BaseScope.baseNavigationBarTintColor }
-}
-
 struct SignUpScreen: View {
     let scope: SignUpScope
     
     var body: some View {
         getCurrentView()
-            .backButton { scope.goBack() }
     }
     
     private func getCurrentView() -> some View {
@@ -54,10 +45,6 @@ struct SignUpScreen: View {
         case let scope as SignUpScope.LegalDocuments:
             progressFill = 1.0
             scopeView = AnyView(SignUpLegalDocumentsScreen(scope: scope))
-            
-        case let scope as SignUpScope.Welcome:
-            return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scope.accept() },
-                                         userName: scope.fullName))
             
         default:
             progressFill = 0

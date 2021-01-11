@@ -38,7 +38,6 @@ struct OtpPhoneVerification: View {
                     .frame(height: otpHeight)
             }
         }
-        .navigationBarTitle(LocalizedStringKey("phone_verification"), displayMode: .inline)
     }
     
     init(scope: OtpScope.AwaitVerification, geometry: GeometryProxy) {

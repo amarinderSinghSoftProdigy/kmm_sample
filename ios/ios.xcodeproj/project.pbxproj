@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3308674B2566D441000C3EB8 /* MainScreen.swift */; };
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
 		3317B5D425A59C7C008681ED /* ProductDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3317B5D325A59C7C008681ED /* ProductDetails.swift */; };
 		331A23CB258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */; };
@@ -20,6 +19,7 @@
 		333F45D125A49AC8008DE1D2 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 333F45D025A49AC8008DE1D2 /* Introspect */; };
 		333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F45D225A4B5A8008DE1D2 /* URLImage.swift */; };
 		334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334574EF25762A5F002839C5 /* SignUpScreen.swift */; };
+		3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356497325AC453300F2D3CE /* NavigationBar.swift */; };
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
 		33621CF62571009D004BD4CF /* MedicoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF52571009D004BD4CF /* MedicoText.swift */; };
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
@@ -42,7 +42,7 @@
 		337DE628258A523800614951 /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
 		337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
-		3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */; };
+		3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
@@ -129,7 +129,6 @@
 		251BB946665B9AAA979DC276 /* Pods-Medico-MedicoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico-MedicoUITests.debug.xcconfig"; path = "Target Support Files/Pods-Medico-MedicoUITests/Pods-Medico-MedicoUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		289BFD22E9FAC8B5DB1DEF7A /* Pods-Medico.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.debug.xcconfig"; sourceTree = "<group>"; };
 		2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3308674B2566D441000C3EB8 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
 		3317B5D325A59C7C008681ED /* ProductDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetails.swift; sourceTree = "<group>"; };
 		331A23CA258CDE630089E42A /* UserInfoNavigationBarScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBarScreenTests.swift; sourceTree = "<group>"; };
@@ -144,6 +143,7 @@
 		33385A85256FB7C200DACD7C /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = ios/extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
 		333F45D225A4B5A8008DE1D2 /* URLImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImage.swift; sourceTree = "<group>"; };
 		334574EF25762A5F002839C5 /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
+		3356497325AC453300F2D3CE /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
 		33621CF52571009D004BD4CF /* MedicoText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoText.swift; sourceTree = "<group>"; };
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
@@ -164,7 +164,7 @@
 		337DE627258A523800614951 /* TestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsHelper.swift; sourceTree = "<group>"; };
 		337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScopeInfo.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoNavigationBar.swift; sourceTree = "<group>"; };
+		3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingNavigationPanelView.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
@@ -288,7 +288,6 @@
 			children = (
 				3376EC742583736200570BB3 /* LimitedAppAccess */,
 				3317B5D525A59CE3008681ED /* Product */,
-				3308674B2566D441000C3EB8 /* MainScreen.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -344,7 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
-				3395030E25824ABB0080CC88 /* UserInfoNavigationBar.swift */,
+				3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -393,6 +392,7 @@
 				338F98EA257F7808002D36FF /* UIKitElements */,
 				33ABAEC7258B826A0061F63C /* CommonViews.swift */,
 				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
+				3356497325AC453300F2D3CE /* NavigationBar.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -907,12 +907,13 @@
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
+				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
 				336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
-				3395030F25824ABB0080CC88 /* UserInfoNavigationBar.swift in Sources */,
+				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
 				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
@@ -923,7 +924,6 @@
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
-				3308674C2566D441000C3EB8 /* MainScreen.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,

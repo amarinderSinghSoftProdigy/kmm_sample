@@ -1,10 +1,12 @@
 package com.zealsoftsol.medico.core.utils
 
 import com.zealsoftsol.medico.core.directDI
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
@@ -191,9 +193,9 @@ object DebugScopeCreator {
     }
 
     fun productScreen() {
-        nav.setCurrentScope(
-            MainScope.ProductInfo(
-                user = DataSource(testUser),
+        nav.setScope(
+            ProductInfoScope(
+                user = ReadOnlyDataSource(MutableStateFlow(testUser)),
                 product = ProductData(
                     active = true, 
                     code = "VD000307", 
@@ -218,7 +220,8 @@ object DebugScopeCreator {
                     shortName="Delok 30 Capsule DR", 
                     standardUnit="10", 
                     unitOfMeasureData=CodeName(code="US000058", name="strip of 10 Capsule DR")),
-                alternativeBrands = listOf("a")
+                alternativeBrands = listOf("a"),
+                isDetailsOpened = DataSource(false)
             )
         )
     }

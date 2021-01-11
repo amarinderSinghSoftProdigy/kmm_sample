@@ -30,7 +30,6 @@ struct SignUpPersonalDataScreen: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToAddress))
         .keyboardResponder()
-        .navigationBarTitle(LocalizedStringKey("personal_data"), displayMode: .inline)
     }
     
     var personalDataFields: some View {

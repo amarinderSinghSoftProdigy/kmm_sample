@@ -10,10 +10,6 @@ import SwiftUI
 import core
 import Introspect
 
-extension SearchScope {
-    override var navigationBarTintColor: UIColor? { return nil }
-}
-
 struct GlobalSearchScreen: View {
     let scope: SearchScope
     
@@ -48,8 +44,6 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
-                .keyboardResponder()
-                .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
         )
     }
     

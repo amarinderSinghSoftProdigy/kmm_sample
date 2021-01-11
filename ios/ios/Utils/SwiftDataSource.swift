@@ -9,11 +9,11 @@
 import core
 
 class SwiftDataSource<T: AnyObject> : ObservableObject {
-    private var dataSource: DataSource<T>
+    private var dataSource: BaseDataSource<T>
     
     @Published private(set) var value: T?
     
-    init(dataSource: DataSource<T>) {
+    init(dataSource: BaseDataSource<T>) {
         self.dataSource = dataSource
         self.dataSource.observeOnUi { newValue in
             self.value = newValue

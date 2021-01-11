@@ -1,22 +1,10 @@
 import SwiftUI
 import core
 
-@objc protocol NavigationBarHandler {
-    var navigationBarTintColor: UIColor? { get }
-}
-
-extension BaseScope: NavigationBarHandler {
-    static var baseNavigationBarTintColor: UIColor? { return UIColor(named: "LightGrey") }
-    
-    var navigationBarTintColor: UIColor? { return BaseScope.baseNavigationBarTintColor }
-}
-
 struct HostScreen: View {
     @State private var isSplashScreenActive = true
     
-    @ObservedObject var currentScope: SwiftDataSource<BaseScope>
-    
-    private let appearance = UINavigationBarAppearance()
+    @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
     var body: some View {
         if isSplashScreenActive {
@@ -30,7 +18,7 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-                getBaseScopeView(fromScope: scope)
+                BaseScopeView(scope: scope)
             }
         }
     }
@@ -44,32 +32,12 @@ struct HostScreen: View {
     
     init() {
         currentScope = SwiftDataSource(dataSource: UIApplication.shared.navigator.scope)
-        
-        setUpNavigationBar()
-    }
-    
-    private func setUpNavigationBar() {
-        appearance.backgroundColor = UIColor(named: "NavigationBar")
-        
-        var titleTextAttributes: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor(hex: 0x003657)]
-        if let titleFont = UIFont(name: TextWeight.semiBold.fontName, size: 17) {
-            titleTextAttributes[.font] = titleFont
-        }
-        appearance.titleTextAttributes = titleTextAttributes
-        
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-    }
-    
-    private func getBaseScopeView(fromScope scope: BaseScope) -> some View {
-        appearance.shadowColor = scope.navigationBarTintColor
-            
-        return BaseScopeView(scope: scope)
     }
 }
 
 struct BaseScopeView: View {
-    let scope: BaseScope
+    let scope: Scope.Host
+    
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
@@ -78,9 +46,11 @@ struct BaseScopeView: View {
                 ZStack {
                     AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 
-                    getCurrentViewWithModifiers()
+                    currentView
+                        .errorAlert(withHandler: scope)
                 }
                 .hideKeyboardOnTap()
+                .navigationBarHidden(true)
             }
 
             if let isInProgress = self.isInProgress.value,
@@ -92,12 +62,52 @@ struct BaseScopeView: View {
     
     var currentView: AnyView {
         switch scope {
-            
+        
         case let scopeValue as LogInScope:
             return AnyView(AuthScreen(scope: scopeValue))
             
-        case let scopeValue as MainScope:
-            return AnyView(MainScreen(scope: scopeValue))
+        case let scopeValue as WelcomeScope:
+            return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scopeValue.accept() },
+                                         userName: scopeValue.fullName))
+            
+        case let scopeValue as SearchScope:
+            return AnyView(GlobalSearchScreen(scope: scopeValue))
+            
+        case let scopeValue as Scope.Host.HostTabBar:
+            return AnyView(TabBarScreen(tabBarScope: scopeValue))
+            
+        default:
+            return AnyView(EmptyView())
+        }
+    }
+    
+    init(scope: Scope.Host) {
+        self.scope = scope
+        
+        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
+    }
+}
+
+struct TabBarScreen: View {
+    let tabBarScope: Scope.Host.HostTabBar
+    
+    @ObservedObject var scope: SwiftDataSource<Scope.ChildTabBar>
+    
+    var body: some View {
+        currentView
+            .navigationBar(withNavigationSection: tabBarScope.navigationSection,
+                           withNavigationBarInfo: tabBarScope.tabBar,
+                           handleGoBack: { tabBarScope.goBack() })
+    }
+    
+    init(tabBarScope: Scope.Host.HostTabBar) {
+        self.tabBarScope = tabBarScope
+        
+        self.scope = SwiftDataSource(dataSource: tabBarScope.childScope)
+    }
+    
+    private var currentView: AnyView {
+        switch scope.value {
             
         case let scopeValue as OtpScope:
             return AnyView(OtpFlowScreen(scope: scopeValue))
@@ -108,27 +118,14 @@ struct BaseScopeView: View {
         case let scopeValue as SignUpScope:
             return AnyView(SignUpScreen(scope: scopeValue))
             
-        case let scopeValue as SearchScope:
-            return AnyView(GlobalSearchScreen(scope: scopeValue))
+        case let scope as LimitedAccessScope:
+            return AnyView(LimitedAppAccessScreen(scope: scope))
+            
+        case let scope as ProductInfoScope:
+            return AnyView(ProductDetails(scope: scope))
             
         default:
             return AnyView(EmptyView())
         }
-    }
-    
-    private func getCurrentViewWithModifiers() -> some View {
-        var view = self.currentView
-        
-        if let scopeWithErrors = scope as? CommonScopeWithErrors {
-            view = AnyView(view.errorAlert(withHandler: scopeWithErrors))
-        }
-        
-        return view
-    }
-    
-    init(scope: BaseScope) {
-        self.scope = scope
-        
-        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
     }
 }
