@@ -59,13 +59,15 @@ import kotlinx.serialization.json.Json
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
     private val tokenStorage: TokenStorage,
+    // TODO bind to UiLink
+    useNetworkInterceptor: Boolean = true,
 ) : NetworkScope.Auth,
     NetworkScope.Customer,
     NetworkScope.Search,
     NetworkScope.Product {
 
     private val client = HttpClient(engine) {
-        addInterceptor(this)
+        if (useNetworkInterceptor) addInterceptor(this)
         expectSuccess = true
         install(JsonFeature) {
             serializer = KotlinxSerializer(
