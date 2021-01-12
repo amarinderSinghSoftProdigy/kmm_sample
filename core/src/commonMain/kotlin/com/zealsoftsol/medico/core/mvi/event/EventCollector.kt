@@ -11,21 +11,26 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
-import com.zealsoftsol.medico.core.mvi.scope.BaseScope
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
-import com.zealsoftsol.medico.core.mvi.scope.NavAndSearchMainScope
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.requireUser
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
 internal class EventCollector(
-    private val navigator: Navigator,
-
-    private val networkClient: NetworkClient,
+    navigator: Navigator,
+    networkClient: NetworkClient,
     private val userRepo: UserRepo,
 ) {
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
@@ -39,36 +44,35 @@ internal class EventCollector(
     )
 
     init {
-        GlobalScope.launch(compatDispatcher) {
-            for (event in events.openSubscription()) {
-                delegateMap[event.typeClazz]!!.genericHandle(event)
-            }
+        events.onEach {
+            delegateMap[it.typeClazz]!!.genericHandle(it)
+        }.launchIn(CoroutineScope(compatDispatcher))
+    }
+
+    fun getStartingScope(): Scope {
+        return when (userRepo.getUserAccess()) {
+            UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
+                userRepo.getUserDataSource(),
+            )
+            UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
+                userRepo.requireUser(),
+                userRepo.getUserDataSource(),
+            )
+            UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
         }
     }
 
-    fun getStartingScope(): BaseScope {
-        val startScope = when (userRepo.getUserAccess()) {
-            UserRepo.UserAccess.FULL_ACCESS -> MainScope.Dashboard(
-                user = DataSource(userRepo.user!!)
-            )
-            UserRepo.UserAccess.LIMITED_ACCESS -> MainScope.LimitedAccess.from(userRepo.user!!)
-            UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
-        }
-        if (startScope is MainScope && startScope is NavAndSearchMainScope) GlobalScope.launch(
+    fun checkUser() {
+        if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) GlobalScope.launch(
             compatDispatcher
         ) {
-            userRepo.loadUserFromServer()?.let {
-                startScope.user.value = it
-            }
+            userRepo.loadUserFromServer()
         }
-
-        return startScope
     }
 
     companion object {
-        @Deprecated("use SharedFlow when available")
-        private val events = ConflatedBroadcastChannel<Event>()
+        private val events = MutableSharedFlow<Event>(1, 0, BufferOverflow.DROP_OLDEST)
 
-        fun sendEvent(event: Event) = events.offer(event)
+        fun sendEvent(event: Event) = events.tryEmit(event)
     }
 }

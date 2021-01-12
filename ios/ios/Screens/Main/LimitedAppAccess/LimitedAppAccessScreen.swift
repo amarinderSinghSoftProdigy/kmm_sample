@@ -10,7 +10,7 @@ import SwiftUI
 import core
 
 struct LimitedAppAccessScreen: View {
-    let scope: MainScope.LimitedAccess
+    let scope: LimitedAccessScope
     
     @ObservedObject var user: SwiftDataSource<DataUser>
     
@@ -18,7 +18,7 @@ struct LimitedAppAccessScreen: View {
         self.getView()
     }
     
-    init(scope: MainScope.LimitedAccess) {
+    init(scope: LimitedAccessScope) {
         self.scope = scope
         
         self.user = SwiftDataSource(dataSource: scope.user)
@@ -33,20 +33,12 @@ struct LimitedAppAccessScreen: View {
             welcomeOption = WelcomeOption.Thanks()
         }
         else {
-            let documentTypes = scope.getAvailableDocumentTypes(from: scope.supportedFileTypes)
-            
-            if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessSeasonBoy {
-                welcomeOption = WelcomeOption.Upload.AadhaarCard(documentTypes: documentTypes,
-                                                                 isVerified: scope.isVerified,
-                                                                 aadhaarData: scope.aadhaarData,
-                                                                 changeCard: scope.changeCard,
-                                                                 changeShareCode: scope.changeShareCode,
-                                                                 uploadData: uploadData)
+            if let aadhaarDataHolder = self.scope as? AadhaarDataHolder {
+                welcomeOption = WelcomeOption.Upload.AadhaarCard(aadhaarDataHolder: aadhaarDataHolder,
+                                                                 onUploadClick: { scope.showBottomSheet() })
             }
-            
             else {
-                welcomeOption = WelcomeOption.Upload.DrugLicense(documentTypes: documentTypes,
-                                                                 uploadData: uploadData)
+                welcomeOption = WelcomeOption.Upload.DrugLicense(onUploadClick: { scope.showBottomSheet() })
             }
         }
         
@@ -54,17 +46,5 @@ struct LimitedAppAccessScreen: View {
             WelcomeScreen(welcomeOption: welcomeOption,
                           userName: user.fullName())
         )
-    }
-    
-    private func uploadData(_ base64: String, withFileType fileType: DataFileType) {
-        if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessSeasonBoy {
-            scope.uploadAadhaar(base64: base64)
-            
-            return
-        }
-        
-        if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessNonSeasonBoy {
-            scope.uploadDrugLicense(base64: base64, fileType: fileType)
-        }
     }
 }

@@ -24,7 +24,6 @@ struct SignUpAadhaarCardDetailsScreen: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: { scope.addAadhaar() }))
         .keyboardResponder()
-        .navigationBarTitle(LocalizedStringKey("aadhaar_details"), displayMode: .inline)
     }
     
     init(scope: SignUpScope.Details.DetailsAadhaar) {

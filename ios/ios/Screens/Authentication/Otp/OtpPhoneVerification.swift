@@ -38,7 +38,6 @@ struct OtpPhoneVerification: View {
                     .frame(height: otpHeight)
             }
         }
-        .navigationBarTitle(LocalizedStringKey("phone_verification"), displayMode: .inline)
     }
     
     init(scope: OtpScope.AwaitVerification, geometry: GeometryProxy) {
@@ -64,31 +63,35 @@ fileprivate struct OtpDetailsView: View {
     
     var body: some View {
         VStack {
-            Text("verification_code_sent_hint \(phoneNumber)")
-                .modifier(MedicoText(textWeight: .medium, color: .textGrey))
-                .testingIdentifier("verification_code_sent_hint")
-                .padding([.trailing, .leading], geometry.size.width * 0.15)
+            LocalizedText(localizedStringKey: LocalizedStringKey("verification_code_sent_hint \(phoneNumber)"),
+                          testingIdentifier: "verification_code_sent_hint",
+                          textWeight: .medium,
+                          color: .textGrey)
+                .padding(.horizontal, geometry.size.width * 0.15)
             
             if let attemptsLeft = self.attemptsLeft.value as? Int {
                 if let timerValue = timerValue.value as? Double,
                    timerValue > 0 && attemptsLeft > 0 {
                     Text("\(TimeInterval(milliseconds: timerValue).timeString)")
-                        .modifier(MedicoText(textWeight: .bold, fontSize: 15))
-                        .testingIdentifier("timer")
-                        .padding([.top, .bottom])
+                        .medicoText(textWeight: .bold,
+                                    fontSize: 15,
+                                    testingIdentifier: "timer")
+                        .padding(.vertical)
                 }
                 else {
-                    Text("attempts_left \(attemptsLeft)")
-                        .modifier(MedicoText(textWeight: .bold, fontSize: 15, color: .lightBlue))
-                        .testingIdentifier("attempts_left")
-                        .padding([.top, .bottom])
+                    LocalizedText(localizedStringKey: LocalizedStringKey("attempts_left \(attemptsLeft)"),
+                                  testingIdentifier: "attempts_left",
+                                  textWeight: .bold,
+                                  fontSize: 15,
+                                  color: .lightBlue)
+                        .padding(.vertical)
                 }
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
                                              text: code,
                                              onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
-                    .padding([.top, .bottom])
+                    .padding(.vertical)
                     .textContentType(.oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
@@ -125,12 +128,12 @@ fileprivate struct ResendOtpView: View {
             AppColor.white.color
                 
             HStack(alignment: .center) {
-                LocalizedText(localizedStringKey: "didnt_get_code",
+                LocalizedText(localizationKey: "didnt_get_code",
                               textWeight: .medium)
                 
-                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey
+                let resendColor: AppColor = isResendActive.value == true ? .lightBlue : .grey1
                 
-                LocalizedText(localizedStringKey: "resend",
+                LocalizedText(localizationKey: "resend",
                               textWeight: .semiBold,
                               color: resendColor)
                     .onTapGesture {

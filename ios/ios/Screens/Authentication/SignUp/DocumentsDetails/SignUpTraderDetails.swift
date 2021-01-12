@@ -26,7 +26,6 @@ struct SignUpTraderDetails: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: tryToSignUp))
         .keyboardResponder()
-        .navigationBarTitle(LocalizedStringKey("trader_details"), displayMode: .inline)
     }
     
     var traderDataFields: some View {

@@ -7,10 +7,9 @@ import com.zealsoftsol.medico.core.mvi.environment
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithErrors
-import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.OtpScope
-import com.zealsoftsol.medico.core.mvi.scope.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
@@ -33,13 +32,13 @@ internal class OtpEventDelegate(
     }
 
     private suspend fun sendOtp(phoneNumber: String) {
-        navigator.withCommonScope<CommonScope.PhoneVerificationEntryPoint> {
+        navigator.withScope<CommonScope.PhoneVerificationEntryPoint> {
             if (it is OtpScope.PhoneNumberInput && it.isForRegisteredUsersOnly) {
                 val (errorCode, isSuccess) = withProgress {
                     userRepo.checkCanResetPassword(phoneNumber)
                 }
                 if (!isSuccess) {
-                    it.errors.value = errorCode ?: ErrorCode()
+                    setHostError(errorCode ?: ErrorCode())
                     return
                 }
             }
@@ -49,11 +48,9 @@ internal class OtpEventDelegate(
             if (isSuccess) {
                 val nextScope = OtpScope.AwaitVerification(phoneNumber = phoneNumber)
                 startResetPasswordTimer(nextScope)
-                setCurrentScope(nextScope)
+                setScope(nextScope)
             } else {
-                (it as? WithErrors)?.errors?.let { errors ->
-                    errors.value = errorCode ?: ErrorCode()
-                }
+                setHostError(errorCode ?: ErrorCode())
             }
         }
     }
@@ -65,10 +62,10 @@ internal class OtpEventDelegate(
             }
             if (isSuccess) {
                 stopResetPasswordTimer()
-                dropCurrentScope(updateDataSource = false)
-                when (searchQueueFor<CommonScope.PhoneVerificationEntryPoint>()) {
+                dropScope(updateDataSource = false)
+                when (searchQueuesFor<CommonScope.PhoneVerificationEntryPoint>()) {
                     is OtpScope.PhoneNumberInput -> {
-                        setCurrentScope(
+                        setScope(
                             EnterNewPasswordScope(
                                 phoneNumber = it.phoneNumber,
                                 passwordValidation = DataSource(null),
@@ -81,7 +78,7 @@ internal class OtpEventDelegate(
                     else -> throw UnsupportedOperationException("unknown subtype of PhoneVerificationEntryPoint")
                 }
             } else {
-                it.errors.value = errorCode ?: ErrorCode()
+                setHostError(errorCode ?: ErrorCode())
             }
         }
     }
@@ -94,7 +91,7 @@ internal class OtpEventDelegate(
                 startResetPasswordTimer(it)
             } else {
                 it.resendActive.value = true
-                it.errors.value = errorCode ?: ErrorCode()
+                setHostError(errorCode ?: ErrorCode())
             }
         }
     }

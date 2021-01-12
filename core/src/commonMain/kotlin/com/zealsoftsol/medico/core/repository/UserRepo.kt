@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.repository
 import com.russhwolf.settings.Settings
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
@@ -26,6 +27,11 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 
 class UserRepo(
@@ -36,11 +42,14 @@ class UserRepo(
     private val phoneEmailVerifier: PhoneEmailVerifier,
     private val ipAddressFetcher: IpAddressFetcher,
 ) {
-    val user: User?
-        get() = fetchUser()
+    val userFlow: MutableStateFlow<User?> = MutableStateFlow(
+        runCatching {
+            Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
+        }.getOrNull()
+    )
 
     fun getUserAccess(): UserAccess {
-        return fetchUser()?.let {
+        return userFlow.value?.let {
             if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
     }
@@ -50,11 +59,11 @@ class UserRepo(
         return networkAuthScope.login(UserRequest(login, password))
     }
 
-    suspend fun loadUserFromServer(): User? {
-        return networkCustomerScope.getCustomerData().entity?.let {
+    suspend fun loadUserFromServer(): Boolean {
+        userFlow.value = networkCustomerScope.getCustomerData().entity?.let {
             val parsedType = UserType.parse(it.customerType) ?: run {
                 "unknown user type".warnIt()
-                return null
+                return@let null
             }
             val user = User(
                 it.firstName,
@@ -73,12 +82,14 @@ class UserRepo(
             settings.putString(AUTH_USER_KEY, json)
             user
         }
+        return userFlow.value != null
     }
 
     suspend fun logout(): Boolean {
         return networkAuthScope.logout().also { isSuccess ->
             if (isSuccess) {
                 clearUserData()
+                userFlow.value = null
             }
         }
     }
@@ -215,14 +226,6 @@ class UserRepo(
         tokenStorage.clear()
     }
 
-    private fun fetchUser(): User? {
-        val user = runCatching {
-            Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
-        }.getOrNull()
-        if (user == null) "no cached user".warnIt()
-        return user
-    }
-
     enum class UserAccess {
         FULL_ACCESS, LIMITED_ACCESS, NO_ACCESS
     }
@@ -233,3 +236,10 @@ class UserRepo(
         private const val AUTH_USER_KEY = "ukey"
     }
 }
+
+internal inline fun UserRepo.requireUser(): User =
+    requireNotNull(userFlow.value) { "user can no be null" }
+
+internal inline fun UserRepo.getUserDataSource(): ReadOnlyDataSource<User> = ReadOnlyDataSource(
+    userFlow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
+)

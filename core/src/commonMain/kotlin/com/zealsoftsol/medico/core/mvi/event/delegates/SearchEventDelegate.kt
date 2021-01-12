@@ -5,7 +5,7 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.Facet
@@ -106,7 +106,7 @@ internal class SearchEventDelegate(
     private suspend fun loadMoreProducts() {
         navigator.withScope<SearchScope> {
             if (it.canLoadMore()) {
-                setProgress(true)
+                setHostProgress(true)
                 it.currentProductPage++
                 it.search(addPage = true)
             }
@@ -117,7 +117,7 @@ internal class SearchEventDelegate(
         searchJob?.cancel()
         searchJob = coroutineContext.toScope().launch {
             if (!addPage) delay(500)
-            if (addPage) navigator.setProgress(true)
+            if (addPage) navigator.setHostProgress(true)
             val (result, isSuccess) = networkSearchScope.search(
                 productSearch.value,
                 manufacturerSearch.value,
@@ -137,7 +137,7 @@ internal class SearchEventDelegate(
                     it.logIt()
                 }
             }
-            if (addPage) navigator.setProgress(false)
+            if (addPage) navigator.setHostProgress(false)
         }
     }
 

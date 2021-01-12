@@ -23,7 +23,6 @@
 "forgot_password" = "Forgot password?";
 "sign_up" = "Sign up";
 "to_medico" = " to Medico Stores";
-"log_out" = "Log Out";
 "copyright" = "© Copyright mediostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
@@ -106,7 +105,30 @@
 "something_went_wrong" = "Something went wrong. Please, try again";
 "okay" = "OKAY";
 
+// MARK: Navigation Bar
+"log_out" = "Log Out";
+"settings" = "Settings";
+
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
 "thank_you_for_registration" = "Thank you for registration!";
 "documents_under_review" = "Your documents are under review. We will update you.";
+
+// MARK: Global Search
+"search" = "Search";
+"cancel" = "Cancel";
+"clear_all" = "Clear All";
+"clear" = "Clear";
+"search_manufacturer" = "Search Manufacturer";
+
+// MARK: Product Details
+"mrp %@" = "MRP: %@";
+"ptr %@" = "PTR: %@";
+"code %@" = "Code: %@";
+"description %@" = "Description: %@";
+"add_to_cart" = "Add to cart";
+"details" = "Details";
+"manufacturer" = "Manufacturer";
+"compositions" = "Compositions";
+"storage" = "Storage";
+"storage_description" = "Store at room temperature (10–30°C)";

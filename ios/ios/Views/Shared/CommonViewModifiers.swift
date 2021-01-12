@@ -44,7 +44,7 @@ struct FieldError: ViewModifier {
                         .fill(appColor: .red)
                         .frame(height: 1)
                 
-                    LocalizedText(localizedStringKey: errorMessageKey,
+                    LocalizedText(localizationKey: errorMessageKey,
                                   fontSize: 12,
                                   color: .red,
                                   multilineTextAlignment: .leading)
@@ -62,15 +62,15 @@ struct FieldError: ViewModifier {
 }
 
 struct ErrorAlert: ViewModifier {
-    let errorsHandler: WithErrors
+    let errorsHandler: Scope.Host
     
     @ObservedObject var error: SwiftDataSource<DataErrorCode>
     private var showsAlert: Binding<Bool>
     
-    init(errorsHandler: WithErrors) {
+    init(errorsHandler: Scope.Host) {
         self.errorsHandler = errorsHandler
         
-        let error = SwiftDataSource(dataSource: errorsHandler.errors)
+        let error = SwiftDataSource(dataSource: errorsHandler.alertError)
         self.error = error
         
         showsAlert = Binding(get: { error.value != nil }, set: { _ in })
@@ -84,19 +84,19 @@ struct ErrorAlert: ViewModifier {
                 
                 return content.getAlert(withTitleKey: title,
                                         withMessageKey: body,
-                                        withButtonAction: { errorsHandler.dismissError() })
+                                        withButtonAction: { errorsHandler.dismissAlertError() })
             }
     }
 }
 
 struct NotificationAlert: ViewModifier {
-    let notificationsHandler: WithNotifications
+    let notificationsHandler: CommonScopeWithNotifications
     let onDismiss: (() -> ())?
     
     @ObservedObject var notification: SwiftDataSource<ScopeNotification>
     private var showsAlert: Binding<Bool>
     
-    init(notificationsHandler: WithNotifications,
+    init(notificationsHandler: CommonScopeWithNotifications,
          onDismiss: (() -> ())? = nil) {
         self.notificationsHandler = notificationsHandler
         self.onDismiss = onDismiss

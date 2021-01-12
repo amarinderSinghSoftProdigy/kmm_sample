@@ -13,8 +13,6 @@ struct WelcomeScreen: View {
     let welcomeOption: WelcomeOption
     let userName: String
     
-    @State private var filePickerOption: FilePickerOption?
-    
     @ObservedObject var uploadButtonEnabled: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
@@ -23,9 +21,10 @@ struct WelcomeScreen: View {
                 Spacer()
                 
                 VStack(spacing: 50) {
-                    Text(LocalizedStringKey("welcome \(userName)"))
-                        .modifier(MedicoText(textWeight: .medium, fontSize: 20))
-                        .testingIdentifier("welcome")
+                    LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
+                                  testingIdentifier: "welcome",
+                                  textWeight: .medium,
+                                  fontSize: 20)
                     
                     if welcomeOption is WelcomeOption.Thanks {
                         self.uploadedDocumentCenterView
@@ -34,7 +33,7 @@ struct WelcomeScreen: View {
                         self.getUploadDocumentCenterView(for: uploadOption)
                     }
                 }
-                .padding([.leading, .trailing], geometry.size.width * 0.19)
+                .padding(.horizontal, geometry.size.width * 0.19)
                 
                 Spacer()
                 
@@ -48,22 +47,13 @@ struct WelcomeScreen: View {
             Image("Welcome")
             
             VStack(spacing: 19) {
-                LocalizedText(localizedStringKey: "thank_you_for_registration",
+                LocalizedText(localizationKey: "thank_you_for_registration",
                               fontSize: 16)
                 
-                LocalizedText(localizedStringKey: "documents_under_review",
+                LocalizedText(localizationKey: "documents_under_review",
                               fontSize: 16)
             }
-        }
-    }
-    
-    func getUploadDocumentCenterView(for optionView: WelcomeOption.Upload) -> some View {
-        VStack(spacing: 30) {
-            Image("UploadDocuments")
-            
-            LocalizedText(localizedStringKey: optionView.uploadDocumentTextKey,
-                          fontSize: 16,
-                          color: .grey)
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
     
@@ -73,11 +63,22 @@ struct WelcomeScreen: View {
         self.userName = userName
         
         if let aadhaarCardOption = welcomeOption as? WelcomeOption.Upload.AadhaarCard {
-            self.uploadButtonEnabled = SwiftDataSource(dataSource: aadhaarCardOption.isVerified)
+            self.uploadButtonEnabled = SwiftDataSource(dataSource: aadhaarCardOption.aadhaarDataHolder.isVerified)
         }
         else {
             self.uploadButtonEnabled = SwiftDataSource(dataSource: DataSource(initialValue: true))
         }
+    }
+    
+    private func getUploadDocumentCenterView(for optionView: WelcomeOption.Upload) -> some View {
+        VStack(spacing: 30) {
+            Image("UploadDocuments")
+            
+            LocalizedText(localizationKey: optionView.uploadDocumentTextKey,
+                          fontSize: 16,
+                          color: .grey1)
+        }
+        .fixedSize(horizontal: false, vertical: true)
     }
     
     private func getBottomView(forGeometry geometry: GeometryProxy) -> some View {
@@ -90,26 +91,22 @@ struct WelcomeScreen: View {
                 MedicoButton(localizedStringKey: "okay") {
                     thanksButtonAction()
                 }
-                .navigationBarHidden(true)
             )
         }
         else if let uploadOption = self.welcomeOption as? WelcomeOption.Upload {
             view = AnyView(
                 VStack(spacing: 32) {
                     if let aadhaarCard = uploadOption as? WelcomeOption.Upload.AadhaarCard {
-                        AadhaardCardDataFields(aadhaarData: aadhaarCard.aadhaarData,
-                                               changeCard: aadhaarCard.changeCard,
-                                               changeShareCode: aadhaarCard.changeShareCode)
+                        AadhaardCardDataFields(aadhaarData: aadhaarCard.aadhaarDataHolder.aadhaarData,
+                                               changeCard: aadhaarCard.aadhaarDataHolder.changeCard,
+                                               changeShareCode: aadhaarCard.aadhaarDataHolder.changeShareCode)
                     }
                     
                     MedicoButton(localizedStringKey: uploadOption.buttonTextKey,
                                  isEnabled: self.uploadButtonEnabled.value == true) {
-                        self.filePickerOption = uploadOption.filePickerOption
+                        uploadOption.onUploadClick()
                     }
                 }
-                .filePicker(filePickerOption: $filePickerOption,
-                            forAvailableTypes: uploadOption.documentTypes,
-                            uploadData: uploadOption.uploadData)
             )
         }
         else { return AnyView(EmptyView()) }
@@ -135,51 +132,30 @@ class WelcomeOption {
     class Upload: WelcomeOption {
         var uploadDocumentTextKey: String { "" }
         var buttonTextKey: String { "" }
-        var filePickerOption: FilePickerOption { .actionSheet }
         
-        let documentTypes: [String]
-        let uploadData: (String, DataFileType) -> ()
+        let onUploadClick: () -> ()
         
-        init(documentTypes: [String],
-             uploadData: @escaping (String, DataFileType) -> ()) {
-            self.documentTypes = documentTypes
-            self.uploadData = uploadData
+        init(onUploadClick: @escaping () -> ()) {
+            self.onUploadClick = onUploadClick
         }
         
         class AadhaarCard: Upload {
             override var uploadDocumentTextKey: String { "aadhaar_card_request" }
             override var buttonTextKey: String { "upload_aadhaar_card" }
-            override var filePickerOption: FilePickerOption { .documentPicker }
             
-            let isVerified: DataSource<KotlinBoolean>
+            let aadhaarDataHolder: AadhaarDataHolder
             
-            let aadhaarData: DataSource<DataAadhaarData>
-            
-            let changeCard: (String) -> ()
-            let changeShareCode: (String) -> ()
-            
-            init(documentTypes: [String],
-                 isVerified: DataSource<KotlinBoolean>,
-                 aadhaarData: DataSource<DataAadhaarData>,
-                 changeCard: @escaping (String) -> (),
-                 changeShareCode: @escaping (String) -> (),
-                 uploadData: @escaping (String, DataFileType) -> ()) {
-                self.isVerified = isVerified
+            init(aadhaarDataHolder: AadhaarDataHolder,
+                 onUploadClick: @escaping () -> ()) {
+                self.aadhaarDataHolder = aadhaarDataHolder
                 
-                self.aadhaarData = aadhaarData
-                
-                self.changeCard = changeCard
-                self.changeShareCode = changeShareCode
-                
-                super.init(documentTypes: documentTypes,
-                           uploadData: uploadData)
+                super.init(onUploadClick: onUploadClick)
             }
         }
         
         class DrugLicense: Upload {
             override var uploadDocumentTextKey: String { "drug_license_request" }
             override var buttonTextKey: String { "upload_new_document" }
-            override var filePickerOption: FilePickerOption { .actionSheet }
         }
     }
 }

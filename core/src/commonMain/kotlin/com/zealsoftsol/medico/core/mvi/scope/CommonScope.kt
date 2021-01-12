@@ -1,26 +1,26 @@
 package com.zealsoftsol.medico.core.mvi.scope
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.User
 
-interface CommonScope {
+interface CommonScope : Scopable {
     interface PhoneVerificationEntryPoint : CommonScope
-    interface UploadDocument : WithErrors
+    interface UploadDocument : CommonScope {
+        val supportedFileTypes: Array<FileType>
+        val isSeasonBoy: Boolean
+            get() = false
 
-    interface CanGoBack : CommonScope {
-        fun goBack() {
-            EventCollector.sendEvent(Event.Transition.Back)
-        }
+        fun showBottomSheet() =
+            EventCollector.sendEvent(Event.Action.Registration.ShowUploadBottomSheet)
     }
 
-    interface WithErrors : CommonScope {
-        val errors: DataSource<ErrorCode?>
+    interface CanGoBack : CommonScope {
 
-        fun dismissError() {
-            errors.value = null
-        }
+        fun goBack() = EventCollector.sendEvent(Event.Transition.Back)
     }
 
     interface WithNotifications : CommonScope {
@@ -29,6 +29,10 @@ interface CommonScope {
         fun dismissNotification() {
             notifications.value = null
         }
+    }
+
+    interface WithUser : CommonScope {
+        val user: ReadOnlyDataSource<User>
     }
 }
 

@@ -46,10 +46,6 @@ struct SignUpScreen: View {
             progressFill = 1.0
             scopeView = AnyView(SignUpLegalDocumentsScreen(scope: scope))
             
-        case let scope as SignUpScope.Welcome:
-            return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scope.accept() },
-                                         userName: scope.fullName))
-            
         default:
             progressFill = 0
             scopeView = AnyView(EmptyView())
@@ -139,7 +135,7 @@ struct SignUpButton: ViewModifier {
             MedicoButton(localizedStringKey: buttonTextKey, isEnabled: isEnabled, action: action)
             
             if let skipButtonAction = self.skipButtonAction {
-                LocalizedText(localizedStringKey: "skip_for_now",
+                LocalizedText(localizationKey: "skip_for_now",
                               color: .lightBlue)
                     .onTapGesture {
                         skipButtonAction()

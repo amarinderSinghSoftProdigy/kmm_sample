@@ -25,7 +25,7 @@ import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.Space
 
 @Composable
-fun Welcome(
+fun WelcomeScreen(
     fullName: String,
     option: WelcomeOption,
 ) {

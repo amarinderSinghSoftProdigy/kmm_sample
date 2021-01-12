@@ -11,15 +11,19 @@ import SwiftUI
 
 enum AppColor: String {
     case primary
+    case navigationBar
     
     case white
     case yellow
     case red
     
+    case blue
     case lightBlue
     case darkBlue
     
-    case grey
+    case grey1
+    case grey2
+    case grey3
     case placeholderGrey
     case textGrey
     case lightGrey

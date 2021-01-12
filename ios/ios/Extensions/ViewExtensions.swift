@@ -21,25 +21,6 @@ extension View {
         }
     }
     
-    // MARK: Navigation bar
-    func backButton(action: @escaping () -> ()) -> some View {
-        let backButton = AnyView(
-            Button(action: action) {
-                HStack(spacing: 3) {
-                    Image("Back")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    
-                    LocalizedText(localizedStringKey: "back",
-                                  fontSize: 17)
-                }
-            }
-        )
-        
-        return self.navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading: backButton)
-    }
-    
     // MARK: Alerts
     func alert(_ isPresented: Binding<Bool>,
                withTitleKey titleKey: String,
@@ -70,11 +51,11 @@ extension View {
     }
     
     // MARK: View Modifiers
-    func errorAlert(withHandler errorsHandler: WithErrors) -> some View {
+    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
         self.modifier(ErrorAlert(errorsHandler: errorsHandler))
     }
     
-    func notificationAlert(withHandler notificationsHandler: WithNotifications,
+    func notificationAlert(withHandler notificationsHandler: CommonScopeWithNotifications,
                            onDismiss: (() -> ())? = nil) -> some View {
         self.modifier(NotificationAlert(notificationsHandler: notificationsHandler,
                                         onDismiss: onDismiss))
@@ -89,21 +70,21 @@ extension View {
         self.modifier(ScrollViewModifier(initialInputFieldsHeight: initialHeight))
     }
     
-    func userInfoNavigationBar(withScope scope: NavAndSearchMainScope,
-                               withNavigationSection navigationSection: NavigationSection) -> some View {
+    func slidingNavigationPanelView(withNavigationSection navigationSection: NavigationSection,
+                                    showsSlidingPanel: Bool,
+                                    changeSlidingPanelState: @escaping (Bool) -> ()) -> some View {
         self.modifier(
-            UserInfoNavigationBar(scope: scope,
-                                  navigationSection: navigationSection)
+            SlidingNavigationPanelView(navigationSection: navigationSection,
+                                       showsSlidingPanel: showsSlidingPanel,
+                                       changeSlidingPanelState: changeSlidingPanelState)
         )
     }
     
-    func filePicker(filePickerOption: Binding<FilePickerOption?>,
-                    forAvailableTypes types: [String],
-                    uploadData: @escaping (String, DataFileType) -> ()) -> some View {
+    func filePicker(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+                    onBottomSheetDismiss: @escaping () -> ()) -> some View {
         self.modifier(
-            FilePicker(filePickerOption: filePickerOption,
-                       documentTypes: types,
-                       uploadData: uploadData)
+            FilePicker(bottomSheet: bottomSheet,
+                       onBottomSheetDismiss: onBottomSheetDismiss)
         )
     }
     
@@ -112,4 +93,36 @@ extension View {
             TestingIdentifier(identifier: id)
         )
     }
+    
+    func medicoText(textWeight: TextWeight = .regular,
+                    fontSize: CGFloat = 14,
+                    color: AppColor = .darkBlue,
+                    multilineTextAlignment: TextAlignment = .center,
+                    testingIdentifier: String? = nil) -> some View {
+        let view = AnyView(
+            self.modifier(
+                MedicoText(textWeight: textWeight,
+                           fontSize: fontSize,
+                           color: color,
+                           multilineTextAlignment: multilineTextAlignment)
+            )
+        )
+        
+        guard let testingIdentifier = testingIdentifier else { return view }
+        
+        return AnyView(
+            view.testingIdentifier(testingIdentifier)
+        )
+    }
+    
+    func navigationBar(withNavigationSection navigationSection: NavigationSection?,
+                       withNavigationBarInfo navigationBarInfo: DataSource<TabBarInfo>,
+                       handleGoBack: @escaping () -> ()) -> some View {
+        self.modifier(
+            NavigationBar(navigationSection: navigationSection,
+                          navigationBarInfo: navigationBarInfo,
+                          handleGoBack: handleGoBack)
+        )
+    }
 }
+

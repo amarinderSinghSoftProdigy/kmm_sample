@@ -54,7 +54,6 @@ struct AuthNewPasswordScreen: View {
             Spacer()
         }
         .keyboardResponder()
-        .navigationBarTitle(LocalizedStringKey("new_password"), displayMode: .inline)
         .padding()
         .notificationAlert(withHandler: scope) { _ = scope.finishResetPasswordFlow() }
     }

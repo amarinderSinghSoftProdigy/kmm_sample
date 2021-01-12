@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.MainScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.screens.MedicoButton
@@ -36,7 +36,7 @@ import com.zealsoftsol.medico.screens.Space
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun ProductScreen(scope: MainScope.ProductInfo) {
+fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
 
     ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {

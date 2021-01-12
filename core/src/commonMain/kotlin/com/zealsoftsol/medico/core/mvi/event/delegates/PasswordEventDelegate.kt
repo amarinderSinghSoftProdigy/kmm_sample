@@ -3,8 +3,8 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.LogInScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 
@@ -32,8 +32,8 @@ internal class PasswordEventDelegate(
 
     private fun finishResetPassword() {
         navigator.withScope<EnterNewPasswordScope> {
-            clearQueue()
-            setCurrentScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+            dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+            setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }
 }

@@ -29,26 +29,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.EnterNewPasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.OtpScope
-import com.zealsoftsol.medico.screens.BasicTabBar
+import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.screens.InputField
 import com.zealsoftsol.medico.screens.InputWithError
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.showAlert
-import com.zealsoftsol.medico.screens.showErrorAlert
 import java.text.SimpleDateFormat
 
 @Composable
 fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
     val phoneState = scope.phoneNumber.flow.collectAsState()
     BasicAuthRestoreScreen(
-        title = stringResource(id = R.string.password_reset),
         subtitle = stringResource(id = R.string.reset_password_hint),
-        back = scope,
         body = {
             PhoneFormatInputField(
                 hint = stringResource(id = R.string.phone_number),
@@ -59,20 +54,17 @@ fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
         buttonText = stringResource(id = R.string.get_code),
         onButtonClick = { scope.sendOtp(phoneState.value.filter { it.isDigit() }) },
     )
-    scope.showErrorAlert()
 }
 
 @Composable
 fun AuthAwaitVerificationScreen(
     scope: OtpScope.AwaitVerification,
-    dateFormat: SimpleDateFormat,
+    dateFormat: SimpleDateFormat = remember { SimpleDateFormat("mm:ss") },
 ) {
     val code = remember { mutableStateOf("") }
     val attempts = scope.attemptsLeft.flow.collectAsState()
     BasicAuthRestoreScreen(
-        title = stringResource(id = R.string.phone_verification),
         subtitle = "${stringResource(id = R.string.verification_code_sent_hint)} ${scope.phoneNumber}",
-        back = scope,
         body = {
             val timer = scope.resendTimer.flow.collectAsState()
             if (timer.value > 0 && attempts.value > 0) {
@@ -126,7 +118,6 @@ fun AuthAwaitVerificationScreen(
             }
         }
     )
-    scope.showErrorAlert()
 }
 
 @Composable
@@ -135,9 +126,7 @@ fun AuthEnterNewPasswordScreen(scope: EnterNewPasswordScope) {
     val password2 = remember { mutableStateOf("") }
     val validation = scope.passwordValidation.flow.collectAsState()
     BasicAuthRestoreScreen(
-        title = stringResource(id = R.string.new_password),
         subtitle = "",
-        back = scope,
         body = {
             PasswordFormatInputField(
                 hint = stringResource(id = R.string.new_password),
@@ -167,9 +156,7 @@ fun AuthEnterNewPasswordScreen(scope: EnterNewPasswordScope) {
 
 @Composable
 private fun BasicAuthRestoreScreen(
-    title: String,
     subtitle: String,
-    back: CanGoBack,
     body: @Composable ColumnScope.() -> Boolean,
     buttonText: String,
     onButtonClick: () -> Unit,
@@ -179,7 +166,6 @@ private fun BasicAuthRestoreScreen(
         modifier = Modifier.fillMaxSize()
             .background(MaterialTheme.colors.primary)
     ) {
-        BasicTabBar(back = back, title = title)
         Column(modifier = Modifier.align(Alignment.Center).padding(16.dp)) {
             if (subtitle.isNotEmpty()) {
                 Text(

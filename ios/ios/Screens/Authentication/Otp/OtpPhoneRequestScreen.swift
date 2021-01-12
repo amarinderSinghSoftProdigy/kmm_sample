@@ -14,7 +14,6 @@ struct OtpPhoneRequestScreen: View {
     let geometry: GeometryProxy
     
     @ObservedObject var phone: SwiftDataSource<NSString>
-    @ObservedObject var error: SwiftDataSource<DataErrorCode>
     
     @State var canSubmitPhone = false
     
@@ -27,7 +26,6 @@ struct OtpPhoneRequestScreen: View {
         self.geometry = geometry
         
         self.phone = SwiftDataSource(dataSource: scope.phoneNumber)
-        self.error = SwiftDataSource(dataSource: scope.errors)
     }
     
     private func getView() -> some View {
@@ -39,16 +37,16 @@ struct OtpPhoneRequestScreen: View {
             VStack {
                 Spacer()
                 
-                LocalizedText(localizedStringKey: "reset_password_hint",
+                LocalizedText(localizationKey: "reset_password_hint",
                               textWeight: .medium,
                               color: .textGrey)
                     .multilineTextAlignment(.center)
-                    .padding([.trailing, .leading], geometry.size.width * 0.15)
+                    .padding(.horizontal, geometry.size.width * 0.15)
                 
                 PhoneTextField(phone: phone, canSubmitPhone: $canSubmitPhone) { newValue in
                     scope.changePhoneNumber(phoneNumber: newValue)
                 }
-                .padding([.top, .bottom])
+                .padding(.vertical)
                 
                 MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                     scope.sendOtp(phoneNumber: phone)
@@ -56,7 +54,6 @@ struct OtpPhoneRequestScreen: View {
                 
                 Spacer()
             }
-            .navigationBarTitle(LocalizedStringKey("password_reset"), displayMode: .inline)
             .padding()
         )
     }

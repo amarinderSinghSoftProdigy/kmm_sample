@@ -1,13 +1,8 @@
 package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,14 +13,12 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -33,11 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AmbientConfiguration
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -49,37 +40,10 @@ import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope.CanGoBack
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithErrors
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
-
-@Composable
-fun BasicTabBar(back: CanGoBack?, title: String) {
-    TabBar {
-        Row {
-            if (back != null) {
-                Icon(
-                    imageVector = vectorResource(id = R.drawable.ic_arrow_back),
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                        .fillMaxHeight()
-                        .padding(16.dp)
-                        .clickable(
-                            indication = null,
-                            onClick = { back.goBack() },
-                        )
-                )
-            }
-            Text(
-                text = title,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterVertically)
-                    .padding(start = 16.dp),
-            )
-        }
-    }
-}
 
 @Composable
 fun TabBar(
@@ -164,8 +128,8 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
 }
 
 @Composable
-fun <T : WithErrors> T.showErrorAlert() {
-    val errorCode = errors.flow.collectAsState()
+fun Scope.Host.showErrorAlert() {
+    val errorCode = alertError.flow.collectAsState()
     errorCode.value?.let {
         val titleResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
@@ -176,7 +140,7 @@ fun <T : WithErrors> T.showErrorAlert() {
         ErrorDialog(
             title = stringResource(id = titleResourceId),
             text = stringResource(id = bodyResourceId),
-            onDismiss = { dismissError() }
+            onDismiss = { dismissAlertError() }
         )
     }
 }
@@ -346,57 +310,4 @@ fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
         state.value = await()
     }
     return state
-}
-
-data class BottomSheetCell(val stringId: Int, val iconAsset: ImageVector)
-
-@Composable
-fun BottomSheet(
-    title: String,
-    cells: List<BottomSheetCell>,
-    onClick: (BottomSheetCell) -> Unit,
-    isShowingBottomSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
-) {
-    if (isShowingBottomSheet.value) Box(
-        modifier = Modifier.fillMaxSize()
-            .background(color = Color.Black.copy(alpha = 0.5f))
-            .clickable(indication = null) { isShowingBottomSheet.value = false }
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            color = Color.White,
-            elevation = 8.dp,
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.height(52.dp)
-                        .padding(start = 18.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = title,
-                        color = ConstColors.gray,
-                    )
-                }
-                cells.forEach {
-                    Row(
-                        modifier = Modifier.height(48.dp)
-                            .fillMaxWidth()
-                            .clickable { onClick(it) },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = it.iconAsset,
-                            modifier = Modifier.padding(horizontal = 18.dp)
-                        )
-                        Text(
-                            text = stringResource(id = it.stringId),
-                            color = ConstColors.gray,
-                        )
-                    }
-                }
-            }
-        }
-    }
 }

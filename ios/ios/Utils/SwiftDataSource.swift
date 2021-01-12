@@ -9,11 +9,17 @@
 import core
 
 class SwiftDataSource<T: AnyObject> : ObservableObject {
-    private var dataSource: DataSource<T>
+    private var dataSource: BaseDataSource<T>
     
-    @Published private(set) var value: T?
+    @Published private(set) var value: T? {
+        didSet {
+            onValueDidSet?(value)
+        }
+    }
     
-    init(dataSource: DataSource<T>) {
+    var onValueDidSet: ((T?) -> ())?
+    
+    init(dataSource: BaseDataSource<T>) {
         self.dataSource = dataSource
         self.dataSource.observeOnUi { newValue in
             self.value = newValue

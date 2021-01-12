@@ -44,22 +44,14 @@ internal sealed class Event {
             data class Validate(val userRegistration: UserRegistration) : Registration()
             data class AddAadhaar(val aadhaarData: AadhaarData) : Registration()
             data class UpdatePincode(val pincode: String) : Registration()
-            data class UploadAadhaar(
-                val phoneNumber: String,
-                val email: String,
-                val aadhaarAsBase64: String,
-            ) : Registration()
-
-            data class UploadDrugLicense(
-                val phoneNumber: String,
-                val email: String,
-                val licenseAsBase64: String,
-                val fileType: FileType,
-            ) : Registration()
+            data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
+            data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
+                Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
             object AcceptWelcome : Registration()
+            object ShowUploadBottomSheet : Registration()
         }
 
         sealed class Search : Action() {
