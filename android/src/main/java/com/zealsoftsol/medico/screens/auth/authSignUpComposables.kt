@@ -74,9 +74,17 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
             Column(
                 modifier = Modifier.fillMaxWidth()
                     .padding(32.dp)
-                    .align(Alignment.Center)
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Text(
+                    text = stringResource(id = R.string.who_are_you),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.W700,
+                    color = MaterialTheme.colors.background,
+                )
+                Space(32.dp)
+                Row {
                     UserType(
                         iconRes = R.drawable.ic_stockist,
                         textRes = R.string.stockist,
@@ -92,7 +100,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     )
                 }
                 Spacer(modifier = Modifier.size(18.dp))
-                Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Row {
                     UserType(
                         iconRes = R.drawable.ic_season_boy,
                         textRes = R.string.season_boy,

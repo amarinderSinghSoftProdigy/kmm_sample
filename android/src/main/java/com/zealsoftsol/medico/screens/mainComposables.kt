@@ -112,10 +112,10 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 modifier = Modifier
                                     .weight(0.7f)
                                     .fillMaxHeight()
+                                    .clickable(indication = null) { info.goToSearch() }
                                     .padding(vertical = 4.dp)
                                     .background(Color.White, MaterialTheme.shapes.medium)
-                                    .padding(14.dp)
-                                    .clickable(indication = null) { info.goToSearch() },
+                                    .padding(14.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Icon(

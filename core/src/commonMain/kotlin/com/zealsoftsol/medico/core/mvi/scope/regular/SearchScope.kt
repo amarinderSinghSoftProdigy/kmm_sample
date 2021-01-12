@@ -21,7 +21,7 @@ class SearchScope(
 ) : Scope.Host.Regular(), CommonScope.CanGoBack {
 
     init {
-        searchProduct("")
+        EventCollector.sendEvent(Event.Action.Search.SearchProduct(""))
     }
 
     fun canLoadMore() = (currentProductPage + 1) * DEFAULT_ITEMS_PER_PAGE < totalProducts
@@ -41,8 +41,11 @@ class SearchScope(
     fun searchManufacturer(input: String) =
         EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input))
 
-    fun searchProduct(input: String) =
-        EventCollector.sendEvent(Event.Action.Search.SearchProduct(input))
+    fun searchProduct(input: String): Boolean {
+        return if (input.isNotBlank() || productSearch.value.isNotBlank()) {
+            EventCollector.sendEvent(Event.Action.Search.SearchProduct(input))
+        } else false
+    }
 
     fun selectProduct(product: ProductSearch, index: Int) {
         clickedProductIndex = index

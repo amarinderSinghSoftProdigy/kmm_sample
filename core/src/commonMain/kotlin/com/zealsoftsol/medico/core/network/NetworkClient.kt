@@ -59,8 +59,7 @@ import kotlinx.serialization.json.Json
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
     private val tokenStorage: TokenStorage,
-    // TODO bind to UiLink
-    useNetworkInterceptor: Boolean = true,
+    useNetworkInterceptor: Boolean,
 ) : NetworkScope.Auth,
     NetworkScope.Customer,
     NetworkScope.Search,

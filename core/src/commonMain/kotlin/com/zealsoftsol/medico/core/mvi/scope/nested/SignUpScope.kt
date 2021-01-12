@@ -30,7 +30,7 @@ sealed class SignUpScope(titleId: String) :
 
     class SelectUserType private constructor(
         val userType: DataSource<UserType>,
-    ) : SignUpScope("who_are_you") {
+    ) : SignUpScope("user_type") {
 
         init {
             canGoNext.value = true

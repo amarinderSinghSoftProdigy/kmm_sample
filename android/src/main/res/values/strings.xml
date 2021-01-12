@@ -29,6 +29,7 @@
     <string name="error_log_in_text">Log in or password is wrong. Please try again or restore your password</string>
     <string name="okay">Okay</string>
     <string name="who_are_you">Who are you?</string>
+    <string name="user_type">User Type</string>
     <string name="personal_data">Personal Data</string>
     <string name="stockist">Stockist</string>
     <string name="retailer">Retailer</string>
