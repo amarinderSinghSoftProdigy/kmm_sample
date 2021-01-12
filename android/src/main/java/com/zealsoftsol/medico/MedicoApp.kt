@@ -15,7 +15,8 @@ class MedicoApp : Application(), DIAware {
         val (di) = UiLink.appStart(
             context = this,
             useMocks = false,
-            navigatorSafeCasts = !BuildConfig.DEBUG,
+            useNavigatorSafeCasts = !BuildConfig.DEBUG,
+            useNetworkInterceptor = BuildConfig.FLAVOR == "dev",
             loggerLevel = if (BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
         )
         this.di = di
