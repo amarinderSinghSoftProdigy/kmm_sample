@@ -15,7 +15,7 @@ import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.data.User
 import kotlin.reflect.KClass
 
-class ProductInfoScope(
+class ProductInfoScope private constructor(
     override val user: ReadOnlyDataSource<User>,
     val product: ProductData,
     val alternativeBrands: List<Any>,
