@@ -44,6 +44,7 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
+                .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
         )
     }
     
@@ -72,6 +73,7 @@ struct GlobalSearchScreen: View {
             .medicoText(fontSize: 17,
                         color: .blue)
         }
+        .padding([.leading, .trailing], 6)
     }
     
     private var filtersView: some View {
