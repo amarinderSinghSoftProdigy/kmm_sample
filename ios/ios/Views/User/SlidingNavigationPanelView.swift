@@ -12,6 +12,8 @@ import core
 struct SlidingNavigationPanelView: ViewModifier {
     let navigationSection: NavigationSection
     
+    @ObservedObject var user: SwiftDataSource<DataUser>
+    
     let showsSlidingPanel: Bool
     let changeSlidingPanelState: (Bool) -> ()
     
@@ -20,33 +22,33 @@ struct SlidingNavigationPanelView: ViewModifier {
          changeSlidingPanelState: @escaping (Bool) -> ()) {
         self.navigationSection = navigationSection
         
+        self.user = SwiftDataSource(dataSource: navigationSection.user)
+        
         self.showsSlidingPanel = showsSlidingPanel
         self.changeSlidingPanelState = changeSlidingPanelState
     }
     
     func body(content: Content) -> some View {
-        let baseNavigationBarView = AnyView(
-            GeometryReader { geometry in
-                ZStack {
-                    AppColor.primary.color
-                    
-                    content
-                        .frame(maxWidth: geometry.size.width,
-                               maxHeight: geometry.size.height,
-                               alignment: .topLeading)
-                        .zIndex(1)
+        GeometryReader { geometry in
+            ZStack {
+                AppColor.primary.color
                 
-                    _SlidingPanelView(navigationSection: navigationSection,
-                                      geometry: geometry,
-                                      isShown: showsSlidingPanel,
-                                      changeSlidingPanelState: changeSlidingPanelState)
-                        .zIndex(2)
-                }
+                content
+                    .frame(maxWidth: geometry.size.width,
+                           maxHeight: geometry.size.height,
+                           alignment: .topLeading)
+                    .zIndex(1)
+            
+                _SlidingPanelView(navigationSection: navigationSection,
+                                  userName: user.value?.fullName(),
+                                  userType: user.value?.type,
+                                  geometry: geometry,
+                                  isShown: showsSlidingPanel,
+                                  changeSlidingPanelState: changeSlidingPanelState)
+                    .zIndex(2)
             }
-            .gesture(getDragGesture())
-        )
-        
-        return baseNavigationBarView
+        }
+        .gesture(getDragGesture())
     }
     
     private func getDragGesture() -> some Gesture {
@@ -72,7 +74,8 @@ private struct _SlidingPanelView: View {
     let geometry: GeometryProxy
     let isShown: Bool
     
-    let user: SwiftDataSource<DataUser>
+    let userName: String?
+    let userType: DataUserType?
     
     var body: some View {
         ZStack {
@@ -93,11 +96,15 @@ private struct _SlidingPanelView: View {
     }
     
     init(navigationSection: NavigationSection,
+         userName: String?,
+         userType: DataUserType?,
          geometry: GeometryProxy,
          isShown: Bool,
          changeSlidingPanelState: @escaping (Bool) -> ()) {
-        self.user = SwiftDataSource(dataSource: navigationSection.user)
         self.navigationSection = navigationSection
+        
+        self.userName = userName
+        self.userType = userType
         
         self.geometry = geometry
         self.isShown = isShown
@@ -113,26 +120,22 @@ private struct _SlidingPanelView: View {
     }
     
     private var userPanel: some View {
-        guard let user = self.user.value else { return AnyView(EmptyView()) }
-        
-        return AnyView(
-            ZStack(alignment: .bottomLeading) {
-                Image("AccountInfoBackground")
+        ZStack(alignment: .bottomLeading) {
+            Image("AccountInfoBackground")
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Image("DefaultUserPhoto")
-                        .testingIdentifier("user_photo")
+            VStack(alignment: .leading, spacing: 6) {
+                Image("DefaultUserPhoto")
+                    .testingIdentifier("user_photo")
 
-                    Text(user.fullName())
-                        .medicoText(textWeight: .bold,
-                                    testingIdentifier: "user_name")
+                Text(userName ?? "")
+                    .medicoText(textWeight: .bold,
+                                testingIdentifier: "user_name")
 
-                    LocalizedText(localizationKey: user.type.localizedName,
-                                  textWeight: .medium)
-                }
-                .padding()
+                LocalizedText(localizationKey: userType?.localizedName ?? "",
+                              textWeight: .medium)
             }
-        )
+            .padding()
+        }
     }
     
     private var optionsPanel: some View {

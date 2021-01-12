@@ -10,21 +10,18 @@ import SwiftUI
 import core
 
 struct FilePicker: ViewModifier {
+    @ObservedObject var bottomSheet: SwiftDataSource<BottomSheet.UploadDocuments>
     @ObservedObject var fileUploadData: FileUploadData
     
-    @Binding var filePickerOption: FilePickerOption?
+    let onBottomSheetDismiss: () -> ()
     
-    let documentTypes: [String]
-    let uploadData: (String, DataFileType) -> ()
-    
-    init(filePickerOption: Binding<FilePickerOption?>,
-         documentTypes: [String],
-         uploadData: @escaping (String, DataFileType) -> ()) {
-        self.documentTypes = documentTypes
-        self.uploadData = uploadData
+    init(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+         onBottomSheetDismiss: @escaping () -> ()) {
+        let bottomSheetDataSource = SwiftDataSource(dataSource: bottomSheet)
+        self.bottomSheet = bottomSheetDataSource
         
-        self.fileUploadData = FileUploadData(filePickerOption: filePickerOption)
-        self._filePickerOption = filePickerOption
+        self.onBottomSheetDismiss = onBottomSheetDismiss
+        self.fileUploadData = FileUploadData(bottomSheet: bottomSheetDataSource)
     }
     
     func body(content: Content) -> some View {
@@ -35,7 +32,7 @@ struct FilePicker: ViewModifier {
             .sheet(item: $fileUploadData.activeSheet) { sheet in
                 getCurrentSheet(sheet)
                     .onDisappear {
-                        filePickerOption = nil
+                        onBottomSheetDismiss()
                     }
             }
     }
@@ -49,10 +46,10 @@ struct FilePicker: ViewModifier {
                 self.fileUploadData.imageSourceType = .photoLibrary
             },
             .default(Text(LocalizedStringKey("choose_from_device"))) {
-                fileUploadData.documentPickerShown = true
+                self.fileUploadData.documentPickerShown = true
             },
             .cancel {
-                filePickerOption = nil
+                onBottomSheetDismiss()
             }
         ])
     }
@@ -61,8 +58,10 @@ struct FilePicker: ViewModifier {
         switch sheet {
         
         case .documentPicker:
-            guard fileUploadData.documentPickerShown else { return AnyView(EmptyView()) }
+            guard fileUploadData.documentPickerShown,
+                  let uploadDocumentsSheet = self.bottomSheet.value else { return AnyView(EmptyView()) }
             
+            let documentTypes = getAvailableDocumentTypes(from: uploadDocumentsSheet.supportedFileTypes)
             return AnyView(
                 DocumentPicker(documentTypes: documentTypes,
                                onDocumentPicked: uploadFile))
@@ -76,10 +75,25 @@ struct FilePicker: ViewModifier {
         }
     }
     
+    private func getAvailableDocumentTypes(from fileTypes: KotlinArray<DataFileType>) -> [String] {
+        var documentTypes = [String]()
+        
+        let iterator = fileTypes.iterator()
+        while iterator.hasNext() {
+            guard let fileType = iterator.next() as? DataFileType,
+                  fileType.isMandatory,
+                  let uti = fileType.getUniformTypeIdentifier() else { continue }
+            
+            documentTypes.append(uti)
+        }
+        
+        return documentTypes
+    }
+    
     private func uploadImage(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.85) else { return }
 
-        uploadData(imageData, withFileExtension: "jpeg")
+        bottomSheet.value?.uploadData(imageData, withFileExtension: "jpeg")
     }
     
     private func uploadFile(fromPath filePath: URL) {
@@ -87,20 +101,8 @@ struct FilePicker: ViewModifier {
         
         let fileExtension = filePath.pathExtension
         
-        uploadData(fileData, withFileExtension: fileExtension)
+        bottomSheet.value?.uploadData(fileData, withFileExtension: fileExtension)
     }
-    
-    private func uploadData(_ data: Data, withFileExtension fileExtension: String) {
-        let base64String = data.base64EncodedString()
-        let fileType = DataFileType.Utils().fromExtension(ext: fileExtension)
-        
-        self.uploadData(base64String, fileType)
-    }
-}
-
-enum FilePickerOption {
-    case actionSheet
-    case documentPicker
 }
 
 // MARK: File Upload Data
@@ -140,15 +142,6 @@ extension DataFileType {
 }
 
 final class FileUploadData: ObservableObject {
-    @Published var filePickerOption: FilePickerOption? {
-        didSet {
-            guard let filePickerOption =  self.filePickerOption else { return }
-
-            self.showingActionSheet = filePickerOption == .actionSheet
-            self.documentPickerShown = filePickerOption == .documentPicker
-        }
-    }
-    
     @Published var showingActionSheet = false
     
     @Published fileprivate var activeSheet: ActiveSheet? {
@@ -176,7 +169,25 @@ final class FileUploadData: ObservableObject {
         }
     }
     
-    init(filePickerOption: Binding<FilePickerOption?>) {
-        self.filePickerOption = filePickerOption.wrappedValue
+    init(bottomSheet: SwiftDataSource<BottomSheet.UploadDocuments>) {
+        bottomSheet.onValueDidSet = { newValue in
+            self.showingActionSheet = newValue != nil && !newValue!.isSeasonBoy
+            self.documentPickerShown = newValue != nil && newValue!.isSeasonBoy
+        }
+    }
+}
+
+extension BottomSheet.UploadDocuments {
+    func uploadData(_ data: Data, withFileExtension fileExtension: String) {
+        let base64String = data.base64EncodedString()
+        
+        if isSeasonBoy {
+            self.uploadAadhaar(base64: base64String)
+        }
+        else {
+            let fileType = DataFileType.Utils().fromExtension(ext: fileExtension)
+            
+            self.uploadDrugLicense(base64: base64String, fileType: fileType)
+        }
     }
 }

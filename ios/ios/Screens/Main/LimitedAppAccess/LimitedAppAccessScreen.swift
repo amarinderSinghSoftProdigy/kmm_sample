@@ -33,38 +33,18 @@ struct LimitedAppAccessScreen: View {
             welcomeOption = WelcomeOption.Thanks()
         }
         else {
-            let documentTypes = scope.getAvailableDocumentTypes(from: scope.supportedFileTypes)
-            
-//            if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessSeasonBoy {
-//                welcomeOption = WelcomeOption.Upload.AadhaarCard(documentTypes: documentTypes,
-//                                                                 isVerified: scope.isVerified,
-//                                                                 aadhaarData: scope.aadhaarData,
-//                                                                 changeCard: scope.changeCard,
-//                                                                 changeShareCode: scope.changeShareCode,
-//                                                                 uploadData: uploadData)
-//            }
-//
-//            else {
-                welcomeOption = WelcomeOption.Upload.DrugLicense(documentTypes: documentTypes,
-                                                                 uploadData: uploadData)
-//            }
+            if let aadhaarDataHolder = self.scope as? AadhaarDataHolder {
+                welcomeOption = WelcomeOption.Upload.AadhaarCard(aadhaarDataHolder: aadhaarDataHolder,
+                                                                 onUploadClick: { scope.showBottomSheet() })
+            }
+            else {
+                welcomeOption = WelcomeOption.Upload.DrugLicense(onUploadClick: { scope.showBottomSheet() })
+            }
         }
         
         return AnyView(
             WelcomeScreen(welcomeOption: welcomeOption,
                           userName: user.fullName())
         )
-    }
-    
-    private func uploadData(_ base64: String, withFileType fileType: DataFileType) {
-//        if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessSeasonBoy {
-//            scope.uploadAadhaar(base64: base64)
-//            
-//            return
-//        }
-//        
-//        if let scope = self.scope as? MainScope.LimitedAccess.LimitedAccessNonSeasonBoy {
-//            scope.uploadDrugLicense(base64: base64, fileType: fileType)
-//        }
     }
 }

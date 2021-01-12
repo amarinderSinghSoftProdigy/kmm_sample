@@ -12,10 +12,6 @@ import core
 struct SignUpLegalDocumentsScreen: View {
     let scope: SignUpScope.LegalDocuments
     
-    private var documentTypes: [String]!
-    
-    @State private var filePickerOption: FilePickerOption?
-    
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
@@ -26,8 +22,6 @@ struct SignUpLegalDocumentsScreen: View {
         self.scope = scope
 
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
-        
-        self.documentTypes = scope.getAvailableDocumentTypes(from: scope.supportedFileTypes)
     }
     
     private func getView() -> some View {
@@ -73,39 +67,7 @@ struct SignUpLegalDocumentsScreen: View {
             .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                    buttonTextKey: buttonTextKey,
                                    skipButtonAction: { scope.skip() },
-                                   action: uploadDocuments))
-            .filePicker(filePickerOption: $filePickerOption,
-                        forAvailableTypes: documentTypes,
-                        uploadData: uploadData)
+                                   action: { scope.showBottomSheet() }))
         )
-    }
-    
-    private func uploadDocuments() {
-        switch scope {
-        
-        case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-            self.filePickerOption = .documentPicker
-            
-        case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-            self.filePickerOption = .actionSheet
-            
-        default:
-            break
-            
-        }
-    }
-    
-    private func uploadData(_ base64String: String, withFileType fileType: DataFileType) {
-        switch scope {
-
-//        case let aadhaarScope as SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
-//            _ = aadhaarScope.upload(base64: base64String)
-//
-//        case let drugLicenseScope as SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
-//            _ = drugLicenseScope.upload(base64: base64String, fileType: fileType)
-
-        default:
-            break
-        }
     }
 }

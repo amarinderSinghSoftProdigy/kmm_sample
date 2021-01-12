@@ -80,13 +80,11 @@ extension View {
         )
     }
     
-    func filePicker(filePickerOption: Binding<FilePickerOption?>,
-                    forAvailableTypes types: [String],
-                    uploadData: @escaping (String, DataFileType) -> ()) -> some View {
+    func filePicker(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+                    onBottomSheetDismiss: @escaping () -> ()) -> some View {
         self.modifier(
-            FilePicker(filePickerOption: filePickerOption,
-                       documentTypes: types,
-                       uploadData: uploadData)
+            FilePicker(bottomSheet: bottomSheet,
+                       onBottomSheetDismiss: onBottomSheetDismiss)
         )
     }
     

@@ -46,8 +46,7 @@ struct BaseScopeView: View {
                 ZStack {
                     AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 
-                    currentView
-                        .errorAlert(withHandler: scope)
+                    getViewWithModifiers()
                 }
                 .hideKeyboardOnTap()
                 .navigationBarHidden(true)
@@ -85,6 +84,23 @@ struct BaseScopeView: View {
         self.scope = scope
         
         self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
+    }
+    
+    private func getViewWithModifiers() -> some View {
+        var view = AnyView(
+            currentView
+                .errorAlert(withHandler: scope)
+        )
+        
+        if let uploadBottomSheet = scope.bottomSheet as? DataSource<BottomSheet.UploadDocuments> {
+            view = AnyView(
+                view
+                    .filePicker(bottomSheet: uploadBottomSheet,
+                                onBottomSheetDismiss: { scope.dismissBottomSheet() })
+            )
+        }
+        
+        return view
     }
 }
 
