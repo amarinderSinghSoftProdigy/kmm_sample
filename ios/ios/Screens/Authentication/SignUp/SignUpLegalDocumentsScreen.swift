@@ -16,6 +16,8 @@ struct SignUpLegalDocumentsScreen: View {
     
     var body: some View {
         self.getView()
+            .screenLogger(withScreenName: "SignUpLegalDocumentsScreen",
+                          withScreenClass: SignUpLegalDocumentsScreen.self)
     }
     
     init(scope: SignUpScope.LegalDocuments) {

@@ -124,5 +124,19 @@ extension View {
                           handleGoBack: handleGoBack)
         )
     }
+    
+    func navigationBar(withNavigationBarContent navigationBarContent: AnyView) -> some View {
+        self.modifier(
+            NavigationBar(navigationBarContent: navigationBarContent)
+        )
+    }
+    
+    func screenLogger<T>(withScreenName screenName: String,
+                         withScreenClass screenClass: T.Type) -> some View {
+        self.modifier(
+            ScreenLoggerModifier(screenName: screenName,
+                                 screenClass: screenClass)
+        )
+    }
 }
 

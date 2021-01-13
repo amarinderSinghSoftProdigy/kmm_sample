@@ -30,6 +30,8 @@ struct SignUpAddressScreen: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToTraderDetails))
         .keyboardResponder()
+        .screenLogger(withScreenName: "SignUpAddressScreen",
+                      withScreenClass: SignUpAddressScreen.self)
     }
     
     var addressDataFields: some View {

@@ -34,16 +34,22 @@ struct GlobalSearchScreen: View {
         }
         
         let view: AnyView
+        let screenName: String
         
         if isFilterOpened == true {
             view = AnyView(self.filtersView)
+            screenName = "FiltersView"
         }
         else {
             view = AnyView(self.productsView)
+            screenName = "ProductsView"
         }
         
         return AnyView(
             view
+                .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
+                .screenLogger(withScreenName: "GlobalSearchScreen.\(screenName)",
+                              withScreenClass: GlobalSearchScreen.self)
         )
     }
     
@@ -72,6 +78,7 @@ struct GlobalSearchScreen: View {
             .medicoText(fontSize: 17,
                         color: .blue)
         }
+        .padding([.leading, .trailing], 6)
     }
     
     private var filtersView: some View {

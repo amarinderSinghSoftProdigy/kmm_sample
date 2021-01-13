@@ -29,9 +29,7 @@ struct OtpFlowScreen: View {
             return AnyView(OtpPhoneVerification(scope: scope, geometry: geometry))
             
         default:
-            break
+            return AnyView(EmptyView())
         }
-        
-        return AnyView(Group {})
     }
 }

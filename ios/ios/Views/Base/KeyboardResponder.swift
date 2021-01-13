@@ -114,26 +114,3 @@ extension View {
         self.modifier(KeyboardResponderModifier())
     }
 }
-
-//@State var text: String = ""
-//
-//var body: some View {
-//    if #available(iOS 14.0, *) {
-//        GeometryReader { _ in
-//            VStack {
-//                //                    Spacer()
-//                ForEach(0..<10) { _ in
-//                    TextField("Enter something", text: $text)
-//                        .textFieldStyle(RoundedBorderTextFieldStyle())
-//                }
-//                Spacer()
-//            }
-//        }
-//        .ignoresSafeArea(.keyboard, edges: .bottom)
-//        .padding()
-//        .offset(y: -keyboard.currentBottomPadding)
-//        .animation(.easeOut(duration: 0.16))
-//    } else {
-//        // Fallback on earlier versions
-//    }
-//}
