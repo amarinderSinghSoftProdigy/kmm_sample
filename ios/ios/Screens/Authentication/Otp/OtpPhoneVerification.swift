@@ -38,6 +38,8 @@ struct OtpPhoneVerification: View {
                     .frame(height: otpHeight)
             }
         }
+        .screenLogger(withScreenName: "OtpPhoneVerification",
+                      withScreenClass: OtpPhoneVerification.self)
     }
     
     init(scope: OtpScope.AwaitVerification, geometry: GeometryProxy) {

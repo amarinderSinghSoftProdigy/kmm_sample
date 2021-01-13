@@ -24,6 +24,8 @@ struct SignUpAadhaarCardDetailsScreen: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: { scope.addAadhaar() }))
         .keyboardResponder()
+        .screenLogger(withScreenName: "SignUpAadhaarCardDetailsScreen",
+                      withScreenClass: SignUpAadhaarCardDetailsScreen.self)
     }
     
     init(scope: SignUpScope.Details.DetailsAadhaar) {

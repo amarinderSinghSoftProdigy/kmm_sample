@@ -13,6 +13,9 @@
 		331BED592593614600757694 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331BED582593614600757694 /* GoogleService-Info.plist */; };
 		331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
+		332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4025AF31FC00341A7E /* ScreenLogger.swift */; };
+		332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */; };
+		332CFD4825AF337F00341A7E /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4725AF337F00341A7E /* AppColor.swift */; };
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
 		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
 		33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A85256FB7C200DACD7C /* ViewExtensions.swift */; };
@@ -56,19 +59,18 @@
 		33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
 		33B15820258A637D009B69AB /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
-		33B1B80F2564378E005215A3 /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B80E2564378E005215A3 /* HostingController.swift */; };
 		33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */; };
 		33B4A30F25A34E6900B04AF3 /* Barlow-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
-		33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA2B256E55AB001C189A /* AppColor.swift */; };
+		33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67C825AEF87600148A27 /* AnalyticsService.swift */; };
+		33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */; };
+		33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67E925AF0EFD00148A27 /* DIContainer.swift */; };
 		33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */; };
 		33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */; };
-		33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
 		33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
-		33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */; };
 		33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151EA256FE1F000C4C656 /* OtpPhoneRequestScreen.swift */; };
 		33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */; };
 		33F1520A256FF5D200C4C656 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33F15209256FF5D200C4C656 /* Colors.xcassets */; };
@@ -135,6 +137,9 @@
 		331BED582593614600757694 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreenTests.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		332CFD4025AF31FC00341A7E /* ScreenLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLogger.swift; sourceTree = "<group>"; };
+		332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtil.swift; sourceTree = "<group>"; };
+		332CFD4725AF337F00341A7E /* AppColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
 		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
 		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
 		332F7E0E258B3BC100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../core/src/commonMain; sourceTree = "<group>"; };
@@ -175,18 +180,18 @@
 		33ABAECD258B93370061F63C /* BaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTests.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
-		33B1B80E2564378E005215A3 /* HostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingController.swift; sourceTree = "<group>"; };
 		33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexibleView.swift; sourceTree = "<group>"; };
 		33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Black.ttf"; sourceTree = "<group>"; };
 		33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPersonalDataScreen.swift; sourceTree = "<group>"; };
-		33CDAA2B256E55AB001C189A /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColor.swift; path = ios/utils/AppColor.swift; sourceTree = SOURCE_ROOT; };
+		33CA67C825AEF87600148A27 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
+		33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalyticsService.swift; sourceTree = "<group>"; };
+		33CA67E925AF0EFD00148A27 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColorViewsExtensions.swift; path = ios/extensions/AppColorViewsExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreenTests.swift; sourceTree = "<group>"; };
 		33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAadhaarCardDetailsScreen.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
-		33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PhoneNumberUtil.swift; path = ios/utils/PhoneNumberUtil.swift; sourceTree = SOURCE_ROOT; };
 		33F151EA256FE1F000C4C656 /* OtpPhoneRequestScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreen.swift; sourceTree = "<group>"; };
 		33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneVerification.swift; sourceTree = "<group>"; };
 		33F15209256FF5D200C4C656 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -239,12 +244,8 @@
 		33016394255999F200835961 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				33CDAA2B256E55AB001C189A /* AppColor.swift */,
-				33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */,
-				33B1B80E2564378E005215A3 /* HostingController.swift */,
-				336728212578E1CB00C7E73D /* KeyboardResponder.swift */,
-				33F151D0256FBF5F00C4C656 /* PhoneNumberUtil.swift */,
-				33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */,
+				332CFD4625AF337100341A7E /* Models */,
+				332CFD4325AF334A00341A7E /* Services */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -255,6 +256,42 @@
 				3317B5D325A59C7C008681ED /* ProductDetails.swift */,
 			);
 			path = Product;
+			sourceTree = "<group>";
+		};
+		332CFD4225AF330C00341A7E /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				3356497325AC453300F2D3CE /* NavigationBar.swift */,
+				3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		332CFD4325AF334A00341A7E /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */,
+				332CFD4025AF31FC00341A7E /* ScreenLogger.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		332CFD4625AF337100341A7E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				332CFD4725AF337F00341A7E /* AppColor.swift */,
+				33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		332CFD4925AF33B100341A7E /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */,
+				336728212578E1CB00C7E73D /* KeyboardResponder.swift */,
+			);
+			path = Base;
 			sourceTree = "<group>";
 		};
 		332F7DF9258B39BD00C5BF6B /* KotlinSources */ = {
@@ -305,6 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
+				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
 				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = Inputs;
@@ -339,15 +377,6 @@
 			path = SignUp;
 			sourceTree = "<group>";
 		};
-		3367284B2579293800C7E73D /* User */ = {
-			isa = PBXGroup;
-			children = (
-				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
-				3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */,
-			);
-			path = User;
-			sourceTree = "<group>";
-		};
 		336EE4FD2594A05600D354C8 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -376,8 +405,8 @@
 		3378955F256E3B970034D79F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				332CFD4925AF33B100341A7E /* Base */,
 				33789560256E3BBC0034D79F /* Shared */,
-				3367284B2579293800C7E73D /* User */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -387,12 +416,12 @@
 			children = (
 				333F45D725A4B63C008DE1D2 /* Images */,
 				333F45D525A4B616008DE1D2 /* Inputs */,
+				332CFD4225AF330C00341A7E /* Navigation */,
 				333F45D425A4B608008DE1D2 /* Pickers */,
 				333F45D625A4B636008DE1D2 /* Texts */,
 				338F98EA257F7808002D36FF /* UIKitElements */,
 				33ABAEC7258B826A0061F63C /* CommonViews.swift */,
 				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
-				3356497325AC453300F2D3CE /* NavigationBar.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -508,6 +537,24 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		33CA67C625AEF7E700148A27 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				33CA67C825AEF87600148A27 /* AnalyticsService.swift */,
+				33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		33CA67C725AEF81300148A27 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				33CA67C625AEF7E700148A27 /* Analytics */,
+				33CA67E925AF0EFD00148A27 /* DIContainer.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		33CE886B2590C84400E4D316 /* PasswordRestore */ = {
 			isa = PBXGroup;
 			children = (
@@ -601,6 +648,7 @@
 				337C0A36256D426900C3F0A5 /* Resources */,
 				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				337C0A35256D423D00C3F0A5 /* Screens */,
+				33CA67C725AEF81300148A27 /* Services */,
 				337DE626258A522100614951 /* Testing */,
 				33016394255999F200835961 /* Utils */,
 				3378955F256E3B970034D79F /* Views */,
@@ -667,8 +715,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7555FFA5242A565B00829871 /* Build configuration list for PBXNativeTarget "Medico" */;
 			buildPhases = (
-				7555FFB5242A651A00829871 /* Run Script */,
 				09DF2A296B4A29D1C3C82ECC /* [CP] Check Pods Manifest.lock */,
+				7555FFB5242A651A00829871 /* Run Script */,
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
@@ -889,7 +937,6 @@
 				33B15820258A637D009B69AB /* LimitedAppAccessScopeInfo.swift in Sources */,
 				337DE57D258A069B00614951 /* AuthScreenTests.swift in Sources */,
 				331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */,
-				33CE886E2590D7A700E4D316 /* PhoneNumberUtil.swift in Sources */,
 				33B1581F258A637A009B69AB /* TestsHelper.swift in Sources */,
 				336EE5012594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */,
@@ -911,7 +958,7 @@
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
-				33F151D1256FBF5F00C4C656 /* PhoneNumberUtil.swift in Sources */,
+				332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */,
 				336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
 				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
 				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
@@ -919,6 +966,7 @@
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
+				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
@@ -926,18 +974,20 @@
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
+				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
 				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
+				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
-				33B1B80F2564378E005215A3 /* HostingController.swift in Sources */,
-				33CDAA2C256E55AB001C189A /* AppColor.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
+				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,
 				33621CF62571009D004BD4CF /* MedicoText.swift in Sources */,
 				33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */,
 				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
 				33FD6A40259CAD640092887D /* SearchBar.swift in Sources */,
 				337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */,
+				33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				337DE628258A523800614951 /* TestsHelper.swift in Sources */,
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
@@ -1175,7 +1225,7 @@
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1206,7 +1256,7 @@
 				BUNDLE_LOADER = "";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;

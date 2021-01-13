@@ -43,6 +43,8 @@ struct SelectUserTypeScreen: View {
             }
         }
         .modifier(SignUpButton(isEnabled: selectedUserType.value != nil, action: goToPersonalData))
+        .screenLogger(withScreenName: "SelectUserTypeScreen",
+                      withScreenClass: SelectUserTypeScreen.self)
     }
     
     init(scope: SignUpScope.SelectUserType) {

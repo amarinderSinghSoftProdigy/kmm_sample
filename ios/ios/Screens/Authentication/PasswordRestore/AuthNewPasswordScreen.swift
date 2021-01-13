@@ -56,6 +56,8 @@ struct AuthNewPasswordScreen: View {
         .keyboardResponder()
         .padding()
         .notificationAlert(withHandler: scope) { _ = scope.finishResetPasswordFlow() }
+        .screenLogger(withScreenName: "AuthNewPasswordScreen",
+                          withScreenClass: AuthNewPasswordScreen.self)
     }
     
     init(scope: EnterNewPasswordScope) {

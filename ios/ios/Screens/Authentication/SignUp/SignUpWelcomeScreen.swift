@@ -40,6 +40,8 @@ struct WelcomeScreen: View {
                 self.getBottomView(forGeometry: geometry)
             }
         }
+        .screenLogger(withScreenName: "WelcomeScreen.\(welcomeOption.optionName)",
+                      withScreenClass: WelcomeScreen.self)
     }
     
     var uploadedDocumentCenterView: some View {
@@ -121,7 +123,11 @@ struct WelcomeScreen: View {
 }
 
 class WelcomeOption {
+    var optionName: String { "WelcomeOption" }
+    
     class Thanks: WelcomeOption {
+        override var optionName: String { "Thanks" }
+        
         let onButtonClick: (() -> ())?
         
         init(onButtonClick: (() -> ())? = nil) {
@@ -130,6 +136,8 @@ class WelcomeOption {
     }
     
     class Upload: WelcomeOption {
+        override var optionName: String { "Upload" }
+        
         var uploadDocumentTextKey: String { "" }
         var buttonTextKey: String { "" }
         
@@ -140,6 +148,8 @@ class WelcomeOption {
         }
         
         class AadhaarCard: Upload {
+            override var optionName: String { "UploadAadhaarCard" }
+            
             override var uploadDocumentTextKey: String { "aadhaar_card_request" }
             override var buttonTextKey: String { "upload_aadhaar_card" }
             
@@ -154,6 +164,8 @@ class WelcomeOption {
         }
         
         class DrugLicense: Upload {
+            override var optionName: String { "UploadDrugLicense" }
+            
             override var uploadDocumentTextKey: String { "drug_license_request" }
             override var buttonTextKey: String { "upload_new_document" }
         }

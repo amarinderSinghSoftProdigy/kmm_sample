@@ -19,6 +19,8 @@ struct OtpPhoneRequestScreen: View {
     
     var body: some View {
         self.getView()
+            .screenLogger(withScreenName: "OtpPhoneRequestScreen",
+                          withScreenClass: OtpPhoneRequestScreen.self)
     }
     
     init(scope: OtpScope.PhoneNumberInput, geometry: GeometryProxy) {

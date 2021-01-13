@@ -26,6 +26,8 @@ struct ProductDetails: View {
         .padding(.vertical, 33)
         .padding(.horizontal, 16)
         .scrollView()
+        .screenLogger(withScreenName: "ProductDetails",
+                      withScreenClass: ProductDetails.self)
     }
     
     private var infoView: some View {

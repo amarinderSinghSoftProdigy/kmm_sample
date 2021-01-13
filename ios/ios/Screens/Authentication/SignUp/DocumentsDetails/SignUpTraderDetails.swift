@@ -26,6 +26,8 @@ struct SignUpTraderDetails: View {
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: tryToSignUp))
         .keyboardResponder()
+        .screenLogger(withScreenName: "SignUpTraderDetails",
+                      withScreenClass: SignUpTraderDetails.self)
     }
     
     var traderDataFields: some View {

@@ -134,3 +134,18 @@ struct TestingIdentifier: ViewModifier {
         return AnyView(content)
     }
 }
+
+struct ScreenLoggerModifier<T>: ViewModifier {
+    @EnvironmentObject var screenLogger: ScreenLogger
+    
+    let screenName: String
+    let screenClass: T.Type
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                screenLogger.logCurrentScreen(screenName,
+                                              screenClass: screenClass)
+            }
+    }
+}

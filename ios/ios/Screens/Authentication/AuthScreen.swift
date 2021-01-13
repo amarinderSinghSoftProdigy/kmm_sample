@@ -39,6 +39,8 @@ struct AuthScreen: View {
                 .padding(.bottom, 30)
         }
         .keyboardResponder()
+        .screenLogger(withScreenName: "AuthScreen",
+                      withScreenClass: AuthScreen.self)
     }
     
     var background: some View {
