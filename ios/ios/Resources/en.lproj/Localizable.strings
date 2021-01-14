@@ -137,3 +137,8 @@
 "personal_profile" = "Personal Profile";
 "change_password" = "Change Password";
 "gstin_details" = "GSTIN Details";
+
+// MARK: Settings Change Password
+"enter_current_password" = "Please enter your current password:";
+"current_password" = "Current Password";
+"enter_new_password" = "Please enter your new password:";

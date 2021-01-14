@@ -12,17 +12,19 @@ struct SettingsScreen: View {
     private let options = ["PersonalProfile", "ChangePassword", "Address", "GSTIN Details"]
     
     var body: some View {
-        VStack(spacing: 22) {
-            ForEach(options, id: \.self) { option in
-                TableViewCell(textLocalizationKey: self.getTextLocalizationKey(forOption: option),
-                              imageName: self.getImageName(forOption: option),
-                              style: .navigation,
-                              onTapAction: { print(option) })
-            }
-            
-            Spacer()
-        }
-        .padding()
+        ChangePasswordNewPassword()
+        
+//        VStack(spacing: 22) {
+//            ForEach(options, id: \.self) { option in
+//                TableViewCell(textLocalizationKey: self.getTextLocalizationKey(forOption: option),
+//                              imageName: self.getImageName(forOption: option),
+//                              style: .navigation,
+//                              onTapAction: { print(option) })
+//            }
+//            
+//            Spacer()
+//        }
+//        .padding()
     }
         
     private func getTextLocalizationKey(forOption option: String) -> String? {
@@ -102,6 +104,58 @@ struct SettingsScreen: View {
             .padding()
             .screenLogger(withScreenName: "SettingsPersonalProfile",
                           withScreenClass: PersonalProfile.self)
+        }
+    }
+    
+    private struct ChangePasswordCurrentPassword: View {
+        var body: some View {
+            VStack(spacing: 32) {
+                LocalizedText(localizationKey: "enter_current_password",
+                              textWeight: .medium,
+                              color: .textGrey)
+                
+                VStack(spacing: 12) {
+                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "current_password",
+                                                   text: nil,
+                                                   onTextChange: { newValue in })
+                    
+                    MedicoButton(localizedStringKey: "confirm",
+                                 isEnabled: true) {
+                        
+                    }
+                }
+            }
+            .padding()
+            .screenLogger(withScreenName: "ChangePassword.CurrentPassword",
+                          withScreenClass: ChangePasswordCurrentPassword.self)
+        }
+    }
+    
+    private struct ChangePasswordNewPassword: View {
+        var body: some View {
+            VStack(spacing: 32) {
+                LocalizedText(localizationKey: "enter_current_password",
+                              textWeight: .medium,
+                              color: .textGrey)
+                
+                VStack(spacing: 12) {
+                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
+                                                   text: nil,
+                                                   onTextChange: { newValue in })
+                    
+                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
+                                                   text: nil,
+                                                   onTextChange: { newValue in })
+                    
+                    MedicoButton(localizedStringKey: "confirm",
+                                 isEnabled: true) {
+                        
+                    }
+                }
+            }
+            .padding()
+            .screenLogger(withScreenName: "ChangePassword.NewPassword",
+                          withScreenClass: ChangePasswordNewPassword.self)
         }
     }
 }
