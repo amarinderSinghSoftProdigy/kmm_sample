@@ -18,8 +18,7 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-                SettingsScreen()
-//                BaseScopeView(scope: scope)
+                BaseScopeView(scope: scope)
             }
         }
     }
@@ -43,21 +42,17 @@ struct BaseScopeView: View {
     
     var body: some View {
         ZStack {
-            NavigationView {
-                ZStack {
-                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
-                
-                    getViewWithModifiers()
-                }
-                .hideKeyboardOnTap()
-                .navigationBarHidden(true)
-            }
+            AppColor.primary.color.edgesIgnoringSafeArea(.all)
+            
+//            SettingsScreen()
+            getViewWithModifiers()
 
             if let isInProgress = self.isInProgress.value,
                isInProgress == true {
                 ActivityView()
             }
         }
+        .hideKeyboardOnTap()
     }
     
     var currentView: AnyView {

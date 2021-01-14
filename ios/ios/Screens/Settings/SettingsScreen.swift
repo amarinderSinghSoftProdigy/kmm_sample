@@ -63,4 +63,45 @@ struct SettingsScreen: View {
         }
     }
     
+    private struct PersonalProfile: View {
+        @State private var canSubmitPhone = false
+        
+        var body: some View {
+            VStack(spacing: 12) {
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
+                                             text: "firstName",
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .textContentType(.givenName)
+                    .autocapitalization(.words)
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
+                                             text: "lastName",
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .textContentType(.familyName)
+                    .autocapitalization(.words)
+
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
+                                             text: "email",
+                                             onTextChange: { newValue in },
+                                             keyboardType: .emailAddress)//,
+//                                             isValid: emailErrorMessageKey == nil,
+//                                             errorMessageKey: emailErrorMessageKey)
+                    .textContentType(.emailAddress)
+                    .autocapitalization(.none)
+                
+                PhoneTextField(phone: "1234",
+                               canSubmitPhone: $canSubmitPhone,
+                               errorMessageKey: nil) { newValue in
+//                    scope.changePhoneNumber(phoneNumber: newValue)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .screenLogger(withScreenName: "SettingsPersonalProfile",
+                          withScreenClass: PersonalProfile.self)
+        }
+    }
 }
