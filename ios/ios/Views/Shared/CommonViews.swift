@@ -155,3 +155,69 @@ struct LocalizedText: View {
         self.localizedStringKey = localizedStringKey
     }
 }
+
+struct TableViewCell: View {
+    let textLocalizationKey: String?
+    let imageName: String?
+    
+    let style: Style
+    
+    let onTapAction: () -> ()
+    
+    var body: some View {
+        guard let localizationKey = self.textLocalizationKey else {
+            return AnyView(EmptyView())
+        }
+        
+        return AnyView(
+            Button(action: { self.onTapAction() }) {
+                HStack(spacing: 24) {
+                    if let imageName = self.imageName {
+                        Image(imageName)
+                            .frame(width: 24)
+                    }
+                    
+                    LocalizedText(localizationKey: localizationKey,
+                                  textWeight: style.textWeight,
+                                  fontSize: 15,
+                                  color: style.foregroundColor)
+                    
+                    if style.hasNavigationArrow {
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(appColor: style.foregroundColor)
+                    }
+                }
+            }
+            .testingIdentifier("\(localizationKey)_button")
+        )
+    }
+    
+    enum Style {
+        case navigation
+        case plain
+        
+        var hasNavigationArrow: Bool {
+            return self == .navigation
+        }
+        
+        var textWeight: TextWeight {
+            switch self {
+            case .navigation:
+                return .medium
+            case .plain:
+                return .semiBold
+            }
+        }
+        
+        var foregroundColor: AppColor {
+            switch self {
+            case .navigation:
+                return .darkBlue
+            case .plain:
+                return .grey1
+            }
+        }
+    }
+}

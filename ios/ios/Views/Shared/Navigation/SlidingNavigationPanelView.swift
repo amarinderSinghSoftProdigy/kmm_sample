@@ -146,7 +146,7 @@ private struct _SlidingPanelView: View {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(spacing: 20) {
                     ForEach(navigationSection.main, id: \.self) { option in
-                        NavigationCell(navigationOption: option, style: .main)
+                        NavigationCell(navigationOption: option, style: .navigation)
                     }
                 }
                 
@@ -157,7 +157,7 @@ private struct _SlidingPanelView: View {
                 
                 VStack(spacing: 20) {
                     ForEach(navigationSection.footer, id: \.self) { option in
-                        NavigationCell(navigationOption: option, style: .bottom)
+                        NavigationCell(navigationOption: option, style: .plain)
                     }
                 }
             }
@@ -169,62 +169,13 @@ private struct _SlidingPanelView: View {
     private struct NavigationCell: View {
         let navigationOption: NavigationOption
         
-        let style: Style
+        let style: TableViewCell.Style
         
         var body: some View {
-            guard let localizationKey = navigationOption.textLocalizationKey else {
-                return AnyView(EmptyView())
-            }
-            
-            return AnyView(
-                Button(action: { _ = navigationOption.select() }) {
-                    HStack(spacing: 24) {
-                        if let imageName = navigationOption.imageName {
-                            Image(imageName)
-                        }
-                        
-                        LocalizedText(localizationKey: localizationKey,
-                                      textWeight: style.textWeight,
-                                      fontSize: 15,
-                                      color: style.foregroundColor)
-                        
-                        if style.hasNavigationArrow {
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(appColor: style.foregroundColor)
-                        }
-                    }
-                }
-                .testingIdentifier("\(localizationKey)_button")
-            )
-        }
-        
-        enum Style {
-            case main
-            case bottom
-            
-            var hasNavigationArrow: Bool {
-                return self == .main
-            }
-            
-            var textWeight: TextWeight {
-                switch self {
-                case .main:
-                    return .medium
-                case .bottom:
-                    return .semiBold
-                }
-            }
-            
-            var foregroundColor: AppColor {
-                switch self {
-                case .main:
-                    return .darkBlue
-                case .bottom:
-                    return .grey1
-                }
-            }
+            TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
+                          imageName: navigationOption.imageName,
+                          style: style,
+                          onTapAction: { _ = navigationOption.select() })
         }
     }
 }

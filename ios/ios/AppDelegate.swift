@@ -19,16 +19,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #if DEBUG
         let testsHelper = TestsHelper()
         let useMocks = testsHelper.testingEnabled
-        let navigatorSafeCasts = false
+        let useNavigatorSafeCasts = false
+        let useNetworkInterceptor = true
         #else
         let useMocks = false
-        let navigatorSafeCasts = true
+        let useNavigatorSafeCasts = true
+        let useNetworkInterceptor = false
         #endif
         
         let link = UiLink()
         let start = link.appStart(context: self,
                                   useMocks: useMocks,
-                                  navigatorSafeCasts: navigatorSafeCasts,
+                                  useNavigatorSafeCasts: useNavigatorSafeCasts,
+                                  useNetworkInterceptor: useNetworkInterceptor,
                                   loggerLevel: Logger.Level.log)
         navigator = start.navigator
         link.setStartingScope()

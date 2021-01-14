@@ -50,6 +50,7 @@
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
+		339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339D372125B05CCF00C57B2D /* SettingsScreen.swift */; };
 		33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
 		33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECA258B8FE90061F63C /* Extensions.swift */; };
@@ -174,6 +175,7 @@
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
+		339D372125B05CCF00C57B2D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRestoreOtpPhoneVerificationScreenTests.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
 		33ABAECA258B8FE90061F63C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333AE3F925821ED000C249C1 /* Main */,
+				339D372025B05C6E00C57B2D /* Settings */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
 			path = Screens;
@@ -502,6 +505,14 @@
 				33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */,
 			);
 			path = Otp;
+			sourceTree = "<group>";
+		};
+		339D372025B05C6E00C57B2D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				339D372125B05CCF00C57B2D /* SettingsScreen.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		33ABAEC9258B8F810061F63C /* Utils */ = {
@@ -996,6 +1007,7 @@
 				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
 				33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
+				339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */,
 				336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */,

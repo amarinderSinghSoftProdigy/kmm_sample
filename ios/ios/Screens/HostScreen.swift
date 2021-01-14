@@ -18,7 +18,8 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-                BaseScopeView(scope: scope)
+                SettingsScreen()
+//                BaseScopeView(scope: scope)
             }
         }
     }
