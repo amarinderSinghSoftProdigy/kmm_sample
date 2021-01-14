@@ -12,13 +12,20 @@ data class User(
     val details: Details,
     val isVerified: Boolean,
     val isDocumentUploaded: Boolean,
+    val addressData: CustomerAddressData,
 ) {
     fun fullName() = "$firstName $lastName"
 
     @Serializable
     sealed class Details {
         @Serializable
-        data class DrugLicense(val url: String?) : Details()
+        data class DrugLicense(
+            val tradeName: String,
+            val gstin: String,
+            val license1: String,
+            val license2: String,
+            val url: String?,
+        ) : Details()
 
         @Serializable
         data class Aadhaar(val cardNumber: String, val shareCode: String) : Details()

@@ -1,21 +1,16 @@
 package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ConstraintLayout
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,6 +25,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
 import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.NavigationCell
 import com.zealsoftsol.medico.screens.Separator
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.stringResourceByName
@@ -39,6 +35,7 @@ fun NavigationColumn(
     userName: String,
     userType: UserType,
     navigationSection: NavigationSection,
+    onSectionSelected: () -> Unit,
 ) {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
@@ -85,7 +82,10 @@ fun NavigationColumn(
                 NavigationCell(
                     icon = icon,
                     text = text,
-                    onClick = { it.select() },
+                    onClick = {
+                        onSectionSelected()
+                        it.select()
+                    },
                 )
             }
         }
@@ -115,30 +115,3 @@ private inline val NavigationOption.iconAndText: Pair<ImageVector, String>
         NavigationOption.Settings -> Icons.Filled.Settings to stringResource(R.string.settings)
         NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit) to stringResource(R.string.log_out)
     }
-
-@Composable
-private fun NavigationCell(
-    icon: ImageVector,
-    text: String,
-    color: Color = MaterialTheme.colors.onPrimary,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = icon,
-            tint = color,
-            modifier = Modifier.padding(start = 18.dp),
-        )
-        Text(
-            text = text,
-            fontSize = MaterialTheme.typography.body2.fontSize,
-            color = color,
-            modifier = Modifier.padding(start = 32.dp),
-        )
-    }
-}

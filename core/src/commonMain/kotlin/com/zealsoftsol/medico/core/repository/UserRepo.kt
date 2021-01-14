@@ -73,10 +73,17 @@ class UserRepo(
                 parsedType,
                 when (parsedType) {
                     UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
-                    else -> User.Details.DrugLicense(it.drugLicenseUrl)
+                    else -> User.Details.DrugLicense(
+                        it.traderName,
+                        it.gstin,
+                        it.drugLicenseNo1,
+                        it.drugLicenseNo2,
+                        it.drugLicenseUrl
+                    )
                 },
                 it.customerMetaData.activated,
                 it.isDocumentUploaded,
+                it.customerAddressData,
             )
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)

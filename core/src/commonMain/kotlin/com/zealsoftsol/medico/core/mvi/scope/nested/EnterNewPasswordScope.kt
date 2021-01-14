@@ -9,6 +9,8 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.data.PasswordValidation
 
+// TODO
+@Deprecated("create hierarchy of PasswordScope")
 class EnterNewPasswordScope(
     internal val phoneNumber: String,
     val passwordValidation: DataSource<PasswordValidation?>,

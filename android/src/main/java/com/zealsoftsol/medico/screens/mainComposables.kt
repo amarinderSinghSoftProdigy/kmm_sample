@@ -37,6 +37,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
@@ -51,6 +52,7 @@ import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.product.ProductScreen
+import com.zealsoftsol.medico.screens.settings.SettingsScreen
 
 @Composable
 fun TabBarScreen(scope: Scope.Host.TabBar) {
@@ -65,6 +67,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     userName = user.value.fullName(),
                     userType = user.value.type,
                     navigationSection = nav,
+                    onSectionSelected = { scaffoldState.drawerState.close() }
                 )
             }
         },
@@ -170,6 +173,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     }
                     is DashboardScope -> Unit
                     is ProductInfoScope -> ProductScreen(it)
+                    is SettingsScope -> SettingsScreen(it)
                 }
             }
         },

@@ -16,6 +16,7 @@ internal class PasswordEventDelegate(
     override suspend fun handleEvent(event: Event.Action.ResetPassword) = when (event) {
         is Event.Action.ResetPassword.Send -> changePassword(event.newPassword)
         is Event.Action.ResetPassword.Finish -> finishResetPassword()
+        is Event.Action.ResetPassword.RequestChange -> TODO("transition to change password screen")
     }
 
     private suspend fun changePassword(newPassword: String) {
