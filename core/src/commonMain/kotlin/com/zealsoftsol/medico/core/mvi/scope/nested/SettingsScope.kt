@@ -5,13 +5,14 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(
     icon: ScopeIcon,
     titleId: String,
-) : Scope.Child.TabBar(icon, titleId),
+) : Scope.Child.TabBar(TabBarInfo.Simple(icon, titleId)),
     CommonScope.CanGoBack {
 
     class List(
