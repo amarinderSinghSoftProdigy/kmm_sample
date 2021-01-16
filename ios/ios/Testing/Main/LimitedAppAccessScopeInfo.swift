@@ -68,7 +68,11 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
             details = DataUser.DetailsAadhaar(cardNumber: cardNumber, shareCode: "")
         }
         else {
-            details = DataUser.DetailsDrugLicense(url: nil)
+            details = DataUser.DetailsDrugLicense(tradeName: "Trade",
+                                                  gstin: "37AADCB2230M2ZR",
+                                                  license1: "20B 398",
+                                                  license2: "21B 398",
+                                                  url: nil)
         }
         
         let user = DataUser(firstName: scopeInfo.firstName,
@@ -78,7 +82,16 @@ class LimitedAppAccessScopeInfo: MainScopeInfo {
                             type: scopeInfo.userType,
                             details: details,
                             isVerified: false,
-                            isDocumentUploaded: scopeInfo.isDocumentUploaded)
+                            isDocumentUploaded: scopeInfo.isDocumentUploaded,
+                            addressData: DataCustomerAddressData(address: "",
+                                                                 city: "",
+                                                                 district: "",
+                                                                 latitidue: 0,
+                                                                 location: "",
+                                                                 longitude: 0,
+                                                                 pincode: 520001,
+                                                                 placeId: "",
+                                                                 state: ""))
 
         if scopeInfo.userType == .seasonBoy {
             testScope.limitedAccessSeasonBoy(user: user,

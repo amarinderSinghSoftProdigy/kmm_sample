@@ -44,7 +44,6 @@ struct BaseScopeView: View {
         ZStack {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
             
-//            SettingsScreen()
             getViewWithModifiers()
 
             if let isInProgress = self.isInProgress.value,
@@ -121,20 +120,23 @@ struct TabBarScreen: View {
     private var currentView: AnyView {
         switch scope.value {
             
-        case let scopeValue as OtpScope:
-            return AnyView(OtpFlowScreen(scope: scopeValue))
+        case let scope as OtpScope:
+            return AnyView(OtpFlowScreen(scope: scope))
             
-        case let scopeValue as EnterNewPasswordScope:
-            return AnyView(AuthNewPasswordScreen(scope: scopeValue))
+        case let scope as EnterNewPasswordScope:
+            return AnyView(AuthNewPasswordScreen(scope: scope))
             
-        case let scopeValue as SignUpScope:
-            return AnyView(SignUpScreen(scope: scopeValue))
+        case let scope as SignUpScope:
+            return AnyView(SignUpScreen(scope: scope))
             
         case let scope as LimitedAccessScope:
             return AnyView(LimitedAppAccessScreen(scope: scope))
             
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
+            
+        case let scope as SettingsScope:
+            return AnyView(SettingsScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

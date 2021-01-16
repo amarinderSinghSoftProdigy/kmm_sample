@@ -6,103 +6,87 @@
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
+import core
 import SwiftUI
 
 struct SettingsScreen: View {
-    private let options = ["PersonalProfile", "ChangePassword", "Address", "GSTIN Details"]
+    let scope: SettingsScope
     
     var body: some View {
-        ChangePasswordNewPassword()
+        let view: AnyView
         
-//        VStack(spacing: 22) {
-//            ForEach(options, id: \.self) { option in
-//                TableViewCell(textLocalizationKey: self.getTextLocalizationKey(forOption: option),
-//                              imageName: self.getImageName(forOption: option),
-//                              style: .navigation,
-//                              onTapAction: { print(option) })
-//            }
-//            
-//            Spacer()
-//        }
-//        .padding()
-    }
-        
-    private func getTextLocalizationKey(forOption option: String) -> String? {
-        switch option {
-        case "PersonalProfile":
-            return "personal_profile"
+        switch self.scope {
+        case let scope as SettingsScope.List:
+            view = AnyView(SectionsList(scope: scope))
             
-        case "ChangePassword":
-            return "change_password"
-            
-        case "Address":
-            return "address"
-            
-        case "GSTIN Details":
-            return "gstin_details"
-            
+        case let scope as SettingsScope.Profile:
+            view = AnyView(PersonalProfile(scope: scope))
+                
         default:
-            return nil
+            view = AnyView(EmptyView())
         }
+        
+        return AnyView(
+            view
+                .padding()
+        )
     }
     
-    private func getImageName(forOption option: String) -> String? {
-        switch option {
-        case "PersonalProfile":
-            return "PersonalProfile"
-            
-        case "ChangePassword":
-            return "Lock"
-            
-        case "Address":
-            return "MapPin"
-            
-        case "GSTIN Details":
-            return "Folder"
-            
-        default:
-            return nil
+    private struct SectionsList: View {
+        let scope: SettingsScope.List
+        
+        var body: some View {
+            VStack(spacing: 22) {
+                ForEach(scope.sections, id: \.self) { section in
+                    TableViewCell(textLocalizationKey: section.getTextLocalizationKey(),
+                                  imageName: section.getImageName(),
+                                  style: .navigation,
+                                  onTapAction: { section.select() })
+                }
+    
+                Spacer()
+            }
+            .screenLogger(withScreenName: "Settings.SectionsList",
+                          withScreenClass: SectionsList.self)
         }
     }
     
     private struct PersonalProfile: View {
+        let scope: SettingsScope.Profile
+        
         @State private var canSubmitPhone = false
         
         var body: some View {
             VStack(spacing: 12) {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
-                                             text: "firstName",
+                                             text: scope.user.firstName,
                                              onTextChange: { newValue in })
                     .disableAutocorrection(true)
                     .textContentType(.givenName)
                     .autocapitalization(.words)
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
-                                             text: "lastName",
+                                             text: scope.user.lastName,
                                              onTextChange: { newValue in })
                     .disableAutocorrection(true)
                     .textContentType(.familyName)
                     .autocapitalization(.words)
 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
-                                             text: "email",
+                                             text: scope.user.email,
                                              onTextChange: { newValue in },
-                                             keyboardType: .emailAddress)//,
-//                                             isValid: emailErrorMessageKey == nil,
-//                                             errorMessageKey: emailErrorMessageKey)
+                                             keyboardType: .emailAddress)
                     .textContentType(.emailAddress)
                     .autocapitalization(.none)
                 
-                PhoneTextField(phone: "1234",
+                PhoneTextField(phone: scope.user.phoneNumber,
                                canSubmitPhone: $canSubmitPhone,
-                               errorMessageKey: nil) { newValue in
-//                    scope.changePhoneNumber(phoneNumber: newValue)
-                }
+                               errorMessageKey: nil) { newValue in }
                 
                 Spacer()
             }
-            .padding()
-            .screenLogger(withScreenName: "SettingsPersonalProfile",
+            .disabled(true)
+            .screenLogger(withScreenName: "Settings.PersonalProfile",
                           withScreenClass: PersonalProfile.self)
         }
     }
@@ -156,6 +140,46 @@ struct SettingsScreen: View {
             .padding()
             .screenLogger(withScreenName: "ChangePassword.NewPassword",
                           withScreenClass: ChangePasswordNewPassword.self)
+        }
+    }
+}
+
+extension SettingsScope.ListSection {
+    func getTextLocalizationKey() -> String? {
+        switch self {
+        case .profile:
+            return "personal_profile"
+            
+        case .changePassword:
+            return "change_password"
+            
+        case .address:
+            return "address"
+            
+        case .gstinDetails:
+            return "gstin_details"
+            
+        default:
+            return nil
+        }
+    }
+
+    func getImageName() -> String? {
+        switch self {
+        case .profile:
+            return "PersonalProfile"
+            
+        case .changePassword:
+            return "Lock"
+            
+        case .address:
+            return "MapPin"
+            
+        case .gstinDetails:
+            return "Folder"
+            
+        default:
+            return nil
         }
     }
 }
