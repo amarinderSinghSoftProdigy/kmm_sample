@@ -59,6 +59,7 @@ import com.zealsoftsol.medico.screens.InputWithError
 import com.zealsoftsol.medico.screens.MedicoButton
 import com.zealsoftsol.medico.screens.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.PhoneFormatInputField
+import com.zealsoftsol.medico.screens.ReadOnlyField
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
@@ -270,27 +271,11 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 }
                 Space(dp = 12.dp)
                 InputWithError(errorText = userValidation.value?.district) {
-                    Text(
-                        text = if (registration.value.district.isEmpty()) stringResource(id = R.string.district) else registration.value.district,
-                        color = if (registration.value.district.isEmpty()) ConstColors.gray else Color.Black,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = Color.White)
-                            .padding(vertical = 20.dp, horizontal = 16.dp),
-                    )
+                    ReadOnlyField(registration.value.district, R.string.district)
                 }
                 Space(dp = 12.dp)
                 InputWithError(errorText = userValidation.value?.state) {
-                    Text(
-                        text = if (registration.value.state.isEmpty()) stringResource(id = R.string.state) else registration.value.state,
-                        color = if (registration.value.state.isEmpty()) ConstColors.gray else Color.Black,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(color = Color.White)
-                            .padding(vertical = 20.dp, horizontal = 16.dp),
-                    )
+                    ReadOnlyField(registration.value.state, R.string.state)
                 }
             }
         }

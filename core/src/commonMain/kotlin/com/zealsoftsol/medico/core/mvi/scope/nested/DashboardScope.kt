@@ -9,11 +9,11 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.User
 
 class DashboardScope private constructor() :
-    Scope.Child.TabBar(ScopeIcon.HAMBURGER, null) {
+    Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)) {
+
     companion object {
         fun get(userDataSource: ReadOnlyDataSource<User>) = Host.TabBar(
             childScope = DashboardScope(),
-            tabBarInfo = TabBarInfo.Search(),
             navigationSection = NavigationSection(
                 userDataSource,
                 NavigationOption.default(),

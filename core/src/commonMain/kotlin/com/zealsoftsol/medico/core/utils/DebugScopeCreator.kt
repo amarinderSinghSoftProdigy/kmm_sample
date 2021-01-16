@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.CodeName
 import com.zealsoftsol.medico.data.CompositionsData
+import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.MiniProductData
 import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.data.User
@@ -169,7 +170,7 @@ object DebugScopeCreator {
             details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
                 "",
                 ""
-            ) else User.Details.DrugLicense("url"),
+            ) else User.Details.DrugLicense("", "", "", "", "url"),
             isVerified = false,
             isDocumentUploaded = isDocumentUploaded
         )
@@ -242,7 +243,8 @@ private inline val testUser
         "test@mail.com",
         "000",
         UserType.STOCKIST,
-        User.Details.DrugLicense("url"),
+        User.Details.DrugLicense("", "", "", "", "url"),
         true,
         true,
+        CustomerAddressData("", "", "", 0.0, "", 0.0, 0, "", "")
     )

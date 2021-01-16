@@ -10,7 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 
 sealed class OtpScope(titleId: String) :
-    Scope.Child.TabBar(ScopeIcon.BACK, titleId),
+    Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
     CommonScope.CanGoBack {
 
     class PhoneNumberInput private constructor(
@@ -37,7 +37,6 @@ sealed class OtpScope(titleId: String) :
             ): Host.TabBar {
                 return Host.TabBar(
                     childScope = PhoneNumberInput(phoneNumber, isForRegisteredUsersOnly),
-                    tabBarInfo = TabBarInfo.Simple(),
                     navigationSection = null,
                 )
             }

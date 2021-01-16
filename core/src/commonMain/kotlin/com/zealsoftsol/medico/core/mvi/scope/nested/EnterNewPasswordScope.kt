@@ -7,13 +7,18 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.PasswordValidation
 
+// TODO
+@Deprecated("create hierarchy of PasswordScope")
 class EnterNewPasswordScope(
     internal val phoneNumber: String,
     val passwordValidation: DataSource<PasswordValidation?>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
-) : Scope.Child.TabBar(ScopeIcon.BACK, "new_password"),
+) : Scope.Child.TabBar(
+    TabBarInfo.Simple(ScopeIcon.BACK, "new_password")
+),
     CommonScope.CanGoBack,
     CommonScope.WithNotifications {
 

@@ -1,7 +1,11 @@
 package com.zealsoftsol.medico.screens
 
+import androidx.compose.foundation.AmbientIndication
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +17,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -26,10 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AmbientConfiguration
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -176,12 +183,7 @@ fun PhoneFormatInputField(
     text: String,
     onValueChange: (String) -> Unit,
 ): Boolean {
-    val countryCode = when {
-        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
-        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> AmbientConfiguration.current.locale.country
-    }
-    val formatter = remember { PhoneNumberFormatter(countryCode) }
+    val formatter = rememberPhoneNumberFormatter()
     val formatted = formatter.verifyNumber(text)
     val isValid = formatted != null || text.isEmpty()
     InputField(
@@ -203,12 +205,7 @@ fun PhoneOrEmailFormatInputField(
     isPhoneNumber: Boolean,
     onValueChange: (String) -> Unit,
 ) {
-    val countryCode = when {
-        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
-        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> AmbientConfiguration.current.locale.country
-    }
-    val formatter = remember { PhoneNumberFormatter(countryCode) }
+    val formatter = rememberPhoneNumberFormatter()
     val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
     InputField(
         hint = hint,
@@ -218,6 +215,20 @@ fun PhoneOrEmailFormatInputField(
         onValueChange = onValueChange,
     )
     formatted?.let(onValueChange)
+}
+
+@Composable
+fun rememberPhoneNumberFormatter() = getCountryCode().let {
+    remember { PhoneNumberFormatter(it) }
+}
+
+@Composable
+private fun getCountryCode(): String {
+    return when {
+        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
+        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
+        else -> AmbientConfiguration.current.locale.country
+    }
 }
 
 @Composable
@@ -284,6 +295,48 @@ fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.error,
             modifier = Modifier.padding(start = 16.dp),
+        )
+    }
+}
+
+@Composable
+fun ReadOnlyField(text: String, labelId: Int) {
+    Text(
+        text = if (text.isEmpty()) stringResource(id = labelId) else text,
+        color = if (text.isEmpty()) ConstColors.gray else Color.Black,
+        fontSize = 14.sp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.White)
+            .padding(vertical = 20.dp, horizontal = 16.dp),
+    )
+}
+
+@Composable
+fun NavigationCell(
+    icon: ImageVector,
+    text: String,
+    color: Color = MaterialTheme.colors.onPrimary,
+    clickIndication: Indication? = AmbientIndication.current(),
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .clickable(indication = clickIndication, onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
+            tint = color,
+            modifier = Modifier.padding(start = 18.dp),
+        )
+        Text(
+            text = text,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.W600,
+            color = color,
+            modifier = Modifier.padding(start = 32.dp),
         )
     }
 }

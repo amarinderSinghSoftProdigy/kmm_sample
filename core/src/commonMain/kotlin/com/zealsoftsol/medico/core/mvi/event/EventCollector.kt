@@ -34,7 +34,7 @@ internal class EventCollector(
     private val userRepo: UserRepo,
 ) {
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
-        Event.Transition::class to TransitionEventDelegate(navigator),
+        Event.Transition::class to TransitionEventDelegate(navigator, userRepo),
         Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo),
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),

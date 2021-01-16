@@ -49,31 +49,21 @@ data class CustomerData(
 @Serializable
 data class CustomerAddressData(
     @SerialName("addressLine1")
-    val addressLine1: String,
+    val address: String,
     @SerialName("cityTown")
-    val cityTown: String,
-    @SerialName("district")
+    val city: String,
     val district: String,
-    @SerialName("latitidue")
     val latitidue: Double,
-    @SerialName("location")
     val location: String,
-    @SerialName("longitude")
     val longitude: Double,
-    @SerialName("pincode")
     val pincode: Int,
-    @SerialName("placeId")
     val placeId: String,
-    @SerialName("state")
-    val state: String
+    val state: String,
 )
 
 @Serializable
 data class CustomerMetaData(
-    @SerialName("activated")
     val activated: Boolean,
-    @SerialName("pageType")
     val pageType: String,
-    @SerialName("userRole")
-    val userRole: String
+    val userRole: String,
 )
