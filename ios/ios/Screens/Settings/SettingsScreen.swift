@@ -21,6 +21,9 @@ struct SettingsScreen: View {
             
         case let scope as SettingsScope.Profile:
             view = AnyView(PersonalProfile(scope: scope))
+            
+        case let scope as SettingsScope.GstinDetails:
+            view = AnyView(GstinDetails(scope: scope))
                 
         default:
             view = AnyView(EmptyView())
@@ -140,6 +143,44 @@ struct SettingsScreen: View {
             .padding()
             .screenLogger(withScreenName: "ChangePassword.NewPassword",
                           withScreenClass: ChangePasswordNewPassword.self)
+        }
+    }
+    
+    private struct GstinDetails: View {
+        let scope: SettingsScope.GstinDetails
+        
+        var body: some View {
+            VStack(spacing: 12) {
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
+                                             text: scope.details.tradeName,
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .autocapitalization(.words)
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
+                                             text: scope.details.gstin,
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
+                                             text: scope.details.license1,
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",
+                                             text: scope.details.license2,
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none)
+                
+                Spacer()
+            }
+            .disabled(true)
+            .screenLogger(withScreenName: "Settings.GstinDetails",
+                          withScreenClass: GstinDetails.self)
         }
     }
 }
