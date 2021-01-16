@@ -42,7 +42,7 @@ struct NavigationBar: ViewModifier {
             view
                 .slidingNavigationPanelView(withNavigationSection: navigationSection,
                                             showsSlidingPanel: showsSlidingPanel,
-                                            changeSlidingPanelState: changeSlidingPanelState)
+                                            closeSlidingPanel: closeSlidingPanel)
         )
         
     }
@@ -63,9 +63,9 @@ struct NavigationBar: ViewModifier {
         self.navigationBarData = nil
     }
     
-    private func changeSlidingPanelState(isHidden: Bool) {
+    private func closeSlidingPanel(isClosed: Bool) {
         withAnimation {
-            self.showsSlidingPanel = !isHidden
+            self.showsSlidingPanel = !isClosed
         }
     }
     
@@ -74,7 +74,7 @@ struct NavigationBar: ViewModifier {
         
         return AnyView(
             _NavigationBar(navigationBarInfo: data.navigationBarInfo,
-                           changeSlidingPanelState: changeSlidingPanelState,
+                           closeSlidingPanel: closeSlidingPanel,
                            handleGoBack: data.handleGoBack)
         )
     }
@@ -89,7 +89,7 @@ struct NavigationBar: ViewModifier {
 private struct _NavigationBar: View {
     @ObservedObject var navigationBarInfo: SwiftDataSource<TabBarInfo>
     
-    let changeSlidingPanelState: (Bool) -> ()
+    let closeSlidingPanel: (Bool) -> ()
     let handleGoBack: () -> ()
     
     var body: some View {
@@ -157,11 +157,11 @@ private struct _NavigationBar: View {
     }
     
     init(navigationBarInfo: DataSource<TabBarInfo>,
-         changeSlidingPanelState: @escaping (Bool) -> (),
+         closeSlidingPanel: @escaping (Bool) -> (),
          handleGoBack: @escaping () -> ()) {
         self.navigationBarInfo = SwiftDataSource(dataSource: navigationBarInfo)
         
-        self.changeSlidingPanelState = changeSlidingPanelState
+        self.closeSlidingPanel = closeSlidingPanel
         self.handleGoBack = handleGoBack
     }
     
@@ -185,7 +185,7 @@ private struct _NavigationBar: View {
         case .back:
             handleGoBack()
         case .hamburger:
-            changeSlidingPanelState(false)
+            closeSlidingPanel(false)
         default:
             return
         }

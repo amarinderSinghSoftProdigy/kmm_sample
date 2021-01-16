@@ -60,8 +60,6 @@ struct SettingsScreen: View {
     private struct PersonalProfile: View {
         let scope: SettingsScope.Profile
         
-        @State private var canSubmitPhone = false
-        
         var body: some View {
             VStack(spacing: 12) {
                 ReadOnlyTextField(placeholder: "first_name",
@@ -128,7 +126,6 @@ struct SettingsScreen: View {
                     }
                 }
             }
-            .padding()
             .screenLogger(withScreenName: "ChangePassword.NewPassword",
                           withScreenClass: ChangePasswordNewPassword.self)
         }

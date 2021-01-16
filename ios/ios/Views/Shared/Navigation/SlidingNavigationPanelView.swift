@@ -15,17 +15,17 @@ struct SlidingNavigationPanelView: ViewModifier {
     @ObservedObject var user: SwiftDataSource<DataUser>
     
     let showsSlidingPanel: Bool
-    let changeSlidingPanelState: (Bool) -> ()
+    let closeSlidingPanel: (Bool) -> ()
     
     init(navigationSection: NavigationSection,
          showsSlidingPanel: Bool,
-         changeSlidingPanelState: @escaping (Bool) -> ()) {
+         closeSlidingPanel: @escaping (Bool) -> ()) {
         self.navigationSection = navigationSection
         
         self.user = SwiftDataSource(dataSource: navigationSection.user)
         
         self.showsSlidingPanel = showsSlidingPanel
-        self.changeSlidingPanelState = changeSlidingPanelState
+        self.closeSlidingPanel = closeSlidingPanel
     }
     
     func body(content: Content) -> some View {
@@ -44,7 +44,7 @@ struct SlidingNavigationPanelView: ViewModifier {
                                   userType: user.value?.type,
                                   geometry: geometry,
                                   isShown: showsSlidingPanel,
-                                  changeSlidingPanelState: changeSlidingPanelState)
+                                  closeSlidingPanel: closeSlidingPanel)
                     .zIndex(2)
             }
         }
@@ -56,12 +56,12 @@ struct SlidingNavigationPanelView: ViewModifier {
             .onEnded({ value in
                 // Left swipe
                 if value.translation.width < 0 {
-                    self.changeSlidingPanelState(true)
+                    self.closeSlidingPanel(true)
                 }
                 
                 // Right swipe
                 if value.translation.width > 0 {
-                    self.changeSlidingPanelState(false)
+                    self.closeSlidingPanel(false)
                 }
             })
     }
@@ -69,7 +69,7 @@ struct SlidingNavigationPanelView: ViewModifier {
 
 private struct _SlidingPanelView: View {
     let navigationSection: NavigationSection
-    let changeSlidingPanelState: (Bool) -> ()
+    let closeSlidingPanel: (Bool) -> ()
     
     let geometry: GeometryProxy
     let isShown: Bool
@@ -100,7 +100,7 @@ private struct _SlidingPanelView: View {
          userType: DataUserType?,
          geometry: GeometryProxy,
          isShown: Bool,
-         changeSlidingPanelState: @escaping (Bool) -> ()) {
+         closeSlidingPanel: @escaping (Bool) -> ()) {
         self.navigationSection = navigationSection
         
         self.userName = userName
@@ -109,14 +109,14 @@ private struct _SlidingPanelView: View {
         self.geometry = geometry
         self.isShown = isShown
         
-        self.changeSlidingPanelState = changeSlidingPanelState
+        self.closeSlidingPanel = closeSlidingPanel
     }
     
     private var blurView: some View {
         BlurEffectView()
             .testingIdentifier("blur_view")
             .transition(.identity)
-            .onTapGesture { self.changeSlidingPanelState(true) }
+            .onTapGesture { self.closeSlidingPanel(true) }
     }
     
     private var userPanel: some View {
@@ -146,7 +146,9 @@ private struct _SlidingPanelView: View {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(spacing: 20) {
                     ForEach(navigationSection.main, id: \.self) { option in
-                        NavigationCell(navigationOption: option, style: .navigation)
+                        NavigationCell(navigationOption: option, style: .navigation) {
+                            self.closeSlidingPanel(true)
+                        }
                     }
                 }
                 
@@ -171,11 +173,26 @@ private struct _SlidingPanelView: View {
         
         let style: TableViewCell.Style
         
+        let onTapActionCallback: (() -> ())?
+        
         var body: some View {
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
                           style: style,
-                          onTapAction: { _ = navigationOption.select() })
+                          onTapAction: {
+                            _ = navigationOption.select()
+                            onTapActionCallback?()
+                          })
+        }
+        
+        init(navigationOption: NavigationOption,
+             style: TableViewCell.Style,
+             onTapActionCallback: (() -> ())? = nil) {
+            self.navigationOption = navigationOption
+            
+            self.style = style
+            
+            self.onTapActionCallback = onTapActionCallback
         }
     }
 }

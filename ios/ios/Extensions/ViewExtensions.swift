@@ -72,11 +72,11 @@ extension View {
     
     func slidingNavigationPanelView(withNavigationSection navigationSection: NavigationSection,
                                     showsSlidingPanel: Bool,
-                                    changeSlidingPanelState: @escaping (Bool) -> ()) -> some View {
+                                    closeSlidingPanel: @escaping (Bool) -> ()) -> some View {
         self.modifier(
             SlidingNavigationPanelView(navigationSection: navigationSection,
                                        showsSlidingPanel: showsSlidingPanel,
-                                       changeSlidingPanelState: changeSlidingPanelState)
+                                       closeSlidingPanel: closeSlidingPanel)
         )
     }
     
