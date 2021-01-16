@@ -22,6 +22,9 @@ struct SettingsScreen: View {
         case let scope as SettingsScope.Profile:
             view = AnyView(PersonalProfile(scope: scope))
             
+        case let scope as SettingsScope.Address:
+            view = AnyView(Address(scope: scope))
+            
         case let scope as SettingsScope.GstinDetails:
             view = AnyView(GstinDetails(scope: scope))
                 
@@ -112,7 +115,6 @@ struct SettingsScreen: View {
                     }
                 }
             }
-            .padding()
             .screenLogger(withScreenName: "ChangePassword.CurrentPassword",
                           withScreenClass: ChangePasswordCurrentPassword.self)
         }
@@ -146,12 +148,49 @@ struct SettingsScreen: View {
         }
     }
     
+    private struct Address: View {
+        let scope: SettingsScope.Address
+        
+        var body: some View {
+            VStack(spacing: 12) {
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
+                                             text: String(scope.addressData.pincode),
+                                             onTextChange: { newValue in },
+                                             keyboardType: .numberPad)
+                    .textContentType(.postalCode)
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
+                                             text: scope.addressData.address,
+                                             onTextChange: { newValue in })
+                    .disableAutocorrection(true)
+                    .textContentType(.fullStreetAddress)
+                    .autocapitalization(.words)
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "location",
+                                             text: scope.addressData.location,
+                                             onTextChange: { newValue in })
+                
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "city",
+                                             text: scope.addressData.city,
+                                             onTextChange: { newValue in })
+                
+                PlaceholderTextView(placeholder: "district",
+                                    text: scope.addressData.district)
+                
+                PlaceholderTextView(placeholder: "state",
+                                    text: scope.addressData.state)
+            }
+            .disabled(true)
+            .screenLogger(withScreenName: "Settings.Address",
+                          withScreenClass: Address.self)
+        }
+    }
+    
     private struct GstinDetails: View {
         let scope: SettingsScope.GstinDetails
         
         var body: some View {
             VStack(spacing: 12) {
-                
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
                                              text: scope.details.tradeName,
                                              onTextChange: { newValue in })

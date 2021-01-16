@@ -36,7 +36,6 @@ struct SignUpAddressScreen: View {
     
     var addressDataFields: some View {
         VStack(spacing: 12) {
-            
             let pincodeError = self.pincodeValidation.value?.pincode
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
                                          text: self.registration.value?.pincode,
