@@ -36,11 +36,13 @@ struct MedicoButton: View {
     }
 }
 
-struct PlaceholderTextView: View {
+struct ReadOnlyTextField: View {
     let height: CGFloat
     
     let placeholder: String
     let text: String?
+    
+    let showPlaceholderWithText: Bool
     
     let errorMessageKey: String?
     
@@ -51,23 +53,42 @@ struct PlaceholderTextView: View {
             AppColor.white.color
                 .cornerRadius(8)
             
-            let showsPlaceholder = text?.isEmpty != false
-            let currentText = showsPlaceholder ? placeholder : text!
-            let color: AppColor = showsPlaceholder ? .placeholderGrey : .darkBlue
+            let hasText = text?.isEmpty == false
             
-            LocalizedText(localizationKey: currentText,
-                          fontSize: 15,
-                          color: color)
-                .padding([.leading, .trailing], padding)
+            VStack(alignment: .leading, spacing: 4) {
+                if !hasText || showPlaceholderWithText {
+                    let fontSize: CGFloat = hasText ? 11 : 15
+                    let color: AppColor = hasText ? .lightBlue : .placeholderGrey
+                    
+                    LocalizedText(localizationKey: placeholder,
+                                  fontSize: fontSize,
+                                  color: color,
+                                  multilineTextAlignment: .leading)
+                }
+                
+                if hasText {
+                    LocalizedText(localizationKey: text ?? "",
+                                  fontSize: 15)
+                }
+            }
+            .padding([.leading, .trailing], padding)
         }
         .frame(height: height)
         .fieldError(withLocalizedKey: errorMessageKey, withPadding: padding)
     }
     
-    init(placeholder: String, text: String?, errorMessageKey: String? = nil,  height: CGFloat = 50) {
+    init(placeholder: String,
+         text: String?,
+         showPlaceholderWithText: Bool = true,
+         errorMessageKey: String? = nil,
+         height: CGFloat = 50) {
         self.placeholder = placeholder
         self.text = text
+        
+        self.showPlaceholderWithText = showPlaceholderWithText
+        
         self.errorMessageKey = errorMessageKey
+        
         self.height = height
     }
 }

@@ -64,34 +64,20 @@ struct SettingsScreen: View {
         
         var body: some View {
             VStack(spacing: 12) {
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "first_name",
-                                             text: scope.user.firstName,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .textContentType(.givenName)
-                    .autocapitalization(.words)
+                ReadOnlyTextField(placeholder: "first_name",
+                                  text: scope.user.firstName)
                 
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
-                                             text: scope.user.lastName,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .textContentType(.familyName)
-                    .autocapitalization(.words)
-
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
-                                             text: scope.user.email,
-                                             onTextChange: { newValue in },
-                                             keyboardType: .emailAddress)
-                    .textContentType(.emailAddress)
-                    .autocapitalization(.none)
+                ReadOnlyTextField(placeholder: "last_name",
+                                  text: scope.user.lastName)
+            
+                ReadOnlyTextField(placeholder: "email_address",
+                                  text: scope.user.email)
                 
-                PhoneTextField(phone: scope.user.phoneNumber,
-                               canSubmitPhone: $canSubmitPhone,
-                               errorMessageKey: nil) { newValue in }
+                ReadOnlyTextField(placeholder: "phone_number",
+                                  text: PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.user.phoneNumber))
                 
                 Spacer()
             }
-            .disabled(true)
             .screenLogger(withScreenName: "Settings.PersonalProfile",
                           withScreenClass: PersonalProfile.self)
         }
@@ -153,34 +139,24 @@ struct SettingsScreen: View {
         
         var body: some View {
             VStack(spacing: 12) {
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
-                                             text: String(scope.addressData.pincode),
-                                             onTextChange: { newValue in },
-                                             keyboardType: .numberPad)
-                    .textContentType(.postalCode)
+                ReadOnlyTextField(placeholder: "pincode",
+                                  text: String(scope.addressData.pincode))
                 
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
-                                             text: scope.addressData.address,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .textContentType(.fullStreetAddress)
-                    .autocapitalization(.words)
+                ReadOnlyTextField(placeholder: "address_line",
+                                  text: scope.addressData.address)
+            
+                ReadOnlyTextField(placeholder: "location",
+                                  text: scope.addressData.location)
+            
+                ReadOnlyTextField(placeholder: "city",
+                                  text: scope.addressData.city)
                 
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "location",
-                                             text: scope.addressData.location,
-                                             onTextChange: { newValue in })
-                
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "city",
-                                             text: scope.addressData.city,
-                                             onTextChange: { newValue in })
-                
-                PlaceholderTextView(placeholder: "district",
+                ReadOnlyTextField(placeholder: "district",
                                     text: scope.addressData.district)
                 
-                PlaceholderTextView(placeholder: "state",
+                ReadOnlyTextField(placeholder: "state",
                                     text: scope.addressData.state)
             }
-            .disabled(true)
             .screenLogger(withScreenName: "Settings.Address",
                           withScreenClass: Address.self)
         }
@@ -191,33 +167,20 @@ struct SettingsScreen: View {
         
         var body: some View {
             VStack(spacing: 12) {
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
-                                             text: scope.details.tradeName,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .autocapitalization(.words)
+                ReadOnlyTextField(placeholder: "trade_name",
+                                  text: scope.details.tradeName)
                 
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
-                                             text: scope.details.gstin,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none)
-
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
-                                             text: scope.details.license1,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none)
-                
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",
-                                             text: scope.details.license2,
-                                             onTextChange: { newValue in })
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none)
+                ReadOnlyTextField(placeholder: "gstin",
+                                  text: scope.details.gstin)
+            
+                ReadOnlyTextField(placeholder: "drug_license_No1",
+                                  text: scope.details.license1)
+            
+                ReadOnlyTextField(placeholder: "drug_license_No2",
+                                  text: scope.details.license2)
                 
                 Spacer()
             }
-            .disabled(true)
             .screenLogger(withScreenName: "Settings.GstinDetails",
                           withScreenClass: GstinDetails.self)
         }

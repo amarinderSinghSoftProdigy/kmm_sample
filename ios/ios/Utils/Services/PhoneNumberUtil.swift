@@ -18,7 +18,7 @@ class PhoneNumberUtil {
     
     static let shared = PhoneNumberUtil()
     
-    init() {
+    private init() {
 //        #if DEBUG
         region = Locale.current.regionCode ?? "IN"
 //        #else
