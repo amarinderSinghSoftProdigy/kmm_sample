@@ -46,11 +46,11 @@ struct SettingsScreen: View {
                 ForEach(scope.sections, id: \.self) { section in
                     TableViewCell(textLocalizationKey: section.getTextLocalizationKey(),
                                   imageName: section.getImageName(),
+                                  imageColor: .darkBlue,
+                                  imageSize: 20,
                                   style: .navigation,
                                   onTapAction: { section.select() })
                 }
-    
-                Spacer()
             }
             .screenLogger(withScreenName: "Settings.SectionsList",
                           withScreenClass: SectionsList.self)
@@ -73,8 +73,6 @@ struct SettingsScreen: View {
                 
                 ReadOnlyTextField(placeholder: "phone_number",
                                   text: PhoneNumberUtil.shared.getFormattedPhoneNumber(scope.user.phoneNumber))
-                
-                Spacer()
             }
             .screenLogger(withScreenName: "Settings.PersonalProfile",
                           withScreenClass: PersonalProfile.self)
@@ -132,27 +130,56 @@ struct SettingsScreen: View {
     }
     
     private struct Address: View {
+        @State private var showsMap: Bool = false
+        
         let scope: SettingsScope.Address
         
         var body: some View {
-            VStack(spacing: 12) {
-                ReadOnlyTextField(placeholder: "pincode",
-                                  text: String(scope.addressData.pincode))
+            ZStack(alignment: .topLeading) {
+                VStack(spacing: 25) {
+                    VStack(spacing: 12) {
+                        ReadOnlyTextField(placeholder: "pincode",
+                                          text: String(scope.addressData.pincode))
+                        
+                        ReadOnlyTextField(placeholder: "address_line",
+                                          text: scope.addressData.address)
+                    
+                        ReadOnlyTextField(placeholder: "location",
+                                          text: scope.addressData.location)
+
+                        ReadOnlyTextField(placeholder: "city",
+                                          text: scope.addressData.city)
+
+                        ReadOnlyTextField(placeholder: "district",
+                                            text: scope.addressData.district)
+
+                        ReadOnlyTextField(placeholder: "state",
+                                            text: scope.addressData.state)
+                    }
+                    
+                    LocalizedText(localizationKey: "view_location_on_map",
+                                  textWeight: .medium,
+                                  color: .lightBlue)
+                        .onTapGesture {
+                            self.showsMap = true
+                        }
+                }
                 
-                ReadOnlyTextField(placeholder: "address_line",
-                                  text: scope.addressData.address)
-            
-                ReadOnlyTextField(placeholder: "location",
-                                  text: scope.addressData.location)
-            
-                ReadOnlyTextField(placeholder: "city",
-                                  text: scope.addressData.city)
-                
-                ReadOnlyTextField(placeholder: "district",
-                                    text: scope.addressData.district)
-                
-                ReadOnlyTextField(placeholder: "state",
-                                    text: scope.addressData.state)
+                if showsMap {
+                    VStack {
+                        ZStack(alignment: .leading) {
+                            AppColor.primary.color
+                            
+                            Button(action: { self.showsMap = false }) {
+                                Image("Clear")
+                            }
+                            .padding()
+                        }
+                        .frame(height: 44)
+                    
+                        MapView(latitude: 53.9, longitude: 27.56)
+                    }
+                }
             }
             .screenLogger(withScreenName: "Settings.Address",
                           withScreenClass: Address.self)
@@ -175,8 +202,6 @@ struct SettingsScreen: View {
             
                 ReadOnlyTextField(placeholder: "drug_license_No2",
                                   text: scope.details.license2)
-                
-                Spacer()
             }
             .screenLogger(withScreenName: "Settings.GstinDetails",
                           withScreenClass: GstinDetails.self)

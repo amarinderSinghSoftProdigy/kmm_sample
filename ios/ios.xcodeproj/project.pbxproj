@@ -21,6 +21,7 @@
 		33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A85256FB7C200DACD7C /* ViewExtensions.swift */; };
 		333F45D125A49AC8008DE1D2 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 333F45D025A49AC8008DE1D2 /* Introspect */; };
 		333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F45D225A4B5A8008DE1D2 /* URLImage.swift */; };
+		334288AC25B3180F008F3890 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334288AB25B3180F008F3890 /* MapView.swift */; };
 		334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334574EF25762A5F002839C5 /* SignUpScreen.swift */; };
 		3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356497325AC453300F2D3CE /* NavigationBar.swift */; };
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
@@ -148,6 +149,7 @@
 		33385A7B256FB66B00DACD7C /* CommonExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonExt.swift; path = ios/extensions/CommonExt.swift; sourceTree = SOURCE_ROOT; };
 		33385A85256FB7C200DACD7C /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = ios/extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
 		333F45D225A4B5A8008DE1D2 /* URLImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImage.swift; sourceTree = "<group>"; };
+		334288AB25B3180F008F3890 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		334574EF25762A5F002839C5 /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		3356497325AC453300F2D3CE /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
@@ -494,6 +496,7 @@
 				3395031225824C060080CC88 /* BlurEffectView.swift */,
 				33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */,
 				338F98E6257F77C3002D36FF /* ImagePicker.swift */,
+				334288AB25B3180F008F3890 /* MapView.swift */,
 			);
 			path = UIKitElements;
 			sourceTree = "<group>";
@@ -967,6 +970,7 @@
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
+				334288AC25B3180F008F3890 /* MapView.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */,

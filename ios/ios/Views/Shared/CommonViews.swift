@@ -179,7 +179,10 @@ struct LocalizedText: View {
 
 struct TableViewCell: View {
     let textLocalizationKey: String?
+    
     let imageName: String?
+    let imageColor: AppColor?
+    let imageSize: CGFloat
     
     let style: Style
     
@@ -195,7 +198,10 @@ struct TableViewCell: View {
                 HStack(spacing: 24) {
                     if let imageName = self.imageName {
                         Image(imageName)
-                            .frame(width: 24)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: imageSize, height: imageSize)
+                            .foregroundColor(appColor: imageColor ?? .white)
                     }
                     
                     LocalizedText(localizationKey: localizationKey,
@@ -213,6 +219,22 @@ struct TableViewCell: View {
             }
             .testingIdentifier("\(localizationKey)_button")
         )
+    }
+    
+    init(textLocalizationKey: String?,
+         imageName: String?,
+         imageColor: AppColor? = nil,
+         imageSize: CGFloat = 18,
+         style: Style,
+         onTapAction: @escaping () -> ()) {
+        self.textLocalizationKey = textLocalizationKey
+        
+        self.imageName = imageName
+        self.imageColor = imageColor
+        self.imageSize = imageSize
+       
+        self.style = style
+        self.onTapAction = onTapAction
     }
     
     enum Style {

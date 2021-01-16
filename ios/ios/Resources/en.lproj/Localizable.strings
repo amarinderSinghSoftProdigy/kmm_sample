@@ -142,3 +142,6 @@
 "enter_current_password" = "Please enter your current password:";
 "current_password" = "Current Password";
 "enter_new_password" = "Please enter your new password:";
+
+// MARK: Settings Address
+"view_location_on_map" = "View the location on the map";
