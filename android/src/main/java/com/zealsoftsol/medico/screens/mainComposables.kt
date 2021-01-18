@@ -33,9 +33,9 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
@@ -43,7 +43,6 @@ import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthDetailsAadhaar
 import com.zealsoftsol.medico.screens.auth.AuthDetailsTraderData
-import com.zealsoftsol.medico.screens.auth.AuthEnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.auth.AuthLegalDocuments
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
@@ -51,6 +50,8 @@ import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
+import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
+import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 
@@ -149,7 +150,8 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                 when (it) {
                     is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
-                    is EnterNewPasswordScope -> AuthEnterNewPasswordScreen(it)
+                    is PasswordScope.VerifyCurrent -> VerifyCurrentPasswordScreen(it)
+                    is PasswordScope.EnterNew -> EnterNewPasswordScreen(it)
                     is SignUpScope.SelectUserType -> AuthUserType(it)
                     is SignUpScope.PersonalData -> AuthPersonalData(it)
                     is SignUpScope.AddressData -> AuthAddressData(it)

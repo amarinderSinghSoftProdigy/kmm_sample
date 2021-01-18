@@ -1,14 +1,13 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.compatDispatcher
-import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.environment
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -65,12 +64,7 @@ internal class OtpEventDelegate(
                 dropScope(updateDataSource = false)
                 when (searchQueuesFor<CommonScope.PhoneVerificationEntryPoint>()) {
                     is OtpScope.PhoneNumberInput -> {
-                        setScope(
-                            EnterNewPasswordScope(
-                                phoneNumber = it.phoneNumber,
-                                passwordValidation = DataSource(null),
-                            )
-                        )
+                        setScope(PasswordScope.EnterNew(it.phoneNumber))
                     }
                     is SignUpScope.LegalDocuments -> {
                         EventCollector.sendEvent(Event.Action.Registration.SignUp)

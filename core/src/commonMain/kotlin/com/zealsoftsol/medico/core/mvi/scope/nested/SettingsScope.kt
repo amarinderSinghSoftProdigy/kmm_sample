@@ -24,7 +24,7 @@ sealed class SettingsScope(
             val stringId: String,
         ) {
             PROFILE(Event.Transition.Profile, "personal_profile"),
-            CHANGE_PASSWORD(Event.Action.ResetPassword.RequestChange, "change_password"),
+            CHANGE_PASSWORD(Event.Transition.ChangePassword, "change_password"),
             ADDRESS(Event.Transition.Address, "address"),
             GSTIN_DETAILS(Event.Transition.GstinDetails, "gstin_details");
 
