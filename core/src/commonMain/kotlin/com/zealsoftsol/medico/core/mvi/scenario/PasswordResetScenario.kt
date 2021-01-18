@@ -4,8 +4,8 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Environment
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.environment
-import com.zealsoftsol.medico.core.mvi.scope.nested.EnterNewPasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
 
@@ -21,11 +21,11 @@ class PasswordResetScenario : Scenario() {
             it.submitOtp("123456")
         }
         pause()
-        withScope<EnterNewPasswordScope> {
+        withScope<PasswordScope.EnterNew> {
             it.changePassword("Qwerty12345")
             pause()
-            require(it.notifications.value == EnterNewPasswordScope.PasswordChangedSuccessfully)
-            it.finishResetPasswordFlow()
+            require(it.notifications.value == PasswordScope.EnterNew.PasswordChangedSuccessfully)
+            it.finishPasswordFlow()
         }
         pause()
         withScope<LogInScope> {}
@@ -48,11 +48,11 @@ class PasswordResetScenario : Scenario() {
             it.submitOtp("123456")
         }
         pause()
-        withScope<EnterNewPasswordScope> {
+        withScope<PasswordScope.EnterNew> {
             it.changePassword("Qwerty12345")
             pause()
-            require(it.notifications.value == EnterNewPasswordScope.PasswordChangedSuccessfully)
-            it.finishResetPasswordFlow()
+            require(it.notifications.value == PasswordScope.EnterNew.PasswordChangedSuccessfully)
+            it.finishPasswordFlow()
         }
         pause()
         withScope<LogInScope> {}

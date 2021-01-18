@@ -36,6 +36,7 @@ import kotlinx.serialization.json.Json
 
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
+    private val networkPasswordScope: NetworkScope.Password,
     private val networkCustomerScope: NetworkScope.Customer,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
@@ -134,11 +135,15 @@ class UserRepo(
         return networkAuthScope.verifyOtp(phoneNumber, otp)
     }
 
+    suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation> {
+        return networkPasswordScope.verifyPassword(password)
+    }
+
     suspend fun changePassword(
-        phoneNumber: String,
-        newPassword: String
+        phoneNumber: String?,
+        newPassword: String,
     ): Response.Wrapped<PasswordValidation> {
-        return networkAuthScope.changePassword(phoneNumber, newPassword)
+        return networkPasswordScope.changePassword(phoneNumber, newPassword)
     }
 
     suspend fun resendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {

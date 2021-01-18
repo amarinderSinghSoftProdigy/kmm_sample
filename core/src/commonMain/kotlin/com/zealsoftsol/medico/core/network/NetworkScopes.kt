@@ -32,11 +32,6 @@ interface NetworkScope {
         suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode>
 
-        suspend fun changePassword(
-            phoneNumber: String,
-            password: String,
-        ): Response.Wrapped<PasswordValidation>
-
         suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1>
         suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2>
         suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
@@ -44,6 +39,14 @@ interface NetworkScope {
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
         suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
+    }
+
+    interface Password {
+        suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation>
+        suspend fun changePassword(
+            phoneNumber: String?,
+            password: String
+        ): Response.Wrapped<PasswordValidation>
     }
 
     interface Customer : NetworkScope {

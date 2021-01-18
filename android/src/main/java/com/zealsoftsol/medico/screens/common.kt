@@ -5,8 +5,12 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -153,7 +158,7 @@ fun Scope.Host.showErrorAlert() {
 }
 
 @Composable
-fun <T : WithNotifications> T.showAlert(onDismiss: () -> Unit = { dismissNotification() }) {
+fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { dismissNotification() }) {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
         val titleResourceId = AmbientContext.current.runCatching {
@@ -363,4 +368,51 @@ fun <T> Deferred<T>.awaitAsState(initial: T): State<T> {
         state.value = await()
     }
     return state
+}
+
+@Composable
+fun BasicScreen(
+    subtitle: String? = null,
+    body: @Composable ColumnScope.() -> Boolean,
+    buttonText: String,
+    onButtonClick: () -> Unit,
+    footer: (@Composable BoxScope.() -> Unit)? = null
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colors.primary)
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center).padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (!subtitle.isNullOrEmpty()) {
+                Text(
+                    text = subtitle,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.body2,
+                    color = ConstColors.gray,
+                    modifier = Modifier.padding(horizontal = 60.dp),
+                )
+            }
+            Spacer(modifier = Modifier.size(32.dp))
+            val isButtonEnabled = body()
+            Spacer(modifier = Modifier.size(12.dp))
+            MedicoButton(
+                text = buttonText,
+                onClick = onButtonClick,
+                isEnabled = isButtonEnabled,
+            )
+        }
+        footer?.let {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(color = Color.White)
+            ) {
+                it.invoke(this)
+            }
+        }
+    }
 }

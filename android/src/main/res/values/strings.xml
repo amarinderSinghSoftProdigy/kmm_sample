@@ -21,6 +21,9 @@
     <string name="wrong_code">Wrong Code</string>
     <string name="attempt_left">attempts left</string>
     <string name="new_password">New Password</string>
+    <string name="current_password">Current Password</string>
+    <string name="change_password_hint">Please enter your current password</string>
+    <string name="new_password_hint">Please enter your new password</string>
     <string name="new_password_repeat">Repeat New Password</string>
     <string name="confirm">Confirm</string>
     <string name="password_doesnt_match">Password doesn’t match</string>

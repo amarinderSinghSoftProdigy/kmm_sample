@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
@@ -39,6 +40,9 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Profile -> setScope(
                     SettingsScope.Profile(userRepo.requireUser())
+                )
+                is Event.Transition.ChangePassword -> setScope(
+                    PasswordScope.VerifyCurrent()
                 )
                 is Event.Transition.Address -> setScope(
                     SettingsScope.Address(userRepo.requireUser().addressData)
