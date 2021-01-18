@@ -27,7 +27,7 @@
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
 		33621CF62571009D004BD4CF /* MedicoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF52571009D004BD4CF /* MedicoText.swift */; };
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
-		33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */; };
+		33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* PasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
 		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
@@ -155,7 +155,7 @@
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
 		33621CF52571009D004BD4CF /* MedicoText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoText.swift; sourceTree = "<group>"; };
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
-		33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreen.swift; sourceTree = "<group>"; };
+		33621D0125712DE6004BD4CF /* PasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
 		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
@@ -381,6 +381,14 @@
 			path = SignUp;
 			sourceTree = "<group>";
 		};
+		334FF84325B5CC9600EC9663 /* Password */ = {
+			isa = PBXGroup;
+			children = (
+				33621D0125712DE6004BD4CF /* PasswordScreen.swift */,
+			);
+			path = Password;
+			sourceTree = "<group>";
+		};
 		336EE4FD2594A05600D354C8 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -436,6 +444,7 @@
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333AE3F925821ED000C249C1 /* Main */,
+				334FF84325B5CC9600EC9663 /* Password */,
 				339D372025B05C6E00C57B2D /* Settings */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
@@ -530,7 +539,6 @@
 			isa = PBXGroup;
 			children = (
 				33946A942580E65800A01804 /* Otp */,
-				33F151E9256FE1C500C4C656 /* PasswordRestore */,
 				334574EE257629B6002839C5 /* SignUp */,
 				33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */,
 				33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */,
@@ -598,14 +606,6 @@
 				33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */,
 			);
 			path = Fonts;
-			sourceTree = "<group>";
-		};
-		33F151E9256FE1C500C4C656 /* PasswordRestore */ = {
-			isa = PBXGroup;
-			children = (
-				33621D0125712DE6004BD4CF /* AuthNewPasswordScreen.swift */,
-			);
-			path = PasswordRestore;
 			sourceTree = "<group>";
 		};
 		33F51B20258CD13000DA2F9F /* Authentication */ = {
@@ -1008,7 +1008,7 @@
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
 				3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
-				33621D0225712DE6004BD4CF /* AuthNewPasswordScreen.swift in Sources */,
+				33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */,
 				33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
 				339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */,

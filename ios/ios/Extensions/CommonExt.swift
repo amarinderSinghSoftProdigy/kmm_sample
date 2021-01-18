@@ -70,7 +70,7 @@ extension UIImagePickerController.SourceType: Identifiable {
 extension ScopeNotification {
     var title: String? {
         switch self {
-        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+        case is PasswordScope.EnterNewPasswordChangedSuccessfully:
             return "success"
         default:
             return nil
@@ -79,7 +79,7 @@ extension ScopeNotification {
     
     var body: String? {
         switch self {
-        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+        case is PasswordScope.EnterNewPasswordChangedSuccessfully:
             return "password_change_success"
         default:
             return nil

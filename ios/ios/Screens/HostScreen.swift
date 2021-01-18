@@ -123,8 +123,8 @@ struct TabBarScreen: View {
         case let scope as OtpScope:
             return AnyView(OtpFlowScreen(scope: scope))
             
-        case let scope as EnterNewPasswordScope:
-            return AnyView(AuthNewPasswordScreen(scope: scope))
+        case let scope as PasswordScope:
+            return AnyView(PasswordScreen(scope: scope))
             
         case let scope as SignUpScope:
             return AnyView(SignUpScreen(scope: scope))

@@ -79,107 +79,28 @@ struct SettingsScreen: View {
         }
     }
     
-    private struct ChangePasswordCurrentPassword: View {
-        var body: some View {
-            VStack(spacing: 32) {
-                LocalizedText(localizationKey: "enter_current_password",
-                              textWeight: .medium,
-                              color: .textGrey)
-                
-                VStack(spacing: 12) {
-                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "current_password",
-                                                   text: nil,
-                                                   onTextChange: { newValue in })
-                    
-                    MedicoButton(localizedStringKey: "confirm",
-                                 isEnabled: true) {
-                        
-                    }
-                }
-            }
-            .screenLogger(withScreenName: "ChangePassword.CurrentPassword",
-                          withScreenClass: ChangePasswordCurrentPassword.self)
-        }
-    }
-    
-    private struct ChangePasswordNewPassword: View {
-        var body: some View {
-            VStack(spacing: 32) {
-                LocalizedText(localizationKey: "enter_current_password",
-                              textWeight: .medium,
-                              color: .textGrey)
-                
-                VStack(spacing: 12) {
-                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password",
-                                                   text: nil,
-                                                   onTextChange: { newValue in })
-                    
-                    FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "new_password_repeat",
-                                                   text: nil,
-                                                   onTextChange: { newValue in })
-                    
-                    MedicoButton(localizedStringKey: "confirm",
-                                 isEnabled: true) {
-                        
-                    }
-                }
-            }
-            .screenLogger(withScreenName: "ChangePassword.NewPassword",
-                          withScreenClass: ChangePasswordNewPassword.self)
-        }
-    }
-    
     private struct Address: View {
-        @State private var showsMap: Bool = false
-        
         let scope: SettingsScope.Address
         
         var body: some View {
-            ZStack(alignment: .topLeading) {
-                VStack(spacing: 25) {
-                    VStack(spacing: 12) {
-                        ReadOnlyTextField(placeholder: "pincode",
-                                          text: String(scope.addressData.pincode))
-                        
-                        ReadOnlyTextField(placeholder: "address_line",
-                                          text: scope.addressData.address)
-                    
-                        ReadOnlyTextField(placeholder: "location",
-                                          text: scope.addressData.location)
-
-                        ReadOnlyTextField(placeholder: "city",
-                                          text: scope.addressData.city)
-
-                        ReadOnlyTextField(placeholder: "district",
-                                            text: scope.addressData.district)
-
-                        ReadOnlyTextField(placeholder: "state",
-                                            text: scope.addressData.state)
-                    }
-                    
-                    LocalizedText(localizationKey: "view_location_on_map",
-                                  textWeight: .medium,
-                                  color: .lightBlue)
-                        .onTapGesture {
-                            self.showsMap = true
-                        }
-                }
+            VStack(spacing: 12) {
+                ReadOnlyTextField(placeholder: "pincode",
+                                  text: String(scope.addressData.pincode))
                 
-                if showsMap {
-                    VStack {
-                        ZStack(alignment: .leading) {
-                            AppColor.primary.color
-                            
-                            Button(action: { self.showsMap = false }) {
-                                Image("Clear")
-                            }
-                            .padding()
-                        }
-                        .frame(height: 44)
-                    
-                        MapView(latitude: 53.9, longitude: 27.56)
-                    }
-                }
+                ReadOnlyTextField(placeholder: "address_line",
+                                  text: scope.addressData.address)
+            
+                ReadOnlyTextField(placeholder: "location",
+                                  text: scope.addressData.location)
+
+                ReadOnlyTextField(placeholder: "city",
+                                  text: scope.addressData.city)
+
+                ReadOnlyTextField(placeholder: "district",
+                                    text: scope.addressData.district)
+
+                ReadOnlyTextField(placeholder: "state",
+                                    text: scope.addressData.state)
             }
             .screenLogger(withScreenName: "Settings.Address",
                           withScreenClass: Address.self)
