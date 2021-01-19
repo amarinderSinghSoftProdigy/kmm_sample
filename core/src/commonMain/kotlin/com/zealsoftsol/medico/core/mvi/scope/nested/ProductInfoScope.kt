@@ -55,7 +55,7 @@ class ProductInfoScope private constructor(
                     alternativeBrands,
                     isDetailsOpened
                 ),
-                navigationSection = NavigationSection(
+                navigationSectionValue = NavigationSection(
                     userDataSource,
                     NavigationOption.default(),
                     NavigationOption.footer()

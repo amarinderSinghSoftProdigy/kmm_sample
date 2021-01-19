@@ -50,7 +50,7 @@ sealed class SignUpScope(titleId: String) :
             fun get(userType: DataSource<UserType> = DataSource(UserType.STOCKIST)) =
                 Host.TabBar(
                     childScope = SelectUserType(userType),
-                    navigationSection = null,
+                    navigationSectionValue = null,
                 )
         }
     }

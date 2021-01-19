@@ -38,8 +38,11 @@ class SearchScope(
     fun clearFilter(filter: Filter?) =
         EventCollector.sendEvent(Event.Action.Search.ClearFilter(filter))
 
-    fun searchManufacturer(input: String) =
-        EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input))
+    fun searchManufacturer(input: String): Boolean {
+        return if (input.isNotBlank() || manufacturerSearch.value.isNotBlank()) {
+            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input))
+        } else false
+    }
 
     fun searchProduct(input: String): Boolean {
         return if (input.isNotBlank() || productSearch.value.isNotBlank()) {

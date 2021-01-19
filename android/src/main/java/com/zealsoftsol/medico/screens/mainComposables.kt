@@ -58,20 +58,22 @@ import com.zealsoftsol.medico.screens.settings.SettingsScreen
 @Composable
 fun TabBarScreen(scope: Scope.Host.TabBar) {
     val scaffoldState = rememberScaffoldState()
+    val navigation = scope.navigationSection.flow.collectAsState()
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
-        drawerContent = scope.navigationSection?.let { nav ->
-            {
-                val user = nav.user.flow.collectAsState()
+        drawerContent = {
+            navigation.value?.let {
+                val user = it.user.flow.collectAsState()
                 NavigationColumn(
                     userName = user.value.fullName(),
                     userType = user.value.type,
-                    navigationSection = nav,
+                    navigationSection = it,
                     onSectionSelected = { scaffoldState.drawerState.close() }
                 )
             }
         },
+        drawerGesturesEnabled = navigation.value != null,
         topBar = {
             TabBar {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()

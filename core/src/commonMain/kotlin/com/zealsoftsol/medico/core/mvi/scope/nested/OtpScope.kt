@@ -37,7 +37,7 @@ sealed class OtpScope(titleId: String) :
             ): Host.TabBar {
                 return Host.TabBar(
                     childScope = PhoneNumberInput(phoneNumber, isForRegisteredUsersOnly),
-                    navigationSection = null,
+                    navigationSectionValue = null,
                 )
             }
         }

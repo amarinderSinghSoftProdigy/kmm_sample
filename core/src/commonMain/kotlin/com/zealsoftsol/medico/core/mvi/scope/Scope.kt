@@ -40,13 +40,20 @@ sealed class Scope : Scopable {
 
         open class TabBar(
             childScope: Child.TabBar,
-            val navigationSection: NavigationSection?,
+            private val navigationSectionValue: NavigationSection?,
         ) : Host(), CommonScope.CanGoBack {
             val tabBar: DataSource<TabBarInfo> = DataSource(childScope.tabBarInfo)
+            val navigationSection: DataSource<NavigationSection?> =
+                DataSource(navigationSectionValue)
             val childScope: DataSource<Child.TabBar> = DataSource(childScope)
 
             internal fun setChildScope(child: Child.TabBar) {
                 tabBar.value = child.tabBarInfo
+                navigationSection.value = if (child.tabBarInfo.icon != ScopeIcon.HAMBURGER) {
+                    null
+                } else {
+                    navigationSectionValue
+                }
                 childScope.value = child
             }
         }
@@ -60,11 +67,15 @@ enum class ScopeIcon {
 }
 
 sealed class TabBarInfo {
+    abstract val icon: ScopeIcon
 
-    data class Simple(val icon: ScopeIcon, val titleId: String?) :
+    data class Simple(override val icon: ScopeIcon, val titleId: String?) :
         TabBarInfo()
 
-    data class Search(val icon: ScopeIcon, val cartItems: DataSource<Int> = DataSource(0)) :
+    data class Search(
+        override val icon: ScopeIcon,
+        val cartItems: DataSource<Int> = DataSource(0)
+    ) :
         TabBarInfo() {
 
         fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search)
