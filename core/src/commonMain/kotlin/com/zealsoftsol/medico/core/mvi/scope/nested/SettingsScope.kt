@@ -30,8 +30,19 @@ sealed class SettingsScope(
             fun select() = EventCollector.sendEvent(event)
 
             internal companion object {
-                fun all() = listOf(PROFILE, CHANGE_PASSWORD, ADDRESS, GSTIN_DETAILS)
-                fun simple() = listOf(PROFILE, CHANGE_PASSWORD)
+                fun all(canChangePassword: Boolean) =
+                    listOfNotNull(
+                        PROFILE,
+                        CHANGE_PASSWORD.takeIf { canChangePassword },
+                        ADDRESS,
+                        GSTIN_DETAILS,
+                    )
+
+                fun simple(canChangePassword: Boolean) =
+                    listOfNotNull(
+                        PROFILE,
+                        CHANGE_PASSWORD.takeIf { canChangePassword },
+                    )
             }
         }
     }
