@@ -115,7 +115,7 @@ extension View {
         )
     }
     
-    func navigationBar(withNavigationSection navigationSection: NavigationSection?,
+    func navigationBar(withNavigationSection navigationSection: DataSource<NavigationSection>,
                        withNavigationBarInfo navigationBarInfo: DataSource<TabBarInfo>,
                        handleGoBack: @escaping () -> ()) -> some View {
         self.modifier(

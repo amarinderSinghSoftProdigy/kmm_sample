@@ -33,8 +33,12 @@ struct SettingsScreen: View {
         }
         
         return AnyView(
-            view
-                .padding()
+            VStack {
+                view
+                
+                Spacer()
+            }
+            .padding()
         )
     }
     
