@@ -14,7 +14,7 @@ class DashboardScope private constructor() :
     companion object {
         fun get(userDataSource: ReadOnlyDataSource<User>) = Host.TabBar(
             childScope = DashboardScope(),
-            navigationSection = NavigationSection(
+            navigationSectionValue = NavigationSection(
                 userDataSource,
                 NavigationOption.default(),
                 NavigationOption.footer()

@@ -10,14 +10,13 @@ import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(
-    icon: ScopeIcon,
-    titleId: String,
-) : Scope.Child.TabBar(TabBarInfo.Simple(icon, titleId)),
+    titleId: String
+) : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
     CommonScope.CanGoBack {
 
     class List(
         val sections: kotlin.collections.List<Section>
-    ) : SettingsScope(ScopeIcon.HAMBURGER, "settings") {
+    ) : SettingsScope("settings") {
 
         enum class Section(
             private val event: Event,
@@ -37,13 +36,12 @@ sealed class SettingsScope(
         }
     }
 
-    class Profile(val user: User) : SettingsScope(ScopeIcon.BACK, "personal_profile")
+    class Profile(val user: User) : SettingsScope("personal_profile")
 
-    class Address(val addressData: CustomerAddressData) : SettingsScope(ScopeIcon.BACK, "address") {
+    class Address(val addressData: CustomerAddressData) : SettingsScope("address") {
 
         fun openMap(): Boolean = TODO("open map")
     }
 
-    class GstinDetails(val details: User.Details.DrugLicense) :
-        SettingsScope(ScopeIcon.BACK, "gstin_details")
+    class GstinDetails(val details: User.Details.DrugLicense) : SettingsScope("gstin_details")
 }
