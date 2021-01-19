@@ -20,7 +20,7 @@ class ProductInfoScope private constructor(
     val product: ProductData,
     val alternativeBrands: List<Any>,
     val isDetailsOpened: DataSource<Boolean>,
-) : Scope.Child.TabBar(ScopeIcon.HAMBURGER, null),
+) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)),
     CommonScope.WithUser,
     CommonScope.CanGoBack {
     override val scopeId: KClass<*> = DetachedScopeId::class
@@ -55,8 +55,7 @@ class ProductInfoScope private constructor(
                     alternativeBrands,
                     isDetailsOpened
                 ),
-                tabBarInfo = TabBarInfo.Search(),
-                navigationSection = NavigationSection(
+                navigationSectionValue = NavigationSection(
                     userDataSource,
                     NavigationOption.default(),
                     NavigationOption.footer()

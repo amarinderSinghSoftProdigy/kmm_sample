@@ -15,7 +15,7 @@ sealed class NavigationOption(private val event: Event) {
 
     fun select() = EventCollector.sendEvent(event)
 
-    object Settings : NavigationOption(Event.Transition.Back)
+    object Settings : NavigationOption(Event.Transition.Settings)
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true))
 
     companion object {

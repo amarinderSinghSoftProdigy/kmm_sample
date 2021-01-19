@@ -14,7 +14,7 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 
-sealed class LimitedAccessScope : Scope.Child.TabBar(ScopeIcon.HAMBURGER, null),
+sealed class LimitedAccessScope : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.HAMBURGER, null)),
     CommonScope.UploadDocument,
     CommonScope.WithUser {
 
@@ -55,7 +55,6 @@ sealed class LimitedAccessScope : Scope.Child.TabBar(ScopeIcon.HAMBURGER, null),
                         user = dataSource,
                     )
                 },
-                TabBarInfo.Simple(),
                 NavigationSection(
                     dataSource,
                     NavigationOption.limited(),

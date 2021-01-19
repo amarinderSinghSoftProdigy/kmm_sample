@@ -21,7 +21,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
 sealed class SignUpScope(titleId: String) :
-    Scope.Child.TabBar(ScopeIcon.BACK, titleId),
+    Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
     CommonScope.CanGoBack {
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
@@ -50,8 +50,7 @@ sealed class SignUpScope(titleId: String) :
             fun get(userType: DataSource<UserType> = DataSource(UserType.STOCKIST)) =
                 Host.TabBar(
                     childScope = SelectUserType(userType),
-                    tabBarInfo = TabBarInfo.Simple(),
-                    navigationSection = null,
+                    navigationSectionValue = null,
                 )
         }
     }

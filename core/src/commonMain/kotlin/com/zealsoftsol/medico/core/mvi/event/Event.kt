@@ -33,7 +33,8 @@ internal sealed class Event {
         sealed class ResetPassword : Action() {
             override val typeClazz: KClass<*> = ResetPassword::class
 
-            data class Send(val newPassword: String) : ResetPassword()
+            data class ConfirmCurrent(val password: String) : ResetPassword()
+            data class ConfirmNew(val password: String) : ResetPassword()
             object Finish : ResetPassword()
         }
 
@@ -77,6 +78,11 @@ internal sealed class Event {
         object Back : Transition()
         object SignUp : Transition()
         object ForgetPassword : Transition()
+        object ChangePassword : Transition()
         object Search : Transition()
+        object Settings : Transition()
+        object Profile : Transition()
+        object Address : Transition()
+        object GstinDetails : Transition()
     }
 }

@@ -17,6 +17,12 @@ data class PasswordResetRequest(
 )
 
 @Serializable
+data class PasswordResetRequest2(
+    val newPassword: String,
+    val verifyPassword: String,
+)
+
+@Serializable
 data class PasswordValidation(
     val password: String? = null
 )

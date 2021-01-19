@@ -15,7 +15,7 @@ sealed class Scope : Scopable {
     sealed class Child : Scope() {
         internal abstract val parentScopeId: KClass<*>
 
-        abstract class TabBar(internal val icon: ScopeIcon, internal val titleId: String?) :
+        abstract class TabBar(internal val tabBarInfo: TabBarInfo) :
             Child() {
             override val scopeId: KClass<*> = Child.TabBar::class
             override val parentScopeId: KClass<*> = Host::class
@@ -40,15 +40,20 @@ sealed class Scope : Scopable {
 
         open class TabBar(
             childScope: Child.TabBar,
-            tabBarInfo: TabBarInfo,
-            val navigationSection: NavigationSection?,
+            private val navigationSectionValue: NavigationSection?,
         ) : Host(), CommonScope.CanGoBack {
-            val tabBar: DataSource<TabBarInfo> =
-                DataSource(tabBarInfo.apply(childScope.icon, childScope.titleId))
+            val tabBar: DataSource<TabBarInfo> = DataSource(childScope.tabBarInfo)
+            val navigationSection: DataSource<NavigationSection?> =
+                DataSource(navigationSectionValue)
             val childScope: DataSource<Child.TabBar> = DataSource(childScope)
 
             internal fun setChildScope(child: Child.TabBar) {
-                tabBar.value = tabBar.value.apply(child.icon, child.titleId)
+                tabBar.value = child.tabBarInfo
+                navigationSection.value = if (child.tabBarInfo.icon != ScopeIcon.HAMBURGER) {
+                    null
+                } else {
+                    navigationSectionValue
+                }
                 childScope.value = child
             }
         }
@@ -62,18 +67,16 @@ enum class ScopeIcon {
 }
 
 sealed class TabBarInfo {
+    abstract val icon: ScopeIcon
 
-    abstract fun apply(icon: ScopeIcon, titleId: String?): TabBarInfo
+    data class Simple(override val icon: ScopeIcon, val titleId: String?) :
+        TabBarInfo()
 
-    data class Simple(val icon: ScopeIcon = ScopeIcon.NO_ICON, val titleId: String? = null) :
+    data class Search(
+        override val icon: ScopeIcon,
+        val cartItems: DataSource<Int> = DataSource(0)
+    ) :
         TabBarInfo() {
-        override fun apply(icon: ScopeIcon, titleId: String?): TabBarInfo =
-            copy(icon = icon, titleId = titleId)
-    }
-
-    data class Search(val icon: ScopeIcon = ScopeIcon.NO_ICON, val cartItems: Int = 0) :
-        TabBarInfo() {
-        override fun apply(icon: ScopeIcon, titleId: String?): TabBarInfo = copy(icon = icon)
 
         fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search)
     }

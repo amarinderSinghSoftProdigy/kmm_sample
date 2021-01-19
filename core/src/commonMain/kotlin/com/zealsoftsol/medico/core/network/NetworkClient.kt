@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest
+import com.zealsoftsol.medico.data.PasswordResetRequest2
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductResponse
@@ -61,6 +62,7 @@ class NetworkClient(
     private val tokenStorage: TokenStorage,
     useNetworkInterceptor: Boolean,
 ) : NetworkScope.Auth,
+    NetworkScope.Password,
     NetworkScope.Customer,
     NetworkScope.Search,
     NetworkScope.Product {
@@ -138,14 +140,31 @@ class NetworkClient(
             body.getWrappedError()
         }
 
+    override suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation> =
+        ktorDispatcher {
+            client.post<Response.Body<String, PasswordValidation>>("$B2B_URL/api/v1/myaccount/currentPwd") {
+                withMainToken()
+                jsonBody(mapOf("currentPassword" to password))
+            }.getWrappedValidation()
+        }
+
     override suspend fun changePassword(
-        phoneNumber: String,
+        phoneNumber: String?,
         password: String
     ): Response.Wrapped<PasswordValidation> =
         ktorDispatcher {
-            client.post<Response.Body<MapBody, PasswordValidation>>("$AUTH_URL/api/v1/medico/forgetpwd/update") {
-                withTempToken(TempToken.UPDATE_PASSWORD)
-                jsonBody(PasswordResetRequest(phoneNumber, password, password))
+            val url = if (phoneNumber != null)
+                "$AUTH_URL/api/v1/medico/forgetpwd/update"
+            else
+                "$B2B_URL/api/v1/myaccount/changePwd"
+            client.post<Response.Body<MapBody, PasswordValidation>>(url) {
+                if (phoneNumber != null) {
+                    withTempToken(TempToken.UPDATE_PASSWORD)
+                    jsonBody(PasswordResetRequest(phoneNumber, password, password))
+                } else {
+                    withMainToken()
+                    jsonBody(PasswordResetRequest2(password, password))
+                }
             }.getWrappedValidation()
         }
 
@@ -336,6 +355,7 @@ class NetworkClient(
         private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
         private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
+        private const val B2B_URL = "https://develop-api-b2b.medicostores.com"
     }
 }
 

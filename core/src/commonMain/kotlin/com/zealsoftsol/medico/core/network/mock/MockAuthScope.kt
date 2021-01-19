@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
-import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -46,11 +45,6 @@ class MockAuthScope : NetworkScope.Auth {
 
     override suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> =
         mockResponse { Response.Wrapped(null, true) }
-
-    override suspend fun changePassword(
-        phoneNumber: String,
-        password: String
-    ): Response.Wrapped<PasswordValidation> = mockResponse { Response.Wrapped(null, true) }
 
     override suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> {
         return mockResponse { Response.Wrapped(null, true) }
