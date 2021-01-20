@@ -5,45 +5,28 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CustomerData(
-    @SerialName("aadhaarCardNo")
     val aadhaarCardNo: String,
-    @SerialName("customerAddressData")
     val customerAddressData: CustomerAddressData,
-    @SerialName("customerMetaData")
     val customerMetaData: CustomerMetaData,
-    @SerialName("customerType")
     val customerType: String,
-    @SerialName("customerTypeLogo")
     val customerTypeLogo: String,
-    @SerialName("drugLicenseNo1")
     val drugLicenseNo1: String,
-    @SerialName("drugLicenseNo2")
     val drugLicenseNo2: String,
-    @SerialName("drugLicenseUrl")
     val drugLicenseUrl: String?,
     val isDocumentUploaded: Boolean,
-    @SerialName("email")
     val email: String,
-    @SerialName("firstName")
     val firstName: String,
-    @SerialName("gstin")
     val gstin: String,
-    @SerialName("lastName")
     val lastName: String,
-    @SerialName("medicoStoresLogo")
     val medicoStoresLogo: String,
-    @SerialName("message")
     val message: String,
     @SerialName("mobileNumber")
     val phoneNumber: String,
-    @SerialName("panNumber")
     val panNumber: String,
-    @SerialName("traderFooter")
     val traderFooter: String,
-    @SerialName("traderHeader")
     val traderHeader: String,
-    @SerialName("traderName")
-    val traderName: String
+    val traderName: String,
+    val unitCode: String,
 )
 
 @Serializable
@@ -53,7 +36,8 @@ data class CustomerAddressData(
     @SerialName("cityTown")
     val city: String,
     val district: String,
-    val latitidue: Double,
+    @SerialName("latitidue")
+    val latitude: Double,
     val location: String,
     val longitude: Double,
     val pincode: Int,

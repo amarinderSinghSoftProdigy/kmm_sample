@@ -7,11 +7,12 @@ import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
@@ -65,7 +66,8 @@ class NetworkClient(
     NetworkScope.Password,
     NetworkScope.Customer,
     NetworkScope.Search,
-    NetworkScope.Product {
+    NetworkScope.Product,
+    NetworkScope.Management {
 
     private val client = HttpClient(engine) {
         if (useNetworkInterceptor) addInterceptor(this)
@@ -244,7 +246,7 @@ class NetworkClient(
                         set(name, value)
                     }
                     append("currentPage", page.toString())
-                    append("pageSize", SearchScope.DEFAULT_ITEMS_PER_PAGE.toString())
+                    append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
                     append("sort", "ASC")
                 }
             }
@@ -257,6 +259,37 @@ class NetworkClient(
                 withMainToken()
             }.getWrappedBody()
         }
+
+    override suspend fun getAllStockists(page: Int): Response.Wrapped<List<EntityInfo>> =
+        ktorDispatcher {
+            client.get<SimpleResponse<List<EntityInfo>>>("$B2B_URL/api/v1/stockist/all") {
+                withMainToken()
+                url {
+                    parameters.apply {
+                        append("page", page.toString())
+                        append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                    }
+                }
+            }.getWrappedBody()
+        }
+
+    override suspend fun getSubscribedStockists(
+        page: Int,
+        unitCode: String
+    ): Response.Wrapped<List<EntityInfo>> =
+        ktorDispatcher {
+            client.get<SimpleResponse<List<EntityInfo>>>("$B2B_URL/api/v1/stockist/subscribed/$unitCode") {
+                withMainToken()
+                url {
+                    parameters.apply {
+                        append("page", page.toString())
+                        append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                    }
+                }
+            }.getWrappedBody()
+        }
+
+    // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->

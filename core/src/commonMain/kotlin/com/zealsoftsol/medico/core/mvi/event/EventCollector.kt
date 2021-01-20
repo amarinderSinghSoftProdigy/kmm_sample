@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -41,6 +42,11 @@ internal class EventCollector(
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
         Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, networkClient),
         Event.Action.Product::class to ProductEventDelegate(navigator, userRepo, networkClient),
+        Event.Action.Management::class to ManagementEventDelegate(
+            navigator,
+            userRepo,
+            networkClient
+        ),
     )
 
     init {
@@ -52,7 +58,8 @@ internal class EventCollector(
     fun getStartingScope(): Scope {
         return when (userRepo.getUserAccess()) {
             UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
-                userRepo.getUserDataSource(),
+                user = userRepo.requireUser(),
+                userDataSource = userRepo.getUserDataSource(),
             )
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
                 userRepo.requireUser(),

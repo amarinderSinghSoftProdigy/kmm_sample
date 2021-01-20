@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserType
 
 data class NavigationSection(
     val user: ReadOnlyDataSource<User>,
@@ -11,12 +12,18 @@ data class NavigationSection(
     val footer: List<NavigationOption> = NavigationOption.empty(),
 )
 
-sealed class NavigationOption(private val event: Event) {
+sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     fun select() = EventCollector.sendEvent(event)
 
-    object Settings : NavigationOption(Event.Transition.Settings)
-    object LogOut : NavigationOption(Event.Action.Auth.LogOut(true))
+    object Settings : NavigationOption(Event.Transition.Settings, "settings")
+    object Stockists : NavigationOption(Event.Transition.Management(UserType.STOCKIST), "stockists")
+    object Retailers : NavigationOption(Event.Transition.Management(UserType.RETAILER), "retailers")
+    object Hospitals : NavigationOption(Event.Transition.Management(UserType.HOSPITAL), "hospitals")
+    object SeasonBoys :
+        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
+
+    object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
 
     companion object {
         internal fun empty() = emptyList<NavigationOption>()
@@ -24,8 +31,12 @@ sealed class NavigationOption(private val event: Event) {
             Settings,
         )
 
-        internal fun default() = listOf(
+        internal fun default(userType: UserType) = listOfNotNull(
             Settings,
+            Stockists,
+            Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
+            Hospitals.takeIf { userType == UserType.STOCKIST },
+            SeasonBoys.takeIf { userType == UserType.STOCKIST },
         )
 
         internal fun footer() = listOf(

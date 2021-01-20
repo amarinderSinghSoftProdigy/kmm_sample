@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.data
 
+import kotlinx.serialization.Serializable
+
 data class AuthCredentials(
     val phoneNumberOrEmail: String,
     val type: Type?,
@@ -36,4 +38,10 @@ enum class UserType(val serverValue: String) {
 data class AadhaarData(
     val cardNumber: String,
     val shareCode: String,
+)
+
+@Serializable
+data class GeoPoints(
+    val latitude: Int,
+    val longitude: Int
 )

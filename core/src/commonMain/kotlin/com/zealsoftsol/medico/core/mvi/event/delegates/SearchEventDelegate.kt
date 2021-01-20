@@ -1,8 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.toScope
-import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
@@ -35,7 +33,7 @@ internal class SearchEventDelegate(
 
     private suspend fun searchProduct(value: String) {
         navigator.withScope<SearchScope> {
-            it.currentProductPage = 0
+            it.pagination.currentPage = 0
             it.productSearch.value = value
             it.search()
         }
@@ -43,7 +41,7 @@ internal class SearchEventDelegate(
 
     private suspend fun searchManufacturer(value: String) {
         navigator.withScope<SearchScope> {
-            it.currentProductPage = 0
+            it.pagination.currentPage = 0
             it.manufacturerSearch.value = value
             it.search()
         }
@@ -51,7 +49,7 @@ internal class SearchEventDelegate(
 
     private suspend fun selectFilter(filter: Filter, option: Option<String>) {
         navigator.withScope<SearchScope> {
-            it.currentProductPage = 0
+            it.pagination.currentPage = 0
             it.filters.value = it.filters.value.map { f ->
                 if (filter.name == f.name) {
                     f.copy(options = f.options.map { op ->
@@ -79,7 +77,7 @@ internal class SearchEventDelegate(
 
     private suspend fun clearFilter(filter: Filter?) {
         navigator.withScope<SearchScope> {
-            it.currentProductPage = 0
+            it.pagination.currentPage = 0
             it.filters.value = it.filters.value.map { f ->
                 when {
                     filter == null || filter.name == f.name -> {
@@ -107,7 +105,7 @@ internal class SearchEventDelegate(
         navigator.withScope<SearchScope> {
             if (it.canLoadMore()) {
                 setHostProgress(true)
-                it.currentProductPage++
+                it.pagination.currentPage++
                 it.search(addPage = true)
             }
         }
@@ -121,21 +119,13 @@ internal class SearchEventDelegate(
             val (result, isSuccess) = networkSearchScope.search(
                 productSearch.value,
                 manufacturerSearch.value,
-                currentProductPage,
+                pagination.currentPage,
                 activeFilters.map { (queryName, option) -> queryName to option.value },
             )
             if (isSuccess && result != null) {
-                totalProducts = result.totalResults
+                pagination.totalItems = result.totalResults
                 filters.value = result.facets.toFilter()
                 products.value = if (!addPage) result.products else products.value + result.products
-                "facets".warnIt()
-                result.facets.forEach {
-                    it.logIt()
-                }
-                "products".warnIt()
-                result.products.forEach {
-                    it.logIt()
-                }
             }
             if (addPage) navigator.setHostProgress(false)
         }

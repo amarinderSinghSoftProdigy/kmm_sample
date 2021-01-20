@@ -8,6 +8,7 @@ data class User(
     val lastName: String,
     val email: String,
     val phoneNumber: String,
+    val unitCode: String,
     val type: UserType,
     val details: Details,
     val isVerified: Boolean,
