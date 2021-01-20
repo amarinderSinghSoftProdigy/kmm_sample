@@ -36,6 +36,8 @@ struct HostScreen: View {
 }
 
 struct BaseScopeView: View {
+    @EnvironmentObject var alertData: AlertData
+    
     let scope: Scope.Host
     
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
@@ -84,6 +86,13 @@ struct BaseScopeView: View {
     private func getViewWithModifiers() -> some View {
         var view = AnyView(
             currentView
+                .alert(item: $alertData.data) { alertData in
+                    Alert(title: Text(LocalizedStringKey(alertData.titleKey)),
+                          message: Text(LocalizedStringKey(alertData.messageKey)),
+                          dismissButton: Alert.Button.default(Text(LocalizedStringKey(alertData.buttonTextKey)),
+                                                              action: alertData.buttonAction))
+                }
+                
                 .errorAlert(withHandler: scope)
         )
         
