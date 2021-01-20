@@ -40,13 +40,13 @@ class SearchScope(
 
     fun searchManufacturer(input: String): Boolean {
         return if (input.isNotBlank() || manufacturerSearch.value.isNotBlank()) {
-            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input))
+            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input.trimNewLine()))
         } else false
     }
 
     fun searchProduct(input: String): Boolean {
         return if (input.isNotBlank() || productSearch.value.isNotBlank()) {
-            EventCollector.sendEvent(Event.Action.Search.SearchProduct(input))
+            EventCollector.sendEvent(Event.Action.Search.SearchProduct(input.trimNewLine()))
         } else false
     }
 
@@ -57,6 +57,8 @@ class SearchScope(
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+
+    private inline fun String.trimNewLine() = trimEnd { it == '\n' }
 
     companion object {
         internal const val DEFAULT_ITEMS_PER_PAGE = 20

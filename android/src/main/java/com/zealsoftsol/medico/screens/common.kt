@@ -285,6 +285,7 @@ fun InputField(
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
+        singleLine = maxLines == 1,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
     )

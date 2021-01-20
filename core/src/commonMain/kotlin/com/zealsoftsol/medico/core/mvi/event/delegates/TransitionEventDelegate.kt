@@ -30,14 +30,17 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.SignUp -> setScope(SignUpScope.SelectUserType.get())
                 is Event.Transition.Search -> setScope(SearchScope())
-                is Event.Transition.Settings -> setScope(
-                    SettingsScope.List(
-                        if (userRepo.requireUser().type == UserType.SEASON_BOY)
-                            SettingsScope.List.Section.simple()
-                        else
-                            SettingsScope.List.Section.all()
+                is Event.Transition.Settings -> {
+                    val user = userRepo.requireUser()
+                    setScope(
+                        SettingsScope.List(
+                            if (user.type == UserType.SEASON_BOY)
+                                SettingsScope.List.Section.simple(user.isVerified)
+                            else
+                                SettingsScope.List.Section.all(user.isVerified)
+                        )
                     )
-                )
+                }
                 is Event.Transition.Profile -> setScope(
                     SettingsScope.Profile(userRepo.requireUser())
                 )

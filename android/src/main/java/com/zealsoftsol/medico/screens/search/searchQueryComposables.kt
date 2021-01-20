@@ -76,7 +76,7 @@ fun SearchQueryScreen(scope: SearchScope) {
                 icon = Icons.Default.ArrowBack,
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
-                onSearch = { scope.searchProduct(it) }
+                onSearch = { scope.searchProduct(it) },
             )
         }
         if (showFilter.value) {
@@ -286,7 +286,8 @@ fun BasicSearchBar(
                 value = input,
                 cursorColor = ConstColors.lightBlue,
                 onValueChange = onSearch,
-                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
             )
             val modifier = Modifier.size(24.dp).align(Alignment.CenterEnd)
             when (searchBarEnd) {
