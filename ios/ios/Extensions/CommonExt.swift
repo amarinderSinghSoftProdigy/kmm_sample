@@ -70,7 +70,7 @@ extension UIImagePickerController.SourceType: Identifiable {
 extension ScopeNotification {
     var title: String? {
         switch self {
-        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+        case is PasswordScope.EnterNewPasswordChangedSuccessfully:
             return "success"
         default:
             return nil
@@ -79,7 +79,7 @@ extension ScopeNotification {
     
     var body: String? {
         switch self {
-        case is EnterNewPasswordScope.PasswordChangedSuccessfully:
+        case is PasswordScope.EnterNewPasswordChangedSuccessfully:
             return "password_change_success"
         default:
             return nil
@@ -95,4 +95,30 @@ extension String {
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: "")
     }
+}
+
+extension UIImage {
+    func colorized(color : UIColor?) -> UIImage {
+        guard let color = color else { return self }
+        
+        let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height)
+
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0.0)
+        
+        if let context = UIGraphicsGetCurrentContext(),
+           let cgImage = self.cgImage {
+            context.setBlendMode(.multiply)
+            context.translateBy(x: 0, y: self.size.height)
+            context.scaleBy(x: 1.0, y: -1.0)
+            context.draw(cgImage, in: rect)
+            context.clip(to: rect, mask: cgImage)
+            context.setFillColor(color.cgColor)
+            context.fill(rect)
+        }
+
+        let colorizedImage = UIGraphicsGetImageFromCurrentImageContext()
+
+        UIGraphicsEndImageContext()
+        return colorizedImage ?? self
+      }
 }

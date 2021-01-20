@@ -10,86 +10,123 @@ import core
 import SwiftUI
 
 struct NavigationBar: ViewModifier {
-    @State private var showsSlidingPanel = false
-    
     private let navigationBarContent: AnyView?
-    
+
     private let navigationBarData: NavigationBarData?
-    
+
     func body(content: Content) -> some View {
-        let view = AnyView(
-            VStack(spacing: 0) {
-                ZStack {
-                    AppColor.navigationBar.color
-                        .edgesIgnoringSafeArea(.all)
-                    
-                    if let navigationBarContent = self.navigationBarContent ?? self.getNavigationBar() {
-                        navigationBarContent
-                            .padding([.leading, .trailing], 10)
-                    }
-                }
-                .frame(height: 44)
-                
-                AppColor.lightGrey.color.frame(height: 1)
-                
+        if let navigationBarContent = self.navigationBarContent {
+            return AnyView(
                 content
-            }
+                    .modifier(_BaseNavigationBarModifier(navigationBarContent: navigationBarContent))
+            )
+        }
+
+        guard let data = self.navigationBarData else { return AnyView(content) }
+
+        return AnyView (
+            content
+                .modifier(
+                    _SlidingNavigationBarModifier(navigationSection: data.navigationSection,
+                                                  navigationBarInfo: data.navigationBarInfo,
+                                                  handleGoBack: data.handleGoBack)
+                )
         )
-        
-        guard let navigationSection = self.navigationBarData?.navigationSection else { return view }
-        
-        return AnyView(
-            view
-                .slidingNavigationPanelView(withNavigationSection: navigationSection,
-                                            showsSlidingPanel: showsSlidingPanel,
-                                            changeSlidingPanelState: changeSlidingPanelState)
-        )
-        
     }
-    
-    init(navigationSection: NavigationSection?,
+
+    init(navigationSection: DataSource<NavigationSection>,
          navigationBarInfo: DataSource<TabBarInfo>,
          handleGoBack: @escaping () -> ()) {
         self.navigationBarData = NavigationBarData(navigationSection: navigationSection,
                                                    navigationBarInfo: navigationBarInfo,
                                                    handleGoBack: handleGoBack)
-        
+
         self.navigationBarContent = nil
     }
-    
+
     init(navigationBarContent: AnyView) {
         self.navigationBarContent = navigationBarContent
-        
+
         self.navigationBarData = nil
     }
-    
-    private func changeSlidingPanelState(isHidden: Bool) {
-        withAnimation {
-            self.showsSlidingPanel = !isHidden
-        }
-    }
-    
-    private func getNavigationBar() -> AnyView? {
-        guard let data = self.navigationBarData else { return AnyView(EmptyView()) }
-        
-        return AnyView(
-            _NavigationBar(navigationBarInfo: data.navigationBarInfo,
-                           changeSlidingPanelState: changeSlidingPanelState,
-                           handleGoBack: data.handleGoBack)
-        )
-    }
-    
+
     private struct NavigationBarData {
-        let navigationSection: NavigationSection?
+        let navigationSection: DataSource<NavigationSection>
+
         let navigationBarInfo: DataSource<TabBarInfo>
         let handleGoBack: (() -> ())
     }
 }
 
-private struct _NavigationBar: View {
+private struct _BaseNavigationBarModifier: ViewModifier {
+    let navigationBarContent: AnyView
+    
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            ZStack {
+                AppColor.navigationBar.color
+                    .edgesIgnoringSafeArea(.all)
+
+                navigationBarContent
+                    .padding([.leading, .trailing], 10)
+            }
+            .frame(height: 44)
+
+            AppColor.lightGrey.color.frame(height: 1)
+
+            content
+        }
+    }
+}
+
+struct _SlidingNavigationBarModifier: ViewModifier {
+    @State private var showsSlidingPanel = false
+
+    @ObservedObject var navigationSection: SwiftDataSource<NavigationSection>
+
+    private let navigationBarInfo: DataSource<TabBarInfo>
+    private let handleGoBack: (() -> ())
+
+    func body(content: Content) -> some View {
+        let navigationBar = _CustomizedNavigationBar(navigationBarInfo: navigationBarInfo,
+                                                     closeSlidingPanel: closeSlidingPanel,
+                                                     handleGoBack: handleGoBack)
+        
+        let view = AnyView(
+            content
+                .modifier(_BaseNavigationBarModifier(navigationBarContent: AnyView(navigationBar)))
+        )
+
+        guard let navigationSection = self.navigationSection.value else { return view }
+
+        return AnyView (
+            view
+                .slidingNavigationPanelView(withNavigationSection: navigationSection,
+                                            showsSlidingPanel: showsSlidingPanel,
+                                            closeSlidingPanel: closeSlidingPanel)
+        )
+    }
+
+    init(navigationSection: DataSource<NavigationSection>,
+         navigationBarInfo: DataSource<TabBarInfo>,
+         handleGoBack: @escaping () -> ()) {
+        self.navigationSection = SwiftDataSource(dataSource: navigationSection)
+
+        self.navigationBarInfo = navigationBarInfo
+        self.handleGoBack = handleGoBack
+    }
+
+    private func closeSlidingPanel(isClosed: Bool) {
+        withAnimation {
+            self.showsSlidingPanel = !isClosed
+        }
+    }
+}
+
+private struct _CustomizedNavigationBar: View {
     @ObservedObject var navigationBarInfo: SwiftDataSource<TabBarInfo>
     
-    let changeSlidingPanelState: (Bool) -> ()
+    let closeSlidingPanel: (Bool) -> ()
     let handleGoBack: () -> ()
     
     var body: some View {
@@ -157,11 +194,11 @@ private struct _NavigationBar: View {
     }
     
     init(navigationBarInfo: DataSource<TabBarInfo>,
-         changeSlidingPanelState: @escaping (Bool) -> (),
+         closeSlidingPanel: @escaping (Bool) -> (),
          handleGoBack: @escaping () -> ()) {
         self.navigationBarInfo = SwiftDataSource(dataSource: navigationBarInfo)
         
-        self.changeSlidingPanelState = changeSlidingPanelState
+        self.closeSlidingPanel = closeSlidingPanel
         self.handleGoBack = handleGoBack
     }
     
@@ -185,7 +222,7 @@ private struct _NavigationBar: View {
         case .back:
             handleGoBack()
         case .hamburger:
-            changeSlidingPanelState(false)
+            closeSlidingPanel(false)
         default:
             return
         }

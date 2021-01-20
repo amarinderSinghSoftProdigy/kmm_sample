@@ -132,3 +132,16 @@
 "compositions" = "Compositions";
 "storage" = "Storage";
 "storage_description" = "Store at room temperature (10–30°C)";
+
+// MARK: Settings
+"personal_profile" = "Personal Profile";
+"change_password" = "Change Password";
+"gstin_details" = "GSTIN Details";
+
+// MARK: Settings Change Password
+"enter_current_password" = "Please enter your current password:";
+"current_password" = "Current Password";
+"enter_new_password" = "Please enter your new password:";
+
+// MARK: Settings Address
+"view_location_on_map" = "View the location on the map";

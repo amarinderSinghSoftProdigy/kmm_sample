@@ -36,11 +36,13 @@ struct MedicoButton: View {
     }
 }
 
-struct PlaceholderTextView: View {
+struct ReadOnlyTextField: View {
     let height: CGFloat
     
     let placeholder: String
     let text: String?
+    
+    let showPlaceholderWithText: Bool
     
     let errorMessageKey: String?
     
@@ -51,23 +53,42 @@ struct PlaceholderTextView: View {
             AppColor.white.color
                 .cornerRadius(8)
             
-            let showsPlaceholder = text?.isEmpty != false
-            let currentText = showsPlaceholder ? placeholder : text!
-            let color: AppColor = showsPlaceholder ? .placeholderGrey : .darkBlue
+            let hasText = text?.isEmpty == false
             
-            LocalizedText(localizationKey: currentText,
-                          fontSize: 15,
-                          color: color)
-                .padding([.leading, .trailing], padding)
+            VStack(alignment: .leading, spacing: 4) {
+                if !hasText || showPlaceholderWithText {
+                    let fontSize: CGFloat = hasText ? 11 : 15
+                    let color: AppColor = hasText ? .lightBlue : .placeholderGrey
+                    
+                    LocalizedText(localizationKey: placeholder,
+                                  fontSize: fontSize,
+                                  color: color,
+                                  multilineTextAlignment: .leading)
+                }
+                
+                if hasText {
+                    LocalizedText(localizationKey: text ?? "",
+                                  fontSize: 15)
+                }
+            }
+            .padding([.leading, .trailing], padding)
         }
         .frame(height: height)
         .fieldError(withLocalizedKey: errorMessageKey, withPadding: padding)
     }
     
-    init(placeholder: String, text: String?, errorMessageKey: String? = nil,  height: CGFloat = 50) {
+    init(placeholder: String,
+         text: String?,
+         showPlaceholderWithText: Bool = true,
+         errorMessageKey: String? = nil,
+         height: CGFloat = 50) {
         self.placeholder = placeholder
         self.text = text
+        
+        self.showPlaceholderWithText = showPlaceholderWithText
+        
         self.errorMessageKey = errorMessageKey
+        
         self.height = height
     }
 }
@@ -153,5 +174,93 @@ struct LocalizedText: View {
         self.underlined = underlined ?? false
         
         self.localizedStringKey = localizedStringKey
+    }
+}
+
+struct TableViewCell: View {
+    let textLocalizationKey: String?
+    
+    let imageName: String?
+    let imageColor: AppColor?
+    let imageSize: CGFloat
+    
+    let style: Style
+    
+    let onTapAction: () -> ()
+    
+    var body: some View {
+        guard let localizationKey = self.textLocalizationKey else {
+            return AnyView(EmptyView())
+        }
+        
+        return AnyView(
+            Button(action: { self.onTapAction() }) {
+                HStack(spacing: 24) {
+                    if let imageName = self.imageName {
+                        Image(imageName)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: imageSize, height: imageSize)
+                            .foregroundColor(appColor: imageColor ?? .white)
+                    }
+                    
+                    LocalizedText(localizationKey: localizationKey,
+                                  textWeight: style.textWeight,
+                                  fontSize: 15,
+                                  color: style.foregroundColor)
+                    
+                    if style.hasNavigationArrow {
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(appColor: style.foregroundColor)
+                    }
+                }
+            }
+            .testingIdentifier("\(localizationKey)_button")
+        )
+    }
+    
+    init(textLocalizationKey: String?,
+         imageName: String?,
+         imageColor: AppColor? = nil,
+         imageSize: CGFloat = 18,
+         style: Style,
+         onTapAction: @escaping () -> ()) {
+        self.textLocalizationKey = textLocalizationKey
+        
+        self.imageName = imageName
+        self.imageColor = imageColor
+        self.imageSize = imageSize
+       
+        self.style = style
+        self.onTapAction = onTapAction
+    }
+    
+    enum Style {
+        case navigation
+        case plain
+        
+        var hasNavigationArrow: Bool {
+            return self == .navigation
+        }
+        
+        var textWeight: TextWeight {
+            switch self {
+            case .navigation:
+                return .medium
+            case .plain:
+                return .semiBold
+            }
+        }
+        
+        var foregroundColor: AppColor {
+            switch self {
+            case .navigation:
+                return .darkBlue
+            case .plain:
+                return .grey1
+            }
+        }
     }
 }

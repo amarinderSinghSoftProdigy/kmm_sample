@@ -36,7 +36,6 @@ struct SignUpAddressScreen: View {
     
     var addressDataFields: some View {
         VStack(spacing: 12) {
-            
             let pincodeError = self.pincodeValidation.value?.pincode
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
                                          text: self.registration.value?.pincode,
@@ -74,11 +73,11 @@ struct SignUpAddressScreen: View {
                            onChange: { newValue in scope.changeCity(city: newValue) })
                 .fieldError(withLocalizedKey: self.userValidation.value?.city)
             
-            PlaceholderTextView(placeholder: "district",
+            ReadOnlyTextField(placeholder: "district",
                                 text: self.registration.value?.district,
                                 errorMessageKey: self.userValidation.value?.district)
             
-            PlaceholderTextView(placeholder: "state",
+            ReadOnlyTextField(placeholder: "state",
                                 text: self.registration.value?.state,
                                 errorMessageKey: self.userValidation.value?.state)
         }

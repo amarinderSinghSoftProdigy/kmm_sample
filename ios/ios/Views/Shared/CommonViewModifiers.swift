@@ -61,68 +61,6 @@ struct FieldError: ViewModifier {
     }
 }
 
-struct ErrorAlert: ViewModifier {
-    let errorsHandler: Scope.Host
-    
-    @ObservedObject var error: SwiftDataSource<DataErrorCode>
-    private var showsAlert: Binding<Bool>
-    
-    init(errorsHandler: Scope.Host) {
-        self.errorsHandler = errorsHandler
-        
-        let error = SwiftDataSource(dataSource: errorsHandler.alertError)
-        self.error = error
-        
-        showsAlert = Binding(get: { error.value != nil }, set: { _ in })
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .alert(isPresented: showsAlert) {
-                let title = self.error.value?.title ?? "error"
-                let body = self.error.value?.body ?? "something_went_wrong"
-                
-                return content.getAlert(withTitleKey: title,
-                                        withMessageKey: body,
-                                        withButtonAction: { errorsHandler.dismissAlertError() })
-            }
-    }
-}
-
-struct NotificationAlert: ViewModifier {
-    let notificationsHandler: CommonScopeWithNotifications
-    let onDismiss: (() -> ())?
-    
-    @ObservedObject var notification: SwiftDataSource<ScopeNotification>
-    private var showsAlert: Binding<Bool>
-    
-    init(notificationsHandler: CommonScopeWithNotifications,
-         onDismiss: (() -> ())? = nil) {
-        self.notificationsHandler = notificationsHandler
-        self.onDismiss = onDismiss
-        
-        let notification = SwiftDataSource(dataSource: notificationsHandler.notifications)
-        self.notification = notification
-        
-        showsAlert = Binding(get: { notification.value != nil }, set: { _ in })
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .alert(isPresented: showsAlert) {
-                let title = notification.value?.title ?? ""
-                let body = notification.value?.body ?? ""
-                
-                return content.getAlert(withTitleKey: title,
-                                        withMessageKey: body,
-                                        withButtonAction: {
-                                            notificationsHandler.dismissNotification()
-                                            onDismiss?()
-                                        })
-            }
-    }
-}
-
 struct TestingIdentifier: ViewModifier {
     let identifier: String
     

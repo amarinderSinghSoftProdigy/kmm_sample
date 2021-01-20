@@ -36,27 +36,24 @@ struct HostScreen: View {
 }
 
 struct BaseScopeView: View {
+    @EnvironmentObject var alertData: AlertData
+    
     let scope: Scope.Host
     
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
         ZStack {
-            NavigationView {
-                ZStack {
-                    AppColor.primary.color.edgesIgnoringSafeArea(.all)
-                
-                    getViewWithModifiers()
-                }
-                .hideKeyboardOnTap()
-                .navigationBarHidden(true)
-            }
+            AppColor.primary.color.edgesIgnoringSafeArea(.all)
+            
+            getViewWithModifiers()
 
             if let isInProgress = self.isInProgress.value,
                isInProgress == true {
                 ActivityView()
             }
         }
+        .hideKeyboardOnTap()
     }
     
     var currentView: AnyView {
@@ -89,6 +86,13 @@ struct BaseScopeView: View {
     private func getViewWithModifiers() -> some View {
         var view = AnyView(
             currentView
+                .alert(item: $alertData.data) { alertData in
+                    Alert(title: Text(LocalizedStringKey(alertData.titleKey)),
+                          message: Text(LocalizedStringKey(alertData.messageKey)),
+                          dismissButton: Alert.Button.default(Text(LocalizedStringKey(alertData.buttonTextKey)),
+                                                              action: alertData.buttonAction))
+                }
+                
                 .errorAlert(withHandler: scope)
         )
         
@@ -125,20 +129,23 @@ struct TabBarScreen: View {
     private var currentView: AnyView {
         switch scope.value {
             
-        case let scopeValue as OtpScope:
-            return AnyView(OtpFlowScreen(scope: scopeValue))
+        case let scope as OtpScope:
+            return AnyView(OtpFlowScreen(scope: scope))
             
-        case let scopeValue as EnterNewPasswordScope:
-            return AnyView(AuthNewPasswordScreen(scope: scopeValue))
+        case let scope as PasswordScope:
+            return AnyView(PasswordScreen(scope: scope))
             
-        case let scopeValue as SignUpScope:
-            return AnyView(SignUpScreen(scope: scopeValue))
+        case let scope as SignUpScope:
+            return AnyView(SignUpScreen(scope: scope))
             
         case let scope as LimitedAccessScope:
             return AnyView(LimitedAppAccessScreen(scope: scope))
             
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
+            
+        case let scope as SettingsScope:
+            return AnyView(SettingsScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

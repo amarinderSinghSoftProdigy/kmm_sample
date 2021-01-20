@@ -21,28 +21,6 @@ extension View {
         }
     }
     
-    // MARK: Alerts
-    func alert(_ isPresented: Binding<Bool>,
-               withTitleKey titleKey: String,
-               withMessageKey messageKey: String,
-               withButtonTextKey buttonTextKey: String) -> some View {
-        return self.alert(isPresented: isPresented) {
-            Alert(title: Text(LocalizedStringKey(titleKey)),
-                  message: Text(LocalizedStringKey(messageKey)),
-                  dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey))))
-        }
-    }
-    
-    func getAlert(withTitleKey titleKey: String,
-                  withMessageKey messageKey: String,
-                  withButtonTextKey buttonTextKey: String = "okay",
-                  withButtonAction buttonAction: (() -> ())? = nil) -> Alert {
-        Alert(title: Text(LocalizedStringKey(titleKey)),
-              message: Text(LocalizedStringKey(messageKey)),
-              dismissButton: Alert.Button.default(Text(LocalizedStringKey(buttonTextKey)),
-                                                  action: buttonAction))
-    }
-    
     // MARK: Input Fields
     func hideKeyboardOnTap() -> some View {
         self.onTapGesture {
@@ -72,11 +50,11 @@ extension View {
     
     func slidingNavigationPanelView(withNavigationSection navigationSection: NavigationSection,
                                     showsSlidingPanel: Bool,
-                                    changeSlidingPanelState: @escaping (Bool) -> ()) -> some View {
+                                    closeSlidingPanel: @escaping (Bool) -> ()) -> some View {
         self.modifier(
             SlidingNavigationPanelView(navigationSection: navigationSection,
                                        showsSlidingPanel: showsSlidingPanel,
-                                       changeSlidingPanelState: changeSlidingPanelState)
+                                       closeSlidingPanel: closeSlidingPanel)
         )
     }
     
@@ -115,7 +93,7 @@ extension View {
         )
     }
     
-    func navigationBar(withNavigationSection navigationSection: NavigationSection?,
+    func navigationBar(withNavigationSection navigationSection: DataSource<NavigationSection>,
                        withNavigationBarInfo navigationBarInfo: DataSource<TabBarInfo>,
                        handleGoBack: @escaping () -> ()) -> some View {
         self.modifier(
