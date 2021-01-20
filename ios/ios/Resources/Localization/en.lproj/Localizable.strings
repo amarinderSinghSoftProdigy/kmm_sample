@@ -145,3 +145,6 @@
 
 // MARK: Settings Address
 "view_location_on_map" = "View the location on the map";
+
+// MARK: Stockist Management
+"stockists" = "Stockists";

@@ -47,6 +47,7 @@
 		337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BF25B871000025B945 /* AlertViewModifiers.swift */; };
+		3391B0BE25B824600025B945 /* StockistManagementScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BD25B824600025B945 /* StockistManagementScreen.swift */; };
 		3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
@@ -174,6 +175,7 @@
 		337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScopeInfo.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3391B0BF25B871000025B945 /* AlertViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifiers.swift; sourceTree = "<group>"; };
+		3391B0BD25B824600025B945 /* StockistManagementScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockistManagementScreen.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingNavigationPanelView.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
@@ -449,6 +451,7 @@
 				333AE3F925821ED000C249C1 /* Main */,
 				334FF84325B5CC9600EC9663 /* Password */,
 				339D372025B05C6E00C57B2D /* Settings */,
+				3391B08C25B81E740025B945 /* UsersManagement */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
 			path = Screens;
@@ -457,14 +460,12 @@
 		337C0A36256D426900C3F0A5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				7555FF84242A565B00829871 /* Assets.xcassets */,
-				33F15209256FF5D200C4C656 /* Colors.xcassets */,
+				3391B0BA25B820360025B945 /* Assets */,
 				33E7682D256D5F6D00B35FDF /* Fonts */,
-				331BED582593614600757694 /* GoogleService-Info.plist */,
-				7555FF8C242A565B00829871 /* Info.plist */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
-				33289422256537A50003E092 /* Localizable.strings */,
+				3391B0BC25B820680025B945 /* Localization */,
 				7555FF86242A565B00829871 /* Preview Content */,
+				3391B0BB25B8204F0025B945 /* PropertyLists */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -519,6 +520,48 @@
 				3391B0BF25B871000025B945 /* AlertViewModifiers.swift */,
 			);
 			path = Alert;
+            sourceTree = "<group>";
+        };
+		3391B08B25B81D5E0025B945 /* Stockist */ = {
+			isa = PBXGroup;
+			children = (
+				3391B0BD25B824600025B945 /* StockistManagementScreen.swift */,
+			);
+			path = Stockist;
+			sourceTree = "<group>";
+		};
+		3391B08C25B81E740025B945 /* UsersManagement */ = {
+			isa = PBXGroup;
+			children = (
+				3391B08B25B81D5E0025B945 /* Stockist */,
+			);
+			path = UsersManagement;
+			sourceTree = "<group>";
+		};
+		3391B0BA25B820360025B945 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				7555FF84242A565B00829871 /* Assets.xcassets */,
+				33F15209256FF5D200C4C656 /* Colors.xcassets */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		3391B0BB25B8204F0025B945 /* PropertyLists */ = {
+			isa = PBXGroup;
+			children = (
+				331BED582593614600757694 /* GoogleService-Info.plist */,
+				7555FF8C242A565B00829871 /* Info.plist */,
+			);
+			path = PropertyLists;
+			sourceTree = "<group>";
+		};
+		3391B0BC25B820680025B945 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				33289422256537A50003E092 /* Localizable.strings */,
+			);
+			path = Localization;
 			sourceTree = "<group>";
 		};
 		33946A942580E65800A01804 /* Otp */ = {
@@ -989,6 +1032,7 @@
 				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
 				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
+				3391B0BE25B824600025B945 /* StockistManagementScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
@@ -1261,7 +1305,7 @@
 					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = ios/Resources/Info.plist;
+				INFOPLIST_FILE = ios/Resources/PropertyLists/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1292,7 +1336,7 @@
 					"$(SRCROOT)/../core/build/xcode-frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = ios/Resources/Info.plist;
+				INFOPLIST_FILE = ios/Resources/PropertyLists/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

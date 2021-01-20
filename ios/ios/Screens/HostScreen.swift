@@ -148,7 +148,10 @@ struct TabBarScreen: View {
             return AnyView(SettingsScreen(scope: scope))
             
         default:
-            return AnyView(EmptyView())
+            return AnyView(
+                StockistManagementScreen()
+//                EmptyView()
+            )
         }
     }
 }

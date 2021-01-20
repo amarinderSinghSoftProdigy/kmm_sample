@@ -69,7 +69,8 @@ struct GlobalSearchScreen: View {
     private var searchBarPanel: some View {
         HStack {
             SearchBar(searchText: productSearch.value,
-                      trailingButton: .filter({ scope.toggleFilter() }),
+                      style: .small,
+                      trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
                       onTextChange: { value in scope.searchProduct(input: value) })
             
             Button(LocalizedStringKey("cancel")) {
@@ -82,90 +83,99 @@ struct GlobalSearchScreen: View {
     }
     
     private var filtersView: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Spacer()
-                
-                LocalizedText(localizationKey: "clear_all",
-                              textWeight: .medium,
-                              fontSize: 16,
-                              color: .textGrey,
-                              multilineTextAlignment: .trailing)
-                    .onTapGesture {
-                        scope.clearFilter(filter: nil)
-                    }
-            }
-            
-            if let filters = self.filters.value as? [DataFilter] {
-                ForEach(filters, id: \.self.name) { filter in
-                    let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
-                        SearchOption(text: manufucturerSearch.value,
-                                     onSearch: { value in scope.searchManufacturer(input: value) }) : nil
+        VStack(spacing: 0){
+            VStack(spacing: 12) {
+                HStack {
+                    Spacer()
                     
-                    FilterView(filter: filter,
-                               searchOption: searchOption,
-                               onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                    option: option) },
-                               onClearFilter: { scope.clearFilter(filter: filter) })
+                    LocalizedText(localizationKey: "clear_all",
+                                  textWeight: .medium,
+                                  fontSize: 16,
+                                  color: .textGrey,
+                                  multilineTextAlignment: .trailing)
+                        .onTapGesture {
+                            scope.clearFilter(filter: nil)
+                        }
+                }
+                
+                if let filters = self.filters.value as? [DataFilter] {
+                    ForEach(filters, id: \.self.name) { filter in
+                        let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
+                            SearchOption(text: manufucturerSearch.value,
+                                         onSearch: { value in scope.searchManufacturer(input: value) }) : nil
+
+                        FilterView(filter: filter,
+                                   searchOption: searchOption,
+                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                        option: option) },
+                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                    }
                 }
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 32)
+            .scrollView()
+        
+            Spacer()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 32)
-        .scrollView()
     }
     
     private var productsView: some View {
         guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
         
+        let lastProductIndex = products.count - 1
+        
         return AnyView (
-            ZStack {
-                List {
-                    ForEach(Array(products.enumerated()), id: \.element) { index, product in
-                        let topPadding: CGFloat = index == 0 ? 0 : 16
+            List {
+                ForEach(Array(products.enumerated()), id: \.element) { index, product in
+                    let topPadding: CGFloat = index == 0 ? 32 : 16
+                    let bottomPadding: CGFloat = index == lastProductIndex ? 32 : 0
 
-                        ProductView(product: product)
-                            .padding(.top, topPadding)
-                            .listRowInsets(.init())
-                            .listRowBackground(Color.clear)
-                            .background(appColor: .primary)
-                            .onTapGesture {
-                                scope.selectProduct(product: product, index: Int32(index))
-                            }
-                            .onAppear {
-                                if index == products.count - 1 &&
-                                    scope.canLoadMore() &&
-                                    isInProgress.value == false {
-                                    scope.loadMoreProducts()
+                    ProductView(product: product)
+                        .padding(.top, topPadding)
+                        .padding(.bottom, bottomPadding)
+                        .listRowInsets(.init())
+                        .listRowBackground(Color.clear)
+                        .background(appColor: .primary)
+                        .onTapGesture {
+                            scope.selectProduct(product: product, index: Int32(index))
+                        }
+                        .onAppear {
+                            if index == products.count - 1 &&
+                                scope.canLoadMore() &&
+                                isInProgress.value == false {
+                                scope.loadMoreProducts()
 
-                                    self.scrollElementIndex = index
-                                }
+                                self.scrollElementIndex = index
                             }
-                    }
-                }
-                .introspectTableView { (tableView) in
-                    if self.productsListTableView == nil {
-                        self.productsListTableView = tableView
-                    }
-                    
-                    if self.isInProgress.value == true { return }
-                    
-                    setUpInitialScrollData()
-                    
-                    if let elementToScrollTo = self.elementToScrollTo {
-                        scrollToCell(elementToScrollTo)
-                    }
-                }
-                .onAppear {
-                    UITableView.appearance().backgroundColor = UIColor.clear
-                    UITableViewCell.appearance().backgroundColor = UIColor.clear
-                }
-                .onReceive(self.products.$value) { value in
-                    guard let value = value, value.count > 0 else { return }
-                    
-                    self.productsListTableView = nil
+                        }
                 }
             }
+            .introspectTableView { (tableView) in
+                if self.productsListTableView == nil {
+                    self.productsListTableView = tableView
+                }
+                
+                if self.isInProgress.value == true { return }
+                
+                setUpInitialScrollData()
+                
+                if let elementToScrollTo = self.elementToScrollTo {
+                    scrollToCell(elementToScrollTo)
+                }
+            }
+            .onAppear {
+                UITableView.appearance().showsVerticalScrollIndicator = false
+                
+                UITableView.appearance().backgroundColor = UIColor.clear
+                UITableViewCell.appearance().backgroundColor = UIColor.clear
+            }
+            .onReceive(self.products.$value) { value in
+                guard let value = value, value.count > 0 else { return }
+                
+                self.productsListTableView = nil
+            }
+            .padding(.horizontal, 16)
         )
     }
     
@@ -233,7 +243,7 @@ private struct FilterView: View {
             if let searchOption = self.searchOption {
                 SearchBar(placeholderLocalizationKey: "search_manufacturer",
                           searchText: searchOption.text,
-                          trailingButton: .clear,
+                          style: .small,
                           onTextChange: searchOption.onSearch)
             }
             

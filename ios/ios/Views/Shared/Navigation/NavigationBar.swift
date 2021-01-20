@@ -157,7 +157,7 @@ private struct _CustomizedNavigationBar: View {
                         self.getScopeButton(for: searchBarInfo.icon)
                         
                         HStack(spacing: spacing - 4) {
-                            SearchBar()
+                            SearchBar(style: .small)
                                 .onTapGesture {
                                     searchBarInfo.goToSearch()
                                 }
