@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -64,5 +65,13 @@ interface NetworkScope {
             page: Int,
             query: List<Pair<String, String>>,
         ): Response.Wrapped<SearchResponse>
+    }
+
+    interface Management {
+        suspend fun getAllStockists(page: Int): Response.Wrapped<List<EntityInfo>>
+        suspend fun getSubscribedStockists(
+            page: Int,
+            unitCode: String
+        ): Response.Wrapped<List<EntityInfo>>
     }
 }

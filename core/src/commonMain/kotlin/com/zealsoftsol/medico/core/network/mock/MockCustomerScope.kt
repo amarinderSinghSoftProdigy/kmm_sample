@@ -37,6 +37,7 @@ class MockCustomerScope : NetworkScope.Customer {
                 "",
                 "",
                 "",
+                "",
             ),
             true
         )

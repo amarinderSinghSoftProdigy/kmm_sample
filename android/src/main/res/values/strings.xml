@@ -38,6 +38,10 @@
     <string name="retailer">Retailer</string>
     <string name="season_boy">Season Boy</string>
     <string name="hospital">Hospital</string>
+    <string name="stockists">Stockists</string>
+    <string name="retailers">Retailers</string>
+    <string name="season_boys">Season Boys</string>
+    <string name="hospitals">Hospitals</string>
     <string name="next">Next</string>
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
@@ -93,7 +97,6 @@
     <string name="compositions">Compositions</string>
     <string name="storage">Storage</string>
     <string name="storage_desc">Store at room temperature (10–30°C)</string>
-    <string name="setting">Settings</string>
     <string name="personal_profile">Personal Profile</string>
     <string name="change_password">Change Password</string>
     <string name="gstin_details">GSTIN Details</string>

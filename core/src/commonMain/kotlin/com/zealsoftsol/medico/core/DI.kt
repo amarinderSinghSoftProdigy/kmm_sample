@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.network.mock.MockAuthScope
 import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
+import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
 import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
@@ -69,6 +70,13 @@ fun startKodein(
             instance<NetworkClient>()
         } else {
             MockProductScope()
+        }
+    }
+    bind<NetworkScope.Management>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockManagementScope()
         }
     }
     bind<UserRepo>() with singleton {

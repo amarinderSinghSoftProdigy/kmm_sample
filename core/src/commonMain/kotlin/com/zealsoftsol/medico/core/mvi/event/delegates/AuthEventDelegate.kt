@@ -41,7 +41,7 @@ internal class AuthEventDelegate(
                     val user = userRepo.requireUser()
                     setScope(
                         if (user.isVerified)
-                            DashboardScope.get(userRepo.getUserDataSource())
+                            DashboardScope.get(user, userRepo.getUserDataSource())
                         else
                             LimitedAccessScope.get(user, userRepo.getUserDataSource())
                     )

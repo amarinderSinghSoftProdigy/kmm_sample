@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -62,14 +63,14 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun SearchQueryScreen(scope: SearchScope) {
+    val listState = (scope.storage.restore("list") as? LazyListState) ?: rememberLazyListState()
+    scope.storage.save("list", listState)
     Column(modifier = Modifier.fillMaxSize()) {
         val product = scope.productSearch.flow.collectAsState()
         val manufacturer = scope.manufacturerSearch.flow.collectAsState()
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
-        val listState =
-            rememberLazyListState(initialFirstVisibleItemIndex = scope.getVisibleProductIndex())
         TabBar {
             BasicSearchBar(
                 input = product.value,
@@ -104,7 +105,7 @@ fun SearchQueryScreen(scope: SearchScope) {
                 itemsIndexed(
                     items = products.value,
                     itemContent = { index, item ->
-                        ProductItem(item) { scope.selectProduct(item, index) }
+                        ProductItem(item) { scope.selectProduct(item) }
                         if (index == products.value.lastIndex && scope.canLoadMore() && !scope.isInProgress.flow.value) {
                             scope.loadMoreProducts()
                         }

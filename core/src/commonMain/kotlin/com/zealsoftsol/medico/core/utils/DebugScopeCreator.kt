@@ -185,7 +185,7 @@ object DebugScopeCreator {
     fun dashboardScreen() {
         nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
         nav.setScope(
-            DashboardScope.get(ReadOnlyDataSource(MutableStateFlow(testUser)))
+            DashboardScope.get(testUser, ReadOnlyDataSource(MutableStateFlow(testUser)))
         )
     }
 
@@ -197,6 +197,7 @@ object DebugScopeCreator {
         nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
         nav.setScope(
             ProductInfoScope.get(
+                user = testUser,
                 userDataSource = ReadOnlyDataSource(MutableStateFlow(testUser)),
                 product = ProductData(
                     active = true,
@@ -242,6 +243,7 @@ private inline val testUser
         "User",
         "test@mail.com",
         "000",
+        "unitcode",
         UserType.STOCKIST,
         User.Details.DrugLicense("", "", "", "", "url"),
         true,

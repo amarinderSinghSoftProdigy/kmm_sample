@@ -329,13 +329,13 @@ fun NavigationCell(
     Row(
         modifier = Modifier.fillMaxWidth()
             .clickable(indication = clickIndication, onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = icon,
             tint = color,
-            modifier = Modifier.padding(start = 18.dp),
+            modifier = Modifier.padding(start = 18.dp).size(22.dp),
         )
         Text(
             text = text,

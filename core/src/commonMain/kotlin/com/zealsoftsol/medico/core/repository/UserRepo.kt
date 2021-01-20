@@ -71,6 +71,7 @@ class UserRepo(
                 it.lastName,
                 it.email,
                 it.phoneNumber,
+                it.unitCode,
                 parsedType,
                 when (parsedType) {
                     UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")

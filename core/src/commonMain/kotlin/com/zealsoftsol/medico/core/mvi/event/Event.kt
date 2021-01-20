@@ -70,6 +70,17 @@ internal sealed class Event {
 
             data class Select(val productCode: String) : Product()
         }
+
+        sealed class Management : Action() {
+            override val typeClazz: KClass<*> = Management::class
+
+            data class Filter(val value: String?) : Management()
+            object LoadAllStockists : Management()
+            object LoadSubscribedStockists : Management()
+            object LoadRetailers : Management()
+            object LoadHospitals : Management()
+            object LoadSeasonBoys : Management()
+        }
     }
 
     sealed class Transition : Event() {
@@ -84,5 +95,6 @@ internal sealed class Event {
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
+        data class Management(val manageUserType: UserType) : Transition()
     }
 }
