@@ -37,6 +37,9 @@ interface CommonScope : Scopable {
 }
 
 interface ScopeNotification {
+    val isSimple: Boolean
+    val isDismissible: Boolean
+
     /**
      * Localized string key
      */
@@ -45,5 +48,5 @@ interface ScopeNotification {
     /**
      * Localized string key
      */
-    val body: String
+    val body: String?
 }
