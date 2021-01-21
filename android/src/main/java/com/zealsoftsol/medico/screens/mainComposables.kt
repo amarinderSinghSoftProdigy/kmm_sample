@@ -34,6 +34,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
@@ -49,6 +50,7 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
@@ -112,7 +114,15 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 modifier = Modifier
                                     .weight(0.15f)
                                     .padding(16.dp)
-                                    .clickable(onClick = { scaffoldState.drawerState.open() })
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                            when (info.icon) {
+                                                ScopeIcon.BACK -> scope.goBack()
+                                                ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
+                                            }
+                                        }
+                                    )
                             )
                             Row(
                                 modifier = Modifier
@@ -178,6 +188,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     is DashboardScope -> Unit
                     is ProductInfoScope -> ProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
+                    is ManagementScope<*> -> ManagementScreen(it)
                 }
             }
         },

@@ -171,7 +171,7 @@ object DebugScopeCreator {
                 "",
                 ""
             ) else User.Details.DrugLicense("", "", "", "", "url"),
-            isVerified = false,
+            isActivated = false,
             isDocumentUploaded = isDocumentUploaded
         )
         nav.setScope(

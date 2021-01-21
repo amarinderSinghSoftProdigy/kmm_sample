@@ -100,4 +100,12 @@
     <string name="personal_profile">Personal Profile</string>
     <string name="change_password">Change Password</string>
     <string name="gstin_details">GSTIN Details</string>
+    <string name="your_stockists">Your Stockists</string>
+    <string name="all_stockists">All Stockists</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="see_on_the_map">See on the map</string>
+    <string name="status">Status</string>
+    <string name="gstin_num">GSTIN Number</string>
+    <string name="payment_method">Payment method</string>
+    <string name="orders">Orders</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,6 +61,7 @@ class MainActivity : ComponentActivity(), DIAware {
         UiLink.setStartingScope()
         setContent {
             val coroutineScope = rememberCoroutineScope()
+            val searchList = rememberLazyListState()
             AppTheme {
                 val hostScope = navigator.scope.flow.collectAsState()
                 Crossfade(hostScope.value, animation = tween(durationMillis = 200)) {
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity(), DIAware {
                                 option = WelcomeOption.Thanks { it.accept() }
                             )
                         }
-                        is SearchScope -> Surface { SearchQueryScreen(it) }
+                        is SearchScope -> Surface { SearchQueryScreen(it, searchList) }
                         is Scope.Host.TabBar -> TabBarScreen(it)
                     }
                 }

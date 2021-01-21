@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -75,6 +76,8 @@ internal sealed class Event {
             override val typeClazz: KClass<*> = Management::class
 
             data class Filter(val value: String?) : Management()
+            data class Select(val item: ManagementItem) : Management()
+            data class Subscribe(val item: ManagementItem) : Management()
             object LoadAllStockists : Management()
             object LoadSubscribedStockists : Management()
             object LoadRetailers : Management()
