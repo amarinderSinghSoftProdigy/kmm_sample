@@ -36,7 +36,7 @@ struct OtpPhoneRequestScreen: View {
         let phone = phoneValue as String
         
         return AnyView(
-            VStack {
+            VStack(spacing: 0) {
                 Spacer()
                 
                 LocalizedText(localizationKey: "reset_password_hint",
@@ -48,7 +48,8 @@ struct OtpPhoneRequestScreen: View {
                 PhoneTextField(phone: phone, canSubmitPhone: $canSubmitPhone) { newValue in
                     scope.changePhoneNumber(phoneNumber: newValue)
                 }
-                .padding(.vertical)
+                .padding(.top, 32)
+                .padding(.bottom, 12)
                 
                 MedicoButton(localizedStringKey: "get_code", isEnabled: canSubmitPhone) {
                     scope.sendOtp(phoneNumber: phone)

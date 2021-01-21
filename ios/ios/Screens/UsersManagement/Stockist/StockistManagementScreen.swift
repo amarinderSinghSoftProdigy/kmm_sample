@@ -11,13 +11,18 @@ import SwiftUI
 struct StockistManagementScreen: View {
     @State private var stockistText: NSString = ""
     
+    @State private var chosenStockist: String?
+    
     @State private var selectedOption = 0
     let options = ["your_stockists", "all_stockists"]
     
-    let stockists = ["Pharmacy Doctors", "Pharmacy Doctors"]
+    let stockists = ["Pharmacy Doctors", "Pharmacy Doctors2"]
 
     var body: some View {
         let stockistImage = Image("Stockist").resizable()
+    
+        let bottomSheetOpened = Binding(get: { self.chosenStockist != nil },
+                                        set: { newValue in if newValue == false { self.chosenStockist = nil }  })
 
         ZStack(alignment: .topLeading) {
             AppColor.primary.color
@@ -36,11 +41,20 @@ struct StockistManagementScreen: View {
                 
                 TransparentList(data: stockists) { _, element in
                     StockistView(stockist: element)
+                        .onTapGesture {
+                            self.chosenStockist = element
+                        }
                 }
             }
             .keyboardResponder()
             .padding(.horizontal, 16)
             .padding(.vertical, 32)
+            
+            if let chosenStockist = self.chosenStockist {
+                BottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
+                    StockistDetails(stockist: chosenStockist)
+                }.edgesIgnoringSafeArea(.all)
+            }
         }
         .screenLogger(withScreenName: "StockistManagement",
                       withScreenClass: StockistManagementScreen.self)
@@ -110,6 +124,94 @@ struct StockistManagementScreen: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 7)
+            }
+        }
+    }
+    
+    private struct StockistDetails: View {
+        let stockist: String
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(stockist)
+                            .medicoText(textWeight: .semiBold,
+                                        fontSize: 20,
+                                        multilineTextAlignment: .leading)
+                        
+                        Text("Mumbai")
+                            .medicoText(textWeight: .medium,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
+                    }
+                    
+                    Spacer()
+                    
+                    MedicoButton(localizedStringKey: "subscribe",
+                                 width: 91,
+                                 height: 31,
+                                 cornerRadius: 5,
+                                 fontSize: 14) {
+                        
+                    }
+                }
+                
+                HStack {
+                    HStack(spacing: 60) {
+                        URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
+                            .frame(width: 96, height: 96)
+                        
+                        VStack(alignment: .leading, spacing: 13) {
+                            HStack(spacing: 5) {
+                                Image("SmallAddress")
+                                
+                                Text("Mumbai 200005")
+                                    .medicoText(textWeight: .bold,
+                                                color: .grey3,
+                                                multilineTextAlignment: .leading)
+                            }
+                            
+                            VStack(alignment: .leading,spacing: 5) {
+                                Text("2 km from you")
+                                    .medicoText(fontSize: 12,
+                                                color: .grey3,
+                                                multilineTextAlignment: .leading)
+                                
+                                LocalizedText(localizationKey: "see_on_the_map",
+                                              textWeight: .bold,
+                                              fontSize: 12,
+                                              color: .lightBlue,
+                                              multilineTextAlignment: .leading)
+                            }
+                        }
+                    }
+                    
+                    Spacer()
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    getInfoPanel(withTitleKey: "status", withValueKey: "subscribed")
+                    getInfoPanel(withTitleKey: "gstin_number", withValueKey: "405569546")
+                    getInfoPanel(withTitleKey: "payment_method", withValueKey: "Cash")
+                    getInfoPanel(withTitleKey: "orders", withValueKey: "3")
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal, 25)
+            .padding(.vertical, 22)
+        }
+        
+        private func getInfoPanel(withTitleKey titleKey: String,
+                                  withValueKey valueKey: String) -> some View {
+            HStack(spacing: 3) {
+                LocalizedText(localizationKey: titleKey,
+                              multilineTextAlignment: .leading)
+                
+                LocalizedText(localizationKey: valueKey,
+                              textWeight: .medium,
+                              multilineTextAlignment: .leading)
             }
         }
     }

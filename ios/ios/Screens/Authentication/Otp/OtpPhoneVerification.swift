@@ -64,7 +64,7 @@ fileprivate struct OtpDetailsView: View {
     @ObservedObject var timerValue: SwiftDataSource<KotlinLong>
     
     var body: some View {
-        VStack {
+        VStack(spacing: 23) {
             LocalizedText(localizedStringKey: LocalizedStringKey("verification_code_sent_hint \(phoneNumber)"),
                           testingIdentifier: "verification_code_sent_hint",
                           textWeight: .medium,
@@ -78,7 +78,6 @@ fileprivate struct OtpDetailsView: View {
                         .medicoText(textWeight: .bold,
                                     fontSize: 15,
                                     testingIdentifier: "timer")
-                        .padding(.vertical)
                 }
                 else {
                     LocalizedText(localizedStringKey: LocalizedStringKey("attempts_left \(attemptsLeft)"),
@@ -86,20 +85,19 @@ fileprivate struct OtpDetailsView: View {
                                   textWeight: .bold,
                                   fontSize: 15,
                                   color: .lightBlue)
-                        .padding(.vertical)
                 }
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
                                              text: code,
                                              onTextChange: { newValue in code = newValue},
                                              keyboardType: .numberPad)
-                    .padding(.vertical)
                     .textContentType(.oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
                              isEnabled: !code.isEmpty && attemptsLeft > 0) {
                     buttonAction(code)
                 }
+                .padding(.top, -11)
             }
         }
         .padding()

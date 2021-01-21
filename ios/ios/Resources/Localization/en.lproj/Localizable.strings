@@ -152,3 +152,11 @@
 "all_stockists" = "All Stockists";
 "pending" = "Pending";
 "subscribed" = "Subscribed";
+
+// MARK: Stockist Details
+"subscribe" = "Subscribe";
+"see_on_the_map" = "See on the map";
+"status" = "Status:";
+"gstin_number" = "GSTIN Number:";
+"payment_method" = "Payment Method:";
+"orders" = "Orders:";
