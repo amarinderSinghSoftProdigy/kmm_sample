@@ -127,17 +127,14 @@ struct GlobalSearchScreen: View {
         let lastProductIndex = products.count - 1
         
         return AnyView (
-            List {
-                ForEach(Array(products.enumerated()), id: \.element) { index, product in
-                    let topPadding: CGFloat = index == 0 ? 32 : 16
-                    let bottomPadding: CGFloat = index == lastProductIndex ? 32 : 0
-
+            TransparentList(data: products) { index, product -> AnyView in
+                let topPadding: CGFloat = index == 0 ? 32 : 0
+                let bottomPadding: CGFloat = index == lastProductIndex ? 16 : 0
+                
+                return AnyView(
                     ProductView(product: product)
                         .padding(.top, topPadding)
                         .padding(.bottom, bottomPadding)
-                        .listRowInsets(.init())
-                        .listRowBackground(Color.clear)
-                        .background(appColor: .primary)
                         .onTapGesture {
                             scope.selectProduct(product: product, index: Int32(index))
                         }
@@ -150,7 +147,7 @@ struct GlobalSearchScreen: View {
                                 self.scrollElementIndex = index
                             }
                         }
-                }
+                )
             }
             .introspectTableView { (tableView) in
                 if self.productsListTableView == nil {
@@ -164,12 +161,6 @@ struct GlobalSearchScreen: View {
                 if let elementToScrollTo = self.elementToScrollTo {
                     scrollToCell(elementToScrollTo)
                 }
-            }
-            .onAppear {
-                UITableView.appearance().showsVerticalScrollIndicator = false
-                
-                UITableView.appearance().backgroundColor = UIColor.clear
-                UITableViewCell.appearance().backgroundColor = UIColor.clear
             }
             .onReceive(self.products.$value) { value in
                 guard let value = value, value.count > 0 else { return }

@@ -46,14 +46,15 @@
 		337DE628258A523800614951 /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
 		337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
-		3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BF25B871000025B945 /* AlertViewModifiers.swift */; };
 		3391B0BE25B824600025B945 /* StockistManagementScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BD25B824600025B945 /* StockistManagementScreen.swift */; };
+		3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BF25B871000025B945 /* AlertViewModifiers.swift */; };
 		3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */; };
 		3395031325824C060080CC88 /* BlurEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3395031225824C060080CC88 /* BlurEffectView.swift */; };
 		339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */; };
 		339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */; };
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
 		339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339D372125B05CCF00C57B2D /* SettingsScreen.swift */; };
+		33A0202425B9920000615349 /* TransparentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202325B9920000615349 /* TransparentList.swift */; };
 		33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
 		33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECA258B8FE90061F63C /* Extensions.swift */; };
@@ -174,14 +175,15 @@
 		337DE627258A523800614951 /* TestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsHelper.swift; sourceTree = "<group>"; };
 		337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScopeInfo.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		3391B0BF25B871000025B945 /* AlertViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifiers.swift; sourceTree = "<group>"; };
 		3391B0BD25B824600025B945 /* StockistManagementScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockistManagementScreen.swift; sourceTree = "<group>"; };
+		3391B0BF25B871000025B945 /* AlertViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifiers.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingNavigationPanelView.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
 		339D372125B05CCF00C57B2D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		33A0202325B9920000615349 /* TransparentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentList.swift; sourceTree = "<group>"; };
 		33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRestoreOtpPhoneVerificationScreenTests.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
 		33ABAECA258B8FE90061F63C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 			isa = PBXGroup;
 			children = (
 				3391B0C125B871940025B945 /* Alert */,
+				33A0202225B991E700615349 /* Containers */,
 				333F45D725A4B63C008DE1D2 /* Images */,
 				333F45D525A4B616008DE1D2 /* Inputs */,
 				332CFD4225AF330C00341A7E /* Navigation */,
@@ -514,14 +517,6 @@
 			path = UIKitElements;
 			sourceTree = "<group>";
 		};
-		3391B0C125B871940025B945 /* Alert */ = {
-			isa = PBXGroup;
-			children = (
-				3391B0BF25B871000025B945 /* AlertViewModifiers.swift */,
-			);
-			path = Alert;
-            sourceTree = "<group>";
-        };
 		3391B08B25B81D5E0025B945 /* Stockist */ = {
 			isa = PBXGroup;
 			children = (
@@ -564,6 +559,14 @@
 			path = Localization;
 			sourceTree = "<group>";
 		};
+		3391B0C125B871940025B945 /* Alert */ = {
+			isa = PBXGroup;
+			children = (
+				3391B0BF25B871000025B945 /* AlertViewModifiers.swift */,
+			);
+			path = Alert;
+			sourceTree = "<group>";
+		};
 		33946A942580E65800A01804 /* Otp */ = {
 			isa = PBXGroup;
 			children = (
@@ -579,6 +582,14 @@
 				339D372125B05CCF00C57B2D /* SettingsScreen.swift */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		33A0202225B991E700615349 /* Containers */ = {
+			isa = PBXGroup;
+			children = (
+				33A0202325B9920000615349 /* TransparentList.swift */,
+			);
+			path = Containers;
 			sourceTree = "<group>";
 		};
 		33ABAEC9258B8F810061F63C /* Utils */ = {
@@ -1038,6 +1049,7 @@
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
+				33A0202425B9920000615349 /* TransparentList.swift in Sources */,
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,

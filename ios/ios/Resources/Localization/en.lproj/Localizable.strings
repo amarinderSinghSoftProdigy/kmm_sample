@@ -150,3 +150,5 @@
 "stockists" = "Stockists";
 "your_stockists" = "Your Stockists";
 "all_stockists" = "All Stockists";
+"pending" = "Pending";
+"subscribed" = "Subscribed";
