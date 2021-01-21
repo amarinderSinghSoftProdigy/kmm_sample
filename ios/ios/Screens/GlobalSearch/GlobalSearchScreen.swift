@@ -47,6 +47,7 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
+                .hideKeyboardOnTap()
                 .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
                 .screenLogger(withScreenName: "GlobalSearchScreen.\(screenName)",
                               withScreenClass: GlobalSearchScreen.self)

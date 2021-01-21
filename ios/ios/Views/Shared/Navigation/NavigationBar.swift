@@ -62,19 +62,22 @@ private struct _BaseNavigationBarModifier: ViewModifier {
     let navigationBarContent: AnyView
     
     func body(content: Content) -> some View {
-        VStack(spacing: 0) {
-            ZStack {
-                AppColor.navigationBar.color
-                    .edgesIgnoringSafeArea(.all)
-
-                navigationBarContent
-                    .padding([.leading, .trailing], 10)
-            }
-            .frame(height: 44)
-
-            AppColor.lightGrey.color.frame(height: 1)
-
+        ZStack(alignment: .topLeading) {
             content
+                .padding(.top, 45)
+            
+            VStack(spacing: 0) {
+                ZStack {
+                    AppColor.navigationBar.color
+                        .edgesIgnoringSafeArea(.all)
+
+                    navigationBarContent
+                        .padding([.leading, .trailing], 10)
+                }
+                .frame(height: 44)
+
+                AppColor.lightGrey.color.frame(height: 1)
+            }
         }
     }
 }

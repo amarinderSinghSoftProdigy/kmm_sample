@@ -16,7 +16,7 @@ struct OtpFlowScreen: View {
         GeometryReader { geometry in
             getCurrentView(with: geometry)
         }
-        .keyboardResponder()
+        .textFieldsModifiers()
     }
     
     func getCurrentView(with geometry: GeometryProxy) ->  some View {

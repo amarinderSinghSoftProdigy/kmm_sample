@@ -45,6 +45,7 @@ struct BaseScopeView: View {
     var body: some View {
         ZStack {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                .hideKeyboardOnTap()
             
             getViewWithModifiers()
 
@@ -53,7 +54,6 @@ struct BaseScopeView: View {
                 ActivityView()
             }
         }
-        .hideKeyboardOnTap()
     }
     
     var currentView: AnyView {

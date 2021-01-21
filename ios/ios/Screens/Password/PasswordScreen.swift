@@ -45,7 +45,7 @@ struct PasswordScreen: View {
                 Spacer()
             }
             .padding()
-            .keyboardResponder()
+            .textFieldsModifiers()
         )
     }
 }

@@ -16,32 +16,45 @@ struct WelcomeScreen: View {
     @ObservedObject var uploadButtonEnabled: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack {
-                Spacer()
-                
-                VStack(spacing: 50) {
-                    LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
-                                  testingIdentifier: "welcome",
-                                  textWeight: .medium,
-                                  fontSize: 20)
+        let view = AnyView(
+            GeometryReader { geometry in
+                VStack {
+                    Spacer()
                     
-                    if welcomeOption is WelcomeOption.Thanks {
-                        self.uploadedDocumentCenterView
+                    VStack(spacing: 50) {
+                        LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
+                                      testingIdentifier: "welcome",
+                                      textWeight: .medium,
+                                      fontSize: 20)
+                        
+                        if welcomeOption is WelcomeOption.Thanks {
+                            self.uploadedDocumentCenterView
+                        }
+                        else if let uploadOption = welcomeOption as? WelcomeOption.Upload {
+                            self.getUploadDocumentCenterView(for: uploadOption)
+                        }
                     }
-                    else if let uploadOption = welcomeOption as? WelcomeOption.Upload {
-                        self.getUploadDocumentCenterView(for: uploadOption)
-                    }
+                    .padding(.horizontal, geometry.size.width * 0.19)
+                    
+                    Spacer()
+                    
+                    self.getBottomView(forGeometry: geometry)
                 }
-                .padding(.horizontal, geometry.size.width * 0.19)
-                
-                Spacer()
-                
-                self.getBottomView(forGeometry: geometry)
             }
-        }
-        .screenLogger(withScreenName: "WelcomeScreen.\(welcomeOption.optionName)",
-                      withScreenClass: WelcomeScreen.self)
+            .screenLogger(withScreenName: "WelcomeScreen.\(welcomeOption.optionName)",
+                          withScreenClass: WelcomeScreen.self)
+        )
+        
+        if !(welcomeOption is WelcomeOption.Upload.AadhaarCard) { return view }
+        
+        return AnyView(
+            ZStack {
+                AppColor.primary.color
+                
+                view
+            }
+            .textFieldsModifiers()
+        )
     }
     
     var uploadedDocumentCenterView: some View {

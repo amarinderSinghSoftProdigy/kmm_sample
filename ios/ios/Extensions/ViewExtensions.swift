@@ -116,5 +116,11 @@ extension View {
                                  screenClass: screenClass)
         )
     }
+    
+    func textFieldsModifiers() -> some View {
+        self
+            .keyboardResponder()
+            .hideKeyboardOnTap()
+    }
 }
 

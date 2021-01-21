@@ -38,7 +38,7 @@ struct AuthScreen: View {
                 .opacity(0.8)
                 .padding(.bottom, 30)
         }
-        .keyboardResponder()
+        .textFieldsModifiers()
         .screenLogger(withScreenName: "AuthScreen",
                       withScreenClass: AuthScreen.self)
     }
