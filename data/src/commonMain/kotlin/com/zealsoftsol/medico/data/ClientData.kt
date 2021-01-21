@@ -1,7 +1,5 @@
 package com.zealsoftsol.medico.data
 
-import kotlinx.serialization.Serializable
-
 data class AuthCredentials(
     val phoneNumberOrEmail: String,
     val type: Type?,
@@ -40,8 +38,28 @@ data class AadhaarData(
     val shareCode: String,
 )
 
-@Serializable
-data class GeoPoints(
-    val latitude: Int,
-    val longitude: Int
-)
+enum class FileType(val mimeType: String, val isMandatory: Boolean) {
+    PNG("image/png", true),
+    JPEG("image/jpeg", true),
+    JPG("image/jpg", true),
+    PDF("application/pdf", true),
+    ZIP("application/zip", true),
+    XZIP("multipart/x-zip", false),
+    UNKNOWN("*/*", false);
+
+    companion object Utils {
+        fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
+        fun forAadhaar() = arrayOf(ZIP, XZIP)
+
+        fun fromExtension(ext: String): FileType {
+            return when (ext) {
+                "png" -> PNG
+                "jpeg" -> JPEG
+                "jpg" -> JPG
+                "pdf" -> PDF
+                "zip" -> ZIP
+                else -> UNKNOWN
+            }
+        }
+    }
+}

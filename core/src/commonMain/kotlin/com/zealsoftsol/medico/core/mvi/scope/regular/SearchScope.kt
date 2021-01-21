@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
-import com.zealsoftsol.medico.core.mvi.scope.extra.PaginationHelper
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -17,10 +16,9 @@ class SearchScope(
     val isFilterOpened: DataSource<Boolean> = DataSource(false),
     val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-    val pagination: Pagination = Pagination(),
 ) : Scope.Host.Regular(),
-    CommonScope.CanGoBack,
-    PaginationHelper by pagination {
+    CommonScope.CanGoBack {
+    val pagination: Pagination = Pagination()
 
     init {
         EventCollector.sendEvent(Event.Action.Search.SearchProduct(""))

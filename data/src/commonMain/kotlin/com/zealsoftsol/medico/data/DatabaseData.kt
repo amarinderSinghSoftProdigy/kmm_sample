@@ -11,7 +11,7 @@ data class User(
     val unitCode: String,
     val type: UserType,
     val details: Details,
-    val isVerified: Boolean,
+    val isActivated: Boolean,
     val isDocumentUploaded: Boolean,
     val addressData: CustomerAddressData,
 ) {

@@ -1,11 +1,13 @@
 package com.zealsoftsol.medico.core.network
 
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductResponse
@@ -60,18 +62,18 @@ interface NetworkScope {
 
     interface Search : NetworkScope {
         suspend fun search(
+            pagination: Pagination,
             product: String,
             manufacturer: String,
-            page: Int,
             query: List<Pair<String, String>>,
         ): Response.Wrapped<SearchResponse>
     }
 
     interface Management {
-        suspend fun getAllStockists(page: Int): Response.Wrapped<List<EntityInfo>>
+        suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>>
         suspend fun getSubscribedStockists(
-            page: Int,
+            pagination: Pagination,
             unitCode: String
-        ): Response.Wrapped<List<EntityInfo>>
+        ): Response.Wrapped<PaginatedData<EntityInfo>>
     }
 }

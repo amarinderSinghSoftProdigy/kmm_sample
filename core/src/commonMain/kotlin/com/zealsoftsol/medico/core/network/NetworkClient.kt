@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.extensions.Interval
 import com.zealsoftsol.medico.core.extensions.isExpired
+import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
@@ -18,6 +19,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
+import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest2
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -68,6 +70,10 @@ class NetworkClient(
     NetworkScope.Search,
     NetworkScope.Product,
     NetworkScope.Management {
+
+    init {
+        "USING NetworkClient".logIt()
+    }
 
     private val client = HttpClient(engine) {
         if (useNetworkInterceptor) addInterceptor(this)
@@ -231,9 +237,9 @@ class NetworkClient(
     }
 
     override suspend fun search(
+        pagination: Pagination,
         product: String,
         manufacturer: String,
-        page: Int,
         query: List<Pair<String, String>>,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
@@ -245,12 +251,14 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
-                    append("currentPage", page.toString())
-                    append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                    append("currentPage", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
                     append("sort", "ASC")
                 }
             }
-        }.getWrappedBody()
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
     }
 
     override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
@@ -260,33 +268,37 @@ class NetworkClient(
             }.getWrappedBody()
         }
 
-    override suspend fun getAllStockists(page: Int): Response.Wrapped<List<EntityInfo>> =
+    override suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>> =
         ktorDispatcher {
-            client.get<SimpleResponse<List<EntityInfo>>>("$B2B_URL/api/v1/stockist/all") {
+            client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/stockist/all") {
                 withMainToken()
                 url {
                     parameters.apply {
-                        append("page", page.toString())
-                        append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                        append("page", pagination.nextPage().toString())
+                        append("pageSize", pagination.itemsPerPage.toString())
                     }
                 }
-            }.getWrappedBody()
+            }.getWrappedBody().also {
+                if (it.isSuccess) pagination.pageLoaded()
+            }
         }
 
     override suspend fun getSubscribedStockists(
-        page: Int,
+        pagination: Pagination,
         unitCode: String
-    ): Response.Wrapped<List<EntityInfo>> =
+    ): Response.Wrapped<PaginatedData<EntityInfo>> =
         ktorDispatcher {
-            client.get<SimpleResponse<List<EntityInfo>>>("$B2B_URL/api/v1/stockist/subscribed/$unitCode") {
+            client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/buyer/subscribed/$unitCode") {
                 withMainToken()
                 url {
                     parameters.apply {
-                        append("page", page.toString())
-                        append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                        append("page", pagination.nextPage().toString())
+                        append("pageSize", pagination.itemsPerPage.toString())
                     }
                 }
-            }.getWrappedBody()
+            }.getWrappedBody().also {
+                if (it.isSuccess) pagination.pageLoaded()
+            }
         }
 
     // Utils

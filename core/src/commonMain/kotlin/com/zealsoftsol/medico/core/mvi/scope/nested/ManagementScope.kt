@@ -7,35 +7,39 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
-import com.zealsoftsol.medico.core.mvi.scope.extra.PaginationHelper
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.ManagementItem
 
-sealed class ManagementScope<T>(
+sealed class ManagementScope<T : ManagementItem>(
     val tabs: List<Tab>,
-    internal val getLoadTrigger: (Tab?) -> Event.Action.Management,
-    val pagination: Pagination = Pagination()
-) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)), PaginationHelper by pagination {
+    internal val getLoadAction: (Tab?) -> Event.Action.Management,
+) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)) {
 
-    val entities: DataSource<List<T>> = DataSource(emptyList())
+    val pagination: Pagination = Pagination()
+    val items: DataSource<List<T>> = DataSource(emptyList())
     val activeTab: DataSource<Tab?> = DataSource(tabs.firstOrNull())
+    val searchText: DataSource<String> = DataSource("")
 
     init {
         loadItems()
     }
 
     fun selectTab(tab: Tab) {
-        pagination.currentPage = 0
-        loadItems()
+        pagination.reset()
+        items.value = emptyList()
         activeTab.value = tab
+        loadItems()
     }
 
-    fun filter(value: String?) = EventCollector.sendEvent(Event.Action.Management.Filter(value))
+    fun selectItem(item: T) = EventCollector.sendEvent(Event.Action.Management.Select(item))
 
-    fun loadItems() = EventCollector.sendEvent(getLoadTrigger(activeTab.value))
+    fun search(value: String?) = EventCollector.sendEvent(Event.Action.Management.Filter(value))
+
+    fun loadItems() = EventCollector.sendEvent(getLoadAction(activeTab.value))
 
     class Stockist : ManagementScope<EntityInfo>(
         tabs = listOf(Tab.YOUR_STOCKISTS, Tab.ALL_STOCKISTS),
-        getLoadTrigger = {
+        getLoadAction = {
             when (it) {
                 Tab.YOUR_STOCKISTS -> Event.Action.Management.LoadSubscribedStockists
                 Tab.ALL_STOCKISTS -> Event.Action.Management.LoadAllStockists

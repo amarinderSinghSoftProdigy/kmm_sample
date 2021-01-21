@@ -92,7 +92,15 @@ fun startKodein(
     }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
-    bind<EventCollector>() with singleton { EventCollector(instance(), instance(), instance()) }
+    bind<EventCollector>() with singleton {
+        EventCollector(
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+        )
+    }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
     bind<TokenStorage>() with singleton { TokenStorage(instance()) }
 }.also {

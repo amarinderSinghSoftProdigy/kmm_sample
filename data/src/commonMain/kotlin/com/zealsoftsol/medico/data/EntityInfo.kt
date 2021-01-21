@@ -3,6 +3,8 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+interface ManagementItem
+
 @Serializable
 data class EntityInfo(
     @SerialName("buyerPoints")
@@ -18,4 +20,4 @@ data class EntityInfo(
     val city: String,
     val traderName: String,
     val subscribeStatus: String? = null,
-)
+) : ManagementItem
