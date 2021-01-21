@@ -20,6 +20,7 @@ sealed class BottomSheet {
     }
 
     class PreviewManagementItem(val entityInfo: EntityInfo) : BottomSheet() {
-        fun subscribe() = EventCollector.sendEvent(Event.Action.Management.Subscribe(entityInfo))
+        fun subscribe() =
+            EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
     }
 }

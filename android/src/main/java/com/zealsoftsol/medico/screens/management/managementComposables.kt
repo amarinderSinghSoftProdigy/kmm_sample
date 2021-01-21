@@ -43,6 +43,7 @@ import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
+import com.zealsoftsol.medico.screens.showNotificationAlert
 import com.zealsoftsol.medico.screens.stringResourceByName
 
 @Composable
@@ -142,6 +143,7 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
             },
         )
     }
+    scope.showNotificationAlert()
 }
 
 @Composable

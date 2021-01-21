@@ -49,10 +49,10 @@ sealed class PasswordScope(
             EventCollector.sendEvent(Event.Action.ResetPassword.Finish)
 
         object PasswordChangedSuccessfully : ScopeNotification {
-            override val title: String
-                get() = "success"
-            override val body: String
-                get() = "password_change_success"
+            override val isSimple: Boolean = true
+            override val isDismissible: Boolean = true
+            override val title: String = "success"
+            override val body: String = "password_change_success"
         }
     }
 }

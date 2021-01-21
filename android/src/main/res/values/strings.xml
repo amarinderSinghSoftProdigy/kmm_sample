@@ -108,4 +108,13 @@
     <string name="gstin_num">GSTIN Number</string>
     <string name="payment_method">Payment method</string>
     <string name="orders">Orders</string>
+    <string name="cancel">Cancel</string>
+    <string name="send_request">Send Request</string>
+    <string name="save">Save</string>
+    <string name="continue_">Continue</string>
+    <string name="credit">Credit</string>
+    <string name="cash">Cash on delivery</string>
+    <string name="choose_payment_method">Before you subscribe to Pharmacy Doctors please choose the payment method</string>
+    <string name="enter_number_of_days">Enter number of days</string>
+    <string name="thank_you_for_request">Thank you for your request!</string>
 </resources>

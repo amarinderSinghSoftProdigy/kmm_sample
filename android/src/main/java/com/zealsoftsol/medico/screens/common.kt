@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.AndroidDialogProperties
 import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
@@ -142,7 +143,12 @@ fun IndefiniteProgressBar() {
 }
 
 @Composable
-private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
+private fun SimpleDialog(
+    title: String,
+    text: String?,
+    onDismiss: () -> Unit,
+    canDismissOnTapOutside: Boolean,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
@@ -154,7 +160,7 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
             )
         },
         text = {
-            if (text.isNotEmpty()) {
+            if (!text.isNullOrEmpty()) {
                 Text(
                     text = text,
                     style = MaterialTheme.typography.subtitle1,
@@ -162,18 +168,30 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
             }
         },
         confirmButton = {
-            Button(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
-                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.okay),
-                    style = MaterialTheme.typography.subtitle2,
-                )
-            }
-        }
+            AlertButton(onDismiss, stringResource(id = R.string.okay))
+        },
+        properties = AndroidDialogProperties(
+            dismissOnBackPress = canDismissOnTapOutside,
+            dismissOnClickOutside = canDismissOnTapOutside,
+        )
     )
+}
+
+@Composable
+fun AlertButton(
+    onClick: () -> Unit,
+    text: String,
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.subtitle2,
+        )
+    }
 }
 
 @Composable
@@ -186,9 +204,10 @@ fun Scope.Host.showErrorAlert() {
         val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
-        ErrorDialog(
+        SimpleDialog(
             title = stringResource(id = titleResourceId),
             text = stringResource(id = bodyResourceId),
+            canDismissOnTapOutside = true,
             onDismiss = { dismissAlertError() }
         )
     }
@@ -204,11 +223,20 @@ fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { di
         val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
-        ErrorDialog(
-            title = stringResource(id = titleResourceId),
-            text = stringResource(id = bodyResourceId),
-            onDismiss = onDismiss
-        )
+        if (it.isSimple) {
+            SimpleDialog(
+                title = stringResource(id = titleResourceId),
+                text = if (bodyResourceId != 0) stringResource(id = bodyResourceId) else null,
+                canDismissOnTapOutside = it.isDismissible,
+                onDismiss = onDismiss
+            )
+        } else {
+            Notification(
+                title = stringResource(id = titleResourceId),
+                onDismiss = onDismiss,
+                notification = it,
+            )
+        }
     }
 }
 
