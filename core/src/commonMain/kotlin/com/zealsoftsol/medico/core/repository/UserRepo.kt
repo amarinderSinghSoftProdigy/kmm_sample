@@ -51,7 +51,7 @@ class UserRepo(
 
     fun getUserAccess(): UserAccess {
         return userFlow.value?.let {
-            if (it.isVerified) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
+            if (it.isActivated) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
     }
 
@@ -71,6 +71,7 @@ class UserRepo(
                 it.lastName,
                 it.email,
                 it.phoneNumber,
+                it.unitCode,
                 parsedType,
                 when (parsedType) {
                     UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")

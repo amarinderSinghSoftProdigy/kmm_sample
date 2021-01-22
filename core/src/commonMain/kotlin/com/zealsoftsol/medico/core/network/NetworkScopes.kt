@@ -1,10 +1,13 @@
 package com.zealsoftsol.medico.core.network
 
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductResponse
@@ -12,6 +15,7 @@ import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -59,10 +63,20 @@ interface NetworkScope {
 
     interface Search : NetworkScope {
         suspend fun search(
+            pagination: Pagination,
             product: String,
             manufacturer: String,
-            page: Int,
             query: List<Pair<String, String>>,
         ): Response.Wrapped<SearchResponse>
+    }
+
+    interface Management {
+        suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>>
+        suspend fun getSubscribedStockists(
+            pagination: Pagination,
+            unitCode: String
+        ): Response.Wrapped<PaginatedData<EntityInfo>>
+
+        suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
     }
 }

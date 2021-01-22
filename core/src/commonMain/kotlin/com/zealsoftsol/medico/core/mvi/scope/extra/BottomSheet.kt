@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 
 sealed class BottomSheet {
@@ -16,5 +17,10 @@ sealed class BottomSheet {
 
         fun uploadDrugLicense(base64: String, fileType: FileType) =
             EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64, fileType))
+    }
+
+    class PreviewManagementItem(val entityInfo: EntityInfo) : BottomSheet() {
+        fun subscribe() =
+            EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
     }
 }

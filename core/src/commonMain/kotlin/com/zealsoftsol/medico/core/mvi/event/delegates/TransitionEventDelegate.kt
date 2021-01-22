@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
@@ -35,9 +36,9 @@ internal class TransitionEventDelegate(
                     setScope(
                         SettingsScope.List(
                             if (user.type == UserType.SEASON_BOY)
-                                SettingsScope.List.Section.simple(user.isVerified)
+                                SettingsScope.List.Section.simple(user.isActivated)
                             else
-                                SettingsScope.List.Section.all(user.isVerified)
+                                SettingsScope.List.Section.all(user.isActivated)
                         )
                     )
                 }
@@ -52,6 +53,14 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.GstinDetails -> setScope(
                     SettingsScope.GstinDetails(userRepo.requireUser().details as User.Details.DrugLicense)
+                )
+                is Event.Transition.Management -> setScope(
+                    when (event.manageUserType) {
+                        UserType.STOCKIST -> ManagementScope.Stockist()
+                        UserType.RETAILER -> TODO()
+                        UserType.HOSPITAL -> TODO()
+                        UserType.SEASON_BOY -> TODO()
+                    }
                 )
             }
         }

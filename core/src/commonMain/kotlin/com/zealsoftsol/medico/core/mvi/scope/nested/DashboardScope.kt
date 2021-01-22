@@ -12,11 +12,11 @@ class DashboardScope private constructor() :
     Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)) {
 
     companion object {
-        fun get(userDataSource: ReadOnlyDataSource<User>) = Host.TabBar(
+        fun get(user: User, userDataSource: ReadOnlyDataSource<User>) = Host.TabBar(
             childScope = DashboardScope(),
             navigationSectionValue = NavigationSection(
                 userDataSource,
-                NavigationOption.default(),
+                NavigationOption.default(user.type),
                 NavigationOption.footer()
             ),
         )

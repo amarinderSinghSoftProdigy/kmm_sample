@@ -11,6 +11,7 @@ import kotlin.reflect.KClass
 sealed class Scope : Scopable {
     internal val queueId: String = this::class.qualifiedName.orEmpty()
     internal abstract val scopeId: KClass<*>
+    val storage by lazy { Storage() }
 
     sealed class Child : Scope() {
         internal abstract val parentScopeId: KClass<*>
@@ -86,3 +87,12 @@ internal object StartScope : Scope.Host.Regular()
 
 interface Scopable
 
+class Storage {
+    private val map = hashMapOf<String, Any>()
+
+    fun save(key: String, value: Any) {
+        map[key] = value
+    }
+
+    fun restore(key: String) = map[key]
+}

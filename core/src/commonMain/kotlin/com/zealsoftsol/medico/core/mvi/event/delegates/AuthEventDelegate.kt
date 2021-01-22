@@ -40,8 +40,8 @@ internal class AuthEventDelegate(
                     dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
                     val user = userRepo.requireUser()
                     setScope(
-                        if (user.isVerified)
-                            DashboardScope.get(userRepo.getUserDataSource())
+                        if (user.isActivated)
+                            DashboardScope.get(user, userRepo.getUserDataSource())
                         else
                             LimitedAccessScope.get(user, userRepo.getUserDataSource())
                     )

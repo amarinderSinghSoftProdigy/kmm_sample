@@ -3,7 +3,9 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -70,6 +72,22 @@ internal sealed class Event {
 
             data class Select(val productCode: String) : Product()
         }
+
+        sealed class Management : Action() {
+            override val typeClazz: KClass<*> = Management::class
+
+            data class Filter(val value: String?) : Management()
+            data class Select(val item: ManagementItem) : Management()
+            object LoadAllStockists : Management()
+            object LoadSubscribedStockists : Management()
+            object LoadRetailers : Management()
+            object LoadHospitals : Management()
+            object LoadSeasonBoys : Management()
+            data class RequestSubscribe(val item: ManagementItem) : Management()
+            data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
+            data class ChooseNumberOfDays(val days: Int) : Management()
+            object FinishSubscribe : Management()
+        }
     }
 
     sealed class Transition : Event() {
@@ -84,5 +102,6 @@ internal sealed class Event {
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
+        data class Management(val manageUserType: UserType) : Transition()
     }
 }

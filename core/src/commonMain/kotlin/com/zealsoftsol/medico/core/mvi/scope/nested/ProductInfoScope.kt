@@ -20,7 +20,7 @@ class ProductInfoScope private constructor(
     val product: ProductData,
     val alternativeBrands: List<Any>,
     val isDetailsOpened: DataSource<Boolean>,
-) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)),
+) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.BACK)),
     CommonScope.WithUser,
     CommonScope.CanGoBack {
     override val scopeId: KClass<*> = DetachedScopeId::class
@@ -43,6 +43,7 @@ class ProductInfoScope private constructor(
 
     companion object {
         fun get(
+            user: User,
             userDataSource: ReadOnlyDataSource<User>,
             product: ProductData,
             alternativeBrands: List<Any>,
@@ -57,7 +58,7 @@ class ProductInfoScope private constructor(
                 ),
                 navigationSectionValue = NavigationSection(
                     userDataSource,
-                    NavigationOption.default(),
+                    NavigationOption.default(user.type),
                     NavigationOption.footer()
                 ),
             )
