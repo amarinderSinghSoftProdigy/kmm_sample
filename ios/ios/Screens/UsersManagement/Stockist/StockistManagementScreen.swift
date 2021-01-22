@@ -6,19 +6,27 @@
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
+import core
 import SwiftUI
 
 struct StockistManagementScreen: View {
-    @State private var stockistText: NSString = ""
+    let scope: ManagementScopeStockist
     
-    @State private var chosenStockist: String?
+    @ObservedObject var stockistSearchText: SwiftDataSource<NSString>
+    @ObservedObject var activeTab: SwiftDataSource<ManagementScopeTab>
+    @ObservedObject var stockists: SwiftDataSource<NSArray>
     
-    @State private var selectedOption = 0
-    let options = ["your_stockists", "all_stockists"]
-    
-    let stockists = ["Pharmacy Doctors", "Pharmacy Doctors2"]
+    @State private var chosenStockist: DataEntityInfo?
 
     var body: some View {
+        let selectedOption = Binding(get: {
+            guard let activeTab = self.activeTab.value else { return 0 }
+
+            return scope.tabs.firstIndex(of: activeTab) ?? 0
+        }, set: { newValue in
+            scope.selectTab(tab: scope.tabs[newValue])
+        })
+        
         let stockistImage = Image("Stockist").resizable()
     
         let bottomSheetOpened = Binding(get: { self.chosenStockist != nil },
@@ -30,20 +38,22 @@ struct StockistManagementScreen: View {
             
             VStack(spacing: 16) {
                 SearchBar(placeholderLocalizationKey: "stockists",
-                          searchText: stockistText,
+                          searchText: stockistSearchText.value,
                           leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(stockistImage)),
                                                                    enteredTextButton: .smallMagnifyingGlass),
                           trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
                                                                     enteredTextButton: .clear),
-                          onTextChange: { newValue in stockistText = newValue as NSString })
-
-                self.stockistsOptionsPicker
+                          onTextChange: { newValue in scope.search(value: newValue) })
                 
-                TransparentList(data: stockists) { _, element in
-                    StockistView(stockist: element)
-                        .onTapGesture {
-                            self.chosenStockist = element
-                        }
+                self.getStockistsOptionsPicker(withSelectedOption: selectedOption)
+                
+                if let stockists = self.stockists.value as? [DataEntityInfo] {
+                    TransparentList(data: stockists) { _, element in
+                        StockistView(stockist: element)
+                            .onTapGesture {
+                                self.chosenStockist = element
+                            }
+                    }
                 }
             }
             .keyboardResponder()
@@ -60,10 +70,18 @@ struct StockistManagementScreen: View {
                       withScreenClass: StockistManagementScreen.self)
     }
     
-    private var stockistsOptionsPicker: some View {
-        Picker(selection: $selectedOption, label: Text("")) {
-            ForEach(0 ..< options.count) { index in
-                LocalizedText(localizationKey: options[index])
+    init(scope: ManagementScopeStockist) {
+        self.scope = scope
+        
+        self.stockistSearchText = SwiftDataSource(dataSource: scope.searchText)
+        self.activeTab = SwiftDataSource(dataSource: scope.activeTab)
+        self.stockists = SwiftDataSource(dataSource: scope.items)
+    }
+    
+    private func getStockistsOptionsPicker(withSelectedOption selectedOption: Binding<Int>) -> some View {
+        Picker(selection: selectedOption, label: Text("")) {
+            ForEach(0..<scope.tabs.count) { index in
+                LocalizedText(localizationKey: scope.tabs[index].stringId)
             }
         }
         .pickerStyle(SegmentedPickerStyle())
@@ -90,7 +108,7 @@ struct StockistManagementScreen: View {
     }
     
     private struct StockistView: View {
-        let stockist: String
+        let stockist: DataEntityInfo
         
         var body: some View {
             ZStack {
@@ -99,28 +117,21 @@ struct StockistManagementScreen: View {
                 
                 HStack(alignment: .top) {
                     VStack(alignment: .leading) {
-                        Text(stockist)
+                        Text(stockist.traderName)
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 16,
                                         multilineTextAlignment: .leading)
                         
-                        HStack(spacing: 5) {
-                            Image("SmallAddress")
-                            
-                            Text("Vijayawada 520001")
-                                .medicoText(textWeight: .medium,
-                                            color: .grey3,
-                                            multilineTextAlignment: .leading)
-                        }
+                        SmallAddresView(location: stockist.location, pincode: stockist.pincode)
                     }
                     
                     Spacer()
                     
-                    let statusColor: AppColor = .lightBlue
-                    LocalizedText(localizationKey: "subscribed",
+                    let status = stockist.getSubscriptionStatus()
+                    LocalizedText(localizationKey: status?.serverValue ?? "",
                                   textWeight: .medium,
                                   fontSize: 15,
-                                  color: statusColor)
+                                  color: status == .subscribed ? .lightBlue : .yellow)
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 7)
@@ -129,22 +140,23 @@ struct StockistManagementScreen: View {
     }
     
     private struct StockistDetails: View {
-        let stockist: String
+        let stockist: DataEntityInfo
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
+                HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text(stockist)
+                        Text(stockist.traderName)
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 20,
                                         multilineTextAlignment: .leading)
                         
-                        Text("Mumbai")
+                        Text(stockist.city)
                             .medicoText(textWeight: .medium,
                                         color: .grey3,
                                         multilineTextAlignment: .leading)
                     }
+                    .fixedSize(horizontal: false, vertical: true)
                     
                     Spacer()
                     
@@ -153,7 +165,6 @@ struct StockistManagementScreen: View {
                                  height: 31,
                                  cornerRadius: 5,
                                  fontSize: 14) {
-                        
                     }
                 }
                 
@@ -163,17 +174,10 @@ struct StockistManagementScreen: View {
                             .frame(width: 96, height: 96)
                         
                         VStack(alignment: .leading, spacing: 13) {
-                            HStack(spacing: 5) {
-                                Image("SmallAddress")
-                                
-                                Text("Mumbai 200005")
-                                    .medicoText(textWeight: .bold,
-                                                color: .grey3,
-                                                multilineTextAlignment: .leading)
-                            }
+                            SmallAddresView(location: stockist.location, pincode: stockist.pincode)
                             
                             VStack(alignment: .leading,spacing: 5) {
-                                Text("2 km from you")
+                                Text(stockist.distance)
                                     .medicoText(fontSize: 12,
                                                 color: .grey3,
                                                 multilineTextAlignment: .leading)
@@ -192,7 +196,7 @@ struct StockistManagementScreen: View {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     getInfoPanel(withTitleKey: "status", withValueKey: "subscribed")
-                    getInfoPanel(withTitleKey: "gstin_number", withValueKey: "405569546")
+                    getInfoPanel(withTitleKey: "gstin_number", withValueKey: stockist.gstin)
                     getInfoPanel(withTitleKey: "payment_method", withValueKey: "Cash")
                     getInfoPanel(withTitleKey: "orders", withValueKey: "3")
                 }
@@ -212,6 +216,22 @@ struct StockistManagementScreen: View {
                 LocalizedText(localizationKey: valueKey,
                               textWeight: .medium,
                               multilineTextAlignment: .leading)
+            }
+        }
+    }
+    
+    private struct SmallAddresView: View {
+        let location: String
+        let pincode: String
+        
+        var body: some View {
+            HStack(spacing: 5) {
+                Image("SmallAddress")
+                
+                Text("\(location) \(pincode)")
+                    .medicoText(textWeight: .bold,
+                                color: .grey3,
+                                multilineTextAlignment: .leading)
             }
         }
     }

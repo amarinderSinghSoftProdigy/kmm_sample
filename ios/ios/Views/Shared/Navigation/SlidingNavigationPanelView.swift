@@ -178,6 +178,7 @@ private struct _SlidingPanelView: View {
         var body: some View {
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
+                          imageColor: .darkBlue,
                           style: style,
                           onTapAction: {
                             _ = navigationOption.select()
@@ -206,6 +207,9 @@ extension NavigationOption {
         case .Settings():
             return "Settings"
             
+        case .Stockists():
+            return "Stockist"
+            
         default:
             return nil
         }
@@ -218,6 +222,9 @@ extension NavigationOption {
             
         case .Settings():
             return "settings"
+            
+        case .Stockists():
+            return "stockists"
             
         default:
             return nil

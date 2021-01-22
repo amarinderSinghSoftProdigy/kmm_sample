@@ -66,7 +66,7 @@ struct NotificationAlert: ViewModifier {
                     
                     if let value = newValue {
                         alertData = AlertData.Data(titleKey: value.title,
-                                                   messageKey: value.body,
+                                                   messageKey: value.body ?? "",
                                                    buttonAction: {
                                                     notificationsHandler.dismissNotification()
                                                     onDismiss?()

@@ -136,11 +136,11 @@ struct GlobalSearchScreen: View {
                         .padding(.top, topPadding)
                         .padding(.bottom, bottomPadding)
                         .onTapGesture {
-                            scope.selectProduct(product: product, index: Int32(index))
+                            scope.selectProduct(product: product)
                         }
                         .onAppear {
                             if index == products.count - 1 &&
-                                scope.canLoadMore() &&
+                                scope.pagination.canLoadMore() &&
                                 isInProgress.value == false {
                                 scope.loadMoreProducts()
 
@@ -172,7 +172,7 @@ struct GlobalSearchScreen: View {
     }
     
     private func setUpInitialScrollData() {
-        let visibleProductIndex = scope.getVisibleProductIndex()
+        let visibleProductIndex = 0 // Get VisibleProductIndex
         
         if visibleProductIndex != 0 {
             self.elementToScrollTo = Int(visibleProductIndex)

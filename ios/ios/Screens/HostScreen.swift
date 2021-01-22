@@ -147,11 +147,11 @@ struct TabBarScreen: View {
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))
             
+        case let scope as ManagementScopeStockist:
+            return AnyView(StockistManagementScreen(scope: scope))
+            
         default:
-            return AnyView(
-                StockistManagementScreen()
-//                EmptyView()
-            )
+            return AnyView(EmptyView())
         }
     }
 }

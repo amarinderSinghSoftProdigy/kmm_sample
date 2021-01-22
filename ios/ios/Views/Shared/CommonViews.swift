@@ -213,6 +213,7 @@ struct TableViewCell: View {
                 HStack(spacing: 24) {
                     if let imageName = self.imageName {
                         Image(imageName)
+                            .renderingMode(imageColor == nil ? .original : .template)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: imageSize, height: imageSize)
