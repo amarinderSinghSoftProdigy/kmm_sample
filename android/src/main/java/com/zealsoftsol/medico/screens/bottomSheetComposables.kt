@@ -113,7 +113,6 @@ private fun PreviewItemBottomSheet(
     onSubscribe: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val isSubscribed = entityInfo.subscribeStatus != null
     BaseBottomSheet(onDismiss) {
         Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 24.dp)) {
             Surface(
@@ -170,7 +169,7 @@ private fun PreviewItemBottomSheet(
                                     modifier = Modifier.clickable {},
                                 )
                             }
-                            if (!isSubscribed) {
+                            if (entityInfo.getSubscriptionStatus() == null) {
                                 Space(14.dp)
                                 MedicoSmallButton(
                                     text = stringResource(id = R.string.subscribe),
@@ -183,8 +182,8 @@ private fun PreviewItemBottomSheet(
                 Space(12.dp)
                 Column {
                     DataWithLabel(label = R.string.gstin_num, data = entityInfo.gstin)
-                    entityInfo.subscribeStatus?.let {
-                        DataWithLabel(label = R.string.status, data = it)
+                    entityInfo.getSubscriptionStatus()?.let {
+                        DataWithLabel(label = R.string.status, data = it.serverValue)
                         DataWithLabel(label = R.string.payment_method, data = "")
                         DataWithLabel(label = R.string.orders, data = "")
                     }
@@ -263,10 +262,13 @@ private fun BaseBottomSheet(
     Box(
         modifier = Modifier.fillMaxSize()
             .background(color = Color.Black.copy(alpha = 0.5f))
-            .clickable(indication = null) { onDismiss() }
     ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .clickable(indication = NoOpIndication) { onDismiss() })
         Surface(
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+            modifier = Modifier.fillMaxWidth().clickable(indication = null) { }
+                .align(Alignment.BottomCenter),
             color = Color.White,
             elevation = 8.dp,
         ) {

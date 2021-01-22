@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -75,5 +76,7 @@ interface NetworkScope {
             pagination: Pagination,
             unitCode: String
         ): Response.Wrapped<PaginatedData<EntityInfo>>
+
+        suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
     }
 }

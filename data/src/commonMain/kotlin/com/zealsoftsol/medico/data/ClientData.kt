@@ -63,8 +63,3 @@ enum class FileType(val mimeType: String, val isMandatory: Boolean) {
         }
     }
 }
-
-enum class PaymentMethod(val serverValue: String) {
-    CREDIT("CREDIT"),
-    CASH("CASH"),
-}

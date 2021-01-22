@@ -4,9 +4,11 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SubscribeRequest
 
 class MockManagementScope : NetworkScope.Management {
 
@@ -29,6 +31,7 @@ class MockManagementScope : NetworkScope.Management {
                             GeoPoints(0.0, 0.0),
                             "Delhi",
                             "Pharmacy Doctors",
+                            "12345",
                             null,
                         )
                     ),
@@ -44,4 +47,9 @@ class MockManagementScope : NetworkScope.Management {
     ): Response.Wrapped<PaginatedData<EntityInfo>> = mockResponse {
         Response.Wrapped(PaginatedData(emptyList(), 0), true)
     }
+
+    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
+        mockResponse {
+            Response.Wrapped(null, true)
+        }
 }

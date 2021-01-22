@@ -39,6 +39,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
@@ -170,8 +171,8 @@ private fun StockistItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                 GeoLocation(entityInfo.location)
             }
             Text(
-                text = entityInfo.subscribeStatus.orEmpty(),
-                color = ConstColors.lightBlue,
+                text = entityInfo.getSubscriptionStatus()?.serverValue.orEmpty(),
+                color = if (entityInfo.getSubscriptionStatus() == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
                 modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
             )
         }

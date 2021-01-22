@@ -41,9 +41,6 @@ sealed class ManagementScope<T : ManagementItem>(
 
     fun loadItems() = EventCollector.sendEvent(getLoadAction(activeTab.value))
 
-    fun requestSubscribe(item: T) =
-        EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(item))
-
     class Stockist(
         override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     ) : ManagementScope<EntityInfo>(
@@ -56,6 +53,9 @@ sealed class ManagementScope<T : ManagementItem>(
             }
         }
     ), CommonScope.WithNotifications
+
+
+    // Notifications
 
     class ChoosePaymentMethod(
         val paymentMethod: DataSource<PaymentMethod> = DataSource(PaymentMethod.CREDIT),
