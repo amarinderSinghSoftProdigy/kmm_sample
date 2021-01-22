@@ -81,7 +81,7 @@ internal class ManagementEventDelegate(
             when (it) {
                 is ManagementScope.Stockist -> {
                     it.items.value = if (!value.isNullOrEmpty()) {
-                        it.items.value.filter { item ->
+                        it.cachedItems.filter { item ->
                             item.traderName.contains(value, ignoreCase = true)
                         }
                     } else {
