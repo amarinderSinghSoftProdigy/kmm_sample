@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.core.UiLink
 import com.zealsoftsol.medico.core.mvi.UiNavigator
@@ -113,6 +114,12 @@ class MainActivity : ComponentActivity(), DIAware {
         )
         cameraCompletion.await()
         image.takeIf { image.length() > 0 }
+    }
+
+    fun openMaps(latitude: Double, longitude: Double) {
+        val uri = String.format("geo:%f,%f", latitude, longitude).toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 
     private object GetSpecificContent : ActivityResultContracts.GetContent() {

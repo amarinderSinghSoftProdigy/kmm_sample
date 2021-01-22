@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -161,12 +162,18 @@ private fun PreviewItemBottomSheet(
                                     color = ConstColors.gray,
                                 )
                                 Space(4.dp)
+                                val activity = AmbientContext.current as MainActivity
                                 Text(
                                     text = stringResource(id = R.string.see_on_the_map),
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = ConstColors.lightBlue,
-                                    modifier = Modifier.clickable {},
+                                    modifier = Modifier.clickable {
+                                        activity.openMaps(
+                                            entityInfo.sellerGeoPoints.latitude,
+                                            entityInfo.sellerGeoPoints.longitude
+                                        )
+                                    },
                                 )
                             }
                             if (entityInfo.getSubscriptionStatus() == null) {
