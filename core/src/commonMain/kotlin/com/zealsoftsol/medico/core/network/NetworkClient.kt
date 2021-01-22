@@ -31,6 +31,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -299,6 +300,14 @@ class NetworkClient(
             }.getWrappedBody().also {
                 if (it.isSuccess) pagination.pageLoaded()
             }
+        }
+
+    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<String>>("$B2B_URL/api/v1/b2bapp/subscriptions/subscribe") {
+                withMainToken()
+                jsonBody(subscribeRequest)
+            }.getWrappedError()
         }
 
     // Utils

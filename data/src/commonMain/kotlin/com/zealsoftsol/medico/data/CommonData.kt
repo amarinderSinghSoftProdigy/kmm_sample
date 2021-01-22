@@ -27,6 +27,16 @@ data class PaginatedData<T>(
     val total: Int,
 )
 
+enum class PaymentMethod(val serverValue: String) {
+    CREDIT("CREDIT"),
+    CASH("CASH"),
+}
+
+enum class SubscriptionStatus(val serverValue: String) {
+    PENDING("Pending"),
+    SUBSCRIBED("Subscribed"),
+}
+
 // BASE
 
 @Serializable

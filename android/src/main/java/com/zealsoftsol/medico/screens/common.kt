@@ -4,6 +4,7 @@ import androidx.compose.foundation.AmbientIndication
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
+import androidx.compose.foundation.Interaction
 import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -496,6 +497,8 @@ object NoOpIndication : Indication {
 
         override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
             drawContent()
+            if (interactionState.contains(Interaction.Pressed)) {
+            }
         }
     }
 
