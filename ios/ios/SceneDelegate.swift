@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let contentView = HostScreen()
             .environmentObject(ScreenLogger())
             .environmentObject(AlertData())
+            .environmentObject(ListScrollData())
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

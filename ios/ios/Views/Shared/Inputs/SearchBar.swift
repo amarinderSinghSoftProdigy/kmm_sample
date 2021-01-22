@@ -32,6 +32,11 @@ struct SearchBar: View {
             AppColor.white.color
                 .cornerRadius(10)
             
+            let attributedPlaceholder =
+                NSAttributedString(string: placeholderLocalizationKey.localized,
+                                   attributes: [NSAttributedString.Key.foregroundColor: style.fontColor,
+                                                NSAttributedString.Key.font: style.font])
+            
             HStack(spacing: style.spacing) {
                 let buttonSize: CGFloat = 24
                 
@@ -43,11 +48,11 @@ struct SearchBar: View {
                     .textFieldStyle(PlainTextFieldStyle())
                     .disableAutocorrection(true)
                     .disabled(isDisabled)
+                    .onAppear {
+                        UITextField.appearance().attributedPlaceholder = attributedPlaceholder
+                    }
                     .introspectTextField { uiTextField in
-                        uiTextField.attributedPlaceholder =
-                            NSAttributedString(string: placeholderLocalizationKey.localized,
-                                               attributes: [NSAttributedString.Key.foregroundColor: style.fontColor,
-                                                            NSAttributedString.Key.font: style.font])
+                        uiTextField.attributedPlaceholder = attributedPlaceholder
                     }
                 
                 self.getButtonView(for: trailingButton)

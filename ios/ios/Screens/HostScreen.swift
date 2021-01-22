@@ -118,6 +118,9 @@ struct TabBarScreen: View {
             .navigationBar(withNavigationSection: tabBarScope.navigationSection,
                            withNavigationBarInfo: tabBarScope.tabBar,
                            handleGoBack: { tabBarScope.goBack() })
+            .onDisappear {
+                
+            }
     }
     
     init(tabBarScope: Scope.Host.HostTabBar) {

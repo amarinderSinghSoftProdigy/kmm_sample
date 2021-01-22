@@ -11,6 +11,8 @@ import core
 import Introspect
 
 struct GlobalSearchScreen: View {
+    @EnvironmentObject var scrollData: ListScrollData
+    
     let scope: SearchScope
     
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
@@ -21,12 +23,6 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
-    
-    @State private var productsListTableView: UITableView?
-    
-    @State private var scrollElementIndex: Int = 0
-    @State private var elementToScrollTo: Int?
-    @State private var scrollPostion: UITableView.ScrollPosition = .none
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -75,6 +71,8 @@ struct GlobalSearchScreen: View {
                       onTextChange: { value in scope.searchProduct(input: value) })
             
             Button(LocalizedStringKey("cancel")) {
+                scrollData.clear(list: .globalSearchProducts)
+                
                 scope.goBack()
             }
             .medicoText(fontSize: 17,
@@ -122,83 +120,27 @@ struct GlobalSearchScreen: View {
     }
     
     private var productsView: some View {
-        guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
-        
-        let lastProductIndex = products.count - 1
+        let productsCount = self.products.value?.count ?? 0
         
         return AnyView (
-            TransparentList(data: products) { index, product -> AnyView in
+            TransparentList(data: self.products,
+                            dataType: DataProductSearch.self,
+                            listName: .globalSearchProducts,
+                            isInProgress: scope.isInProgress,
+                            pagination: scope.pagination,
+                            onTapGesture: { scope.selectProduct(product: $0) },
+                            loadItems: { scope.loadMoreProducts() }) { index, product -> AnyView in
                 let topPadding: CGFloat = index == 0 ? 32 : 0
-                let bottomPadding: CGFloat = index == lastProductIndex ? 16 : 0
+                let bottomPadding: CGFloat = index == productsCount - 1 ? 16 : 0
                 
                 return AnyView(
                     ProductView(product: product)
                         .padding(.top, topPadding)
                         .padding(.bottom, bottomPadding)
-                        .onTapGesture {
-                            scope.selectProduct(product: product)
-                        }
-                        .onAppear {
-                            if index == products.count - 1 &&
-                                scope.pagination.canLoadMore() &&
-                                isInProgress.value == false {
-                                scope.loadMoreProducts()
-
-                                self.scrollElementIndex = index
-                            }
-                        }
                 )
-            }
-            .introspectTableView { (tableView) in
-                if self.productsListTableView == nil {
-                    self.productsListTableView = tableView
-                }
-                
-                if self.isInProgress.value == true { return }
-                
-                setUpInitialScrollData()
-                
-                if let elementToScrollTo = self.elementToScrollTo {
-                    scrollToCell(elementToScrollTo)
-                }
-            }
-            .onReceive(self.products.$value) { value in
-                guard let value = value, value.count > 0 else { return }
-                
-                self.productsListTableView = nil
             }
             .padding(.horizontal, 16)
         )
-    }
-    
-    private func setUpInitialScrollData() {
-        let visibleProductIndex = 0 // Get VisibleProductIndex
-        
-        if visibleProductIndex != 0 {
-            self.elementToScrollTo = Int(visibleProductIndex)
-            self.scrollPostion = .top
-        }
-        else if self.scrollElementIndex != 0 {
-            self.elementToScrollTo = self.scrollElementIndex
-            self.scrollPostion = .bottom
-        }
-        else {
-            self.elementToScrollTo = nil
-            self.scrollPostion = .none
-        }
-    }
-    
-    private func scrollToCell(_ index: Int, animated: Bool = false) {
-        let indexPath = IndexPath(row: index, section: 0)
-        
-        guard let productsListTableView = self.productsListTableView,
-           productsListTableView.dataSource != nil,
-           productsListTableView.hasRowAtIndexPath(indexPath) else { return }
-        
-        productsListTableView.scrollToRow(at: indexPath,
-                                          at: scrollPostion,
-                                          animated: animated)
-        self.elementToScrollTo = nil
     }
 }
 

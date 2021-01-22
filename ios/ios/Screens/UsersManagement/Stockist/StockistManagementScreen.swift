@@ -47,13 +47,15 @@ struct StockistManagementScreen: View {
                 
                 self.getStockistsOptionsPicker(withSelectedOption: selectedOption)
                 
-                if let stockists = self.stockists.value as? [DataEntityInfo] {
-                    TransparentList(data: stockists) { _, element in
-                        StockistView(stockist: element)
-                            .onTapGesture {
-                                self.chosenStockist = element
-                            }
-                    }
+                let listName: ListScrollData.Name =
+                    self.activeTab.value == .allStockists ? .allStockists : .yourStockists
+                TransparentList(data: stockists,
+                                dataType: DataEntityInfo.self,
+                                listName: listName,
+                                pagination: scope.pagination,
+                                onTapGesture: { self.chosenStockist = $0 },
+                                loadItems: { scope.loadItems() }) { _, element in
+                    StockistView(stockist: element)
                 }
             }
             .keyboardResponder()
