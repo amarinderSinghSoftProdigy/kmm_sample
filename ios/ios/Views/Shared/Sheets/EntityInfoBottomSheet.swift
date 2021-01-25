@@ -20,7 +20,8 @@ struct EntityInfoBottomSheet: ViewModifier {
         
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
-                ManagementItemDetails(entityInfo: bottomSheet.entityInfo)
+                ManagementItemDetails(entityInfo: bottomSheet.entityInfo,
+                                      onSubscribe: { bottomSheet.subscribe() })
             }
             .edgesIgnoringSafeArea(.all)
         )
@@ -28,6 +29,7 @@ struct EntityInfoBottomSheet: ViewModifier {
     
     private struct ManagementItemDetails: View {
         let entityInfo: DataEntityInfo
+        let onSubscribe: () -> ()
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
@@ -47,11 +49,14 @@ struct EntityInfoBottomSheet: ViewModifier {
                     
                     Spacer()
                     
-                    MedicoButton(localizedStringKey: "subscribe",
-                                 width: 91,
-                                 height: 31,
-                                 cornerRadius: 5,
-                                 fontSize: 14) {
+                    if entityInfo.getSubscriptionStatus() == nil {
+                        MedicoButton(localizedStringKey: "subscribe",
+                                     width: 91,
+                                     height: 31,
+                                     cornerRadius: 5,
+                                     fontSize: 14) {
+                            onSubscribe()
+                        }
                     }
                 }
                 
@@ -82,10 +87,13 @@ struct EntityInfoBottomSheet: ViewModifier {
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    getInfoPanel(withTitleKey: "status", withValueKey: "subscribed")
-                    getInfoPanel(withTitleKey: "gstin_number", withValueKey: entityInfo.gstin)
-                    getInfoPanel(withTitleKey: "payment_method", withValueKey: "Cash")
-                    getInfoPanel(withTitleKey: "orders", withValueKey: "3")
+                    getDataPanel(withTitleKey: "gstin_number", withValueKey: entityInfo.gstin)
+                    
+                    if let status = entityInfo.getSubscriptionStatus() {
+                        getDataPanel(withTitleKey: "status", withValueKey: status.serverValue)
+                        getDataPanel(withTitleKey: "payment_method", withValueKey: "Cash")
+                        getDataPanel(withTitleKey: "orders", withValueKey: "3")
+                    }
                 }
                 
                 Spacer()
@@ -94,7 +102,7 @@ struct EntityInfoBottomSheet: ViewModifier {
             .padding(.vertical, 22)
         }
         
-        private func getInfoPanel(withTitleKey titleKey: String,
+        private func getDataPanel(withTitleKey titleKey: String,
                                   withValueKey valueKey: String) -> some View {
             HStack(spacing: 3) {
                 LocalizedText(localizationKey: titleKey,
