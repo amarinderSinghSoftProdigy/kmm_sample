@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
@@ -234,6 +235,10 @@ object DebugScopeCreator {
                 isDetailsOpened = DataSource(false),
             )
         )
+    }
+
+    fun allStockistsList() {
+        nav.setScope(ManagementScope.Stockist())
     }
 }
 

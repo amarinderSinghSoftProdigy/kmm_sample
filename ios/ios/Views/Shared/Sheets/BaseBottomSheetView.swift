@@ -19,10 +19,6 @@ struct BaseBottomSheetView<Content: View>: View {
 
     @GestureState private var translation: CGFloat = 0
 
-    private var offset: CGFloat {
-        isOpened ? 0 : maxHeight - minHeight
-    }
-
     private var indicator: some View {
         AppColor.placeholderGrey.color
             .cornerRadius(2.5)
@@ -42,40 +38,43 @@ struct BaseBottomSheetView<Content: View>: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            BlurEffectView()
-                .edgesIgnoringSafeArea(.all)
-                .onTapGesture {
-                    self.isOpened = false
-                }
-            
-            GeometryReader { geometry in
-                VStack(spacing: 10) {
-                    self.indicator
-                        .padding(.top, 10)
-                    
-                    self.content
-                }
-                .frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
-                .background(appColor: .white)
-                .cornerRadius(13, corners: [.topLeft, .topRight])
-                .frame(height: geometry.size.height, alignment: .bottom)
-                .offset(y: max(self.offset + self.translation, 0))
-                .animation(.interactiveSpring())
-                .gesture(
-                    DragGesture().updating(self.$translation) { value, state, _ in
-                        state = value.translation.height
-                    }.onEnded { value in
-                        let snapRatio: CGFloat = 0.35
-                        let snapDistance = self.maxHeight * snapRatio
-                        
-                        guard abs(value.translation.height) > snapDistance else {
-                            return
-                        }
-                        
-                        self.isOpened = value.translation.height < 0
+        Group {
+            if isOpened {
+                BlurEffectView()
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        self.isOpened = false
                     }
-                )
+                    .transition(.opacity)
+                
+                GeometryReader { geometry in
+                    VStack(spacing: 10) {
+                        self.indicator
+                            .padding(.top, 10)
+                        
+                        self.content
+                    }
+                    .frame(width: geometry.size.width, height: self.maxHeight, alignment: .top)
+                    .background(appColor: .white)
+                    .cornerRadius(13, corners: [.topLeft, .topRight])
+                    .frame(height: geometry.size.height, alignment: .bottom)
+                    .offset(y: max(self.translation, 0))
+                    .gesture(
+                        DragGesture().updating(self.$translation) { value, state, _ in
+                            state = value.translation.height
+                        }.onEnded { value in
+                            let snapRatio: CGFloat = 0.35
+                            let snapDistance = self.maxHeight * snapRatio
+                            
+                            guard abs(value.translation.height) > snapDistance else {
+                                return
+                            }
+                            
+                            self.isOpened = value.translation.height < 0
+                        }
+                    )
+                }
+                .transition(.move(edge: .bottom))
             }
         }
     }

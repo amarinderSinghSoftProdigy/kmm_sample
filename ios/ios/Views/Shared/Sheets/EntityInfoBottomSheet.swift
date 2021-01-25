@@ -19,11 +19,10 @@ struct EntityInfoBottomSheet: ViewModifier {
                                         set: { newValue in if !newValue { onBottomSheetDismiss() } })
         
         return AnyView(
-            ZStack {
-                BaseBottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
-                    ManagementItemDetails(entityInfo: bottomSheet.entityInfo)
-                }.edgesIgnoringSafeArea(.all)
+            BaseBottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
+                ManagementItemDetails(entityInfo: bottomSheet.entityInfo)
             }
+            .edgesIgnoringSafeArea(.all)
         )
     }
     

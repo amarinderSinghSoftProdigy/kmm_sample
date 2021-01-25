@@ -157,26 +157,23 @@ struct BottomSheetView: View {
     let dismissBottomSheet: () -> ()
 
     var body: some View {
-        let initialView = AnyView(EmptyView())
+        ZStack(alignment: .topLeading) {
+            switch bottomSheet.value {
 
-        switch bottomSheet.value {
-
-        case let uploadBottomSheet as BottomSheet.UploadDocuments:
-            return AnyView(
-                initialView.filePicker(bottomSheet: uploadBottomSheet,
+            case let uploadBottomSheet as BottomSheet.UploadDocuments:
+                Color.clear.filePicker(bottomSheet: uploadBottomSheet,
                                        onBottomSheetDismiss: { dismissBottomSheet() })
-            )
 
-        case let managementItemSheet as BottomSheet.PreviewManagementItem:
-            return AnyView(
-                initialView
+            case let managementItemSheet as BottomSheet.PreviewManagementItem:
+                Color.clear
                     .modifier(EntityInfoBottomSheet(bottomSheet: managementItemSheet,
                                                     onBottomSheetDismiss: { dismissBottomSheet() }))
-            )
-
-        default:
-            return AnyView(initialView)
+                        
+            default:
+                Color.clear
+            }
         }
+        .animation(.linear(duration: 0.2))
     }
     
     init(bottomSheet: DataSource<BottomSheet>,
