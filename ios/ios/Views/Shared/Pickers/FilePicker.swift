@@ -10,43 +10,62 @@ import SwiftUI
 import core
 
 struct FilePicker: ViewModifier {
-    @ObservedObject var bottomSheet: SwiftDataSource<BottomSheet.UploadDocuments>
-    @ObservedObject var fileUploadData: FileUploadData
+    @State private var imageSourceType: UIImagePickerController.SourceType?
+    @State private var documentPickerShown: Bool = false
+    
+    let bottomSheet: BottomSheet.UploadDocuments
     
     let onBottomSheetDismiss: () -> ()
     
-    init(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+    init(bottomSheet: BottomSheet.UploadDocuments,
          onBottomSheetDismiss: @escaping () -> ()) {
-        let bottomSheetDataSource = SwiftDataSource(dataSource: bottomSheet)
-        self.bottomSheet = bottomSheetDataSource
+        self.bottomSheet = bottomSheet
+        
+        self._documentPickerShown = State(initialValue: bottomSheet.isSeasonBoy)
         
         self.onBottomSheetDismiss = onBottomSheetDismiss
-        self.fileUploadData = FileUploadData(bottomSheet: bottomSheetDataSource)
     }
     
     func body(content: Content) -> some View {
-        content
-            .actionSheet(isPresented: $fileUploadData.showingActionSheet) {
-                actionSheet
-            }
-            .sheet(item: $fileUploadData.activeSheet) { sheet in
-                getCurrentSheet(sheet)
-                    .onDisappear {
-                        onBottomSheetDismiss()
-                    }
-            }
+        let showingActionSheet = Binding(get: { !bottomSheet.isSeasonBoy }, set: { _ in })
+        
+        let activeSheet = Binding(get: { () -> ActiveSheet? in
+            if documentPickerShown { return .documentPicker }
+            
+            if imageSourceType != nil { return .imagePicker }
+            
+            return nil
+        }, set: { newValue in
+            if newValue != nil { return }
+            
+            self.documentPickerShown = false
+            self.imageSourceType = nil
+        })
+        
+        return AnyView(
+            content
+                .actionSheet(isPresented: showingActionSheet) {
+                    actionSheet
+                }
+                .sheet(item: activeSheet) { sheet in
+                    getCurrentSheet(sheet)
+                        .onDisappear {
+                            onBottomSheetDismiss()
+                        }
+                }
+        )
     }
     
     var actionSheet: ActionSheet {
         ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
             .default(Text(LocalizedStringKey("take_photo"))) {
-                self.fileUploadData.imageSourceType = .camera
+                self.imageSourceType = .camera
             },
             .default(Text(LocalizedStringKey("choose_from_photo_library"))) {
-                self.fileUploadData.imageSourceType = .photoLibrary
+                self.imageSourceType = .photoLibrary
             },
             .default(Text(LocalizedStringKey("choose_from_device"))) {
-                self.fileUploadData.documentPickerShown = true
+                self.documentPickerShown = true
             },
             .cancel {
                 onBottomSheetDismiss()
@@ -58,16 +77,15 @@ struct FilePicker: ViewModifier {
         switch sheet {
         
         case .documentPicker:
-            guard fileUploadData.documentPickerShown,
-                  let uploadDocumentsSheet = self.bottomSheet.value else { return AnyView(EmptyView()) }
+            guard documentPickerShown else { return AnyView(EmptyView()) }
             
-            let documentTypes = getAvailableDocumentTypes(from: uploadDocumentsSheet.supportedFileTypes)
+            let documentTypes = getAvailableDocumentTypes(from: self.bottomSheet.supportedFileTypes)
             return AnyView(
                 DocumentPicker(documentTypes: documentTypes,
                                onDocumentPicked: uploadFile))
             
         case .imagePicker:
-            guard let sourceType = self.fileUploadData.imageSourceType else { return AnyView(EmptyView()) }
+            guard let sourceType = self.imageSourceType else { return AnyView(EmptyView()) }
             
             return AnyView(
                 ImagePicker(sourceType: sourceType,
@@ -93,7 +111,7 @@ struct FilePicker: ViewModifier {
     private func uploadImage(_ image: UIImage) {
         guard let imageData = image.jpegData(compressionQuality: 0.85) else { return }
 
-        bottomSheet.value?.uploadData(imageData, withFileExtension: "jpeg")
+        bottomSheet.uploadData(imageData, withFileExtension: "jpeg")
     }
     
     private func uploadFile(fromPath filePath: URL) {
@@ -101,7 +119,7 @@ struct FilePicker: ViewModifier {
         
         let fileExtension = filePath.pathExtension
         
-        bottomSheet.value?.uploadData(fileData, withFileExtension: fileExtension)
+        bottomSheet.uploadData(fileData, withFileExtension: fileExtension)
     }
 }
 
@@ -137,42 +155,6 @@ extension DataFileType {
             
         default:
             return nil
-        }
-    }
-}
-
-final class FileUploadData: ObservableObject {
-    @Published var showingActionSheet = false
-    
-    @Published fileprivate var activeSheet: ActiveSheet? {
-        didSet {
-            if activeSheet == nil {
-                self.imageSourceType = nil
-                self.documentPickerShown = false
-            }
-        }
-    }
-    
-    var imageSourceType: UIImagePickerController.SourceType? {
-        didSet {
-            if imageSourceType == nil { return }
-            
-            activeSheet = .imagePicker
-        }
-    }
-    
-    var documentPickerShown: Bool = false {
-        didSet {
-            if !documentPickerShown { return }
-            
-            activeSheet = .documentPicker
-        }
-    }
-    
-    init(bottomSheet: SwiftDataSource<BottomSheet.UploadDocuments>) {
-        bottomSheet.onValueDidSet = { newValue in
-            self.showingActionSheet = newValue != nil && !newValue!.isSeasonBoy
-            self.documentPickerShown = newValue != nil && newValue!.isSeasonBoy
         }
     }
 }

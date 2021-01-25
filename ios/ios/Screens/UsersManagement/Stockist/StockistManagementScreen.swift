@@ -15,8 +15,6 @@ struct StockistManagementScreen: View {
     @ObservedObject var stockistSearchText: SwiftDataSource<NSString>
     @ObservedObject var activeTab: SwiftDataSource<ManagementScopeTab>
     @ObservedObject var stockists: SwiftDataSource<NSArray>
-    
-    @State private var chosenStockist: DataEntityInfo?
 
     var body: some View {
         let selectedOption = Binding(get: {
@@ -28,9 +26,6 @@ struct StockistManagementScreen: View {
         })
         
         let stockistImage = Image("Stockist").resizable()
-    
-        let bottomSheetOpened = Binding(get: { self.chosenStockist != nil },
-                                        set: { newValue in if newValue == false { self.chosenStockist = nil }  })
 
         ZStack(alignment: .topLeading) {
             AppColor.primary.color
@@ -53,7 +48,7 @@ struct StockistManagementScreen: View {
                                 dataType: DataEntityInfo.self,
                                 listName: listName,
                                 pagination: scope.pagination,
-                                onTapGesture: { self.chosenStockist = $0 },
+                                onTapGesture: { scope.selectItem(item: $0) },
                                 loadItems: { scope.loadItems() }) { _, element in
                     StockistView(stockist: element)
                 }
@@ -61,12 +56,6 @@ struct StockistManagementScreen: View {
             .keyboardResponder()
             .padding(.horizontal, 16)
             .padding(.vertical, 32)
-            
-            if let chosenStockist = self.chosenStockist {
-                BottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
-                    StockistDetails(stockist: chosenStockist)
-                }.edgesIgnoringSafeArea(.all)
-            }
         }
         .screenLogger(withScreenName: "StockistManagement",
                       withScreenClass: StockistManagementScreen.self)
@@ -140,101 +129,20 @@ struct StockistManagementScreen: View {
             }
         }
     }
+}
+
+struct SmallAddresView: View {
+    let location: String
+    let pincode: String
     
-    private struct StockistDetails: View {
-        let stockist: DataEntityInfo
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(stockist.traderName)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 20,
-                                        multilineTextAlignment: .leading)
-                        
-                        Text(stockist.city)
-                            .medicoText(textWeight: .medium,
-                                        color: .grey3,
-                                        multilineTextAlignment: .leading)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    
-                    Spacer()
-                    
-                    MedicoButton(localizedStringKey: "subscribe",
-                                 width: 91,
-                                 height: 31,
-                                 cornerRadius: 5,
-                                 fontSize: 14) {
-                    }
-                }
-                
-                HStack {
-                    HStack(spacing: 60) {
-                        URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
-                            .frame(width: 96, height: 96)
-                        
-                        VStack(alignment: .leading, spacing: 13) {
-                            SmallAddresView(location: stockist.location, pincode: stockist.pincode)
-                            
-                            VStack(alignment: .leading,spacing: 5) {
-                                Text(stockist.distance)
-                                    .medicoText(fontSize: 12,
-                                                color: .grey3,
-                                                multilineTextAlignment: .leading)
-                                
-                                LocalizedText(localizationKey: "see_on_the_map",
-                                              textWeight: .bold,
-                                              fontSize: 12,
-                                              color: .lightBlue,
-                                              multilineTextAlignment: .leading)
-                            }
-                        }
-                    }
-                    
-                    Spacer()
-                }
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    getInfoPanel(withTitleKey: "status", withValueKey: "subscribed")
-                    getInfoPanel(withTitleKey: "gstin_number", withValueKey: stockist.gstin)
-                    getInfoPanel(withTitleKey: "payment_method", withValueKey: "Cash")
-                    getInfoPanel(withTitleKey: "orders", withValueKey: "3")
-                }
-                
-                Spacer()
-            }
-            .padding(.horizontal, 25)
-            .padding(.vertical, 22)
-        }
-        
-        private func getInfoPanel(withTitleKey titleKey: String,
-                                  withValueKey valueKey: String) -> some View {
-            HStack(spacing: 3) {
-                LocalizedText(localizationKey: titleKey,
-                              multilineTextAlignment: .leading)
-                
-                LocalizedText(localizationKey: valueKey,
-                              textWeight: .medium,
-                              multilineTextAlignment: .leading)
-            }
-        }
-    }
-    
-    private struct SmallAddresView: View {
-        let location: String
-        let pincode: String
-        
-        var body: some View {
-            HStack(spacing: 5) {
-                Image("SmallAddress")
-                
-                Text("\(location) \(pincode)")
-                    .medicoText(textWeight: .bold,
-                                color: .grey3,
-                                multilineTextAlignment: .leading)
-            }
+    var body: some View {
+        HStack(spacing: 5) {
+            Image("SmallAddress")
+            
+            Text("\(location) \(pincode)")
+                .medicoText(textWeight: .bold,
+                            color: .grey3,
+                            multilineTextAlignment: .leading)
         }
     }
 }

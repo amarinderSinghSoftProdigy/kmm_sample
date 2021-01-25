@@ -48,6 +48,9 @@ struct BaseScopeView: View {
                 .hideKeyboardOnTap()
             
             getViewWithModifiers()
+            
+            BottomSheetView(bottomSheet: scope.bottomSheet,
+                            dismissBottomSheet: { scope.dismissBottomSheet() })
 
             if let isInProgress = self.isInProgress.value,
                isInProgress == true {
@@ -84,7 +87,7 @@ struct BaseScopeView: View {
     }
     
     private func getViewWithModifiers() -> some View {
-        var view = AnyView(
+        let view = AnyView(
             currentView
                 .alert(item: $alertData.data) { alertData in
                     Alert(title: Text(LocalizedStringKey(alertData.titleKey)),
@@ -95,14 +98,6 @@ struct BaseScopeView: View {
                 
                 .errorAlert(withHandler: scope)
         )
-        
-        if let uploadBottomSheet = scope.bottomSheet as? DataSource<BottomSheet.UploadDocuments> {
-            view = AnyView(
-                view
-                    .filePicker(bottomSheet: uploadBottomSheet,
-                                onBottomSheetDismiss: { scope.dismissBottomSheet() })
-            )
-        }
         
         return view
     }
@@ -118,9 +113,6 @@ struct TabBarScreen: View {
             .navigationBar(withNavigationSection: tabBarScope.navigationSection,
                            withNavigationBarInfo: tabBarScope.tabBar,
                            handleGoBack: { tabBarScope.goBack() })
-            .onDisappear {
-                
-            }
     }
     
     init(tabBarScope: Scope.Host.HostTabBar) {
@@ -156,5 +148,41 @@ struct TabBarScreen: View {
         default:
             return AnyView(EmptyView())
         }
+    }
+}
+
+struct BottomSheetView: View {
+    @ObservedObject var bottomSheet: SwiftDataSource<BottomSheet>
+
+    let dismissBottomSheet: () -> ()
+
+    var body: some View {
+        let initialView = AnyView(EmptyView())
+
+        switch bottomSheet.value {
+
+        case let uploadBottomSheet as BottomSheet.UploadDocuments:
+            return AnyView(
+                initialView.filePicker(bottomSheet: uploadBottomSheet,
+                                       onBottomSheetDismiss: { dismissBottomSheet() })
+            )
+
+        case let managementItemSheet as BottomSheet.PreviewManagementItem:
+            return AnyView(
+                initialView
+                    .modifier(EntityInfoBottomSheet(bottomSheet: managementItemSheet,
+                                                    onBottomSheetDismiss: { dismissBottomSheet() }))
+            )
+
+        default:
+            return AnyView(initialView)
+        }
+    }
+    
+    init(bottomSheet: DataSource<BottomSheet>,
+         dismissBottomSheet: @escaping () -> ()) {
+        self.bottomSheet = SwiftDataSource(dataSource: bottomSheet)
+
+        self.dismissBottomSheet = dismissBottomSheet
     }
 }

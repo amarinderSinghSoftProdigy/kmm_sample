@@ -62,7 +62,7 @@ extension View {
         )
     }
     
-    func filePicker(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+    func filePicker(bottomSheet: BottomSheet.UploadDocuments,
                     onBottomSheetDismiss: @escaping () -> ()) -> some View {
         self.modifier(
             FilePicker(bottomSheet: bottomSheet,

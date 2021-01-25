@@ -55,7 +55,7 @@
 		339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339C5044257A548F00AAB45F /* PickerSelector.swift */; };
 		339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339D372125B05CCF00C57B2D /* SettingsScreen.swift */; };
 		33A0202425B9920000615349 /* TransparentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202325B9920000615349 /* TransparentList.swift */; };
-		33A0202625B99E1100615349 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202525B99E1100615349 /* BottomSheetView.swift */; };
+		33A0202625B99E1100615349 /* BaseBottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202525B99E1100615349 /* BaseBottomSheetView.swift */; };
 		33A1586125920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
 		33ABAECB258B8FE90061F63C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAECA258B8FE90061F63C /* Extensions.swift */; };
@@ -74,6 +74,7 @@
 		33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */; };
 		33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */; };
 		33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */; };
+		33D7F29925BEBCB40070C9DB /* EntityInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
@@ -185,7 +186,7 @@
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
 		339D372125B05CCF00C57B2D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		33A0202325B9920000615349 /* TransparentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentList.swift; sourceTree = "<group>"; };
-		33A0202525B99E1100615349 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
+		33A0202525B99E1100615349 /* BaseBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseBottomSheetView.swift; sourceTree = "<group>"; };
 		33A1586025920325005A634F /* PasswordRestoreOtpPhoneVerificationScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordRestoreOtpPhoneVerificationScreenTests.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
 		33ABAECA258B8FE90061F63C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
@@ -201,6 +202,7 @@
 		33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColorViewsExtensions.swift; path = ios/extensions/AppColorViewsExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreenTests.swift; sourceTree = "<group>"; };
 		33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAadhaarCardDetailsScreen.swift; sourceTree = "<group>"; };
+		33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityInfoBottomSheet.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -598,7 +600,8 @@
 		33A0202725B99E2200615349 /* Sheets */ = {
 			isa = PBXGroup;
 			children = (
-				33A0202525B99E1100615349 /* BottomSheetView.swift */,
+				33A0202525B99E1100615349 /* BaseBottomSheetView.swift */,
+				33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1056,7 +1059,7 @@
 				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
 				3391B0BE25B824600025B945 /* StockistManagementScreen.swift in Sources */,
 				33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */,
-				33A0202625B99E1100615349 /* BottomSheetView.swift in Sources */,
+				33A0202625B99E1100615349 /* BaseBottomSheetView.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
@@ -1088,6 +1091,7 @@
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
 				3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
+				33D7F29925BEBCB40070C9DB /* EntityInfoBottomSheet.swift in Sources */,
 				33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */,
 				33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,

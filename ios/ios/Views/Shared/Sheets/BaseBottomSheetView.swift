@@ -1,5 +1,5 @@
 //
-//  BottomSheetView.swift
+//  BaseBottomSheetView.swift
 //  Medico
 //
 //  Created by Dasha Gurinovich on 21.01.21.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct BottomSheetView<Content: View>: View {
+struct BaseBottomSheetView<Content: View>: View {
     private let minHeightRatio: CGFloat = 0.3
     
     let maxHeight: CGFloat
