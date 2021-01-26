@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -129,9 +130,9 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
         }
     }
     val items = scope.items.flow.collectAsState()
-    Space(16.dp)
     LazyColumn(
         state = rememberLazyListState(),
+        contentPadding = PaddingValues(top = 16.dp),
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
     ) {
         itemsIndexed(
@@ -152,14 +153,13 @@ private fun StockistItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth()
             .padding(vertical = 8.dp)
-            .height(62.dp)
             .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
-        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 7.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
             Column(
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier.fillMaxHeight().weight(0.7f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -170,11 +170,15 @@ private fun StockistItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                 )
                 GeoLocation(entityInfo.location)
             }
-            Text(
-                text = entityInfo.getSubscriptionStatus()?.serverValue.orEmpty(),
-                color = if (entityInfo.getSubscriptionStatus() == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
-                modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
-            )
+            entityInfo.subscriptionData?.let {
+                Box(modifier = Modifier.weight(0.3f)) {
+                    Text(
+                        text = it.status.serverValue,
+                        color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                        modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
+                    )
+                }
+            }
         }
     }
 }

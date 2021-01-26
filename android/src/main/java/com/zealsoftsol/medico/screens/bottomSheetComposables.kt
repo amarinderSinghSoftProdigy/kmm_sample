@@ -176,7 +176,7 @@ private fun PreviewItemBottomSheet(
                                     },
                                 )
                             }
-                            if (entityInfo.getSubscriptionStatus() == null) {
+                            if (entityInfo.subscriptionData == null) {
                                 Space(14.dp)
                                 MedicoSmallButton(
                                     text = stringResource(id = R.string.subscribe),
@@ -189,10 +189,13 @@ private fun PreviewItemBottomSheet(
                 Space(12.dp)
                 Column {
                     DataWithLabel(label = R.string.gstin_num, data = entityInfo.gstin)
-                    entityInfo.getSubscriptionStatus()?.let {
-                        DataWithLabel(label = R.string.status, data = it.serverValue)
-                        DataWithLabel(label = R.string.payment_method, data = "")
-                        DataWithLabel(label = R.string.orders, data = "")
+                    entityInfo.subscriptionData?.let {
+                        DataWithLabel(label = R.string.status, data = it.status.serverValue)
+                        DataWithLabel(
+                            label = R.string.payment_method,
+                            data = it.paymentMethod.serverValue
+                        )
+                        DataWithLabel(label = R.string.orders, data = it.orders)
                     }
                 }
             }
