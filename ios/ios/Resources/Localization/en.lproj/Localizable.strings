@@ -152,6 +152,13 @@
 "all_stockists" = "All Stockists";
 "pending" = "Pending";
 "subscribed" = "Subscribed";
+"choose_payment_method_description" = "Before you subscribe to Pharmacy Doctors, please choose the payment method ";
+"credit" = "Credit";
+"cash_on_delivery" = "Cash on delivery";
+"save" = "Save";
+"edit_number_of_days" = "Edit number of days";
+"thank_you_for_your_request" = "Thank you for your request!";
+"continue" = "Continue";
 
 // MARK: Stockist Details
 "subscribe" = "Subscribe";

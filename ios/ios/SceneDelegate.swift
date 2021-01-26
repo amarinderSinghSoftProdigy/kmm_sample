@@ -15,7 +15,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Create the SwiftUI view that provides the window contents.
         let contentView = HostScreen()
             .environmentObject(ScreenLogger())
-            .environmentObject(AlertData())
             .environmentObject(ListScrollData())
 
         // Use a UIHostingController as window root view controller.
