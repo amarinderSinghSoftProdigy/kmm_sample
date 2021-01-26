@@ -22,20 +22,21 @@ struct ErrorAlert: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        guard let error = self.error.value else { return AnyView(content) }
-        
-        let dismissAction = { errorsHandler.dismissAlertError() }
-        
-        return AnyView(
+        ZStack {
+            content
+            
             ZStack {
-                content
-                
-                CustomAlert<AnyView>(titleKey: error.title,
-                                     descriptionKey: error.body,
-                                     button: .standard(action: dismissAction),
-                                     dismissAction: dismissAction)
+                if let error = self.error.value {
+                    let dismissAction = { errorsHandler.dismissAlertError() }
+                    
+                    CustomAlert<AnyView>(titleKey: error.title,
+                                         descriptionKey: error.body,
+                                         button: .standard(action: dismissAction),
+                                         dismissAction: dismissAction)
+                }
             }
-        )
+            .animation(.default)
+        }
     }
 }
 
@@ -88,29 +89,30 @@ struct NotificationAlert: ViewModifier {
     }
     
     func body(content: Content) -> some View {
-        guard let notification = self.notification.value else { return AnyView(content) }
-        
-        let dismissAction = {
-            notificationsHandler.dismissNotification()
-            onDismiss?()
-         }
-        
-        return AnyView(
+        ZStack {
+            content
+            
             ZStack {
-                content
-                
-                if notification.isSimple {
-                    CustomAlert<AnyView>(titleKey: notification.title,
-                                         descriptionKey: notification.body,
-                                         button: .standard(action: dismissAction),
-                                         dismissAction: notification.isDismissible ? dismissAction : nil)
-                }
-                else {
-                    ComplexNotificationAlert(notification: notification,
+                if let notification = self.notification.value {
+                    let dismissAction = {
+                        notificationsHandler.dismissNotification()
+                        onDismiss?()
+                     }
+                    
+                    if notification.isSimple {
+                        CustomAlert<AnyView>(titleKey: notification.title,
+                                             descriptionKey: notification.body,
+                                             button: .standard(action: dismissAction),
                                              dismissAction: notification.isDismissible ? dismissAction : nil)
+                    }
+                    else {
+                        ComplexNotificationAlert(notification: notification,
+                                                 dismissAction: notification.isDismissible ? dismissAction : nil)
+                    }
                 }
             }
-        )
+            .animation(.default)
+        }
     }
 }
 
