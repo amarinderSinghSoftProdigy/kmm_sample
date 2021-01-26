@@ -38,6 +38,7 @@ struct HostScreen: View {
 struct BaseScopeView: View {
     let scope: Scope.Host
     
+    @EnvironmentObject var notificationObserver: NotificationObservable
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
@@ -85,10 +86,18 @@ struct BaseScopeView: View {
     }
     
     private func getViewWithModifiers() -> some View {
-        let view = AnyView(
+        var view = AnyView(
             currentView
                 .errorAlert(withHandler: scope)
         )
+        
+        if let notificationData = self.notificationObserver.data {
+            view = AnyView(
+                view
+                    .notificationAlertListener(withHandler: notificationData.notificationsHandler,
+                                               onDismiss: notificationData.onDismiss)
+            )
+        }
         
         return view
     }

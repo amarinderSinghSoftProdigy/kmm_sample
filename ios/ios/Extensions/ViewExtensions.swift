@@ -41,10 +41,16 @@ extension View {
         self.modifier(ErrorAlert(errorsHandler: errorsHandler))
     }
     
-    func notificationAlert(withHandler notificationsHandler: CommonScopeWithNotifications,
-                           onDismiss: (() -> ())? = nil) -> some View {
+    func notificationAlertListener(withHandler notificationsHandler: CommonScopeWithNotifications,
+                                   onDismiss: (() -> ())? = nil) -> some View {
         self.modifier(NotificationAlert(notificationsHandler: notificationsHandler,
                                         onDismiss: onDismiss))
+    }
+    
+    func notificationAlertSender(withHandler notificationsHandler: CommonScopeWithNotifications,
+                                 onDismiss: (() -> ())? = nil) -> some View {
+        self.modifier(NotificationAlertSender(notificationsHandler: notificationsHandler,
+                                              onDismiss: onDismiss))
     }
     
     func fieldError(withLocalizedKey errorMessageKey: String?,

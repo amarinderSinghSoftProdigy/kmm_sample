@@ -57,7 +57,7 @@ struct StockistManagementScreen: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 32)
         }
-        .notificationAlert(withHandler: scope)
+        .notificationAlertSender(withHandler: scope)
         .screenLogger(withScreenName: "StockistManagement",
                       withScreenClass: StockistManagementScreen.self)
     }

@@ -40,6 +40,39 @@ struct ErrorAlert: ViewModifier {
 }
 
 // MARK: Notifications
+class NotificationObservable: ObservableObject {
+    var data: Data?
+    
+    class Data {
+        let notificationsHandler: CommonScopeWithNotifications
+        let onDismiss: (() -> ())?
+        
+        init(notificationsHandler: CommonScopeWithNotifications,
+             onDismiss: (() -> ())? = nil) {
+            self.notificationsHandler = notificationsHandler
+            self.onDismiss = onDismiss
+        }
+    }
+}
+
+struct NotificationAlertSender: ViewModifier {
+    @EnvironmentObject var notificationObserver: NotificationObservable
+    
+    let notificationsHandler: CommonScopeWithNotifications
+    let onDismiss: (() -> ())?
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                self.notificationObserver.data = .init(notificationsHandler: notificationsHandler,
+                                                       onDismiss: onDismiss)
+            }
+            .onDisappear {
+                self.notificationObserver.data = nil
+            }
+    }
+}
+
 struct NotificationAlert: ViewModifier {
     let notificationsHandler: CommonScopeWithNotifications
     let onDismiss: (() -> ())?
