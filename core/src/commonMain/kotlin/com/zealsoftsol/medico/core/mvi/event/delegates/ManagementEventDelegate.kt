@@ -108,7 +108,7 @@ internal class ManagementEventDelegate(
             val user = userRepo.requireUser()
             subscribeRequest = SubscribeRequest(
                 buyerUnitCode = user.unitCode,
-                sellerUnitCode = requireNotNull(managementItem.unitCode),
+                sellerUnitCode = managementItem.unitCode,
                 paymentMethod = "",
                 noOfCreditDays = 0,
                 customerType = user.type.serverValue,

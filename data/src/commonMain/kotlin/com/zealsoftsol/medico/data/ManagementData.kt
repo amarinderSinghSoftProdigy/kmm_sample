@@ -19,16 +19,9 @@ data class EntityInfo(
     @SerialName("townOrCity")
     val city: String,
     val traderName: String,
-    val unitCode: String? = null,
-    private val subscribeStatus: String? = null,
-) : ManagementItem {
-
-    fun getSubscriptionStatus() = when (subscribeStatus) {
-        SubscriptionStatus.PENDING.serverValue -> SubscriptionStatus.PENDING
-        SubscriptionStatus.SUBSCRIBED.serverValue -> SubscriptionStatus.SUBSCRIBED
-        else -> null
-    }
-}
+    val unitCode: String,
+    val subscriptionData: SubscriptionData? = null,
+) : ManagementItem
 
 @Serializable
 data class SubscribeRequest(
@@ -37,4 +30,13 @@ data class SubscribeRequest(
     val paymentMethod: String,
     val noOfCreditDays: Int,
     val customerType: String
+)
+
+@Serializable
+data class SubscriptionData(
+    @SerialName("subscribeStatus")
+    val status: SubscriptionStatus,
+    val paymentMethod: PaymentMethod,
+    val noOfCreditDays: Int,
+    val orders: String,
 )

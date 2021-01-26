@@ -304,7 +304,7 @@ class NetworkClient(
 
     override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleResponse<String>>("$B2B_URL/api/v1/b2bapp/subscriptions/subscribe") {
+            client.post<SimpleResponse<MapBody>>("$B2B_URL/api/v1/b2bapp/subscriptions/subscribe") {
                 withMainToken()
                 jsonBody(subscribeRequest)
             }.getWrappedError()
