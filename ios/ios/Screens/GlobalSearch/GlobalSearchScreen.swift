@@ -67,6 +67,7 @@ struct GlobalSearchScreen: View {
         HStack {
             SearchBar(searchText: productSearch.value,
                       style: .small,
+                      showsCancelButton: false,
                       trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
                       onTextChange: { value in scope.searchProduct(input: value) })
             

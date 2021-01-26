@@ -19,6 +19,9 @@ struct SearchBar: View {
     
     let isDisabled: Bool
     
+    let showsCancelButton: Bool
+    
+    @State private var isSelected: Bool = false
     @Binding private var text: String
     
     // TECHNICAL DEBT
@@ -28,39 +31,54 @@ struct SearchBar: View {
     // after the application was minimized and reopened
     //
     var body: some View {
-        ZStack {
-            AppColor.white.color
-                .cornerRadius(10)
-            
-            let attributedPlaceholder =
-                NSAttributedString(string: placeholderLocalizationKey.localized,
-                                   attributes: [NSAttributedString.Key.foregroundColor: style.fontColor,
-                                                NSAttributedString.Key.font: style.font])
-            
-            HStack(spacing: style.spacing) {
-                let buttonSize: CGFloat = 24
+        HStack {
+            ZStack {
+                AppColor.white.color
+                    .cornerRadius(10)
                 
-                self.getButtonView(for: self.leadingButton)
-                    .frame(width: buttonSize, height: buttonSize)
+                let attributedPlaceholder =
+                    NSAttributedString(string: placeholderLocalizationKey.localized,
+                                       attributes: [NSAttributedString.Key.foregroundColor: style.fontColor,
+                                                    NSAttributedString.Key.font: style.font])
                 
-                TextField(LocalizedStringKey(placeholderLocalizationKey), text: $text)
-                    .medicoText(fontSize: 17, color: .darkBlue, multilineTextAlignment: .leading)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .disableAutocorrection(true)
-                    .disabled(isDisabled)
-                    .onAppear {
-                        UITextField.appearance().attributedPlaceholder = attributedPlaceholder
-                    }
-                    .introspectTextField { uiTextField in
-                        uiTextField.attributedPlaceholder = attributedPlaceholder
-                    }
-                
-                self.getButtonView(for: trailingButton)
-                    .frame(width: buttonSize, height: buttonSize)
+                HStack(spacing: style.spacing) {
+                    let buttonSize: CGFloat = 24
+                    
+                    self.getButtonView(for: self.leadingButton)
+                        .frame(width: buttonSize, height: buttonSize)
+                    
+                    TextField(LocalizedStringKey(placeholderLocalizationKey),
+                              text: $text,
+                              onEditingChanged: { self.isSelected = $0 })
+                        .medicoText(fontSize: 17, color: .darkBlue, multilineTextAlignment: .leading)
+                        .textFieldStyle(PlainTextFieldStyle())
+                        .disableAutocorrection(true)
+                        .disabled(isDisabled)
+                        .onAppear {
+                            UITextField.appearance().attributedPlaceholder = attributedPlaceholder
+                        }
+                        .introspectTextField { uiTextField in
+                            uiTextField.attributedPlaceholder = attributedPlaceholder
+                        }
+                    
+                    self.getButtonView(for: trailingButton)
+                        .frame(width: buttonSize, height: buttonSize)
+                }
+                .padding(.horizontal, 8)
             }
-            .padding(.horizontal, 8)
+            .frame(height: style.height)
+            
+            if showsCancelButton && isSelected {
+                Button(action: {
+                    self.text = ""
+                    self.hideKeyboard()
+                }) {
+                    LocalizedText(localizationKey: "cancel",
+                                  fontSize: 17,
+                                  color: .blue)
+                }
+            }
         }
-        .frame(height: style.height)
     }
     
     private func getButtonView(for searchBarButton: SearchBarButton?) -> some View {
@@ -92,6 +110,7 @@ struct SearchBar: View {
     init(placeholderLocalizationKey: String = "search",
          searchText: NSString? = nil,
          style: Style = .standart,
+         showsCancelButton: Bool = true,
          leadingButton: SearchBarButton? = SearchBarButton(button: .smallMagnifyingGlass),
          trailingButton: SearchBarButton? = SearchBarButton(emptyTextButton: nil,
                                                             enteredTextButton: .clear),
@@ -99,6 +118,8 @@ struct SearchBar: View {
         self.placeholderLocalizationKey = placeholderLocalizationKey
         
         self.style = style
+        
+        self.showsCancelButton = showsCancelButton
         
         self.leadingButton = leadingButton
         self.trailingButton = trailingButton
