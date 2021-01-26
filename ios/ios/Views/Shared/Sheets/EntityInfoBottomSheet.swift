@@ -49,7 +49,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                     
                     Spacer()
                     
-                    if entityInfo.getSubscriptionStatus() == nil {
+                    if entityInfo.subscriptionData == nil {
                         MedicoButton(localizedStringKey: "subscribe",
                                      width: 91,
                                      height: 31,
@@ -89,10 +89,10 @@ struct EntityInfoBottomSheet: ViewModifier {
                 VStack(alignment: .leading, spacing: 5) {
                     getDataPanel(withTitleKey: "gstin_number", withValueKey: entityInfo.gstin)
                     
-                    if let status = entityInfo.getSubscriptionStatus() {
-                        getDataPanel(withTitleKey: "status", withValueKey: status.serverValue)
-                        getDataPanel(withTitleKey: "payment_method", withValueKey: "Cash")
-                        getDataPanel(withTitleKey: "orders", withValueKey: "3")
+                    if let subscriptionData = entityInfo.subscriptionData{
+                        getDataPanel(withTitleKey: "status", withValueKey: subscriptionData.status.serverValue)
+                        getDataPanel(withTitleKey: "payment_method", withValueKey: subscriptionData.paymentMethod.serverValue)
+                        getDataPanel(withTitleKey: "orders", withValueKey: subscriptionData.orders)
                     }
                 }
                 

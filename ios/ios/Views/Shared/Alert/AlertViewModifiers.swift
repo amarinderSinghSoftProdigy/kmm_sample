@@ -24,13 +24,16 @@ struct ErrorAlert: ViewModifier {
     func body(content: Content) -> some View {
         guard let error = self.error.value else { return AnyView(content) }
         
+        let dismissAction = { errorsHandler.dismissAlertError() }
+        
         return AnyView(
             ZStack {
                 content
                 
                 CustomAlert<AnyView>(titleKey: error.title,
                                      descriptionKey: error.body,
-                                     button: .standard(action: { errorsHandler.dismissAlertError() }))
+                                     button: .standard(action: dismissAction),
+                                     dismissAction: dismissAction)
             }
         )
     }
@@ -54,6 +57,11 @@ struct NotificationAlert: ViewModifier {
     func body(content: Content) -> some View {
         guard let notification = self.notification.value else { return AnyView(content) }
         
+        let dismissAction = {
+            notificationsHandler.dismissNotification()
+            onDismiss?()
+         }
+        
         return AnyView(
             ZStack {
                 content
@@ -61,14 +69,12 @@ struct NotificationAlert: ViewModifier {
                 if notification.isSimple {
                     CustomAlert<AnyView>(titleKey: notification.title,
                                          descriptionKey: notification.body,
-                                         button: .standard(action: {
-                                            notificationsHandler.dismissNotification()
-                                            onDismiss?()
-                                         }))
+                                         button: .standard(action: dismissAction),
+                                         dismissAction: notification.isDismissible ? dismissAction : nil)
                 }
                 else {
-                    ComplexNotificationAlert(notification: notification)
-                        .zIndex(10)
+                    ComplexNotificationAlert(notification: notification,
+                                             dismissAction: notification.isDismissible ? dismissAction : nil)
                 }
             }
         )
@@ -77,26 +83,41 @@ struct NotificationAlert: ViewModifier {
 
 private struct ComplexNotificationAlert: View {
     let notification: ScopeNotification
+    let dismissAction: (() -> ())?
     
     var body: some View {
-        Group {
-            switch self.notification {
+        let titleKey: String
+        let button: CustomAlert<AnyView>.AlertButton
+        let body: AnyView
+        var dismissAction = self.dismissAction
 
-            case let notification as ManagementScopeChoosePaymentMethod:
-                ManagementScopeChoosePaymentMethodView(notification: notification)
-                
-            case let notification as ManagementScopeChooseNumberOfDays:
-                ManagementScopeChooseNumberOfDaysView(notification: notification)
-                
-            case let notification as ManagementScopeThankYou:
-                CustomAlert<AnyView>(titleKey: "thank_you_for_your_request",
-                                     button: .init(text: "continue",
-                                                   action: { notification.finishSubscribe() } ))
-                
-            default:
-                EmptyView()
-            }
+        switch self.notification {
+
+        case let notification as ManagementScopeChoosePaymentMethod:
+            titleKey = "choose_payment_method_description"
+            button = .init(text: "save",
+                           action: { notification.sendRequest() })
+            body = AnyView(ManagementScopeChoosePaymentMethodView(notification: notification))
+
+        case let notification as ManagementScopeChooseNumberOfDays:
+            titleKey = "edit_number_of_days"
+            button = .init(text: "save",
+                           action: { notification.save() })
+            body = AnyView(ManagementScopeChooseNumberOfDaysView(notification: notification))
+            
+            if dismissAction == nil { dismissAction = { self.hideKeyboard() } }
+
+        default:
+            return AnyView(EmptyView())
         }
+
+        return AnyView(
+            CustomAlert(titleKey: titleKey,
+                        button: button,
+                        dismissAction: dismissAction) {
+                body
+            }
+        )
     }
     
     private struct ManagementScopeChoosePaymentMethodView: View {
@@ -105,14 +126,10 @@ private struct ComplexNotificationAlert: View {
         @ObservedObject var paymentMethod: SwiftDataSource<DataPaymentMethod>
         
         var body: some View {
-            CustomAlert(titleKey: "choose_payment_method_description",
-                        button: .init(text: "save",
-                                      action: { notification.sendRequest() })) {
-                Group {
-                    getOptionView(for: .credit)
-                    
-                    getOptionView(for: .cash)
-                }
+            Group {
+                getOptionView(for: .credit)
+                
+                getOptionView(for: .cash)
             }
         }
         
@@ -160,38 +177,34 @@ private struct ComplexNotificationAlert: View {
     }
     
     private struct ManagementScopeChooseNumberOfDaysView: View {
-        let notification: ManagementScopeChooseNumberOfDays
-        
         let text: Binding<String>
         
         var body: some View {
-            CustomAlert(titleKey: "edit_number_of_days",
-                        button: .init(text: "save",
-                                      action: { notification.save() })) {
-                ZStack(alignment: .leading) {
-                    if text.wrappedValue.isEmpty {
-                        LocalizedText(localizationKey: "0",
-                                      fontSize: 13,
-                                      color: .placeholderGrey)
-                    }
-                    
-                    TextField("", text: text)
-                        .keyboardType(.numberPad)
-                        .medicoText(multilineTextAlignment: .leading)
+            ZStack(alignment: .leading) {
+                if text.wrappedValue.isEmpty {
+                    LocalizedText(localizationKey: "0",
+                                  fontSize: 13,
+                                  color: .placeholderGrey)
                 }
-                .padding(4)
-                .frame(height: 25)
-                .background(AppColor.white.color.cornerRadius(5))
-                .padding([.horizontal, .bottom], 16)
+                
+                TextField("", text: text)
+                    .keyboardType(.numberPad)
+                    .medicoText(multilineTextAlignment: .leading)
             }
-            .textFieldsModifiers()
+            .padding(4)
+            .frame(height: 25)
+            .background(AppColor.white.color.cornerRadius(5))
+            .padding([.horizontal, .bottom], 16)
         }
         
         init(notification: ManagementScopeChooseNumberOfDays) {
-            self.notification = notification
-            
-            self.text = Binding(get: { "\(SwiftDataSource(dataSource: notification.days).value ?? 0)" },
-                                set: { notification.changeDays(days: Int32($0) ?? 0) })
+            self.text = Binding(
+                get: { "\(SwiftDataSource(dataSource: notification.days).value ?? 0)" },
+                set: {
+                    if let days = Int32($0) {
+                        notification.changeDays(days: days)
+                    }
+                })
         }
     }
 }
@@ -202,6 +215,7 @@ private struct CustomAlert<Content: View>: View {
     let descriptionKey: String?
     
     let primaryButton: AlertButton
+    let dismissAction: (() -> ())?
     
     let customBody: Content?
     
@@ -209,6 +223,9 @@ private struct CustomAlert<Content: View>: View {
         ZStack {
             BlurEffectView()
                 .edgesIgnoringSafeArea(.all)
+                .onTapGesture {
+                    dismissAction?()
+                }
             
             VStack(spacing: 0) {
                 VStack(spacing: 6) {
@@ -250,11 +267,13 @@ private struct CustomAlert<Content: View>: View {
     
     init(titleKey: String,
          descriptionKey: String? = nil,
-         button: AlertButton) {
+         button: AlertButton,
+         dismissAction: (() -> ())? = nil) {
         self.titleKey = titleKey
         self.descriptionKey = descriptionKey
         
         self.primaryButton = button
+        self.dismissAction = dismissAction
         
         self.customBody = nil
     }
@@ -262,6 +281,7 @@ private struct CustomAlert<Content: View>: View {
     init(titleKey: String,
          descriptionKey: String? = nil,
          button: AlertButton,
+         dismissAction: (() -> ())? = nil,
          @ViewBuilder content: () -> Content) {
         self.titleKey = titleKey
         self.descriptionKey = descriptionKey
@@ -269,6 +289,7 @@ private struct CustomAlert<Content: View>: View {
         self.customBody = content()
         
         self.primaryButton = button
+        self.dismissAction = dismissAction
     }
     
     struct Separator: View {

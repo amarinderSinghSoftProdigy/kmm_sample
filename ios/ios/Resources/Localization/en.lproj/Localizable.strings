@@ -157,8 +157,7 @@
 "cash_on_delivery" = "Cash on delivery";
 "save" = "Save";
 "edit_number_of_days" = "Edit number of days";
-"thank_you_for_your_request" = "Thank you for your request!";
-"continue" = "Continue";
+"thank_you_for_request" = "Thank you for your request!";
 
 // MARK: Stockist Details
 "subscribe" = "Subscribe";

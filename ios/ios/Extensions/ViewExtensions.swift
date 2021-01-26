@@ -28,8 +28,12 @@ extension View {
     // MARK: Input Fields
     func hideKeyboardOnTap() -> some View {
         self.onTapGesture {
-            UIApplication.shared.endEditing()
+            self.hideKeyboard()
         }
+    }
+    
+    func hideKeyboard() {
+        UIApplication.shared.endEditing()
     }
     
     // MARK: View Modifiers

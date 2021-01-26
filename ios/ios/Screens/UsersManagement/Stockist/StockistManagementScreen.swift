@@ -119,11 +119,12 @@ struct StockistManagementScreen: View {
                     
                     Spacer()
                     
-                    let status = stockist.getSubscriptionStatus()
-                    LocalizedText(localizationKey: status?.serverValue ?? "",
-                                  textWeight: .medium,
-                                  fontSize: 15,
-                                  color: status == .subscribed ? .lightBlue : .yellow)
+                    if let status = stockist.subscriptionData?.status {
+                        LocalizedText(localizationKey: status.serverValue,
+                                      textWeight: .medium,
+                                      fontSize: 15,
+                                      color: status == .subscribed ? .lightBlue : .yellow)
+                    }
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 7)
