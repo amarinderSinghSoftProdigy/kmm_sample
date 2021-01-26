@@ -212,20 +212,31 @@ private struct ComplexNotificationAlert: View {
     }
     
     private struct ManagementScopeChooseNumberOfDaysView: View {
-        let text: Binding<String>
+        let notification: ManagementScopeChooseNumberOfDays
+        
+        @ObservedObject var daysNumber: SwiftDataSource<KotlinInt>
         
         var body: some View {
-            ZStack(alignment: .leading) {
-                if text.wrappedValue.isEmpty {
-                    LocalizedText(localizationKey: "0",
-                                  fontSize: 13,
-                                  color: .placeholderGrey)
-                }
-                
-                TextField("", text: text)
-                    .keyboardType(.numberPad)
-                    .medicoText(multilineTextAlignment: .leading)
+            let text: Binding<String> = Binding(
+                get: {
+                    if let days = self.daysNumber.value {
+                        return "\(days)"
+                    }
+                    
+                    return ""
+                },
+                set: {
+                    if let days = Int32($0) {
+                        notification.changeDays(days: days)
+                    }
+                })
+            
+            CustomPlaceholderTextField(text: text) {
+                LocalizedText(localizationKey: "0",
+                              fontSize: 13,
+                              color: .placeholderGrey)
             }
+            .keyboardType(.numberPad)
             .padding(4)
             .frame(height: 25)
             .background(AppColor.white.color.cornerRadius(5))
@@ -233,13 +244,9 @@ private struct ComplexNotificationAlert: View {
         }
         
         init(notification: ManagementScopeChooseNumberOfDays) {
-            self.text = Binding(
-                get: { "\(SwiftDataSource(dataSource: notification.days).value ?? 0)" },
-                set: {
-                    if let days = Int32($0) {
-                        notification.changeDays(days: days)
-                    }
-                })
+            self.notification = notification
+
+            self.daysNumber = SwiftDataSource(dataSource: notification.days)
         }
     }
 }

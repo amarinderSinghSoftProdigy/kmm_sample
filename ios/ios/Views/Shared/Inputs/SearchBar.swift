@@ -36,30 +36,28 @@ struct SearchBar: View {
                 AppColor.white.color
                     .cornerRadius(10)
                 
-                let attributedPlaceholder =
-                    NSAttributedString(string: placeholderLocalizationKey.localized,
-                                       attributes: [NSAttributedString.Key.foregroundColor: style.fontColor,
-                                                    NSAttributedString.Key.font: style.font])
-                
                 HStack(spacing: style.spacing) {
                     let buttonSize: CGFloat = 24
                     
                     self.getButtonView(for: self.leadingButton)
                         .frame(width: buttonSize, height: buttonSize)
                     
-                    TextField(LocalizedStringKey(placeholderLocalizationKey),
-                              text: $text,
-                              onEditingChanged: { self.isSelected = $0 })
-                        .medicoText(fontSize: 17, color: .darkBlue, multilineTextAlignment: .leading)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .disableAutocorrection(true)
-                        .disabled(isDisabled)
-                        .onAppear {
-                            UITextField.appearance().attributedPlaceholder = attributedPlaceholder
-                        }
-                        .introspectTextField { uiTextField in
-                            uiTextField.attributedPlaceholder = attributedPlaceholder
-                        }
+                    CustomPlaceholderTextField(text: $text,
+                                               fontSize: 17,
+                                               onEditingChanged: { self.isSelected = $0 }) {
+                        LocalizedText(localizationKey: placeholderLocalizationKey,
+                                      textWeight: style.fontWeight,
+                                      fontSize: style.fontSize,
+                                      color: style.fontColor,
+                                      multilineTextAlignment: .leading)
+                    }
+                    .disableAutocorrection(true)
+                    .disabled(isDisabled)
+                    
+//                    TextField(LocalizedStringKey(placeholderLocalizationKey),
+//                              text: $text,
+//                              onEditingChanged: { self.isSelected = $0 })
+//                        .textFieldStyle(PlainTextFieldStyle())
                     
                     self.getButtonView(for: trailingButton)
                         .frame(width: buttonSize, height: buttonSize)
@@ -154,23 +152,33 @@ struct SearchBar: View {
             }
         }
         
-        var fontColor: UIColor {
+        var fontColor: AppColor {
             switch self {
             case .small:
-                return UIColor(named: "Grey2") ?? UIColor.gray
+                return .grey2
                 
             case .standart:
-                return UIColor(named: "DarkBlue") ?? UIColor.darkGray
+                return .darkBlue
             }
         }
         
-        var font: UIFont {
+        var fontSize: CGFloat {
             switch self {
             case .small:
-                return UIFont(name: "Barlow-Regular", size: 17) ?? .systemFont(ofSize: 17)
+                return 17
                 
             case .standart:
-                return UIFont(name: "Barlow-Bold", size: 15) ?? .systemFont(ofSize: 15)
+                return 15
+            }
+        }
+        
+        var fontWeight: TextWeight {
+            switch self {
+            case .small:
+                return .regular
+                
+            case .standart:
+                return .bold
             }
         }
     }

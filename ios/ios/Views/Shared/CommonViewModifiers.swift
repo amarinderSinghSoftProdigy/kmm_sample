@@ -87,3 +87,46 @@ struct ScreenLoggerModifier<T>: ViewModifier {
             }
     }
 }
+
+struct CustomPlaceholderTextField<Content: View>: View {
+    let text: Binding<String>
+    
+    let placeholder: Content
+    
+    let textWeight: TextWeight
+    let fontSize: CGFloat
+    let color: AppColor
+    
+    let onEditingChanged: ((Bool) -> ())?
+    
+    var body: some View {
+        ZStack(alignment: .leading) {
+            if text.wrappedValue.isEmpty {
+                placeholder
+            }
+            
+            TextField("", text: text, onEditingChanged: { onEditingChanged?($0) })
+                .medicoText(textWeight: textWeight,
+                            fontSize: fontSize,
+                            color: color,
+                            multilineTextAlignment: .leading)
+        }
+    }
+    
+    init(text: Binding<String>,
+         textWeight: TextWeight = .regular,
+         fontSize: CGFloat = 14,
+         color: AppColor = .darkBlue,
+         onEditingChanged: ((Bool) -> ())? = nil,
+         @ViewBuilder placeholder: () -> Content) {
+        self.text = text
+        
+        self.textWeight = textWeight
+        self.fontSize = fontSize
+        self.color = color
+        
+        self.onEditingChanged = onEditingChanged
+        
+        self.placeholder = placeholder()
+    }
+}
