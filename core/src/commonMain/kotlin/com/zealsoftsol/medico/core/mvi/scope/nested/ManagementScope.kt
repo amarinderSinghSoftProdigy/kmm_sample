@@ -94,8 +94,6 @@ sealed class ManagementScope<T : ManagementItem>(
         override val isDismissible: Boolean = true
         override val title: String = "thank_you_for_request"
         override val body: String? = null
-
-        fun finishSubscribe() = EventCollector.sendEvent(Event.Action.Management.FinishSubscribe)
     }
 
     enum class Tab(val stringId: String) {

@@ -42,7 +42,6 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
             when (notification) {
                 is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(notification)
                 is ManagementScope.ChooseNumberOfDays -> BodyForChooseNumberOfDays(notification)
-                is ManagementScope.ThankYou -> Unit
             }
         },
         buttons = {
@@ -58,15 +57,6 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
                     AlertButton(
                         onClick = { notification.save() },
                         text = stringResource(id = R.string.save),
-                    )
-                }
-                is ManagementScope.ThankYou -> Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AlertButton(
-                        onClick = { notification.finishSubscribe() },
-                        text = stringResource(id = R.string.continue_),
                     )
                 }
             }
