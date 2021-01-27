@@ -39,7 +39,6 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
         is Event.Action.Management.ChoosePayment -> choosePayment(event.paymentMethod)
         is Event.Action.Management.ChooseNumberOfDays -> chooseNumberOfDays(event.days)
-        is Event.Action.Management.FinishSubscribe -> finishSubscribe()
     }
 
     private suspend fun loadAllStockists() {
@@ -138,12 +137,6 @@ internal class ManagementEventDelegate(
             it.dismissNotification()
             subscribe()
             it.notifications.value = ManagementScope.ThankYou
-        }
-    }
-
-    private fun finishSubscribe() {
-        navigator.withScope<ManagementScope.Stockist> {
-            it.dismissNotification()
         }
     }
 

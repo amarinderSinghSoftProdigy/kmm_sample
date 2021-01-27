@@ -86,7 +86,6 @@ internal sealed class Event {
             data class RequestSubscribe(val item: ManagementItem) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
-            object FinishSubscribe : Management()
         }
     }
 
