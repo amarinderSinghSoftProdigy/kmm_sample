@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
@@ -65,33 +66,45 @@ sealed class SignUpScope(titleId: String) :
         }
 
         fun changeFirstName(firstName: String) {
-            registration.value = registration.value.copy(firstName = firstName)
-            checkCanGoNext()
+            trimInput(firstName, registration.value.firstName) {
+                registration.value = registration.value.copy(firstName = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeLastName(lastName: String) {
-            registration.value = registration.value.copy(lastName = lastName)
-            checkCanGoNext()
+            trimInput(lastName, registration.value.lastName) {
+                registration.value = registration.value.copy(lastName = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeEmail(email: String) {
-            registration.value = registration.value.copy(email = email)
-            checkCanGoNext()
+            trimInput(email, registration.value.email) {
+                registration.value = registration.value.copy(email = it)
+                checkCanGoNext()
+            }
         }
 
         fun changePhoneNumber(phoneNumber: String) {
-            registration.value = registration.value.copy(phoneNumber = phoneNumber)
-            checkCanGoNext()
+            trimInput(phoneNumber, registration.value.phoneNumber) {
+                registration.value = registration.value.copy(phoneNumber = it)
+                checkCanGoNext()
+            }
         }
 
         fun changePassword(password: String) {
-            registration.value = registration.value.copy(password = password)
-            checkCanGoNext()
+            trimInput(password, registration.value.password) {
+                registration.value = registration.value.copy(password = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeRepeatPassword(repeatPassword: String) {
-            registration.value = registration.value.copy(verifyPassword = repeatPassword)
-            checkCanGoNext()
+            trimInput(repeatPassword, registration.value.verifyPassword) {
+                registration.value = registration.value.copy(verifyPassword = it)
+                checkCanGoNext()
+            }
         }
 
         /**
@@ -126,23 +139,31 @@ sealed class SignUpScope(titleId: String) :
          */
         fun changePincode(pincode: String) {
             if (pincode.length <= 6) {
-                EventCollector.sendEvent(Event.Action.Registration.UpdatePincode(pincode))
+                trimInput(pincode, registration.value.pincode) {
+                    EventCollector.sendEvent(Event.Action.Registration.UpdatePincode(it))
+                }
             }
         }
 
         fun changeAddressLine(address: String) {
-            registration.value = registration.value.copy(addressLine1 = address)
-            checkCanGoNext()
+            trimInput(address, registration.value.addressLine1) {
+                registration.value = registration.value.copy(addressLine1 = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeLocation(location: String) {
-            registration.value = registration.value.copy(location = location)
-            checkCanGoNext()
+            trimInput(location, registration.value.location) {
+                registration.value = registration.value.copy(location = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeCity(city: String) {
-            registration.value = registration.value.copy(city = city)
-            checkCanGoNext()
+            trimInput(city, registration.value.city) {
+                registration.value = registration.value.copy(city = it)
+                checkCanGoNext()
+            }
         }
 
         /**
@@ -190,35 +211,45 @@ sealed class SignUpScope(titleId: String) :
             }
 
             fun changeTradeName(tradeName: String) {
-                registration.value = registration.value.copy(tradeName = tradeName)
-                checkCanGoNext()
+                trimInput(tradeName, registration.value.tradeName) {
+                    registration.value = registration.value.copy(tradeName = it)
+                    checkCanGoNext()
+                }
             }
 
             fun changeGstin(gstin: String) {
                 if (gstin.length <= 15) {
-                    registration.value = registration.value.copy(gstin = gstin)
-                    checkCanGoNext()
+                    trimInput(gstin, registration.value.gstin) {
+                        registration.value = registration.value.copy(gstin = it)
+                        checkCanGoNext()
+                    }
                 }
             }
 
             fun changePan(panNumber: String) {
                 if (panNumber.length <= 10) {
-                    registration.value = registration.value.copy(panNumber = panNumber)
-                    checkCanGoNext()
+                    trimInput(panNumber, registration.value.panNumber) {
+                        registration.value = registration.value.copy(panNumber = it)
+                        checkCanGoNext()
+                    }
                 }
             }
 
             fun changeDrugLicense1(drugLicenseNo: String) {
                 if (drugLicenseNo.length <= 30) {
-                    registration.value = registration.value.copy(drugLicenseNo1 = drugLicenseNo)
-                    checkCanGoNext()
+                    trimInput(drugLicenseNo, registration.value.drugLicenseNo1) {
+                        registration.value = registration.value.copy(drugLicenseNo1 = it)
+                        checkCanGoNext()
+                    }
                 }
             }
 
             fun changeDrugLicense2(drugLicenseNo: String) {
                 if (drugLicenseNo.length <= 30) {
-                    registration.value = registration.value.copy(drugLicenseNo2 = drugLicenseNo)
-                    checkCanGoNext()
+                    trimInput(drugLicenseNo, registration.value.drugLicenseNo2) {
+                        registration.value = registration.value.copy(drugLicenseNo2 = it)
+                        checkCanGoNext()
+                    }
                 }
             }
 

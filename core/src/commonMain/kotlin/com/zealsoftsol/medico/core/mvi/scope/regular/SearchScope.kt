@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -35,15 +36,15 @@ class SearchScope(
         EventCollector.sendEvent(Event.Action.Search.ClearFilter(filter))
 
     fun searchManufacturer(input: String): Boolean {
-        return if (input.isNotBlank() || manufacturerSearch.value.isNotBlank()) {
-            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(input.trimNewLine()))
-        } else false
+        return trimInput(input, manufacturerSearch.value) {
+            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(it))
+        }
     }
 
     fun searchProduct(input: String): Boolean {
-        return if (input.isNotBlank() || productSearch.value.isNotBlank()) {
-            EventCollector.sendEvent(Event.Action.Search.SearchProduct(input.trimNewLine()))
-        } else false
+        return trimInput(input, productSearch.value) {
+            EventCollector.sendEvent(Event.Action.Search.SearchProduct(it))
+        }
     }
 
     fun selectProduct(product: ProductSearch) =
@@ -51,6 +52,4 @@ class SearchScope(
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
-
-    private inline fun String.trimNewLine() = trimEnd { it == '\n' }
 }
