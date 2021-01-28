@@ -83,41 +83,37 @@ struct GlobalSearchScreen: View {
     }
     
     private var filtersView: some View {
-        VStack(spacing: 0){
-            VStack(spacing: 12) {
-                HStack {
-                    Spacer()
-                    
-                    LocalizedText(localizationKey: "clear_all",
-                                  textWeight: .medium,
-                                  fontSize: 16,
-                                  color: .textGrey,
-                                  multilineTextAlignment: .trailing)
-                        .onTapGesture {
-                            scope.clearFilter(filter: nil)
-                        }
-                }
+        VStack(spacing: 12) {
+            HStack {
+                Spacer()
                 
-                if let filters = self.filters.value as? [DataFilter] {
-                    ForEach(filters, id: \.self.name) { filter in
-                        let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
-                            SearchOption(text: manufucturerSearch.value,
-                                         onSearch: { value in scope.searchManufacturer(input: value) }) : nil
-
-                        FilterView(filter: filter,
-                                   searchOption: searchOption,
-                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                        option: option) },
-                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                LocalizedText(localizationKey: "clear_all",
+                              textWeight: .medium,
+                              fontSize: 16,
+                              color: .textGrey,
+                              multilineTextAlignment: .trailing)
+                    .onTapGesture {
+                        scope.clearFilter(filter: nil)
                     }
+            }
+            
+            if let filters = self.filters.value as? [DataFilter] {
+                ForEach(filters, id: \.self.name) { filter in
+                    let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
+                        SearchOption(text: manufucturerSearch.value,
+                                     onSearch: { value in scope.searchManufacturer(input: value) }) : nil
+
+                    FilterView(filter: filter,
+                               searchOption: searchOption,
+                               onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                    option: option) },
+                               onClearFilter: { scope.clearFilter(filter: filter) })
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 32)
-            .scrollView()
-        
-            Spacer()
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 32)
+        .scrollView()
     }
     
     private var productsView: some View {

@@ -42,7 +42,7 @@ struct BaseScopeView: View {
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 .hideKeyboardOnTap()
             
