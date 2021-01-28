@@ -25,6 +25,9 @@ import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.screens.common.AlertButton
+import com.zealsoftsol.medico.screens.common.InputField
+import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotification) {

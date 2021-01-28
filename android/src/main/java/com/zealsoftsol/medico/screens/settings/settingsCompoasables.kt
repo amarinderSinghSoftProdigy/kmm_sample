@@ -11,11 +11,11 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.screens.NavigationCell
-import com.zealsoftsol.medico.screens.ReadOnlyField
-import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.rememberPhoneNumberFormatter
-import com.zealsoftsol.medico.screens.stringResourceByName
+import com.zealsoftsol.medico.screens.common.NavigationCell
+import com.zealsoftsol.medico.screens.common.ReadOnlyField
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
