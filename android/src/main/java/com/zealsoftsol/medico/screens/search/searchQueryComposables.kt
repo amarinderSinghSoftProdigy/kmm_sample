@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,10 +59,10 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.screens.ItemPlaceholder
-import com.zealsoftsol.medico.screens.Separator
-import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.TabBar
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.TabBar
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -82,7 +83,10 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
             )
         }
         if (showFilter.value) {
-            ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            ScrollableColumn(
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 Text(
                     text = stringResource(id = R.string.clear_all),
                     modifier = Modifier.align(Alignment.End)
@@ -128,6 +132,7 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
+                modifier = Modifier.size(123.dp),
                 data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },

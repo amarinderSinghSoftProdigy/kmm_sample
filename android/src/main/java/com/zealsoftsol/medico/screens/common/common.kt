@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.screens
+package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.AmbientIndication
 import androidx.compose.foundation.Image
@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -30,7 +29,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -46,11 +44,7 @@ import androidx.compose.ui.platform.AmbientConfiguration
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -62,6 +56,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.screens.Notification
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 
@@ -249,46 +244,6 @@ fun stringResourceByName(name: String): String {
 }
 
 @Composable
-fun PhoneFormatInputField(
-    hint: String,
-    text: String,
-    onValueChange: (String) -> Unit,
-): Boolean {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null || text.isEmpty()
-    InputField(
-        hint = hint,
-        text = formatted ?: text,
-        isValid = isValid,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
-    return isValid
-}
-
-@Composable
-fun PhoneOrEmailFormatInputField(
-    hint: String,
-    text: String,
-    isPhoneNumber: Boolean,
-    onValueChange: (String) -> Unit,
-) {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
-    InputField(
-        hint = hint,
-        text = formatted ?: text,
-        isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
-}
-
-@Composable
 fun rememberPhoneNumberFormatter() = getCountryCode().let {
     remember { PhoneNumberFormatter(it) }
 }
@@ -300,88 +255,6 @@ private fun getCountryCode(): String {
         BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
         else -> AmbientConfiguration.current.locale.country
     }
-}
-
-@Composable
-fun PasswordFormatInputField(
-    hint: String,
-    text: String,
-    isValid: Boolean = true,
-    onValueChange: (String) -> Unit,
-) {
-    InputField(
-        hint = hint,
-        text = text,
-        isValid = isValid,
-        visualTransformation = PasswordVisualTransformation(),
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-}
-
-@Composable
-fun InputField(
-    modifier: Modifier = Modifier,
-    hint: String,
-    text: String,
-    isValid: Boolean = true,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    maxLines: Int = 1,
-    onValueChange: (String) -> Unit,
-) {
-    TextField(
-        value = text,
-        label = {
-            Text(
-                text = hint,
-                style = TextStyle.Default
-                    .copy(
-                        color = when {
-                            text.isEmpty() -> ConstColors.gray
-                            !isValid -> MaterialTheme.colors.error
-                            else -> ConstColors.lightBlue
-                        }
-                    )
-            )
-        },
-        isErrorValue = !isValid,
-        activeColor = ConstColors.lightBlue,
-        backgroundColor = Color.White,
-        onValueChange = onValueChange,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        singleLine = maxLines == 1,
-        maxLines = maxLines,
-        modifier = modifier.fillMaxWidth(),
-    )
-}
-
-@Composable
-fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
-    input()
-    errorText?.let {
-        Spacer(modifier = Modifier.size(4.dp))
-        Text(
-            text = it,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.error,
-            modifier = Modifier.padding(start = 16.dp),
-        )
-    }
-}
-
-@Composable
-fun ReadOnlyField(text: String, labelId: Int) {
-    Text(
-        text = if (text.isEmpty()) stringResource(id = labelId) else text,
-        color = if (text.isEmpty()) ConstColors.gray else Color.Black,
-        fontSize = 14.sp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(vertical = 20.dp, horizontal = 16.dp),
-    )
 }
 
 @Composable

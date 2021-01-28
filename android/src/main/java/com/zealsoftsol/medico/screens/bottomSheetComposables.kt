@@ -32,12 +32,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoSmallButton
+import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
@@ -145,6 +150,7 @@ private fun PreviewItemBottomSheet(
                 Space(12.dp)
                 Row(modifier = Modifier.fillMaxWidth()) {
                     CoilImage(
+                        modifier = Modifier.size(123.dp),
                         data = "",
                         error = { ItemPlaceholder() },
                         loading = { ItemPlaceholder() },

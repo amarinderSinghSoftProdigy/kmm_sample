@@ -24,10 +24,10 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
 import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.screens.NavigationCell
-import com.zealsoftsol.medico.screens.Separator
-import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.stringResourceByName
+import com.zealsoftsol.medico.screens.common.NavigationCell
+import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun NavigationColumn(
