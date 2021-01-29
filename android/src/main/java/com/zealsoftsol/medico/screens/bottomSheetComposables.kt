@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -140,6 +141,7 @@ private fun PreviewItemBottomSheet(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W600,
                     color = MaterialTheme.colors.background,
+                    modifier = Modifier.padding(end = 30.dp),
                 )
                 Space(4.dp)
                 Text(
@@ -148,7 +150,7 @@ private fun PreviewItemBottomSheet(
                     color = ConstColors.gray,
                 )
                 Space(12.dp)
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
                     CoilImage(
                         modifier = Modifier.size(123.dp),
                         data = "",
@@ -156,39 +158,34 @@ private fun PreviewItemBottomSheet(
                         loading = { ItemPlaceholder() },
                     )
                     Space(24.dp)
-                    Column {
-                        Space(8.dp)
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
                         GeoLocation(entityInfo.location, isBold = true)
-                        Space(12.dp)
-                        Row {
-                            Column {
-                                Text(
-                                    text = entityInfo.distance,
-                                    fontSize = 12.sp,
-                                    color = ConstColors.gray,
+                        Text(
+                            text = entityInfo.distance,
+                            fontSize = 12.sp,
+                            color = ConstColors.gray,
+                        )
+                        val activity = AmbientContext.current as MainActivity
+                        Text(
+                            text = stringResource(id = R.string.see_on_the_map),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ConstColors.lightBlue,
+                            modifier = Modifier.clickable {
+                                activity.openMaps(
+                                    entityInfo.sellerGeoPoints.latitude,
+                                    entityInfo.sellerGeoPoints.longitude
                                 )
-                                Space(4.dp)
-                                val activity = AmbientContext.current as MainActivity
-                                Text(
-                                    text = stringResource(id = R.string.see_on_the_map),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = ConstColors.lightBlue,
-                                    modifier = Modifier.clickable {
-                                        activity.openMaps(
-                                            entityInfo.sellerGeoPoints.latitude,
-                                            entityInfo.sellerGeoPoints.longitude
-                                        )
-                                    },
-                                )
-                            }
-                            if (entityInfo.subscriptionData == null) {
-                                Space(14.dp)
-                                MedicoSmallButton(
-                                    text = stringResource(id = R.string.subscribe),
-                                    onClick = onSubscribe,
-                                )
-                            }
+                            },
+                        )
+                        if (entityInfo.subscriptionData == null) {
+                            MedicoSmallButton(
+                                text = stringResource(id = R.string.subscribe),
+                                onClick = onSubscribe,
+                            )
                         }
                     }
                 }

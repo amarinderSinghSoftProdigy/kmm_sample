@@ -120,8 +120,7 @@ fun MedicoSmallButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-        modifier = modifier.wrapContentWidth(unbounded = true).height(32.dp)
-            .padding(horizontal = 21.dp),
+        modifier = modifier.wrapContentWidth(unbounded = true).height(32.dp),
     ) {
         Text(
             text = text,
