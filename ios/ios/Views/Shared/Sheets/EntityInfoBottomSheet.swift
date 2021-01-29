@@ -33,57 +33,49 @@ struct EntityInfoBottomSheet: ViewModifier {
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(entityInfo.traderName)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 20,
-                                        multilineTextAlignment: .leading)
-                        
-                        Text(entityInfo.city)
-                            .medicoText(textWeight: .medium,
-                                        color: .grey3,
-                                        multilineTextAlignment: .leading)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(entityInfo.traderName)
+                        .medicoText(textWeight: .semiBold,
+                                    fontSize: 20,
+                                    multilineTextAlignment: .leading)
                     
-                    Spacer()
-                    
-                    if entityInfo.subscriptionData == nil {
-                        MedicoButton(localizedStringKey: "subscribe",
-                                     width: 91,
-                                     height: 31,
-                                     cornerRadius: 5,
-                                     fontSize: 14) {
-                            onSubscribe()
-                        }
-                    }
+                    Text(entityInfo.city)
+                        .medicoText(textWeight: .medium,
+                                    color: .grey3,
+                                    multilineTextAlignment: .leading)
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 
-                HStack {
-                    HStack(spacing: 60) {
-                        URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
-                            .frame(width: 96, height: 96)
-                        
-                        VStack(alignment: .leading, spacing: 13) {
+                HStack(spacing: 50) {
+                    URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
+                        .frame(width: 96, height: 96)
+                    
+                    VStack(alignment: .leading, spacing: 13) {
+                        VStack(alignment: .leading,spacing: 5) {
                             SmallAddresView(location: entityInfo.location, pincode: entityInfo.pincode)
                             
-                            VStack(alignment: .leading,spacing: 5) {
-                                Text(entityInfo.distance)
-                                    .medicoText(fontSize: 12,
-                                                color: .grey3,
-                                                multilineTextAlignment: .leading)
-                                
-                                LocalizedText(localizationKey: "see_on_the_map",
-                                              textWeight: .bold,
-                                              fontSize: 12,
-                                              color: .lightBlue,
-                                              multilineTextAlignment: .leading)
+                            Text(entityInfo.distance)
+                                .medicoText(fontSize: 12,
+                                            color: .grey3,
+                                            multilineTextAlignment: .leading)
+                            
+                            LocalizedText(localizationKey: "see_on_the_map",
+                                          textWeight: .bold,
+                                          fontSize: 12,
+                                          color: .lightBlue,
+                                          multilineTextAlignment: .leading)
+                        }
+                        
+                        if entityInfo.subscriptionData == nil {
+                            MedicoButton(localizedStringKey: "subscribe",
+                                         width: 91,
+                                         height: 31,
+                                         cornerRadius: 5,
+                                         fontSize: 14) {
+                                onSubscribe()
                             }
                         }
                     }
-                    
-                    Spacer()
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
@@ -98,6 +90,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                 
                 Spacer()
             }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
             .padding(.horizontal, 25)
             .padding(.vertical, 22)
         }
