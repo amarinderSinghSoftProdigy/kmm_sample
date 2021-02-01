@@ -22,6 +22,7 @@ final class DIContainer: DIContainerProtocol {
 
     func initialize() {
         self.register(type: AnalyticsService.self, component: FirebaseAnalyticsService())
+        self.register(type: NotificationsService.self, component: CloudMessagingNotificationsService())
     }
     
     func register<Component>(type: Component.Type, component: Any) {

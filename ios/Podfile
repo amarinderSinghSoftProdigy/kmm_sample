@@ -8,6 +8,7 @@ target 'Medico' do
   # Pods for ios
   pod 'Firebase/Analytics'
   pod 'Firebase/Crashlytics'
+  pod 'Firebase/Messaging'
   
   pod 'libPhoneNumber-iOS'
 
