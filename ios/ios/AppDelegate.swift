@@ -75,4 +75,38 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         DIContainer.shared.resolve(type: NotificationsService.self)?
             .setDeviceToken(deviceToken)
     }
+    
+    // Called when the notification was fetched with the app in the foreground or background
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        DIContainer.shared.resolve(type: NotificationsService.self)?
+            .handleRemoteNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler(UIBackgroundFetchResult.newData)
+    }
+    
+    // Called when the notification was received when the app was in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        
+        DIContainer.shared.resolve(type: NotificationsService.self)?
+            .handleRemoteNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler([.alert, .badge, .sound])
+    }
+
+    // Handles the user's response to a delivered notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        
+        DIContainer.shared.resolve(type: NotificationsService.self)?
+            .handleRemoteNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler()
+    }
 }

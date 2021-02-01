@@ -10,6 +10,8 @@ import Foundation
 import Firebase
 
 class CloudMessagingNotificationsService: NSObject, NotificationsService, MessagingDelegate {
+    private let gcmMessageIDKey = "gcm.message_id"
+    
     private let messaging = Messaging.messaging()
     
     override init() {
@@ -24,6 +26,17 @@ class CloudMessagingNotificationsService: NSObject, NotificationsService, Messag
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         print("Firebase registration token: \(String(describing: fcmToken))")
+    }
+    
+    func handleRemoteNotificationReceive(withUserInfo userInfo: [AnyHashable: Any]) {
+        messaging.appDidReceiveMessage(userInfo)
+
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+
+        // Print full message.
+        print(userInfo)
     }
 }
                          

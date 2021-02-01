@@ -10,4 +10,6 @@ import Foundation
 
 protocol NotificationsService {
     func setDeviceToken(_ deviceToken: Data)
+    
+    func handleRemoteNotificationReceive(withUserInfo userInfo: [AnyHashable: Any])
 }
