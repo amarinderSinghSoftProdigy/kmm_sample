@@ -3,7 +3,6 @@ package com.zealsoftsol.medico
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.zealsoftsol.medico.screens.MainActivity
 
 class SplashActivity : AppCompatActivity() {
 

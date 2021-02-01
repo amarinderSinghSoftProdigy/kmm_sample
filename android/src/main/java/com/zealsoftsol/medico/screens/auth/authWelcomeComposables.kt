@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
-import com.zealsoftsol.medico.screens.MedicoButton
-import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun WelcomeScreen(

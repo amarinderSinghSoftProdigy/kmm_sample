@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,12 +33,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoSmallButton
+import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
@@ -135,6 +141,7 @@ private fun PreviewItemBottomSheet(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W600,
                     color = MaterialTheme.colors.background,
+                    modifier = Modifier.padding(end = 30.dp),
                 )
                 Space(4.dp)
                 Text(
@@ -143,46 +150,42 @@ private fun PreviewItemBottomSheet(
                     color = ConstColors.gray,
                 )
                 Space(12.dp)
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
                     CoilImage(
+                        modifier = Modifier.size(123.dp),
                         data = "",
                         error = { ItemPlaceholder() },
                         loading = { ItemPlaceholder() },
                     )
                     Space(24.dp)
-                    Column {
-                        Space(8.dp)
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
                         GeoLocation(entityInfo.location, isBold = true)
-                        Space(12.dp)
-                        Row {
-                            Column {
-                                Text(
-                                    text = entityInfo.distance,
-                                    fontSize = 12.sp,
-                                    color = ConstColors.gray,
+                        Text(
+                            text = entityInfo.distance,
+                            fontSize = 12.sp,
+                            color = ConstColors.gray,
+                        )
+                        val activity = AmbientContext.current as MainActivity
+                        Text(
+                            text = stringResource(id = R.string.see_on_the_map),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ConstColors.lightBlue,
+                            modifier = Modifier.clickable {
+                                activity.openMaps(
+                                    entityInfo.sellerGeoPoints.latitude,
+                                    entityInfo.sellerGeoPoints.longitude
                                 )
-                                Space(4.dp)
-                                val activity = AmbientContext.current as MainActivity
-                                Text(
-                                    text = stringResource(id = R.string.see_on_the_map),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = ConstColors.lightBlue,
-                                    modifier = Modifier.clickable {
-                                        activity.openMaps(
-                                            entityInfo.sellerGeoPoints.latitude,
-                                            entityInfo.sellerGeoPoints.longitude
-                                        )
-                                    },
-                                )
-                            }
-                            if (entityInfo.subscriptionData == null) {
-                                Space(14.dp)
-                                MedicoSmallButton(
-                                    text = stringResource(id = R.string.subscribe),
-                                    onClick = onSubscribe,
-                                )
-                            }
+                            },
+                        )
+                        if (entityInfo.subscriptionData == null) {
+                            MedicoSmallButton(
+                                text = stringResource(id = R.string.subscribe),
+                                onClick = onSubscribe,
+                            )
                         }
                     }
                 }

@@ -41,12 +41,12 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
-import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.showNotificationAlert
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
-import com.zealsoftsol.medico.screens.showNotificationAlert
-import com.zealsoftsol.medico.screens.stringResourceByName
 
 @Composable
 fun ManagementScreen(scope: ManagementScope<*>) {

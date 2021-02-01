@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.screens
+package com.zealsoftsol.medico
 
 import android.content.Context
 import android.content.Intent
@@ -15,7 +15,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import com.zealsoftsol.medico.AppTheme
 import com.zealsoftsol.medico.core.UiLink
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -23,10 +22,14 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.screens.TabBarScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.common.IndefiniteProgressBar
+import com.zealsoftsol.medico.screens.common.showErrorAlert
 import com.zealsoftsol.medico.screens.search.SearchQueryScreen
+import com.zealsoftsol.medico.screens.showBottomSheet
 import com.zealsoftsol.medico.utils.FileUtil
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers

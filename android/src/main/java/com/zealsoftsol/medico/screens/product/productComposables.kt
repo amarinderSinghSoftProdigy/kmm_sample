@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -29,9 +30,9 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ProductData
-import com.zealsoftsol.medico.screens.ItemPlaceholder
-import com.zealsoftsol.medico.screens.MedicoButton
-import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.Space
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -42,6 +43,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(12.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
+                modifier = Modifier.size(123.dp),
                 data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },

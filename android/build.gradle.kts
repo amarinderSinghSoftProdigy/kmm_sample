@@ -19,6 +19,7 @@ android {
         targetSdkVersion(Config.Android.minSdk)
         versionCode = Config.Version.code
         versionName = Config.Version.name
+        vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
         named("debug").configure {

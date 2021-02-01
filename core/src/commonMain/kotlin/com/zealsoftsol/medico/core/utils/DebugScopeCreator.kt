@@ -32,6 +32,10 @@ object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
+    fun selectUserType() {
+        nav.setScope(SignUpScope.SelectUserType.get())
+    }
+
     fun signUpDetailsNonSeasonBoy(
         userType: UserType,
         email: String,
