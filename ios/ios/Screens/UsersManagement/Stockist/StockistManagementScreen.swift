@@ -131,6 +131,34 @@ struct StockistManagementScreen: View {
             }
         }
     }
+    
+    private struct SeasonBoyView: View {
+        let seasonBoy: DataEntityInfo
+        
+        var body: some View {
+            ZStack {
+                AppColor.white.color
+                    .cornerRadius(5)
+                
+                HStack {
+                    Text(seasonBoy.traderName)
+                        .medicoText(textWeight: .bold,
+                                    fontSize: 15,
+                                    multilineTextAlignment: .leading)
+                    
+                    Spacer()
+                    
+                    Text("+91 235 256 25 63")
+                        .medicoText(textWeight: .semiBold,
+                                    fontSize: 15,
+                                    color: .lightBlue,
+                                    multilineTextAlignment: .leading)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 14)
+            }
+        }
+    }
 }
 
 struct SmallAddresView: View {
