@@ -190,7 +190,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     is DashboardScope -> Unit
                     is ProductInfoScope -> ProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
-                    is ManagementScope<*> -> ManagementScreen(it)
+                    is ManagementScope.User -> ManagementScreen(it)
                 }
             }
         },

@@ -38,6 +38,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -270,13 +271,14 @@ class NetworkClient(
             }.getWrappedBody()
         }
 
-    override suspend fun getStockists(
+    override suspend fun getManagementInfo(
         unitCode: String,
+        forUserType: UserType,
         criteria: ManagementCriteria,
         search: String,
         pagination: Pagination
     ): Response.Wrapped<PaginatedData<EntityInfo>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/stockist/mngt/$unitCode") {
+        client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/${forUserType.serverValueSimple}/mngt/$unitCode") {
             withMainToken()
             url {
                 parameters.apply {

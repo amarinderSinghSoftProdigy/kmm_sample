@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -72,8 +73,9 @@ interface NetworkScope {
     }
 
     interface Management {
-        suspend fun getStockists(
+        suspend fun getManagementInfo(
             unitCode: String,
+            forUserType: UserType,
             criteria: ManagementCriteria,
             search: String,
             pagination: Pagination,
