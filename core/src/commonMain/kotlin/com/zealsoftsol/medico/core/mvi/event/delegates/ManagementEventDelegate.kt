@@ -12,10 +12,12 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
@@ -29,9 +31,8 @@ internal class ManagementEventDelegate(
     private var subscribeRequest: SubscribeRequest? = null
 
     override suspend fun handleEvent(event: Event.Action.Management) = when (event) {
-        is Event.Action.Management.LoadAllStockists -> loadAllStockists()
-        is Event.Action.Management.LoadSubscribedStockists -> loadSubscribedStockists()
-        is Event.Action.Management.Filter -> filter(event.value)
+        is Event.Action.Management.LoadStockists -> loadStockists(null, event.criteria)
+        is Event.Action.Management.SearchStockists -> loadStockists(event.value, null)
         is Event.Action.Management.Select -> select(event.item)
         is Event.Action.Management.LoadRetailers -> TODO()
         is Event.Action.Management.LoadHospitals -> TODO()
@@ -41,50 +42,20 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.ChooseNumberOfDays -> chooseNumberOfDays(event.days)
     }
 
-    private suspend fun loadAllStockists() {
+    private suspend fun loadStockists(search: String?, criteria: ManagementCriteria?) {
         navigator.withScope<ManagementScope.Stockist> {
+            it.searchText.value = search.orEmpty()
             if (it.pagination.nextPage() == 0 || it.pagination.canLoadMore()) {
-                load {
-                    val (result, isSuccess) = networkManagementScope.getAllStockists(it.pagination)
-                    if (isSuccess && result != null) {
-                        it.pagination.setTotal(result.total)
-                        it.items.value = it.items.value + result.data
-                        it.cachedItems = it.items.value
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun loadSubscribedStockists() {
-        navigator.withScope<ManagementScope.Stockist> {
-            if (it.pagination.nextPage() == 0 || it.pagination.canLoadMore()) {
-                load {
-                    val (result, isSuccess) = networkManagementScope.getSubscribedStockists(
+                load(withProgress = criteria != null, debounce = 500) {
+                    val (result, isSuccess) = networkManagementScope.getStockists(
                         pagination = it.pagination,
                         unitCode = userRepo.requireUser().unitCode,
+                        search = it.searchText.value,
+                        criteria = criteria ?: requireNotNull(it.activeTab.value?.criteria),
                     )
                     if (isSuccess && result != null) {
                         it.pagination.setTotal(result.total)
                         it.items.value = it.items.value + result.data
-                        it.cachedItems = it.items.value
-                    }
-                }
-            }
-        }
-    }
-
-    private fun filter(value: String?) {
-        navigator.withScope<ManagementScope<*>> {
-            it.searchText.value = value.orEmpty()
-            when (it) {
-                is ManagementScope.Stockist -> {
-                    it.items.value = if (!value.isNullOrEmpty()) {
-                        it.cachedItems.filter { item ->
-                            item.traderName.contains(value, ignoreCase = true)
-                        }
-                    } else {
-                        it.cachedItems
                     }
                 }
             }
@@ -155,12 +126,17 @@ internal class ManagementEventDelegate(
         }
     }
 
-    private suspend fun load(loader: suspend () -> Unit) {
-        navigator.setHostProgress(true)
+    private suspend fun load(
+        withProgress: Boolean = false,
+        debounce: Long = 0,
+        loader: suspend () -> Unit
+    ) {
+        if (withProgress) navigator.setHostProgress(true)
         loadJob?.cancel()
         loadJob = coroutineContext.toScope().launch {
+            if (debounce > 0) delay(debounce)
             loader()
-            navigator.setHostProgress(false)
+            if (withProgress) navigator.setHostProgress(false)
         }
     }
 }

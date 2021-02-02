@@ -63,3 +63,8 @@ enum class FileType(val mimeType: String, val isMandatory: Boolean) {
         }
     }
 }
+
+enum class ManagementCriteria(val serverValue: String) {
+    ALL("ALL"),
+    PERSONAL("YOUR");
+}

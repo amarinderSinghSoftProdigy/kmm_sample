@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.GeoPoints
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SubscribeRequest
@@ -16,8 +17,13 @@ class MockManagementScope : NetworkScope.Management {
         "USING MOCK MANAGEMENT SCOPE".logIt()
     }
 
-    override suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>> =
-        mockResponse {
+    override suspend fun getStockists(
+        unitCode: String,
+        criteria: ManagementCriteria,
+        search: String,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<EntityInfo>> {
+        return mockResponse {
             Response.Wrapped(
                 PaginatedData(
                     listOf(
@@ -40,12 +46,6 @@ class MockManagementScope : NetworkScope.Management {
                 true,
             )
         }
-
-    override suspend fun getSubscribedStockists(
-        pagination: Pagination,
-        unitCode: String
-    ): Response.Wrapped<PaginatedData<EntityInfo>> = mockResponse {
-        Response.Wrapped(PaginatedData(emptyList(), 0), true)
     }
 
     override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
