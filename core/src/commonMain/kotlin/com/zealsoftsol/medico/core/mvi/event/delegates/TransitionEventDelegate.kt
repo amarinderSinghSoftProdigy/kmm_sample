@@ -56,10 +56,10 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {
-                        UserType.STOCKIST -> ManagementScope.Stockist()
-                        UserType.RETAILER -> TODO()
-                        UserType.HOSPITAL -> TODO()
-                        UserType.SEASON_BOY -> TODO()
+                        UserType.STOCKIST -> ManagementScope.User.Stockist()
+                        UserType.RETAILER -> ManagementScope.User.Retailer()
+                        UserType.HOSPITAL -> ManagementScope.User.Hospital()
+                        UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
                     }
                 )
             }

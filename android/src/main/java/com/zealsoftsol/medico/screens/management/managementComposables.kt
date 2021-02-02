@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,10 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -49,17 +52,15 @@ import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
-fun ManagementScreen(scope: ManagementScope<*>) {
+fun ManagementScreen(scope: ManagementScope.User) {
     Column(modifier = Modifier.fillMaxSize()) {
-        when (scope) {
-            is ManagementScope.Stockist -> StockistManagementScreen(scope)
-        }
+        EntityManagementScreen(scope)
     }
 }
 
 @Composable
-private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
-    val filter = scope.searchText.flow.collectAsState()
+private fun EntityManagementScreen(scope: ManagementScope.User) {
+    val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     Space(16.dp)
     if (showSearchOverlay.value) {
@@ -68,14 +69,20 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
             elevation = 0.dp,
             horizontalPadding = 16.dp,
         ) {
+            val (icon, text) = when (scope) {
+                is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists
+                is ManagementScope.User.Retailer -> R.drawable.ic_retailer to R.string.retailers
+                is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys
+                is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals
+            }
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_stockist),
+                imageVector = vectorResource(id = icon),
                 tint = ConstColors.lightBlue,
                 modifier = Modifier.size(24.dp),
             )
             Space(16.dp)
             Text(
-                text = stringResource(id = R.string.stockists),
+                text = stringResource(id = text),
                 fontWeight = FontWeight.W700,
                 color = MaterialTheme.colors.background,
             )
@@ -89,13 +96,13 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
         }
     } else {
         BasicSearchBar(
-            input = filter.value,
+            input = search.value,
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
             isSearchFocused = true,
-            onSearch = { scope.search(it.takeIf(String::isNotEmpty)) },
+            onSearch = { scope.search(it) },
             onIconClick = { showSearchOverlay.value = true },
         )
     }
@@ -104,11 +111,13 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
         Space(16.dp)
         Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
             scope.tabs.forEach {
-                Box(
-                    modifier = Modifier.weight(1f)
-                        .fillMaxHeight()
-                        .clickable { scope.selectTab(it) },
-                ) {
+                var boxMod = Modifier.weight(1f).fillMaxHeight()
+                boxMod = if (scope.tabs.size == 1) {
+                    boxMod.padding(horizontal = 16.dp)
+                } else {
+                    boxMod.clickable { scope.selectTab(it) }
+                }
+                Box(modifier = boxMod) {
                     val isActive = activeTab.value == it
                     Text(
                         text = stringResourceByName(it.stringId),
@@ -133,23 +142,80 @@ private fun StockistManagementScreen(scope: ManagementScope.Stockist) {
     LazyColumn(
         state = rememberLazyListState(),
         contentPadding = PaddingValues(top = 16.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
     ) {
+        val isSeasonBoy = scope is ManagementScope.User.SeasonBoy
         itemsIndexed(
             items = items.value,
             itemContent = { index, item ->
-                StockistItem(item) { scope.selectItem(item) }
-                if (index == items.value.lastIndex && scope.pagination.canLoadMore()/* && !scope.isInProgress.flow.value*/) {
+                if (isSeasonBoy) {
+                    SeasonBoyItem(item) { scope.selectItem(item) }
+                } else {
+                    NonSeasonBoyItem(item) { scope.selectItem(item) }
+                }
+                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                     scope.loadItems()
                 }
             },
         )
     }
-    scope.showNotificationAlert()
+    if (scope is CommonScope.WithNotifications) scope.showNotificationAlert()
 }
 
 @Composable
-private fun StockistItem(entityInfo: EntityInfo, onClick: () -> Unit) {
+private fun NonSeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
+    BaseManagementItem(onClick) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(0.7f),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                text = entityInfo.traderName,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+                color = MaterialTheme.colors.background,
+            )
+            GeoLocation(entityInfo.location)
+        }
+        entityInfo.subscriptionData?.let {
+            Box(modifier = Modifier.weight(0.3f)) {
+                Text(
+                    text = it.status.serverValue,
+                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
+    BaseManagementItem(onClick) {
+        Text(
+            text = entityInfo.traderName,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.W700,
+            color = MaterialTheme.colors.background,
+            modifier = Modifier.align(Alignment.CenterVertically).padding(vertical = 8.dp)
+                .weight(0.5f),
+        )
+        val formatter = rememberPhoneNumberFormatter()
+        Text(
+            text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
+            fontWeight = FontWeight.W600,
+            textAlign = TextAlign.End,
+            color = ConstColors.lightBlue,
+            modifier = Modifier.align(Alignment.CenterVertically).weight(0.5f),
+        )
+    }
+}
+
+@Composable
+private fun BaseManagementItem(
+    onClick: () -> Unit,
+    body: @Composable RowScope.() -> Unit,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth()
             .padding(vertical = 8.dp)
@@ -158,27 +224,7 @@ private fun StockistItem(entityInfo: EntityInfo, onClick: () -> Unit) {
         color = Color.White,
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
-            Column(
-                modifier = Modifier.fillMaxHeight().weight(0.7f),
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text(
-                    text = entityInfo.traderName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    color = MaterialTheme.colors.background,
-                )
-                GeoLocation(entityInfo.location)
-            }
-            entityInfo.subscriptionData?.let {
-                Box(modifier = Modifier.weight(0.3f)) {
-                    Text(
-                        text = it.status.serverValue,
-                        color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
-                        modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
-                    )
-                }
-            }
+            body()
         }
     }
 }

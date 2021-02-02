@@ -101,6 +101,9 @@
     <string name="change_password">Change Password</string>
     <string name="gstin_details">GSTIN Details</string>
     <string name="your_stockists">Your Stockists</string>
+    <string name="your_retailers">Your Retailers</string>
+    <string name="your_hospitals">Your Hospitals</string>
+    <string name="your_season_boys">Your Season Boys</string>
     <string name="all_stockists">All Stockists</string>
     <string name="subscribe">Subscribe</string>
     <string name="see_on_the_map">See on the map</string>

@@ -13,6 +13,8 @@ data class EntityInfo(
     val gstin: String,
     val location: String,
     val panNumber: String,
+    @SerialName("mobileNumber")
+    val phoneNumber: String,
     val pincode: String,
     @SerialName("sellerPoints")
     val sellerGeoPoints: GeoPoints,
