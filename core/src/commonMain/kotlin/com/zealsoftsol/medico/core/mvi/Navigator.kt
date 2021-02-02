@@ -55,10 +55,16 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                 } else {
                     val next = queue.firstOrNull()
                     if (updateDataSource) when (next) {
-                        is Scope.Host -> hostScope.value = next
-                        is Scope.Child.TabBar -> (getQueue(next.parentScopeId).first() as Scope.Host.TabBar).setChildScope(
-                            next
-                        )
+                        is Scope.Host -> {
+                            hostScope.value = next
+                            if (next is Scope.Host.TabBar) {
+                                activeQueue = next.childScope.value.scopeId
+                            }
+                        }
+                        is Scope.Child.TabBar -> {
+                            (getQueue(next.parentScopeId).first() as Scope.Host.TabBar)
+                                .setChildScope(next)
+                        }
                     }
                     next
                 }
