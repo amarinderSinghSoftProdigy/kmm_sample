@@ -166,3 +166,8 @@
 "gstin_number" = "GSTIN Number:";
 "payment_method" = "Payment Method:";
 "orders" = "Orders:";
+
+// MARK: Notifications Screen
+"notifications" = "Notifications";
+"unread" = "Unread";
+"read" = "Read";

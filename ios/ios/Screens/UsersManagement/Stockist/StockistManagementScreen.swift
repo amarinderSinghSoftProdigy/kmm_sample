@@ -27,36 +27,32 @@ struct StockistManagementScreen: View {
         
         let stockistImage = Image("Stockist").resizable()
 
-        ZStack(alignment: .topLeading) {
-            AppColor.primary.color
-                .hideKeyboardOnTap()
+        VStack(spacing: 16) {
+            SearchBar(placeholderLocalizationKey: "stockists",
+                      searchText: stockistSearchText.value,
+                      leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(stockistImage)),
+                                                               enteredTextButton: .smallMagnifyingGlass),
+                      trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
+                                                                enteredTextButton: .clear),
+                      onTextChange: { newValue in scope.search(value: newValue) })
             
-            VStack(spacing: 16) {
-                SearchBar(placeholderLocalizationKey: "stockists",
-                          searchText: stockistSearchText.value,
-                          leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(stockistImage)),
-                                                                   enteredTextButton: .smallMagnifyingGlass),
-                          trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
-                                                                    enteredTextButton: .clear),
-                          onTextChange: { newValue in scope.search(value: newValue) })
-                
-                self.getStockistsOptionsPicker(withSelectedOption: selectedOption)
-                
-                let listName: ListScrollData.Name =
-                    self.activeTab.value == .allStockists ? .allStockists : .yourStockists
-                TransparentList(data: stockists,
-                                dataType: DataEntityInfo.self,
-                                listName: listName,
-                                pagination: scope.pagination,
-                                onTapGesture: { scope.selectItem(item: $0) },
-                                loadItems: { scope.loadItems() }) { _, element in
-                    StockistView(stockist: element)
-                }
+            self.getStockistsOptionsPicker(withSelectedOption: selectedOption)
+            
+            let listName: ListScrollData.Name =
+                self.activeTab.value == .allStockists ? .allStockists : .yourStockists
+            TransparentList(data: stockists,
+                            dataType: DataEntityInfo.self,
+                            listName: listName,
+                            pagination: scope.pagination,
+                            onTapGesture: { scope.selectItem(item: $0) },
+                            loadItems: { scope.loadItems() }) { _, element in
+                StockistView(stockist: element)
             }
-            .keyboardResponder()
-            .padding(.horizontal, 16)
-            .padding(.vertical, 32)
+            .hideKeyboardOnTap()
         }
+        .keyboardResponder()
+        .padding(.horizontal, 16)
+        .padding(.vertical, 32)
         .notificationAlertSender(withHandler: scope)
         .screenLogger(withScreenName: "StockistManagement",
                       withScreenClass: StockistManagementScreen.self)

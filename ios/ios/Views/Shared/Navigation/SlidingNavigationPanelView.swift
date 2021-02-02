@@ -32,6 +32,7 @@ struct SlidingNavigationPanelView: ViewModifier {
         GeometryReader { geometry in
             ZStack {
                 AppColor.primary.color
+                    .hideKeyboardOnTap()
                 
                 content
                     .frame(maxWidth: geometry.size.width,
@@ -78,19 +79,21 @@ private struct _SlidingPanelView: View {
     let userType: DataUserType?
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .leading) {
             if isShown {
                 self.blurView
                     
+                let width = min(geometry.size.width * 0.81, 300)
+                
                 VStack(spacing: -1) {
                     self.userPanel
                     
                     self.optionsPanel
                 }
-                .frame(width: geometry.size.width * 0.81)
-                .frame(maxWidth: 400, alignment: .leading)
+                .frame(width: width, alignment: .leading)
                 .shadow(radius: 9)
                 .transition(.move(edge: .leading))
+                .onAppear { self.hideKeyboard() }
             }
         }
     }
@@ -116,12 +119,15 @@ private struct _SlidingPanelView: View {
         BlurEffectView()
             .testingIdentifier("blur_view")
             .transition(.identity)
+            .edgesIgnoringSafeArea(.all)
             .onTapGesture { self.closeSlidingPanel(true) }
     }
     
     private var userPanel: some View {
         ZStack(alignment: .bottomLeading) {
             Image("AccountInfoBackground")
+                .resizable()
+                .edgesIgnoringSafeArea(.all)
 
             VStack(alignment: .leading, spacing: 6) {
                 Image("DefaultUserPhoto")
@@ -136,12 +142,14 @@ private struct _SlidingPanelView: View {
             }
             .padding()
         }
+        .frame(height: 175)
     }
     
     private var optionsPanel: some View {
         ZStack {
             AppColor.primary.color
                 .testingIdentifier("sliding_panel")
+                .edgesIgnoringSafeArea(.all)
             
             VStack(alignment: .leading, spacing: 20) {
                 VStack(spacing: 20) {

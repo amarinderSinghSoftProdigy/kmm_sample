@@ -32,6 +32,7 @@
 		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
+		336D347025C973470021F39A /* NotificationsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336D346F25C973470021F39A /* NotificationsScreen.swift */; };
 		336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */; };
 		336EE4FC259490E400D354C8 /* OtpScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */; };
 		336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */; };
@@ -167,6 +168,7 @@
 		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
+		336D346F25C973470021F39A /* NotificationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsScreen.swift; sourceTree = "<group>"; };
 		336EE4FA259490E400D354C8 /* OtpScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpScopeInfo.swift; sourceTree = "<group>"; };
 		336EE4FF2594A09200D354C8 /* LogInScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInScopeInfo.swift; sourceTree = "<group>"; };
 		3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpWelcomeScreen.swift; sourceTree = "<group>"; };
@@ -403,6 +405,14 @@
 			path = Password;
 			sourceTree = "<group>";
 		};
+		336D346E25C9732F0021F39A /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				336D346F25C973470021F39A /* NotificationsScreen.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		336EE4FD2594A05600D354C8 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -461,6 +471,7 @@
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333AE3F925821ED000C249C1 /* Main */,
+				336D346E25C9732F0021F39A /* Notifications */,
 				334FF84325B5CC9600EC9663 /* Password */,
 				339D372025B05C6E00C57B2D /* Settings */,
 				3391B08C25B81E740025B945 /* UsersManagement */,
@@ -1086,6 +1097,7 @@
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
+				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,

@@ -18,18 +18,23 @@ struct MedicoButton: View {
     let cornerRadius: CGFloat
     let fontSize: CGFloat
     
+    let buttonColor: AppColor
+    
     var body: some View {
+        let width = self.width ?? .infinity
+        
         Button(action: action) {
             LocalizedText(localizationKey: localizedStringKey,
                           textWeight: .semiBold,
                           fontSize: fontSize)
-                .frame(maxWidth:  width ?? .infinity)
+                .frame(maxWidth: width)
         }
         .testingIdentifier("\(localizedStringKey)_button")
-        .frame(maxWidth: width ?? .infinity, maxHeight: height)
+        .frame(width: width, height: height)
+        .frame(maxWidth: width, maxHeight: height)
         .disabled(!isEnabled)
         .background(RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(isEnabled ? Color.yellow : Color.gray))
+                        .fill(appColor: isEnabled ? buttonColor : AppColor.grey1))
     }
     
     init(localizedStringKey: String,
@@ -38,6 +43,7 @@ struct MedicoButton: View {
          height: CGFloat = 50,
          cornerRadius: CGFloat = 8,
          fontSize: CGFloat = 17,
+         buttonColor: AppColor = .yellow,
          action: @escaping () -> ()) {
         self.action = action
         self.localizedStringKey = localizedStringKey
@@ -48,6 +54,8 @@ struct MedicoButton: View {
         self.height = height
         self.cornerRadius = cornerRadius
         self.fontSize = fontSize
+        
+        self.buttonColor = buttonColor
     }
 }
 

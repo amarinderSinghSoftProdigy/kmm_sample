@@ -75,6 +75,7 @@ struct BaseBottomSheetView<Content: View>: View {
                     )
                 }
                 .transition(.move(edge: .bottom))
+                .onAppear { self.hideKeyboard() }
             }
         }
     }

@@ -54,11 +54,6 @@ struct SearchBar: View {
                     .disableAutocorrection(true)
                     .disabled(isDisabled)
                     
-//                    TextField(LocalizedStringKey(placeholderLocalizationKey),
-//                              text: $text,
-//                              onEditingChanged: { self.isSelected = $0 })
-//                        .textFieldStyle(PlainTextFieldStyle())
-                    
                     self.getButtonView(for: trailingButton)
                         .frame(width: buttonSize, height: buttonSize)
                 }
