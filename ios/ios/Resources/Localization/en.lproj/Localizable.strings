@@ -167,17 +167,23 @@
 "retailers" = "Retailers";
 "your_retailers" = "Your Retailers";
 
-// MARK: SeasonBoys Management
+// MARK: Season Boys Management
 "seasonBoys" = "Season Boys";
 "your_season_boys" = "Your Season Boys";
 
-// MARK: Stockist Details
+// MARK: Bottom Sheet User Details
 "subscribe" = "Subscribe";
 "see_on_the_map" = "See on the map";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
 "payment_method" = "Payment Method:";
 "orders" = "Orders:";
+
+// MARK: Bottom Sheet Season Boy Details
+"email_address:" = "Email Address:";
+"address:" = "Address:";
+"pending_orders" = "Pending Orders:";
+"total_orders" = "Total Orders:";
 
 // MARK: Notifications Screen
 "notifications" = "Notifications";

@@ -107,4 +107,56 @@ struct EntityInfoBottomSheet: ViewModifier {
             }
         }
     }
+    
+    private struct SeasonBoyItem: View {
+        let entityInfo: DataEntityInfo
+        
+        var body: some View {
+            VStack(alignment: .leading) {
+                HStack {
+                    Image("SeasonBoy")
+                        .resizable()
+                        .renderingMode(.template)
+                        .foregroundColor(appColor: .darkBlue)
+                        .frame(width: 24, height: 24)
+                    
+                    Text(entityInfo.traderName)
+                        .medicoText(textWeight: .semiBold,
+                                    fontSize: 20,
+                                    multilineTextAlignment: .leading)
+                }
+                
+                Text("+91 235 256 25 63")
+                    .medicoText(textWeight: .semiBold,
+                                fontSize: 16,
+                                color: .lightBlue,
+                                multilineTextAlignment: .leading)
+                
+                AppColor.black.color.opacity(0.42)
+                    .frame(height: 1)
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    getDataPanel(withTitleKey: "email_address:", withValueKey: entityInfo.gstin)
+                    getDataPanel(withTitleKey: "address:", withValueKey: entityInfo.location)
+                    getDataPanel(withTitleKey: "pending_orders", withValueKey: "10")
+                    getDataPanel(withTitleKey: "total_orders", withValueKey: "24")
+                }
+            }
+            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
+            .padding(.horizontal, 25)
+            .padding(.vertical, 22)
+        }
+        
+        private func getDataPanel(withTitleKey titleKey: String,
+                                  withValueKey valueKey: String) -> some View {
+            HStack(spacing: 3) {
+                LocalizedText(localizationKey: titleKey,
+                              multilineTextAlignment: .leading)
+                
+                LocalizedText(localizationKey: valueKey,
+                              textWeight: .medium,
+                              multilineTextAlignment: .leading)
+            }
+        }
+    }
 }
