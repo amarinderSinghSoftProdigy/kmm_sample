@@ -103,7 +103,7 @@ internal class SearchEventDelegate(
 
     private suspend fun loadMoreProducts() {
         navigator.withScope<SearchScope> {
-            if (it.pagination.canLoadMore()) {
+            if (!it.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
                 it.search(addPage = true)
             }

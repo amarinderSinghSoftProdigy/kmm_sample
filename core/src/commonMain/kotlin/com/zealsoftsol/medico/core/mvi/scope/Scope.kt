@@ -16,8 +16,7 @@ sealed class Scope : Scopable {
     sealed class Child : Scope() {
         internal abstract val parentScopeId: KClass<*>
 
-        abstract class TabBar(internal val tabBarInfo: TabBarInfo) :
-            Child() {
+        abstract class TabBar(internal val tabBarInfo: TabBarInfo) : Child() {
             override val scopeId: KClass<*> = Child.TabBar::class
             override val parentScopeId: KClass<*> = Host::class
         }

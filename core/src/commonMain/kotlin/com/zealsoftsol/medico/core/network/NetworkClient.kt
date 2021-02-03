@@ -17,6 +17,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
@@ -37,6 +38,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -269,38 +271,27 @@ class NetworkClient(
             }.getWrappedBody()
         }
 
-    override suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>> =
-        ktorDispatcher {
-            client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/stockist/all") {
-                withMainToken()
-                url {
-                    parameters.apply {
-                        append("page", pagination.nextPage().toString())
-                        append("pageSize", pagination.itemsPerPage.toString())
-                    }
+    override suspend fun getManagementInfo(
+        unitCode: String,
+        forUserType: UserType,
+        criteria: ManagementCriteria,
+        search: String,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<EntityInfo>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/${forUserType.serverValueSimple}/mngt/$unitCode") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    if (search.isNotEmpty()) append("search", search)
+                    append("criteria", criteria.serverValue)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
                 }
-            }.getWrappedBody().also {
-                if (it.isSuccess) pagination.pageLoaded()
             }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
         }
-
-    override suspend fun getSubscribedStockists(
-        pagination: Pagination,
-        unitCode: String
-    ): Response.Wrapped<PaginatedData<EntityInfo>> =
-        ktorDispatcher {
-            client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/buyer/subscribed/$unitCode") {
-                withMainToken()
-                url {
-                    parameters.apply {
-                        append("page", pagination.nextPage().toString())
-                        append("pageSize", pagination.itemsPerPage.toString())
-                    }
-                }
-            }.getWrappedBody().also {
-                if (it.isSuccess) pagination.pageLoaded()
-            }
-        }
+    }
 
     override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
         ktorDispatcher {

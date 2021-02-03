@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
@@ -29,71 +30,33 @@ internal class ManagementEventDelegate(
     private var subscribeRequest: SubscribeRequest? = null
 
     override suspend fun handleEvent(event: Event.Action.Management) = when (event) {
-        is Event.Action.Management.LoadAllStockists -> loadAllStockists()
-        is Event.Action.Management.LoadSubscribedStockists -> loadSubscribedStockists()
-        is Event.Action.Management.Filter -> filter(event.value)
+        is Event.Action.Management.Load -> loadUserManagement()
+        is Event.Action.Management.Search -> searchUserManagement(event.value)
         is Event.Action.Management.Select -> select(event.item)
-        is Event.Action.Management.LoadRetailers -> TODO()
-        is Event.Action.Management.LoadHospitals -> TODO()
-        is Event.Action.Management.LoadSeasonBoys -> TODO()
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
         is Event.Action.Management.ChoosePayment -> choosePayment(event.paymentMethod)
         is Event.Action.Management.ChooseNumberOfDays -> chooseNumberOfDays(event.days)
     }
 
-    private suspend fun loadAllStockists() {
-        navigator.withScope<ManagementScope.Stockist> {
-            if (it.pagination.nextPage() == 0 || it.pagination.canLoadMore()) {
-                load {
-                    val (result, isSuccess) = networkManagementScope.getAllStockists(it.pagination)
-                    if (isSuccess && result != null) {
-                        it.pagination.setTotal(result.total)
-                        it.items.value = it.items.value + result.data
-                        it.cachedItems = it.items.value
-                    }
-                }
+    private suspend fun loadUserManagement() {
+        navigator.withScope<ManagementScope.User> {
+            if (!navigator.scope.value.isInProgress.value && (it.pagination.nextPage() == 0 || it.pagination.canLoadMore())) {
+                it.loadManagement(withProgress = true, addPage = true)
             }
         }
     }
 
-    private suspend fun loadSubscribedStockists() {
-        navigator.withScope<ManagementScope.Stockist> {
-            if (it.pagination.nextPage() == 0 || it.pagination.canLoadMore()) {
-                load {
-                    val (result, isSuccess) = networkManagementScope.getSubscribedStockists(
-                        pagination = it.pagination,
-                        unitCode = userRepo.requireUser().unitCode,
-                    )
-                    if (isSuccess && result != null) {
-                        it.pagination.setTotal(result.total)
-                        it.items.value = it.items.value + result.data
-                        it.cachedItems = it.items.value
-                    }
-                }
-            }
-        }
-    }
-
-    private fun filter(value: String?) {
-        navigator.withScope<ManagementScope<*>> {
-            it.searchText.value = value.orEmpty()
-            when (it) {
-                is ManagementScope.Stockist -> {
-                    it.items.value = if (!value.isNullOrEmpty()) {
-                        it.cachedItems.filter { item ->
-                            item.traderName.contains(value, ignoreCase = true)
-                        }
-                    } else {
-                        it.cachedItems
-                    }
-                }
-            }
+    private suspend fun searchUserManagement(search: String) {
+        navigator.withScope<ManagementScope.User> {
+            it.pagination.reset()
+            it.searchText.value = search
+            it.loadManagement(withProgress = false, addPage = false)
         }
     }
 
     private fun select(item: Any) {
         when (item) {
-            is EntityInfo -> navigator.withScope<ManagementScope<*>> {
+            is EntityInfo -> navigator.withScope<ManagementScope.User> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(item)
             }
@@ -102,7 +65,7 @@ internal class ManagementEventDelegate(
     }
 
     private fun requestSubscribe(managementItem: ManagementItem) {
-        navigator.withScope<ManagementScope.Stockist> {
+        navigator.withScope<ManagementScope.User.Stockist> {
             managementItem as EntityInfo
             val user = userRepo.requireUser()
             subscribeRequest = SubscribeRequest(
@@ -118,7 +81,7 @@ internal class ManagementEventDelegate(
     }
 
     private suspend fun choosePayment(paymentMethod: PaymentMethod) {
-        navigator.withScope<ManagementScope.Stockist> {
+        navigator.withScope<ManagementScope.User.Stockist> {
             subscribeRequest =
                 requireNotNull(subscribeRequest).copy(paymentMethod = paymentMethod.serverValue)
             it.notifications.value = if (paymentMethod == PaymentMethod.CREDIT) {
@@ -132,7 +95,7 @@ internal class ManagementEventDelegate(
     }
 
     private suspend fun chooseNumberOfDays(days: Int) {
-        navigator.withScope<ManagementScope.Stockist> {
+        navigator.withScope<ManagementScope.User.Stockist> {
             subscribeRequest = requireNotNull(subscribeRequest).copy(noOfCreditDays = days)
             it.dismissNotification()
             subscribe()
@@ -141,26 +104,53 @@ internal class ManagementEventDelegate(
     }
 
     private suspend fun subscribe() {
-        navigator.withProgress {
-            val (error, isSuccess) = networkManagementScope.subscribeRequest(
-                requireNotNull(
-                    subscribeRequest
+        navigator.withScope<ManagementScope.User> {
+            withProgress {
+                val (error, isSuccess) = networkManagementScope.subscribeRequest(
+                    requireNotNull(subscribeRequest)
                 )
-            )
-            if (isSuccess) {
-                subscribeRequest = null
-            } else {
-                navigator.setHostError(error ?: ErrorCode())
+                if (isSuccess) {
+                    // lazy hack, it is better to ask the server for updated values
+                    it.items.value = it.items.value
+                        .filter { requireNotNull(subscribeRequest).sellerUnitCode != it.unitCode }
+                    subscribeRequest = null
+                } else {
+                    setHostError(error ?: ErrorCode())
+                }
             }
         }
     }
 
-    private suspend fun load(loader: suspend () -> Unit) {
-        navigator.setHostProgress(true)
+    private suspend fun ManagementScope.User.loadManagement(
+        withProgress: Boolean,
+        addPage: Boolean
+    ) {
+        load(withProgress = withProgress, debounce = 500) {
+            val (result, isSuccess) = networkManagementScope.getManagementInfo(
+                unitCode = userRepo.requireUser().unitCode,
+                forUserType = forType,
+                criteria = activeTab.value.criteria,
+                search = searchText.value,
+                pagination = pagination,
+            )
+            if (isSuccess && result != null) {
+                pagination.setTotal(result.total)
+                items.value = if (addPage) items.value + result.data else result.data
+            }
+        }
+    }
+
+    private suspend fun load(
+        withProgress: Boolean = false,
+        debounce: Long = 0,
+        loader: suspend () -> Unit
+    ) {
+        if (withProgress) navigator.setHostProgress(true)
         loadJob?.cancel()
         loadJob = coroutineContext.toScope().launch {
+            if (debounce > 0) delay(debounce)
             loader()
-            navigator.setHostProgress(false)
+            if (withProgress) navigator.setHostProgress(false)
         }
     }
 }

@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -20,6 +21,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -71,10 +73,12 @@ interface NetworkScope {
     }
 
     interface Management {
-        suspend fun getAllStockists(pagination: Pagination): Response.Wrapped<PaginatedData<EntityInfo>>
-        suspend fun getSubscribedStockists(
+        suspend fun getManagementInfo(
+            unitCode: String,
+            forUserType: UserType,
+            criteria: ManagementCriteria,
+            search: String,
             pagination: Pagination,
-            unitCode: String
         ): Response.Wrapped<PaginatedData<EntityInfo>>
 
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>

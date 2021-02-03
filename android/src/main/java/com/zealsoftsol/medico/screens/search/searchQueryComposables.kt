@@ -111,7 +111,7 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                     items = products.value,
                     itemContent = { index, item ->
                         ProductItem(item) { scope.selectProduct(item) }
-                        if (index == products.value.lastIndex && scope.pagination.canLoadMore() && !scope.isInProgress.flow.value) {
+                        if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadMoreProducts()
                         }
                     },

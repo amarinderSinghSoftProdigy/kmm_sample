@@ -13,11 +13,14 @@ data class AuthCredentials(
     }
 }
 
-enum class UserType(val serverValue: String) {
-    STOCKIST("STOCKIST"),
-    RETAILER("RETAILER"),
-    SEASON_BOY("SEASON_BOY"),
-    HOSPITAL("HOSPITAL");
+enum class UserType(
+    val serverValue: String,
+    val serverValueSimple: String,
+) {
+    STOCKIST("STOCKIST", "stockist"),
+    RETAILER("RETAILER", "retailer"),
+    SEASON_BOY("SEASON_BOY", "seasonboy"),
+    HOSPITAL("HOSPITAL", "hospital");
 
     val stringId: String
         get() = serverValue.toLowerCase()
@@ -62,4 +65,9 @@ enum class FileType(val mimeType: String, val isMandatory: Boolean) {
             }
         }
     }
+}
+
+enum class ManagementCriteria(val serverValue: String) {
+    ALL("ALL"),
+    PERSONAL("YOUR");
 }

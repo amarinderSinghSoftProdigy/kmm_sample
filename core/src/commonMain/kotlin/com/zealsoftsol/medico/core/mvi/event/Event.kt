@@ -76,13 +76,9 @@ internal sealed class Event {
         sealed class Management : Action() {
             override val typeClazz: KClass<*> = Management::class
 
-            data class Filter(val value: String?) : Management()
             data class Select(val item: ManagementItem) : Management()
-            object LoadAllStockists : Management()
-            object LoadSubscribedStockists : Management()
-            object LoadRetailers : Management()
-            object LoadHospitals : Management()
-            object LoadSeasonBoys : Management()
+            data class Search(val value: String) : Management()
+            object Load : Management()
             data class RequestSubscribe(val item: ManagementItem) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
