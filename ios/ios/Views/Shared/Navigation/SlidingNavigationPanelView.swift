@@ -218,6 +218,15 @@ extension NavigationOption {
         case .Stockists():
             return "Stockist"
             
+        case .Retailers():
+            return "Retailer"
+            
+        case .Hospitals():
+            return "Hospital"
+            
+        case .SeasonBoys():
+            return "SeasonBoy"
+            
         default:
             return nil
         }
@@ -233,6 +242,15 @@ extension NavigationOption {
             
         case .Stockists():
             return "stockists"
+            
+        case .Retailers():
+            return "retailers"
+            
+        case .Hospitals():
+            return "hospitals"
+            
+        case .SeasonBoys():
+            return "seasonBoys"
             
         default:
             return nil

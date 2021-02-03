@@ -242,7 +242,7 @@ object DebugScopeCreator {
     }
 
     fun allStockistsList() {
-        nav.setScope(ManagementScope.Stockist())
+        nav.setScope(ManagementScope.User.Stockist())
     }
 }
 

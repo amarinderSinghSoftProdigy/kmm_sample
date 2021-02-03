@@ -142,8 +142,8 @@ struct TabBarScreen: View {
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))
             
-        case let scope as ManagementScopeStockist:
-            return AnyView(StockistManagementScreen(scope: scope))
+        case let scope as ManagementScopeUser:
+            return AnyView(UserManagementScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

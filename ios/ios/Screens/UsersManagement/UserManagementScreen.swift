@@ -1,0 +1,264 @@
+//
+//  UserManagementScreen.swift
+//  Medico
+//
+//  Created by Dasha Gurinovich on 20.01.21.
+//  Copyright © 2021 Zeal Software Solutions. All rights reserved.
+//
+
+import core
+import SwiftUI
+
+struct UserManagementScreen: View {
+    let scope: ManagementScopeUser
+    
+    @ObservedObject var userSearchText: SwiftDataSource<NSString>
+    @ObservedObject var activeTab: SwiftDataSource<ManagementScopeTab>
+    @ObservedObject var users: SwiftDataSource<NSArray>
+
+    var body: some View {
+        let imageName: String
+        let searchBarPlaceholderKey: String
+        let screenName: String
+        
+        switch self.scope {
+        
+        case is ManagementScopeUser.Stockist:
+            imageName = "Stockist"
+            searchBarPlaceholderKey = "stockists"
+            screenName = "Stockist"
+        
+        case is ManagementScopeUser.Retailer:
+            imageName = "Retailer"
+            searchBarPlaceholderKey = "retailers"
+            screenName = "Retailer"
+            
+        case is ManagementScopeUser.Hospital:
+            imageName = "Hospital"
+            searchBarPlaceholderKey = "hospitals"
+            screenName = "Hospital"
+            
+        case is ManagementScopeUser.SeasonBoy:
+            imageName = "SeasonBoy"
+            searchBarPlaceholderKey = "seasonBoys"
+            screenName = "SeasonBoy"
+            
+        default:
+            return AnyView(EmptyView())
+        }
+        
+        let view = AnyView(
+            getGeneralScreen(withSearchImageName: imageName,
+                             withSearchBarPlaceholderKey: searchBarPlaceholderKey)
+                .screenLogger(withScreenName: "ManagementScopeUser.\(screenName)",
+                              withScreenClass: ManagementScopeUser.self)
+        )
+        
+        if let notificationsScope = self.scope as? CommonScopeWithNotifications {
+            return AnyView(
+                view
+                    .notificationAlertSender(withHandler: notificationsScope)
+            )
+        }
+        
+        return view
+    }
+    
+    init(scope: ManagementScopeUser) {
+        self.scope = scope
+        
+        self.userSearchText = SwiftDataSource(dataSource: scope.searchText)
+        self.activeTab = SwiftDataSource(dataSource: scope.activeTab)
+        self.users = SwiftDataSource(dataSource: scope.items)
+    }
+    
+    private func getGeneralScreen(withSearchImageName imageName: String,
+                                  withSearchBarPlaceholderKey searchBarPlaceholderKey: String) -> some View {
+        let selectedOption = Binding(get: {
+            guard let activeTab = self.activeTab.value else { return 0 }
+
+            return scope.tabs.firstIndex(of: activeTab) ?? 0
+        }, set: { newValue in
+            scope.selectTab(tab: scope.tabs[newValue])
+        })
+        
+        let image = Image(imageName).resizable()
+
+        return AnyView(
+            VStack(spacing: 16) {
+                SearchBar(placeholderLocalizationKey: searchBarPlaceholderKey,
+                          searchText: userSearchText.value,
+                          leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(image)),
+                                                                   enteredTextButton: .smallMagnifyingGlass),
+                          trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
+                                                                    enteredTextButton: .clear),
+                          onTextChange: { newValue in scope.search(value: newValue) })
+                
+                if scope.tabs.count == 1 {
+                    self.singleTabView
+                }
+                else {
+                    self.getOptionsPicker(withSelectedOption: selectedOption)
+                }
+                
+                TransparentList(data: users,
+                                dataType: DataEntityInfo.self,
+                                listName: self.activeTab.value?.listName,
+                                pagination: scope.pagination,
+                                onTapGesture: { scope.selectItem(item: $0) },
+                                loadItems: { scope.loadItems() }) { _, element in
+                    UserView(user: element)
+                }
+                .hideKeyboardOnTap()
+            }
+            .keyboardResponder()
+            .padding(.horizontal, 16)
+            .padding(.vertical, 32)
+        )
+    }
+    
+    private var singleTabView: some View {
+        guard let activeTab = self.activeTab.value else { return AnyView(EmptyView()) }
+            
+        return AnyView(
+            VStack {
+                LocalizedText(localizationKey: activeTab.stringId,
+                              fontSize: 15)
+                
+                AppColor.darkBlue.color
+                    .frame(height: 1)
+            }
+        )
+    }
+    
+    private func getOptionsPicker(withSelectedOption selectedOption: Binding<Int>) -> some View {
+        Picker(selection: selectedOption, label: Text("")) {
+            ForEach(0..<scope.tabs.count) { index in
+                LocalizedText(localizationKey: scope.tabs[index].stringId)
+            }
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .onAppear {
+            let segmentedControlAppearance = UISegmentedControl.appearance()
+
+            segmentedControlAppearance.selectedSegmentTintColor = .white
+
+            segmentedControlAppearance.tintColor = UIColor(named: "NavigationBar")
+            segmentedControlAppearance.backgroundColor = UIColor(named: "NavigationBar")
+
+            let textColor = UIColor(named: "DarkBlue") ?? .darkGray
+            let selectedStateFont = UIFont(name: "Barlow-SemiBold", size: 14) ?? .boldSystemFont(ofSize: 14)
+            let normalStateFont = UIFont(name: "Barlow-Medium", size: 14) ?? .systemFont(ofSize: 14)
+
+            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
+                                                               .font: selectedStateFont],
+                                                              for: .selected)
+
+            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
+                                                               .font: normalStateFont],
+                                                              for: .normal)
+        }
+    }
+    
+    private struct UserView: View {
+        let user: DataEntityInfo
+        
+        var body: some View {
+            ZStack {
+                AppColor.white.color
+                    .cornerRadius(5)
+                
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading) {
+                        Text(user.traderName)
+                            .medicoText(textWeight: .semiBold,
+                                        fontSize: 16,
+                                        multilineTextAlignment: .leading)
+                        
+                        SmallAddresView(location: user.location, pincode: user.pincode)
+                    }
+                    
+                    Spacer()
+                    
+                    if let status = user.subscriptionData?.status {
+                        LocalizedText(localizationKey: status.serverValue,
+                                      textWeight: .medium,
+                                      fontSize: 15,
+                                      color: status == .subscribed ? .lightBlue : .yellow)
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 7)
+            }
+        }
+    }
+    
+    private struct SeasonBoyView: View {
+        let seasonBoy: DataEntityInfo
+        
+        var body: some View {
+            ZStack {
+                AppColor.white.color
+                    .cornerRadius(5)
+                
+                HStack {
+                    Text(seasonBoy.traderName)
+                        .medicoText(textWeight: .bold,
+                                    fontSize: 15,
+                                    multilineTextAlignment: .leading)
+                    
+                    Spacer()
+                    
+                    Text("+91 235 256 25 63")
+                        .medicoText(textWeight: .semiBold,
+                                    fontSize: 15,
+                                    color: .lightBlue,
+                                    multilineTextAlignment: .leading)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 14)
+            }
+        }
+    }
+}
+
+struct SmallAddresView: View {
+    let location: String
+    let pincode: String
+    
+    var body: some View {
+        HStack(spacing: 5) {
+            Image("SmallAddress")
+            
+            Text("\(location) \(pincode)")
+                .medicoText(textWeight: .bold,
+                            color: .grey3,
+                            multilineTextAlignment: .leading)
+        }
+    }
+}
+
+extension ManagementScopeTab {
+    var listName: ListScrollData.Name? {
+        switch self {
+        
+        case .allStockists:
+            return .allStockists
+            
+        case .yourStockists:
+            return .yourStockists
+            
+        case .yourRetailers:
+            return .yourRetailers
+            
+        case .yourHospitals:
+            return .yourHospitals
+            
+        case .yourSeasonBoys:
+            return .yourSeasonBoys
+            
+        default:
+            return nil
+        }
+    }
+}

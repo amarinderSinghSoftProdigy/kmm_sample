@@ -12,7 +12,7 @@ import SwiftUI
 struct TransparentList<Content: View, T: Hashable>: View {
     @EnvironmentObject var scrollData: ListScrollData
     
-    let listName: ListScrollData.Name
+    let listName: ListScrollData.Name?
     
     let data: SwiftDataSource<NSArray>
     let dataType: T.Type
@@ -43,11 +43,15 @@ struct TransparentList<Content: View, T: Hashable>: View {
                                 self.isInProgress.value == false {
                                 self.loadItems()
 
-                                self.scrollData.lists[listName]?.elementToScrollTo = index
+                                if let listName = self.listName {
+                                    self.scrollData.lists[listName]?.elementToScrollTo = index
+                                }
                             }
                         }
                         .onTapGesture {
-                            self.scrollData.lists[listName]?.elementToScrollTo = index
+                            if let listName = self.listName {
+                                self.scrollData.lists[listName]?.elementToScrollTo = index
+                            }
                             
                             self.onTapGesture(element)
                         }
@@ -60,7 +64,8 @@ struct TransparentList<Content: View, T: Hashable>: View {
                 UITableViewCell.appearance().backgroundColor = UIColor.clear
             }
             .introspectTableView { (tableView) in
-                if self.scrollData.lists[listName]?.listTableView == nil {
+                if let listName = self.listName,
+                   self.scrollData.lists[listName]?.listTableView == nil {
                     self.scrollData.lists[listName]?.listTableView = tableView
                 }
                 
@@ -68,12 +73,14 @@ struct TransparentList<Content: View, T: Hashable>: View {
                 
                 setUpInitialScrollData()
                 
-                if let elementToScrollTo = self.scrollData.lists[listName]?.elementToScrollTo {
+                if let listName = self.listName,
+                   let elementToScrollTo = self.scrollData.lists[listName]?.elementToScrollTo {
                     scrollToCell(elementToScrollTo, animated: true)
                 }
             }
             .onReceive(self.data.$value) { value in
-                guard let value = value, value.count > 0 else { return }
+                guard let listName = self.listName,
+                      let value = value, value.count > 0 else { return }
 
                 self.scrollData.lists[listName]?.listTableView = nil
             }
@@ -82,7 +89,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
     
     init(data: SwiftDataSource<NSArray>,
          dataType: T.Type,
-         listName: ListScrollData.Name,
+         listName: ListScrollData.Name?,
          isInProgress: DataSource<KotlinBoolean>? = nil,
          pagination: Pagination,
          elementsSpacing: CGFloat = 16,
@@ -105,17 +112,19 @@ struct TransparentList<Content: View, T: Hashable>: View {
     }
     
     private func setUpInitialScrollData() {
-        guard !self.scrollData.lists.contains(where: { $0.key == self.listName }) else { return }
+        guard let listName = self.listName,
+              !self.scrollData.lists.contains(where: { $0.key == listName }) else { return }
         
-        self.scrollData.lists[self.listName] = ListScrollData.Data()
+        self.scrollData.lists[listName] = ListScrollData.Data()
     }
     
     private func scrollToCell(_ index: Int, animated: Bool = false) {
         let indexPath = IndexPath(row: index, section: 0)
         
-        guard let listTableView = self.scrollData.lists[listName]?.listTableView,
-           listTableView.dataSource != nil,
-           listTableView.hasRowAtIndexPath(indexPath) else { return }
+        guard let listName = self.listName,
+              let listTableView = self.scrollData.lists[listName]?.listTableView,
+              listTableView.dataSource != nil,
+              listTableView.hasRowAtIndexPath(indexPath) else { return }
         
         listTableView.scrollToRow(at: indexPath,
                                   at: .middle,
@@ -142,5 +151,8 @@ class ListScrollData: ObservableObject {
         
         case allStockists
         case yourStockists
+        case yourRetailers
+        case yourHospitals
+        case yourSeasonBoys
     }
 }

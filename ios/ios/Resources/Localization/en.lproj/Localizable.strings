@@ -159,6 +159,18 @@
 "edit_number_of_days" = "Edit number of days";
 "thank_you_for_request" = "Thank you for your request!";
 
+// MARK: Hospitals Management
+"hospitals" = "Hospitals";
+"your_hospitals" = "Your Hospitals";
+
+// MARK: Retailers Management
+"retailers" = "Retailers";
+"your_retailers" = "Your Retailers";
+
+// MARK: SeasonBoys Management
+"seasonBoys" = "Season Boys";
+"your_season_boys" = "Your Season Boys";
+
 // MARK: Stockist Details
 "subscribe" = "Subscribe";
 "see_on_the_map" = "See on the map";
