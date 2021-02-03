@@ -189,3 +189,8 @@
 "notifications" = "Notifications";
 "unread" = "Unread";
 "read" = "Read";
+"new_request_to_subscribe_from" = "New request to subscribe from";
+"phone" = "Phone:";
+"edit_credit" = "Edit Credit";
+"accept" = "Accept";
+"decline" = "Decline";

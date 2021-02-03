@@ -71,7 +71,8 @@ struct EntityInfoBottomSheet: ViewModifier {
                                          width: 91,
                                          height: 31,
                                          cornerRadius: 5,
-                                         fontSize: 14) {
+                                         fontSize: 14,
+                                         fontWeight: .bold) {
                                 onSubscribe()
                             }
                         }
