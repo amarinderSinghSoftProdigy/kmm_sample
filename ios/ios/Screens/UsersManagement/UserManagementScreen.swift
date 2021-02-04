@@ -85,35 +85,47 @@ struct UserManagementScreen: View {
         let image = Image(imageName).resizable()
 
         return AnyView(
-            VStack(spacing: 16) {
-                SearchBar(placeholderLocalizationKey: searchBarPlaceholderKey,
-                          searchText: userSearchText.value,
-                          leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(image)),
-                                                                   enteredTextButton: .smallMagnifyingGlass),
-                          trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
-                                                                    enteredTextButton: .clear),
-                          onTextChange: { newValue in scope.search(value: newValue) })
+            ZStack(alignment: .bottomTrailing) {
+                VStack(spacing: 16) {
+                    SearchBar(placeholderLocalizationKey: searchBarPlaceholderKey,
+                              searchText: userSearchText.value,
+                              leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(image)),
+                                                                       enteredTextButton: .smallMagnifyingGlass),
+                              trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
+                                                                        enteredTextButton: .clear),
+                              onTextChange: { newValue in scope.search(value: newValue) })
+                    
+                    if scope.tabs.count == 1 {
+                        self.singleTabView
+                    }
+                    else {
+                        self.getOptionsPicker(withSelectedOption: selectedOption)
+                    }
+                    
+                    TransparentList(data: users,
+                                    dataType: DataEntityInfo.self,
+                                    listName: self.activeTab.value?.listName,
+                                    pagination: scope.pagination,
+                                    onTapGesture: { scope.selectItem(item: $0) },
+                                    loadItems: { scope.loadItems() }) { _, element in
+                        UserView(user: element)
+                    }
+                    .hideKeyboardOnTap()
+                }
+                .keyboardResponder()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 32)
                 
-                if scope.tabs.count == 1 {
-                    self.singleTabView
+                if false {
+                    Button(action: { }) {
+                        Image(systemName: "plus")
+                            .foregroundColor(appColor: .darkBlue)
+                            .padding(20)
+                            .background(Circle().fill(appColor: .yellow))
+                    }
+                    .padding(30)
                 }
-                else {
-                    self.getOptionsPicker(withSelectedOption: selectedOption)
-                }
-                
-                TransparentList(data: users,
-                                dataType: DataEntityInfo.self,
-                                listName: self.activeTab.value?.listName,
-                                pagination: scope.pagination,
-                                onTapGesture: { scope.selectItem(item: $0) },
-                                loadItems: { scope.loadItems() }) { _, element in
-                    UserView(user: element)
-                }
-                .hideKeyboardOnTap()
             }
-            .keyboardResponder()
-            .padding(.horizontal, 16)
-            .padding(.vertical, 32)
         )
     }
     
