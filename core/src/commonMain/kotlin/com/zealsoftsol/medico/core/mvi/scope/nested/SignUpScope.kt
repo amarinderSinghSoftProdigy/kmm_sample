@@ -58,7 +58,7 @@ sealed class SignUpScope(titleId: String) :
 
     class PersonalData(
         val registration: DataSource<UserRegistration1>,
-        val validation: DataSource<UserValidation1?>,
+        val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : SignUpScope("personal_data") {
 
         init {

@@ -82,6 +82,11 @@ internal sealed class Event {
             data class RequestSubscribe(val item: ManagementItem) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
+//            data class PreviewUser(
+//                val registration1: UserRegistration1,
+//                val registration2: UserRegistration2,
+//                val registration3: UserRegistration3,
+//            ) : Management()
         }
     }
 
@@ -98,5 +103,6 @@ internal sealed class Event {
         object Address : Transition()
         object GstinDetails : Transition()
         data class Management(val manageUserType: UserType) : Transition()
+        object CreateRetailer : Transition()
     }
 }

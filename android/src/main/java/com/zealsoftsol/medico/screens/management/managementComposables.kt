@@ -16,11 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.LocationOn
@@ -55,6 +57,17 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 fun ManagementScreen(scope: ManagementScope.User) {
     Column(modifier = Modifier.fillMaxSize()) {
         EntityManagementScreen(scope)
+    }
+    if (scope is ManagementScope.User.Retailer && scope.canAdd) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            FloatingActionButton(
+                onClick = { scope.createRetailer() },
+                backgroundColor = ConstColors.yellow,
+                contentColor = MaterialTheme.colors.background,
+                content = { Icon(imageVector = Icons.Default.Add) },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp),
+            )
+        }
     }
 }
 

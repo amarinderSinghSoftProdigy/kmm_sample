@@ -29,7 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -43,7 +45,9 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
@@ -70,6 +74,7 @@ fun Scope.Host.showBottomSheet(
             }
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
                 entityInfo = bs.entityInfo,
+                isForSeasonBoy = bs.isSeasonBoy,
                 onSubscribe = { bs.subscribe() },
                 onDismiss = { dismissBottomSheet() },
             )
@@ -117,6 +122,7 @@ private fun DocumentUploadBottomSheet(
 @Composable
 private fun PreviewItemBottomSheet(
     entityInfo: EntityInfo,
+    isForSeasonBoy: Boolean,
     onSubscribe: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -136,71 +142,108 @@ private fun PreviewItemBottomSheet(
                 )
             }
             Column {
-                Text(
-                    text = entityInfo.traderName,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W600,
-                    color = MaterialTheme.colors.background,
-                    modifier = Modifier.padding(end = 30.dp),
-                )
-                Space(4.dp)
-                Text(
-                    text = entityInfo.city,
-                    fontSize = 14.sp,
-                    color = ConstColors.gray,
-                )
-                Space(12.dp)
-                Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
-                    CoilImage(
-                        modifier = Modifier.size(123.dp),
-                        data = "",
-                        error = { ItemPlaceholder() },
-                        loading = { ItemPlaceholder() },
-                    )
-                    Space(24.dp)
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        GeoLocation(entityInfo.location, isBold = true)
-                        Text(
-                            text = entityInfo.distance,
-                            fontSize = 12.sp,
-                            color = ConstColors.gray,
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isForSeasonBoy) {
+                        Icon(
+                            imageVector = vectorResource(id = R.drawable.ic_season_boy),
+                            tint = MaterialTheme.colors.background,
+                            modifier = Modifier.size(24.dp),
                         )
-                        val activity = AmbientContext.current as MainActivity
-                        Text(
-                            text = stringResource(id = R.string.see_on_the_map),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = ConstColors.lightBlue,
-                            modifier = Modifier.clickable {
-                                activity.openMaps(
-                                    entityInfo.sellerGeoPoints.latitude,
-                                    entityInfo.sellerGeoPoints.longitude
-                                )
-                            },
-                        )
-                        if (entityInfo.subscriptionData == null) {
-                            MedicoSmallButton(
-                                text = stringResource(id = R.string.subscribe),
-                                onClick = onSubscribe,
-                            )
-                        }
+                        Space(16.dp)
                     }
+                    Text(
+                        text = entityInfo.traderName,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W600,
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.padding(end = 30.dp),
+                    )
+                }
+                Space(4.dp)
+                if (isForSeasonBoy) {
+                    Space(8.dp)
+                    SeasonBoyPreviewItemBottomSheet(entityInfo)
+                } else {
+                    NonSeasonBoyPreviewItemBottomSheet(entityInfo, onSubscribe)
                 }
                 Space(12.dp)
                 Column {
-                    DataWithLabel(label = R.string.gstin_num, data = entityInfo.gstin)
-                    entityInfo.subscriptionData?.let {
-                        DataWithLabel(label = R.string.status, data = it.status.serverValue)
-                        DataWithLabel(
-                            label = R.string.payment_method,
-                            data = it.paymentMethod.serverValue
-                        )
-                        DataWithLabel(label = R.string.orders, data = it.orders)
+                    if (!isForSeasonBoy) {
+                        DataWithLabel(label = R.string.gstin_num, data = entityInfo.gstin)
+                        entityInfo.subscriptionData?.let {
+                            DataWithLabel(label = R.string.status, data = it.status.serverValue)
+                            DataWithLabel(
+                                label = R.string.payment_method,
+                                data = it.paymentMethod.serverValue
+                            )
+                            DataWithLabel(label = R.string.orders, data = it.orders)
+                        }
+                    } else {
+                        DataWithLabel(label = R.string.address, data = entityInfo.location)
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo) {
+    val formatter = rememberPhoneNumberFormatter()
+    Text(
+        text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.End,
+        color = ConstColors.lightBlue,
+    )
+    Space(12.dp)
+    Separator(padding = 0.dp)
+}
+
+@Composable
+private fun NonSeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo, onSubscribe: () -> Unit) {
+    Text(
+        text = entityInfo.city,
+        fontSize = 14.sp,
+        color = ConstColors.gray,
+    )
+    Space(12.dp)
+    Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
+        CoilImage(
+            modifier = Modifier.size(123.dp),
+            data = "",
+            error = { ItemPlaceholder() },
+            loading = { ItemPlaceholder() },
+        )
+        Space(24.dp)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            GeoLocation(entityInfo.location, isBold = true)
+            Text(
+                text = entityInfo.distance,
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+            )
+            val activity = AmbientContext.current as MainActivity
+            Text(
+                text = stringResource(id = R.string.see_on_the_map),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = ConstColors.lightBlue,
+                modifier = Modifier.clickable {
+                    activity.openMaps(
+                        entityInfo.sellerGeoPoints.latitude,
+                        entityInfo.sellerGeoPoints.longitude
+                    )
+                },
+            )
+            if (entityInfo.subscriptionData == null) {
+                MedicoSmallButton(
+                    text = stringResource(id = R.string.subscribe),
+                    onClick = onSubscribe,
+                )
             }
         }
     }
