@@ -185,6 +185,12 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
+        if (userRepo.getUserAccess() == UserRepo.UserAccess.FULL_ACCESS) {
+            TODO("handle creation of user by signed in user")
+            // change tokens in sign up
+            // extra request for linkage
+            // send preview action to get into managemnt delegate
+        }
         val documents = navigator.searchQueuesFor<SignUpScope.LegalDocuments>()
         val (error, isSuccess) = navigator.withProgress {
             when (documents) {

@@ -19,7 +19,8 @@ sealed class BottomSheet {
             EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64, fileType))
     }
 
-    class PreviewManagementItem(val entityInfo: EntityInfo) : BottomSheet() {
+    class PreviewManagementItem(val entityInfo: EntityInfo, val isSeasonBoy: Boolean) :
+        BottomSheet() {
         fun subscribe() =
             EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
     }

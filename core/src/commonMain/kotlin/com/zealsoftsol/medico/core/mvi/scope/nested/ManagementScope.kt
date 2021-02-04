@@ -54,10 +54,12 @@ sealed class ManagementScope<T : ManagementItem>(
             tabs = listOf(Tab.YOUR_STOCKISTS, Tab.ALL_STOCKISTS),
         ), CommonScope.WithNotifications
 
-        class Retailer : User(
+        class Retailer(val canAdd: Boolean) : User(
             forType = UserType.RETAILER,
             tabs = listOf(Tab.YOUR_RETAILERS),
-        )
+        ) {
+            fun createRetailer() = EventCollector.sendEvent(Event.Transition.CreateRetailer)
+        }
 
         class Hospital : User(
             forType = UserType.HOSPITAL,

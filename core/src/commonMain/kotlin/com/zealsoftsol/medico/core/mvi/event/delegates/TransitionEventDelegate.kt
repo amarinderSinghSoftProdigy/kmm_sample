@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
 
 internal class TransitionEventDelegate(
@@ -57,10 +58,17 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {
                         UserType.STOCKIST -> ManagementScope.User.Stockist()
-                        UserType.RETAILER -> ManagementScope.User.Retailer()
+                        UserType.RETAILER -> ManagementScope.User.Retailer(
+                            canAdd = userRepo.requireUser().type == UserType.SEASON_BOY
+                        )
                         UserType.HOSPITAL -> ManagementScope.User.Hospital()
                         UserType.SEASON_BOY -> ManagementScope.User.SeasonBoy()
                     }
+                )
+                is Event.Transition.CreateRetailer -> setScope(
+                    SignUpScope.PersonalData(
+                        registration = DataSource(UserRegistration1(userType = UserType.RETAILER.serverValue))
+                    )
                 )
             }
         }
