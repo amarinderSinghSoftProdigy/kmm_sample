@@ -58,7 +58,8 @@ sealed class ManagementScope<T : ManagementItem>(
             forType = UserType.RETAILER,
             tabs = listOf(Tab.YOUR_RETAILERS),
         ) {
-            fun createRetailer() = EventCollector.sendEvent(Event.Transition.CreateRetailer)
+            fun requestCreateRetailer() =
+                EventCollector.sendEvent(Event.Transition.RequestCreateRetailer)
         }
 
         class Hospital : User(

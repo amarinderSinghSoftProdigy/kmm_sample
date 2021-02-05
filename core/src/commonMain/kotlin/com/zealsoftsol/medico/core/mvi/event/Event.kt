@@ -7,10 +7,13 @@ import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
-internal sealed class Event {
+sealed class Event {
     abstract val typeClazz: KClass<*>
 
     sealed class Action : Event() {
@@ -55,6 +58,8 @@ internal sealed class Event {
             object Skip : Registration()
             object AcceptWelcome : Registration()
             object ShowUploadBottomSheet : Registration()
+
+            object ConfirmCreateRetailer : Registration()
         }
 
         sealed class Search : Action() {
@@ -82,11 +87,6 @@ internal sealed class Event {
             data class RequestSubscribe(val item: ManagementItem) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
-//            data class PreviewUser(
-//                val registration1: UserRegistration1,
-//                val registration2: UserRegistration2,
-//                val registration3: UserRegistration3,
-//            ) : Management()
         }
     }
 
@@ -103,6 +103,13 @@ internal sealed class Event {
         object Address : Transition()
         object GstinDetails : Transition()
         data class Management(val manageUserType: UserType) : Transition()
-        object CreateRetailer : Transition()
+        object RequestCreateRetailer : Transition()
+        data class PreviewUser(
+            val registration1: UserRegistration1,
+            val registration2: UserRegistration2,
+            val registration3: UserRegistration3,
+        ) : Transition()
+
+        object CloseNotification : Transition()
     }
 }

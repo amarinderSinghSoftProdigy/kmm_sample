@@ -187,7 +187,7 @@ object DebugScopeCreator {
     }
 
     fun dashboardScreen() {
-        nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+        nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             DashboardScope.get(testUser, ReadOnlyDataSource(MutableStateFlow(testUser)))
         )
@@ -198,7 +198,7 @@ object DebugScopeCreator {
     }
 
     fun productScreen() {
-        nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+        nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             ProductInfoScope.get(
                 user = testUser,

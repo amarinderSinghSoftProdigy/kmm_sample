@@ -9,21 +9,25 @@ interface ManagementItem
 data class EntityInfo(
     @SerialName("buyerPoints")
     val buyerGeoPoints: GeoPoints,
-    val distance: String,
-    val gstin: String,
-    val location: String,
+    override val distance: String,
+    override val gstin: String,
+    override val location: String,
     val panNumber: String,
     @SerialName("mobileNumber")
-    val phoneNumber: String,
+    override val phoneNumber: String,
     val pincode: String,
     @SerialName("sellerPoints")
     val sellerGeoPoints: GeoPoints,
     @SerialName("townOrCity")
-    val city: String,
-    val traderName: String,
+    override val city: String,
+    override val traderName: String,
     val unitCode: String,
     val subscriptionData: SubscriptionData? = null,
-) : ManagementItem
+) : ManagementItem, PreviewItem {
+
+    override val geo: GeoPoints
+        get() = sellerGeoPoints
+}
 
 @Serializable
 data class SubscribeRequest(

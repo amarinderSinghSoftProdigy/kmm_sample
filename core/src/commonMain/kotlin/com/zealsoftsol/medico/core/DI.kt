@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
 import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
+import com.zealsoftsol.medico.core.network.mock.MockSignUpScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
@@ -42,6 +43,13 @@ fun startKodein(
             instance<NetworkClient>()
         } else {
             MockAuthScope()
+        }
+    }
+    bind<NetworkScope.SignUp>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockSignUpScope()
         }
     }
     bind<NetworkScope.Password>() with singleton {
@@ -87,7 +95,8 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
-            instance()
+            instance(),
+            instance(),
         )
     }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
