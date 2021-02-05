@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
@@ -37,7 +38,9 @@ interface NetworkScope {
         suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
         suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode>
+    }
 
+    interface SignUp : NetworkScope {
         suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1>
         suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2>
         suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
@@ -45,6 +48,7 @@ interface NetworkScope {
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
         suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
+        suspend fun linkCreatedRetailerWithSeasonBoy(linkData: LinkData): Response.Wrapped<ErrorCode>
     }
 
     interface Password {

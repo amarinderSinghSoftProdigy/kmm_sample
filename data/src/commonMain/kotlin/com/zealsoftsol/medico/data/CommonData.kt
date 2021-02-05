@@ -37,6 +37,24 @@ enum class SubscriptionStatus(val serverValue: String) {
     SUBSCRIBED("Subscribed"),
 }
 
+@Serializable
+data class LinkData(
+    val retailerEmail: String,
+    @SerialName("mobileNumber")
+    val phoneNumber: String,
+    val seasonBoyUnitCode: String,
+)
+
+interface PreviewItem {
+    val traderName: String
+    val location: String
+    val city: String
+    val distance: String
+    val gstin: String
+    val phoneNumber: String
+    val geo: GeoPoints
+}
+
 // BASE
 
 @Serializable

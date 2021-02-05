@@ -66,5 +66,5 @@ fun EnterNewPasswordScreen(scope: PasswordScope.EnterNew) {
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { scope.submit() }
     )
-    scope.showNotificationAlert(onDismiss = { scope.finishPasswordFlow() })
+    scope.showNotificationAlert()
 }

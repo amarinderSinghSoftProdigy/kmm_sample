@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -68,6 +69,7 @@ class NetworkClient(
     private val tokenStorage: TokenStorage,
     useNetworkInterceptor: Boolean,
 ) : NetworkScope.Auth,
+    NetworkScope.SignUp,
     NetworkScope.Password,
     NetworkScope.Customer,
     NetworkScope.Search,
@@ -230,6 +232,14 @@ class NetworkClient(
             client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(submitRegistration)
+            }.getWrappedError()
+        }
+
+    override suspend fun linkCreatedRetailerWithSeasonBoy(linkData: LinkData): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/season-retailer/add") {
+                withMainToken()
+                jsonBody(linkData)
             }.getWrappedError()
         }
 

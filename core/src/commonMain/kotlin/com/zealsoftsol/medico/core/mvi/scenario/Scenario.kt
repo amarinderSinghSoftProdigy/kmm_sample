@@ -17,7 +17,7 @@ abstract class Scenario {
     protected val longDelay: Long = 5000L
 
     fun start(block: suspend Navigator.() -> Unit) {
-        nav.dropScope(strategy = Navigator.DropStrategy.ALL, updateDataSource = false)
+        nav.dropScope(strategy = Navigator.DropStrategy.All, updateDataSource = false)
         GlobalScope.launch(Dispatchers.Main) { nav.block() }
     }
 

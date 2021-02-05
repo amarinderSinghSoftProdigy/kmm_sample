@@ -58,7 +58,10 @@ internal class ManagementEventDelegate(
         when (item) {
             is EntityInfo -> navigator.withScope<ManagementScope.User> {
                 val hostScope = scope.value
-                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(item)
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    item,
+                    isSeasonBoy = it is ManagementScope.User.SeasonBoy,
+                )
             }
             else -> "unknown item to select $item".warnIt()
         }
