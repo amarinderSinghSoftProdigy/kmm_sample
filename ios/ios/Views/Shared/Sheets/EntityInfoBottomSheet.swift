@@ -19,15 +19,21 @@ struct EntityInfoBottomSheet: ViewModifier {
                                         set: { newValue in if !newValue { onBottomSheetDismiss() } })
         
         return AnyView(
-            BaseBottomSheetView(isOpened: bottomSheetOpened, maxHeight: 350) {
-                ManagementItemDetails(entityInfo: bottomSheet.entityInfo,
-                                      onSubscribe: { bottomSheet.subscribe() })
+            BaseBottomSheetView(isOpened: bottomSheetOpened,
+                                maxHeight: bottomSheet.isSeasonBoy ? 275 : 350) {
+                if bottomSheet.isSeasonBoy {
+                    SeasonBoyDetailsItem(seasonBoy: bottomSheet.entityInfo)
+                }
+                else {
+                    NonSeasonBoyDetailsItem(entityInfo: bottomSheet.entityInfo,
+                                            onSubscribe: { bottomSheet.subscribe() })
+                }
             }
             .edgesIgnoringSafeArea(.all)
         )
     }
     
-    private struct ManagementItemDetails: View {
+    private struct NonSeasonBoyDetailsItem: View {
         let entityInfo: DataEntityInfo
         let onSubscribe: () -> ()
         
@@ -109,8 +115,8 @@ struct EntityInfoBottomSheet: ViewModifier {
         }
     }
     
-    private struct SeasonBoyItem: View {
-        let entityInfo: DataEntityInfo
+    private struct SeasonBoyDetailsItem: View {
+        let seasonBoy: DataEntityInfo
         
         var body: some View {
             VStack(alignment: .leading) {
@@ -121,13 +127,14 @@ struct EntityInfoBottomSheet: ViewModifier {
                         .foregroundColor(appColor: .darkBlue)
                         .frame(width: 24, height: 24)
                     
-                    Text(entityInfo.traderName)
+                    Text(seasonBoy.traderName)
                         .medicoText(textWeight: .semiBold,
                                     fontSize: 20,
                                     multilineTextAlignment: .leading)
                 }
                 
-                Text("+91 235 256 25 63")
+                let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
+                Text(phoneNumber)
                     .medicoText(textWeight: .semiBold,
                                 fontSize: 16,
                                 color: .lightBlue,
@@ -137,10 +144,10 @@ struct EntityInfoBottomSheet: ViewModifier {
                     .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    getDataPanel(withTitleKey: "email_address:", withValueKey: entityInfo.gstin)
-                    getDataPanel(withTitleKey: "address:", withValueKey: entityInfo.location)
-                    getDataPanel(withTitleKey: "pending_orders", withValueKey: "10")
-                    getDataPanel(withTitleKey: "total_orders", withValueKey: "24")
+//                    getDataPanel(withTitleKey: "email_address:", withValueKey: seasonBoy.gstin)
+                    getDataPanel(withTitleKey: "address:", withValueKey: seasonBoy.location)
+//                    getDataPanel(withTitleKey: "pending_orders", withValueKey: "10")
+//                    getDataPanel(withTitleKey: "total_orders", withValueKey: "24")
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)

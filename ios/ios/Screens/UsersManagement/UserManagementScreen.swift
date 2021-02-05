@@ -83,6 +83,7 @@ struct UserManagementScreen: View {
         })
         
         let image = Image(imageName).resizable()
+        let isSeasonBoy = self.scope is ManagementScopeUser.SeasonBoy
 
         return AnyView(
             ZStack(alignment: .bottomTrailing) {
@@ -108,7 +109,14 @@ struct UserManagementScreen: View {
                                     pagination: scope.pagination,
                                     onTapGesture: { scope.selectItem(item: $0) },
                                     loadItems: { scope.loadItems() }) { _, element in
-                        UserView(user: element)
+                        Group {
+                            if isSeasonBoy {
+                                SeasonBoyView(seasonBoy: element)
+                            }
+                            else {
+                                NonSeasonBoyView(user: element)
+                            }
+                        }
                     }
                     .hideKeyboardOnTap()
                 }
@@ -116,8 +124,9 @@ struct UserManagementScreen: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 32)
                 
-                if false {
-                    Button(action: { }) {
+                if let retailersManagementScope = self.scope as? ManagementScopeUser.Retailer,
+                   retailersManagementScope.canAdd {
+                    Button(action: { retailersManagementScope.requestCreateRetailer() }) {
                         Image(systemName: "plus")
                             .foregroundColor(appColor: .darkBlue)
                             .padding(20)
@@ -172,7 +181,7 @@ struct UserManagementScreen: View {
         }
     }
     
-    private struct UserView: View {
+    private struct NonSeasonBoyView: View {
         let user: DataEntityInfo
         
         var body: some View {
@@ -181,7 +190,7 @@ struct UserManagementScreen: View {
                     .cornerRadius(5)
                 
                 HStack(alignment: .top) {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 6) {
                         Text(user.traderName)
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 16,
@@ -221,7 +230,8 @@ struct UserManagementScreen: View {
                     
                     Spacer()
                     
-                    Text("+91 235 256 25 63")
+                    let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
+                    Text(phoneNumber)
                         .medicoText(textWeight: .semiBold,
                                     fontSize: 15,
                                     color: .lightBlue,
