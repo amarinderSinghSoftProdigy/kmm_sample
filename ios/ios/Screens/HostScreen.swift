@@ -94,8 +94,7 @@ struct BaseScopeView: View {
         if let notificationData = self.notificationObserver.data {
             view = AnyView(
                 view
-                    .notificationAlertListener(withHandler: notificationData.notificationsHandler,
-                                               onDismiss: notificationData.onDismiss)
+                    .notificationAlertListener(withHandler: notificationData.notificationsHandler)
             )
         }
         

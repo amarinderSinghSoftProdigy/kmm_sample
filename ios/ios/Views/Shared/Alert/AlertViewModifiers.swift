@@ -60,13 +60,11 @@ struct NotificationAlertSender: ViewModifier {
     @EnvironmentObject var notificationObserver: NotificationObservable
     
     let notificationsHandler: CommonScopeWithNotifications
-    let onDismiss: (() -> ())?
     
     func body(content: Content) -> some View {
         content
             .onAppear {
-                self.notificationObserver.data = .init(notificationsHandler: notificationsHandler,
-                                                       onDismiss: onDismiss)
+                self.notificationObserver.data = .init(notificationsHandler: notificationsHandler)
             }
             .onDisappear {
                 self.notificationObserver.data = nil
@@ -76,14 +74,11 @@ struct NotificationAlertSender: ViewModifier {
 
 struct NotificationAlert: ViewModifier {
     let notificationsHandler: CommonScopeWithNotifications
-    let onDismiss: (() -> ())?
     
     @ObservedObject var notification: SwiftDataSource<ScopeNotification>
     
-    init(notificationsHandler: CommonScopeWithNotifications,
-         onDismiss: (() -> ())? = nil) {
+    init(notificationsHandler: CommonScopeWithNotifications) {
         self.notificationsHandler = notificationsHandler
-        self.onDismiss = onDismiss
         
         self.notification = SwiftDataSource(dataSource: notificationsHandler.notifications)
     }
@@ -94,10 +89,7 @@ struct NotificationAlert: ViewModifier {
             
             ZStack {
                 if let notification = self.notification.value {
-                    let dismissAction = {
-                        notificationsHandler.dismissNotification()
-                        onDismiss?()
-                     }
+                    let dismissAction = { _ = notificationsHandler.dismissNotification() }
                     
                     if notification.isSimple {
                         CustomAlert<AnyView>(titleKey: notification.title,
