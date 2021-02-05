@@ -42,6 +42,8 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.PreviewItem
+import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -162,9 +164,9 @@ private fun PreviewItemBottomSheet(
                 Space(4.dp)
                 if (isForSeasonBoy) {
                     Space(8.dp)
-                    SeasonBoyPreviewItemBottomSheet(entityInfo)
+                    SeasonBoyPreviewItem(entityInfo)
                 } else {
-                    NonSeasonBoyPreviewItemBottomSheet(entityInfo, onSubscribe)
+                    NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
                 }
                 Space(12.dp)
                 Column {
@@ -188,7 +190,7 @@ private fun PreviewItemBottomSheet(
 }
 
 @Composable
-private fun SeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo) {
+private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     val formatter = rememberPhoneNumberFormatter()
     Text(
         text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
@@ -201,9 +203,9 @@ private fun SeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo) {
 }
 
 @Composable
-private fun NonSeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo, onSubscribe: () -> Unit) {
+fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
     Text(
-        text = entityInfo.city,
+        text = previewItem.city,
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
@@ -220,9 +222,9 @@ private fun NonSeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo, onSubscri
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            GeoLocation(entityInfo.location, isBold = true)
+            GeoLocation(previewItem.location, isBold = true)
             Text(
-                text = entityInfo.distance,
+                text = previewItem.distance,
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
@@ -234,36 +236,18 @@ private fun NonSeasonBoyPreviewItemBottomSheet(entityInfo: EntityInfo, onSubscri
                 color = ConstColors.lightBlue,
                 modifier = Modifier.clickable {
                     activity.openMaps(
-                        entityInfo.sellerGeoPoints.latitude,
-                        entityInfo.sellerGeoPoints.longitude
+                        previewItem.geo.latitude,
+                        previewItem.geo.longitude
                     )
                 },
             )
-            if (entityInfo.subscriptionData == null) {
+            if (previewItem is EntityInfo && previewItem.subscriptionData == null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DataWithLabel(label: Int, data: String) {
-    Row {
-        Text(
-            text = "${stringResource(id = label)}:",
-            fontSize = 14.sp,
-            color = ConstColors.gray,
-        )
-        Space(4.dp)
-        Text(
-            text = data,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.W600,
-            color = MaterialTheme.colors.background,
-        )
     }
 }
 

@@ -120,4 +120,9 @@
     <string name="choose_payment_method">Before you subscribe to Pharmacy Doctors please choose the payment method</string>
     <string name="enter_number_of_days">Enter number of days</string>
     <string name="thank_you_for_request">Thank you for your request!</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="retailer_added_template">You have added %s to your list of Retailers successfully</string>
+    <string name="retailers_list">Retailers List</string>
+    <string name="confirm_info">Confirm if the information above is correct</string>
+    <string name="add_retailer">Add retailer</string>
 </resources>

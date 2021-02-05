@@ -61,7 +61,7 @@ fun ManagementScreen(scope: ManagementScope.User) {
     if (scope is ManagementScope.User.Retailer && scope.canAdd) {
         Box(modifier = Modifier.fillMaxSize()) {
             FloatingActionButton(
-                onClick = { scope.createRetailer() },
+                onClick = { scope.requestCreateRetailer() },
                 backgroundColor = ConstColors.yellow,
                 contentColor = MaterialTheme.colors.background,
                 content = { Icon(imageVector = Icons.Default.Add) },

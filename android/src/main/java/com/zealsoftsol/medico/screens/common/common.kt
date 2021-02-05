@@ -183,7 +183,7 @@ fun AlertButton(
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
     ) {
         Text(
-            text = text,
+            text = text.toUpperCase(),
             style = MaterialTheme.typography.subtitle2,
         )
     }
@@ -209,7 +209,7 @@ fun Scope.Host.showErrorAlert() {
 }
 
 @Composable
-fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { dismissNotification() }) {
+fun <T : WithNotifications> T.showNotificationAlert() {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
         val titleResourceId = AmbientContext.current.runCatching {
@@ -223,12 +223,12 @@ fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { di
                 title = stringResource(id = titleResourceId),
                 text = if (bodyResourceId != 0) stringResource(id = bodyResourceId) else null,
                 canDismissOnTapOutside = it.isDismissible,
-                onDismiss = onDismiss
+                onDismiss = { dismissNotification() },
             )
         } else {
             Notification(
                 title = stringResource(id = titleResourceId),
-                onDismiss = onDismiss,
+                onDismiss = { dismissNotification() },
                 notification = it,
             )
         }
@@ -375,4 +375,22 @@ object NoOpIndication : Indication {
     }
 
     override fun createInstance() = NoOpIndicationInstance
+}
+
+@Composable
+fun DataWithLabel(label: Int, data: String) {
+    Row {
+        Text(
+            text = "${stringResource(id = label)}:",
+            fontSize = 14.sp,
+            color = ConstColors.gray,
+        )
+        Space(4.dp)
+        Text(
+            text = data,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.W600,
+            color = MaterialTheme.colors.background,
+        )
+    }
 }

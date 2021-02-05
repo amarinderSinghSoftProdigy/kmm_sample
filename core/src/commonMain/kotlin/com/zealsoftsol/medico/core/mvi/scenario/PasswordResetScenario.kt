@@ -25,7 +25,7 @@ class PasswordResetScenario : Scenario() {
             it.changePassword("Qwerty12345")
             pause()
             require(it.notifications.value == PasswordScope.EnterNew.PasswordChangedSuccessfully)
-            it.finishPasswordFlow()
+            it.dismissNotification()
         }
         pause()
         withScope<LogInScope> {}
@@ -52,7 +52,7 @@ class PasswordResetScenario : Scenario() {
             it.changePassword("Qwerty12345")
             pause()
             require(it.notifications.value == PasswordScope.EnterNew.PasswordChangedSuccessfully)
-            it.finishPasswordFlow()
+            it.dismissNotification()
         }
         pause()
         withScope<LogInScope> {}

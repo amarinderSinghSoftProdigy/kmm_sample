@@ -49,7 +49,7 @@ internal class PasswordEventDelegate(
             it.dismissNotification()
             withProgress {
                 if (userRepo.getUserAccess() == UserRepo.UserAccess.NO_ACCESS || userRepo.logout()) {
-                    dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+                    dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
                 } else {
                     setHostError(ErrorCode())

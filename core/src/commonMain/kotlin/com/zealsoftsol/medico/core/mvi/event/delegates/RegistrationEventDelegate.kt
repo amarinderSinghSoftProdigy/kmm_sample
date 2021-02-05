@@ -8,6 +8,8 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -38,6 +40,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Skip -> skipUploadDocuments()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
         is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
+        is Event.Action.Registration.ConfirmCreateRetailer -> confirmCreateRetailer()
     }
 
     private fun selectUserType(userType: UserType) {
@@ -185,12 +188,6 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun signUp() {
-        if (userRepo.getUserAccess() == UserRepo.UserAccess.FULL_ACCESS) {
-            TODO("handle creation of user by signed in user")
-            // change tokens in sign up
-            // extra request for linkage
-            // send preview action to get into managemnt delegate
-        }
         val documents = navigator.searchQueuesFor<SignUpScope.LegalDocuments>()
         val (error, isSuccess) = navigator.withProgress {
             when (documents) {
@@ -209,13 +206,42 @@ internal class RegistrationEventDelegate(
                 else -> Response.Wrapped(ErrorCode(), false)
             }
         }
-        if (isSuccess) {
-            navigator.dropScope(Navigator.DropStrategy.TO_ROOT, updateDataSource = false)
-            navigator.setScope(
-                WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
-            )
+        if (userRepo.getUserAccess() == UserRepo.UserAccess.FULL_ACCESS) {
+            if (isSuccess) {
+                val docs = requireNotNull(documents)
+                EventCollector.sendEvent(
+                    Event.Transition.PreviewUser(
+                        docs.registrationStep1,
+                        docs.registrationStep2,
+                        docs.registrationStep3,
+                    )
+                )
+            } else {
+                navigator.dropScope(Navigator.DropStrategy.To(ManagementScope.User.Retailer::class))
+                navigator.setHostError(error ?: ErrorCode())
+            }
         } else {
-            dropToLogin(error)
+            if (isSuccess) {
+                navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
+                navigator.setScope(
+                    WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
+                )
+            } else {
+                dropToLogin(error)
+            }
+        }
+    }
+
+    private suspend fun confirmCreateRetailer() {
+        navigator.withScope<PreviewUserScope> {
+            val (error, isSuccess) = withProgress {
+                userRepo.linkUserToRetailer(it.email, it.phoneNumber)
+            }
+            if (isSuccess) {
+                it.notifications.value = PreviewUserScope.Congratulations(it.traderName)
+            } else {
+                setHostError(error ?: ErrorCode())
+            }
         }
     }
 
@@ -234,7 +260,7 @@ internal class RegistrationEventDelegate(
     }
 
     private fun dropToLogin(errorCode: ErrorCode?) {
-        navigator.dropScope(Navigator.DropStrategy.TO_ROOT)
+        navigator.dropScope(Navigator.DropStrategy.ToRoot)
         navigator.setHostError(errorCode)
     }
 
