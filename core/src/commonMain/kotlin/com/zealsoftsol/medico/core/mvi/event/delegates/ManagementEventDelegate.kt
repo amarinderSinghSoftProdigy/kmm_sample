@@ -90,7 +90,6 @@ internal class ManagementEventDelegate(
             it.notifications.value = if (paymentMethod == PaymentMethod.CREDIT) {
                 ManagementScope.ChooseNumberOfDays()
             } else {
-                it.dismissNotification()
                 subscribe()
                 ManagementScope.ThankYou
             }
@@ -100,7 +99,6 @@ internal class ManagementEventDelegate(
     private suspend fun chooseNumberOfDays(days: Int) {
         navigator.withScope<ManagementScope.User.Stockist> {
             subscribeRequest = requireNotNull(subscribeRequest).copy(noOfCreditDays = days)
-            it.dismissNotification()
             subscribe()
             it.notifications.value = ManagementScope.ThankYou
         }
