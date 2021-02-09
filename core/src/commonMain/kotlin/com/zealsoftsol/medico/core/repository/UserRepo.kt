@@ -236,6 +236,10 @@ class UserRepo(
         )
     }
 
+    suspend fun verifyRetailer(registration3: UserRegistration3): Response.Wrapped<UserValidation3> {
+        return networkSignUpScope.verifyRetailerTraderDetails(registration3)
+    }
+
     suspend fun createRetailer(
         registration2: UserRegistration2,
         registration3: UserRegistration3,

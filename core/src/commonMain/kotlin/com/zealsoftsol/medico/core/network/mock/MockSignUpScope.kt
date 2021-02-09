@@ -62,4 +62,9 @@ class MockSignUpScope : NetworkScope.SignUp {
         mockResponse {
             Response.Wrapped(null, true)
         }
+
+    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
+        mockResponse {
+            Response.Wrapped(UserValidation3(), true)
+        }
 }

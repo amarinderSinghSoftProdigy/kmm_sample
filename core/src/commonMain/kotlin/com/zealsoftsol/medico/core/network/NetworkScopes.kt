@@ -48,6 +48,7 @@ interface NetworkScope {
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
         suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
+        suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
         suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode>
     }
 

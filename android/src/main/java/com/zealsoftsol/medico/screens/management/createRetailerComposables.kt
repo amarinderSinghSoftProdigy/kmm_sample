@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -72,44 +73,54 @@ private fun TraderDetails(
     scrollState: ScrollState
 ) {
     val registration = scope.registration.flow.collectAsState()
+    val validation = scope.validation.flow.collectAsState()
     val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()
 
     Text(
         text = stringResource(id = R.string.add_retailer),
         color = MaterialTheme.colors.background,
+        fontWeight = FontWeight.W600,
         fontSize = 17.sp,
     )
     Space(dp = 12.dp)
-    InputField(
-        autoScrollOnFocus = scrollState,
-        hint = stringResource(id = R.string.trade_name),
-        text = registration.value.tradeName,
-        onValueChange = { scope.changeTradeName(it) },
-    )
+    InputWithError(errorText = validation.value?.tradeName) {
+        InputField(
+            autoScrollOnFocus = scrollState,
+            hint = stringResource(id = R.string.trade_name),
+            text = registration.value.tradeName,
+            onValueChange = { scope.changeTradeName(it) },
+        )
+    }
     Space(dp = 12.dp)
-    InputField(
-        autoScrollOnFocus = scrollState,
-        hint = stringResource(id = R.string.gstin),
-        text = registration.value.gstin,
-        isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
-        keyboardOptions = KeyboardOptions.Default
-            .copy(capitalization = KeyboardCapitalization.Characters),
-        onValueChange = { scope.changeGstin(it) },
-    )
+    InputWithError(errorText = validation.value?.gstin) {
+        InputField(
+            autoScrollOnFocus = scrollState,
+            hint = stringResource(id = R.string.gstin),
+            text = registration.value.gstin,
+            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
+            keyboardOptions = KeyboardOptions.Default
+                .copy(capitalization = KeyboardCapitalization.Characters),
+            onValueChange = { scope.changeGstin(it) },
+        )
+    }
     Space(dp = 12.dp)
-    InputField(
-        autoScrollOnFocus = scrollState,
-        hint = stringResource(id = R.string.drug_license_1),
-        text = registration.value.drugLicenseNo1,
-        onValueChange = { scope.changeDrugLicense1(it) },
-    )
+    InputWithError(errorText = validation.value?.drugLicenseNo1) {
+        InputField(
+            autoScrollOnFocus = scrollState,
+            hint = stringResource(id = R.string.drug_license_1),
+            text = registration.value.drugLicenseNo1,
+            onValueChange = { scope.changeDrugLicense1(it) },
+        )
+    }
     Space(dp = 12.dp)
-    InputField(
-        autoScrollOnFocus = scrollState,
-        hint = stringResource(id = R.string.drug_license_2),
-        text = registration.value.drugLicenseNo2,
-        onValueChange = { scope.changeDrugLicense2(it) },
-    )
+    InputWithError(errorText = validation.value?.drugLicenseNo2) {
+        InputField(
+            autoScrollOnFocus = scrollState,
+            hint = stringResource(id = R.string.drug_license_2),
+            text = registration.value.drugLicenseNo2,
+            onValueChange = { scope.changeDrugLicense2(it) },
+        )
+    }
     Space(dp = 12.dp)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(
@@ -135,6 +146,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     Text(
         text = stringResource(id = R.string.add_retailer_address),
         color = MaterialTheme.colors.background,
+        fontWeight = FontWeight.W600,
         fontSize = 17.sp,
     )
     Space(dp = 12.dp)

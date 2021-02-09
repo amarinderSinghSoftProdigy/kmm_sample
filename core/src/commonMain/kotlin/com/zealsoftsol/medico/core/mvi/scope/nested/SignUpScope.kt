@@ -160,7 +160,7 @@ sealed class SignUpScope(titleId: String) :
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
             override val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
-            val validation: DataSource<UserValidation3?> = DataSource(null),
+            override val validation: DataSource<UserValidation3?> = DataSource(null),
         ) : Details("trader_details", registrationStep1, registrationStep2),
             TraderDetailsComponent {
 

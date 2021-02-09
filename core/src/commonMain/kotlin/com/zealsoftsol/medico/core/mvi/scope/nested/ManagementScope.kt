@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserValidation3
 
 sealed class ManagementScope(
     icon: ScopeIcon = ScopeIcon.HAMBURGER,
@@ -88,7 +89,8 @@ sealed class ManagementScope(
 
         class TraderDetails(
             val isTermsAccepted: DataSource<Boolean> = DataSource(false),
-            override val registration: DataSource<UserRegistration3>
+            override val registration: DataSource<UserRegistration3>,
+            override val validation: DataSource<UserValidation3?> = DataSource(null),
         ) : AddRetailer(),
             TraderDetailsComponent {
 
@@ -101,7 +103,8 @@ sealed class ManagementScope(
                 checkData()
             }
 
-            override fun next() = EventCollector.sendEvent(Event.Transition.AddRetailerAddress)
+            override fun next() =
+                EventCollector.sendEvent(Event.Action.Management.VerifyRetailerTraderDetails)
         }
 
         class Address(

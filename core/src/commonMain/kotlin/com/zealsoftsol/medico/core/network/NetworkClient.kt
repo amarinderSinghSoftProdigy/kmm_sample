@@ -235,6 +235,14 @@ class NetworkClient(
             }.getWrappedError()
         }
 
+    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
+        ktorDispatcher {
+            client.post<Response.Body<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/sbret/verify") {
+                withMainToken()
+                jsonBody(userRegistration3)
+            }.getWrappedValidation()
+        }
+
     override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
             client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/sbret/add") {

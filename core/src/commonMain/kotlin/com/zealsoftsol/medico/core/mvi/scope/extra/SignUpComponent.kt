@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserValidation3
 
 interface AddressComponent : Scopable {
     val locationData: DataSource<LocationData?>
@@ -60,6 +61,7 @@ interface AddressComponent : Scopable {
 
 interface TraderDetailsComponent : Scopable {
     val registration: DataSource<UserRegistration3>
+    val validation: DataSource<UserValidation3?>
 
     fun onDataValid(isValid: Boolean)
 
