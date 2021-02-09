@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -36,6 +37,7 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
         is Event.Action.Management.ChoosePayment -> choosePayment(event.paymentMethod)
         is Event.Action.Management.ChooseNumberOfDays -> chooseNumberOfDays(event.days)
+        is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
     }
 
     private suspend fun loadUserManagement() {
@@ -118,6 +120,18 @@ internal class ManagementEventDelegate(
                 } else {
                     setHostError(error ?: ErrorCode())
                 }
+            }
+        }
+    }
+
+    private suspend fun verifyRetailerTraderDetails() {
+        navigator.withScope<ManagementScope.AddRetailer.TraderDetails> {
+            val (validation, isSuccess) = withProgress {
+                userRepo.verifyRetailer(it.registration.value)
+            }
+            it.validation.value = validation
+            if (isSuccess) {
+                EventCollector.sendEvent(Event.Transition.AddRetailerAddress)
             }
         }
     }
