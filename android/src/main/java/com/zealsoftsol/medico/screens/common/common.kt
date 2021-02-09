@@ -25,10 +25,14 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -393,4 +397,54 @@ fun DataWithLabel(label: Int, data: String) {
             color = MaterialTheme.colors.background,
         )
     }
+}
+
+@Composable
+fun LocationSelector(
+    chooseRemember: Any?,
+    chosenValue: String?,
+    defaultName: String,
+    dropDownItems: List<String>,
+    onSelected: (String) -> Unit,
+) {
+    val choosing = remember(chooseRemember) { mutableStateOf(false) }
+    DropdownMenu(
+        toggle = {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .background(color = Color.White)
+                    .clickable(onClick = {
+                        if (dropDownItems.isNotEmpty()) {
+                            choosing.value = true
+                        }
+                    })
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
+            ) {
+                Text(
+                    text = chosenValue ?: defaultName,
+                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    tint = ConstColors.gray,
+                )
+            }
+        },
+        expanded = choosing.value,
+        onDismissRequest = { choosing.value = false },
+        dropdownContent = {
+            dropDownItems.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        choosing.value = false
+                        onSelected(it)
+                    },
+                    content = { Text(it) },
+                )
+            }
+        }
+    )
 }

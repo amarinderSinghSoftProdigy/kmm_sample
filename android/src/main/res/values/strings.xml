@@ -124,5 +124,7 @@
     <string name="retailer_added_template">You have added %s to your list of Retailers successfully</string>
     <string name="retailers_list">Retailers List</string>
     <string name="confirm_info">Confirm if the information above is correct</string>
-    <string name="add_retailer">Add retailer</string>
+    <string name="add_retailer">Add Retailer</string>
+    <string name="add_retailer_address">Add Retailer\'s Address</string>
+    <string name="consent_terms">I consest for Terms and Conditions</string>
 </resources>
