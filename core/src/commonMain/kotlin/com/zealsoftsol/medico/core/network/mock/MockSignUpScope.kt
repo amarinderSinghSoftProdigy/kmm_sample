@@ -3,9 +3,9 @@ package com.zealsoftsol.medico.core.network.mock
 import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
@@ -58,7 +58,7 @@ class MockSignUpScope : NetworkScope.SignUp {
             Response.Wrapped(null, true)
         }
 
-    override suspend fun linkCreatedRetailerWithSeasonBoy(linkData: LinkData): Response.Wrapped<ErrorCode> =
+    override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode> =
         mockResponse {
             Response.Wrapped(null, true)
         }

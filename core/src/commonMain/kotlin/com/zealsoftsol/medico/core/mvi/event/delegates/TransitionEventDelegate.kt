@@ -14,7 +14,8 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 
 internal class TransitionEventDelegate(
@@ -68,10 +69,18 @@ internal class TransitionEventDelegate(
                     }
                 )
                 is Event.Transition.RequestCreateRetailer -> setScope(
-                    SignUpScope.PersonalData(
-                        registration = DataSource(UserRegistration1(userType = UserType.RETAILER.serverValue))
+                    ManagementScope.AddRetailer.TraderDetails(
+                        registration = DataSource(UserRegistration3())
                     )
                 )
+                is Event.Transition.AddRetailerAddress -> withScope<ManagementScope.AddRetailer.TraderDetails> {
+                    setScope(
+                        ManagementScope.AddRetailer.Address(
+                            it.registration.value,
+                            DataSource(UserRegistration2()),
+                        )
+                    )
+                }
                 is Event.Transition.PreviewUser -> {
                     dropScope(
                         Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
@@ -79,7 +88,6 @@ internal class TransitionEventDelegate(
                     )
                     setScope(
                         PreviewUserScope(
-                            event.registration1,
                             event.registration2,
                             event.registration3
                         )

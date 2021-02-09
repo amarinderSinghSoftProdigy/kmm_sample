@@ -25,17 +25,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,6 +55,7 @@ import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
+import com.zealsoftsol.medico.screens.common.LocationSelector
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
@@ -437,56 +432,6 @@ fun AadhaarInputFields(
             onValueChange = onCodeChange,
         )
     }
-}
-
-@Composable
-private fun LocationSelector(
-    chooseRemember: Any?,
-    chosenValue: String?,
-    defaultName: String,
-    dropDownItems: List<String>,
-    onSelected: (String) -> Unit,
-) {
-    val choosing = remember(chooseRemember) { mutableStateOf(false) }
-    DropdownMenu(
-        toggle = {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .background(color = Color.White)
-                    .clickable(onClick = {
-                        if (dropDownItems.isNotEmpty()) {
-                            choosing.value = true
-                        }
-                    })
-                    .padding(vertical = 16.dp, horizontal = 16.dp)
-            ) {
-                Text(
-                    text = chosenValue ?: defaultName,
-                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
-                    fontSize = 14.sp,
-                    modifier = Modifier.align(Alignment.CenterStart),
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    tint = ConstColors.gray,
-                )
-            }
-        },
-        expanded = choosing.value,
-        onDismissRequest = { choosing.value = false },
-        dropdownContent = {
-            dropDownItems.forEach {
-                DropdownMenuItem(
-                    onClick = {
-                        choosing.value = false
-                        onSelected(it)
-                    },
-                    content = { Text(it) },
-                )
-            }
-        }
-    )
 }
 
 @Composable

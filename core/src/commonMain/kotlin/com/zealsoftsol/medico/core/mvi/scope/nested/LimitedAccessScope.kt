@@ -8,7 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
@@ -29,7 +29,7 @@ sealed class LimitedAccessScope : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon
         override val user: ReadOnlyDataSource<User>,
         override val aadhaarData: DataSource<AadhaarData>,
         override val isVerified: DataSource<Boolean>,
-    ) : LimitedAccessScope(), AadhaarDataHolder {
+    ) : LimitedAccessScope(), AadhaarDataComponent {
 
         override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
         override val isSeasonBoy = true
