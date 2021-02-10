@@ -74,7 +74,8 @@ class NetworkClient(
     NetworkScope.Customer,
     NetworkScope.Search,
     NetworkScope.Product,
-    NetworkScope.Management {
+    NetworkScope.Management,
+    NetworkScope.Notification {
 
     init {
         "USING NetworkClient".logIt()
@@ -319,6 +320,13 @@ class NetworkClient(
             }.getWrappedError()
         }
 
+    override suspend fun sendFirebaseToken(token: String): Boolean = ktorDispatcher {
+        client.post<Response.Status>("$NOTIFICATIONS_URL/api/v1/notifications/mobile/token") {
+            withMainToken()
+            jsonBody(mapOf("token" to token))
+        }.isSuccess
+    }
+
     // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
@@ -419,6 +427,7 @@ class NetworkClient(
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
         private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
         private const val B2B_URL = "https://develop-api-b2b.medicostores.com"
+        private const val NOTIFICATION_URL = "https://develop-api-notifications.medicostores.com"
     }
 }
 
