@@ -74,7 +74,8 @@ class NetworkClient(
     NetworkScope.Customer,
     NetworkScope.Search,
     NetworkScope.Product,
-    NetworkScope.Management {
+    NetworkScope.Management,
+    NetworkScope.Notification {
 
     init {
         "USING NetworkClient".logIt()
@@ -318,6 +319,13 @@ class NetworkClient(
                 jsonBody(subscribeRequest)
             }.getWrappedError()
         }
+
+    override suspend fun sendFirebaseToken(token: String): Boolean = ktorDispatcher {
+        client.post<Response.Status>("$NOTIFICATIONS_URL/api/v1/notifications/mobile/token") {
+            withMainToken()
+            jsonBody(mapOf("token" to token))
+        }.isSuccess
+    }
 
     // Utils
 

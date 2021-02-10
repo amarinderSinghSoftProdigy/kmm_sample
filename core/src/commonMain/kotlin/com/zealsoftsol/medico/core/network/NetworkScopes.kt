@@ -88,4 +88,8 @@ interface NetworkScope {
 
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
     }
+
+    interface Notification {
+        suspend fun sendFirebaseToken(token: String): Boolean
+    }
 }

@@ -207,6 +207,7 @@ internal class RegistrationEventDelegate(
             }
         }
         if (isSuccess) {
+            userRepo.sendFirebaseToken()
             navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
             navigator.setScope(
                 WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })

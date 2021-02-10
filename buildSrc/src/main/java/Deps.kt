@@ -84,7 +84,7 @@ object Deps {
     object Firebase {
         const val BOM = "com.google.firebase:firebase-bom:26.0.0"
         const val analytics = "com.google.firebase:firebase-analytics-ktx"
-        const val messaging = "com.google.firebase:firebase-messaging:20.2.0"
+        const val messaging = "com.google.firebase:firebase-messaging-ktx"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
         const val perfomance = "com.google.firebase:firebase-perf:17.0.0"
         const val remoteConfig = "com.google.firebase:firebase-config:17.0.0"
