@@ -10,10 +10,10 @@ import core
 import SwiftUI
 
 struct UserManagementScreen: View {
-    let scope: ManagementScopeUser
+    let scope: ManagementScope.User
     
     @ObservedObject var userSearchText: SwiftDataSource<NSString>
-    @ObservedObject var activeTab: SwiftDataSource<ManagementScopeTab>
+    @ObservedObject var activeTab: SwiftDataSource<ManagementScope.Tab>
     @ObservedObject var users: SwiftDataSource<NSArray>
 
     var body: some View {
@@ -23,22 +23,22 @@ struct UserManagementScreen: View {
         
         switch self.scope {
         
-        case is ManagementScopeUser.Stockist:
+        case is ManagementScope.UserStockist:
             imageName = "Stockist"
             searchBarPlaceholderKey = "stockists"
             screenName = "Stockist"
         
-        case is ManagementScopeUser.Retailer:
+        case is ManagementScope.UserRetailer:
             imageName = "Retailer"
             searchBarPlaceholderKey = "retailers"
             screenName = "Retailer"
             
-        case is ManagementScopeUser.Hospital:
+        case is ManagementScope.UserHospital:
             imageName = "Hospital"
             searchBarPlaceholderKey = "hospitals"
             screenName = "Hospital"
             
-        case is ManagementScopeUser.SeasonBoy:
+        case is ManagementScope.UserSeasonBoy:
             imageName = "SeasonBoy"
             searchBarPlaceholderKey = "seasonBoys"
             screenName = "SeasonBoy"
@@ -51,7 +51,7 @@ struct UserManagementScreen: View {
             getGeneralScreen(withSearchImageName: imageName,
                              withSearchBarPlaceholderKey: searchBarPlaceholderKey)
                 .screenLogger(withScreenName: "ManagementScopeUser.\(screenName)",
-                              withScreenClass: ManagementScopeUser.self)
+                              withScreenClass: UserManagementScreen.self)
         )
         
         if let notificationsScope = self.scope as? CommonScopeWithNotifications {
@@ -64,7 +64,7 @@ struct UserManagementScreen: View {
         return view
     }
     
-    init(scope: ManagementScopeUser) {
+    init(scope: ManagementScope.User) {
         self.scope = scope
         
         self.userSearchText = SwiftDataSource(dataSource: scope.searchText)
@@ -83,7 +83,7 @@ struct UserManagementScreen: View {
         })
         
         let image = Image(imageName).resizable()
-        let isSeasonBoy = self.scope is ManagementScopeUser.SeasonBoy
+        let isSeasonBoy = self.scope is ManagementScope.UserSeasonBoy
 
         return AnyView(
             ZStack(alignment: .bottomTrailing) {
@@ -124,7 +124,7 @@ struct UserManagementScreen: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 32)
                 
-                if let retailersManagementScope = self.scope as? ManagementScopeUser.Retailer,
+                if let retailersManagementScope = self.scope as? ManagementScope.UserRetailer,
                    retailersManagementScope.canAdd {
                     Button(action: { retailersManagementScope.requestCreateRetailer() }) {
                         Image(systemName: "plus")
@@ -140,7 +140,7 @@ struct UserManagementScreen: View {
     
     private var singleTabView: some View {
         guard let activeTab = self.activeTab.value else { return AnyView(EmptyView()) }
-            
+        
         return AnyView(
             VStack {
                 LocalizedText(localizationKey: activeTab.stringId,
@@ -196,7 +196,7 @@ struct UserManagementScreen: View {
                                         fontSize: 16,
                                         multilineTextAlignment: .leading)
                         
-                        SmallAddresView(location: user.location, pincode: user.pincode)
+                        SmallAddressView(location: user.location)
                     }
                     
                     Spacer()
@@ -244,15 +244,14 @@ struct UserManagementScreen: View {
     }
 }
 
-struct SmallAddresView: View {
+struct SmallAddressView: View {
     let location: String
-    let pincode: String
     
     var body: some View {
         HStack(spacing: 5) {
             Image("SmallAddress")
             
-            Text("\(location) \(pincode)")
+            Text(location)
                 .medicoText(textWeight: .bold,
                             color: .grey3,
                             multilineTextAlignment: .leading)
@@ -260,7 +259,7 @@ struct SmallAddresView: View {
     }
 }
 
-extension ManagementScopeTab {
+extension ManagementScope.Tab {
     var listName: ListScrollData.Name? {
         switch self {
         

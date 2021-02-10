@@ -10,7 +10,7 @@ import core
 import SwiftUI
 
 // MARK: Errors
-struct ErrorAlert: ViewModifier {
+struct ErrorAlert: View {
     let errorsHandler: Scope.Host
     
     @ObservedObject var error: SwiftDataSource<DataErrorCode>
@@ -21,37 +21,30 @@ struct ErrorAlert: ViewModifier {
         self.error = SwiftDataSource(dataSource: errorsHandler.alertError)
     }
     
-    func body(content: Content) -> some View {
+    var body: some View {
         ZStack {
-            content
-            
-            ZStack {
-                if let error = self.error.value {
-                    let dismissAction = { errorsHandler.dismissAlertError() }
-                    
-                    CustomAlert<AnyView>(titleKey: error.title,
-                                         descriptionKey: error.body,
-                                         button: .standard(action: dismissAction),
-                                         dismissAction: dismissAction)
-                }
+            if let error = self.error.value {
+                let dismissAction = { errorsHandler.dismissAlertError() }
+                
+                CustomAlert<AnyView>(titleKey: error.title,
+                                     descriptionKey: error.body,
+                                     button: .standard(action: dismissAction),
+                                     dismissAction: dismissAction)
             }
-            .animation(.default)
         }
+        .animation(.default)
     }
 }
 
 // MARK: Notifications
 class NotificationObservable: ObservableObject {
-    var data: Data?
+    @Published var data: Data?
     
     class Data {
         let notificationsHandler: CommonScopeWithNotifications
-        let onDismiss: (() -> ())?
         
-        init(notificationsHandler: CommonScopeWithNotifications,
-             onDismiss: (() -> ())? = nil) {
+        init(notificationsHandler: CommonScopeWithNotifications) {
             self.notificationsHandler = notificationsHandler
-            self.onDismiss = onDismiss
         }
     }
 }
@@ -72,7 +65,7 @@ struct NotificationAlertSender: ViewModifier {
     }
 }
 
-struct NotificationAlert: ViewModifier {
+struct NotificationAlert: View {
     let notificationsHandler: CommonScopeWithNotifications
     
     @ObservedObject var notification: SwiftDataSource<ScopeNotification>
@@ -83,168 +76,40 @@ struct NotificationAlert: ViewModifier {
         self.notification = SwiftDataSource(dataSource: notificationsHandler.notifications)
     }
     
-    func body(content: Content) -> some View {
+    var body: some View {
         ZStack {
-            content
-            
-            ZStack {
-                if let notification = self.notification.value {
-                    let dismissAction = { _ = notificationsHandler.dismissNotification() }
-                    
-                    if notification.isSimple {
-                        CustomAlert<AnyView>(titleKey: notification.title,
-                                             descriptionKey: notification.body,
-                                             button: .standard(action: dismissAction),
-                                             dismissAction: notification.isDismissible ? dismissAction : nil)
-                    }
-                    else {
-                        ComplexNotificationAlert(notification: notification,
-                                                 dismissAction: notification.isDismissible ? dismissAction : nil)
-                    }
+            if let notification = self.notification.value {
+                let dismissAction: (() -> ())? = notification.isDismissible ?
+                    { _ = notificationsHandler.dismissNotification() } : nil
+                
+                if notification.isSimple {
+                    SimpleNotificationAlert(notification: notification,
+                                            dismissAction: dismissAction)
+                }
+                else {
+                    ComplexNotificationAlert(notification: notification,
+                                             dismissAction: dismissAction)
                 }
             }
-            .animation(.default)
         }
+        .animation(.default)
     }
 }
 
-private struct ComplexNotificationAlert: View {
+struct SimpleNotificationAlert: View {
     let notification: ScopeNotification
     let dismissAction: (() -> ())?
     
     var body: some View {
-        let titleKey: String
-        let button: CustomAlert<AnyView>.AlertButton
-        let body: AnyView
-        var dismissAction = self.dismissAction
-
-        switch self.notification {
-
-        case let notification as ManagementScopeChoosePaymentMethod:
-            titleKey = "choose_payment_method_description"
-            button = .init(text: "save",
-                           action: { notification.sendRequest() })
-            body = AnyView(ManagementScopeChoosePaymentMethodView(notification: notification))
-
-        case let notification as ManagementScopeChooseNumberOfDays:
-            titleKey = "edit_number_of_days"
-            button = .init(text: "save",
-                           action: { notification.save() })
-            body = AnyView(ManagementScopeChooseNumberOfDaysView(notification: notification))
-            
-            if dismissAction == nil { dismissAction = { self.hideKeyboard() } }
-
-        default:
-            return AnyView(EmptyView())
-        }
-
-        return AnyView(
-            CustomAlert(titleKey: titleKey,
-                        button: button,
-                        dismissAction: dismissAction) {
-                body
-            }
-        )
-    }
-    
-    private struct ManagementScopeChoosePaymentMethodView: View {
-        let notification: ManagementScopeChoosePaymentMethod
-        
-        @ObservedObject var paymentMethod: SwiftDataSource<DataPaymentMethod>
-        
-        var body: some View {
-            Group {
-                getOptionView(for: .credit)
-                
-                getOptionView(for: .cash)
-            }
-        }
-        
-        init(notification: ManagementScopeChoosePaymentMethod) {
-            self.notification = notification
-            
-            self.paymentMethod = SwiftDataSource(dataSource: notification.paymentMethod)
-        }
-        
-        private func getOptionView(for option: DataPaymentMethod) -> some View {
-            VStack(spacing: 0) {
-                CustomAlert<AnyView>.Separator()
-                
-                Button(action: { notification.changePaymentMethod(paymentMethod: option) }) {
-                    HStack {
-                        LocalizedText(localizationKey: getLocalizationKey(for: option),
-                                      fontSize: 17,
-                                      color: .black)
-
-                        Spacer()
-
-                        if paymentMethod.value == option {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(appColor: .lightBlue)
-                        }
-                    }
-                    .padding(.horizontal, 17)
-                }
-                .frame(height: 44)
-            }
-        }
-        
-        private func getLocalizationKey(for option: DataPaymentMethod) -> String {
-            switch option {
-            case .cash:
-                return "cash_on_delivery"
-                
-            case .credit:
-                return "credit"
-                
-            default:
-                return ""
-            }
-        }
-    }
-    
-    private struct ManagementScopeChooseNumberOfDaysView: View {
-        let notification: ManagementScopeChooseNumberOfDays
-        
-        @ObservedObject var daysNumber: SwiftDataSource<KotlinInt>
-        
-        var body: some View {
-            let text: Binding<String> = Binding(
-                get: {
-                    if let days = self.daysNumber.value {
-                        return "\(days)"
-                    }
-                    
-                    return ""
-                },
-                set: {
-                    if let days = Int32($0) {
-                        notification.changeDays(days: days)
-                    }
-                })
-            
-            CustomPlaceholderTextField(text: text) {
-                LocalizedText(localizationKey: "0",
-                              fontSize: 13,
-                              color: .placeholderGrey)
-            }
-            .keyboardType(.numberPad)
-            .padding(4)
-            .frame(height: 25)
-            .background(AppColor.white.color.cornerRadius(5))
-            .padding([.horizontal, .bottom], 16)
-        }
-        
-        init(notification: ManagementScopeChooseNumberOfDays) {
-            self.notification = notification
-
-            self.daysNumber = SwiftDataSource(dataSource: notification.days)
-        }
+        CustomAlert<AnyView>(titleKey: notification.title,
+                             descriptionKey: notification.body,
+                             button: .standard(action: dismissAction),
+                             dismissAction: dismissAction)
     }
 }
 
 // MARK: Custom Alert
-private struct CustomAlert<Content: View>: View {
+struct CustomAlert<Content: View>: View {
     let titleKey: String
     let descriptionKey: String?
     

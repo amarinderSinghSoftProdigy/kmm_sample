@@ -293,3 +293,15 @@ struct TableViewCell: View {
         }
     }
 }
+
+struct CheckBoxView: View {
+    @Binding var checked: Bool
+
+    var body: some View {
+        Button(action: { self.checked.toggle() }) {
+            Image(systemName: checked ? "checkmark.circle.fill" : "circle")
+                .foregroundColor(appColor: checked ? .lightBlue : .grey1)
+                .frame(width: 25, height: 25)
+        }
+    }
+}

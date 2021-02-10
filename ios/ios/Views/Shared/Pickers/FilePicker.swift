@@ -98,7 +98,7 @@ struct FilePicker: ViewModifier {
         
         let iterator = fileTypes.iterator()
         while iterator.hasNext() {
-            guard let fileType = iterator.next() as? DataFileType,
+            guard let fileType = iterator.next_() as? DataFileType,
                   fileType.isMandatory,
                   let uti = fileType.getUniformTypeIdentifier() else { continue }
             

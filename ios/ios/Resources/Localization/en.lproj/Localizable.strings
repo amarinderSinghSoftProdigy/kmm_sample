@@ -194,3 +194,12 @@
 "edit_credit" = "Edit Credit";
 "accept" = "Accept";
 "decline" = "Decline";
+
+// MARK: Add Retailer
+"add_retailer" = "Add Retailer";
+"i_consest_for_terms_and_conditions" = "I consest for Terms and Conditions";
+"add_retailer_address" = "Add Retailer’s Address";
+"confirm_the_information" = "Confirm if the information above is correct";
+"congratulations" = "Congratulations";
+"retailer_added_template %@" = "You have added %@ to your list of Retailes successfully";
+"retailers_list" = "Retailers List";

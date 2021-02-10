@@ -33,8 +33,8 @@ struct LimitedAppAccessScreen: View {
             welcomeOption = WelcomeOption.Thanks()
         }
         else {
-            if let aadhaarDataHolder = self.scope as? AadhaarDataHolder {
-                welcomeOption = WelcomeOption.Upload.AadhaarCard(aadhaarDataHolder: aadhaarDataHolder,
+            if let aadhaarDataComponent = self.scope as? AadhaarDataComponent {
+                welcomeOption = WelcomeOption.Upload.AadhaarCard(aadhaarDataComponent: aadhaarDataComponent,
                                                                  onUploadClick: { scope.showBottomSheet() })
             }
             else {

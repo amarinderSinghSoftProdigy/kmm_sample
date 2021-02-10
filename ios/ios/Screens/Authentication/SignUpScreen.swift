@@ -93,20 +93,25 @@ struct ProgressViewModifier: ViewModifier {
 }
 
 struct SignUpButton: ViewModifier {
-    @State private var padding: CGFloat = 0
+    @State private var buttonPadding: CGFloat = 0
     
     let isEnabled: Bool
     let buttonTextKey: String
+    
+    let padding: CGFloat
     
     let action: () -> ()
     let skipButtonAction: (() -> ())?
     
     init(isEnabled: Bool,
          buttonTextKey: String = "next",
+         padding: CGFloat = 16,
          skipButtonAction: (() -> ())? = nil,
          action: @escaping () -> ()) {
         self.isEnabled = isEnabled
         self.buttonTextKey = buttonTextKey
+        
+        self.padding = padding
         
         self.action = action
         self.skipButtonAction = skipButtonAction
@@ -127,7 +132,7 @@ struct SignUpButton: ViewModifier {
                 self.createButtonsContainer(withTopStackPadding: topStackPadding)
             }
         }
-        .padding()
+        .padding(padding)
     }
     
     private func createButtonsContainer(withTopStackPadding topStackPadding: CGFloat) -> some View {
@@ -145,10 +150,10 @@ struct SignUpButton: ViewModifier {
         .background(GeometryReader { gp -> Color in
             let frame = gp.frame(in: .local)
             DispatchQueue.main.async {
-                self.padding = topStackPadding - frame.size.height
+                self.buttonPadding = topStackPadding - frame.size.height
             }
             return Color.clear
         })
-        .padding(.bottom, padding)
+        .padding(.bottom, buttonPadding)
     }
 }

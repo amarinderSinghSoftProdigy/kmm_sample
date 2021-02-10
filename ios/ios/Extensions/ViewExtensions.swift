@@ -37,13 +37,9 @@ extension View {
     }
     
     // MARK: View Modifiers
-    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
-        self.modifier(ErrorAlert(errorsHandler: errorsHandler))
-    }
-    
-    func notificationAlertListener(withHandler notificationsHandler: CommonScopeWithNotifications) -> some View {
-        self.modifier(NotificationAlert(notificationsHandler: notificationsHandler))
-    }
+//    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
+//        self.modifier(ErrorAlert(errorsHandler: errorsHandler))
+//    }
     
     func notificationAlertSender(withHandler notificationsHandler: CommonScopeWithNotifications) -> some View {
         self.modifier(NotificationAlertSender(notificationsHandler: notificationsHandler))

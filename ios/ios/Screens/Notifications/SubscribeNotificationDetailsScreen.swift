@@ -29,8 +29,8 @@ struct SubscribeNotificationDetailsScreen: View {
                         URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
                             .frame(width: 125, height: 125)
                         
-                        VStack(alignment: .leading,spacing: 5) {
-                            SmallAddresView(location: "Vijayawada", pincode: "520001")
+                        VStack(alignment: .leading, spacing: 5) {
+                            SmallAddressView(location: "Vijayawada 520001")
                             
                             Text("25 km from you")
                                 .medicoText(color: .lightBlue,
@@ -45,9 +45,9 @@ struct SubscribeNotificationDetailsScreen: View {
                     
                     HStack(alignment: .bottom) {
                         VStack(alignment: .leading, spacing: 5) {
-                            getDataPanel(withTitleKey: "phone", withValueKey: "+123456789")
-                            getDataPanel(withTitleKey: "gstin_number", withValueKey: "656462926")
-                            getDataPanel(withTitleKey: "payment_method", withValueKey: "credit")
+                            UserInfoItemDetailsPanel(titleKey: "phone", valueKey: "+123456789")
+                            UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: "656462926")
+                            UserInfoItemDetailsPanel(titleKey: "payment_method", valueKey: "credit")
                         }
                         
                         Spacer()
@@ -84,17 +84,5 @@ struct SubscribeNotificationDetailsScreen: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 32)
-    }
-    
-    private func getDataPanel(withTitleKey titleKey: String,
-                              withValueKey valueKey: String) -> some View {
-        HStack(spacing: 3) {
-            LocalizedText(localizationKey: titleKey,
-                          multilineTextAlignment: .leading)
-            
-            LocalizedText(localizationKey: valueKey,
-                          textWeight: .semiBold,
-                          multilineTextAlignment: .leading)
-        }
     }
 }

@@ -38,23 +38,21 @@ struct HostScreen: View {
 struct BaseScopeView: View {
     let scope: Scope.Host
     
-    @EnvironmentObject var notificationObserver: NotificationObservable
-    @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
-    
     var body: some View {
         ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 .hideKeyboardOnTap()
             
-            getViewWithModifiers()
+            currentView
             
             BottomSheetView(bottomSheet: scope.bottomSheet,
                             dismissBottomSheet: { scope.dismissBottomSheet() })
-
-            if let isInProgress = self.isInProgress.value,
-               isInProgress == true {
-                ActivityView()
-            }
+            
+            NotificationsListener()
+            
+            ErrorAlert(errorsHandler: scope)
+            
+            ActivityScreen(isInProgress: scope.isInProgress)
         }
     }
     
@@ -81,24 +79,37 @@ struct BaseScopeView: View {
     
     init(scope: Scope.Host) {
         self.scope = scope
-        
-        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
     }
     
-    private func getViewWithModifiers() -> some View {
-        var view = AnyView(
-            currentView
-                .errorAlert(withHandler: scope)
-        )
+    private struct ActivityScreen: View {
+        @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
         
-        if let notificationData = self.notificationObserver.data {
-            view = AnyView(
-                view
-                    .notificationAlertListener(withHandler: notificationData.notificationsHandler)
-            )
+        var body: some View {
+            ZStack {
+                if let isInProgress = self.isInProgress.value,
+                   isInProgress == true {
+                    ActivityView()
+                }
+            }
+            .animation(.linear(duration: 0.2))
         }
+
+        init(isInProgress: DataSource<KotlinBoolean>) {
+            self.isInProgress = SwiftDataSource(dataSource: isInProgress)
+        }
+    }
+    
+    private struct NotificationsListener: View {
+        @EnvironmentObject var notificationObserver: NotificationObservable
         
-        return view
+        var body: some View {
+            ZStack {
+                if let notificationData = self.notificationObserver.data {
+                    NotificationAlert(notificationsHandler: notificationData.notificationsHandler)
+                }
+            }
+            .animation(.default)
+        }
     }
 }
 
@@ -141,8 +152,14 @@ struct TabBarScreen: View {
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))
             
-        case let scope as ManagementScopeUser:
+        case let scope as ManagementScope.User:
             return AnyView(UserManagementScreen(scope: scope))
+            
+        case let scope as ManagementScope.AddRetailer:
+            return AnyView(AddRetailerScreen(scope: scope))
+            
+        case let scope as PreviewUserScope:
+            return AnyView(PreviewUserScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

@@ -52,46 +52,18 @@ struct EntityInfoBottomSheet: ViewModifier {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 
-                HStack(spacing: 50) {
-                    URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
-                        .frame(width: 96, height: 96)
-                    
-                    VStack(alignment: .leading, spacing: 13) {
-                        VStack(alignment: .leading,spacing: 5) {
-                            SmallAddresView(location: entityInfo.location, pincode: entityInfo.pincode)
-                            
-                            Text(entityInfo.distance)
-                                .medicoText(fontSize: 12,
-                                            color: .grey3,
-                                            multilineTextAlignment: .leading)
-                            
-                            LocalizedText(localizationKey: "see_on_the_map",
-                                          textWeight: .bold,
-                                          fontSize: 12,
-                                          color: .lightBlue,
-                                          multilineTextAlignment: .leading)
-                        }
-                        
-                        if entityInfo.subscriptionData == nil {
-                            MedicoButton(localizedStringKey: "subscribe",
-                                         width: 91,
-                                         height: 31,
-                                         cornerRadius: 5,
-                                         fontSize: 14,
-                                         fontWeight: .bold) {
-                                onSubscribe()
-                            }
-                        }
-                    }
-                }
+                NonSeasonBoyImageAndAddressItem(previewItem: entityInfo,
+                                                onSubscribe: onSubscribe,
+                                                imageSize: 96,
+                                                fontSize: 12)
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    getDataPanel(withTitleKey: "gstin_number", withValueKey: entityInfo.gstin)
+                    UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: entityInfo.gstin)
                     
                     if let subscriptionData = entityInfo.subscriptionData{
-                        getDataPanel(withTitleKey: "status", withValueKey: subscriptionData.status.serverValue)
-                        getDataPanel(withTitleKey: "payment_method", withValueKey: subscriptionData.paymentMethod.serverValue)
-                        getDataPanel(withTitleKey: "orders", withValueKey: subscriptionData.orders)
+                        UserInfoItemDetailsPanel(titleKey: "status", valueKey: subscriptionData.status.serverValue)
+                        UserInfoItemDetailsPanel(titleKey: "payment_method", valueKey: subscriptionData.paymentMethod.serverValue)
+                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: subscriptionData.orders)
                     }
                 }
                 
@@ -100,18 +72,6 @@ struct EntityInfoBottomSheet: ViewModifier {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
             .padding(.horizontal, 25)
             .padding(.vertical, 22)
-        }
-        
-        private func getDataPanel(withTitleKey titleKey: String,
-                                  withValueKey valueKey: String) -> some View {
-            HStack(spacing: 3) {
-                LocalizedText(localizationKey: titleKey,
-                              multilineTextAlignment: .leading)
-                
-                LocalizedText(localizationKey: valueKey,
-                              textWeight: .medium,
-                              multilineTextAlignment: .leading)
-            }
         }
     }
     
@@ -145,7 +105,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                 
                 VStack(alignment: .leading, spacing: 5) {
 //                    getDataPanel(withTitleKey: "email_address:", withValueKey: seasonBoy.gstin)
-                    getDataPanel(withTitleKey: "address:", withValueKey: seasonBoy.location)
+                    UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.location)
 //                    getDataPanel(withTitleKey: "pending_orders", withValueKey: "10")
 //                    getDataPanel(withTitleKey: "total_orders", withValueKey: "24")
                 }
@@ -154,17 +114,76 @@ struct EntityInfoBottomSheet: ViewModifier {
             .padding(.horizontal, 25)
             .padding(.vertical, 22)
         }
-        
-        private func getDataPanel(withTitleKey titleKey: String,
-                                  withValueKey valueKey: String) -> some View {
-            HStack(spacing: 3) {
-                LocalizedText(localizationKey: titleKey,
-                              multilineTextAlignment: .leading)
+    }
+}
+
+struct NonSeasonBoyImageAndAddressItem: View {
+    let previewItem: DataPreviewItem
+    let onSubscribe: () -> ()
+    
+    let imageSize: CGFloat
+    let fontSize: CGFloat
+    
+    var body: some View {
+        HStack(spacing: 50) {
+            URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
+                .frame(width: 96, height: 96)
+            
+            VStack(alignment: .leading, spacing: 13) {
+                VStack(alignment: .leading,spacing: 5) {
+                    SmallAddressView(location: previewItem.location)
+                    
+                    Text(previewItem.distance)
+                        .medicoText(fontSize: 12,
+                                    color: .grey3,
+                                    multilineTextAlignment: .leading)
+                    
+                    LocalizedText(localizationKey: "see_on_the_map",
+                                  textWeight: .bold,
+                                  fontSize: 12,
+                                  color: .lightBlue,
+                                  multilineTextAlignment: .leading)
+                }
                 
-                LocalizedText(localizationKey: valueKey,
-                              textWeight: .medium,
-                              multilineTextAlignment: .leading)
+                if let entityInfo = self.previewItem as? DataEntityInfo,
+                   entityInfo.subscriptionData == nil {
+                    MedicoButton(localizedStringKey: "subscribe",
+                                 width: 91,
+                                 height: 31,
+                                 cornerRadius: 5,
+                                 fontSize: 14,
+                                 fontWeight: .bold) {
+                        onSubscribe()
+                    }
+                }
             }
+        }
+    }
+    
+    init(previewItem: DataPreviewItem,
+         onSubscribe: @escaping () -> (),
+         imageSize: CGFloat = 125,
+         fontSize: CGFloat = 14) {
+        self.previewItem = previewItem
+        self.onSubscribe = onSubscribe
+        
+        self.imageSize = imageSize
+        self.fontSize = fontSize
+    }
+}
+
+struct UserInfoItemDetailsPanel: View {
+    let titleKey: String
+    let valueKey: String
+    
+    var body: some View {
+        HStack(spacing: 3) {
+            LocalizedText(localizationKey: titleKey,
+                          multilineTextAlignment: .leading)
+            
+            LocalizedText(localizationKey: valueKey,
+                          textWeight: .medium,
+                          multilineTextAlignment: .leading)
         }
     }
 }
