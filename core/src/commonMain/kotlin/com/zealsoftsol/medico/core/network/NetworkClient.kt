@@ -430,7 +430,6 @@ class NetworkClient(
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
         private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
         private const val B2B_URL = "https://develop-api-b2b.medicostores.com"
-        private const val NOTIFICATION_URL = "https://develop-api-notifications.medicostores.com"
     }
 }
 

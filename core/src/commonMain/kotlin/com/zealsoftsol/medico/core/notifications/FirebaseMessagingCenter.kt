@@ -44,6 +44,7 @@ data class NotificationMessage(
 )
 
 interface FirebaseMessaging {
+
     val notifications: DataSource<NotificationMessage?>
 
     fun handleMessage(data: Map<String, String>)
