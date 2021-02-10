@@ -22,6 +22,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven("https://kotlin.bintray.com/kotlinx/")
+        maven(url = "https://jitpack.io")
 //        maven {
 //            url = uri("https://zealsoftsol.jfrog.io/artifactory/libs-release")
 //            credentials {

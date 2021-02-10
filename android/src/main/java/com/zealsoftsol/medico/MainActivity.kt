@@ -15,6 +15,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import com.zealsoftsol.medico.core.UiLink
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity(), DIAware {
             pickerCompletion = CompletableDeferred()
         }
     }
+    private val messaging by lazy { (application as MedicoApp).messaging }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +93,19 @@ class MainActivity : ComponentActivity(), DIAware {
         }
         camera
         picker
+
+        intent?.let(::handleIntent)
+
+        Firebase.messaging.token.addOnCompleteListener { task ->
+            if (task.isSuccessful) task.result?.let {
+                messaging.handleNewToken(it)
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let(::handleIntent)
     }
 
     override fun onBackPressed() {
@@ -123,6 +139,12 @@ class MainActivity : ComponentActivity(), DIAware {
         val uri = String.format("geo:%f,%f", latitude, longitude).toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        intent.extras?.getString(NotificationCenter.DISMISS_NOTIFICATION_ID)?.let {
+            messaging.dismissMessage(it)
+        }
     }
 
     private object GetSpecificContent : ActivityResultContracts.GetContent() {

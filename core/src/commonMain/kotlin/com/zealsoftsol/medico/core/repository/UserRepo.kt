@@ -40,11 +40,15 @@ class UserRepo(
     private val networkSignUpScope: NetworkScope.SignUp,
     private val networkPasswordScope: NetworkScope.Password,
     private val networkCustomerScope: NetworkScope.Customer,
+    private val networkNotificationScope: NetworkScope.Notification,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val phoneEmailVerifier: PhoneEmailVerifier,
     private val ipAddressFetcher: IpAddressFetcher,
 ) {
+
+    private var cachedFirebaseToken: String? = null
+
     val userFlow: MutableStateFlow<User?> = MutableStateFlow(
         runCatching {
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
@@ -253,6 +257,15 @@ class UserRepo(
                 registration3,
             )
         )
+    }
+
+    suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
+        cachedFirebaseToken = if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
+            networkNotificationScope.sendFirebaseToken(token)
+            null
+        } else {
+            token
+        }
     }
 
     private fun clearUserData() {

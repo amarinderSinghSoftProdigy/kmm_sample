@@ -37,6 +37,7 @@ internal class AuthEventDelegate(
             }
             if (isSuccess) {
                 if (withProgress { userRepo.loadUserFromServer() }) {
+                    userRepo.sendFirebaseToken()
                     dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     val user = userRepo.requireUser()
                     setScope(
