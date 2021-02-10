@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
-import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
@@ -87,6 +86,7 @@ sealed class Event {
             data class RequestSubscribe(val item: ManagementItem) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
+            object VerifyRetailerTraderDetails : Management()
         }
     }
 
@@ -104,8 +104,8 @@ sealed class Event {
         object GstinDetails : Transition()
         data class Management(val manageUserType: UserType) : Transition()
         object RequestCreateRetailer : Transition()
+        object AddRetailerAddress : Transition()
         data class PreviewUser(
-            val registration1: UserRegistration1,
             val registration2: UserRegistration2,
             val registration3: UserRegistration3,
         ) : Transition()

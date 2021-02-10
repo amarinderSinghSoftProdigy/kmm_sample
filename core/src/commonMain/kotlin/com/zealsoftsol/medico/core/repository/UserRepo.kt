@@ -10,9 +10,9 @@ import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -236,17 +236,21 @@ class UserRepo(
         )
     }
 
-    suspend fun linkUserToRetailer(
-        retailerEmail: String,
-        retailerPhoneNumber: String
+    suspend fun verifyRetailer(registration3: UserRegistration3): Response.Wrapped<UserValidation3> {
+        return networkSignUpScope.verifyRetailerTraderDetails(registration3)
+    }
+
+    suspend fun createRetailer(
+        registration2: UserRegistration2,
+        registration3: UserRegistration3,
     ): Response.Wrapped<ErrorCode> {
         val user = requireUser()
-        require(user.type == UserType.SEASON_BOY) { "can only link season boys" }
-        return networkSignUpScope.linkCreatedRetailerWithSeasonBoy(
-            LinkData(
-                retailerEmail = retailerEmail,
-                phoneNumber = retailerPhoneNumber,
-                seasonBoyUnitCode = user.unitCode,
+        require(user.type == UserType.SEASON_BOY) { "can only create from season boys" }
+        return networkSignUpScope.createdRetailerWithSeasonBoy(
+            CreateRetailer.from(
+                unitCode = user.unitCode,
+                registration2,
+                registration3,
             )
         )
     }

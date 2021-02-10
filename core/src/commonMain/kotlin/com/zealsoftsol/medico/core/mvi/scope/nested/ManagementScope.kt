@@ -8,44 +8,52 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class ManagementScope<T : ManagementItem>(
-    val tabs: List<Tab>,
-) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)) {
-
-    val pagination: Pagination = Pagination()
-    val items: DataSource<List<T>> = DataSource(emptyList())
-    val activeTab: DataSource<Tab> = DataSource(tabs.first())
-    val searchText: DataSource<String> = DataSource("")
-
-    init {
-        loadItems()
-    }
-
-    fun selectTab(tab: Tab) {
-        searchText.value = ""
-        pagination.reset()
-        items.value = emptyList()
-        activeTab.value = tab
-        loadItems()
-    }
-
-    fun selectItem(item: T) = EventCollector.sendEvent(Event.Action.Management.Select(item))
-
-    fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
-
-    fun loadItems() = EventCollector.sendEvent(Event.Action.Management.Load)
+sealed class ManagementScope(
+    icon: ScopeIcon = ScopeIcon.HAMBURGER,
+) : Scope.Child.TabBar(TabBarInfo.Search(icon)) {
 
     sealed class User(
-        tabs: List<Tab>,
+        val tabs: List<Tab>,
         internal val forType: UserType,
-    ) : ManagementScope<EntityInfo>(tabs) {
+    ) : ManagementScope() {
+
+        val pagination: Pagination = Pagination()
+        val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        val activeTab: DataSource<Tab> = DataSource(tabs.first())
+        val searchText: DataSource<String> = DataSource("")
+
+        init {
+            loadItems()
+        }
+
+        fun selectTab(tab: Tab) {
+            searchText.value = ""
+            pagination.reset()
+            items.value = emptyList()
+            activeTab.value = tab
+            loadItems()
+        }
+
+        fun selectItem(item: ManagementItem) =
+            EventCollector.sendEvent(Event.Action.Management.Select(item))
+
+        fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
+
+        fun loadItems() = EventCollector.sendEvent(Event.Action.Management.Load)
 
         class Stockist(
             override val notifications: DataSource<ScopeNotification?> = DataSource(null)
@@ -71,6 +79,53 @@ sealed class ManagementScope<T : ManagementItem>(
             forType = UserType.SEASON_BOY,
             tabs = listOf(Tab.YOUR_SEASON_BOYS),
         )
+    }
+
+    sealed class AddRetailer(icon: ScopeIcon = ScopeIcon.HAMBURGER) : ManagementScope(icon) {
+
+        val canGoNext: DataSource<Boolean> = DataSource(false)
+
+        abstract fun next(): Boolean
+
+        class TraderDetails(
+            val isTermsAccepted: DataSource<Boolean> = DataSource(false),
+            override val registration: DataSource<UserRegistration3>,
+            override val validation: DataSource<UserValidation3?> = DataSource(null),
+        ) : AddRetailer(),
+            TraderDetailsComponent {
+
+            override fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid && isTermsAccepted.value
+            }
+
+            fun changeTerms(isAccepted: Boolean) {
+                isTermsAccepted.value = isAccepted
+                checkData()
+            }
+
+            override fun next() =
+                EventCollector.sendEvent(Event.Action.Management.VerifyRetailerTraderDetails)
+        }
+
+        class Address(
+            val registration3: UserRegistration3,
+            override val registration: DataSource<UserRegistration2>,
+            override val locationData: DataSource<LocationData?> = DataSource(null),
+            override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
+        ) : AddRetailer(icon = ScopeIcon.BACK),
+            AddressComponent {
+
+            override fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
+            }
+
+            override fun next() = EventCollector.sendEvent(
+                Event.Transition.PreviewUser(
+                    registration.value,
+                    registration3
+                )
+            )
+        }
     }
 
 

@@ -11,12 +11,12 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Filter
-import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -235,11 +235,19 @@ class NetworkClient(
             }.getWrappedError()
         }
 
-    override suspend fun linkCreatedRetailerWithSeasonBoy(linkData: LinkData): Response.Wrapped<ErrorCode> =
+    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
         ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/season-retailer/add") {
+            client.post<Response.Body<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/sbret/verify") {
                 withMainToken()
-                jsonBody(linkData)
+                jsonBody(userRegistration3)
+            }.getWrappedValidation()
+        }
+
+    override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/sbret/add") {
+                withMainToken()
+                jsonBody(data)
             }.getWrappedError()
         }
 

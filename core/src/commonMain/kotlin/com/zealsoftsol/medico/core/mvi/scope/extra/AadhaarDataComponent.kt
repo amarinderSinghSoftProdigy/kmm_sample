@@ -5,7 +5,7 @@ import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 
-interface AadhaarDataHolder {
+interface AadhaarDataComponent {
     val aadhaarData: DataSource<AadhaarData>
     val isVerified: DataSource<Boolean>
 

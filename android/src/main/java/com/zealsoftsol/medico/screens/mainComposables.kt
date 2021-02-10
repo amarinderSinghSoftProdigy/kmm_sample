@@ -31,7 +31,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -53,6 +53,7 @@ import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.PreviewUserScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
@@ -179,7 +180,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                         WelcomeScreen(
                             fullName = user.value.fullName(),
                             option = if (!user.value.isDocumentUploaded) {
-                                if (it is AadhaarDataHolder) {
+                                if (it is AadhaarDataComponent) {
                                     WelcomeOption.Upload.Aadhaar(it) { it.showBottomSheet() }
                                 } else {
                                     WelcomeOption.Upload.DrugLicense { it.showBottomSheet() }
@@ -193,6 +194,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     is ProductInfoScope -> ProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
+                    is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is PreviewUserScope -> PreviewUserScreen(it)
                 }
             }

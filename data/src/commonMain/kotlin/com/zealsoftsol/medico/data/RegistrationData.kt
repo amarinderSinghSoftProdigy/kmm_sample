@@ -193,3 +193,43 @@ data class SubmitRegistration(
         )
     }
 }
+
+@Serializable
+data class CreateRetailer(
+    @SerialName("sbUnitCode")
+    val seasonBoyUnitCode: String,
+    val traderName: String,
+    val gstin: String,
+    val panNumber: String,
+    val drugLicenseNo1: String,
+    val drugLicenseNo2: String,
+    val pincode: String,
+    val addressLine1: String,
+    val location: String,
+    @SerialName("cityTown")
+    val city: String,
+    val district: String,
+    val state: String,
+) {
+    companion object {
+
+        fun from(
+            unitCode: String,
+            userRegistration2: UserRegistration2,
+            userRegistration3: UserRegistration3,
+        ) = CreateRetailer(
+            seasonBoyUnitCode = unitCode,
+            traderName = userRegistration3.tradeName,
+            gstin = userRegistration3.gstin,
+            panNumber = userRegistration3.panNumber,
+            drugLicenseNo1 = userRegistration3.drugLicenseNo1,
+            drugLicenseNo2 = userRegistration3.drugLicenseNo2,
+            pincode = userRegistration2.pincode,
+            addressLine1 = userRegistration2.addressLine1,
+            location = userRegistration2.location,
+            city = userRegistration2.city,
+            district = userRegistration2.district,
+            state = userRegistration2.state,
+        )
+    }
+}

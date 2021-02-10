@@ -2,11 +2,11 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.LinkData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
@@ -48,7 +48,8 @@ interface NetworkScope {
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
         suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
-        suspend fun linkCreatedRetailerWithSeasonBoy(linkData: LinkData): Response.Wrapped<ErrorCode>
+        suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
+        suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode>
     }
 
     interface Password {
