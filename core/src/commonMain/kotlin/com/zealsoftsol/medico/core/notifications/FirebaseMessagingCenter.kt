@@ -7,10 +7,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+
 internal class FirebaseMessagingCenter(private val userRepo: UserRepo) : FirebaseMessaging {
 
     override val notifications: DataSource<NotificationMessage?> = DataSource(null)
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    init {
+        GlobalScope.launch {
+            delay(5000)
+            notifications.value = NotificationMessage("id", "Title", "Body")
+        }
+    }
 
     override fun handleMessage(data: Map<String, String>) {
         when (data[TYPE_KEY]) {
