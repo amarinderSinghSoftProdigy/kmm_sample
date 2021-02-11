@@ -6,7 +6,7 @@ import core
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var navigator: UiNavigator!
-    var notificationsService: NotificationsService!
+    var notificationsManager: NotificationsManager!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   useNetworkInterceptor: useNetworkInterceptor,
                                   loggerLevel: Logger.Level.log)
         navigator = start.navigator
-        notificationsService = NotificationsService(firebaseMessaging: start.firebaseMessaging)
+        notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
         
         link.setStartingScope()
         
@@ -75,24 +75,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        notificationsService.setDeviceToken(deviceToken)
+        notificationsManager.setDeviceToken(deviceToken)
     }
     
     // Called when the notification was fetched with the app in the foreground or background
-//    func application(_ application: UIApplication,
-//                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-//                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-//        DIContainer.shared.resolve(type: NotificationsService.self)?
-//            .handleRemoteNotificationReceive(withUserInfo: userInfo)
-//
-//        completionHandler(UIBackgroundFetchResult.newData)
-//    }
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler(UIBackgroundFetchResult.newData)
+    }
     
     // Called when the notification was received when the app was in the foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-       completionHandler([.alert, .badge, .sound])
+        let userInfo = notification.request.content.userInfo
+        
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+        
+        completionHandler([.alert, .badge, .sound])
     }
 
     // Handles the user's response to a delivered notification
@@ -101,7 +104,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         
-        notificationsService.handleNotificationTap(withUserInfo: userInfo)
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+        notificationsManager.handleNotificationTap(withUserInfo: userInfo)
 
         completionHandler()
     }

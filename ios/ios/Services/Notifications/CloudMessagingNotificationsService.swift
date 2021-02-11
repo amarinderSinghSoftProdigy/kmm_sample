@@ -9,34 +9,41 @@
 import Foundation
 import Firebase
 
-//class CloudMessagingNotificationsService: NSObject, NotificationsService, MessagingDelegate {
-//    private let gcmMessageIDKey = "gcm.message_id"
-//
-//    private let messaging = Messaging.messaging()
-//
-//    override init() {
-//        super.init()
-//
-//        messaging.delegate = self
-//    }
-//
-//    func setDeviceToken(_ deviceToken: Data) {
-//        messaging.apnsToken = deviceToken
-//    }
-//
-//    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-//        print("Firebase registration token: \(String(describing: fcmToken))")
-//    }
-//
-//    func handleRemoteNotificationReceive(withUserInfo userInfo: [AnyHashable: Any]) {
-//        messaging.appDidReceiveMessage(userInfo)
-//
-//        if let messageID = userInfo[gcmMessageIDKey] {
-//            print("Message ID: \(messageID)")
-//        }
-//
-//        // Print full message.
-//        print(userInfo)
-//    }
-//}
-                         
+class CloudMessagingNotificationsService: NSObject, MessagingDelegate {
+    private let gcmMessageIDKey = "gcm.message_id"
+
+    private let messaging = Messaging.messaging()
+    
+    var delegate: NotificationsServiceDelegate?
+
+    override init() {
+        super.init()
+
+        messaging.delegate = self
+    }
+
+    func setDeviceToken(_ deviceToken: Data) {
+        messaging.apnsToken = deviceToken
+    }
+
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
+        
+        delegate?.handleTokenReceive(fcmToken)
+    }
+
+    func handleRemoteNotificationReceive(withUserInfo userInfo: [AnyHashable: Any]) {
+        messaging.appDidReceiveMessage(userInfo)
+
+        if let messageID = userInfo[gcmMessageIDKey] {
+            print("Message ID: \(messageID)")
+        }
+
+        // Print full message.
+        print(userInfo)
+    }
+}
+ 
+protocol NotificationsServiceDelegate {
+    func handleTokenReceive(_ token: String?)
+}

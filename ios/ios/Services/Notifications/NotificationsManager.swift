@@ -1,5 +1,5 @@
 //
-//  NotificationsService.swift
+//  NotificationsManager.swift
 //  Medico
 //
 //  Created by Dasha Gurinovich on 1.02.21.
@@ -10,11 +10,15 @@ import Foundation
 import core
 import NotificationCenter
 
-class NotificationsService {
+class NotificationsManager {
+    private let cloudMessagingNotificationsService = CloudMessagingNotificationsService()
+    
     let firebaseMessaging: FirebaseMessaging
     
     init(firebaseMessaging: FirebaseMessaging) {
         self.firebaseMessaging = firebaseMessaging
+        
+        self.cloudMessagingNotificationsService.delegate = self
         
         firebaseMessaging.notifications.observeOnUi { newValue in
             if let notification = newValue { self.showNotification(notification) }
@@ -22,7 +26,11 @@ class NotificationsService {
     }
     
     func setDeviceToken(_ token: Data) {
-//        firebaseMessaging.handleNewToken(token: token.base64EncodedString())
+        cloudMessagingNotificationsService.setDeviceToken(token)
+    }
+    
+    func handleNotificationReceive(withUserInfo userInfo: [AnyHashable: Any]) {
+        cloudMessagingNotificationsService.handleRemoteNotificationReceive(withUserInfo: userInfo)
     }
     
     func handleNotificationTap(withUserInfo userInfo: [AnyHashable: Any]) {
@@ -41,5 +49,14 @@ class NotificationsService {
 
         let center = UNUserNotificationCenter.current()
         center.add(request)
+    }
+}
+
+extension NotificationsManager: NotificationsServiceDelegate {
+    func handleTokenReceive(_ token: String?) {
+        guard let newToken = token else { return }
+        
+        print(newToken)
+//        firebaseMessaging.handleNewToken(token: newToken)
     }
 }

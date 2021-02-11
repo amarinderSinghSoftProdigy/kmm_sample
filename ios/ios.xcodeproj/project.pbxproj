@@ -49,7 +49,7 @@
 		337DE625258A44B900614951 /* core.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		337DE628258A523800614951 /* TestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE627258A523800614951 /* TestsHelper.swift */; };
 		337DE62A258A55DA00614951 /* LimitedAppAccessScopeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */; };
-		338BFF0625C8171500514E79 /* NotificationsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338BFF0525C8171500514E79 /* NotificationsService.swift */; };
+		338BFF0625C8171500514E79 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338BFF0525C8171500514E79 /* NotificationsManager.swift */; };
 		338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338BFF0725C8173800514E79 /* CloudMessagingNotificationsService.swift */; };
 		338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338F98E6257F77C3002D36FF /* ImagePicker.swift */; };
 		3391B0BE25B824600025B945 /* UserManagementScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3391B0BD25B824600025B945 /* UserManagementScreen.swift */; };
@@ -187,7 +187,7 @@
 		337DE57E258A069B00614951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		337DE627258A523800614951 /* TestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsHelper.swift; sourceTree = "<group>"; };
 		337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScopeInfo.swift; sourceTree = "<group>"; };
-		338BFF0525C8171500514E79 /* NotificationsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsService.swift; sourceTree = "<group>"; };
+		338BFF0525C8171500514E79 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
 		338BFF0725C8173800514E79 /* CloudMessagingNotificationsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudMessagingNotificationsService.swift; sourceTree = "<group>"; };
 		338F98E6257F77C3002D36FF /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		3391B0BD25B824600025B945 /* UserManagementScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManagementScreen.swift; sourceTree = "<group>"; };
@@ -538,7 +538,7 @@
 			isa = PBXGroup;
 			children = (
 				338BFF0725C8173800514E79 /* CloudMessagingNotificationsService.swift */,
-				338BFF0525C8171500514E79 /* NotificationsService.swift */,
+				338BFF0525C8171500514E79 /* NotificationsManager.swift */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";
@@ -1083,7 +1083,7 @@
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
 				332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */,
 				336EE4FB259490E400D354C8 /* OtpScopeInfo.swift in Sources */,
-				338BFF0625C8171500514E79 /* NotificationsService.swift in Sources */,
+				338BFF0625C8171500514E79 /* NotificationsManager.swift in Sources */,
 				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
 				336EE5002594A09200D354C8 /* LogInScopeInfo.swift in Sources */,
 				33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */,
