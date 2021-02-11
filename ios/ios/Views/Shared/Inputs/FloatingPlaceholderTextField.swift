@@ -78,27 +78,45 @@ struct FloatingPlaceholderSecureField: View {
     let isValid: Bool
     let errorMessageKey: String?
     
+    @State var showsPassword = false
     @State var fieldSelected = false
     
     var body: some View {
-        SecureField("", text: text)
-            .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                                  text: text.wrappedValue,
-                                                  height: height,
-                                                  fieldSelected: fieldSelected,
-                                                  isValid: isValid,
-                                                  showPlaceholderWithText: showPlaceholderWithText,
-                                                  errorMessageKey: errorMessageKey))
-            .autocapitalization(.none)
-            .simultaneousGesture(TapGesture().onEnded {
-                self.fieldSelected = true
-            })
-            .onAppear {
-                setUpKeyboardHideListener()
+        HStack {
+            if showsPassword {
+                TextField("", text: text)
+                    .disableAutocorrection(true)
+                    
+                    .autocapitalization(.none)
             }
-            .onDisappear {
-                NotificationCenter.default.removeObserver(self)
+            else {
+                SecureField("", text: text)
             }
+            
+            if !text.wrappedValue.isEmpty {
+                Button(action: { self.showsPassword.toggle() }) {
+                    Image(systemName: self.showsPassword ? "eye" : "eye.slash")
+                        .foregroundColor(appColor: .darkBlue)
+                }
+            }
+        }
+        .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
+                                              text: text.wrappedValue,
+                                              height: height,
+                                              fieldSelected: fieldSelected,
+                                              isValid: isValid,
+                                              showPlaceholderWithText: showPlaceholderWithText,
+                                              errorMessageKey: errorMessageKey))
+        .autocapitalization(.none)
+        .simultaneousGesture(TapGesture().onEnded {
+            self.fieldSelected = true
+        })
+        .onAppear {
+            setUpKeyboardHideListener()
+        }
+        .onDisappear {
+            NotificationCenter.default.removeObserver(self)
+        }
     }
     
     init(placeholderLocalizedStringKey: String,
