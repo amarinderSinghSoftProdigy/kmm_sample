@@ -198,7 +198,7 @@ data class SubmitRegistration(
 data class CreateRetailer(
     @SerialName("sbUnitCode")
     val seasonBoyUnitCode: String,
-    val traderName: String,
+    val tradeName: String,
     val gstin: String,
     val panNumber: String,
     val drugLicenseNo1: String,
@@ -210,6 +210,7 @@ data class CreateRetailer(
     val city: String,
     val district: String,
     val state: String,
+    val termsAndConditions: Boolean = true,
 ) {
     companion object {
 
@@ -219,7 +220,7 @@ data class CreateRetailer(
             userRegistration3: UserRegistration3,
         ) = CreateRetailer(
             seasonBoyUnitCode = unitCode,
-            traderName = userRegistration3.tradeName,
+            tradeName = userRegistration3.tradeName,
             gstin = userRegistration3.gstin,
             panNumber = userRegistration3.panNumber,
             drugLicenseNo1 = userRegistration3.drugLicenseNo1,

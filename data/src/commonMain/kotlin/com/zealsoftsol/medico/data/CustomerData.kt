@@ -25,7 +25,7 @@ data class CustomerData(
     val panNumber: String,
     val traderFooter: String,
     val traderHeader: String,
-    val traderName: String,
+    val tradeName: String,
     val unitCode: String,
 )
 

@@ -183,12 +183,12 @@ private fun NonSeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
-                text = entityInfo.traderName,
+                text = entityInfo.tradeName,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colors.background,
             )
-            GeoLocation(entityInfo.location)
+            GeoLocation(entityInfo.geoData.fullAddress())
         }
         entityInfo.subscriptionData?.let {
             Box(modifier = Modifier.weight(0.3f)) {
@@ -206,7 +206,7 @@ private fun NonSeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     BaseManagementItem(onClick) {
         Text(
-            text = entityInfo.traderName,
+            text = entityInfo.tradeName,
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
             color = MaterialTheme.colors.background,

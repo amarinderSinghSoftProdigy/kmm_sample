@@ -33,7 +33,7 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
     Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Column {
             Text(
-                text = scope.traderName,
+                text = scope.tradeName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colors.background,

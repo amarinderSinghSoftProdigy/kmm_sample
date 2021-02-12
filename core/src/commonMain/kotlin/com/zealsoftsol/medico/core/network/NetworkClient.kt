@@ -291,12 +291,15 @@ class NetworkClient(
 
     override suspend fun getManagementInfo(
         unitCode: String,
+        isSeasonBoy: Boolean,
         forUserType: UserType,
         criteria: ManagementCriteria,
         search: String,
         pagination: Pagination
     ): Response.Wrapped<PaginatedData<EntityInfo>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<EntityInfo>>>("$B2B_URL/api/v1/${forUserType.serverValueSimple}/mngt/$unitCode") {
+        client.get<SimpleResponse<PaginatedData<EntityInfo>>>(
+            "$B2B_URL/api/v1/${forUserType.serverValueSimple}/mngt/${if (isSeasonBoy && forUserType == UserType.RETAILER) "${UserType.SEASON_BOY.serverValueSimple}/" else ""}$unitCode"
+        ) {
             withMainToken()
             url {
                 parameters.apply {

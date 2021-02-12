@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
@@ -20,6 +21,7 @@ class MockManagementScope : NetworkScope.Management {
 
     override suspend fun getManagementInfo(
         unitCode: String,
+        isSeasonBoy: Boolean,
         forUserType: UserType,
         criteria: ManagementCriteria,
         search: String,
@@ -44,18 +46,20 @@ private fun longPaginatedData(size: Int) =
         (0 until size)
             .map {
                 EntityInfo(
-                    GeoPoints(0.0, 0.0),
-                    "10 km away",
-                    "123456789",
-                    "India",
-                    "11111",
-                    "911111111199",
-                    "520001",
-                    GeoPoints(0.0, 0.0),
-                    "Delhi",
-                    "Pharmacy Doctors ${it + 1}",
-                    "12345",
-                    null,
+                    geoData = GeoData(
+                        distance = "10 km away",
+                        origin = GeoPoints(0.0, 0.0),
+                        destination = GeoPoints(0.0, 0.0),
+                        location = "India",
+                        pincode = "520001",
+                        city = "Delhi",
+                    ),
+                    gstin = "123456789",
+                    panNumber = "11111",
+                    phoneNumber = "911111111199",
+                    tradeName = "Pharmacy Doctors ${it + 1}",
+                    unitCode = "12345",
+                    subscriptionData = null,
                 )
             },
         9999999,

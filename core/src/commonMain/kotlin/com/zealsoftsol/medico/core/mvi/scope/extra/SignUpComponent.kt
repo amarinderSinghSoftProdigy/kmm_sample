@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -68,7 +69,9 @@ interface TraderDetailsComponent : Scopable {
     fun checkData() {
         val isValid = registration.value.run {
             tradeName.isNotEmpty() &&
-                    (gstin.isNotEmpty() || panNumber.isNotEmpty())
+                    (Validator.TraderDetails.isGstinValid(gstin) || Validator.TraderDetails.isPanValid(
+                        panNumber
+                    ))
                     && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
         }
         onDataValid(isValid)

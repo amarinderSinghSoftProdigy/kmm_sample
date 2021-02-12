@@ -14,7 +14,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
-import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -48,7 +47,7 @@ sealed class ManagementScope(
             loadItems()
         }
 
-        fun selectItem(item: ManagementItem) =
+        fun selectItem(item: EntityInfo) =
             EventCollector.sendEvent(Event.Action.Management.Select(item))
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
