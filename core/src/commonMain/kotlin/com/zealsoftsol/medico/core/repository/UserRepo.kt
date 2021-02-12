@@ -78,7 +78,7 @@ class UserRepo(
                 when (parsedType) {
                     UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
                     else -> User.Details.DrugLicense(
-                        it.traderName,
+                        it.tradeName,
                         it.gstin,
                         it.drugLicenseNo1,
                         it.drugLicenseNo2,

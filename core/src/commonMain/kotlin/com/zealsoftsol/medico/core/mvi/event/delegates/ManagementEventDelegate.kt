@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.extensions.toScope
-import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -13,9 +12,9 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.ManagementItem
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.UserType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -56,26 +55,22 @@ internal class ManagementEventDelegate(
         }
     }
 
-    private fun select(item: Any) {
-        when (item) {
-            is EntityInfo -> navigator.withScope<ManagementScope.User> {
-                val hostScope = scope.value
-                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
-                    item,
-                    isSeasonBoy = it is ManagementScope.User.SeasonBoy,
-                )
-            }
-            else -> "unknown item to select $item".warnIt()
+    private fun select(item: EntityInfo) {
+        navigator.withScope<ManagementScope.User> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = it is ManagementScope.User.SeasonBoy,
+            )
         }
     }
 
-    private fun requestSubscribe(managementItem: ManagementItem) {
+    private fun requestSubscribe(entityInfo: EntityInfo) {
         navigator.withScope<ManagementScope.User.Stockist> {
-            managementItem as EntityInfo
             val user = userRepo.requireUser()
             subscribeRequest = SubscribeRequest(
                 buyerUnitCode = user.unitCode,
-                sellerUnitCode = managementItem.unitCode,
+                sellerUnitCode = entityInfo.unitCode,
                 paymentMethod = "",
                 noOfCreditDays = 0,
                 customerType = user.type.serverValue,
@@ -141,8 +136,10 @@ internal class ManagementEventDelegate(
         addPage: Boolean
     ) {
         load(withProgress = withProgress, debounce = 500) {
+            val user = userRepo.requireUser()
             val (result, isSuccess) = networkManagementScope.getManagementInfo(
-                unitCode = userRepo.requireUser().unitCode,
+                unitCode = user.unitCode,
+                isSeasonBoy = user.type == UserType.SEASON_BOY,
                 forUserType = forType,
                 criteria = activeTab.value.criteria,
                 search = searchText.value,

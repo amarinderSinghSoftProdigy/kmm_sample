@@ -8,13 +8,9 @@ object Validator {
         private val GSTIN_REGEX =
             Regex("([0][1-9]|[1-2][0-9]|[3][0-7])([A-Z]{5})([0-9]{4})([A-Z]{1}[1-9A-Z]{1})([Z]{1})([0-9A-Z]{1})+")
 
-        fun isPanValid(pan: String): Boolean {
-            return pan.isEmpty() || PAN_REGEX.matches(pan)
-        }
+        fun isPanValid(pan: String) = PAN_REGEX.matches(pan)
 
-        fun isGstinValid(gstin: String): Boolean {
-            return gstin.isEmpty() || GSTIN_REGEX.matches(gstin)
-        }
+        fun isGstinValid(gstin: String) = GSTIN_REGEX.matches(gstin)
     }
 
     object Aadhaar {

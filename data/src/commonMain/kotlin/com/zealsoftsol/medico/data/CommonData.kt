@@ -38,13 +38,10 @@ enum class SubscriptionStatus(val serverValue: String) {
 }
 
 interface PreviewItem {
-    val traderName: String
-    val location: String
-    val city: String
-    val distance: String
-    val gstin: String
     val phoneNumber: String
-    val geo: GeoPoints
+    val tradeName: String
+    val gstin: String
+    val geoData: GeoData
 }
 
 // BASE
