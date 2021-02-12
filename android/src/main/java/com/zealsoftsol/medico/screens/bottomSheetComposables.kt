@@ -154,7 +154,7 @@ private fun PreviewItemBottomSheet(
                         Space(16.dp)
                     }
                     Text(
-                        text = entityInfo.traderName,
+                        text = entityInfo.tradeName,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W600,
                         color = MaterialTheme.colors.background,
@@ -178,10 +178,16 @@ private fun PreviewItemBottomSheet(
                                 label = R.string.payment_method,
                                 data = it.paymentMethod.serverValue
                             )
-                            DataWithLabel(label = R.string.orders, data = it.orders)
+                            DataWithLabel(label = R.string.orders, data = it.orders.toString())
+                        }
+                        entityInfo.seasonBoyRetailerData?.let {
+                            DataWithLabel(label = R.string.orders, data = it.orders.toString())
                         }
                     } else {
-                        DataWithLabel(label = R.string.address, data = entityInfo.location)
+                        DataWithLabel(
+                            label = R.string.address,
+                            data = entityInfo.geoData.fullAddress()
+                        )
                     }
                 }
             }
@@ -205,7 +211,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 @Composable
 fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
     Text(
-        text = previewItem.city,
+        text = previewItem.geoData.city,
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
@@ -222,9 +228,9 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            GeoLocation(previewItem.location, isBold = true)
+            GeoLocation(previewItem.geoData.fullAddress(), isBold = true)
             Text(
-                text = previewItem.distance,
+                text = previewItem.geoData.distance,
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
@@ -236,12 +242,12 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
                 color = ConstColors.lightBlue,
                 modifier = Modifier.clickable {
                     activity.openMaps(
-                        previewItem.geo.latitude,
-                        previewItem.geo.longitude
+                        previewItem.geoData.destination.latitude,
+                        previewItem.geoData.destination.longitude,
                     )
                 },
             )
-            if (previewItem is EntityInfo && previewItem.subscriptionData == null) {
+            if (previewItem is EntityInfo && previewItem.subscriptionData != null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,

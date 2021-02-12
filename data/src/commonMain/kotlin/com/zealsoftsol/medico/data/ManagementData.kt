@@ -3,39 +3,25 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-interface ManagementItem
+internal interface ManagementItem
 
 @Serializable
 data class EntityInfo(
-    @SerialName("buyerPoints")
-    val buyerGeoPoints: GeoPoints,
-    override val distance: String,
-    override val gstin: String,
-    override val location: String,
-    val panNumber: String,
+    override val tradeName: String,
     @SerialName("mobileNumber")
     override val phoneNumber: String,
-    val pincode: String,
-    @SerialName("sellerPoints")
-    val sellerGeoPoints: GeoPoints,
-    @SerialName("townOrCity")
-    override val city: String,
-    override val traderName: String,
+    override val gstin: String,
+    val panNumber: String,
     val unitCode: String,
+    @SerialName("geoPoints")
+    override val geoData: GeoData,
     val subscriptionData: SubscriptionData? = null,
-) : ManagementItem, PreviewItem {
-
-    override val geo: GeoPoints
-        get() = sellerGeoPoints
-}
+    val seasonBoyRetailerData: SeasonBoyRetailerData? = null,
+) : ManagementItem, PreviewItem
 
 @Serializable
-data class SubscribeRequest(
-    val buyerUnitCode: String,
-    val sellerUnitCode: String,
-    val paymentMethod: String,
-    val noOfCreditDays: Int,
-    val customerType: String
+data class SeasonBoyRetailerData(
+    val orders: Int,
 )
 
 @Serializable
@@ -44,5 +30,29 @@ data class SubscriptionData(
     val status: SubscriptionStatus,
     val paymentMethod: PaymentMethod,
     val noOfCreditDays: Int,
-    val orders: String,
+    val orders: Int,
+)
+
+@Serializable
+data class GeoData(
+    val location: String,
+    val pincode: String,
+    @SerialName("townOrCity")
+    val city: String,
+    val distance: String,
+    @SerialName("originPoints")
+    val origin: GeoPoints,
+    @SerialName("destinationPoints")
+    val destination: GeoPoints,
+) {
+    fun fullAddress() = "$location $pincode"
+}
+
+@Serializable
+data class SubscribeRequest(
+    val buyerUnitCode: String,
+    val sellerUnitCode: String,
+    val paymentMethod: String,
+    val noOfCreditDays: Int,
+    val customerType: String,
 )

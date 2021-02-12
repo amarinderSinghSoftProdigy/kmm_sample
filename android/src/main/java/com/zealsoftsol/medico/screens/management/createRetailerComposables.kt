@@ -27,8 +27,10 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.utils.Validator
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
+import com.zealsoftsol.medico.screens.common.InputWithPrefix
 import com.zealsoftsol.medico.screens.common.LocationSelector
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
@@ -105,21 +107,25 @@ private fun TraderDetails(
     }
     Space(dp = 12.dp)
     InputWithError(errorText = validation.value?.drugLicenseNo1) {
-        InputField(
-            autoScrollOnFocus = scrollState,
-            hint = stringResource(id = R.string.drug_license_1),
-            text = registration.value.drugLicenseNo1,
-            onValueChange = { scope.changeDrugLicense1(it) },
-        )
+        InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
+            InputField(
+                autoScrollOnFocus = scrollState,
+                hint = stringResource(id = R.string.drug_license_1),
+                text = registration.value.drugLicenseNo1,
+                onValueChange = { scope.changeDrugLicense1(it) },
+            )
+        }
     }
     Space(dp = 12.dp)
     InputWithError(errorText = validation.value?.drugLicenseNo2) {
-        InputField(
-            autoScrollOnFocus = scrollState,
-            hint = stringResource(id = R.string.drug_license_2),
-            text = registration.value.drugLicenseNo2,
-            onValueChange = { scope.changeDrugLicense2(it) },
-        )
+        InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
+            InputField(
+                autoScrollOnFocus = scrollState,
+                hint = stringResource(id = R.string.drug_license_2),
+                text = registration.value.drugLicenseNo2,
+                onValueChange = { scope.changeDrugLicense2(it) },
+            )
+        }
     }
     Space(dp = 12.dp)
     Row(verticalAlignment = Alignment.CenterVertically) {

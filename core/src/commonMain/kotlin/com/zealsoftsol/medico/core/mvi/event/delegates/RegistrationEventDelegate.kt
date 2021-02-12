@@ -223,7 +223,7 @@ internal class RegistrationEventDelegate(
                 userRepo.createRetailer(it.registration2, it.registration3)
             }
             if (isSuccess) {
-                it.notifications.value = PreviewUserScope.Congratulations(it.traderName)
+                it.notifications.value = PreviewUserScope.Congratulations(it.tradeName)
             } else {
                 setHostError(error ?: ErrorCode())
             }
