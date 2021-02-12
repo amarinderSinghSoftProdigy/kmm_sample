@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,10 +24,10 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
 import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.screens.NavigationCell
-import com.zealsoftsol.medico.screens.Separator
-import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.stringResourceByName
+import com.zealsoftsol.medico.screens.common.NavigationCell
+import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun NavigationColumn(
@@ -112,6 +111,10 @@ fun NavigationColumn(
 @Composable
 private inline val NavigationOption.iconAndText: Pair<ImageVector, String>
     get() = when (this) {
-        NavigationOption.Settings -> Icons.Filled.Settings to stringResource(R.string.settings)
-        NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit) to stringResource(R.string.log_out)
-    }
+        NavigationOption.Settings -> Icons.Filled.Settings
+        NavigationOption.Stockists -> vectorResource(id = R.drawable.ic_stockist)
+        NavigationOption.Retailers -> vectorResource(id = R.drawable.ic_retailer)
+        NavigationOption.Hospitals -> vectorResource(id = R.drawable.ic_hospital)
+        NavigationOption.SeasonBoys -> vectorResource(id = R.drawable.ic_season_boy)
+        NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit)
+    } to stringResourceByName(stringId)

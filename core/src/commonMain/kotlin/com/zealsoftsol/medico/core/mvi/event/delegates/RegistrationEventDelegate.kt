@@ -5,9 +5,11 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -38,6 +40,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Skip -> skipUploadDocuments()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
         is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
+        is Event.Action.Registration.ConfirmCreateRetailer -> confirmCreateRetailer()
     }
 
     private fun selectUserType(userType: UserType) {
@@ -146,7 +149,7 @@ internal class RegistrationEventDelegate(
                     is Event.Action.Registration.UploadAadhaar -> {
                         val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
                         userRepo.uploadAadhaar(
-                            aadhaar = requireNotNull(searchQueuesFor<AadhaarDataHolder>()).aadhaarData.value,
+                            aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
                             fileString = event.aadhaarAsBase64,
                             phoneNumber = userReg?.phoneNumber
                                 ?: userRepo.requireUser().phoneNumber,
@@ -204,12 +207,25 @@ internal class RegistrationEventDelegate(
             }
         }
         if (isSuccess) {
-            navigator.dropScope(Navigator.DropStrategy.TO_ROOT, updateDataSource = false)
+            navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
             navigator.setScope(
                 WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
             )
         } else {
             dropToLogin(error)
+        }
+    }
+
+    private suspend fun confirmCreateRetailer() {
+        navigator.withScope<PreviewUserScope> {
+            val (error, isSuccess) = withProgress {
+                userRepo.createRetailer(it.registration2, it.registration3)
+            }
+            if (isSuccess) {
+                it.notifications.value = PreviewUserScope.Congratulations(it.tradeName)
+            } else {
+                setHostError(error ?: ErrorCode())
+            }
         }
     }
 
@@ -228,7 +244,7 @@ internal class RegistrationEventDelegate(
     }
 
     private fun dropToLogin(errorCode: ErrorCode?) {
-        navigator.dropScope(Navigator.DropStrategy.TO_ROOT)
+        navigator.dropScope(Navigator.DropStrategy.ToRoot)
         navigator.setHostError(errorCode)
     }
 
@@ -239,7 +255,7 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun updatePincode(pincode: String) {
-        navigator.withScope<SignUpScope.AddressData> {
+        navigator.withScope<AddressComponent> {
             it.registration.value = it.registration.value.copy(pincode = pincode)
             if (pincode.length == 6) {
                 val locationResponse = withProgress { userRepo.getLocationData(pincode) }

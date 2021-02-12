@@ -1,7 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.logIt
-import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
@@ -9,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.ErrorCode
 
 internal class ProductEventDelegate(
@@ -28,13 +27,12 @@ internal class ProductEventDelegate(
         if (isSuccess && response != null) {
             navigator.setScope(
                 ProductInfoScope.get(
+                    user = userRepo.requireUser(),
                     userDataSource = userRepo.getUserDataSource(),
                     product = response.productData,
                     alternativeBrands = emptyList(),
                 )
             )
-            "product".warnIt()
-            response.productData.logIt()
 //            "alternate brands".warnIt()
 //            response.alternateBrands.forEach {
 //                it.logIt()

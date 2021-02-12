@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.screens
+package com.zealsoftsol.medico
 
 import android.content.Context
 import android.content.Intent
@@ -8,12 +8,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
-import com.zealsoftsol.medico.AppTheme
+import androidx.core.net.toUri
 import com.zealsoftsol.medico.core.UiLink
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -21,10 +22,14 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.screens.TabBarScreen
 import com.zealsoftsol.medico.screens.auth.AuthScreen
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.common.IndefiniteProgressBar
+import com.zealsoftsol.medico.screens.common.showErrorAlert
 import com.zealsoftsol.medico.screens.search.SearchQueryScreen
+import com.zealsoftsol.medico.screens.showBottomSheet
 import com.zealsoftsol.medico.utils.FileUtil
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +65,7 @@ class MainActivity : ComponentActivity(), DIAware {
         UiLink.setStartingScope()
         setContent {
             val coroutineScope = rememberCoroutineScope()
+            val searchList = rememberLazyListState()
             AppTheme {
                 val hostScope = navigator.scope.flow.collectAsState()
                 Crossfade(hostScope.value, animation = tween(durationMillis = 200)) {
@@ -71,7 +77,7 @@ class MainActivity : ComponentActivity(), DIAware {
                                 option = WelcomeOption.Thanks { it.accept() }
                             )
                         }
-                        is SearchScope -> Surface { SearchQueryScreen(it) }
+                        is SearchScope -> Surface { SearchQueryScreen(it, searchList) }
                         is Scope.Host.TabBar -> TabBarScreen(it)
                     }
                 }
@@ -111,6 +117,12 @@ class MainActivity : ComponentActivity(), DIAware {
         )
         cameraCompletion.await()
         image.takeIf { image.length() > 0 }
+    }
+
+    fun openMaps(latitude: Double, longitude: Double) {
+        val uri = String.format("geo:%f,%f", latitude, longitude).toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 
     private object GetSpecificContent : ActivityResultContracts.GetContent() {

@@ -2,23 +2,28 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.utils.Validator
+import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 
-interface AadhaarDataHolder {
+interface AadhaarDataComponent {
     val aadhaarData: DataSource<AadhaarData>
     val isVerified: DataSource<Boolean>
 
     fun changeCard(card: String) {
         if (card.length <= 12) {
-            aadhaarData.value = aadhaarData.value.copy(cardNumber = card)
-            verify()
+            trimInput(card, aadhaarData.value.cardNumber) {
+                aadhaarData.value = aadhaarData.value.copy(cardNumber = it)
+                verify()
+            }
         }
     }
 
     fun changeShareCode(shareCode: String) {
         if (shareCode.length <= 4) {
-            aadhaarData.value = aadhaarData.value.copy(shareCode = shareCode)
-            verify()
+            trimInput(shareCode, aadhaarData.value.shareCode) {
+                aadhaarData.value = aadhaarData.value.copy(shareCode = it)
+                verify()
+            }
         }
     }
 

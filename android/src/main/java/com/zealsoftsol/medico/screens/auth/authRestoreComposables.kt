@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
-import com.zealsoftsol.medico.screens.BasicScreen
-import com.zealsoftsol.medico.screens.InputField
-import com.zealsoftsol.medico.screens.PhoneFormatInputField
+import com.zealsoftsol.medico.screens.common.BasicScreen
+import com.zealsoftsol.medico.screens.common.InputField
+import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import java.text.SimpleDateFormat
 
 @Composable

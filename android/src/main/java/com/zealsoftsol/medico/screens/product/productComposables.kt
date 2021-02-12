@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.product
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +30,9 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ProductData
-import com.zealsoftsol.medico.screens.MedicoButton
-import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.Space
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -43,9 +43,10 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(12.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
+                modifier = Modifier.size(123.dp),
                 data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
-                error = { ProductPlaceholder() },
-                loading = { ProductPlaceholder() },
+                error = { ItemPlaceholder() },
+                loading = { ItemPlaceholder() },
             )
             Space(10.dp)
             Column {
@@ -142,13 +143,6 @@ fun ProductScreen(scope: ProductInfoScope) {
 //            }
 //        }
     }
-}
-
-@Composable
-inline fun ProductPlaceholder() {
-    Image(
-        imageVector = vectorResource(R.drawable.ic_product),
-    )
 }
 
 @Composable

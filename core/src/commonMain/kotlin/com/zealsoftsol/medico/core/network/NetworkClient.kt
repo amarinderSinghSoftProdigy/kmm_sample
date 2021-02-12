@@ -2,21 +2,26 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.extensions.Interval
 import com.zealsoftsol.medico.core.extensions.isExpired
+import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.retry
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.OtpRequest
+import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest2
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -28,11 +33,13 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRequest
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -62,10 +69,16 @@ class NetworkClient(
     private val tokenStorage: TokenStorage,
     useNetworkInterceptor: Boolean,
 ) : NetworkScope.Auth,
+    NetworkScope.SignUp,
     NetworkScope.Password,
     NetworkScope.Customer,
     NetworkScope.Search,
-    NetworkScope.Product {
+    NetworkScope.Product,
+    NetworkScope.Management {
+
+    init {
+        "USING NetworkClient".logIt()
+    }
 
     private val client = HttpClient(engine) {
         if (useNetworkInterceptor) addInterceptor(this)
@@ -222,6 +235,22 @@ class NetworkClient(
             }.getWrappedError()
         }
 
+    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
+        ktorDispatcher {
+            client.post<Response.Body<MapBody, UserValidation3>>("$REGISTRATION_URL/api/v1/sbret/verify") {
+                withMainToken()
+                jsonBody(userRegistration3)
+            }.getWrappedValidation()
+        }
+
+    override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("$REGISTRATION_URL/api/v1/sbret/add") {
+                withMainToken()
+                jsonBody(data)
+            }.getWrappedError()
+        }
+
     override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = ktorDispatcher {
         client.get<SimpleResponse<CustomerData>>("$AUTH_URL/api/v1/medico/customer/details") {
             withMainToken()
@@ -229,9 +258,9 @@ class NetworkClient(
     }
 
     override suspend fun search(
+        pagination: Pagination,
         product: String,
         manufacturer: String,
-        page: Int,
         query: List<Pair<String, String>>,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
@@ -243,12 +272,14 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
-                    append("currentPage", page.toString())
-                    append("pageSize", SearchScope.DEFAULT_ITEMS_PER_PAGE.toString())
+                    append("currentPage", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
                     append("sort", "ASC")
                 }
             }
-        }.getWrappedBody()
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
     }
 
     override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
@@ -257,6 +288,41 @@ class NetworkClient(
                 withMainToken()
             }.getWrappedBody()
         }
+
+    override suspend fun getManagementInfo(
+        unitCode: String,
+        isSeasonBoy: Boolean,
+        forUserType: UserType,
+        criteria: ManagementCriteria,
+        search: String,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<EntityInfo>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<EntityInfo>>>(
+            "$B2B_URL/api/v1/${forUserType.serverValueSimple}/mngt/${if (isSeasonBoy && forUserType == UserType.RETAILER) "${UserType.SEASON_BOY.serverValueSimple}/" else ""}$unitCode"
+        ) {
+            withMainToken()
+            url {
+                parameters.apply {
+                    if (search.isNotEmpty()) append("search", search)
+                    append("criteria", criteria.serverValue)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("$B2B_URL/api/v1/b2bapp/subscriptions/subscribe") {
+                withMainToken()
+                jsonBody(subscribeRequest)
+            }.getWrappedError()
+        }
+
+    // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->

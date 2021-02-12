@@ -22,28 +22,18 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
 
     fun setScope(scope: Scope) {
         addToQueue(scope)
+        if (scope is Scope.Host.TabBar) addToQueue(scope.childScope.value)
 
-        when (scope) {
-            is Scope.Host -> {
-                hostScope.value = scope
-                if (scope is Scope.Host.TabBar) {
-                    addToQueue(scope.childScope.value)
-                }
-            }
-            is Scope.Child.TabBar -> {
-                val parentQueue = getQueue(scope.parentScopeId)
-                (parentQueue.first() as Scope.Host.TabBar).setChildScope(scope)
-            }
-        }
+        updateCurrentScope(scope)
     }
 
     fun dropScope(
-        strategy: DropStrategy = DropStrategy.FIRST,
+        strategy: DropStrategy = DropStrategy.First,
         updateDataSource: Boolean = true
     ): Scope? {
         val queue = getQueue(activeQueue)
         return when (strategy) {
-            DropStrategy.FIRST -> {
+            is DropStrategy.First -> {
                 val old = queue.removeFirst()
                 if (queue.isEmpty() && old is Scope.Child) {
                     activeQueue = old.parentScopeId
@@ -54,16 +44,16 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                     next
                 } else {
                     val next = queue.firstOrNull()
-                    if (updateDataSource) when (next) {
-                        is Scope.Host -> hostScope.value = next
-                        is Scope.Child.TabBar -> (getQueue(next.parentScopeId).first() as Scope.Host.TabBar).setChildScope(
-                            next
-                        )
+                    if (updateDataSource && next != null) {
+                        if (next is Scope.Host.TabBar) {
+                            activeQueue = next.childScope.value.scopeId
+                        }
+                        updateCurrentScope(next)
                     }
                     next
                 }
             }
-            DropStrategy.ALL -> {
+            is DropStrategy.All -> {
                 val old = queue.last()
                 queue.clear()
                 if (old is Scope.Child) {
@@ -73,10 +63,30 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                 if (updateDataSource) hostScope.value = StartScope
                 null
             }
-            DropStrategy.TO_ROOT -> {
-                lateinit var old: Scope
+            is DropStrategy.ToRoot -> {
+                var old: Scope? = null
                 while (queue.size > if (activeQueue == StartScope.scopeId) 1 else 0) {
                     old = queue.removeFirst()
+                }
+                val next = if (old is Scope.Child) {
+                    activeQueue = old.parentScopeId
+                    requireNotNull(dropScope(strategy, false)) { "no valid host scope" }
+                } else {
+                    queue.first()
+                }
+                if (updateDataSource) hostScope.value = next as Scope.Host
+                next
+            }
+            is DropStrategy.To -> {
+                var old: Scope? = null
+                while (queue.size > if (activeQueue == StartScope.scopeId) 1 else 0) {
+                    old = queue.removeFirst()
+                    queue.firstOrNull()?.let {
+                        if (it::class == strategy.scopeClass) {
+                            updateCurrentScope(it)
+                            return it
+                        }
+                    }
                 }
                 val next = if (old is Scope.Child) {
                     activeQueue = old.parentScopeId
@@ -98,12 +108,15 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
         hostScope.value.alertError.value = errorCode
     }
 
-    internal inline fun <reified S : Scopable> withScope(block: Navigator.(S) -> Unit): Boolean {
+    internal inline fun <reified S : Scopable> withScope(
+        forceSafe: Boolean = false,
+        block: Navigator.(S) -> Unit
+    ): Boolean {
         val actual = getQueue(activeQueue).first()
         val cast = runCatching { actual as S }
         cast.getOrNull()?.let { block(it) } ?: run {
             val msg = "error casting ${actual::class} scope to ${S::class}"
-            if (safeCastEnabled) msg.warnIt() else throw Exception(msg)
+            if (safeCastEnabled || forceSafe) msg.warnIt() else throw Exception(msg)
         }
         return cast.isSuccess
     }
@@ -121,8 +134,23 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
         activeQueue = scope.scopeId
     }
 
-    enum class DropStrategy {
-        FIRST, ALL, TO_ROOT;
+    private fun updateCurrentScope(scope: Scope) {
+        when (scope) {
+            is Scope.Host -> {
+                hostScope.value = scope
+            }
+            is Scope.Child.TabBar -> {
+                (getQueue(scope.parentScopeId).first() as Scope.Host.TabBar)
+                    .setChildScope(scope)
+            }
+        }
+    }
+
+    sealed class DropStrategy {
+        object First : DropStrategy()
+        object All : DropStrategy()
+        object ToRoot : DropStrategy()
+        class To(val scopeClass: KClass<*>) : DropStrategy()
     }
 }
 

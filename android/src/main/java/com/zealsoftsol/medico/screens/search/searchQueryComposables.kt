@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Icon
@@ -33,8 +34,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.onActive
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -45,6 +49,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -54,22 +59,20 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.screens.Separator
-import com.zealsoftsol.medico.screens.Space
-import com.zealsoftsol.medico.screens.TabBar
-import com.zealsoftsol.medico.screens.product.ProductPlaceholder
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.TabBar
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun SearchQueryScreen(scope: SearchScope) {
+fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize()) {
         val product = scope.productSearch.flow.collectAsState()
         val manufacturer = scope.manufacturerSearch.flow.collectAsState()
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
-        val listState =
-            rememberLazyListState(initialFirstVisibleItemIndex = scope.getVisibleProductIndex())
         TabBar {
             BasicSearchBar(
                 input = product.value,
@@ -80,7 +83,10 @@ fun SearchQueryScreen(scope: SearchScope) {
             )
         }
         if (showFilter.value) {
-            ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            ScrollableColumn(
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 Text(
                     text = stringResource(id = R.string.clear_all),
                     modifier = Modifier.align(Alignment.End)
@@ -104,8 +110,8 @@ fun SearchQueryScreen(scope: SearchScope) {
                 itemsIndexed(
                     items = products.value,
                     itemContent = { index, item ->
-                        ProductItem(item) { scope.selectProduct(item, index) }
-                        if (index == products.value.lastIndex && scope.canLoadMore() && !scope.isInProgress.flow.value) {
+                        ProductItem(item) { scope.selectProduct(item) }
+                        if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadMoreProducts()
                         }
                     },
@@ -126,9 +132,10 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
+                modifier = Modifier.size(123.dp),
                 data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
-                error = { ProductPlaceholder() },
-                loading = { ProductPlaceholder() },
+                error = { ItemPlaceholder() },
+                loading = { ItemPlaceholder() },
             )
             Space(10.dp)
             Column {
@@ -262,9 +269,12 @@ fun BasicSearchBar(
     searchBarEnd: SearchBarEnd = SearchBarEnd.Eraser,
     icon: ImageVector = Icons.Default.Search,
     onIconClick: (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+    horizontalPadding: Dp = 8.dp,
+    isSearchFocused: Boolean = false,
     onSearch: (String) -> Unit
 ) {
-    SearchBarBox {
+    SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         Icon(
             imageVector = icon,
             tint = ConstColors.gray,
@@ -282,12 +292,17 @@ fun BasicSearchBar(
                     modifier = Modifier.padding(start = 2.dp),
                 )
             }
+            val focusRequester = FocusRequester()
+            if (isSearchFocused) onActive {
+                focusRequester.requestFocus()
+            }
             BasicTextField(
                 value = input,
                 cursorColor = ConstColors.lightBlue,
                 onValueChange = onSearch,
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
+                modifier = Modifier.focusRequester(focusRequester).fillMaxWidth()
+                    .padding(end = 32.dp),
             )
             val modifier = Modifier.size(24.dp).align(Alignment.CenterEnd)
             when (searchBarEnd) {
@@ -318,17 +333,22 @@ sealed class SearchBarEnd {
 }
 
 @Composable
-private fun SearchBarBox(body: @Composable RowScope.() -> Unit) {
+fun SearchBarBox(
+    rowModifier: Modifier = Modifier,
+    elevation: Dp,
+    horizontalPadding: Dp,
+    body: @Composable RowScope.() -> Unit,
+) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        elevation = 2.dp,
+        elevation = elevation,
         modifier = Modifier.fillMaxWidth()
             .height(48.dp)
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = horizontalPadding)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize()
+            modifier = rowModifier.fillMaxSize()
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

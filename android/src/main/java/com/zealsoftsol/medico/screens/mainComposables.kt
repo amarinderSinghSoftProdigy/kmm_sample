@@ -31,11 +31,13 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
@@ -49,6 +51,11 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.management.AddRetailerScreen
+import com.zealsoftsol.medico.screens.management.ManagementScreen
+import com.zealsoftsol.medico.screens.management.PreviewUserScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
@@ -112,7 +119,15 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 modifier = Modifier
                                     .weight(0.15f)
                                     .padding(16.dp)
-                                    .clickable(onClick = { scaffoldState.drawerState.open() })
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                            when (info.icon) {
+                                                ScopeIcon.BACK -> scope.goBack()
+                                                ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
+                                            }
+                                        }
+                                    )
                             )
                             Row(
                                 modifier = Modifier
@@ -165,7 +180,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                         WelcomeScreen(
                             fullName = user.value.fullName(),
                             option = if (!user.value.isDocumentUploaded) {
-                                if (it is AadhaarDataHolder) {
+                                if (it is AadhaarDataComponent) {
                                     WelcomeOption.Upload.Aadhaar(it) { it.showBottomSheet() }
                                 } else {
                                     WelcomeOption.Upload.DrugLicense { it.showBottomSheet() }
@@ -178,6 +193,9 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     is DashboardScope -> Unit
                     is ProductInfoScope -> ProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
+                    is ManagementScope.User -> ManagementScreen(it)
+                    is ManagementScope.AddRetailer -> AddRetailerScreen(it)
+                    is PreviewUserScope -> PreviewUserScreen(it)
                 }
             }
         },

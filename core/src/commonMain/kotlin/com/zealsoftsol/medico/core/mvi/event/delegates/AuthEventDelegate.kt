@@ -37,11 +37,11 @@ internal class AuthEventDelegate(
             }
             if (isSuccess) {
                 if (withProgress { userRepo.loadUserFromServer() }) {
-                    dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+                    dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     val user = userRepo.requireUser()
                     setScope(
-                        if (user.isVerified)
-                            DashboardScope.get(userRepo.getUserDataSource())
+                        if (user.isActivated)
+                            DashboardScope.get(user, userRepo.getUserDataSource())
                         else
                             LimitedAccessScope.get(user, userRepo.getUserDataSource())
                     )
@@ -58,7 +58,7 @@ internal class AuthEventDelegate(
         navigator.withProgress {
             if (notifyServer) userRepo.logout() else true
         }.ifTrue {
-            navigator.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+            navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
             navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }

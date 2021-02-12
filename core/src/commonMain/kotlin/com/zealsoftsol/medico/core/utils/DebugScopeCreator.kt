@@ -31,6 +31,10 @@ object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
+    fun selectUserType() {
+        nav.setScope(SignUpScope.SelectUserType.get())
+    }
+
     fun signUpDetailsNonSeasonBoy(
         userType: UserType,
         email: String,
@@ -171,7 +175,7 @@ object DebugScopeCreator {
                 "",
                 ""
             ) else User.Details.DrugLicense("", "", "", "", "url"),
-            isVerified = false,
+            isActivated = false,
             isDocumentUploaded = isDocumentUploaded
         )
         nav.setScope(
@@ -183,9 +187,9 @@ object DebugScopeCreator {
     }
 
     fun dashboardScreen() {
-        nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+        nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
-            DashboardScope.get(ReadOnlyDataSource(MutableStateFlow(testUser)))
+            DashboardScope.get(testUser, ReadOnlyDataSource(MutableStateFlow(testUser)))
         )
     }
 
@@ -194,9 +198,10 @@ object DebugScopeCreator {
     }
 
     fun productScreen() {
-        nav.dropScope(Navigator.DropStrategy.ALL, updateDataSource = false)
+        nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             ProductInfoScope.get(
+                user = testUser,
                 userDataSource = ReadOnlyDataSource(MutableStateFlow(testUser)),
                 product = ProductData(
                     active = true,
@@ -242,6 +247,7 @@ private inline val testUser
         "User",
         "test@mail.com",
         "000",
+        "unitcode",
         UserType.STOCKIST,
         User.Details.DrugLicense("", "", "", "", "url"),
         true,

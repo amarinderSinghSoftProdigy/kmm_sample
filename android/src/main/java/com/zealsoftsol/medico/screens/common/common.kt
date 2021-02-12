@@ -1,7 +1,11 @@
-package com.zealsoftsol.medico.screens
+package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.AmbientIndication
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
+import androidx.compose.foundation.IndicationInstance
+import androidx.compose.foundation.Interaction
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,17 +19,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -35,25 +42,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.AmbientConfiguration
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.AndroidDialogProperties
 import androidx.compose.ui.window.Dialog
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.screens.Notification
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 
@@ -100,12 +107,47 @@ fun MedicoButton(
 }
 
 @Composable
+fun MedicoSmallButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isEnabled: Boolean = true,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = ConstColors.yellow,
+            disabledBackgroundColor = Color.LightGray,
+            contentColor = MaterialTheme.colors.onPrimary,
+            disabledContentColor = MaterialTheme.colors.onPrimary,
+        ),
+        enabled = isEnabled,
+        shape = RoundedCornerShape(5.dp),
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+        modifier = modifier.wrapContentWidth(unbounded = true).height(32.dp),
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colors.onPrimary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W700,
+            modifier = Modifier.align(Alignment.CenterVertically),
+        )
+    }
+}
+
+@Composable
 fun IndefiniteProgressBar() {
     Dialog(onDismissRequest = {}) { CircularProgressIndicator() }
 }
 
 @Composable
-private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit) {
+private fun SimpleDialog(
+    title: String,
+    text: String?,
+    onDismiss: () -> Unit,
+    canDismissOnTapOutside: Boolean,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
@@ -117,7 +159,7 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
             )
         },
         text = {
-            if (text.isNotEmpty()) {
+            if (!text.isNullOrEmpty()) {
                 Text(
                     text = text,
                     style = MaterialTheme.typography.subtitle1,
@@ -125,18 +167,30 @@ private fun ErrorDialog(title: String, text: String = "", onDismiss: () -> Unit)
             }
         },
         confirmButton = {
-            Button(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
-                elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-            ) {
-                Text(
-                    text = stringResource(id = R.string.okay),
-                    style = MaterialTheme.typography.subtitle2,
-                )
-            }
-        }
+            AlertButton(onDismiss, stringResource(id = R.string.okay))
+        },
+        properties = AndroidDialogProperties(
+            dismissOnBackPress = canDismissOnTapOutside,
+            dismissOnClickOutside = canDismissOnTapOutside,
+        )
     )
+}
+
+@Composable
+fun AlertButton(
+    onClick: () -> Unit,
+    text: String,
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
+        elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+    ) {
+        Text(
+            text = text.toUpperCase(),
+            style = MaterialTheme.typography.subtitle2,
+        )
+    }
 }
 
 @Composable
@@ -149,16 +203,17 @@ fun Scope.Host.showErrorAlert() {
         val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
-        ErrorDialog(
+        SimpleDialog(
             title = stringResource(id = titleResourceId),
             text = stringResource(id = bodyResourceId),
+            canDismissOnTapOutside = true,
             onDismiss = { dismissAlertError() }
         )
     }
 }
 
 @Composable
-fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { dismissNotification() }) {
+fun <T : WithNotifications> T.showNotificationAlert() {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
         val titleResourceId = AmbientContext.current.runCatching {
@@ -167,11 +222,20 @@ fun <T : WithNotifications> T.showNotificationAlert(onDismiss: () -> Unit = { di
         val bodyResourceId = AmbientContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
-        ErrorDialog(
-            title = stringResource(id = titleResourceId),
-            text = stringResource(id = bodyResourceId),
-            onDismiss = onDismiss
-        )
+        if (it.isSimple) {
+            SimpleDialog(
+                title = stringResource(id = titleResourceId),
+                text = if (bodyResourceId != 0) stringResource(id = bodyResourceId) else null,
+                canDismissOnTapOutside = it.isDismissible,
+                onDismiss = { dismissNotification() },
+            )
+        } else {
+            Notification(
+                title = stringResource(id = titleResourceId),
+                onDismiss = { dismissNotification() },
+                notification = it,
+            )
+        }
     }
 }
 
@@ -180,46 +244,6 @@ fun stringResourceByName(name: String): String {
     return stringResource(id = AmbientContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
     }.getOrNull() ?: 0)
-}
-
-@Composable
-fun PhoneFormatInputField(
-    hint: String,
-    text: String,
-    onValueChange: (String) -> Unit,
-): Boolean {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null || text.isEmpty()
-    InputField(
-        hint = hint,
-        text = formatted ?: text,
-        isValid = isValid,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
-    return isValid
-}
-
-@Composable
-fun PhoneOrEmailFormatInputField(
-    hint: String,
-    text: String,
-    isPhoneNumber: Boolean,
-    onValueChange: (String) -> Unit,
-) {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
-    InputField(
-        hint = hint,
-        text = formatted ?: text,
-        isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
 }
 
 @Composable
@@ -237,88 +261,6 @@ private fun getCountryCode(): String {
 }
 
 @Composable
-fun PasswordFormatInputField(
-    hint: String,
-    text: String,
-    isValid: Boolean = true,
-    onValueChange: (String) -> Unit,
-) {
-    InputField(
-        hint = hint,
-        text = text,
-        isValid = isValid,
-        visualTransformation = PasswordVisualTransformation(),
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-}
-
-@Composable
-fun InputField(
-    modifier: Modifier = Modifier,
-    hint: String,
-    text: String,
-    isValid: Boolean = true,
-    visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    maxLines: Int = 1,
-    onValueChange: (String) -> Unit,
-) {
-    TextField(
-        value = text,
-        label = {
-            Text(
-                text = hint,
-                style = TextStyle.Default
-                    .copy(
-                        color = when {
-                            text.isEmpty() -> ConstColors.gray
-                            !isValid -> MaterialTheme.colors.error
-                            else -> ConstColors.lightBlue
-                        }
-                    )
-            )
-        },
-        isErrorValue = !isValid,
-        activeColor = ConstColors.lightBlue,
-        backgroundColor = Color.White,
-        onValueChange = onValueChange,
-        visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions,
-        singleLine = maxLines == 1,
-        maxLines = maxLines,
-        modifier = modifier.fillMaxWidth(),
-    )
-}
-
-@Composable
-fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
-    input()
-    errorText?.let {
-        Spacer(modifier = Modifier.size(4.dp))
-        Text(
-            text = it,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.error,
-            modifier = Modifier.padding(start = 16.dp),
-        )
-    }
-}
-
-@Composable
-fun ReadOnlyField(text: String, labelId: Int) {
-    Text(
-        text = if (text.isEmpty()) stringResource(id = labelId) else text,
-        color = if (text.isEmpty()) ConstColors.gray else Color.Black,
-        fontSize = 14.sp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(vertical = 20.dp, horizontal = 16.dp),
-    )
-}
-
-@Composable
 fun NavigationCell(
     icon: ImageVector,
     text: String,
@@ -329,13 +271,13 @@ fun NavigationCell(
     Row(
         modifier = Modifier.fillMaxWidth()
             .clickable(indication = clickIndication, onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = icon,
             tint = color,
-            modifier = Modifier.padding(start = 18.dp),
+            modifier = Modifier.padding(start = 18.dp).size(22.dp),
         )
         Text(
             text = text,
@@ -416,4 +358,93 @@ fun BasicScreen(
             }
         }
     }
+}
+
+@Composable
+inline fun ItemPlaceholder() {
+    Image(
+        imageVector = vectorResource(R.drawable.ic_placeholder),
+    )
+}
+
+object NoOpIndication : Indication {
+
+    object NoOpIndicationInstance : IndicationInstance {
+
+        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
+            drawContent()
+            if (interactionState.contains(Interaction.Pressed)) {
+            }
+        }
+    }
+
+    override fun createInstance() = NoOpIndicationInstance
+}
+
+@Composable
+fun DataWithLabel(label: Int, data: String) {
+    Row {
+        Text(
+            text = "${stringResource(id = label)}:",
+            fontSize = 14.sp,
+            color = ConstColors.gray,
+        )
+        Space(4.dp)
+        Text(
+            text = data,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.W600,
+            color = MaterialTheme.colors.background,
+        )
+    }
+}
+
+@Composable
+fun LocationSelector(
+    chooseRemember: Any?,
+    chosenValue: String?,
+    defaultName: String,
+    dropDownItems: List<String>,
+    onSelected: (String) -> Unit,
+) {
+    val choosing = remember(chooseRemember) { mutableStateOf(false) }
+    DropdownMenu(
+        toggle = {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .background(color = Color.White)
+                    .clickable(onClick = {
+                        if (dropDownItems.isNotEmpty()) {
+                            choosing.value = true
+                        }
+                    })
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
+            ) {
+                Text(
+                    text = chosenValue ?: defaultName,
+                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    tint = ConstColors.gray,
+                )
+            }
+        },
+        expanded = choosing.value,
+        onDismissRequest = { choosing.value = false },
+        dropdownContent = {
+            dropDownItems.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        choosing.value = false
+                        onSelected(it)
+                    },
+                    content = { Text(it) },
+                )
+            }
+        }
+    )
 }

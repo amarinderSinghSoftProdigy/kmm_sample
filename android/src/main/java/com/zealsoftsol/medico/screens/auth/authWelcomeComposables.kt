@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
-import com.zealsoftsol.medico.screens.MedicoButton
-import com.zealsoftsol.medico.screens.Space
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun WelcomeScreen(
@@ -87,11 +87,11 @@ private fun UploadDocuments(option: WelcomeOption.Upload) {
     val isEnabled = if (option is WelcomeOption.Upload.Aadhaar) {
         Space(50.dp)
         AadhaarInputFields(
-            aadhaarData = option.dataHolder.aadhaarData,
-            onCardChange = { option.dataHolder.changeCard(it) },
-            onCodeChange = { option.dataHolder.changeShareCode(it) },
+            aadhaarData = option.dataComponent.aadhaarData,
+            onCardChange = { option.dataComponent.changeCard(it) },
+            onCodeChange = { option.dataComponent.changeShareCode(it) },
         )
-        option.dataHolder.isVerified.flow.collectAsState()
+        option.dataComponent.isVerified.flow.collectAsState()
     } else {
         mutableStateOf(true)
     }
@@ -116,7 +116,7 @@ sealed class WelcomeOption {
         ) : Upload()
 
         data class Aadhaar(
-            val dataHolder: AadhaarDataHolder,
+            val dataComponent: AadhaarDataComponent,
             override val buttonStringResource: Int = R.string.upload_aadhaar,
             override val hintStringResource: Int = R.string.provide_aadhaar_hint,
             override val onUpload: () -> Unit

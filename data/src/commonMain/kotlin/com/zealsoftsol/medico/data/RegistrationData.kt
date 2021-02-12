@@ -81,7 +81,13 @@ data class UserRegistration3(
     val drugLicenseNo1: String = "",
     @Required
     val drugLicenseNo2: String = "",
-) : UserRegistration()
+) : UserRegistration() {
+
+    companion object {
+        const val DRUG_LICENSE_1_PREFIX = "20B"
+        const val DRUG_LICENSE_2_PREFIX = "21B"
+    }
+}
 
 @Serializable
 data class UserValidation3(
@@ -190,6 +196,47 @@ data class SubmitRegistration(
             state = userRegistration2.state,
             ipAddress = ipAddress,
             isSeasonBoy = true,
+        )
+    }
+}
+
+@Serializable
+data class CreateRetailer(
+    @SerialName("sbUnitCode")
+    val seasonBoyUnitCode: String,
+    val tradeName: String,
+    val gstin: String,
+    val panNumber: String,
+    val drugLicenseNo1: String,
+    val drugLicenseNo2: String,
+    val pincode: String,
+    val addressLine1: String,
+    val location: String,
+    @SerialName("cityTown")
+    val city: String,
+    val district: String,
+    val state: String,
+    val termsAndConditions: Boolean = true,
+) {
+    companion object {
+
+        fun from(
+            unitCode: String,
+            userRegistration2: UserRegistration2,
+            userRegistration3: UserRegistration3,
+        ) = CreateRetailer(
+            seasonBoyUnitCode = unitCode,
+            tradeName = userRegistration3.tradeName,
+            gstin = userRegistration3.gstin,
+            panNumber = userRegistration3.panNumber,
+            drugLicenseNo1 = userRegistration3.drugLicenseNo1,
+            drugLicenseNo2 = userRegistration3.drugLicenseNo2,
+            pincode = userRegistration2.pincode,
+            addressLine1 = userRegistration2.addressLine1,
+            location = userRegistration2.location,
+            city = userRegistration2.city,
+            district = userRegistration2.district,
+            state = userRegistration2.state,
         )
     }
 }

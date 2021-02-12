@@ -1,14 +1,18 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration2
+import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
-internal sealed class Event {
+sealed class Event {
     abstract val typeClazz: KClass<*>
 
     sealed class Action : Event() {
@@ -53,6 +57,8 @@ internal sealed class Event {
             object Skip : Registration()
             object AcceptWelcome : Registration()
             object ShowUploadBottomSheet : Registration()
+
+            object ConfirmCreateRetailer : Registration()
         }
 
         sealed class Search : Action() {
@@ -70,6 +76,18 @@ internal sealed class Event {
 
             data class Select(val productCode: String) : Product()
         }
+
+        sealed class Management : Action() {
+            override val typeClazz: KClass<*> = Management::class
+
+            data class Select(val item: EntityInfo) : Management()
+            data class Search(val value: String) : Management()
+            object Load : Management()
+            data class RequestSubscribe(val item: EntityInfo) : Management()
+            data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
+            data class ChooseNumberOfDays(val days: Int) : Management()
+            object VerifyRetailerTraderDetails : Management()
+        }
     }
 
     sealed class Transition : Event() {
@@ -84,5 +102,14 @@ internal sealed class Event {
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
+        data class Management(val manageUserType: UserType) : Transition()
+        object RequestCreateRetailer : Transition()
+        object AddRetailerAddress : Transition()
+        data class PreviewUser(
+            val registration2: UserRegistration2,
+            val registration3: UserRegistration3,
+        ) : Transition()
+
+        object CloseNotification : Transition()
     }
 }

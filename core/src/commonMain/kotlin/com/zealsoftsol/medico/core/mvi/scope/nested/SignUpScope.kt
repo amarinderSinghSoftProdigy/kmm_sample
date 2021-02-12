@@ -7,7 +7,10 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataHolder
+import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
+import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
+import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
@@ -57,7 +60,7 @@ sealed class SignUpScope(titleId: String) :
 
     class PersonalData(
         val registration: DataSource<UserRegistration1>,
-        val validation: DataSource<UserValidation1?>,
+        val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : SignUpScope("personal_data") {
 
         init {
@@ -65,33 +68,45 @@ sealed class SignUpScope(titleId: String) :
         }
 
         fun changeFirstName(firstName: String) {
-            registration.value = registration.value.copy(firstName = firstName)
-            checkCanGoNext()
+            trimInput(firstName, registration.value.firstName) {
+                registration.value = registration.value.copy(firstName = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeLastName(lastName: String) {
-            registration.value = registration.value.copy(lastName = lastName)
-            checkCanGoNext()
+            trimInput(lastName, registration.value.lastName) {
+                registration.value = registration.value.copy(lastName = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeEmail(email: String) {
-            registration.value = registration.value.copy(email = email)
-            checkCanGoNext()
+            trimInput(email, registration.value.email) {
+                registration.value = registration.value.copy(email = it)
+                checkCanGoNext()
+            }
         }
 
         fun changePhoneNumber(phoneNumber: String) {
-            registration.value = registration.value.copy(phoneNumber = phoneNumber)
-            checkCanGoNext()
+            trimInput(phoneNumber, registration.value.phoneNumber) {
+                registration.value = registration.value.copy(phoneNumber = it)
+                checkCanGoNext()
+            }
         }
 
         fun changePassword(password: String) {
-            registration.value = registration.value.copy(password = password)
-            checkCanGoNext()
+            trimInput(password, registration.value.password) {
+                registration.value = registration.value.copy(password = it)
+                checkCanGoNext()
+            }
         }
 
         fun changeRepeatPassword(repeatPassword: String) {
-            registration.value = registration.value.copy(verifyPassword = repeatPassword)
-            checkCanGoNext()
+            trimInput(repeatPassword, registration.value.verifyPassword) {
+                registration.value = registration.value.copy(verifyPassword = it)
+                checkCanGoNext()
+            }
         }
 
         /**
@@ -111,38 +126,18 @@ sealed class SignUpScope(titleId: String) :
 
     class AddressData(
         internal val registrationStep1: UserRegistration1,
-        val locationData: DataSource<LocationData?>,
-        val registration: DataSource<UserRegistration2>,
+        override val locationData: DataSource<LocationData?>,
+        override val registration: DataSource<UserRegistration2>,
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
-        val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
-    ) : SignUpScope("address") {
+        override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
+    ) : SignUpScope("address"), AddressComponent {
 
         init {
-            checkCanGoNext()
+            checkData()
         }
 
-        /**
-         * Updates [locationData] with 1s debounce
-         */
-        fun changePincode(pincode: String) {
-            if (pincode.length <= 6) {
-                EventCollector.sendEvent(Event.Action.Registration.UpdatePincode(pincode))
-            }
-        }
-
-        fun changeAddressLine(address: String) {
-            registration.value = registration.value.copy(addressLine1 = address)
-            checkCanGoNext()
-        }
-
-        fun changeLocation(location: String) {
-            registration.value = registration.value.copy(location = location)
-            checkCanGoNext()
-        }
-
-        fun changeCity(city: String) {
-            registration.value = registration.value.copy(city = city)
-            checkCanGoNext()
+        override fun onDataValid(isValid: Boolean) {
+            canGoNext.value = isValid
         }
 
         /**
@@ -151,12 +146,6 @@ sealed class SignUpScope(titleId: String) :
         fun validate(userRegistration: UserRegistration2) =
             EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
-        override fun checkCanGoNext() {
-            canGoNext.value = registration.value.run {
-                pincode.length == 6 && addressLine1.isNotEmpty() && location.isNotEmpty()
-                        && city.isNotEmpty() && district.isNotEmpty() && state.isNotEmpty()
-            }
-        }
     }
 
     sealed class Details(
@@ -170,9 +159,10 @@ sealed class SignUpScope(titleId: String) :
         class TraderData(
             registrationStep1: UserRegistration1,
             registrationStep2: UserRegistration2,
-            val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
-            val validation: DataSource<UserValidation3?> = DataSource(null),
-        ) : Details("trader_details", registrationStep1, registrationStep2) {
+            override val registration: DataSource<UserRegistration3> = DataSource(UserRegistration3()),
+            override val validation: DataSource<UserValidation3?> = DataSource(null),
+        ) : Details("trader_details", registrationStep1, registrationStep2),
+            TraderDetailsComponent {
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,
@@ -183,43 +173,14 @@ sealed class SignUpScope(titleId: String) :
             )
 
             init {
-                checkCanGoNext()
+                checkData()
                 require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
                     "trader data not available for season boy"
                 }
             }
 
-            fun changeTradeName(tradeName: String) {
-                registration.value = registration.value.copy(tradeName = tradeName)
-                checkCanGoNext()
-            }
-
-            fun changeGstin(gstin: String) {
-                if (gstin.length <= 15) {
-                    registration.value = registration.value.copy(gstin = gstin)
-                    checkCanGoNext()
-                }
-            }
-
-            fun changePan(panNumber: String) {
-                if (panNumber.length <= 10) {
-                    registration.value = registration.value.copy(panNumber = panNumber)
-                    checkCanGoNext()
-                }
-            }
-
-            fun changeDrugLicense1(drugLicenseNo: String) {
-                if (drugLicenseNo.length <= 30) {
-                    registration.value = registration.value.copy(drugLicenseNo1 = drugLicenseNo)
-                    checkCanGoNext()
-                }
-            }
-
-            fun changeDrugLicense2(drugLicenseNo: String) {
-                if (drugLicenseNo.length <= 30) {
-                    registration.value = registration.value.copy(drugLicenseNo2 = drugLicenseNo)
-                    checkCanGoNext()
-                }
+            override fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
             }
 
             /**
@@ -227,14 +188,6 @@ sealed class SignUpScope(titleId: String) :
              */
             fun validate(userRegistration: UserRegistration3) =
                 EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
-
-            override fun checkCanGoNext() {
-                canGoNext.value = registration.value.run {
-                    tradeName.isNotEmpty()
-                            && (gstin.isNotEmpty() || panNumber.isNotEmpty())
-                            && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
-                }
-            }
         }
 
         class Aadhaar(
@@ -242,7 +195,7 @@ sealed class SignUpScope(titleId: String) :
             registrationStep2: UserRegistration2,
             override val aadhaarData: DataSource<AadhaarData> = DataSource(AadhaarData("", "")),
         ) : Details("details", registrationStep1, registrationStep2),
-            AadhaarDataHolder {
+            AadhaarDataComponent {
 
             override val isVerified: DataSource<Boolean> = canGoNext
 

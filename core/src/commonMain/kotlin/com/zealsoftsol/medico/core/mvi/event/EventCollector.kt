@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -15,7 +16,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
-import com.zealsoftsol.medico.core.network.NetworkClient
+import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -30,7 +31,9 @@ import kotlin.reflect.KClass
 
 internal class EventCollector(
     navigator: Navigator,
-    networkClient: NetworkClient,
+    searchNetworkScope: NetworkScope.Search,
+    productNetworkScope: NetworkScope.Product,
+    managementNetworkScope: NetworkScope.Management,
     private val userRepo: UserRepo,
 ) {
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
@@ -39,8 +42,17 @@ internal class EventCollector(
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
-        Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, networkClient),
-        Event.Action.Product::class to ProductEventDelegate(navigator, userRepo, networkClient),
+        Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, searchNetworkScope),
+        Event.Action.Product::class to ProductEventDelegate(
+            navigator,
+            userRepo,
+            productNetworkScope
+        ),
+        Event.Action.Management::class to ManagementEventDelegate(
+            navigator,
+            userRepo,
+            managementNetworkScope,
+        ),
     )
 
     init {
@@ -52,7 +64,8 @@ internal class EventCollector(
     fun getStartingScope(): Scope {
         return when (userRepo.getUserAccess()) {
             UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
-                userRepo.getUserDataSource(),
+                user = userRepo.requireUser(),
+                userDataSource = userRepo.getUserDataSource(),
             )
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
                 userRepo.requireUser(),

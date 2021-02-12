@@ -35,11 +35,11 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.screens.MedicoButton
-import com.zealsoftsol.medico.screens.PasswordFormatInputField
-import com.zealsoftsol.medico.screens.PhoneOrEmailFormatInputField
-import com.zealsoftsol.medico.screens.TabBar
-import com.zealsoftsol.medico.screens.showErrorAlert
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
+import com.zealsoftsol.medico.screens.common.PhoneOrEmailFormatInputField
+import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.showErrorAlert
 
 @Composable
 fun AuthScreen(scope: LogInScope) {
@@ -90,7 +90,7 @@ fun AuthScreen(scope: LogInScope) {
                 )
             }
         }
-        AuthTab(Modifier.align(Alignment.Center), scope)
+        AuthTab(Modifier.padding(top = 56.dp).align(Alignment.Center), scope)
 
         scope.showErrorAlert()
     }
