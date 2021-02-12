@@ -116,6 +116,7 @@ struct AddRetailerScreen: View {
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
                                                  text: self.registration.value?.drugLicenseNo1,
                                                  onTextChange: { scope.changeDrugLicense1(drugLicenseNo: $0) },
+                                                 constText: "20B",
                                                  isValid: drugLicenseNo1ErrorMessageKey == nil,
                                                  errorMessageKey: drugLicenseNo1ErrorMessageKey)
                         .disableAutocorrection(true)
@@ -125,6 +126,7 @@ struct AddRetailerScreen: View {
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",
                                                  text: self.registration.value?.drugLicenseNo2,
                                                  onTextChange: { scope.changeDrugLicense2(drugLicenseNo: $0) },
+                                                 constText: "21B",
                                                  isValid: drugLicenseNo2ErrorMessageKey == nil,
                                                  errorMessageKey: drugLicenseNo2ErrorMessageKey)
                         .disableAutocorrection(true)

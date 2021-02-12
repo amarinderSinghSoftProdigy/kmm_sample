@@ -17,6 +17,8 @@ struct FloatingPlaceholderTextField: View {
     
     let onTextChange: (String) -> Void
     
+    let constText: String?
+    
     let height: CGFloat
     
     let isValid: Bool
@@ -25,23 +27,34 @@ struct FloatingPlaceholderTextField: View {
     @State var fieldSelected = false
     
     var body: some View {
-        TextField("", text: text, onEditingChanged: { (changed) in
-            self.fieldSelected = changed
-        }, onCommit: {
-            self.fieldSelected = false
-        })
-        .keyboardType(keyboardType)
+        HStack {
+            if let constText = self.constText,
+               !constText.isEmpty {
+                LocalizedText(localizationKey: constText,
+                              fontSize: 15,
+                              multilineTextAlignment: .leading)
+            }
+            
+            TextField("", text: text, onEditingChanged: { (changed) in
+                self.fieldSelected = changed
+            }, onCommit: {
+                self.fieldSelected = false
+            })
+            .keyboardType(keyboardType)
+        }
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
                                               text: text.wrappedValue,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
-                                              errorMessageKey: errorMessageKey))
+                                              errorMessageKey: errorMessageKey,
+                                              alwaysPlaceholderMoved: constText?.isEmpty == false))
     }
     
     init(placeholderLocalizedStringKey: String,
          text: String?,
          onTextChange: @escaping (String) -> Void,
+         constText: String? = nil,
          height: CGFloat = 50,
          keyboardType: UIKeyboardType = .default,
          isValid: Bool = true,
@@ -55,6 +68,8 @@ struct FloatingPlaceholderTextField: View {
         })
         
         self.onTextChange = onTextChange
+        
+        self.constText = constText
         
         self.height = height
         self.keyboardType = keyboardType
@@ -105,8 +120,8 @@ struct FloatingPlaceholderSecureField: View {
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
-                                              showPlaceholderWithText: showPlaceholderWithText,
-                                              errorMessageKey: errorMessageKey))
+                                              errorMessageKey: errorMessageKey,
+                                              showPlaceholderWithText: showPlaceholderWithText))
         .autocapitalization(.none)
         .simultaneousGesture(TapGesture().onEnded {
             self.fieldSelected = true
@@ -163,6 +178,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
     let fieldSelected: Bool
     let isValid: Bool
     let showPlaceholderWithText: Bool
+    let alwaysPlaceholderMoved: Bool
     
     let errorMessageKey: String?
     
@@ -175,7 +191,8 @@ struct FloatingPlaceholderModifier: ViewModifier {
                     .fill(appColor: .white)
                     .frame(height: height)
                 
-                let placeholderMoved = showPlaceholderWithText && (fieldSelected ||  !text.isEmpty)
+                let placeholderMoved = alwaysPlaceholderMoved ||
+                    showPlaceholderWithText && (fieldSelected ||  !text.isEmpty)
                 let fontSize: CGFloat = placeholderMoved ? 11 : 15
                 let textOffset: CGFloat = placeholderMoved ? -10 : 0
                 let textColor: AppColor = placeholderMoved ?
@@ -217,9 +234,14 @@ struct FloatingPlaceholderModifier: ViewModifier {
         }
     }
     
-    init(placeholderLocalizedStringKey: String, text: String,
-         height: CGFloat, fieldSelected: Bool, isValid: Bool = true, showPlaceholderWithText: Bool = true,
-         errorMessageKey: String? = nil) {
+    init(placeholderLocalizedStringKey: String,
+         text: String,
+         height: CGFloat,
+         fieldSelected: Bool,
+         isValid: Bool = true,
+         errorMessageKey: String? = nil,
+         showPlaceholderWithText: Bool = true,
+         alwaysPlaceholderMoved: Bool = false) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         self.text = text
         
@@ -229,6 +251,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
         self.isValid = text.isEmpty || isValid
         self.showPlaceholderWithText = showPlaceholderWithText
         
+        self.alwaysPlaceholderMoved = alwaysPlaceholderMoved
         self.errorMessageKey = errorMessageKey
     }
 }
