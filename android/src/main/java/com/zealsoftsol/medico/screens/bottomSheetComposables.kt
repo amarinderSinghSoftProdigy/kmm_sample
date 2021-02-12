@@ -247,7 +247,7 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
                     )
                 },
             )
-            if (previewItem is EntityInfo && previewItem.subscriptionData == null) {
+            if (previewItem is EntityInfo && previewItem.subscriptionData != null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,
