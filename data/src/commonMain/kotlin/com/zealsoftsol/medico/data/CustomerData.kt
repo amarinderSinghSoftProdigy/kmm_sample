@@ -23,8 +23,6 @@ data class CustomerData(
     @SerialName("mobileNumber")
     val phoneNumber: String,
     val panNumber: String,
-    val traderFooter: String,
-    val traderHeader: String,
     val tradeName: String,
     val unitCode: String,
 )
