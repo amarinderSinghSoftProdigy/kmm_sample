@@ -81,7 +81,13 @@ data class UserRegistration3(
     val drugLicenseNo1: String = "",
     @Required
     val drugLicenseNo2: String = "",
-) : UserRegistration()
+) : UserRegistration() {
+
+    companion object {
+        const val DRUG_LICENSE_1_PREFIX = "20B"
+        const val DRUG_LICENSE_2_PREFIX = "21B"
+    }
+}
 
 @Serializable
 data class UserValidation3(
