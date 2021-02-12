@@ -40,12 +40,12 @@ struct EntityInfoBottomSheet: ViewModifier {
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(entityInfo.traderName)
+                    Text(entityInfo.tradeName)
                         .medicoText(textWeight: .semiBold,
                                     fontSize: 20,
                                     multilineTextAlignment: .leading)
                     
-                    Text(entityInfo.city)
+                    Text(entityInfo.geoData.city)
                         .medicoText(textWeight: .medium,
                                     color: .grey3,
                                     multilineTextAlignment: .leading)
@@ -60,10 +60,15 @@ struct EntityInfoBottomSheet: ViewModifier {
                 VStack(alignment: .leading, spacing: 5) {
                     UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: entityInfo.gstin)
                     
-                    if let subscriptionData = entityInfo.subscriptionData{
+                    if let subscriptionData = entityInfo.subscriptionData {
                         UserInfoItemDetailsPanel(titleKey: "status", valueKey: subscriptionData.status.serverValue)
                         UserInfoItemDetailsPanel(titleKey: "payment_method", valueKey: subscriptionData.paymentMethod.serverValue)
-                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: subscriptionData.orders)
+                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: String(subscriptionData.orders))
+                    }
+                    
+                    if let seasonBoyRetailerData = entityInfo.seasonBoyRetailerData {
+                        UserInfoItemDetailsPanel(titleKey: "orders",
+                                                 valueKey: String(seasonBoyRetailerData.orders))
                     }
                 }
                 
@@ -87,7 +92,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                         .foregroundColor(appColor: .darkBlue)
                         .frame(width: 24, height: 24)
                     
-                    Text(seasonBoy.traderName)
+                    Text(seasonBoy.tradeName)
                         .medicoText(textWeight: .semiBold,
                                     fontSize: 20,
                                     multilineTextAlignment: .leading)
@@ -104,10 +109,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                     .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
-//                    getDataPanel(withTitleKey: "email_address:", withValueKey: seasonBoy.gstin)
-                    UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.location)
-//                    getDataPanel(withTitleKey: "pending_orders", withValueKey: "10")
-//                    getDataPanel(withTitleKey: "total_orders", withValueKey: "24")
+                    UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.geoData.fullAddress())
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
@@ -131,9 +133,9 @@ struct NonSeasonBoyImageAndAddressItem: View {
             
             VStack(alignment: .leading, spacing: 13) {
                 VStack(alignment: .leading,spacing: 5) {
-                    SmallAddressView(location: previewItem.location)
+                    SmallAddressView(location: previewItem.geoData.fullAddress())
                     
-                    Text(previewItem.distance)
+                    Text(previewItem.geoData.distance)
                         .medicoText(fontSize: 12,
                                     color: .grey3,
                                     multilineTextAlignment: .leading)

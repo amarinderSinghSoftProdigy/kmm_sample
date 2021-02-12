@@ -16,7 +16,7 @@ struct PreviewUserScreen: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(scope.traderName)
+            Text(scope.tradeName)
                 .medicoText(textWeight: .semiBold,
                             fontSize: 16,
                             multilineTextAlignment: .leading)

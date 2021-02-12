@@ -191,12 +191,12 @@ struct UserManagementScreen: View {
                 
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(user.traderName)
+                        Text(user.tradeName)
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 16,
                                         multilineTextAlignment: .leading)
                         
-                        SmallAddressView(location: user.location)
+                        SmallAddressView(location: user.geoData.fullAddress())
                     }
                     
                     Spacer()
@@ -223,7 +223,7 @@ struct UserManagementScreen: View {
                     .cornerRadius(5)
                 
                 HStack {
-                    Text(seasonBoy.traderName)
+                    Text(seasonBoy.tradeName)
                         .medicoText(textWeight: .bold,
                                     fontSize: 15,
                                     multilineTextAlignment: .leading)
