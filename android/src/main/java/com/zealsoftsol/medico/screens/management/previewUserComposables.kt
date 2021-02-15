@@ -25,7 +25,6 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
-import com.zealsoftsol.medico.screens.common.showNotificationAlert
 
 @Composable
 fun PreviewUserScreen(scope: PreviewUserScope) {
@@ -40,7 +39,7 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
                 modifier = Modifier.padding(end = 30.dp),
             )
             Space(4.dp)
-            NonSeasonBoyPreviewItem(scope, {})
+            NonSeasonBoyPreviewItem(scope, null)
             Space(12.dp)
             DataWithLabel(label = R.string.gstin_num, data = scope.gstin)
             val formatter = rememberPhoneNumberFormatter()
@@ -70,5 +69,5 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
             onClick = { scope.addRetailer() },
         )
     }
-    scope.showNotificationAlert()
+//    scope.showNotificationAlert()
 }

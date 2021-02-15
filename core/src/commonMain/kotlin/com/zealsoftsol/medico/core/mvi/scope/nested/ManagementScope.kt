@@ -111,19 +111,17 @@ sealed class ManagementScope(
             override val registration: DataSource<UserRegistration2>,
             override val locationData: DataSource<LocationData?> = DataSource(null),
             override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
+            override val notifications: DataSource<ScopeNotification?> = DataSource(null),
         ) : AddRetailer(icon = ScopeIcon.BACK),
-            AddressComponent {
+            AddressComponent,
+            CommonScope.WithNotifications {
 
             override fun onDataValid(isValid: Boolean) {
                 canGoNext.value = isValid
             }
 
-            override fun next() = EventCollector.sendEvent(
-                Event.Transition.PreviewUser(
-                    registration.value,
-                    registration3
-                )
-            )
+            override fun next() =
+                EventCollector.sendEvent(Event.Action.Registration.ConfirmCreateRetailer)
         }
     }
 
@@ -167,6 +165,14 @@ sealed class ManagementScope(
         override val isDismissible: Boolean = true
         override val title: String = "thank_you_for_request"
         override val body: String? = null
+    }
+
+    data class Congratulations(val tradeName: String) : ScopeNotification {
+        override val dismissEvent: Event = Event.Transition.Refresh
+        override val isSimple: Boolean = false
+        override val isDismissible: Boolean = true
+        override val title: String = "congratulations"
+        override val body: String = "retailer_added_template"
     }
 
     enum class Tab(val stringId: String, val criteria: ManagementCriteria) {

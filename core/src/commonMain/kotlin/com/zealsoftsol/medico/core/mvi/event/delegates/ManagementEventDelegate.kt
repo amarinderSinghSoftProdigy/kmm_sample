@@ -61,6 +61,7 @@ internal class ManagementEventDelegate(
             hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
                 item,
                 isSeasonBoy = it is ManagementScope.User.SeasonBoy,
+                canSubscribe = it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
             )
         }
     }

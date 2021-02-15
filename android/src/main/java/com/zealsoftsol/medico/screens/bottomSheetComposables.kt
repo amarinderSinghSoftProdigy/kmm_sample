@@ -77,7 +77,9 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
                 entityInfo = bs.entityInfo,
                 isForSeasonBoy = bs.isSeasonBoy,
-                onSubscribe = { bs.subscribe() },
+                onSubscribe = if (bs.canSubscribe) {
+                    { bs.subscribe() }
+                } else null,
                 onDismiss = { dismissBottomSheet() },
             )
         }
@@ -125,7 +127,7 @@ private fun DocumentUploadBottomSheet(
 private fun PreviewItemBottomSheet(
     entityInfo: EntityInfo,
     isForSeasonBoy: Boolean,
-    onSubscribe: () -> Unit,
+    onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
@@ -209,7 +211,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 }
 
 @Composable
-fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
+fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?) {
     Text(
         text = previewItem.geoData.city,
         fontSize = 14.sp,
@@ -247,7 +249,7 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
                     )
                 },
             )
-            if (previewItem is EntityInfo && previewItem.subscriptionData != null) {
+            if (previewItem is EntityInfo && onSubscribe != null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,

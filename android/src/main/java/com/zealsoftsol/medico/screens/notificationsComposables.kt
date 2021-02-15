@@ -24,7 +24,6 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.common.AlertButton
 import com.zealsoftsol.medico.screens.common.InputField
@@ -46,7 +45,7 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
             when (notification) {
                 is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(notification)
                 is ManagementScope.ChooseNumberOfDays -> BodyForChooseNumberOfDays(notification)
-                is PreviewUserScope.Congratulations -> Text(
+                is ManagementScope.Congratulations -> Text(
                     text = String.format(
                         stringResource(id = R.string.retailer_added_template),
                         notification.tradeName
@@ -70,7 +69,7 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
                         text = stringResource(id = R.string.save),
                     )
                 }
-                is PreviewUserScope.Congratulations -> Row(
+                is ManagementScope.Congratulations -> Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()
                 ) {
