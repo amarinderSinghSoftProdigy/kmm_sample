@@ -39,7 +39,7 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
                 modifier = Modifier.padding(end = 30.dp),
             )
             Space(4.dp)
-            NonSeasonBoyPreviewItem(scope, {})
+            NonSeasonBoyPreviewItem(scope, null)
             Space(12.dp)
             DataWithLabel(label = R.string.gstin_num, data = scope.gstin)
             val formatter = rememberPhoneNumberFormatter()
