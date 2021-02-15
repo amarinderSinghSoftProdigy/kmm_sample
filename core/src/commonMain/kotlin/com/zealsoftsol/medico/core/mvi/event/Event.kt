@@ -92,6 +92,7 @@ sealed class Event {
         override val typeClazz: KClass<*> = Transition::class
 
         object Back : Transition()
+        object Refresh : Transition()
         object SignUp : Transition()
         object ForgetPassword : Transition()
         object ChangePassword : Transition()

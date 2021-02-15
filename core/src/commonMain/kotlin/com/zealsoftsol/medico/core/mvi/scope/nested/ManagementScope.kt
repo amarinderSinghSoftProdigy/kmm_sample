@@ -168,7 +168,7 @@ sealed class ManagementScope(
     }
 
     data class Congratulations(val tradeName: String) : ScopeNotification {
-        override val dismissEvent: Event = Event.Transition.Back
+        override val dismissEvent: Event = Event.Transition.Refresh
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
         override val title: String = "congratulations"

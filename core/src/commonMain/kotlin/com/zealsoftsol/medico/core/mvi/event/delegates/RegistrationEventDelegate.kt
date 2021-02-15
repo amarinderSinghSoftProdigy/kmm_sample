@@ -225,7 +225,7 @@ internal class RegistrationEventDelegate(
             if (isSuccess) {
                 dropScope(
                     Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
-                    updateDataSource = false
+                    updateDataSource = false,
                 )
                 it.notifications.value = ManagementScope.Congratulations(it.registration3.tradeName)
             } else {
