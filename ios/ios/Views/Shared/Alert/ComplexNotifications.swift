@@ -35,7 +35,7 @@ struct ComplexNotificationAlert: View {
             
             if dismissAction == nil { dismissAction = { self.hideKeyboard() } }
             
-        case let notification as PreviewUserScope.Congratulations:
+        case let notification as ManagementScope.AddRetailerAddress.Congratulations:
             titleKey = "congratulations"
             button = .init(text: "retailers_list",
                            action: dismissAction)

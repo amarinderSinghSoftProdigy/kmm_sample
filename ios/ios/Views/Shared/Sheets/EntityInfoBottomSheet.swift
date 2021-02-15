@@ -25,8 +25,10 @@ struct EntityInfoBottomSheet: ViewModifier {
                     SeasonBoyDetailsItem(seasonBoy: bottomSheet.entityInfo)
                 }
                 else {
+                    let onSubscribe: (() -> ())? = bottomSheet.canSubscribe ? { bottomSheet.subscribe() } : nil
+                    
                     NonSeasonBoyDetailsItem(entityInfo: bottomSheet.entityInfo,
-                                            onSubscribe: { bottomSheet.subscribe() })
+                                            onSubscribe: onSubscribe)
                 }
             }
             .edgesIgnoringSafeArea(.all)
@@ -35,7 +37,7 @@ struct EntityInfoBottomSheet: ViewModifier {
     
     private struct NonSeasonBoyDetailsItem: View {
         let entityInfo: DataEntityInfo
-        let onSubscribe: () -> ()
+        let onSubscribe: (() -> ())?
         
         var body: some View {
             VStack(alignment: .leading, spacing: 16) {
@@ -121,7 +123,7 @@ struct EntityInfoBottomSheet: ViewModifier {
 
 struct NonSeasonBoyImageAndAddressItem: View {
     let previewItem: DataPreviewItem
-    let onSubscribe: () -> ()
+    let onSubscribe: (() -> ())?
     
     let imageSize: CGFloat
     let fontSize: CGFloat
@@ -147,7 +149,8 @@ struct NonSeasonBoyImageAndAddressItem: View {
                                   multilineTextAlignment: .leading)
                 }
                 
-                if let entityInfo = self.previewItem as? DataEntityInfo,
+                if let onSubscribe = self.onSubscribe,
+                   let entityInfo = self.previewItem as? DataEntityInfo,
                    entityInfo.subscriptionData == nil {
                     MedicoButton(localizedStringKey: "subscribe",
                                  width: 91,
@@ -163,7 +166,7 @@ struct NonSeasonBoyImageAndAddressItem: View {
     }
     
     init(previewItem: DataPreviewItem,
-         onSubscribe: @escaping () -> (),
+         onSubscribe: (() -> ())?,
          imageSize: CGFloat = 125,
          fontSize: CGFloat = 14) {
         self.previewItem = previewItem

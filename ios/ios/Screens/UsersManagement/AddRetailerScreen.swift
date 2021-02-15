@@ -200,6 +200,7 @@ struct AddRetailerScreen: View {
                 ReadOnlyTextField(placeholder: "state",
                                     text: self.registration.value?.state)
             }
+            .notificationAlertSender(withHandler: scope)
         }
         
         init(scope: ManagementScope.AddRetailerAddress) {

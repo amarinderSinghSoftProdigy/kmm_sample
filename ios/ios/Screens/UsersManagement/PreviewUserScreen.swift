@@ -44,7 +44,6 @@ struct PreviewUserScreen: View {
         .modifier(SignUpButton(isEnabled: isConfirmed.value == true,
                                buttonTextKey: "add_retailer",
                                action: { scope.addRetailer() }))
-        .notificationAlertSender(withHandler: scope)
     }
     
     init(scope: PreviewUserScope) {
