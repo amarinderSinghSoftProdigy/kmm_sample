@@ -25,7 +25,6 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
-import com.zealsoftsol.medico.screens.common.showNotificationAlert
 
 @Composable
 fun PreviewUserScreen(scope: PreviewUserScope) {
@@ -70,5 +69,5 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
             onClick = { scope.addRetailer() },
         )
     }
-    scope.showNotificationAlert()
+//    scope.showNotificationAlert()
 }

@@ -82,7 +82,6 @@ class NetworkClient(
     }
 
     private val client = HttpClient(engine) {
-        if (useNetworkInterceptor) addInterceptor(this)
         expectSuccess = true
         install(JsonFeature) {
             serializer = KotlinxSerializer(
@@ -96,9 +95,12 @@ class NetworkClient(
         install(HttpTimeout) {
             socketTimeoutMillis = 20_000
         }
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.ALL
+        if (useNetworkInterceptor) {
+            addInterceptor(this)
+            install(Logging) {
+                logger = Logger.DEFAULT
+                level = LogLevel.ALL
+            }
         }
     }
 

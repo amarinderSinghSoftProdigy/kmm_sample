@@ -7,8 +7,6 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
@@ -105,10 +103,10 @@ sealed class Event {
         data class Management(val manageUserType: UserType) : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
-        data class PreviewUser(
-            val registration2: UserRegistration2,
-            val registration3: UserRegistration3,
-        ) : Transition()
+//        data class PreviewUser(
+//            val registration2: UserRegistration2,
+//            val registration3: UserRegistration3,
+//        ) : Transition()
 
         object CloseNotification : Transition()
     }

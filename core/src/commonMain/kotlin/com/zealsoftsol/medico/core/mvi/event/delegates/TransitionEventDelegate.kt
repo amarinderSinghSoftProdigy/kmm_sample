@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
@@ -81,18 +80,18 @@ internal class TransitionEventDelegate(
                         )
                     )
                 }
-                is Event.Transition.PreviewUser -> {
-                    dropScope(
-                        Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
-                        updateDataSource = false
-                    )
-                    setScope(
-                        PreviewUserScope(
-                            event.registration2,
-                            event.registration3
-                        )
-                    )
-                }
+//                is Event.Transition.PreviewUser -> {
+//                    dropScope(
+//                        Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
+//                        updateDataSource = false
+//                    )
+//                    setScope(
+//                        PreviewUserScope(
+//                            event.registration2,
+//                            event.registration3
+//                        )
+//                    )
+//                }
                 is Event.Transition.CloseNotification -> withScope<CommonScope.WithNotifications>(
                     forceSafe = true
                 ) {
