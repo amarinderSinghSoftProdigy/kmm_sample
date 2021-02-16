@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
+import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
@@ -28,15 +29,15 @@ sealed class ManagementScope(
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
-    ) : ManagementScope() {
+    ) : ManagementScope(), Loadable<EntityInfo> {
 
-        val pagination: Pagination = Pagination()
-        val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        override val pagination: Pagination = Pagination()
+        override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
-        val searchText: DataSource<String> = DataSource("")
+        override val searchText: DataSource<String> = DataSource("")
 
         init {
-            loadItems()
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
         }
 
         fun selectTab(tab: Tab) {
@@ -44,7 +45,7 @@ sealed class ManagementScope(
             pagination.reset()
             items.value = emptyList()
             activeTab.value = tab
-            loadItems()
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
         }
 
         fun selectItem(item: EntityInfo) =
@@ -52,7 +53,8 @@ sealed class ManagementScope(
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
 
-        fun loadItems() = EventCollector.sendEvent(Event.Action.Management.Load)
+        fun loadItems() =
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))
 
         class Stockist(
             override val notifications: DataSource<ScopeNotification?> = DataSource(null)

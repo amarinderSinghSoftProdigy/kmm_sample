@@ -99,6 +99,9 @@ internal class TransitionEventDelegate(
                 ) {
                     it.notifications.value = null
                 }
+                is Event.Transition.Notifications -> setScope(
+                    NotificationScope.All()
+                )
             }
         }
     }
