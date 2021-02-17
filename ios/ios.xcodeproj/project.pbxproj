@@ -28,6 +28,7 @@
 		334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334574EF25762A5F002839C5 /* SignUpScreen.swift */; };
 		3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356497325AC453300F2D3CE /* NavigationBar.swift */; };
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
+		335FFAF925DD07F600BC5FC1 /* DashboardScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FFAF825DD07F600BC5FC1 /* DashboardScreen.swift */; };
 		33621CF62571009D004BD4CF /* MedicoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF52571009D004BD4CF /* MedicoText.swift */; };
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* PasswordScreen.swift */; };
@@ -168,6 +169,7 @@
 		334574EF25762A5F002839C5 /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		3356497325AC453300F2D3CE /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
+		335FFAF825DD07F600BC5FC1 /* DashboardScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardScreen.swift; sourceTree = "<group>"; };
 		33621CF52571009D004BD4CF /* MedicoText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicoText.swift; sourceTree = "<group>"; };
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* PasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordScreen.swift; sourceTree = "<group>"; };
@@ -413,6 +415,14 @@
 			path = Password;
 			sourceTree = "<group>";
 		};
+		335FFAF725DD07DD00BC5FC1 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				335FFAF825DD07F600BC5FC1 /* DashboardScreen.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
 		336D346E25C9732F0021F39A /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -478,6 +488,7 @@
 			isa = PBXGroup;
 			children = (
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
+				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333AE3F925821ED000C249C1 /* Main */,
 				336D346E25C9732F0021F39A /* Notifications */,
@@ -1099,6 +1110,7 @@
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,
 				33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */,
 				33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */,
+				335FFAF925DD07F600BC5FC1 /* DashboardScreen.swift in Sources */,
 				33D4743925CAAEDA00BB21CC /* SubscribeNotificationDetailsScreen.swift in Sources */,
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */,

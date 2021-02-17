@@ -30,10 +30,15 @@ enum AppColor: String {
     
     case black
     
+    case clear
+    
     var color: Color {
         switch self {
         case .white:
             return Color.white
+            
+        case .clear:
+            return Color.clear
             
         default:
             return Color(self.rawValue.capitalizeFirstLetter())

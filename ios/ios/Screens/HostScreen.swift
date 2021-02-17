@@ -161,6 +161,12 @@ struct TabBarScreen: View {
         case let scope as PreviewUserScope:
             return AnyView(PreviewUserScreen(scope: scope))
             
+        case let scope as DashboardScope:
+            return AnyView(DashboardScreen(scope: scope))
+            
+        case let scope as NotificationScope.All:
+            return AnyView(NotificationsScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }

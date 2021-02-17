@@ -185,10 +185,17 @@
 "pending_orders" = "Pending Orders:";
 "total_orders" = "Total Orders:";
 
-// MARK: Notifications Screen
+// MARK: Notifications List
 "notifications" = "Notifications";
 "unread" = "Unread";
 "read" = "Read";
+"subscribe_request_button" = "Action Required";
+"order_request_button" = "View Order";
+"accepted" = "Accepted Request";
+"declined" = "Declined Request";
+"hours %lld" = "%lld h";
+
+// MARK: Notification Details
 "new_request_to_subscribe_from" = "New request to subscribe from";
 "phone" = "Phone:";
 "edit_credit" = "Edit Credit";

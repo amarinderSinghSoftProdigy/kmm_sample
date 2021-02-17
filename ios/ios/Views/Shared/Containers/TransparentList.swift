@@ -149,6 +149,8 @@ class ListScrollData: ObservableObject {
     enum Name {
         case globalSearchProducts
         
+        case notifications
+        
         case allStockists
         case yourStockists
         case yourRetailers

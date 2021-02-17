@@ -6,32 +6,36 @@
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
+import core
 import SwiftUI
 
 struct NotificationsScreen: View {
-    @State private var notificationsSearch: NSString = ""
+    let scope: NotificationScope.All
+    
+    @ObservedObject var notifications: SwiftDataSource<NSArray>
+    @ObservedObject var notificationsSearch: SwiftDataSource<NSString>
     
     var body: some View {
         VStack(spacing: 16) {
             SearchBar(placeholderLocalizationKey: "notifications",
-                      searchText: notificationsSearch,
+                      searchText: notificationsSearch.value,
                       leadingButton: .init(emptyTextButton: .custom(AnyView(self.searchBarLeadingButton)),
                                            enteredTextButton: .smallMagnifyingGlass),
                       trailingButton: .init(emptyTextButton: .magnifyingGlass,
-                                            enteredTextButton: .clear)) { newValue in
-                notificationsSearch = newValue as NSString
+                                            enteredTextButton: .clear)) {
+                scope.search(value: $0)
             }
             
-            VStack(alignment: .leading) {
-                NotificationsSection(sectionLocalizationKey: "unread")
-                
-                AppColor.black.color.opacity(0.27)
-                    .frame(height: 1)
-                    .padding(.vertical, 3)
-                
-                NotificationsSection(sectionLocalizationKey: "read")
+            TransparentList(data: notifications,
+                            dataType: DataNotificationData.self,
+                            listName: .notifications,
+                            pagination: scope.pagination,
+                            onTapGesture: { _ in },
+                            loadItems: { scope.loadItems() } ) { _, element in
+                NotificationView(data: element) {
+                    scope.selectItem(item: element)
+                }
             }
-            .scrollView()
         }
         .hideKeyboardOnTap()
         .padding(.horizontal, 16)
@@ -55,51 +59,72 @@ struct NotificationsScreen: View {
         }
     }
     
-    private struct NotificationsSection: View {
-        let sectionLocalizationKey: String
+    init(scope: NotificationScope.All) {
+        self.scope = scope
+        
+        self.notifications = SwiftDataSource(dataSource: scope.items)
+        self.notificationsSearch = SwiftDataSource(dataSource: scope.searchText)
+    }
+    
+    private struct NotificationView: View {
+        let data: DataNotificationData
+        let onButtonTap: () -> ()
         
         var body: some View {
-            VStack(alignment: .leading) {
-                LocalizedText(localizationKey: sectionLocalizationKey,
-                              textWeight: .medium,
-                              fontSize: 16,
-                              multilineTextAlignment: .leading)
-                
-                VStack(alignment: .leading, spacing: 13) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        HStack {
-                            Text("New request to subscribe from ABC Pharmacy")
-                                .medicoText(textWeight: .semiBold,
-                                            color: .lightBlue,
-                                            multilineTextAlignment: .leading)
-                            
-                            Spacer()
-                            
-                            Text("1h")
-                                .medicoText(color: .grey3,
-                                            multilineTextAlignment: .leading)
-                        }
-                        
-                        Text("Payment method: Invoice")
-                            .medicoText(color: .grey3,
-                                        multilineTextAlignment: .leading)
-                    }
-                    
+            VStack(alignment: .leading, spacing: 13) {
+                VStack(alignment: .leading, spacing: 3) {
                     HStack {
+                        Text(data.title)
+                            .medicoText(textWeight: .semiBold,
+                                        color: .lightBlue,
+                                        multilineTextAlignment: .leading)
+                        
                         Spacer()
                         
-                        MedicoButton(localizedStringKey: "Action Required",
+                        let hours = (Time().now - data.sentAt) / (1000 * 60 * 60)
+                        LocalizedText(localizedStringKey: LocalizedStringKey("hours \(hours)"),
+                                      testingIdentifier: "hours",
+                                      color: .grey3,
+                                      multilineTextAlignment: .leading)
+                    }
+                    
+                    Text(data.body)
+                        .medicoText(color: .grey3,
+                                    multilineTextAlignment: .leading)
+                }
+                
+                HStack {
+                    LocalizedText(localizationKey: data.status.stringId,
+                                  textWeight: .semiBold,
+                                  fontSize: 16,
+                                  color: .darkBlue,
+                                  multilineTextAlignment: .leading)
+                        .opacity(data.status == .unread ? 1 : 0.65)
+                    
+                    Spacer()
+                    
+                    let buttonTextKey = data.selectedAction?.completedActionStringId ?? data.type.buttonStringId
+                    
+                    if data.selectedAction != nil {
+                        LocalizedText(localizationKey: buttonTextKey,
+                                      textWeight: .semiBold,
+                                      fontSize: 12,
+                                      multilineTextAlignment: .leading)
+                    }
+                    else {
+                        MedicoButton(localizedStringKey: buttonTextKey,
                                      width: 150,
                                      height: 30,
                                      fontSize: 12,
                                      buttonColor: .navigationBar) {
-                            print("clicked")
+                            onButtonTap()
                         }
+                        .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                .padding(11)
-                .background(AppColor.white.color.cornerRadius(5))
             }
+            .padding(11)
+            .background(AppColor.white.color.cornerRadius(5))
         }
     }
 }
