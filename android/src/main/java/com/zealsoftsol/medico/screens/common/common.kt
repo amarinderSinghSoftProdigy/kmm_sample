@@ -111,12 +111,13 @@ fun MedicoSmallButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean = true,
+    enabledColor: Color = ConstColors.yellow,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ConstColors.yellow,
+            backgroundColor = enabledColor,
             disabledBackgroundColor = Color.LightGray,
             contentColor = MaterialTheme.colors.onPrimary,
             disabledContentColor = MaterialTheme.colors.onPrimary,

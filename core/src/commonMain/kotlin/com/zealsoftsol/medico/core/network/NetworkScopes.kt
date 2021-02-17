@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -93,5 +94,9 @@ interface NetworkScope {
 
     interface Notification {
         suspend fun sendFirebaseToken(token: String): Boolean
+        suspend fun getNotifications(
+            search: String,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<NotificationData>>
     }
 }

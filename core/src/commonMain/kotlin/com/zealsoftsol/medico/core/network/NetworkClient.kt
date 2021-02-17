@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
+import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -331,6 +332,11 @@ class NetworkClient(
             jsonBody(mapOf("token" to token))
         }.isSuccess
     }
+
+    override suspend fun getNotifications(
+        search: String,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<NotificationData>> = TODO("not implemented")
 
     // Utils
 

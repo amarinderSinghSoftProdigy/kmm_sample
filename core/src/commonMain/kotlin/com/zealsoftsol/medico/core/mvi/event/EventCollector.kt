@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -20,6 +21,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.LoadHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -34,8 +36,11 @@ internal class EventCollector(
     searchNetworkScope: NetworkScope.Search,
     productNetworkScope: NetworkScope.Product,
     managementNetworkScope: NetworkScope.Management,
+    notificationNetworkScope: NetworkScope.Notification,
     private val userRepo: UserRepo,
 ) {
+    private val loadHelperScope = CoroutineScope(compatDispatcher)
+
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
         Event.Transition::class to TransitionEventDelegate(navigator, userRepo),
         Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo),
@@ -52,7 +57,14 @@ internal class EventCollector(
             navigator,
             userRepo,
             managementNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
         ),
+        Event.Action.Notification::class to NotificationEventDelegate(
+            navigator,
+            userRepo,
+            notificationNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        )
     )
 
     init {

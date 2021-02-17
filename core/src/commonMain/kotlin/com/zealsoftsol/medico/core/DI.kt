@@ -118,6 +118,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
         )
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
