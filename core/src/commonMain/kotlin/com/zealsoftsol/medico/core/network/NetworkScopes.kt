@@ -9,7 +9,10 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -79,7 +82,7 @@ interface NetworkScope {
         ): Response.Wrapped<SearchResponse>
     }
 
-    interface Management {
+    interface Management : NetworkScope {
         suspend fun getManagementInfo(
             unitCode: String,
             isSeasonBoy: Boolean,
@@ -92,11 +95,23 @@ interface NetworkScope {
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
     }
 
-    interface Notification {
+    interface Notification : NetworkScope {
         suspend fun sendFirebaseToken(token: String): Boolean
         suspend fun getNotifications(
             search: String,
-            pagination: Pagination,
+            pagination: Pagination
         ): Response.Wrapped<PaginatedData<NotificationData>>
+
+        suspend fun markNotification(
+            id: String,
+            status: NotificationStatus
+        ): Response.Wrapped<ErrorCode>
+
+        suspend fun selectNotificationAction(
+            id: String,
+            actionRequest: NotificationActionRequest
+        ): Response.Wrapped<ErrorCode>
+
+        suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails>
     }
 }

@@ -109,6 +109,7 @@ fun MedicoButton(
 @Composable
 fun MedicoSmallButton(
     modifier: Modifier = Modifier,
+    widthModifier: Modifier.() -> Modifier = { wrapContentWidth(unbounded = true) },
     text: String,
     isEnabled: Boolean = true,
     enabledColor: Color = ConstColors.yellow,
@@ -125,7 +126,7 @@ fun MedicoSmallButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-        modifier = modifier.wrapContentWidth(unbounded = true).height(32.dp),
+        modifier = modifier.widthModifier().height(32.dp),
     ) {
         Text(
             text = text,
@@ -383,8 +384,8 @@ object NoOpIndication : Indication {
 }
 
 @Composable
-fun DataWithLabel(label: Int, data: String) {
-    Row {
+fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
+    Row(modifier = modifier) {
         Text(
             text = "${stringResource(id = label)}:",
             fontSize = 14.sp,
@@ -401,14 +402,14 @@ fun DataWithLabel(label: Int, data: String) {
 }
 
 @Composable
-fun LocationSelector(
-    chooseRemember: Any?,
-    chosenValue: String?,
-    defaultName: String,
+fun Dropdown(
+    modifier: Modifier = Modifier,
+    rememberChooseKey: Any?,
+    value: String,
     dropDownItems: List<String>,
     onSelected: (String) -> Unit,
 ) {
-    val choosing = remember(chooseRemember) { mutableStateOf(false) }
+    val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
     DropdownMenu(
         toggle = {
             Box(
@@ -422,8 +423,8 @@ fun LocationSelector(
                     .padding(vertical = 16.dp, horizontal = 16.dp)
             ) {
                 Text(
-                    text = chosenValue ?: defaultName,
-                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
+                    text = value,
+                    color = Color.Black,
                     fontSize = 14.sp,
                     modifier = Modifier.align(Alignment.CenterStart),
                 )
@@ -446,6 +447,7 @@ fun LocationSelector(
                     content = { Text(it) },
                 )
             }
-        }
+        },
+        toggleModifier = modifier,
     )
 }

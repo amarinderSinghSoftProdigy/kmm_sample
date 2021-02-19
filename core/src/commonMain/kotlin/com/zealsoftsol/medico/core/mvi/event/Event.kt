@@ -4,7 +4,9 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
@@ -94,6 +96,8 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Notification()
             data class Search(val value: String) : Notification()
             data class Select(val notification: NotificationData) : Notification()
+            data class SelectAction(val action: NotificationAction) : Notification()
+            data class ChangeOptions(val option: NotificationOption) : Notification()
         }
     }
 

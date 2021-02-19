@@ -28,10 +28,10 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
-import com.zealsoftsol.medico.screens.common.LocationSelector
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
@@ -174,18 +174,18 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
         onValueChange = { scope.changeAddressLine(it) }
     )
     Space(dp = 12.dp)
-    LocationSelector(
-        chooseRemember = locationData.value,
-        chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
-        defaultName = stringResource(id = R.string.location),
+    Dropdown(
+        rememberChooseKey = locationData.value,
+        value = registration.value.location.takeIf { it.isNotEmpty() }
+            ?: stringResource(id = R.string.location),
         dropDownItems = locationData.value?.locations.orEmpty(),
         onSelected = { scope.changeLocation(it) }
     )
     Space(dp = 12.dp)
-    LocationSelector(
-        chooseRemember = locationData.value,
-        chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
-        defaultName = stringResource(id = R.string.city),
+    Dropdown(
+        rememberChooseKey = locationData.value,
+        value = registration.value.city.takeIf { it.isNotEmpty() }
+            ?: stringResource(id = R.string.city),
         dropDownItems = locationData.value?.cities.orEmpty(),
         onSelected = { scope.changeCity(it) }
     )

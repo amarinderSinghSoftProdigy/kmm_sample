@@ -9,7 +9,6 @@ data class CustomerData(
     val customerAddressData: CustomerAddressData,
     val customerMetaData: CustomerMetaData,
     val customerType: String,
-    val customerTypeLogo: String,
     val drugLicenseNo1: String,
     val drugLicenseNo2: String,
     val drugLicenseUrl: String?,
@@ -18,8 +17,6 @@ data class CustomerData(
     val firstName: String,
     val gstin: String,
     val lastName: String,
-    val medicoStoresLogo: String,
-    val message: String,
     @SerialName("mobileNumber")
     val phoneNumber: String,
     val panNumber: String,
