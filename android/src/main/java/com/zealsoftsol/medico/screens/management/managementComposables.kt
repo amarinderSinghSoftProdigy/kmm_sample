@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -33,8 +35,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -64,7 +66,7 @@ fun ManagementScreen(scope: ManagementScope.User) {
                 onClick = { scope.requestCreateRetailer() },
                 backgroundColor = ConstColors.yellow,
                 contentColor = MaterialTheme.colors.background,
-                content = { Icon(imageVector = Icons.Default.Add) },
+                content = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp),
             )
         }
@@ -78,7 +80,11 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
     Space(16.dp)
     if (showSearchOverlay.value) {
         SearchBarBox(
-            rowModifier = Modifier.clickable(indication = null) { showSearchOverlay.value = false },
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionState = remember { InteractionState() }) {
+                showSearchOverlay.value = false
+            },
             elevation = 0.dp,
             horizontalPadding = 16.dp,
         ) {
@@ -89,7 +95,8 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
                 is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals
             }
             Icon(
-                imageVector = vectorResource(id = icon),
+                painter = painterResource(id = icon),
+                contentDescription = null,
                 tint = ConstColors.lightBlue,
                 modifier = Modifier.size(24.dp),
             )
@@ -102,6 +109,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Icon(
                     imageVector = Icons.Default.Search,
+                    contentDescription = null,
                     tint = ConstColors.gray,
                     modifier = Modifier.size(24.dp),
                 )
@@ -247,6 +255,7 @@ fun GeoLocation(location: String, isBold: Boolean = false) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Outlined.LocationOn,
+            contentDescription = null,
             tint = ConstColors.gray,
             modifier = Modifier.size(10.dp),
         )

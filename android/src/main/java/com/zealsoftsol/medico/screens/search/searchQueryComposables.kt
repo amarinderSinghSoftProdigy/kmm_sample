@@ -4,11 +4,11 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.Interaction
 import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Icon
@@ -33,12 +34,13 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.onActive
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -46,8 +48,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -79,31 +81,43 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 icon = Icons.Default.ArrowBack,
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
+                isSearchFocused = true,
                 onSearch = { scope.searchProduct(it) },
             )
         }
         if (showFilter.value) {
-            ScrollableColumn(
-                contentPadding = PaddingValues(16.dp),
+            rememberScrollState(0f)
+            LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
             ) {
-                Text(
-                    text = stringResource(id = R.string.clear_all),
-                    modifier = Modifier.align(Alignment.End)
-                        .clickable(indication = null) { scope.clearFilter(null) },
-                )
-                filters.value.forEach { filter ->
-                    FilterSection(
-                        name = filter.name,
-                        options = filter.options,
-                        searchOption = if (filter.queryName == Filter.MANUFACTURER_ID)
-                            SearchOption(manufacturer.value) { scope.searchManufacturer(it) }
-                        else
-                            null,
-                        onOptionClick = { scope.selectFilter(filter, it) },
-                        onFilterClear = { scope.clearFilter(filter) },
+                // use `item` for separate elements like headers
+                // and `items` for lists of identical elements
+                item(fun ColumnScope.() {
+                    Text(
+                        text = stringResource(id = R.string.clear_all),
+                        modifier = Modifier.align(Alignment.End)
+                            .clickable(
+                                indication = null,
+                                interactionState = remember { InteractionState() }) {
+                                scope.clearFilter(
+                                    null
+                                )
+                            },
                     )
-                }
+                    filters.value.forEach { filter ->
+                        FilterSection(
+                            name = filter.name,
+                            options = filter.options,
+                            searchOption = if (filter.queryName == Filter.MANUFACTURER_ID)
+                                SearchOption(manufacturer.value) { scope.searchManufacturer(it) }
+                            else
+                                null,
+                            onOptionClick = { scope.selectFilter(filter, it) },
+                            onFilterClear = { scope.clearFilter(filter) },
+                        )
+                    }
+                })
             }
         } else {
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
@@ -127,13 +141,17 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .background(color = Color.White, shape = MaterialTheme.shapes.medium)
-            .clickable(onClick = onClick, indication = YellowOutlineIndication)
+            .clickable(
+                onClick = onClick,
+                indication = YellowOutlineIndication,
+                interactionState = remember { InteractionState() })
             .padding(10.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
                 modifier = Modifier.size(123.dp),
                 data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
+                contentDescription = null,
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },
             )
@@ -209,6 +227,7 @@ private fun FilterSection(
                 modifier = Modifier.align(Alignment.CenterEnd).clickable(
                     onClick = onFilterClear,
                     indication = null,
+                    interactionState = remember { InteractionState() }
                 ),
             )
         }
@@ -238,12 +257,14 @@ private fun Chip(option: Option<String>, onClick: () -> Unit) {
         modifier = Modifier.padding(4.dp).clickable(
             onClick = onClick,
             indication = null,
+            interactionState = remember { InteractionState() }
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (option.isSelected) {
                 Icon(
                     imageVector = Icons.Default.Check,
+                    contentDescription = null,
                     tint = MaterialTheme.colors.background,
                     modifier = Modifier.padding(start = 10.dp).size(20.dp),
                 )
@@ -277,6 +298,7 @@ fun BasicSearchBar(
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         Icon(
             imageVector = icon,
+            contentDescription = null,
             tint = ConstColors.gray,
             modifier = Modifier.size(24.dp)
                 .run { if (onIconClick != null) clickable(onClick = onIconClick) else this },
@@ -293,9 +315,7 @@ fun BasicSearchBar(
                 )
             }
             val focusRequester = FocusRequester()
-            if (isSearchFocused) onActive {
-                focusRequester.requestFocus()
-            }
+            if (isSearchFocused) SideEffect { focusRequester.requestFocus() }
             BasicTextField(
                 value = input,
                 cursorColor = ConstColors.lightBlue,
@@ -310,6 +330,7 @@ fun BasicSearchBar(
                     if (input.isNotEmpty()) {
                         Icon(
                             imageVector = Icons.Default.Close,
+                            contentDescription = null,
                             tint = ConstColors.gray,
                             modifier = modifier.clickable(onClick = { onSearch("") })
                         )
@@ -317,7 +338,8 @@ fun BasicSearchBar(
                 }
                 is SearchBarEnd.Filter -> {
                     Icon(
-                        imageVector = vectorResource(id = R.drawable.ic_filter),
+                        painter = painterResource(id = R.drawable.ic_filter),
+                        contentDescription = null,
                         tint = ConstColors.gray,
                         modifier = modifier.clickable(onClick = { searchBarEnd.onClick() })
                     )
@@ -334,7 +356,7 @@ sealed class SearchBarEnd {
 
 @Composable
 fun SearchBarBox(
-    rowModifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     elevation: Dp,
     horizontalPadding: Dp,
     body: @Composable RowScope.() -> Unit,
@@ -348,7 +370,7 @@ fun SearchBarBox(
             .padding(horizontal = horizontalPadding)
     ) {
         Row(
-            modifier = rowModifier.fillMaxSize()
+            modifier = modifier.fillMaxSize()
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -378,5 +400,6 @@ private object YellowOutlineIndication : Indication {
         }
     }
 
+    @Composable
     override fun createInstance() = YellowOutlineIndicationInstance
 }

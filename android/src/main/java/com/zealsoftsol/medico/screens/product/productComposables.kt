@@ -1,15 +1,17 @@
 package com.zealsoftsol.medico.screens.product
 
-import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,109 +42,127 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
 
-    ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Space(12.dp)
-        Row(modifier = Modifier.fillMaxWidth()) {
-            CoilImage(
-                modifier = Modifier.size(123.dp),
-                data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
-            )
-            Space(10.dp)
-            Column {
-                Text(
-                    text = scope.product.name,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 20.sp,
-                )
-                Space(4.dp)
-                Text(
-                    text = "Code: ${scope.product.code}",
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
+    rememberScrollState(0f)
+    //        if (scope.alternativeBrands.isNotEmpty()) {
+//            Space(8.dp)
+//            scope.alternativeBrands.forEach {
+//                ProductAlternative(it) { scope.selectAlternativeProduct(it) }
+//            }
+//        }
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // use `item` for separate elements like headers
+        // and `items` for lists of identical elements
+        item(fun ColumnScope.() {
+            Space(12.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                CoilImage(
+                    modifier = Modifier.size(123.dp),
+                    data = CdnUrlProvider.urlFor(
+                        scope.product.medicineId,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    contentDescription = null,
+                    error = { ItemPlaceholder() },
+                    loading = { ItemPlaceholder() },
                 )
                 Space(10.dp)
+                Column {
+                    Text(
+                        text = scope.product.name,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 20.sp,
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = "Code: ${scope.product.code}",
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                    Space(10.dp)
+                    Text(
+                        text = scope.product.formattedPrice,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 20.sp,
+                    )
+                }
+            }
+            Space(10.dp)
+            Text(
+                text = "MRP: ${scope.product.mrp}",
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+            )
+            Space(4.dp)
+            Text(
+                text = "PTR: ${scope.product.ptr}",
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+            )
+            Space(4.dp)
+            Text(
+                text = "Description: ${scope.product.unitOfMeasureData.name}",
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+            )
+            Space(12.dp)
+            MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
+                scope.addToCart()
+            }
+            Space(32.dp)
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionState = remember { InteractionState() }) { scope.toggleDetails() }) {
                 Text(
-                    text = scope.product.formattedPrice,
+                    text = stringResource(id = R.string.details),
                     color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
+                    modifier = Modifier.align(Alignment.CenterStart),
+                )
+                Icon(
+                    imageVector = if (isDetailsOpened.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = ConstColors.gray,
+                    modifier = Modifier.align(Alignment.CenterEnd),
                 )
             }
-        }
-        Space(10.dp)
-        Text(
-            text = "MRP: ${scope.product.mrp}",
-            color = ConstColors.gray,
-            fontSize = 12.sp,
-        )
-        Space(4.dp)
-        Text(
-            text = "PTR: ${scope.product.ptr}",
-            color = ConstColors.gray,
-            fontSize = 12.sp,
-        )
-        Space(4.dp)
-        Text(
-            text = "Description: ${scope.product.unitOfMeasureData.name}",
-            color = ConstColors.lightBlue,
-            fontSize = 14.sp,
-        )
-        Space(12.dp)
-        MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
-            scope.addToCart()
-        }
-        Space(32.dp)
-        Box(
-            modifier = Modifier.fillMaxWidth()
-                .clickable(indication = null) { scope.toggleDetails() }) {
-            Text(
-                text = stringResource(id = R.string.details),
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W700,
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterStart),
-            )
-            Icon(
-                imageVector = if (isDetailsOpened.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                tint = ConstColors.gray,
-                modifier = Modifier.align(Alignment.CenterEnd),
-            )
-        }
-        if (isDetailsOpened.value) {
+            if (isDetailsOpened.value) {
+                Space(24.dp)
+                Column {
+                    ProductDetail(
+                        title = stringResource(id = R.string.manufacturer),
+                        description = scope.product.manufacturer.name,
+                    )
+                    Space(12.dp)
+                    ProductDetail(
+                        title = stringResource(id = R.string.compositions),
+                        description = scope.compositionsString,
+                    )
+                    Space(12.dp)
+                    ProductDetail(
+                        title = stringResource(id = R.string.storage),
+                        description = stringResource(id = R.string.storage_desc),
+                    )
+                }
+            }
             Space(24.dp)
-            Column {
-                ProductDetail(
-                    title = stringResource(id = R.string.manufacturer),
-                    description = scope.product.manufacturer.name,
-                )
-                Space(12.dp)
-                ProductDetail(
-                    title = stringResource(id = R.string.compositions),
-                    description = scope.compositionsString,
-                )
-                Space(12.dp)
-                ProductDetail(
-                    title = stringResource(id = R.string.storage),
-                    description = stringResource(id = R.string.storage_desc),
-                )
-            }
-        }
-        Space(24.dp)
-        Text(
-            text = stringResource(id = R.string.alternative_brands),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W500,
-            fontSize = 16.sp,
-        )
+            Text(
+                text = stringResource(id = R.string.alternative_brands),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W500,
+                fontSize = 16.sp,
+            )
 //        if (scope.alternativeBrands.isNotEmpty()) {
 //            Space(8.dp)
 //            scope.alternativeBrands.forEach {
 //                ProductAlternative(it) { scope.selectAlternativeProduct(it) }
 //            }
 //        }
+        })
     }
 }
 

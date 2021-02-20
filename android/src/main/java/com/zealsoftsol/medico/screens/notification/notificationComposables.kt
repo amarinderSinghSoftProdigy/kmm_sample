@@ -1,8 +1,10 @@
 package com.zealsoftsol.medico.screens.notification
 
+import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -30,10 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.WithConstraints
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -79,12 +81,17 @@ private fun AllNotifications(scope: NotificationScope.All) {
     val showSearchOverlay = remember { mutableStateOf(true) }
     if (showSearchOverlay.value) {
         SearchBarBox(
-            rowModifier = Modifier.clickable(indication = null) { showSearchOverlay.value = false },
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionState = remember { InteractionState() }) {
+                showSearchOverlay.value = false
+            },
             elevation = 0.dp,
             horizontalPadding = 0.dp,
         ) {
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_bell),
+                painter = painterResource(id = R.drawable.ic_bell),
+                contentDescription = null,
                 tint = ConstColors.lightBlue,
                 modifier = Modifier.size(24.dp),
             )
@@ -97,6 +104,7 @@ private fun AllNotifications(scope: NotificationScope.All) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Icon(
                     imageVector = Icons.Default.Search,
+                    contentDescription = null,
                     tint = ConstColors.gray,
                     modifier = Modifier.size(24.dp),
                 )
@@ -140,7 +148,7 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-            WithConstraints {
+            BoxWithConstraints {
                 Column(modifier = Modifier.width(maxWidth * 3 / 4)) {
                     Text(
                         text = item.title,
@@ -235,6 +243,7 @@ private fun SubscriptionDeatails(
             CoilImage(
                 modifier = Modifier.size(123.dp),
                 data = "",
+                contentDescription = null,
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },
             )
@@ -249,7 +258,7 @@ private fun SubscriptionDeatails(
 //                    fontSize = 12.sp,
 //                    color = ConstColors.gray,
 //                )
-                val activity = AmbientContext.current as MainActivity
+                val activity = LocalContext.current as MainActivity
                 Text(
                     text = stringResource(id = R.string.see_on_the_map),
                     fontSize = 12.sp,
@@ -295,7 +304,7 @@ private fun SubscriptionDeatails(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DataWithLabel(R.string.credit_days, "")
-                WithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
                 OutlinedTextField(
                     value = details.option.creditDays,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -313,7 +322,7 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.discount_rate, "")
-            WithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
             OutlinedTextField(
                 value = details.option.discountRate,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

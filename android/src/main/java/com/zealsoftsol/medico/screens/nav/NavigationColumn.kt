@@ -2,7 +2,7 @@ package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ConstraintLayout
+import androidx.compose.foundation.layout.ConstraintLayoutScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,11 +36,12 @@ fun NavigationColumn(
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
 ) {
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+    ConstraintLayout(modifier = Modifier.fillMaxSize(), content = fun ConstraintLayoutScope.() {
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
 
         Image(
-            bitmap = imageResource(id = R.drawable.nav_bg),
+            painter = painterResource(id = R.drawable.nav_bg),
+            contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth()
                 .constrainAs(bg) {
@@ -55,7 +56,8 @@ fun NavigationColumn(
             }.padding(start = 16.dp)
         ) {
             Image(
-                bitmap = imageResource(id = R.drawable.avatar),
+                painter = painterResource(id = R.drawable.avatar),
+                contentDescription = null,
                 modifier = Modifier.size(64.dp),
             )
             Space(8.dp)
@@ -105,7 +107,7 @@ fun NavigationColumn(
                 )
             }
         }
-    }
+    })
 }
 
 @Composable

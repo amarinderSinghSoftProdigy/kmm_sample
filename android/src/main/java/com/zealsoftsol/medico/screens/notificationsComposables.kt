@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.AndroidDialogProperties
+import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.log
@@ -80,7 +80,7 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
                 }
             }
         },
-        properties = AndroidDialogProperties(
+        properties = DialogProperties(
             dismissOnBackPress = notification.isDismissible,
             dismissOnClickOutside = notification.isDismissible,
         )

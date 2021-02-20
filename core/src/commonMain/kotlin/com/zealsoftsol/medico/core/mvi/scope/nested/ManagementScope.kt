@@ -82,7 +82,7 @@ sealed class ManagementScope(
         )
     }
 
-    sealed class AddRetailer(icon: ScopeIcon = ScopeIcon.HAMBURGER) : ManagementScope(icon) {
+    sealed class AddRetailer : ManagementScope(ScopeIcon.BACK) {
 
         val canGoNext: DataSource<Boolean> = DataSource(false)
 
@@ -114,7 +114,7 @@ sealed class ManagementScope(
             override val locationData: DataSource<LocationData?> = DataSource(null),
             override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
             override val notifications: DataSource<ScopeNotification?> = DataSource(null),
-        ) : AddRetailer(icon = ScopeIcon.BACK),
+        ) : AddRetailer(),
             AddressComponent,
             CommonScope.WithNotifications {
 

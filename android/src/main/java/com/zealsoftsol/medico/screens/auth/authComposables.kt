@@ -5,7 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ConstraintLayout
+import androidx.compose.foundation.layout.ConstraintLayoutScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +22,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -46,13 +46,15 @@ fun AuthScreen(scope: LogInScope) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = ColorPainter(MaterialTheme.colors.background),
+            contentDescription = null,
             modifier = Modifier.fillMaxSize()
         )
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize(), content = fun ConstraintLayoutScope.() {
             val (image, gradient, solid) = createRefs()
 
             Image(
-                bitmap = imageResource(id = R.drawable.auth_logo),
+                painter = painterResource(id = R.drawable.auth_logo),
+                contentDescription = null,
                 modifier = Modifier.constrainAs(image) {
                     top.linkTo(parent.top)
                     centerHorizontallyTo(parent)
@@ -60,6 +62,7 @@ fun AuthScreen(scope: LogInScope) {
             )
             Image(
                 painter = ColorPainter(Color.Transparent),
+                contentDescription = null,
                 modifier = Modifier.constrainAs(gradient) {
                     top.linkTo(parent.top)
                     bottom.linkTo(image.bottom)
@@ -70,22 +73,24 @@ fun AuthScreen(scope: LogInScope) {
                             0f to MaterialTheme.colors.background.copy(alpha = 0f),
                             1f to MaterialTheme.colors.background,
                             startY = 0f,
-                            endY = AmbientContext.current.screenWidth / 1.0925f,
+                            endY = LocalContext.current.screenWidth / 1.0925f,
                             tileMode = TileMode.Clamp
                         )
                     )
             )
             Image(
                 painter = ColorPainter(Color(0, 132, 212, 178)),
+                contentDescription = null,
                 modifier = Modifier.constrainAs(solid) {
                     centerTo(parent)
                 }.fillMaxSize()
             )
-        }
+        })
         TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(
-                    bitmap = imageResource(id = R.drawable.medico_logo),
+                    painter = painterResource(id = R.drawable.medico_logo),
+                    contentDescription = null,
                     modifier = Modifier.align(Alignment.CenterStart),
                 )
             }
@@ -123,9 +128,13 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
         PasswordFormatInputField(
             hint = stringResource(id = R.string.password),
             text = credentialsState.value.password,
-        ) {
-            scope.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
-        }
+            onValueChange = {
+                scope.updateAuthCredentials(
+                    credentialsState.value.phoneNumberOrEmail,
+                    it
+                )
+            },
+        )
         Text(
             text = stringResource(id = R.string.forgot_password),
             color = ConstColors.lightBlue,
