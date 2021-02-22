@@ -61,7 +61,6 @@ internal class EventCollector(
         ),
         Event.Action.Notification::class to NotificationEventDelegate(
             navigator,
-            userRepo,
             notificationNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         )

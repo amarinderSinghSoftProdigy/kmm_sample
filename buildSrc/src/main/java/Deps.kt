@@ -2,14 +2,14 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
-    const val kotlin = "1.4.21"
-    const val ktor = "1.4.3"
+    const val kotlin = "1.4.30"
+    const val ktor = "1.5.1"
     const val coroutines = "1.4.2-native-mt"
-    const val kserialize = "1.0.1"
+    const val kserialize = "1.1.0-RC"
     const val work = "2.0.1"
-    const val kodeinDi = "7.1.0"
+    const val kodeinDi = "7.3.1"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-alpha09"
+    const val compose = "1.0.0-alpha12"
 }
 
 object Deps {
@@ -67,7 +67,7 @@ object Deps {
             val all = listOf(ui, tooling, foundation, material, iconsCore, iconsExtended)
         }
 
-        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.4.1"
+        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.5.1"
     }
 
     object Kodein {

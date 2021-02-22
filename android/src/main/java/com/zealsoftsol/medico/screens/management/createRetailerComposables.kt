@@ -1,12 +1,13 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
@@ -15,6 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,13 +30,14 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
-import com.zealsoftsol.medico.screens.common.LocationSelector
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 
 @Composable
@@ -45,20 +48,26 @@ fun AddRetailerScreen(scope: ManagementScope.AddRetailer) {
         modifier = Modifier.fillMaxSize()
     ) {
         val padding = 16.dp
-        ScrollableColumn(
-            scrollState = scrollState,
+        LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = padding,
                 start = padding,
                 end = padding,
                 bottom = padding + 60.dp
-            ),
+            )
         ) {
-            when (scope) {
-                is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(scope, scrollState)
-                is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
-            }
+            // use `item` for separate elements like headers
+            // and `items` for lists of identical elements
+            item(fun ColumnScope.() {
+                when (scope) {
+                    is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(
+                        scope,
+                        scrollState
+                    )
+                    is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
+                }
+            })
         }
         MedicoButton(
             modifier = Modifier.align(Alignment.BottomCenter).padding(padding),
@@ -78,6 +87,7 @@ private fun TraderDetails(
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     Text(
         text = stringResource(id = R.string.add_retailer),
@@ -88,7 +98,7 @@ private fun TraderDetails(
     Space(dp = 12.dp)
     InputWithError(errorText = validation.value?.tradeName) {
         InputField(
-            autoScrollOnFocus = scrollState,
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.trade_name),
             text = registration.value.tradeName,
             onValueChange = { scope.changeTradeName(it) },
@@ -97,7 +107,7 @@ private fun TraderDetails(
     Space(dp = 12.dp)
     InputWithError(errorText = validation.value?.gstin) {
         InputField(
-            autoScrollOnFocus = scrollState,
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.gstin),
             text = registration.value.gstin,
             isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
@@ -110,7 +120,7 @@ private fun TraderDetails(
     InputWithError(errorText = validation.value?.drugLicenseNo1) {
         InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
             InputField(
-                autoScrollOnFocus = scrollState,
+                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.drug_license_1),
                 text = registration.value.drugLicenseNo1,
                 onValueChange = { scope.changeDrugLicense1(it) },
@@ -121,7 +131,7 @@ private fun TraderDetails(
     InputWithError(errorText = validation.value?.drugLicenseNo2) {
         InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
             InputField(
-                autoScrollOnFocus = scrollState,
+                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.drug_license_2),
                 text = registration.value.drugLicenseNo2,
                 onValueChange = { scope.changeDrugLicense2(it) },
@@ -149,6 +159,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     val registration = scope.registration.flow.collectAsState()
     val pincodeValidation = scope.pincodeValidation.flow.collectAsState()
     val locationData = scope.locationData.flow.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     Text(
         text = stringResource(id = R.string.add_retailer_address),
@@ -159,7 +170,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     Space(dp = 12.dp)
     InputWithError(errorText = pincodeValidation.value?.pincode) {
         InputField(
-            autoScrollOnFocus = scrollState,
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.pincode),
             text = registration.value.pincode,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -168,24 +179,24 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     }
     Space(dp = 12.dp)
     InputField(
-        autoScrollOnFocus = scrollState,
+        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
         hint = stringResource(id = R.string.address_line),
         text = registration.value.addressLine1,
         onValueChange = { scope.changeAddressLine(it) }
     )
     Space(dp = 12.dp)
-    LocationSelector(
-        chooseRemember = locationData.value,
-        chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
-        defaultName = stringResource(id = R.string.location),
+    Dropdown(
+        rememberChooseKey = locationData.value,
+        value = registration.value.location.takeIf { it.isNotEmpty() }
+            ?: stringResource(id = R.string.location),
         dropDownItems = locationData.value?.locations.orEmpty(),
         onSelected = { scope.changeLocation(it) }
     )
     Space(dp = 12.dp)
-    LocationSelector(
-        chooseRemember = locationData.value,
-        chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
-        defaultName = stringResource(id = R.string.city),
+    Dropdown(
+        rememberChooseKey = locationData.value,
+        value = registration.value.city.takeIf { it.isNotEmpty() }
+            ?: stringResource(id = R.string.city),
         dropDownItems = locationData.value?.cities.orEmpty(),
         onSelected = { scope.changeCity(it) }
     )

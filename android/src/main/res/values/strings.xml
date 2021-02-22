@@ -137,4 +137,6 @@
     <string name="declined">Declined</string>
     <string name="subscribe_request_button">Action Required</string>
     <string name="order_request_button">View Order</string>
+    <string name="credit_days">Credit days</string>
+    <string name="discount_rate">Discount Rate</string>
 </resources>

@@ -20,7 +20,10 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -211,7 +214,7 @@ class NetworkClient(
 
     override suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> =
         ktorDispatcher {
-            client.get<Response.Body<LocationData, PincodeValidation>>("$MASTER_URL/api/v1/masterdata/pincode/$pincode") {
+            client.get<Response.Body<LocationData, PincodeValidation>>("$GEO_URL/api/v1/pincode/$pincode") {
                 withTempToken(TempToken.REGISTRATION)
             }
         }
@@ -338,6 +341,19 @@ class NetworkClient(
         pagination: Pagination
     ): Response.Wrapped<PaginatedData<NotificationData>> = TODO("not implemented")
 
+    override suspend fun markNotification(
+        id: String,
+        status: NotificationStatus
+    ): Response.Wrapped<ErrorCode> = TODO("not implemented")
+
+    override suspend fun selectNotificationAction(
+        id: String,
+        actionRequest: NotificationActionRequest
+    ): Response.Wrapped<ErrorCode> = TODO("not implemented")
+
+    override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
+        TODO("not implemented")
+
     // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
@@ -434,10 +450,10 @@ class NetworkClient(
         private const val AUTH_URL = "https://develop-api-auth0.medicostores.com"
         private const val REGISTRATION_URL = "https://develop-api-registration.medicostores.com"
         private const val NOTIFICATIONS_URL = "https://develop-api-notifications.medicostores.com"
-        private const val MASTER_URL = "https://develop-api-masterdata.medicostores.com"
         private const val SEARCH_URL = "https://develop-api-search.medicostores.com"
         private const val PRODUCTS_URL = "https://develop-api-products.medicostores.com"
         private const val B2B_URL = "https://develop-api-b2b.medicostores.com"
+        private const val GEO_URL = "https://develop-api-geolocationapi.medicostores.com"
     }
 }
 

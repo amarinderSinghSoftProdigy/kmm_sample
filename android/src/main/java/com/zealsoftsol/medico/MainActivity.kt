@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.google.firebase.ktx.Firebase
@@ -71,7 +70,7 @@ class MainActivity : ComponentActivity(), DIAware {
             val searchList = rememberLazyListState()
             AppTheme {
                 val hostScope = navigator.scope.flow.collectAsState()
-                Crossfade(hostScope.value, animation = tween(durationMillis = 200)) {
+                Crossfade(hostScope.value, animationSpec = tween(durationMillis = 200)) {
                     when (it) {
                         is LogInScope -> AuthScreen(it)
                         is WelcomeScope -> Surface {

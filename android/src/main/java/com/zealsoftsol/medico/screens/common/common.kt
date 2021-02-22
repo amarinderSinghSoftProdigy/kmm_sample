@@ -1,11 +1,11 @@
 package com.zealsoftsol.medico.screens.common
 
-import androidx.compose.foundation.AmbientIndication
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.Interaction
 import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -44,17 +44,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.AmbientConfiguration
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.AndroidDialogProperties
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
@@ -109,6 +109,7 @@ fun MedicoButton(
 @Composable
 fun MedicoSmallButton(
     modifier: Modifier = Modifier,
+    widthModifier: Modifier.() -> Modifier = { wrapContentWidth(unbounded = true) },
     text: String,
     isEnabled: Boolean = true,
     enabledColor: Color = ConstColors.yellow,
@@ -125,7 +126,7 @@ fun MedicoSmallButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-        modifier = modifier.wrapContentWidth(unbounded = true).height(32.dp),
+        modifier = modifier.widthModifier().height(32.dp),
     ) {
         Text(
             text = text,
@@ -170,7 +171,7 @@ private fun SimpleDialog(
         confirmButton = {
             AlertButton(onDismiss, stringResource(id = R.string.okay))
         },
-        properties = AndroidDialogProperties(
+        properties = DialogProperties(
             dismissOnBackPress = canDismissOnTapOutside,
             dismissOnClickOutside = canDismissOnTapOutside,
         )
@@ -198,10 +199,10 @@ fun AlertButton(
 fun Scope.Host.showErrorAlert() {
     val errorCode = alertError.flow.collectAsState()
     errorCode.value?.let {
-        val titleResourceId = AmbientContext.current.runCatching {
+        val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
         }.getOrNull() ?: 0
-        val bodyResourceId = AmbientContext.current.runCatching {
+        val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
         SimpleDialog(
@@ -217,10 +218,10 @@ fun Scope.Host.showErrorAlert() {
 fun <T : WithNotifications> T.showNotificationAlert() {
     val notification = notifications.flow.collectAsState()
     notification.value?.let {
-        val titleResourceId = AmbientContext.current.runCatching {
+        val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
         }.getOrNull() ?: 0
-        val bodyResourceId = AmbientContext.current.runCatching {
+        val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
         }.getOrNull() ?: 0
         if (it.isSimple) {
@@ -242,7 +243,7 @@ fun <T : WithNotifications> T.showNotificationAlert() {
 
 @Composable
 fun stringResourceByName(name: String): String {
-    return stringResource(id = AmbientContext.current.runCatching {
+    return stringResource(id = LocalContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
     }.getOrNull() ?: 0)
 }
@@ -257,7 +258,7 @@ private fun getCountryCode(): String {
     return when {
         BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
         BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> AmbientConfiguration.current.locale.country
+        else -> LocalConfiguration.current.locale.country
     }
 }
 
@@ -266,18 +267,23 @@ fun NavigationCell(
     icon: ImageVector,
     text: String,
     color: Color = MaterialTheme.colors.onPrimary,
-    clickIndication: Indication? = AmbientIndication.current(),
+    clickIndication: Indication? = LocalIndication.current,
     onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()
-            .clickable(indication = clickIndication, onClick = onClick)
+            .clickable(
+                indication = clickIndication,
+                interactionState = remember { InteractionState() },
+                onClick = onClick
+            )
             .padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = icon,
             tint = color,
+            contentDescription = null,
             modifier = Modifier.padding(start = 18.dp).size(22.dp),
         )
         Text(
@@ -364,7 +370,8 @@ fun BasicScreen(
 @Composable
 inline fun ItemPlaceholder() {
     Image(
-        imageVector = vectorResource(R.drawable.ic_placeholder),
+        painter = painterResource(R.drawable.ic_placeholder),
+        contentDescription = null,
     )
 }
 
@@ -379,12 +386,13 @@ object NoOpIndication : Indication {
         }
     }
 
+    @Composable
     override fun createInstance() = NoOpIndicationInstance
 }
 
 @Composable
-fun DataWithLabel(label: Int, data: String) {
-    Row {
+fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
+    Row(modifier = modifier) {
         Text(
             text = "${stringResource(id = label)}:",
             fontSize = 14.sp,
@@ -401,42 +409,41 @@ fun DataWithLabel(label: Int, data: String) {
 }
 
 @Composable
-fun LocationSelector(
-    chooseRemember: Any?,
-    chosenValue: String?,
-    defaultName: String,
+fun Dropdown(
+    modifier: Modifier = Modifier,
+    rememberChooseKey: Any?,
+    value: String,
     dropDownItems: List<String>,
     onSelected: (String) -> Unit,
 ) {
-    val choosing = remember(chooseRemember) { mutableStateOf(false) }
+    val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .background(color = Color.White)
+            .clickable(onClick = {
+                if (dropDownItems.isNotEmpty()) {
+                    choosing.value = true
+                }
+            })
+            .padding(vertical = 16.dp, horizontal = 16.dp)
+    ) {
+        Text(
+            text = value,
+            color = Color.Black,
+            fontSize = 14.sp,
+            modifier = Modifier.align(Alignment.CenterStart),
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            modifier = Modifier.align(Alignment.CenterEnd),
+            contentDescription = null,
+            tint = ConstColors.gray,
+        )
+    }
     DropdownMenu(
-        toggle = {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .background(color = Color.White)
-                    .clickable(onClick = {
-                        if (dropDownItems.isNotEmpty()) {
-                            choosing.value = true
-                        }
-                    })
-                    .padding(vertical = 16.dp, horizontal = 16.dp)
-            ) {
-                Text(
-                    text = chosenValue ?: defaultName,
-                    color = if (chosenValue == null) ConstColors.gray else Color.Black,
-                    fontSize = 14.sp,
-                    modifier = Modifier.align(Alignment.CenterStart),
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    tint = ConstColors.gray,
-                )
-            }
-        },
         expanded = choosing.value,
         onDismissRequest = { choosing.value = false },
-        dropdownContent = {
+        content = {
             dropDownItems.forEach {
                 DropdownMenuItem(
                     onClick = {
@@ -446,6 +453,7 @@ fun LocationSelector(
                     content = { Text(it) },
                 )
             }
-        }
+        },
+        modifier = modifier,
     )
 }

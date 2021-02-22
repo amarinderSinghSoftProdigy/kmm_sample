@@ -4,12 +4,18 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.NotificationType
 import com.zealsoftsol.medico.data.PaginatedData
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.UserType
 import kotlin.random.Random
 
 class MockNotificationScope : NetworkScope.Notification {
@@ -29,6 +35,35 @@ class MockNotificationScope : NetworkScope.Notification {
         mockResponse {
             Response.Wrapped(longPaginatedData(20, rnd), true)
         }
+
+    override suspend fun markNotification(
+        id: String,
+        status: NotificationStatus
+    ): Response.Wrapped<ErrorCode> = mockResponse {
+        Response.Wrapped(null, true)
+    }
+
+    override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
+        mockResponse {
+            Response.Wrapped(
+                NotificationDetails(
+                    customerData = MockCustomerScope.getMockCustomerData(UserType.RETAILER),
+                    subscriptionOption = NotificationOption.Subscription(
+                        PaymentMethod.CREDIT,
+                        "0",
+                        "0"
+                    ),
+                ),
+                true
+            )
+        }
+
+    override suspend fun selectNotificationAction(
+        id: String,
+        actionRequest: NotificationActionRequest
+    ): Response.Wrapped<ErrorCode> = mockResponse {
+        Response.Wrapped(null, true)
+    }
 }
 
 private fun longPaginatedData(size: Int, rnd: Random) =
