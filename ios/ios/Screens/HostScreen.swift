@@ -167,6 +167,10 @@ struct TabBarScreen: View {
         case let scope as NotificationScope.All:
             return AnyView(NotificationsScreen(scope: scope))
             
+        case let scope as NotificationScopePreview<DataNotificationDetails.TypeSafeSubscription,
+                                                   DataNotificationOption.Subscription>:
+            return AnyView(NotificationDetailsScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }

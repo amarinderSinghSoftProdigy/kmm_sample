@@ -15,6 +15,9 @@ struct PickerSelector: View {
     let chosenElement: String?
     let data: [String]
     
+    let chosenOptionTextWeight: TextWeight
+    let height: CGFloat
+    
     let onChange: (String) -> Void
     
     @State private var expanded: Bool = false
@@ -32,6 +35,7 @@ struct PickerSelector: View {
                         let text = chosenElement?.isEmpty == false ? chosenElement! : placeholder
                         
                         LocalizedText(localizationKey: text,
+                                      textWeight: chosenOptionTextWeight,
                                       fontSize: 15,
                                       color: .black,
                                       multilineTextAlignment: .leading)
@@ -48,15 +52,34 @@ struct PickerSelector: View {
                     .padding([.leading, .trailing], padding)
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 50)
+                .frame(height: height)
                 .background(RoundedRectangle(cornerRadius: 8)
                                 .fill(appColor: .white))
                 
                 if self.expanded {
                     getOptionsViews()
+                        .transition(AnyTransition.opacity
+                                        .combined(with: AnyTransition.offset(y: -height)))
                 }
             }
+            .animation(.linear(duration: 0.2))
         }
+    }
+    
+    init(placeholder: String,
+         chosenElement: String?,
+         data: [String],
+         height: CGFloat = 50,
+         chosenOptionTextWeight: TextWeight = .regular,
+         onChange: @escaping (String) -> Void) {
+        self.placeholder = placeholder
+        self.chosenElement = chosenElement
+        self.data = data
+        
+        self.height = height
+        self.chosenOptionTextWeight = chosenOptionTextWeight
+        
+        self.onChange = onChange
     }
     
     private func getOptionsViews() -> some View {
@@ -73,6 +96,7 @@ struct PickerSelector: View {
                         Text(text)
                             .medicoText(fontSize: 15)
                             .padding([.top, .bottom], 8)
+                            .frame(height: height)
                             .padding([.leading, .trailing], padding)
                     }
                 }

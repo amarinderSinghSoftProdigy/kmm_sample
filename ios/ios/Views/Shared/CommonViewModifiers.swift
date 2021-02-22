@@ -96,11 +96,12 @@ struct CustomPlaceholderTextField<Content: View>: View {
     let textWeight: TextWeight
     let fontSize: CGFloat
     let color: AppColor
+    let elementsAlignment: Alignment
     
     let onEditingChanged: ((Bool) -> ())?
     
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: elementsAlignment) {
             if text.wrappedValue.isEmpty {
                 placeholder
             }
@@ -109,7 +110,7 @@ struct CustomPlaceholderTextField<Content: View>: View {
                 .medicoText(textWeight: textWeight,
                             fontSize: fontSize,
                             color: color,
-                            multilineTextAlignment: .leading)
+                            multilineTextAlignment: elementsAlignment == .center ? .center : .leading)
         }
     }
     
@@ -117,6 +118,7 @@ struct CustomPlaceholderTextField<Content: View>: View {
          textWeight: TextWeight = .regular,
          fontSize: CGFloat = 14,
          color: AppColor = .darkBlue,
+         elementsAlignment: Alignment = .leading,
          onEditingChanged: ((Bool) -> ())? = nil,
          @ViewBuilder placeholder: () -> Content) {
         self.text = text
@@ -124,6 +126,7 @@ struct CustomPlaceholderTextField<Content: View>: View {
         self.textWeight = textWeight
         self.fontSize = fontSize
         self.color = color
+        self.elementsAlignment = elementsAlignment
         
         self.onEditingChanged = onEditingChanged
         
