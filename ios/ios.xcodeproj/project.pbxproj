@@ -80,6 +80,7 @@
 		33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67E925AF0EFD00148A27 /* DIContainer.swift */; };
 		33CDAA32256E5D42001C189A /* AppColorViewsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */; };
 		33CE886D2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */; };
+		33D0326125E3D3020046664C /* UserNameImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D0326025E3D3020046664C /* UserNameImage.swift */; };
 		33D4743925CAAEDA00BB21CC /* NotificationDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D4743825CAAEDA00BB21CC /* NotificationDetailsScreen.swift */; };
 		33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */; };
 		33D7F29925BEBCB40070C9DB /* EntityInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */; };
@@ -216,6 +217,7 @@
 		33CA67E925AF0EFD00148A27 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
 		33CDAA31256E5D42001C189A /* AppColorViewsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppColorViewsExtensions.swift; path = ios/extensions/AppColorViewsExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33CE886C2590C86700E4D316 /* OtpPhoneRequestScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneRequestScreenTests.swift; sourceTree = "<group>"; };
+		33D0326025E3D3020046664C /* UserNameImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNameImage.swift; sourceTree = "<group>"; };
 		33D4743825CAAEDA00BB21CC /* NotificationDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDetailsScreen.swift; sourceTree = "<group>"; };
 		33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAadhaarCardDetailsScreen.swift; sourceTree = "<group>"; };
 		33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityInfoBottomSheet.swift; sourceTree = "<group>"; };
@@ -390,6 +392,7 @@
 			isa = PBXGroup;
 			children = (
 				333F45D225A4B5A8008DE1D2 /* URLImage.swift */,
+				33D0326025E3D3020046664C /* UserNameImage.swift */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -1103,6 +1106,7 @@
 				33A0202625B99E1100615349 /* BaseBottomSheetView.swift in Sources */,
 				331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
+				33D0326125E3D3020046664C /* UserNameImage.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,

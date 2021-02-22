@@ -130,7 +130,7 @@ struct NonSeasonBoyImageAndAddressItem: View {
     
     var body: some View {
         HStack(spacing: 50) {
-            URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
+            UserNameImage(username: previewItem.tradeName)
                 .frame(width: 96, height: 96)
             
             VStack(alignment: .leading, spacing: 13) {

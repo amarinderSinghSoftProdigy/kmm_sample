@@ -77,8 +77,8 @@ struct NotificationDetailsScreen: View {
             return AnyView(
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .top, spacing: 35) {
-                        URLImage(withURL: "", withDefaultImageName: "DefaultProduct")
-                            .frame(width: 125, height: 125)
+                        UserNameImage(username: details.customerData.tradeName)
+                            .frame(width: 96, height: 96)
                         
                         VStack(alignment: .leading, spacing: 5) {
                             SmallAddressView(location: details.customerData.customerAddressData.location)
