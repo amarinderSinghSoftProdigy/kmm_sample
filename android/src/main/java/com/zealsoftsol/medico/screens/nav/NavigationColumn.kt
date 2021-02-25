@@ -2,7 +2,7 @@ package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ConstraintLayoutScope
+import androidx.compose.foundation.layout.ConstraintLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,7 +36,7 @@ fun NavigationColumn(
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
 ) {
-    ConstraintLayout(modifier = Modifier.fillMaxSize(), content = fun ConstraintLayoutScope.() {
+    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
 
         Image(
@@ -107,7 +107,7 @@ fun NavigationColumn(
                 )
             }
         }
-    })
+    }
 }
 
 @Composable

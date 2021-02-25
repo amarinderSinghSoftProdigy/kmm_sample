@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -489,7 +489,8 @@ private fun BasicAuthSignUpScreenWithButton(
         )
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
-        LazyColumn(
+        ScrollableColumn(
+            scrollState = scrollState,
             modifier = Modifier.padding(top = 4.dp).fillMaxSize(),
             contentPadding = PaddingValues(
                 top = padding,
@@ -497,13 +498,10 @@ private fun BasicAuthSignUpScreenWithButton(
                 end = padding,
                 bottom = padding + 60.dp
             ),
-            horizontalAlignment = horizontalAlignment
+            verticalArrangement = verticalArrangement,
+            horizontalAlignment = horizontalAlignment,
         ) {
-            // use `item` for separate elements like headers
-            // and `items` for lists of identical elements
-            item(fun ColumnScope.() {
-                body()
-            })
+            body()
         }
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             MedicoButton(

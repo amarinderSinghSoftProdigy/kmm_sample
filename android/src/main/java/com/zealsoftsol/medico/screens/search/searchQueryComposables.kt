@@ -4,11 +4,11 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.Interaction
 import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayout
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -86,38 +86,33 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
             )
         }
         if (showFilter.value) {
-            rememberScrollState(0f)
-            LazyColumn(
+            ScrollableColumn(
+                contentPadding = PaddingValues(16.dp),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
             ) {
-                // use `item` for separate elements like headers
-                // and `items` for lists of identical elements
-                item(fun ColumnScope.() {
-                    Text(
-                        text = stringResource(id = R.string.clear_all),
-                        modifier = Modifier.align(Alignment.End)
-                            .clickable(
-                                indication = null,
-                                interactionState = remember { InteractionState() }) {
-                                scope.clearFilter(
-                                    null
-                                )
-                            },
+                Text(
+                    text = stringResource(id = R.string.clear_all),
+                    modifier = Modifier.align(Alignment.End)
+                        .clickable(
+                            indication = null,
+                            interactionState = remember { InteractionState() }) {
+                            scope.clearFilter(
+                                null
+                            )
+                        },
+                )
+                filters.value.forEach { filter ->
+                    FilterSection(
+                        name = filter.name,
+                        options = filter.options,
+                        searchOption = if (filter.queryName == Filter.MANUFACTURER_ID)
+                            SearchOption(manufacturer.value) { scope.searchManufacturer(it) }
+                        else
+                            null,
+                        onOptionClick = { scope.selectFilter(filter, it) },
+                        onFilterClear = { scope.clearFilter(filter) },
                     )
-                    filters.value.forEach { filter ->
-                        FilterSection(
-                            name = filter.name,
-                            options = filter.options,
-                            searchOption = if (filter.queryName == Filter.MANUFACTURER_ID)
-                                SearchOption(manufacturer.value) { scope.searchManufacturer(it) }
-                            else
-                                null,
-                            onOptionClick = { scope.selectFilter(filter, it) },
-                            onFilterClear = { scope.clearFilter(filter) },
-                        )
-                    }
-                })
+                }
             }
         } else {
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {

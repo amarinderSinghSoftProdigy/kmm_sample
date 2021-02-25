@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.google.firebase.ktx.Firebase

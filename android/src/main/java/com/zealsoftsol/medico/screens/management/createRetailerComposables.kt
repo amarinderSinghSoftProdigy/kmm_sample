@@ -1,13 +1,12 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
@@ -48,26 +47,20 @@ fun AddRetailerScreen(scope: ManagementScope.AddRetailer) {
         modifier = Modifier.fillMaxSize()
     ) {
         val padding = 16.dp
-        LazyColumn(
+        ScrollableColumn(
+            scrollState = scrollState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = padding,
                 start = padding,
                 end = padding,
                 bottom = padding + 60.dp
-            )
+            ),
         ) {
-            // use `item` for separate elements like headers
-            // and `items` for lists of identical elements
-            item(fun ColumnScope.() {
-                when (scope) {
-                    is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(
-                        scope,
-                        scrollState
-                    )
-                    is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
-                }
-            })
+            when (scope) {
+                is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(scope, scrollState)
+                is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
+            }
         }
         MedicoButton(
             modifier = Modifier.align(Alignment.BottomCenter).padding(padding),
