@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.notification
 
 import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -282,20 +285,28 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.payment_method, "")
-            Dropdown(
-                modifier = Modifier.width(100.dp),
-                rememberChooseKey = this,
-                value = details.option.paymentMethod.serverValue,
-                dropDownItems = PaymentMethod.values().map { it.serverValue },
-                onSelected = {
-                    val method = when (it) {
-                        PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
-                        PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
-                        else -> throw UnsupportedOperationException("unknown payment method")
+            Surface(
+                modifier = Modifier.border(
+                    1.dp,
+                    ConstColors.gray.copy(alpha = ContentAlpha.medium),
+                    RoundedCornerShape(4.dp)
+                )
+            ) {
+                Dropdown(
+                    modifier = Modifier.width(100.dp),
+                    rememberChooseKey = this,
+                    value = details.option.paymentMethod.serverValue,
+                    dropDownItems = PaymentMethod.values().map { it.serverValue },
+                    onSelected = {
+                        val method = when (it) {
+                            PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
+                            PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
+                            else -> throw UnsupportedOperationException("unknown payment method")
+                        }
+                        onOptionChange(details.option.copy(paymentMethod = method))
                     }
-                    onOptionChange(details.option.copy(paymentMethod = method))
-                }
-            )
+                )
+            }
         }
         if (details.option.paymentMethod == PaymentMethod.CREDIT) {
             Row(
@@ -304,13 +315,12 @@ private fun SubscriptionDeatails(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DataWithLabel(R.string.credit_days, "")
-                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
                 OutlinedTextField(
                     value = details.option.creditDays,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     activeColor = ConstColors.lightBlue,
                     inactiveColor = ConstColors.gray,
-                    singleLine = true,
                     maxLines = 1,
                     onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
                 )
@@ -322,13 +332,12 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.discount_rate, "")
-            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
             OutlinedTextField(
                 value = details.option.discountRate,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 activeColor = ConstColors.lightBlue,
                 inactiveColor = ConstColors.gray,
-                singleLine = true,
                 maxLines = 1,
                 onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
             )

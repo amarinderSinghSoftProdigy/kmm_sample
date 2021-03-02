@@ -417,8 +417,8 @@ fun Dropdown(
     onSelected: (String) -> Unit,
 ) {
     val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
-    Box(
-        modifier = Modifier.fillMaxWidth()
+    Row(
+        modifier = modifier
             .background(color = Color.White)
             .clickable(onClick = {
                 if (dropDownItems.isNotEmpty()) {
@@ -428,32 +428,31 @@ fun Dropdown(
             .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
         Text(
+            modifier = Modifier.align(Alignment.CenterVertically),
             text = value,
             color = Color.Black,
             fontSize = 14.sp,
-            modifier = Modifier.align(Alignment.CenterStart),
         )
         Icon(
+            modifier = Modifier.align(Alignment.CenterVertically),
             imageVector = Icons.Default.ArrowDropDown,
-            modifier = Modifier.align(Alignment.CenterEnd),
             contentDescription = null,
             tint = ConstColors.gray,
         )
+        DropdownMenu(
+            expanded = choosing.value,
+            onDismissRequest = { choosing.value = false },
+            content = {
+                dropDownItems.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            choosing.value = false
+                            onSelected(it)
+                        },
+                        content = { Text(it) },
+                    )
+                }
+            },
+        )
     }
-    DropdownMenu(
-        expanded = choosing.value,
-        onDismissRequest = { choosing.value = false },
-        content = {
-            dropDownItems.forEach {
-                DropdownMenuItem(
-                    onClick = {
-                        choosing.value = false
-                        onSelected(it)
-                    },
-                    content = { Text(it) },
-                )
-            }
-        },
-        modifier = modifier,
-    )
 }

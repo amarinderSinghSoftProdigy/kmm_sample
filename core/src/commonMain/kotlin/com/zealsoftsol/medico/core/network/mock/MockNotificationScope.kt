@@ -36,12 +36,12 @@ class MockNotificationScope : NetworkScope.Notification {
             Response.Wrapped(longPaginatedData(20, rnd), true)
         }
 
-    override suspend fun markNotification(
-        id: String,
-        status: NotificationStatus
-    ): Response.Wrapped<ErrorCode> = mockResponse {
-        Response.Wrapped(null, true)
-    }
+//    override suspend fun markNotification(
+//        id: String,
+//        status: NotificationStatus
+//    ): Response.Wrapped<ErrorCode> = mockResponse {
+//        Response.Wrapped(null, true)
+//    }
 
     override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
         mockResponse {

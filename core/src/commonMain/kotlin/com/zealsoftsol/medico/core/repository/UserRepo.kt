@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
+import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
@@ -72,15 +73,19 @@ class UserRepo(
                 "unknown user type".warnIt()
                 return@let null
             }
+            if (it.unitCode == null || it.customerMetaData == null) {
+                "can not create user without unitCode or customerMetaData".errorIt()
+                return false
+            }
             val user = User(
                 it.firstName,
                 it.lastName,
                 it.email,
                 it.phoneNumber,
-                it.unitCode,
+                it.unitCode!!,
                 parsedType,
                 when (parsedType) {
-                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
+                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo.orEmpty(), "")
                     else -> User.Details.DrugLicense(
                         it.tradeName,
                         it.gstin,
@@ -89,7 +94,7 @@ class UserRepo(
                         it.drugLicenseUrl
                     )
                 },
-                it.customerMetaData.activated,
+                it.customerMetaData!!.activated,
                 it.isDocumentUploaded,
                 it.customerAddressData,
             )

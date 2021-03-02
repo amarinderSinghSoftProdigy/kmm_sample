@@ -1,20 +1,28 @@
 package com.zealsoftsol.medico.core.notifications
 
+import com.zealsoftsol.medico.core.compatDispatcher
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.network.createJson
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.data.NotificationData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 internal class FirebaseMessagingCenter(private val userRepo: UserRepo) : FirebaseMessaging {
 
     override val notifications: DataSource<NotificationMessage?> = DataSource(null)
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val scope = CoroutineScope(compatDispatcher + SupervisorJob())
+    private val json by lazy { createJson() }
 
-    override fun handleMessage(data: Map<String, String>) {
-        when (data[TYPE_KEY]) {
-            "req" -> requestReceived(data["user"])
+    override fun handleMessage(data: Map<String, Any>) {
+        data.log("handle message")
+        val notificationJson = data["NOTIFICATIONS"] as String
+        runCatching {
+            json.decodeFromString(NotificationData.serializer(), notificationJson)
+        }.getOrNull()?.let {
+            notifications.value = NotificationMessage(it.id, it.title, it.body)
         }
     }
 
@@ -26,14 +34,6 @@ internal class FirebaseMessagingCenter(private val userRepo: UserRepo) : Firebas
         if (notifications.value?.id == id) {
             notifications.value = null
         }
-    }
-
-    private fun requestReceived(user: String?) {
-        notifications.value = NotificationMessage("id", "title", "body")
-    }
-
-    companion object {
-        private const val TYPE_KEY = ""
     }
 }
 
@@ -47,7 +47,7 @@ interface FirebaseMessaging {
 
     val notifications: DataSource<NotificationMessage?>
 
-    fun handleMessage(data: Map<String, String>)
+    fun handleMessage(data: Map<String, Any>)
 
     fun handleNewToken(token: String)
 

@@ -4,8 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class
-GeoPoints(
+data class GeoPoints(
     val latitude: Double,
     val longitude: Double,
 )

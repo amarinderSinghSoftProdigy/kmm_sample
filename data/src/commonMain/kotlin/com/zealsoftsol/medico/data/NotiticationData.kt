@@ -9,7 +9,7 @@ data class NotificationData(
     val body: String,
     val type: NotificationType,
     val actions: List<NotificationAction>,
-    val selectedAction: NotificationAction?,
+    val selectedAction: NotificationAction? = null,
     val status: NotificationStatus,
     val sentAt: Long,
 )

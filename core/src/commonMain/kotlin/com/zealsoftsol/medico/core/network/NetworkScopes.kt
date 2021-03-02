@@ -12,7 +12,6 @@ import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
-import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -102,10 +101,10 @@ interface NetworkScope {
             pagination: Pagination
         ): Response.Wrapped<PaginatedData<NotificationData>>
 
-        suspend fun markNotification(
-            id: String,
-            status: NotificationStatus
-        ): Response.Wrapped<ErrorCode>
+//        suspend fun markNotification(
+//            id: String,
+//            status: NotificationStatus
+//        ): Response.Wrapped<ErrorCode>
 
         suspend fun selectNotificationAction(
             id: String,

@@ -13,7 +13,6 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationOption
-import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.NotificationType
 
 internal class NotificationEventDelegate(
@@ -62,7 +61,7 @@ internal class NotificationEventDelegate(
             } as GenericNotificationScopePreview
             setScope(nextScope)
             val (result, isSuccess) = withProgress {
-                networkNotificationScope.markNotification(data.id, NotificationStatus.READ)
+//                networkNotificationScope.markNotification(data.id, NotificationStatus.READ)
                 networkNotificationScope.getNotificationDetails(data.id)
             }
             if (isSuccess && result != null) {

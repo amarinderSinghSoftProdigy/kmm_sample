@@ -30,6 +30,9 @@ class NotificationCenter(
                     0,
                 )
             }
+            .header {
+                icon = R.mipmap.ic_launcher_foreground
+            }
             .alerting("medico") {
                 channelImportance = Notify.IMPORTANCE_MAX
             }

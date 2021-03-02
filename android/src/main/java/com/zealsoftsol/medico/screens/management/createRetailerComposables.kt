@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -179,6 +180,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     )
     Space(dp = 12.dp)
     Dropdown(
+        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
         value = registration.value.location.takeIf { it.isNotEmpty() }
             ?: stringResource(id = R.string.location),
@@ -187,6 +189,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     )
     Space(dp = 12.dp)
     Dropdown(
+        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
         value = registration.value.city.takeIf { it.isNotEmpty() }
             ?: stringResource(id = R.string.city),
