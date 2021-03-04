@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -101,6 +102,8 @@ interface NetworkScope {
             pagination: Pagination
         ): Response.Wrapped<PaginatedData<NotificationData>>
 
+        suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
+
 //        suspend fun markNotification(
 //            id: String,
 //            status: NotificationStatus
@@ -110,7 +113,6 @@ interface NetworkScope {
             id: String,
             actionRequest: NotificationActionRequest
         ): Response.Wrapped<ErrorCode>
-
         suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails>
     }
 }

@@ -189,7 +189,11 @@ object DebugScopeCreator {
     fun dashboardScreen() {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
-            DashboardScope.get(testUser, ReadOnlyDataSource(MutableStateFlow(testUser)))
+            DashboardScope.get(
+                testUser,
+                ReadOnlyDataSource(MutableStateFlow(testUser)),
+                ReadOnlyDataSource(MutableStateFlow(0))
+            )
         )
     }
 

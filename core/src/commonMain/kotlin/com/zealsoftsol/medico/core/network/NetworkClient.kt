@@ -38,6 +38,7 @@ import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -274,7 +275,7 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
-                    append("currentPage", pagination.nextPage().toString())
+                    append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                     append("sort", "ASC")
                 }
@@ -340,7 +341,7 @@ class NetworkClient(
             url {
                 parameters.apply {
                     if (search.isNotEmpty()) append("search", search)
-                    append("currentPage", pagination.nextPage().toString())
+                    append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                     append("notificationType", "")
                 }
@@ -349,6 +350,13 @@ class NetworkClient(
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
+
+    override suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications> =
+        ktorDispatcher {
+            client.get<SimpleResponse<UnreadNotifications>>("$NOTIFICATIONS_URL/api/v1/notifications/unread") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     override suspend fun selectNotificationAction(
         id: String,

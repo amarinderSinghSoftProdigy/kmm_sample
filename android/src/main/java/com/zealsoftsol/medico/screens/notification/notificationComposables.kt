@@ -188,7 +188,9 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                     ),
                     enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
                     modifier = Modifier.align(Alignment.BottomEnd),
-                    onClick = if (item.selectedAction == null) onClick else {
+                    onClick = if (item.selectedAction == null) {
+                        onClick
+                    } else {
                         {}
                     },
                 )

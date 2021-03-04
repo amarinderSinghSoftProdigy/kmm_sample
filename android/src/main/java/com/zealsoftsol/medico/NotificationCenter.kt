@@ -13,7 +13,7 @@ class NotificationCenter(
 ) {
 
     init {
-        firebaseMessaging.notifications.observeOnUi {
+        firebaseMessaging.notificationMessage.observeOnUi {
             if (it != null) showMessage(it)
         }
     }

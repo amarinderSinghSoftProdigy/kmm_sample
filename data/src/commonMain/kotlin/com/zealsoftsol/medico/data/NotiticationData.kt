@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,6 +13,13 @@ data class NotificationData(
     val selectedAction: NotificationAction? = null,
     val status: NotificationStatus,
     val sentAt: Long,
+)
+
+@Serializable
+data class UnreadNotifications(
+    @SerialName("totalNotifications")
+    val unreadNotifications: Int,
+    // totalOrders
 )
 
 @Serializable
@@ -55,6 +63,7 @@ sealed class NotificationOption {
 
 enum class NotificationType(val buttonStringId: String) {
     SUBSCRIBE_REQUEST("subscribe_request_button"),
+    SUBSCRIBE_DECISION(""),
     ORDER_REQUEST("order_request_button"),
 }
 

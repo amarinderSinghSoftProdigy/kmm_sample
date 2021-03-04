@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.NotificationType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserType
 import kotlin.random.Random
 
@@ -34,6 +35,11 @@ class MockNotificationScope : NetworkScope.Notification {
     ): Response.Wrapped<PaginatedData<NotificationData>> =
         mockResponse {
             Response.Wrapped(longPaginatedData(20, rnd), true)
+        }
+
+    override suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications> =
+        mockResponse {
+            Response.Wrapped(UnreadNotifications(10), true)
         }
 
 //    override suspend fun markNotification(

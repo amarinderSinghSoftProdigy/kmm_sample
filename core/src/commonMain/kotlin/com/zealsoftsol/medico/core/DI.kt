@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
 import com.zealsoftsol.medico.core.network.mock.MockSignUpScope
 import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
+import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
@@ -109,6 +110,7 @@ fun startKodein(
             instance(),
         )
     }
+    bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
@@ -123,7 +125,12 @@ fun startKodein(
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
     bind<TokenStorage>() with singleton { TokenStorage(instance()) }
-    bind<FirebaseMessagingCenter>() with singleton { FirebaseMessagingCenter(instance()) }
+    bind<FirebaseMessagingCenter>() with singleton {
+        FirebaseMessagingCenter(
+            instance(),
+            instance()
+        )
+    }
 }.also {
     directDI = it.direct
 }

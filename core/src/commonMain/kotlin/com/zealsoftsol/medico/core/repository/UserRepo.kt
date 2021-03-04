@@ -265,10 +265,11 @@ class UserRepo(
     }
 
     suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
+        if (token != null) {
+            cachedFirebaseToken = token
+        }
         if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
             networkNotificationScope.sendFirebaseToken(token)
-        } else {
-            cachedFirebaseToken = token
         }
     }
 
