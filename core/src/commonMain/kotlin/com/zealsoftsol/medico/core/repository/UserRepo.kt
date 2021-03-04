@@ -85,12 +85,12 @@ class UserRepo(
                 it.unitCode!!,
                 parsedType,
                 when (parsedType) {
-                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo.orEmpty(), "")
+                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo!!, "")
                     else -> User.Details.DrugLicense(
                         it.tradeName,
-                        it.gstin,
-                        it.drugLicenseNo1,
-                        it.drugLicenseNo2,
+                        it.gstin!!,
+                        it.drugLicenseNo1!!,
+                        it.drugLicenseNo2!!,
                         it.drugLicenseUrl
                     )
                 },
@@ -265,11 +265,10 @@ class UserRepo(
     }
 
     suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
-        cachedFirebaseToken = if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
+        if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
             networkNotificationScope.sendFirebaseToken(token)
-            null
         } else {
-            token
+            cachedFirebaseToken = token
         }
     }
 

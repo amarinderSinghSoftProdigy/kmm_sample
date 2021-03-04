@@ -354,7 +354,7 @@ class NetworkClient(
         id: String,
         actionRequest: NotificationActionRequest
     ): Response.Wrapped<ErrorCode> = ktorDispatcher {
-        client.post<SimpleResponse<MapBody>>("$B2B_URL/api/v1/b2bapp/subscriptions/approve") {
+        client.post<SimpleResponse<MapBody>>("$B2B_URL/api/v1/b2bapp/subscriptions/submit") {
             withMainToken()
             requireNotNull(actionRequest.subscriptionOption) { "only subscription option is supported" }
             jsonBody(

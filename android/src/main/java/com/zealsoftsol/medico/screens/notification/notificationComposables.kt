@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
@@ -68,18 +68,18 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun NotificationScreen(scope: NotificationScope) {
+fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         Space(16.dp)
         when (scope) {
-            is NotificationScope.All -> AllNotifications(scope)
+            is NotificationScope.All -> AllNotifications(scope, listState)
             is NotificationScope.Preview<*, *> -> PreviewNotifications(scope)
         }
     }
 }
 
 @Composable
-private fun AllNotifications(scope: NotificationScope.All) {
+private fun AllNotifications(scope: NotificationScope.All, listState: LazyListState) {
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     if (showSearchOverlay.value) {
@@ -128,7 +128,7 @@ private fun AllNotifications(scope: NotificationScope.All) {
     Space(16.dp)
     val items = scope.items.flow.collectAsState()
     LazyColumn(
-        state = rememberLazyListState(),
+        state = listState,
         modifier = Modifier.fillMaxSize(),
     ) {
         itemsIndexed(
@@ -188,7 +188,9 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                     ),
                     enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
                     modifier = Modifier.align(Alignment.BottomEnd),
-                    onClick = onClick,
+                    onClick = if (item.selectedAction == null) onClick else {
+                        {}
+                    },
                 )
             }
         }
@@ -278,7 +280,7 @@ private fun SubscriptionDeatails(
         }
         Space(24.dp)
         DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
-        DataWithLabel(R.string.gstin_num, details.customerData.gstin)
+        DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

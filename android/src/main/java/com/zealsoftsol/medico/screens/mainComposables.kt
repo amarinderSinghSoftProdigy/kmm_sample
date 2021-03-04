@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -70,6 +71,7 @@ import com.zealsoftsol.medico.screens.settings.SettingsScreen
 @Composable
 fun TabBarScreen(scope: Scope.Host.TabBar) {
     val scaffoldState = rememberScaffoldState()
+    val notificationList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
@@ -208,7 +210,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is PreviewUserScope -> PreviewUserScreen(it)
-                    is NotificationScope -> NotificationScreen(it)
+                    is NotificationScope -> NotificationScreen(it, notificationList)
                 }
             }
         },
