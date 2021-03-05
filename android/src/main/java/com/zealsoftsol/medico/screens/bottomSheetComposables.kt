@@ -27,9 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,6 +49,7 @@ import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
@@ -77,7 +78,9 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
                 entityInfo = bs.entityInfo,
                 isForSeasonBoy = bs.isSeasonBoy,
-                onSubscribe = { bs.subscribe() },
+                onSubscribe = if (bs.canSubscribe) {
+                    { bs.subscribe() }
+                } else null,
                 onDismiss = { dismissBottomSheet() },
             )
         }
@@ -125,7 +128,7 @@ private fun DocumentUploadBottomSheet(
 private fun PreviewItemBottomSheet(
     entityInfo: EntityInfo,
     isForSeasonBoy: Boolean,
-    onSubscribe: () -> Unit,
+    onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
@@ -135,10 +138,14 @@ private fun PreviewItemBottomSheet(
                 color = Color.Black.copy(alpha = 0.12f),
                 modifier = Modifier.align(Alignment.TopEnd)
                     .size(24.dp)
-                    .clickable(indication = rememberRipple(radius = 12.dp), onClick = onDismiss),
+                    .clickable(
+                        indication = rememberRipple(radius = 12.dp),
+                        onClick = onDismiss,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
+                    contentDescription = null,
                     tint = ConstColors.gray,
                     modifier = Modifier.size(16.dp),
                 )
@@ -147,7 +154,8 @@ private fun PreviewItemBottomSheet(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (isForSeasonBoy) {
                         Icon(
-                            imageVector = vectorResource(id = R.drawable.ic_season_boy),
+                            painter = painterResource(id = R.drawable.ic_season_boy),
+                            contentDescription = null,
                             tint = MaterialTheme.colors.background,
                             modifier = Modifier.size(24.dp),
                         )
@@ -209,7 +217,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 }
 
 @Composable
-fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
+fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?) {
     Text(
         text = previewItem.geoData.city,
         fontSize = 14.sp,
@@ -220,6 +228,7 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
         CoilImage(
             modifier = Modifier.size(123.dp),
             data = "",
+            contentDescription = null,
             error = { ItemPlaceholder() },
             loading = { ItemPlaceholder() },
         )
@@ -234,7 +243,7 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
-            val activity = AmbientContext.current as MainActivity
+            val activity = LocalContext.current as MainActivity
             Text(
                 text = stringResource(id = R.string.see_on_the_map),
                 fontSize = 12.sp,
@@ -247,7 +256,7 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: () -> Unit) {
                     )
                 },
             )
-            if (previewItem is EntityInfo && previewItem.subscriptionData != null) {
+            if (previewItem is EntityInfo && onSubscribe != null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,
@@ -288,6 +297,7 @@ private fun SectionsBottomSheet(
                 ) {
                     Icon(
                         imageVector = it.iconAsset,
+                        contentDescription = null,
                         modifier = Modifier.padding(horizontal = 18.dp)
                     )
                     Text(
@@ -313,7 +323,8 @@ private fun BaseBottomSheet(
             modifier = Modifier.fillMaxSize()
                 .clickable(indication = NoOpIndication) { onDismiss() })
         Surface(
-            modifier = Modifier.fillMaxWidth().clickable(indication = null) { }
+            modifier = Modifier.fillMaxWidth()
+                .clickable(indication = null) { /* intercept touches */ }
                 .align(Alignment.BottomCenter),
             color = Color.White,
             elevation = 8.dp,

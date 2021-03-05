@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.InternalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,18 +23,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientConfiguration
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,15 +54,16 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
-import com.zealsoftsol.medico.screens.common.LocationSelector
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
@@ -123,6 +124,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
     BasicAuthSignUpScreenWithButton(
         progress = 0.4,
         scrollState = scrollState,
@@ -131,14 +133,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
         onButtonClick = { scope.validate(registration.value) },
         body = {
             InputField(
-                autoScrollOnFocus = scrollState,
+                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.first_name),
                 text = registration.value.firstName,
                 onValueChange = { scope.changeFirstName(it) }
             )
             Space(dp = 12.dp)
             InputField(
-                autoScrollOnFocus = scrollState,
+                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.last_name),
                 text = registration.value.lastName,
                 onValueChange = { scope.changeLastName(it) }
@@ -146,7 +148,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.email) {
                 InputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.email),
                     text = registration.value.email,
                     onValueChange = { scope.changeEmail(it) }
@@ -155,7 +157,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.phoneNumber) {
                 PhoneFormatInputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
                     onValueChange = { scope.changePhoneNumber(it.filter { it.isDigit() }) }
@@ -164,10 +166,10 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.password) {
                 PasswordFormatInputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.password),
                     text = registration.value.password,
-                    onValueChange = { scope.changePassword(it) }
+                    onValueChange = { scope.changePassword(it) },
                 )
             }
             Space(dp = 12.dp)
@@ -177,11 +179,11 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 errorText = if (!isValid) stringResource(id = R.string.password_doesnt_match) else null
             ) {
                 PasswordFormatInputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.repeat_password),
                     text = registration.value.verifyPassword,
                     isValid = isValid,
-                    onValueChange = { scope.changeRepeatPassword(it) }
+                    onValueChange = { scope.changeRepeatPassword(it) },
                 )
             }
             Space(dp = 12.dp)
@@ -190,7 +192,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 color = ConstColors.gray,
                 style = MaterialTheme.typography.caption,
             )
-            val context = AmbientContext.current
+            val context = LocalContext.current
             Text(
                 text = stringResource(id = R.string.tos_line_2),
                 color = ConstColors.lightBlue,
@@ -224,6 +226,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val pincodeValidation = scope.pincodeValidation.flow.collectAsState()
     val locationData = scope.locationData.flow.collectAsState()
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
     BasicAuthSignUpScreenWithButton(
         progress = 0.6,
         baseScope = scope,
@@ -233,7 +236,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
         body = {
             InputWithError(errorText = pincodeValidation.value?.pincode) {
                 InputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.pincode),
                     text = registration.value.pincode,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -243,7 +246,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.addressLine1) {
                 InputField(
-                    autoScrollOnFocus = scrollState,
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.address_line),
                     text = registration.value.addressLine1,
                     onValueChange = { scope.changeAddressLine(it) }
@@ -251,20 +254,22 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             }
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.location) {
-                LocationSelector(
-                    chooseRemember = locationData.value,
-                    chosenValue = registration.value.location.takeIf { it.isNotEmpty() },
-                    defaultName = stringResource(id = R.string.location),
+                Dropdown(
+                    modifier = Modifier.fillMaxWidth(),
+                    rememberChooseKey = locationData.value,
+                    value = registration.value.location.takeIf { it.isNotEmpty() }
+                        ?: stringResource(id = R.string.location),
                     dropDownItems = locationData.value?.locations.orEmpty(),
                     onSelected = { scope.changeLocation(it) }
                 )
             }
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.city) {
-                LocationSelector(
-                    chooseRemember = locationData.value,
-                    chosenValue = registration.value.city.takeIf { it.isNotEmpty() },
-                    defaultName = stringResource(id = R.string.city),
+                Dropdown(
+                    modifier = Modifier.fillMaxWidth(),
+                    rememberChooseKey = locationData.value,
+                    value = registration.value.city.takeIf { it.isNotEmpty() }
+                        ?: stringResource(id = R.string.city),
                     dropDownItems = locationData.value?.cities.orEmpty(),
                     onSelected = { scope.changeCity(it) }
                 )
@@ -286,6 +291,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
     val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
     BasicAuthSignUpScreenWithButton(
         progress = 0.8,
         baseScope = scope,
@@ -296,7 +302,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
             if (SignUpScope.Details.Fields.TRADE_NAME in scope.inputFields) {
                 InputWithError(errorText = validation.value?.tradeName) {
                     InputField(
-                        autoScrollOnFocus = scrollState,
+                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                         hint = stringResource(id = R.string.trade_name),
                         text = registration.value.tradeName,
                         onValueChange = { scope.changeTradeName(it) },
@@ -307,7 +313,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
             if (SignUpScope.Details.Fields.PAN in scope.inputFields) {
                 InputWithError(errorText = validation.value?.panNumber) {
                     InputField(
-                        autoScrollOnFocus = scrollState,
+                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                         hint = stringResource(id = R.string.pan_number),
                         text = registration.value.panNumber,
                         isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber),
@@ -321,7 +327,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
             if (SignUpScope.Details.Fields.GSTIN in scope.inputFields) {
                 InputWithError(errorText = validation.value?.gstin) {
                     InputField(
-                        autoScrollOnFocus = scrollState,
+                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                         hint = stringResource(id = R.string.gstin),
                         text = registration.value.gstin,
                         isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
@@ -336,7 +342,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                 InputWithError(errorText = validation.value?.drugLicenseNo1) {
                     InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
                         InputField(
-                            autoScrollOnFocus = scrollState,
+                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                             hint = stringResource(id = R.string.drug_license_1),
                             text = registration.value.drugLicenseNo1,
                             onValueChange = { scope.changeDrugLicense1(it) },
@@ -349,7 +355,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                 InputWithError(errorText = validation.value?.drugLicenseNo2) {
                     InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
                         InputField(
-                            autoScrollOnFocus = scrollState,
+                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                             hint = stringResource(id = R.string.drug_license_2),
                             text = registration.value.drugLicenseNo2,
                             onValueChange = { scope.changeDrugLicense2(it) },
@@ -399,7 +405,8 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
             }
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_upload),
+                painter = painterResource(id = R.drawable.ic_upload),
+                contentDescription = null,
                 tint = ConstColors.gray,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
@@ -453,16 +460,15 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
                 } else {
                     this
                 }
-            }.clickable(onClick = onClick, indication = null),
+            }.clickable(onClick = onClick),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(imageVector = vectorResource(id = iconRes))
+        Image(painter = painterResource(id = iconRes), contentDescription = null)
         Text(text = stringResource(id = textRes), modifier = Modifier.padding(4.dp))
     }
 }
 
-@OptIn(InternalLayoutApi::class)
 @Composable
 private fun BasicAuthSignUpScreenWithButton(
     progress: Double,
@@ -481,19 +487,22 @@ private fun BasicAuthSignUpScreenWithButton(
         Box(
             modifier = Modifier
                 .background(ConstColors.yellow)
-                .size((AmbientConfiguration.current.screenWidthDp * progress).dp, 4.dp)
+                .size((LocalConfiguration.current.screenWidthDp * progress).dp, 4.dp)
         )
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
-        ScrollableColumn(
-            scrollState = scrollState,
-            modifier = Modifier.padding(top = 4.dp).fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding,
-                start = padding,
-                end = padding,
-                bottom = padding + 60.dp
-            ),
+        Column(
+            modifier = Modifier.padding(top = 4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    PaddingValues(
+                        top = padding,
+                        start = padding,
+                        end = padding,
+                        bottom = padding + 60.dp
+                    )
+                ),
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
         ) {

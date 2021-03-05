@@ -9,6 +9,9 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
+import com.zealsoftsol.medico.data.NotificationActionRequest
+import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -18,6 +21,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -78,7 +82,7 @@ interface NetworkScope {
         ): Response.Wrapped<SearchResponse>
     }
 
-    interface Management {
+    interface Management : NetworkScope {
         suspend fun getManagementInfo(
             unitCode: String,
             isSeasonBoy: Boolean,
@@ -89,5 +93,26 @@ interface NetworkScope {
         ): Response.Wrapped<PaginatedData<EntityInfo>>
 
         suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
+    }
+
+    interface Notification : NetworkScope {
+        suspend fun sendFirebaseToken(token: String): Boolean
+        suspend fun getNotifications(
+            search: String,
+            pagination: Pagination
+        ): Response.Wrapped<PaginatedData<NotificationData>>
+
+        suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
+
+//        suspend fun markNotification(
+//            id: String,
+//            status: NotificationStatus
+//        ): Response.Wrapped<ErrorCode>
+
+        suspend fun selectNotificationAction(
+            id: String,
+            actionRequest: NotificationActionRequest
+        ): Response.Wrapped<ErrorCode>
+        suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails>
     }
 }

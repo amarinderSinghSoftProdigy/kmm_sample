@@ -15,29 +15,38 @@ class MockCustomerScope : NetworkScope.Customer {
     }
 
     override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = mockResponse {
-        Response.Wrapped(
-            CustomerData(
+        Response.Wrapped(getMockCustomerData(), true)
+    }
+
+    companion object {
+
+        fun getMockCustomerData(userType: UserType = UserType.SEASON_BOY) = CustomerData(
+            "2194129343",
+            CustomerAddressData(
+                "India",
+                "Delhi",
+                "Vijayawada",
+                0.0,
+                "Some location",
+                0.0,
+                520001,
                 "",
-                CustomerAddressData("", "", "", 0.0, "", 0.0, 0, "", ""),
-                CustomerMetaData(true, "", ""),
-                UserType.SEASON_BOY.serverValue,
-                "",
-                "",
-                "",
-                "",
-                true,
-                "",
-                "Test",
-                "",
-                "User",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                ""
             ),
-            true
+            CustomerMetaData(true, "", ""),
+            userType.serverValue,
+            "drug1",
+            "drug2",
+            "url",
+            true,
+            "test@mail.com",
+            "Test",
+            "12345",
+            "User",
+            "+1111111",
+            "55532",
+            "Test Trader",
+            "0000000",
         )
     }
 }

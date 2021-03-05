@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
+import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
@@ -28,15 +29,15 @@ sealed class ManagementScope(
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
-    ) : ManagementScope() {
+    ) : ManagementScope(), Loadable<EntityInfo> {
 
-        val pagination: Pagination = Pagination()
-        val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        override val pagination: Pagination = Pagination()
+        override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
-        val searchText: DataSource<String> = DataSource("")
+        override val searchText: DataSource<String> = DataSource("")
 
         init {
-            loadItems()
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
         }
 
         fun selectTab(tab: Tab) {
@@ -44,7 +45,7 @@ sealed class ManagementScope(
             pagination.reset()
             items.value = emptyList()
             activeTab.value = tab
-            loadItems()
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = true))
         }
 
         fun selectItem(item: EntityInfo) =
@@ -52,7 +53,8 @@ sealed class ManagementScope(
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
 
-        fun loadItems() = EventCollector.sendEvent(Event.Action.Management.Load)
+        fun loadItems() =
+            EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))
 
         class Stockist(
             override val notifications: DataSource<ScopeNotification?> = DataSource(null)
@@ -80,7 +82,7 @@ sealed class ManagementScope(
         )
     }
 
-    sealed class AddRetailer(icon: ScopeIcon = ScopeIcon.HAMBURGER) : ManagementScope(icon) {
+    sealed class AddRetailer : ManagementScope(ScopeIcon.BACK) {
 
         val canGoNext: DataSource<Boolean> = DataSource(false)
 
@@ -111,19 +113,17 @@ sealed class ManagementScope(
             override val registration: DataSource<UserRegistration2>,
             override val locationData: DataSource<LocationData?> = DataSource(null),
             override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
-        ) : AddRetailer(icon = ScopeIcon.BACK),
-            AddressComponent {
+            override val notifications: DataSource<ScopeNotification?> = DataSource(null),
+        ) : AddRetailer(),
+            AddressComponent,
+            CommonScope.WithNotifications {
 
             override fun onDataValid(isValid: Boolean) {
                 canGoNext.value = isValid
             }
 
-            override fun next() = EventCollector.sendEvent(
-                Event.Transition.PreviewUser(
-                    registration.value,
-                    registration3
-                )
-            )
+            override fun next() =
+                EventCollector.sendEvent(Event.Action.Registration.ConfirmCreateRetailer)
         }
     }
 
@@ -167,6 +167,14 @@ sealed class ManagementScope(
         override val isDismissible: Boolean = true
         override val title: String = "thank_you_for_request"
         override val body: String? = null
+    }
+
+    data class Congratulations(val tradeName: String) : ScopeNotification {
+        override val dismissEvent: Event = Event.Transition.Refresh
+        override val isSimple: Boolean = false
+        override val isDismissible: Boolean = true
+        override val title: String = "congratulations"
+        override val body: String = "retailer_added_template"
     }
 
     enum class Tab(val stringId: String, val criteria: ManagementCriteria) {

@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.product
 
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -10,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -33,17 +34,19 @@ import com.zealsoftsol.medico.data.ProductData
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
 
-    ScrollableColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
         Space(12.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
                 modifier = Modifier.size(123.dp),
+                contentDescription = null,
                 data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },
@@ -96,7 +99,8 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(32.dp)
         Box(
             modifier = Modifier.fillMaxWidth()
-                .clickable(indication = null) { scope.toggleDetails() }) {
+                .clickable(indication = null) { scope.toggleDetails() }
+        ) {
             Text(
                 text = stringResource(id = R.string.details),
                 color = MaterialTheme.colors.background,
@@ -106,6 +110,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             )
             Icon(
                 imageVector = if (isDetailsOpened.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                contentDescription = null,
                 tint = ConstColors.gray,
                 modifier = Modifier.align(Alignment.CenterEnd),
             )

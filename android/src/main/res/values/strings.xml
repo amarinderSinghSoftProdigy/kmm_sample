@@ -127,4 +127,16 @@
     <string name="add_retailer">Add Retailer</string>
     <string name="add_retailer_address">Add Retailer\'s Address</string>
     <string name="consent_terms">I consest for Terms and Conditions</string>
+    <string name="notifications">Notifications</string>
+    <string name="active_orders">Active orders</string>
+    <string name="read">Read</string>
+    <string name="unread">Unread</string>
+    <string name="accept">Accept</string>
+    <string name="accepted">Accepted</string>
+    <string name="decline">Decline</string>
+    <string name="declined">Declined</string>
+    <string name="subscribe_request_button">Action Required</string>
+    <string name="order_request_button">View Order</string>
+    <string name="credit_days">Credit days</string>
+    <string name="discount_rate">Discount Rate</string>
 </resources>

@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -17,9 +18,12 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.LoadHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -34,11 +38,14 @@ internal class EventCollector(
     searchNetworkScope: NetworkScope.Search,
     productNetworkScope: NetworkScope.Product,
     managementNetworkScope: NetworkScope.Management,
+    private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
 ) {
+    private val loadHelperScope = CoroutineScope(compatDispatcher)
+
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
         Event.Transition::class to TransitionEventDelegate(navigator, userRepo),
-        Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo),
+        Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo, notificationRepo),
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
@@ -46,13 +53,19 @@ internal class EventCollector(
         Event.Action.Product::class to ProductEventDelegate(
             navigator,
             userRepo,
-            productNetworkScope
+            productNetworkScope,
         ),
         Event.Action.Management::class to ManagementEventDelegate(
             navigator,
             userRepo,
             managementNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
         ),
+        Event.Action.Notification::class to NotificationEventDelegate(
+            navigator,
+            notificationRepo,
+            LoadHelper(navigator, loadHelperScope),
+        )
     )
 
     init {
@@ -66,6 +79,7 @@ internal class EventCollector(
             UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
                 user = userRepo.requireUser(),
                 userDataSource = userRepo.getUserDataSource(),
+                unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
             )
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
                 userRepo.requireUser(),
@@ -75,11 +89,12 @@ internal class EventCollector(
         }
     }
 
-    fun checkUser() {
-        if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) GlobalScope.launch(
-            compatDispatcher
-        ) {
-            userRepo.loadUserFromServer()
+    fun updateData() {
+        if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) {
+            GlobalScope.launch(compatDispatcher) {
+                userRepo.loadUserFromServer()
+                notificationRepo.loadUnreadMessagesFromServer()
+            }
         }
     }
 

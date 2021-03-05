@@ -4,11 +4,12 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.NotificationAction
+import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
@@ -82,11 +83,22 @@ sealed class Event {
 
             data class Select(val item: EntityInfo) : Management()
             data class Search(val value: String) : Management()
-            object Load : Management()
+            data class Load(val isFirstLoad: Boolean) : Management()
             data class RequestSubscribe(val item: EntityInfo) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
             data class ChooseNumberOfDays(val days: Int) : Management()
             object VerifyRetailerTraderDetails : Management()
+        }
+
+        sealed class Notification : Action() {
+            override val typeClazz: KClass<*> = Notification::class
+
+            data class Load(val isFirstLoad: Boolean) : Notification()
+            data class Search(val value: String) : Notification()
+            data class Select(val notification: NotificationData) : Notification()
+            data class SelectAction(val action: NotificationAction) : Notification()
+            data class ChangeOptions(val option: NotificationOption) : Notification()
+//            object UpdateUnreadMessages: Notification()
         }
     }
 
@@ -94,6 +106,7 @@ sealed class Event {
         override val typeClazz: KClass<*> = Transition::class
 
         object Back : Transition()
+        object Refresh : Transition()
         object SignUp : Transition()
         object ForgetPassword : Transition()
         object ChangePassword : Transition()
@@ -105,11 +118,13 @@ sealed class Event {
         data class Management(val manageUserType: UserType) : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
-        data class PreviewUser(
-            val registration2: UserRegistration2,
-            val registration3: UserRegistration3,
-        ) : Transition()
+//        data class PreviewUser(
+//            val registration2: UserRegistration2,
+//            val registration3: UserRegistration3,
+//        ) : Transition()
 
         object CloseNotification : Transition()
+
+        object Notifications : Transition()
     }
 }

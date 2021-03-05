@@ -27,6 +27,10 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
         updateCurrentScope(scope)
     }
 
+    fun refresh() {
+        queues[activeQueue]?.firstOrNull()?.let { updateCurrentScope(it) }
+    }
+
     fun dropScope(
         strategy: DropStrategy = DropStrategy.First,
         updateDataSource: Boolean = true
@@ -83,7 +87,7 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                     old = queue.removeFirst()
                     queue.firstOrNull()?.let {
                         if (it::class == strategy.scopeClass) {
-                            updateCurrentScope(it)
+                            if (updateDataSource) updateCurrentScope(it)
                             return it
                         }
                     }

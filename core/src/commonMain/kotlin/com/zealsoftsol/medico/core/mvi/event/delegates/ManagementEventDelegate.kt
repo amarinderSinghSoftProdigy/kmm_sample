@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -10,27 +9,24 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 internal class ManagementEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val networkManagementScope: NetworkScope.Management,
+    private val loadHelper: LoadHelper,
 ) : EventDelegate<Event.Action.Management>(navigator) {
 
-    private var loadJob: Job? = null
     private var subscribeRequest: SubscribeRequest? = null
 
     override suspend fun handleEvent(event: Event.Action.Management) = when (event) {
-        is Event.Action.Management.Load -> loadUserManagement()
+        is Event.Action.Management.Load -> loadUserManagement(event.isFirstLoad)
         is Event.Action.Management.Search -> searchUserManagement(event.value)
         is Event.Action.Management.Select -> select(event.item)
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
@@ -39,19 +35,33 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
     }
 
-    private suspend fun loadUserManagement() {
-        navigator.withScope<ManagementScope.User> {
-            if (!navigator.scope.value.isInProgress.value && (it.pagination.nextPage() == 0 || it.pagination.canLoadMore())) {
-                it.loadManagement(withProgress = true, addPage = true)
-            }
+    private suspend fun loadUserManagement(isFirstLoad: Boolean) {
+        loadHelper.load<ManagementScope.User, EntityInfo>(isFirstLoad = isFirstLoad) {
+            val user = userRepo.requireUser()
+            val (result, isSuccess) = networkManagementScope.getManagementInfo(
+                unitCode = user.unitCode,
+                isSeasonBoy = user.type == UserType.SEASON_BOY,
+                forUserType = forType,
+                criteria = activeTab.value.criteria,
+                search = searchText.value,
+                pagination = pagination,
+            )
+            if (isSuccess) result else null
         }
     }
 
     private suspend fun searchUserManagement(search: String) {
-        navigator.withScope<ManagementScope.User> {
-            it.pagination.reset()
-            it.searchText.value = search
-            it.loadManagement(withProgress = false, addPage = false)
+        loadHelper.search<ManagementScope.User, EntityInfo>(searchValue = search) {
+            val user = userRepo.requireUser()
+            val (result, isSuccess) = networkManagementScope.getManagementInfo(
+                unitCode = user.unitCode,
+                isSeasonBoy = user.type == UserType.SEASON_BOY,
+                forUserType = forType,
+                criteria = activeTab.value.criteria,
+                search = searchText.value,
+                pagination = pagination,
+            )
+            if (isSuccess) result else null
         }
     }
 
@@ -61,6 +71,7 @@ internal class ManagementEventDelegate(
             hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
                 item,
                 isSeasonBoy = it is ManagementScope.User.SeasonBoy,
+                canSubscribe = it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
             )
         }
     }
@@ -128,41 +139,6 @@ internal class ManagementEventDelegate(
             if (isSuccess) {
                 EventCollector.sendEvent(Event.Transition.AddRetailerAddress)
             }
-        }
-    }
-
-    private suspend fun ManagementScope.User.loadManagement(
-        withProgress: Boolean,
-        addPage: Boolean
-    ) {
-        load(withProgress = withProgress, debounce = 500) {
-            val user = userRepo.requireUser()
-            val (result, isSuccess) = networkManagementScope.getManagementInfo(
-                unitCode = user.unitCode,
-                isSeasonBoy = user.type == UserType.SEASON_BOY,
-                forUserType = forType,
-                criteria = activeTab.value.criteria,
-                search = searchText.value,
-                pagination = pagination,
-            )
-            if (isSuccess && result != null) {
-                pagination.setTotal(result.total)
-                items.value = if (addPage) items.value + result.data else result.data
-            }
-        }
-    }
-
-    private suspend fun load(
-        withProgress: Boolean = false,
-        debounce: Long = 0,
-        loader: suspend () -> Unit
-    ) {
-        if (withProgress) navigator.setHostProgress(true)
-        loadJob?.cancel()
-        loadJob = coroutineContext.toScope().launch {
-            if (debounce > 0) delay(debounce)
-            loader()
-            if (withProgress) navigator.setHostProgress(false)
         }
     }
 }

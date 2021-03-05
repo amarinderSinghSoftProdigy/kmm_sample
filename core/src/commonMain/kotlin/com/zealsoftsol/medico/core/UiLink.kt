@@ -6,6 +6,8 @@ import com.zealsoftsol.medico.core.mvi.Environment
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.notifications.FirebaseMessaging
+import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
 import org.kodein.di.DI
 import org.kodein.di.instance
 
@@ -32,8 +34,8 @@ object UiLink {
         val di = startKodein(context, useMocks, useNavigatorSafeCasts, useNetworkInterceptor)
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
-        eventCollector.checkUser()
-        return AppStartResult(di, navigator)
+        eventCollector.updateData()
+        return AppStartResult(di, navigator, directDI.instance<FirebaseMessagingCenter>())
     }
 
     /**
@@ -45,6 +47,10 @@ object UiLink {
         navigator.setScope(eventCollector.getStartingScope())
     }
 
-    data class AppStartResult(val di: DI, val navigator: UiNavigator)
+    data class AppStartResult(
+        val di: DI,
+        val navigator: UiNavigator,
+        val firebaseMessaging: FirebaseMessaging
+    )
 }
 

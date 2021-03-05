@@ -8,7 +8,9 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
+import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.ErrorCode
@@ -16,6 +18,7 @@ import com.zealsoftsol.medico.data.ErrorCode
 internal class AuthEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
+    private val notificationRepo: NotificationRepo,
 ) : EventDelegate<Event.Action.Auth>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Auth) = when (event) {
@@ -37,11 +40,17 @@ internal class AuthEventDelegate(
             }
             if (isSuccess) {
                 if (withProgress { userRepo.loadUserFromServer() }) {
+                    userRepo.sendFirebaseToken()
+                    notificationRepo.loadUnreadMessagesFromServer()
                     dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     val user = userRepo.requireUser()
                     setScope(
                         if (user.isActivated)
-                            DashboardScope.get(user, userRepo.getUserDataSource())
+                            DashboardScope.get(
+                                user,
+                                userRepo.getUserDataSource(),
+                                notificationRepo.getUnreadMessagesDataSource()
+                            )
                         else
                             LimitedAccessScope.get(user, userRepo.getUserDataSource())
                     )

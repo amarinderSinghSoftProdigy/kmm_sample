@@ -3,11 +3,11 @@ package com.zealsoftsol.medico.screens
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -23,8 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
@@ -35,6 +35,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
@@ -52,19 +53,25 @@ import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.PreviewUserScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
+import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun TabBarScreen(scope: Scope.Host.TabBar) {
+fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
     val scaffoldState = rememberScaffoldState()
+    val notificationList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
@@ -76,7 +83,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     userName = user.value.fullName(),
                     userType = user.value.type,
                     navigationSection = it,
-                    onSectionSelected = { scaffoldState.drawerState.close() }
+                    onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }
                 )
             }
         },
@@ -90,6 +97,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                             if (info.icon != ScopeIcon.NO_ICON) {
                                 Icon(
                                     imageVector = info.icon.toLocalIcon(),
+                                    contentDescription = null,
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                         .fillMaxHeight()
                                         .padding(16.dp)
@@ -98,7 +106,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                             onClick = {
                                                 when (info.icon) {
                                                     ScopeIcon.BACK -> scope.goBack()
-                                                    ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
+                                                    ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
                                                 }
                                             },
                                         )
@@ -116,18 +124,16 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                         is TabBarInfo.Search -> {
                             Icon(
                                 imageVector = info.icon.toLocalIcon(),
+                                contentDescription = null,
                                 modifier = Modifier
                                     .weight(0.15f)
                                     .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        onClick = {
-                                            when (info.icon) {
-                                                ScopeIcon.BACK -> scope.goBack()
-                                                ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
-                                            }
+                                    .clickable(indication = null) {
+                                        when (info.icon) {
+                                            ScopeIcon.BACK -> scope.goBack()
+                                            ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
                                         }
-                                    )
+                                    }
                             )
                             Row(
                                 modifier = Modifier
@@ -142,6 +148,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
                                     tint = ConstColors.gray,
+                                    contentDescription = null,
                                     modifier = Modifier.size(24.dp),
                                 )
                                 Text(
@@ -151,7 +158,8 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 )
                             }
                             Icon(
-                                imageVector = vectorResource(id = R.drawable.ic_cart),
+                                painter = painterResource(id = R.drawable.ic_cart),
+                                contentDescription = null,
                                 modifier = Modifier
                                     .weight(0.15f)
                                     .padding(16.dp),
@@ -161,9 +169,9 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                 }
             }
         },
-        bodyContent = {
+        content = {
             val childScope = scope.childScope.flow.collectAsState()
-            Crossfade(childScope.value, animation = tween(durationMillis = 200)) {
+            Crossfade(childScope.value, animationSpec = tween(durationMillis = 200)) {
                 when (it) {
                     is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
@@ -190,12 +198,13 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                             },
                         )
                     }
-                    is DashboardScope -> Unit
+                    is DashboardScope -> DashboardScreen(it)
                     is ProductInfoScope -> ProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is PreviewUserScope -> PreviewUserScreen(it)
+                    is NotificationScope -> NotificationScreen(it, notificationList)
                 }
             }
         },
