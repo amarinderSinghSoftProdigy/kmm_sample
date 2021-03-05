@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Architecture
 
-val iosArchitecture = if (Config.Ios.isForSimulator) Architecture.X64 else Architecture.ARM64
+val iosArchitecture = if (Config.Ios.isForSimulator || System.getenv("FOR_SIMULATOR") == "true") Architecture.X64 else Architecture.ARM64
 
 plugins {
     id("com.android.library")

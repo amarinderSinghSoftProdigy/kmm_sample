@@ -1020,7 +1020,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\n";
+			shellScript = "cd \"$SRCROOT/..\"\n\nSCHEME_NAME=`cat ${SCHEME_FILE}`\nif [ $SCHEME_NAME = 'MedicoSimulator' ]; then\n    FOR_SIMULATOR=true ./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\nelse \n    ./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\nfi\n";
 		};
 		B5A6F4C2972F56D21FE9BFDF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1391,6 +1391,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ios/Resources/PropertyLists/Info.plist;
+				INTERMEDIATES_OUTPUT_DIR = "${PROJECT_DIR}/build/intermediates/${CONFIGURATION}/";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1400,6 +1401,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
 				PRODUCT_NAME = Medico;
 				PROVISIONING_PROFILE_SPECIFIER = medicodevelopment;
+				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1423,6 +1425,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = ios/Resources/PropertyLists/Info.plist;
+				INTERMEDIATES_OUTPUT_DIR = "${PROJECT_DIR}/build/intermediates/${CONFIGURATION}/";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1432,6 +1435,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
 				PRODUCT_NAME = Medico;
 				PROVISIONING_PROFILE_SPECIFIER = medicodistribution;
+				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
