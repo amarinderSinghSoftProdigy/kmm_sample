@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -12,7 +13,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.setContent
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.google.firebase.ktx.Firebase
@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity(), DIAware {
                             )
                         }
                         is SearchScope -> Surface { SearchQueryScreen(it, searchList) }
-                        is Scope.Host.TabBar -> TabBarScreen(it)
+                        is Scope.Host.TabBar -> TabBarScreen(it, coroutineScope)
                     }
                 }
                 val isInProgress = hostScope.value.isInProgress.flow.collectAsState()

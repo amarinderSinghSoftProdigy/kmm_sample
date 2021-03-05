@@ -1,15 +1,15 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
@@ -48,15 +48,15 @@ fun AddRetailerScreen(scope: ManagementScope.AddRetailer) {
         modifier = Modifier.fillMaxSize()
     ) {
         val padding = 16.dp
-        ScrollableColumn(
-            scrollState = scrollState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding,
-                start = padding,
-                end = padding,
-                bottom = padding + 60.dp
-            ),
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    top = padding,
+                    start = padding,
+                    end = padding,
+                    bottom = padding + 60.dp
+                )
         ) {
             when (scope) {
                 is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(scope, scrollState)

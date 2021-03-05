@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -491,15 +491,18 @@ private fun BasicAuthSignUpScreenWithButton(
         )
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
-        ScrollableColumn(
-            scrollState = scrollState,
-            modifier = Modifier.padding(top = 4.dp).fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding,
-                start = padding,
-                end = padding,
-                bottom = padding + 60.dp
-            ),
+        Column(
+            modifier = Modifier.padding(top = 4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    PaddingValues(
+                        top = padding,
+                        start = padding,
+                        end = padding,
+                        bottom = padding + 60.dp
+                    )
+                ),
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
         ) {

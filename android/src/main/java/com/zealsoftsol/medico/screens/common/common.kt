@@ -3,11 +3,10 @@ package com.zealsoftsol.medico.screens.common
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
-import androidx.compose.foundation.Interaction
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -264,7 +263,7 @@ private fun getCountryCode(): String {
 
 @Composable
 fun NavigationCell(
-    icon: ImageVector,
+    icon: Painter,
     text: String,
     color: Color = MaterialTheme.colors.onPrimary,
     clickIndication: Indication? = LocalIndication.current,
@@ -274,14 +273,13 @@ fun NavigationCell(
         modifier = Modifier.fillMaxWidth()
             .clickable(
                 indication = clickIndication,
-                interactionState = remember { InteractionState() },
-                onClick = onClick
+                onClick = onClick,
             )
             .padding(vertical = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             tint = color,
             contentDescription = null,
             modifier = Modifier.padding(start = 18.dp).size(22.dp),
@@ -368,7 +366,7 @@ fun BasicScreen(
 }
 
 @Composable
-inline fun ItemPlaceholder() {
+fun ItemPlaceholder() {
     Image(
         painter = painterResource(R.drawable.ic_placeholder),
         contentDescription = null,
@@ -377,17 +375,19 @@ inline fun ItemPlaceholder() {
 
 object NoOpIndication : Indication {
 
-    object NoOpIndicationInstance : IndicationInstance {
+    private class NoOpIndicationInstance : IndicationInstance {
 
-        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
+        override fun ContentDrawScope.drawIndication() {
             drawContent()
-            if (interactionState.contains(Interaction.Pressed)) {
-            }
+//            if (interactionState.contains(Interaction.Pressed)) {
+//            }
         }
     }
 
     @Composable
-    override fun createInstance() = NoOpIndicationInstance
+    override fun rememberUpdatedInstance(interactionSource: InteractionSource): IndicationInstance {
+        return remember(interactionSource) { NoOpIndicationInstance() }
+    }
 }
 
 @Composable

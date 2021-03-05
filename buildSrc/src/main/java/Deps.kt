@@ -6,15 +6,13 @@ object Versions {
     const val ktor = "1.5.1"
     const val coroutines = "1.4.2-native-mt"
     const val kserialize = "1.1.0-RC"
-    const val work = "2.0.1"
     const val kodeinDi = "7.3.1"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-alpha12"
+    const val compose = "1.0.0-beta01"
 }
 
 object Deps {
     object Kotlin {
-        const val time = "org.jetbrains.kotlinx:kotlinx-datetime:0.1.0"
         object Kserialize {
             const val core = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kserialize}"
             const val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kserialize}"
@@ -52,6 +50,7 @@ object Deps {
 
             // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
             const val foundation = "androidx.compose.foundation:foundation:${Versions.compose}"
+
             // Material Design
             const val material = "androidx.compose.material:material:${Versions.compose}"
 
@@ -60,14 +59,23 @@ object Deps {
                 "androidx.compose.material:material-icons-core:${Versions.compose}"
             const val iconsExtended =
                 "androidx.compose.material:material-icons-extended:${Versions.compose}"
-            // Integration with observables
-//            const val livedata = "androidx.compose.runtime:runtime-livedata:${Versions.compose}"
-//            const val rx = "androidx.compose.runtime:runtime-rxjava2:${Versions.compose}"
+            const val activity = "androidx.activity:activity-compose:1.3.0-alpha03"
+            const val constraint =
+                "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha03"
 
-            val all = listOf(ui, tooling, foundation, material, iconsCore, iconsExtended)
+            val all = listOf(
+                ui,
+                tooling,
+                foundation,
+                material,
+                iconsCore,
+                iconsExtended,
+                activity,
+                constraint
+            )
         }
 
-        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.5.1"
+        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.6.1"
     }
 
     object Kodein {

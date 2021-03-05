@@ -2,9 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -21,7 +19,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +53,7 @@ import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -67,9 +65,11 @@ import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun TabBarScreen(scope: Scope.Host.TabBar) {
+fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
     val scaffoldState = rememberScaffoldState()
     val notificationList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
@@ -83,7 +83,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                     userName = user.value.fullName(),
                     userType = user.value.type,
                     navigationSection = it,
-                    onSectionSelected = { scaffoldState.drawerState.close() }
+                    onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }
                 )
             }
         },
@@ -103,11 +103,10 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                         .padding(16.dp)
                                         .clickable(
                                             indication = null,
-                                            interactionState = remember { InteractionState() },
                                             onClick = {
                                                 when (info.icon) {
                                                     ScopeIcon.BACK -> scope.goBack()
-                                                    ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
+                                                    ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
                                                 }
                                             },
                                         )
@@ -129,13 +128,10 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 modifier = Modifier
                                     .weight(0.15f)
                                     .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionState = remember { InteractionState() }
-                                    ) {
+                                    .clickable(indication = null) {
                                         when (info.icon) {
                                             ScopeIcon.BACK -> scope.goBack()
-                                            ScopeIcon.HAMBURGER -> scaffoldState.drawerState.open()
+                                            ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
                                         }
                                     }
                             )
@@ -143,9 +139,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                                 modifier = Modifier
                                     .weight(0.7f)
                                     .fillMaxHeight()
-                                    .clickable(
-                                        indication = null,
-                                        interactionState = remember { InteractionState() }) { info.goToSearch() }
+                                    .clickable(indication = null) { info.goToSearch() }
                                     .padding(vertical = 4.dp)
                                     .background(Color.White, MaterialTheme.shapes.medium)
                                     .padding(14.dp),
@@ -175,7 +169,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar) {
                 }
             }
         },
-        bodyContent = {
+        content = {
             val childScope = scope.childScope.flow.collectAsState()
             Crossfade(childScope.value, animationSpec = tween(durationMillis = 200)) {
                 when (it) {

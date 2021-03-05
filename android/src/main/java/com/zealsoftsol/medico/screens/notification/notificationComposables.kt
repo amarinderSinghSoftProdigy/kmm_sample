@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.notification
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +25,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -59,6 +59,7 @@ import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -84,9 +85,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     val showSearchOverlay = remember { mutableStateOf(true) }
     if (showSearchOverlay.value) {
         SearchBarBox(
-            modifier = Modifier.clickable(
-                indication = null,
-                interactionState = remember { InteractionState() }) {
+            modifier = Modifier.clickable(indication = null) {
                 showSearchOverlay.value = false
             },
             elevation = 0.dp,
@@ -323,8 +322,10 @@ private fun SubscriptionDeatails(
                 OutlinedTextField(
                     value = details.option.creditDays,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    activeColor = ConstColors.lightBlue,
-                    inactiveColor = ConstColors.gray,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = ConstColors.lightBlue,
+                        unfocusedBorderColor = ConstColors.gray,
+                    ),
                     maxLines = 1,
                     onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
                 )
@@ -340,8 +341,10 @@ private fun SubscriptionDeatails(
             OutlinedTextField(
                 value = details.option.discountRate,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                activeColor = ConstColors.lightBlue,
-                inactiveColor = ConstColors.gray,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = ConstColors.lightBlue,
+                    unfocusedBorderColor = ConstColors.gray,
+                ),
                 maxLines = 1,
                 onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
             )

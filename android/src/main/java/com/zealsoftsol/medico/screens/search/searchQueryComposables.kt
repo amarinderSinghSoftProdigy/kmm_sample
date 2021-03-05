@@ -2,16 +2,12 @@ package com.zealsoftsol.medico.screens.search
 
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
-import androidx.compose.foundation.Interaction
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayout
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -35,6 +33,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,6 +42,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
@@ -61,10 +61,12 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.clickable
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -86,16 +88,14 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
             )
         }
         if (showFilter.value) {
-            ScrollableColumn(
-                contentPadding = PaddingValues(16.dp),
-                modifier = Modifier.fillMaxSize(),
+            Column(
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
             ) {
+                Space(16.dp)
                 Text(
                     text = stringResource(id = R.string.clear_all),
-                    modifier = Modifier.align(Alignment.End)
-                        .clickable(
-                            indication = null,
-                            interactionState = remember { InteractionState() }) {
+                    modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp)
+                        .clickable(indication = null) {
                             scope.clearFilter(
                                 null
                             )
@@ -113,6 +113,7 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                         onFilterClear = { scope.clearFilter(filter) },
                     )
                 }
+                Space(16.dp)
             }
         } else {
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
@@ -137,9 +138,9 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .background(color = Color.White, shape = MaterialTheme.shapes.medium)
             .clickable(
-                onClick = onClick,
                 indication = YellowOutlineIndication,
-                interactionState = remember { InteractionState() })
+                onClick = onClick,
+            )
             .padding(10.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -196,7 +197,6 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalLayout::class)
 @Composable
 private fun FilterSection(
     name: String,
@@ -205,7 +205,7 @@ private fun FilterSection(
     onOptionClick: (Option<String>) -> Unit,
     onFilterClear: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
         Separator(padding = 2.dp)
         Space(12.dp)
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -222,7 +222,6 @@ private fun FilterSection(
                 modifier = Modifier.align(Alignment.CenterEnd).clickable(
                     onClick = onFilterClear,
                     indication = null,
-                    interactionState = remember { InteractionState() }
                 ),
             )
         }
@@ -252,7 +251,6 @@ private fun Chip(option: Option<String>, onClick: () -> Unit) {
         modifier = Modifier.padding(4.dp).clickable(
             onClick = onClick,
             indication = null,
-            interactionState = remember { InteractionState() }
         )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -313,7 +311,7 @@ fun BasicSearchBar(
             if (isSearchFocused) SideEffect { focusRequester.requestFocus() }
             BasicTextField(
                 value = input,
-                cursorColor = ConstColors.lightBlue,
+                cursorBrush = SolidColor(ConstColors.lightBlue),
                 onValueChange = onSearch,
                 singleLine = true,
                 modifier = Modifier.focusRequester(focusRequester).fillMaxWidth()
@@ -376,11 +374,13 @@ fun SearchBarBox(
 
 private object YellowOutlineIndication : Indication {
 
-    private object YellowOutlineIndicationInstance : IndicationInstance {
+    private class YellowOutlineIndicationInstance(
+        private val isPressed: State<Boolean>,
+    ) : IndicationInstance {
 
-        override fun ContentDrawScope.drawIndication(interactionState: InteractionState) {
+        override fun ContentDrawScope.drawIndication() {
             drawContent()
-            if (interactionState.contains(Interaction.Pressed)) {
+            if (isPressed.value) {
                 drawRoundRect(
                     color = ConstColors.yellow,
                     cornerRadius = CornerRadius(2.dp.toPx()),
@@ -396,5 +396,8 @@ private object YellowOutlineIndication : Indication {
     }
 
     @Composable
-    override fun createInstance() = YellowOutlineIndicationInstance
+    override fun rememberUpdatedInstance(interactionSource: InteractionSource): IndicationInstance {
+        val isPressed = interactionSource.collectIsPressedAsState()
+        return remember(interactionSource) { YellowOutlineIndicationInstance(isPressed) }
+    }
 }
