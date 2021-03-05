@@ -19,6 +19,7 @@
 		332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4025AF31FC00341A7E /* ScreenLogger.swift */; };
 		332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */; };
 		332CFD4825AF337F00341A7E /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4725AF337F00341A7E /* AppColor.swift */; };
+		332EB65325F2253C009BC392 /* PopSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332EB65225F2253C009BC392 /* PopSheet.swift */; };
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
 		33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7B256FB66B00DACD7C /* CommonExt.swift */; };
 		33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A85256FB7C200DACD7C /* ViewExtensions.swift */; };
@@ -159,6 +160,7 @@
 		332CFD4025AF31FC00341A7E /* ScreenLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLogger.swift; sourceTree = "<group>"; };
 		332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtil.swift; sourceTree = "<group>"; };
 		332CFD4725AF337F00341A7E /* AppColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
+		332EB65225F2253C009BC392 /* PopSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopSheet.swift; sourceTree = "<group>"; };
 		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
 		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
 		332F7E0E258B3BC100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../core/src/commonMain; sourceTree = "<group>"; };
@@ -644,6 +646,7 @@
 			children = (
 				33A0202525B99E1100615349 /* BaseBottomSheetView.swift */,
 				33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */,
+				332EB65225F2253C009BC392 /* PopSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1092,6 +1095,7 @@
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
+				332EB65325F2253C009BC392 /* PopSheet.swift in Sources */,
 				334288AC25B3180F008F3890 /* MapView.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,

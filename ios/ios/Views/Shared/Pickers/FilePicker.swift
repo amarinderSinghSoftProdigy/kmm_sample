@@ -10,6 +10,8 @@ import SwiftUI
 import core
 
 struct FilePicker: ViewModifier {
+    @State private var showingActionSheet: Bool = false
+    
     @State private var imageSourceType: UIImagePickerController.SourceType?
     @State private var documentPickerShown: Bool = false
     
@@ -21,14 +23,13 @@ struct FilePicker: ViewModifier {
          onBottomSheetDismiss: @escaping () -> ()) {
         self.bottomSheet = bottomSheet
         
+        self._showingActionSheet = State(initialValue: !bottomSheet.isSeasonBoy)
         self._documentPickerShown = State(initialValue: bottomSheet.isSeasonBoy)
         
         self.onBottomSheetDismiss = onBottomSheetDismiss
     }
     
     func body(content: Content) -> some View {
-        let showingActionSheet = Binding(get: { !bottomSheet.isSeasonBoy }, set: { _ in })
-        
         let activeSheet = Binding(get: { () -> ActiveSheet? in
             if documentPickerShown { return .documentPicker }
             
@@ -44,8 +45,8 @@ struct FilePicker: ViewModifier {
         
         return AnyView(
             content
-                .actionSheet(isPresented: showingActionSheet) {
-                    actionSheet
+                .popSheet(isPresented: $showingActionSheet) {
+                    popSheet
                 }
                 .sheet(item: activeSheet) { sheet in
                     getCurrentSheet(sheet)
@@ -56,8 +57,8 @@ struct FilePicker: ViewModifier {
         )
     }
     
-    var actionSheet: ActionSheet {
-        ActionSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
+    var popSheet: PopSheet {
+        PopSheet(title: Text(LocalizedStringKey("image_source")), buttons: [
             .default(Text(LocalizedStringKey("take_photo"))) {
                 self.imageSourceType = .camera
             },
@@ -70,7 +71,11 @@ struct FilePicker: ViewModifier {
             .cancel {
                 onBottomSheetDismiss()
             }
-        ])
+        ]) {
+            if !documentPickerShown && imageSourceType == nil {
+                onBottomSheetDismiss()
+            }
+        }
     }
     
     private func getCurrentSheet(_ sheet: ActiveSheet) -> some View {
