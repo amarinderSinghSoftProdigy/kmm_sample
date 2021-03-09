@@ -4,8 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class
-GeoPoints(
+data class GeoPoints(
     val latitude: Double,
     val longitude: Double,
 )
@@ -35,6 +34,7 @@ enum class PaymentMethod(val serverValue: String) {
 enum class SubscriptionStatus(val serverValue: String) {
     PENDING("Pending"),
     SUBSCRIBED("Subscribed"),
+    REJECTED("Rejected"),
 }
 
 interface PreviewItem {

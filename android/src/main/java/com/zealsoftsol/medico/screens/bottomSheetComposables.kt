@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +49,7 @@ import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
@@ -139,11 +138,9 @@ private fun PreviewItemBottomSheet(
                 color = Color.Black.copy(alpha = 0.12f),
                 modifier = Modifier.align(Alignment.TopEnd)
                     .size(24.dp)
-                    .clickable { }
                     .clickable(
                         indication = rememberRipple(radius = 12.dp),
-                        interactionState = remember { InteractionState() },
-                        onClick = onDismiss
+                        onClick = onDismiss,
                     ),
             ) {
                 Icon(
@@ -324,13 +321,10 @@ private fun BaseBottomSheet(
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
-                .clickable(
-                    indication = NoOpIndication,
-                    interactionState = remember { InteractionState() }) { onDismiss() })
+                .clickable(indication = NoOpIndication) { onDismiss() })
         Surface(
-            modifier = Modifier.fillMaxWidth().clickable(
-                indication = null,
-                interactionState = remember { InteractionState() }) { }
+            modifier = Modifier.fillMaxWidth()
+                .clickable(indication = null) { /* intercept touches */ }
                 .align(Alignment.BottomCenter),
             color = Color.White,
             elevation = 8.dp,

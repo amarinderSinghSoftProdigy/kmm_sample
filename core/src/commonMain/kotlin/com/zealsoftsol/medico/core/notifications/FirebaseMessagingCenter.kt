@@ -1,30 +1,34 @@
 package com.zealsoftsol.medico.core.notifications
 
+import com.zealsoftsol.medico.core.compatDispatcher
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.network.createJson
+import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.data.NotificationData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+internal class FirebaseMessagingCenter(
+    private val userRepo: UserRepo,
+    private val notificationRepo: NotificationRepo,
+) : FirebaseMessaging {
 
-internal class FirebaseMessagingCenter(private val userRepo: UserRepo) : FirebaseMessaging {
+    override val notificationMessage: DataSource<NotificationMessage?> = DataSource(null)
+    private val scope = CoroutineScope(compatDispatcher + SupervisorJob())
+    private val json by lazy { createJson() }
 
-    override val notifications: DataSource<NotificationMessage?> = DataSource(null)
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-    // init {
-    //     GlobalScope.launch {
-    //         delay(5000)
-    //         notifications.value = NotificationMessage("id", "Title", "Body")
-    //     }
-    // }
-
-    override fun handleMessage(data: Map<String, String>) {
-        when (data[TYPE_KEY]) {
-            "req" -> requestReceived(data["user"])
+    override fun handleMessage(data: Map<String, Any>) {
+        data.log("handle message")
+        val notificationJson = data["NOTIFICATIONS"] as String
+        (data["unreadNotifications"] as String).toIntOrNull()
+            ?.let(notificationRepo::updateUnreadMessages)
+        runCatching {
+            json.decodeFromString(NotificationData.serializer(), notificationJson)
+        }.getOrNull()?.let {
+            notificationMessage.value = NotificationMessage(it.id, it.title, it.body)
         }
     }
 
@@ -33,17 +37,9 @@ internal class FirebaseMessagingCenter(private val userRepo: UserRepo) : Firebas
     }
 
     override fun dismissMessage(id: String) {
-        if (notifications.value?.id == id) {
-            notifications.value = null
+        if (notificationMessage.value?.id == id) {
+            notificationMessage.value = null
         }
-    }
-
-    private fun requestReceived(user: String?) {
-        notifications.value = NotificationMessage("id", "title", "body")
-    }
-
-    companion object {
-        private const val TYPE_KEY = ""
     }
 }
 
@@ -55,9 +51,9 @@ data class NotificationMessage(
 
 interface FirebaseMessaging {
 
-    val notifications: DataSource<NotificationMessage?>
+    val notificationMessage: DataSource<NotificationMessage?>
 
-    fun handleMessage(data: Map<String, String>)
+    fun handleMessage(data: Map<String, Any>)
 
     fun handleNewToken(token: String)
 

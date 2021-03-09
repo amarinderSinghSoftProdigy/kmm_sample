@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ConstraintLayoutScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.screenWidth
@@ -49,7 +49,7 @@ fun AuthScreen(scope: LogInScope) {
             contentDescription = null,
             modifier = Modifier.fillMaxSize()
         )
-        ConstraintLayout(modifier = Modifier.fillMaxSize(), content = fun ConstraintLayoutScope.() {
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (image, gradient, solid) = createRefs()
 
             Image(
@@ -85,7 +85,7 @@ fun AuthScreen(scope: LogInScope) {
                     centerTo(parent)
                 }.fillMaxSize()
             )
-        })
+        }
         TabBar(color = Color.White) {
             Box(modifier = Modifier.padding(vertical = 13.dp, horizontal = 24.dp)) {
                 Image(

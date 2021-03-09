@@ -20,7 +20,7 @@ class NotificationsManager {
         
         self.cloudMessagingNotificationsService.delegate = self
         
-        firebaseMessaging.notifications.observeOnUi { newValue in
+        firebaseMessaging.notificationMessage.observeOnUi { newValue in
             if let notification = newValue { self.showNotification(notification) }
         }
     }

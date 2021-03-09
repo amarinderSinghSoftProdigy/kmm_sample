@@ -23,7 +23,6 @@ import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
-import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -39,6 +38,7 @@ import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -89,11 +89,7 @@ class NetworkClient(
         expectSuccess = true
         install(JsonFeature) {
             serializer = KotlinxSerializer(
-                Json {
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                    allowStructuredMapKeys = true
-                }
+                createJson()
             )
         }
         install(HttpTimeout) {
@@ -279,7 +275,7 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
-                    append("currentPage", pagination.nextPage().toString())
+                    append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                     append("sort", "ASC")
                 }
@@ -330,29 +326,63 @@ class NetworkClient(
         }
 
     override suspend fun sendFirebaseToken(token: String): Boolean = ktorDispatcher {
-        client.post<Response.Status>("$NOTIFICATIONS_URL/api/v1/notifications/mobile/token") {
+        client.post<Response.Status>("$NOTIFICATIONS_URL/api/v1/firebase/add/token") {
             withMainToken()
-            jsonBody(mapOf("token" to token))
+            jsonBody(mapOf("token" to token, "channel" to "MOBILE"))
         }.isSuccess
     }
 
     override suspend fun getNotifications(
         search: String,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<NotificationData>> = TODO("not implemented")
+    ): Response.Wrapped<PaginatedData<NotificationData>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<NotificationData>>>("$NOTIFICATIONS_URL/api/v1/notifications/all") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    if (search.isNotEmpty()) append("search", search)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    append("notificationType", "")
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
 
-    override suspend fun markNotification(
-        id: String,
-        status: NotificationStatus
-    ): Response.Wrapped<ErrorCode> = TODO("not implemented")
+    override suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications> =
+        ktorDispatcher {
+            client.get<SimpleResponse<UnreadNotifications>>("$NOTIFICATIONS_URL/api/v1/notifications/unread") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     override suspend fun selectNotificationAction(
         id: String,
         actionRequest: NotificationActionRequest
-    ): Response.Wrapped<ErrorCode> = TODO("not implemented")
+    ): Response.Wrapped<ErrorCode> = ktorDispatcher {
+        client.post<SimpleResponse<MapBody>>("$B2B_URL/api/v1/b2bapp/subscriptions/submit") {
+            withMainToken()
+            requireNotNull(actionRequest.subscriptionOption) { "only subscription option is supported" }
+            jsonBody(
+                mapOf(
+                    "notificationId" to id,
+                    "actionType" to actionRequest.action.name,
+                    "paymentMethod" to actionRequest.subscriptionOption!!.paymentMethod.name,
+                    "noOfCreditDays" to actionRequest.subscriptionOption!!.creditDays,
+                    "sellersDiscount" to actionRequest.subscriptionOption!!.discountRate,
+                )
+            )
+        }.getWrappedError()
+    }
 
     override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
-        TODO("not implemented")
+        ktorDispatcher {
+            client.get<SimpleResponse<NotificationDetails>>("$B2B_URL/api/v1/b2bapp/notification/$id/detail") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     // Utils
 
@@ -458,4 +488,10 @@ class NetworkClient(
 }
 
 expect fun addInterceptor(config: HttpClientConfig<HttpClientEngineConfig>)
+
+internal fun createJson() = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+    allowStructuredMapKeys = true
+}
 

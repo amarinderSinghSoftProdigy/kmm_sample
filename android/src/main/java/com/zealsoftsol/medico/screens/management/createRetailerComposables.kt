@@ -2,14 +2,14 @@ package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
@@ -48,26 +48,20 @@ fun AddRetailerScreen(scope: ManagementScope.AddRetailer) {
         modifier = Modifier.fillMaxSize()
     ) {
         val padding = 16.dp
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding,
-                start = padding,
-                end = padding,
-                bottom = padding + 60.dp
-            )
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    top = padding,
+                    start = padding,
+                    end = padding,
+                    bottom = padding + 60.dp
+                )
         ) {
-            // use `item` for separate elements like headers
-            // and `items` for lists of identical elements
-            item(fun ColumnScope.() {
-                when (scope) {
-                    is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(
-                        scope,
-                        scrollState
-                    )
-                    is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
-                }
-            })
+            when (scope) {
+                is ManagementScope.AddRetailer.TraderDetails -> TraderDetails(scope, scrollState)
+                is ManagementScope.AddRetailer.Address -> Address(scope, scrollState)
+            }
         }
         MedicoButton(
             modifier = Modifier.align(Alignment.BottomCenter).padding(padding),
@@ -186,6 +180,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     )
     Space(dp = 12.dp)
     Dropdown(
+        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
         value = registration.value.location.takeIf { it.isNotEmpty() }
             ?: stringResource(id = R.string.location),
@@ -194,6 +189,7 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     )
     Space(dp = 12.dp)
     Dropdown(
+        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
         value = registration.value.city.takeIf { it.isNotEmpty() }
             ?: stringResource(id = R.string.city),

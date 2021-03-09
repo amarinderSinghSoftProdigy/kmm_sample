@@ -34,7 +34,7 @@ object UiLink {
         val di = startKodein(context, useMocks, useNavigatorSafeCasts, useNetworkInterceptor)
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
-        eventCollector.checkUser()
+        eventCollector.updateData()
         return AppStartResult(di, navigator, directDI.instance<FirebaseMessagingCenter>())
     }
 

@@ -20,10 +20,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -255,6 +255,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.location) {
                 Dropdown(
+                    modifier = Modifier.fillMaxWidth(),
                     rememberChooseKey = locationData.value,
                     value = registration.value.location.takeIf { it.isNotEmpty() }
                         ?: stringResource(id = R.string.location),
@@ -265,6 +266,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.city) {
                 Dropdown(
+                    modifier = Modifier.fillMaxWidth(),
                     rememberChooseKey = locationData.value,
                     value = registration.value.city.takeIf { it.isNotEmpty() }
                         ?: stringResource(id = R.string.city),
@@ -489,21 +491,22 @@ private fun BasicAuthSignUpScreenWithButton(
         )
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
-        LazyColumn(
-            modifier = Modifier.padding(top = 4.dp).fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = padding,
-                start = padding,
-                end = padding,
-                bottom = padding + 60.dp
-            ),
-            horizontalAlignment = horizontalAlignment
+        Column(
+            modifier = Modifier.padding(top = 4.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    PaddingValues(
+                        top = padding,
+                        start = padding,
+                        end = padding,
+                        bottom = padding + 60.dp
+                    )
+                ),
+            verticalArrangement = verticalArrangement,
+            horizontalAlignment = horizontalAlignment,
         ) {
-            // use `item` for separate elements like headers
-            // and `items` for lists of identical elements
-            item(fun ColumnScope.() {
-                body()
-            })
+            body()
         }
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             MedicoButton(

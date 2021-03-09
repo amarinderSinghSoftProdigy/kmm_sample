@@ -1,9 +1,7 @@
 package com.zealsoftsol.medico.screens.common
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +13,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.ripple.rememberRipple
@@ -70,9 +69,7 @@ fun PasswordFormatInputField(
             contentDescription = null,
             tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
             modifier = Modifier.size(42.dp)
-                .clickable(
-                    indication = rememberRipple(radius = 15.dp),
-                    interactionState = remember { InteractionState() }) {
+                .clickable(indication = rememberRipple(radius = 15.dp)) {
                     isPasswordHidden.value = !isPasswordHidden.value
                 }
                 .padding(12.dp),
@@ -135,25 +132,21 @@ fun InputField(
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
 ) {
-    var bounds: Rect? = null
     TextField(
         value = text,
         label = {
             Text(
                 text = hint,
-                style = TextStyle.Default
-                    .copy(
-                        color = when {
-                            text.isEmpty() -> ConstColors.gray
-                            !isValid -> MaterialTheme.colors.error
-                            else -> ConstColors.lightBlue
-                        }
-                    )
+                style = TextStyle.Default,
             )
         },
-        isErrorValue = !isValid,
-        activeColor = ConstColors.lightBlue,
-        backgroundColor = Color.White,
+        isError = !isValid,
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            cursorColor = ConstColors.lightBlue,
+            focusedLabelColor = ConstColors.lightBlue,
+            focusedIndicatorColor = ConstColors.lightBlue,
+        ),
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
@@ -169,10 +162,10 @@ fun Modifier.scrollOnFocus(
 ): Modifier = composed {
     var bounds: Rect? = null
     // TODO will not work if parent not the container we need
-    onGloballyPositioned { bounds = it.boundsInParent }
+    onGloballyPositioned { bounds = it.boundsInParent() }
         .onFocusChanged { state ->
             if (state == FocusState.Active) {
-                bounds?.let { coroutineScope.launch { scrollState.smoothScrollTo(it.top) } }
+                bounds?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
             }
         }
 }

@@ -97,7 +97,10 @@ struct NotificationDetailsScreen: View {
                     VStack(alignment: .leading, spacing: 5) {
                         let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(details.customerData.phoneNumber)
                         UserInfoItemDetailsPanel(titleKey: "phone", valueKey: formattedPhone)
-                        UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: details.customerData.gstin)
+                        
+                        if let gstin = details.customerData.gstin {
+                            UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: gstin)
+                        }
                         
                         HStack(alignment: .top) {
                             LocalizedText(localizationKey: "payment_method",

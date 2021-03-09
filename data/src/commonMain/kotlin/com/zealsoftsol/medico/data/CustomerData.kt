@@ -5,23 +5,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CustomerData(
-    val aadhaarCardNo: String,
+    val aadhaarCardNo: String?,
     val customerAddressData: CustomerAddressData,
-    val customerMetaData: CustomerMetaData,
+    val customerMetaData: CustomerMetaData?,
     val customerType: String,
-    val drugLicenseNo1: String,
-    val drugLicenseNo2: String,
+    val drugLicenseNo1: String?,
+    val drugLicenseNo2: String?,
     val drugLicenseUrl: String?,
     val isDocumentUploaded: Boolean,
     val email: String,
     val firstName: String,
-    val gstin: String,
+    val gstin: String?,
     val lastName: String,
     @SerialName("mobileNumber")
     val phoneNumber: String,
-    val panNumber: String,
+    val panNumber: String?,
     val tradeName: String,
-    val unitCode: String,
+    val unitCode: String?,
 )
 
 @Serializable
@@ -36,7 +36,7 @@ data class CustomerAddressData(
     val location: String,
     val longitude: Double,
     val pincode: Int,
-    val placeId: String,
+    val placeId: String?,
     val state: String,
 )
 

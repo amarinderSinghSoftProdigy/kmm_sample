@@ -13,7 +13,7 @@ class NotificationCenter(
 ) {
 
     init {
-        firebaseMessaging.notifications.observeOnUi {
+        firebaseMessaging.notificationMessage.observeOnUi {
             if (it != null) showMessage(it)
         }
     }
@@ -29,6 +29,9 @@ class NotificationCenter(
                     },
                     0,
                 )
+            }
+            .header {
+                icon = R.mipmap.ic_launcher_foreground
             }
             .alerting("medico") {
                 channelImportance = Notify.IMPORTANCE_MAX

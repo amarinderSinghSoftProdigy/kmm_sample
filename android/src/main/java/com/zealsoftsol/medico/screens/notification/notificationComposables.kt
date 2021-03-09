@@ -1,6 +1,6 @@
 package com.zealsoftsol.medico.screens.notification
 
-import androidx.compose.foundation.InteractionState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,14 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -56,6 +59,7 @@ import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -65,25 +69,23 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 import java.util.concurrent.TimeUnit
 
 @Composable
-fun NotificationScreen(scope: NotificationScope) {
+fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         Space(16.dp)
         when (scope) {
-            is NotificationScope.All -> AllNotifications(scope)
+            is NotificationScope.All -> AllNotifications(scope, listState)
             is NotificationScope.Preview<*, *> -> PreviewNotifications(scope)
         }
     }
 }
 
 @Composable
-private fun AllNotifications(scope: NotificationScope.All) {
+private fun AllNotifications(scope: NotificationScope.All, listState: LazyListState) {
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     if (showSearchOverlay.value) {
         SearchBarBox(
-            modifier = Modifier.clickable(
-                indication = null,
-                interactionState = remember { InteractionState() }) {
+            modifier = Modifier.clickable(indication = null) {
                 showSearchOverlay.value = false
             },
             elevation = 0.dp,
@@ -125,7 +127,7 @@ private fun AllNotifications(scope: NotificationScope.All) {
     Space(16.dp)
     val items = scope.items.flow.collectAsState()
     LazyColumn(
-        state = rememberLazyListState(),
+        state = listState,
         modifier = Modifier.fillMaxSize(),
     ) {
         itemsIndexed(
@@ -185,7 +187,11 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                     ),
                     enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
                     modifier = Modifier.align(Alignment.BottomEnd),
-                    onClick = onClick,
+                    onClick = if (item.selectedAction == null) {
+                        onClick
+                    } else {
+                        {}
+                    },
                 )
             }
         }
@@ -275,27 +281,35 @@ private fun SubscriptionDeatails(
         }
         Space(24.dp)
         DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
-        DataWithLabel(R.string.gstin_num, details.customerData.gstin)
+        DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.payment_method, "")
-            Dropdown(
-                modifier = Modifier.width(100.dp),
-                rememberChooseKey = this,
-                value = details.option.paymentMethod.serverValue,
-                dropDownItems = PaymentMethod.values().map { it.serverValue },
-                onSelected = {
-                    val method = when (it) {
-                        PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
-                        PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
-                        else -> throw UnsupportedOperationException("unknown payment method")
+            Surface(
+                modifier = Modifier.border(
+                    1.dp,
+                    ConstColors.gray.copy(alpha = ContentAlpha.medium),
+                    RoundedCornerShape(4.dp)
+                )
+            ) {
+                Dropdown(
+                    modifier = Modifier.width(100.dp),
+                    rememberChooseKey = this,
+                    value = details.option.paymentMethod.serverValue,
+                    dropDownItems = PaymentMethod.values().map { it.serverValue },
+                    onSelected = {
+                        val method = when (it) {
+                            PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
+                            PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
+                            else -> throw UnsupportedOperationException("unknown payment method")
+                        }
+                        onOptionChange(details.option.copy(paymentMethod = method))
                     }
-                    onOptionChange(details.option.copy(paymentMethod = method))
-                }
-            )
+                )
+            }
         }
         if (details.option.paymentMethod == PaymentMethod.CREDIT) {
             Row(
@@ -304,13 +318,14 @@ private fun SubscriptionDeatails(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DataWithLabel(R.string.credit_days, "")
-                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
                 OutlinedTextField(
                     value = details.option.creditDays,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    activeColor = ConstColors.lightBlue,
-                    inactiveColor = ConstColors.gray,
-                    singleLine = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = ConstColors.lightBlue,
+                        unfocusedBorderColor = ConstColors.gray,
+                    ),
                     maxLines = 1,
                     onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
                 )
@@ -322,13 +337,14 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.discount_rate, "")
-            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 72.dp)) }
+            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
             OutlinedTextField(
                 value = details.option.discountRate,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                activeColor = ConstColors.lightBlue,
-                inactiveColor = ConstColors.gray,
-                singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = ConstColors.lightBlue,
+                    unfocusedBorderColor = ConstColors.gray,
+                ),
                 maxLines = 1,
                 onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
             )

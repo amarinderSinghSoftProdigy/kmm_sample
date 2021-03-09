@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
@@ -33,7 +33,7 @@ fun SettingsScreen(scope: SettingsScope) {
 private fun SettingsList(sections: List<SettingsScope.List.Section>) {
     sections.forEach {
         NavigationCell(
-            icon = vectorResource(
+            icon = painterResource(
                 id = when (it) {
                     SettingsScope.List.Section.PROFILE -> R.drawable.ic_profile
                     SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password_lock

@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
+import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
@@ -72,24 +73,28 @@ class UserRepo(
                 "unknown user type".warnIt()
                 return@let null
             }
+            if (it.unitCode == null || it.customerMetaData == null) {
+                "can not create user without unitCode or customerMetaData".errorIt()
+                return false
+            }
             val user = User(
                 it.firstName,
                 it.lastName,
                 it.email,
                 it.phoneNumber,
-                it.unitCode,
+                it.unitCode!!,
                 parsedType,
                 when (parsedType) {
-                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
+                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo!!, "")
                     else -> User.Details.DrugLicense(
                         it.tradeName,
-                        it.gstin,
-                        it.drugLicenseNo1,
-                        it.drugLicenseNo2,
+                        it.gstin!!,
+                        it.drugLicenseNo1!!,
+                        it.drugLicenseNo2!!,
                         it.drugLicenseUrl
                     )
                 },
-                it.customerMetaData.activated,
+                it.customerMetaData!!.activated,
                 it.isDocumentUploaded,
                 it.customerAddressData,
             )
@@ -260,11 +265,11 @@ class UserRepo(
     }
 
     suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
-        cachedFirebaseToken = if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
+        if (token != null) {
+            cachedFirebaseToken = token
+        }
+        if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
             networkNotificationScope.sendFirebaseToken(token)
-            null
-        } else {
-            token
         }
     }
 

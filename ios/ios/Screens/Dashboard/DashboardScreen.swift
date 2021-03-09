@@ -72,7 +72,7 @@ struct DashboardScreen: View {
         
         init(imageName: String,
              textKey: String,
-             counter: DataSource<KotlinInt>) {
+             counter: BaseDataSource<KotlinInt>) {
             self.imageName = imageName
             self.textKey = textKey
             

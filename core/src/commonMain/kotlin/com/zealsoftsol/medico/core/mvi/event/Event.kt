@@ -98,6 +98,7 @@ sealed class Event {
             data class Select(val notification: NotificationData) : Notification()
             data class SelectAction(val action: NotificationAction) : Notification()
             data class ChangeOptions(val option: NotificationOption) : Notification()
+//            object UpdateUnreadMessages: Notification()
         }
     }
 

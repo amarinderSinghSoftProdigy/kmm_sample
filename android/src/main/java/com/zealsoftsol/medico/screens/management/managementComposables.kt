@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.management
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +47,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
@@ -80,9 +80,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
     Space(16.dp)
     if (showSearchOverlay.value) {
         SearchBarBox(
-            modifier = Modifier.clickable(
-                indication = null,
-                interactionState = remember { InteractionState() }) {
+            modifier = Modifier.clickable(indication = null) {
                 showSearchOverlay.value = false
             },
             elevation = 0.dp,
