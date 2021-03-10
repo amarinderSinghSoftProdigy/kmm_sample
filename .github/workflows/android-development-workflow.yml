@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew :android:assembleDev
 
       - name: Upload build artifacts
-          uses: actions/upload-artifact@v2
-          with:
-            name: app
-            path: app/android/dev/release/android-dev-release.apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: app/android/dev/release/android-dev-release.apk
