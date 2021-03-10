@@ -16,14 +16,14 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
         env:
-          msg: ${{ github.event.head_commit.message }}
-          tag: ${{ github.event.head_commit.tag }}
+          MSG: ${{ github.event.head_commit.message }}
+          TAG: ${{ github.event.head_commit.tag }}
 
       - name: get commit message
-        run: echo Commit MSG = $msg
+        run: echo Commit MSG = $MSG
 
       - name: get commit tag
-        run: echo Commit TAG = $tag
+        run: echo Commit TAG = $TAG
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
