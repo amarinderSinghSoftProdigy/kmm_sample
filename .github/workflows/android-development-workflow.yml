@@ -10,7 +10,6 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-
     #     if: contains(github.event.head_commit.message, '[ANDROID]')
 
     steps:
@@ -19,12 +18,6 @@ jobs:
         env:
           MSG: ${{ github.event.head_commit.message }}
           TAG: ${{ github.event.head_commit.tag }}
-
-      - name: get commit message
-        run: echo Commit MSG = $MSG
-
-      - name: get commit tag
-        run: echo Commit TAG = $TAG
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
