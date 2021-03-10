@@ -15,6 +15,15 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
+        env:
+          msg: ${{ github.event.head_commit.message }}
+          tag: ${{ github.event.head_commit.tag }}
+
+      - name: get commit message
+        run: echo Commit MSG = $msg
+
+      - name: get commit tag
+        run: echo Commit TAG = $tag
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
@@ -31,7 +40,7 @@ jobs:
         run: ls
 
       - name: Check dir 2
-        run: cd app
+        run: cd build
 
       - name: Check dir 3
         run: ls
@@ -40,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: app/build/outputs/apk/dev/release/android-dev-release.apk
+          path: build/outputs/apk/dev/release/android-dev-release.apk
