@@ -29,26 +29,8 @@ jobs:
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: ./gradlew :android:assembleDev
 
-      - name: Check dir
-        run: |
-          cd build
-          ls
-
-      - name: Check dir 2
-        run: |
-          cd build
-          cd outputs
-          ls
-
-      - name: Check dir 3
-        run: |
-          cd build
-          cd outputs
-          cd apk
-          ls
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: app
-          path: build/outputs/apk/dev/release/android-dev-release.apk
+          path: android/build/outputs/apk/dev/release/android-dev-release.apk
