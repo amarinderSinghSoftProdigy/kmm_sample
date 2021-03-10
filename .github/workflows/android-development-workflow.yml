@@ -10,13 +10,16 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    #     if: contains(github.event.head_commit.message, '[ANDROID]')
+#    if: contains(github.event.head_commit.message, '[ANDROID]')
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
-      #        env:
-      #          MSG: ${{ github.event.head_commit.message }}
+
+      - name: GITHUB CONTEXT
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
@@ -34,3 +37,11 @@ jobs:
         with:
           name: app
           path: android/build/outputs/apk/dev/release/android-dev-release.apk
+
+      - name: Upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID_DEV }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: main
+          file: android/build/outputs/apk/dev/release/android-dev-release.apk
