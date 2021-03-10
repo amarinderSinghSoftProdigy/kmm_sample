@@ -20,9 +20,9 @@ jobs:
           TAG: ${{ github.event.head_commit.tag }}
 
       - name: GITHUB CONTEXT
-          env:
-            GITHUB_CONTEXT: ${{ toJson(github) }}
-          run: echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
