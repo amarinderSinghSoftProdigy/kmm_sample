@@ -15,14 +15,8 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
-        env:
-          MSG: ${{ github.event.head_commit.message }}
-          TAG: ${{ github.event.head_commit.tag }}
-
-      - name: GITHUB CONTEXT 4
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      #        env:
+      #          MSG: ${{ github.event.head_commit.message }}
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
@@ -36,13 +30,22 @@ jobs:
         run: ./gradlew :android:assembleDev
 
       - name: Check dir
-        run: ls
+        run: |
+          cd build
+          ls
 
       - name: Check dir 2
-        run: cd build
+        run: |
+          cd build
+          cd outputs
+          ls
 
       - name: Check dir 3
-        run: ls
+        run: |
+          cd build
+          cd outputs
+          cd apk
+          ls
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
