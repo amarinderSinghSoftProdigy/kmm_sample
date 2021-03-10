@@ -15,11 +15,6 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
-      
-#       - name: Setup Java
-#         uses: actions/setup-java@v1
-#         with:
-#           java-version: 1.8
 
       - name: Build Android apks
         env:
@@ -27,6 +22,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          GRADLE_OPTS: -Xmx4g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
         run: ./gradlew :android:assembleDev
 
       - name: Upload build artifacts
