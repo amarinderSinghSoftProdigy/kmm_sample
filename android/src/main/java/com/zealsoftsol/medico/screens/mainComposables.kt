@@ -80,7 +80,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
             navigation.value?.let {
                 val user = it.user.flow.collectAsState()
                 NavigationColumn(
-                    userName = user.value.fullName(),
+                    fullName = user.value.fullName(),
                     userType = user.value.type,
                     navigationSection = it,
                     onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }

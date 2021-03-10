@@ -44,11 +44,11 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.PreviewItem
 import com.zealsoftsol.medico.screens.common.DataWithLabel
-import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
@@ -229,8 +229,8 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?
             modifier = Modifier.size(123.dp),
             data = "",
             contentDescription = null,
-            error = { ItemPlaceholder() },
-            loading = { ItemPlaceholder() },
+            error = { UserLogoPlaceholder(previewItem.tradeName) },
+            loading = { UserLogoPlaceholder(previewItem.tradeName) },
         )
         Space(24.dp)
         Column(

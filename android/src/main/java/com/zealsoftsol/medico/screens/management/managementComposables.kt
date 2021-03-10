@@ -122,7 +122,10 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
             horizontalPadding = 16.dp,
             isSearchFocused = true,
             onSearch = { scope.search(it) },
-            onIconClick = { showSearchOverlay.value = true },
+            onIconClick = {
+                scope.search("")
+                showSearchOverlay.value = true
+            },
         )
     }
     val activeTab = scope.activeTab.flow.collectAsState()
