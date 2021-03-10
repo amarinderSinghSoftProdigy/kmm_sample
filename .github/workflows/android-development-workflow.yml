@@ -16,6 +16,9 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
+      - name: Print
+        run: print github.event.head_commit.message
+
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
 
@@ -26,6 +29,15 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
         run: ./gradlew :android:assembleDev
+
+      - name: Check dir
+        run: ls
+
+      - name: Check dir 2
+        run: cd app
+
+      - name: Check dir 3
+        run: ls
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
