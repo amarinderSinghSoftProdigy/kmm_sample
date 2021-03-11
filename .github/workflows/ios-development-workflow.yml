@@ -10,11 +10,14 @@ jobs:
   deploy:
     runs-on: macos-latest
 
-    if: contains(github.event.head_commit.message, '[iOS]')
+    if: contains(github.ref, 'ios/')
     
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
+
+      - name: Set CI gradle.properties
+        run: cp gradle.properties.ci gradle.properties
 
       - name: Set environment variables from project settings
         run: |
