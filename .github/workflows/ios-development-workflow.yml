@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-ios:
     runs-on: macos-latest
 
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && startsWith(github.head_ref, 'ios/'))
@@ -87,8 +87,6 @@ jobs:
         if: always()
 
       - name: Upload the build version to the GitHub repositoty
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ADMIN }}
         if: success()
         id: github_build_version_update
         run: |
