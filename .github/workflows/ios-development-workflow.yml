@@ -8,6 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  check:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: GITHUB CONTEXT
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: Booleans
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          [ "$GITHUB_CONTEXT.event_name" = "workflow_dispatch" ]; echo $?
+          [ "$GITHUB_CONTEXT.event.pull_request.merged" = "true" ]; echo $?
+          echo $GITHUB_CONTEXT.head_ref
+          [ contains($GITHUB_CONTEXT.head_ref, 'ios/') ]; echo $?
+
   deploy:
     runs-on: macos-latest
 
