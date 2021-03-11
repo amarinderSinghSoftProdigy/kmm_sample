@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setUpAppNavigator() {
         #if DEBUG
         let testsHelper = TestsHelper()
-        let useMocks = true//testsHelper.testingEnabled
+        let useMocks = testsHelper.testingEnabled
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
         #else
@@ -82,6 +82,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable: Any],
                      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        notificationsManager.handleNotificationFetch(withUserInfo: userInfo)
         notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
 
         completionHandler(UIBackgroundFetchResult.newData)
@@ -104,8 +105,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         
-        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
         notificationsManager.handleNotificationTap(withUserInfo: userInfo)
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
 
         completionHandler()
     }

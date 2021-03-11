@@ -11,6 +11,7 @@ import core
 import NotificationCenter
 
 class NotificationsManager {
+    private let notificationId = "id"
     private let cloudMessagingNotificationsService = CloudMessagingNotificationsService()
     
     let firebaseMessaging: FirebaseMessaging
@@ -29,18 +30,27 @@ class NotificationsManager {
         cloudMessagingNotificationsService.setDeviceToken(token)
     }
     
+    func handleNotificationFetch(withUserInfo userInfo: [AnyHashable: Any]) {
+        if let data = userInfo as? [String: Any] {
+            firebaseMessaging.handleMessage(data: data)
+        }
+    }
+    
     func handleNotificationReceive(withUserInfo userInfo: [AnyHashable: Any]) {
         cloudMessagingNotificationsService.handleRemoteNotificationReceive(withUserInfo: userInfo)
     }
     
     func handleNotificationTap(withUserInfo userInfo: [AnyHashable: Any]) {
-        print(userInfo)
+        if let messageId = userInfo[notificationId] as? String {
+            firebaseMessaging.dismissMessage(id: messageId)
+        }
     }
     
     private func showNotification(_ notificationData: NotificationMessage) {
         let content = UNMutableNotificationContent()
         content.title = notificationData.title
         content.body = notificationData.body
+        content.userInfo = [notificationId: notificationData.id]
 
         let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest.init(identifier: notificationData.id,
@@ -56,7 +66,6 @@ extension NotificationsManager: NotificationsServiceDelegate {
     func handleTokenReceive(_ token: String?) {
         guard let newToken = token else { return }
         
-        print(newToken)
-//        firebaseMessaging.handleNewToken(token: newToken)
+        firebaseMessaging.handleNewToken(token: newToken)
     }
 }

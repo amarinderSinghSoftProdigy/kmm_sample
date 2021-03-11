@@ -105,7 +105,7 @@ struct NotificationsScreen: View {
                     
                     let buttonTextKey = data.selectedAction?.completedActionStringId ?? data.type.buttonStringId
                     
-                    if data.selectedAction != nil {
+                    if data.actions.isEmpty {
                         LocalizedText(localizationKey: buttonTextKey,
                                       textWeight: .semiBold,
                                       fontSize: 12,

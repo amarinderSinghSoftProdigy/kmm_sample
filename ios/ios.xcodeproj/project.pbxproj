@@ -319,13 +319,12 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		332CFD4925AF33B100341A7E /* Base */ = {
+		332CFD4925AF33B100341A7E /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */,
 				336728212578E1CB00C7E73D /* KeyboardResponder.swift */,
 			);
-			path = Base;
+			path = Other;
 			sourceTree = "<group>";
 		};
 		332F7DF9258B39BD00C5BF6B /* KotlinSources */ = {
@@ -352,15 +351,6 @@
 				332F7E0C258B3BB100C5BF6B /* commonMain */,
 			);
 			name = Data;
-			sourceTree = "<group>";
-		};
-		333AE3F925821ED000C249C1 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				3376EC742583736200570BB3 /* LimitedAppAccess */,
-				3317B5D525A59CE3008681ED /* Product */,
-			);
-			path = Main;
 			sourceTree = "<group>";
 		};
 		333F45D425A4B608008DE1D2 /* Pickers */ = {
@@ -446,12 +436,12 @@
 			path = Authentication;
 			sourceTree = "<group>";
 		};
-		336EE5022594A1B000D354C8 /* Main */ = {
+		336EE5022594A1B000D354C8 /* LimitedAppAccess */ = {
 			isa = PBXGroup;
 			children = (
 				337DE629258A55DA00614951 /* LimitedAppAccessScopeInfo.swift */,
 			);
-			path = Main;
+			path = LimitedAppAccess;
 			sourceTree = "<group>";
 		};
 		3376EC742583736200570BB3 /* LimitedAppAccess */ = {
@@ -465,20 +455,12 @@
 		3378955F256E3B970034D79F /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				332CFD4925AF33B100341A7E /* Base */,
-				33789560256E3BBC0034D79F /* Shared */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		33789560256E3BBC0034D79F /* Shared */ = {
-			isa = PBXGroup;
-			children = (
 				3391B0C125B871940025B945 /* Alert */,
 				33A0202225B991E700615349 /* Containers */,
 				333F45D725A4B63C008DE1D2 /* Images */,
 				333F45D525A4B616008DE1D2 /* Inputs */,
 				332CFD4225AF330C00341A7E /* Navigation */,
+				332CFD4925AF33B100341A7E /* Other */,
 				333F45D425A4B608008DE1D2 /* Pickers */,
 				33A0202725B99E2200615349 /* Sheets */,
 				333F45D625A4B636008DE1D2 /* Texts */,
@@ -486,7 +468,7 @@
 				33ABAEC7258B826A0061F63C /* CommonViews.swift */,
 				339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */,
 			);
-			path = Shared;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		337C0A35256D423D00C3F0A5 /* Screens */ = {
@@ -495,9 +477,10 @@
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
-				333AE3F925821ED000C249C1 /* Main */,
+				3376EC742583736200570BB3 /* LimitedAppAccess */,
 				336D346E25C9732F0021F39A /* Notifications */,
 				334FF84325B5CC9600EC9663 /* Password */,
+				3317B5D525A59CE3008681ED /* Product */,
 				339D372025B05C6E00C57B2D /* Settings */,
 				3391B08C25B81E740025B945 /* UsersManagement */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
@@ -534,7 +517,7 @@
 			isa = PBXGroup;
 			children = (
 				336EE4FD2594A05600D354C8 /* Authentication */,
-				336EE5022594A1B000D354C8 /* Main */,
+				336EE5022594A1B000D354C8 /* LimitedAppAccess */,
 				337DE627258A523800614951 /* TestsHelper.swift */,
 			);
 			path = Testing;
@@ -636,6 +619,7 @@
 		33A0202225B991E700615349 /* Containers */ = {
 			isa = PBXGroup;
 			children = (
+				33B4A30C25A30F3F00B04AF3 /* FlexibleView.swift */,
 				33A0202325B9920000615349 /* TransparentList.swift */,
 			);
 			path = Containers;
@@ -1382,7 +1366,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1416,7 +1400,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
