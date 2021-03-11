@@ -25,7 +25,7 @@ struct SignUpTraderDetails: View {
         }
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: tryToSignUp))
-        .keyboardResponder()
+        .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpTraderDetails",
                       withScreenClass: SignUpTraderDetails.self)
     }
@@ -90,6 +90,7 @@ struct SignUpTraderDetails: View {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
                                              text: self.registration.value?.drugLicenseNo1,
                                              onTextChange: { newValue in scope.changeDrugLicense1(drugLicenseNo: newValue) },
+                                             constText: "20B",
                                              isValid: drugLicenseNo1ErrorMessageKey == nil,
                                              errorMessageKey: drugLicenseNo1ErrorMessageKey)
                     .disableAutocorrection(true)
@@ -101,6 +102,7 @@ struct SignUpTraderDetails: View {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",
                                              text: self.registration.value?.drugLicenseNo2,
                                              onTextChange: { newValue in scope.changeDrugLicense2(drugLicenseNo: newValue) },
+                                             constText: "21B",
                                              isValid: drugLicenseNo2ErrorMessageKey == nil,
                                              errorMessageKey: drugLicenseNo2ErrorMessageKey)
                     .disableAutocorrection(true)

@@ -6,9 +6,14 @@ import core
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var navigator: UiNavigator!
+    var notificationsManager: NotificationsManager!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+        
+        DIContainer.shared.initialize()
+        
+        registerForRemoteNotifications(with: application)
         
         setUpAppNavigator()
         
@@ -34,11 +39,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   useNetworkInterceptor: useNetworkInterceptor,
                                   loggerLevel: Logger.Level.log)
         navigator = start.navigator
+        notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
+        
         link.setStartingScope()
         
         #if DEBUG
         testsHelper.overrideCurrentScope()
         #endif
+    }
+    
+    private func registerForRemoteNotifications(with application: UIApplication) {
+        UNUserNotificationCenter.current().delegate = self
+
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { _, _ in }
+        
+        application.registerForRemoteNotifications()
     }
 
     // MARK: UISceneSession Lifecycle
@@ -54,7 +70,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
-
-
 }
 
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        notificationsManager.setDeviceToken(deviceToken)
+    }
+    
+    // Called when the notification was fetched with the app in the foreground or background
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        notificationsManager.handleNotificationFetch(withUserInfo: userInfo)
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler(UIBackgroundFetchResult.newData)
+    }
+    
+    // Called when the notification was received when the app was in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+        
+        completionHandler([.alert, .badge, .sound])
+    }
+
+    // Handles the user's response to a delivered notification
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        
+        notificationsManager.handleNotificationTap(withUserInfo: userInfo)
+        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+
+        completionHandler()
+    }
+}

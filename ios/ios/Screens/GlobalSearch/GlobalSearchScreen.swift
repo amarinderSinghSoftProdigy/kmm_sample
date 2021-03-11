@@ -11,6 +11,8 @@ import core
 import Introspect
 
 struct GlobalSearchScreen: View {
+    @EnvironmentObject var scrollData: ListScrollData
+    
     let scope: SearchScope
     
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
@@ -21,12 +23,6 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
-    
-    @State private var productsListTableView: UITableView?
-    
-    @State private var scrollElementIndex: Int = 0
-    @State private var elementToScrollTo: Int?
-    @State private var scrollPostion: UITableView.ScrollPosition = .none
     
     var body: some View {
         guard let isFilterOpened = self.isFilterOpened.value else {
@@ -47,6 +43,7 @@ struct GlobalSearchScreen: View {
         
         return AnyView(
             view
+                .hideKeyboardOnTap()
                 .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
                 .screenLogger(withScreenName: "GlobalSearchScreen.\(screenName)",
                               withScreenClass: GlobalSearchScreen.self)
@@ -69,10 +66,14 @@ struct GlobalSearchScreen: View {
     private var searchBarPanel: some View {
         HStack {
             SearchBar(searchText: productSearch.value,
-                      trailingButton: .filter({ scope.toggleFilter() }),
+                      style: .small,
+                      showsCancelButton: false,
+                      trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
                       onTextChange: { value in scope.searchProduct(input: value) })
             
             Button(LocalizedStringKey("cancel")) {
+                scrollData.clear(list: .globalSearchProducts)
+                
                 scope.goBack()
             }
             .medicoText(fontSize: 17,
@@ -101,7 +102,7 @@ struct GlobalSearchScreen: View {
                     let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
                         SearchOption(text: manufucturerSearch.value,
                                      onSearch: { value in scope.searchManufacturer(input: value) }) : nil
-                    
+
                     FilterView(filter: filter,
                                searchOption: searchOption,
                                onSelectFilterOption: { option in scope.selectFilter(filter: filter,
@@ -116,87 +117,27 @@ struct GlobalSearchScreen: View {
     }
     
     private var productsView: some View {
-        guard let products = self.products.value as? [DataProductSearch] else { return AnyView(EmptyView()) }
+        let productsCount = self.products.value?.count ?? 0
         
         return AnyView (
-            ZStack {
-                List {
-                    ForEach(Array(products.enumerated()), id: \.element) { index, product in
-                        let topPadding: CGFloat = index == 0 ? 0 : 16
-
-                        ProductView(product: product)
-                            .padding(.top, topPadding)
-                            .listRowInsets(.init())
-                            .listRowBackground(Color.clear)
-                            .background(appColor: .primary)
-                            .onTapGesture {
-                                scope.selectProduct(product: product, index: Int32(index))
-                            }
-                            .onAppear {
-                                if index == products.count - 1 &&
-                                    scope.canLoadMore() &&
-                                    isInProgress.value == false {
-                                    scope.loadMoreProducts()
-
-                                    self.scrollElementIndex = index
-                                }
-                            }
-                    }
-                }
-                .introspectTableView { (tableView) in
-                    if self.productsListTableView == nil {
-                        self.productsListTableView = tableView
-                    }
-                    
-                    if self.isInProgress.value == true { return }
-                    
-                    setUpInitialScrollData()
-                    
-                    if let elementToScrollTo = self.elementToScrollTo {
-                        scrollToCell(elementToScrollTo)
-                    }
-                }
-                .onAppear {
-                    UITableView.appearance().backgroundColor = UIColor.clear
-                    UITableViewCell.appearance().backgroundColor = UIColor.clear
-                }
-                .onReceive(self.products.$value) { value in
-                    guard let value = value, value.count > 0 else { return }
-                    
-                    self.productsListTableView = nil
-                }
+            TransparentList(data: self.products,
+                            dataType: DataProductSearch.self,
+                            listName: .globalSearchProducts,
+                            isInProgress: scope.isInProgress,
+                            pagination: scope.pagination,
+                            onTapGesture: { scope.selectProduct(product: $0) },
+                            loadItems: { scope.loadMoreProducts() }) { index, product -> AnyView in
+                let topPadding: CGFloat = index == 0 ? 32 : 0
+                let bottomPadding: CGFloat = index == productsCount - 1 ? 16 : 0
+                
+                return AnyView(
+                    ProductView(product: product)
+                        .padding(.top, topPadding)
+                        .padding(.bottom, bottomPadding)
+                )
             }
+            .padding(.horizontal, 16)
         )
-    }
-    
-    private func setUpInitialScrollData() {
-        let visibleProductIndex = scope.getVisibleProductIndex()
-        
-        if visibleProductIndex != 0 {
-            self.elementToScrollTo = Int(visibleProductIndex)
-            self.scrollPostion = .top
-        }
-        else if self.scrollElementIndex != 0 {
-            self.elementToScrollTo = self.scrollElementIndex
-            self.scrollPostion = .bottom
-        }
-        else {
-            self.elementToScrollTo = nil
-            self.scrollPostion = .none
-        }
-    }
-    
-    private func scrollToCell(_ index: Int, animated: Bool = false) {
-        let indexPath = IndexPath(row: index, section: 0)
-        
-        guard let productsListTableView = self.productsListTableView,
-           productsListTableView.dataSource != nil,
-           productsListTableView.hasRowAtIndexPath(indexPath) else { return }
-        
-        productsListTableView.scrollToRow(at: indexPath,
-                                          at: scrollPostion,
-                                          animated: animated)
-        self.elementToScrollTo = nil
     }
 }
 
@@ -233,7 +174,7 @@ private struct FilterView: View {
             if let searchOption = self.searchOption {
                 SearchBar(placeholderLocalizationKey: "search_manufacturer",
                           searchText: searchOption.text,
-                          trailingButton: .clear,
+                          style: .small,
                           onTextChange: searchOption.onSearch)
             }
             

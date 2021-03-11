@@ -29,7 +29,7 @@ struct SignUpPersonalDataScreen: View {
         }
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToAddress))
-        .keyboardResponder()
+        .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpPersonalDataScreen",
                       withScreenClass: SignUpPersonalDataScreen.self)
     }

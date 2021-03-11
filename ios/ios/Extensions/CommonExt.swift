@@ -122,3 +122,7 @@ extension UIImage {
         return colorizedImage ?? self
       }
 }
+
+extension StringProtocol {
+    subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
+}

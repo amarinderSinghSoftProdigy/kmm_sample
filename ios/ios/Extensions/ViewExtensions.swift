@@ -10,7 +10,6 @@ import SwiftUI
 import core
 
 extension View {
-    
     @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
         if hidden {
             if !remove {
@@ -21,22 +20,29 @@ extension View {
         }
     }
     
+    // MARK: Corners
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+    
     // MARK: Input Fields
     func hideKeyboardOnTap() -> some View {
         self.onTapGesture {
-            UIApplication.shared.endEditing()
+            self.hideKeyboard()
         }
     }
     
-    // MARK: View Modifiers
-    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
-        self.modifier(ErrorAlert(errorsHandler: errorsHandler))
+    func hideKeyboard() {
+        UIApplication.shared.endEditing()
     }
     
-    func notificationAlert(withHandler notificationsHandler: CommonScopeWithNotifications,
-                           onDismiss: (() -> ())? = nil) -> some View {
-        self.modifier(NotificationAlert(notificationsHandler: notificationsHandler,
-                                        onDismiss: onDismiss))
+    // MARK: View Modifiers
+//    func errorAlert(withHandler errorsHandler: Scope.Host) -> some View {
+//        self.modifier(ErrorAlert(errorsHandler: errorsHandler))
+//    }
+    
+    func notificationAlertSender(withHandler notificationsHandler: CommonScopeWithNotifications) -> some View {
+        self.modifier(NotificationAlertSender(notificationsHandler: notificationsHandler))
     }
     
     func fieldError(withLocalizedKey errorMessageKey: String?,
@@ -58,7 +64,7 @@ extension View {
         )
     }
     
-    func filePicker(bottomSheet: BaseDataSource<BottomSheet.UploadDocuments>,
+    func filePicker(bottomSheet: BottomSheet.UploadDocuments,
                     onBottomSheetDismiss: @escaping () -> ()) -> some View {
         self.modifier(
             FilePicker(bottomSheet: bottomSheet,
@@ -116,5 +122,22 @@ extension View {
                                  screenClass: screenClass)
         )
     }
+    
+    func textFieldsModifiers() -> some View {
+        self
+            .keyboardResponder()
+            .hideKeyboardOnTap()
+    }
 }
 
+private struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect,
+                                byRoundingCorners: corners,
+                                cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}

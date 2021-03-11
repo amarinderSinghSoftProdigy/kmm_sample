@@ -16,32 +16,45 @@ struct WelcomeScreen: View {
     @ObservedObject var uploadButtonEnabled: SwiftDataSource<KotlinBoolean>
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack {
-                Spacer()
-                
-                VStack(spacing: 50) {
-                    LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
-                                  testingIdentifier: "welcome",
-                                  textWeight: .medium,
-                                  fontSize: 20)
+        let view = AnyView(
+            GeometryReader { geometry in
+                VStack {
+                    Spacer()
                     
-                    if welcomeOption is WelcomeOption.Thanks {
-                        self.uploadedDocumentCenterView
+                    VStack(spacing: 50) {
+                        LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
+                                      testingIdentifier: "welcome",
+                                      textWeight: .medium,
+                                      fontSize: 20)
+                        
+                        if welcomeOption is WelcomeOption.Thanks {
+                            self.uploadedDocumentCenterView
+                        }
+                        else if let uploadOption = welcomeOption as? WelcomeOption.Upload {
+                            self.getUploadDocumentCenterView(for: uploadOption)
+                        }
                     }
-                    else if let uploadOption = welcomeOption as? WelcomeOption.Upload {
-                        self.getUploadDocumentCenterView(for: uploadOption)
-                    }
+                    .padding(.horizontal, geometry.size.width * 0.19)
+                    
+                    Spacer()
+                    
+                    self.getBottomView(forGeometry: geometry)
                 }
-                .padding(.horizontal, geometry.size.width * 0.19)
-                
-                Spacer()
-                
-                self.getBottomView(forGeometry: geometry)
             }
-        }
-        .screenLogger(withScreenName: "WelcomeScreen.\(welcomeOption.optionName)",
-                      withScreenClass: WelcomeScreen.self)
+            .screenLogger(withScreenName: "WelcomeScreen.\(welcomeOption.optionName)",
+                          withScreenClass: WelcomeScreen.self)
+        )
+        
+        if !(welcomeOption is WelcomeOption.Upload.AadhaarCard) { return view }
+        
+        return AnyView(
+            ZStack {
+                AppColor.primary.color
+                
+                view
+            }
+            .textFieldsModifiers()
+        )
     }
     
     var uploadedDocumentCenterView: some View {
@@ -65,7 +78,7 @@ struct WelcomeScreen: View {
         self.userName = userName
         
         if let aadhaarCardOption = welcomeOption as? WelcomeOption.Upload.AadhaarCard {
-            self.uploadButtonEnabled = SwiftDataSource(dataSource: aadhaarCardOption.aadhaarDataHolder.isVerified)
+            self.uploadButtonEnabled = SwiftDataSource(dataSource: aadhaarCardOption.aadhaarDataComponent.isVerified)
         }
         else {
             self.uploadButtonEnabled = SwiftDataSource(dataSource: DataSource(initialValue: true))
@@ -99,9 +112,9 @@ struct WelcomeScreen: View {
             view = AnyView(
                 VStack(spacing: 32) {
                     if let aadhaarCard = uploadOption as? WelcomeOption.Upload.AadhaarCard {
-                        AadhaardCardDataFields(aadhaarData: aadhaarCard.aadhaarDataHolder.aadhaarData,
-                                               changeCard: aadhaarCard.aadhaarDataHolder.changeCard,
-                                               changeShareCode: aadhaarCard.aadhaarDataHolder.changeShareCode)
+                        AadhaardCardDataFields(aadhaarData: aadhaarCard.aadhaarDataComponent.aadhaarData,
+                                               changeCard: aadhaarCard.aadhaarDataComponent.changeCard,
+                                               changeShareCode: aadhaarCard.aadhaarDataComponent.changeShareCode)
                     }
                     
                     MedicoButton(localizedStringKey: uploadOption.buttonTextKey,
@@ -153,11 +166,11 @@ class WelcomeOption {
             override var uploadDocumentTextKey: String { "aadhaar_card_request" }
             override var buttonTextKey: String { "upload_aadhaar_card" }
             
-            let aadhaarDataHolder: AadhaarDataHolder
+            let aadhaarDataComponent: AadhaarDataComponent
             
-            init(aadhaarDataHolder: AadhaarDataHolder,
+            init(aadhaarDataComponent: AadhaarDataComponent,
                  onUploadClick: @escaping () -> ()) {
-                self.aadhaarDataHolder = aadhaarDataHolder
+                self.aadhaarDataComponent = aadhaarDataComponent
                 
                 super.init(onUploadClick: onUploadClick)
             }

@@ -45,7 +45,7 @@ struct PasswordScreen: View {
                 Spacer()
             }
             .padding()
-            .keyboardResponder()
+            .textFieldsModifiers()
         )
     }
 }
@@ -125,7 +125,7 @@ private struct EnterNewPasswordScreen: View {
                 scope.submit()
             }
         }
-        .notificationAlert(withHandler: scope) { _ = scope.finishPasswordFlow() }
+        .notificationAlertSender(withHandler: scope)
         .screenLogger(withScreenName: "PasswordScreen.EnterNew",
                       withScreenClass: EnterNewPasswordScreen.self)
     }

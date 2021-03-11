@@ -29,7 +29,7 @@ struct SignUpAddressScreen: View {
         }
         .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToTraderDetails))
-        .keyboardResponder()
+        .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpAddressScreen",
                       withScreenClass: SignUpAddressScreen.self)
     }

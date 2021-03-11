@@ -6,6 +6,8 @@ struct HostScreen: View {
     
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
+        @State var showSheet = false
+    
     var body: some View {
         if isSplashScreenActive {
             self.splashScreen
@@ -18,6 +20,21 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
+//                ZStack {
+//                    Color.gray
+//
+//                    Button(action: {
+//                        self.showSheet.toggle()
+//                    }) {
+//                        Text("Show")
+//                    }
+//                }
+//                .popover(isPresented: $showSheet,
+//                         attachmentAnchor: .point(.bottom),
+//                         arrowEdge: .bottom) {
+//                    AppColor.red.color.cornerRadius(5)
+//                        .frame(width: 150, height: 50, alignment: .center)
+//                }
                 BaseScopeView(scope: scope)
             }
         }
@@ -36,24 +53,24 @@ struct HostScreen: View {
 }
 
 struct BaseScopeView: View {
-    @EnvironmentObject var alertData: AlertData
-    
     let scope: Scope.Host
     
-    @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
-    
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
+                .hideKeyboardOnTap()
             
-            getViewWithModifiers()
-
-            if let isInProgress = self.isInProgress.value,
-               isInProgress == true {
-                ActivityView()
-            }
+            currentView
+            
+            BottomSheetView(bottomSheet: scope.bottomSheet,
+                            dismissBottomSheet: { scope.dismissBottomSheet() })
+            
+            NotificationsListener()
+            
+            ErrorAlert(errorsHandler: scope)
+            
+            ActivityScreen(isInProgress: scope.isInProgress)
         }
-        .hideKeyboardOnTap()
     }
     
     var currentView: AnyView {
@@ -79,32 +96,37 @@ struct BaseScopeView: View {
     
     init(scope: Scope.Host) {
         self.scope = scope
-        
-        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
     }
     
-    private func getViewWithModifiers() -> some View {
-        var view = AnyView(
-            currentView
-                .alert(item: $alertData.data) { alertData in
-                    Alert(title: Text(LocalizedStringKey(alertData.titleKey)),
-                          message: Text(LocalizedStringKey(alertData.messageKey)),
-                          dismissButton: Alert.Button.default(Text(LocalizedStringKey(alertData.buttonTextKey)),
-                                                              action: alertData.buttonAction))
+    private struct ActivityScreen: View {
+        @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
+        
+        var body: some View {
+            ZStack {
+                if let isInProgress = self.isInProgress.value,
+                   isInProgress == true {
+                    ActivityView()
                 }
-                
-                .errorAlert(withHandler: scope)
-        )
-        
-        if let uploadBottomSheet = scope.bottomSheet as? DataSource<BottomSheet.UploadDocuments> {
-            view = AnyView(
-                view
-                    .filePicker(bottomSheet: uploadBottomSheet,
-                                onBottomSheetDismiss: { scope.dismissBottomSheet() })
-            )
+            }
+            .animation(.linear(duration: 0.2))
         }
+
+        init(isInProgress: DataSource<KotlinBoolean>) {
+            self.isInProgress = SwiftDataSource(dataSource: isInProgress)
+        }
+    }
+    
+    private struct NotificationsListener: View {
+        @EnvironmentObject var notificationObserver: NotificationObservable
         
-        return view
+        var body: some View {
+            ZStack {
+                if let notificationData = self.notificationObserver.data {
+                    NotificationAlert(notificationsHandler: notificationData.notificationsHandler)
+                }
+            }
+            .animation(.default)
+        }
     }
 }
 
@@ -147,8 +169,60 @@ struct TabBarScreen: View {
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))
             
+        case let scope as ManagementScope.User:
+            return AnyView(UserManagementScreen(scope: scope))
+            
+        case let scope as ManagementScope.AddRetailer:
+            return AnyView(AddRetailerScreen(scope: scope))
+            
+        case let scope as PreviewUserScope:
+            return AnyView(PreviewUserScreen(scope: scope))
+            
+        case let scope as DashboardScope:
+            return AnyView(DashboardScreen(scope: scope))
+            
+        case let scope as NotificationScope.All:
+            return AnyView(NotificationsScreen(scope: scope))
+            
+        case let scope as NotificationScopePreview<DataNotificationDetails.TypeSafeSubscription,
+                                                   DataNotificationOption.Subscription>:
+            return AnyView(NotificationDetailsScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }
+    }
+}
+
+struct BottomSheetView: View {
+    @ObservedObject var bottomSheet: SwiftDataSource<BottomSheet>
+
+    let dismissBottomSheet: () -> ()
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            switch bottomSheet.value {
+
+            case let uploadBottomSheet as BottomSheet.UploadDocuments:
+                Color.clear.filePicker(bottomSheet: uploadBottomSheet,
+                                       onBottomSheetDismiss: { dismissBottomSheet() })
+
+            case let managementItemSheet as BottomSheet.PreviewManagementItem:
+                Color.clear
+                    .modifier(EntityInfoBottomSheet(bottomSheet: managementItemSheet,
+                                                    onBottomSheetDismiss: { dismissBottomSheet() }))
+                        
+            default:
+                Color.clear
+            }
+        }
+        .animation(.linear(duration: 0.2))
+    }
+    
+    init(bottomSheet: DataSource<BottomSheet>,
+         dismissBottomSheet: @escaping () -> ()) {
+        self.bottomSheet = SwiftDataSource(dataSource: bottomSheet)
+
+        self.dismissBottomSheet = dismissBottomSheet
     }
 }

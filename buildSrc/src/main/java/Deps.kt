@@ -154,6 +154,6 @@ object Config {
 
     object Ios {
         val isForSimulator: Boolean
-            get() = isAndroidDev && Version.isDevBuild
+            get() = isAndroidDev || System.getenv("FOR_SIMULATOR") == "true" 
     }
 }
