@@ -10,7 +10,7 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-#    if: contains(github.event.head_commit.message, '[ANDROID]')
+#    if: contains(github.ref, 'android/')
 
     steps:
       - name: Checkout project
@@ -39,9 +39,24 @@ jobs:
           path: android/build/outputs/apk/dev/release/android-dev-release.apk
 
       - name: Upload artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
         with:
           appId: ${{ secrets.FIREBASE_APP_ID_ANDROID_DEV }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: main
           file: android/build/outputs/apk/dev/release/android-dev-release.apk
+
+#      - name: Slack Notification for the Firebase App Distribution
+#        uses: 8398a7/action-slack@v3
+#        with:
+#          status: ${{ job.status }}
+#          author_name: $AUTHOR
+#          fields: all
+#          text: Android Build upload to Firebase App Distribution has been ${{ job.status == 'success' && 'Successfull' || job.status == 'failure' && 'Failed' || 'Canceled' }}
+#          channel: mobile-release-pipeline
+#          icon_emoji: ${{ job.status == 'success' && ':white_check_mark:' || job.status == 'failure' && ':x:' || ':warning:' }}
+#        env:
+#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_MOBILE_RELEASE_WEBHOOK }}
+#          AUTHOR: ${{ github.actor }}
+##          VERSION: grep
+#        if: always()
