@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ConstraintLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,12 +12,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
@@ -27,11 +27,13 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.NavigationCell
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun NavigationColumn(
-    userName: String,
+    fullName: String,
     userType: UserType,
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
@@ -40,7 +42,8 @@ fun NavigationColumn(
         val (bg, userInfo, mainSection, logOutSection) = createRefs()
 
         Image(
-            bitmap = imageResource(id = R.drawable.nav_bg),
+            painter = painterResource(id = R.drawable.nav_bg),
+            contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxWidth()
                 .constrainAs(bg) {
@@ -54,13 +57,16 @@ fun NavigationColumn(
                 centerVerticallyTo(bg)
             }.padding(start = 16.dp)
         ) {
-            Image(
-                bitmap = imageResource(id = R.drawable.avatar),
-                modifier = Modifier.size(64.dp),
+            CoilImage(
+                modifier = Modifier.size(96.dp),
+                data = "",
+                contentDescription = null,
+                error = { UserLogoPlaceholder(fullName) },
+                loading = { UserLogoPlaceholder(fullName) },
             )
             Space(8.dp)
             Text(
-                text = userName,
+                text = fullName,
                 fontWeight = FontWeight.W700,
                 color = Color.White,
             )
@@ -77,7 +83,7 @@ fun NavigationColumn(
             }
         ) {
             navigationSection.main.forEach {
-                val (icon, text) = it.iconAndText
+                val (icon, text) = it.iconAndText()
                 NavigationCell(
                     icon = icon,
                     text = text,
@@ -96,7 +102,7 @@ fun NavigationColumn(
         ) {
             Separator()
             navigationSection.footer.forEach {
-                val (icon, text) = it.iconAndText
+                val (icon, text) = it.iconAndText()
                 NavigationCell(
                     icon = icon,
                     text = text,
@@ -109,12 +115,11 @@ fun NavigationColumn(
 }
 
 @Composable
-private inline val NavigationOption.iconAndText: Pair<ImageVector, String>
-    get() = when (this) {
-        NavigationOption.Settings -> Icons.Filled.Settings
-        NavigationOption.Stockists -> vectorResource(id = R.drawable.ic_stockist)
-        NavigationOption.Retailers -> vectorResource(id = R.drawable.ic_retailer)
-        NavigationOption.Hospitals -> vectorResource(id = R.drawable.ic_hospital)
-        NavigationOption.SeasonBoys -> vectorResource(id = R.drawable.ic_season_boy)
-        NavigationOption.LogOut -> vectorResource(id = R.drawable.ic_exit)
-    } to stringResourceByName(stringId)
+private inline fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
+    NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
+    NavigationOption.Stockists -> painterResource(id = R.drawable.ic_stockist)
+    NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
+    NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
+    NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
+    NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)
+} to stringResourceByName(stringId)

@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +13,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.ripple.rememberRipple
@@ -22,8 +22,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInParent
@@ -37,6 +38,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun PasswordFormatInputField(
@@ -44,23 +47,26 @@ fun PasswordFormatInputField(
     hint: String,
     text: String,
     isValid: Boolean = true,
-    autoScrollOnFocus: ScrollState? = null,
     onValueChange: (String) -> Unit,
+//    onPositioned: ((LayoutCoordinates) -> Unit)? = null,
 ) {
-    Box(contentAlignment = Alignment.CenterEnd) {
+    Box(
+        contentAlignment = Alignment.CenterEnd,
+//        modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
+    ) {
         val isPasswordHidden = remember { mutableStateOf(true) }
         InputField(
             modifier = modifier,
             hint = hint,
             text = text,
             isValid = isValid,
-            autoScrollOnFocus = autoScrollOnFocus,
             visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
             maxLines = 1,
             onValueChange = onValueChange,
         )
         Icon(
             imageVector = Icons.Default.RemoveRedEye,
+            contentDescription = null,
             tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
             modifier = Modifier.size(42.dp)
                 .clickable(indication = rememberRipple(radius = 15.dp)) {
@@ -76,7 +82,6 @@ fun PhoneFormatInputField(
     modifier: Modifier = Modifier,
     hint: String,
     text: String,
-    autoScrollOnFocus: ScrollState? = null,
     onValueChange: (String) -> Unit,
 ): Boolean {
     val formatter = rememberPhoneNumberFormatter()
@@ -87,7 +92,6 @@ fun PhoneFormatInputField(
         hint = hint,
         text = formatted ?: text,
         isValid = isValid,
-        autoScrollOnFocus = autoScrollOnFocus,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
         maxLines = 1,
         onValueChange = onValueChange,
@@ -102,7 +106,6 @@ fun PhoneOrEmailFormatInputField(
     hint: String,
     text: String,
     isPhoneNumber: Boolean,
-    autoScrollOnFocus: ScrollState? = null,
     onValueChange: (String) -> Unit,
 ) {
     val formatter = rememberPhoneNumberFormatter()
@@ -111,7 +114,6 @@ fun PhoneOrEmailFormatInputField(
         modifier = modifier,
         hint = hint,
         text = formatted ?: text,
-        autoScrollOnFocus = autoScrollOnFocus,
         isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
         maxLines = 1,
         onValueChange = onValueChange,
@@ -125,47 +127,47 @@ fun InputField(
     hint: String,
     text: String,
     isValid: Boolean = true,
-    autoScrollOnFocus: ScrollState? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
 ) {
-    var bounds: Rect? = null
     TextField(
         value = text,
         label = {
             Text(
                 text = hint,
-                style = TextStyle.Default
-                    .copy(
-                        color = when {
-                            text.isEmpty() -> ConstColors.gray
-                            !isValid -> MaterialTheme.colors.error
-                            else -> ConstColors.lightBlue
-                        }
-                    )
+                style = TextStyle.Default,
             )
         },
-        isErrorValue = !isValid,
-        activeColor = ConstColors.lightBlue,
-        backgroundColor = Color.White,
+        isError = !isValid,
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            cursorColor = ConstColors.lightBlue,
+            focusedLabelColor = ConstColors.lightBlue,
+            focusedIndicatorColor = ConstColors.lightBlue,
+        ),
         onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         singleLine = maxLines == 1,
         maxLines = maxLines,
-        modifier = modifier.run {
-            autoScrollOnFocus?.let { ss ->
-                onGloballyPositioned { bounds = it.boundsInParent }
-                    .onFocusEvent { state ->
-                        if (state == FocusState.Active) {
-                            bounds?.let { ss.smoothScrollTo(it.top) }
-                        }
-                    }
-            } ?: this
-        }.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     )
+}
+
+fun Modifier.scrollOnFocus(
+    scrollState: ScrollState,
+    coroutineScope: CoroutineScope,
+): Modifier = composed {
+    var bounds: Rect? = null
+    // TODO will not work if parent not the container we need
+    onGloballyPositioned { bounds = it.boundsInParent() }
+        .onFocusChanged { state ->
+            if (state == FocusState.Active) {
+                bounds?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
+            }
+        }
 }
 
 @Composable

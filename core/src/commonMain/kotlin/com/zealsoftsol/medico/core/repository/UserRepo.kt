@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
+import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
@@ -40,11 +41,15 @@ class UserRepo(
     private val networkSignUpScope: NetworkScope.SignUp,
     private val networkPasswordScope: NetworkScope.Password,
     private val networkCustomerScope: NetworkScope.Customer,
+    private val networkNotificationScope: NetworkScope.Notification,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val phoneEmailVerifier: PhoneEmailVerifier,
     private val ipAddressFetcher: IpAddressFetcher,
 ) {
+
+    private var cachedFirebaseToken: String? = null
+
     val userFlow: MutableStateFlow<User?> = MutableStateFlow(
         runCatching {
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
@@ -68,24 +73,28 @@ class UserRepo(
                 "unknown user type".warnIt()
                 return@let null
             }
+            if (it.unitCode == null || it.customerMetaData == null) {
+                "can not create user without unitCode or customerMetaData".errorIt()
+                return false
+            }
             val user = User(
                 it.firstName,
                 it.lastName,
                 it.email,
                 it.phoneNumber,
-                it.unitCode,
+                it.unitCode!!,
                 parsedType,
                 when (parsedType) {
-                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo, "")
+                    UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo!!, "")
                     else -> User.Details.DrugLicense(
                         it.tradeName,
-                        it.gstin,
-                        it.drugLicenseNo1,
-                        it.drugLicenseNo2,
+                        it.gstin!!,
+                        it.drugLicenseNo1!!,
+                        it.drugLicenseNo2!!,
                         it.drugLicenseUrl
                     )
                 },
-                it.customerMetaData.activated,
+                it.customerMetaData!!.activated,
                 it.isDocumentUploaded,
                 it.customerAddressData,
             )
@@ -253,6 +262,15 @@ class UserRepo(
                 registration3,
             )
         )
+    }
+
+    suspend fun sendFirebaseToken(token: String? = cachedFirebaseToken) {
+        if (token != null) {
+            cachedFirebaseToken = token
+        }
+        if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
+            networkNotificationScope.sendFirebaseToken(token)
+        }
     }
 
     private fun clearUserData() {

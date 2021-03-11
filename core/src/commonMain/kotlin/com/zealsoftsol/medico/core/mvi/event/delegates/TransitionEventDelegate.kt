@@ -5,9 +5,9 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
@@ -27,6 +27,7 @@ internal class TransitionEventDelegate(
         navigator.apply {
             when (event) {
                 is Event.Transition.Back -> dropScope()
+                is Event.Transition.Refresh -> refresh()
                 is Event.Transition.ForgetPassword -> setScope(
                     OtpScope.PhoneNumberInput.get(
                         phoneNumber = DataSource(""),
@@ -81,23 +82,26 @@ internal class TransitionEventDelegate(
                         )
                     )
                 }
-                is Event.Transition.PreviewUser -> {
-                    dropScope(
-                        Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
-                        updateDataSource = false
-                    )
-                    setScope(
-                        PreviewUserScope(
-                            event.registration2,
-                            event.registration3
-                        )
-                    )
-                }
+//                is Event.Transition.PreviewUser -> {
+//                    dropScope(
+//                        Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
+//                        updateDataSource = false
+//                    )
+//                    setScope(
+//                        PreviewUserScope(
+//                            event.registration2,
+//                            event.registration3
+//                        )
+//                    )
+//                }
                 is Event.Transition.CloseNotification -> withScope<CommonScope.WithNotifications>(
                     forceSafe = true
                 ) {
                     it.notifications.value = null
                 }
+                is Event.Transition.Notifications -> setScope(
+                    NotificationScope.All()
+                )
             }
         }
     }

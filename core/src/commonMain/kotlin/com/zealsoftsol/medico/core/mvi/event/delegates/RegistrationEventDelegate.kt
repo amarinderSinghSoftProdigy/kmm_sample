@@ -9,7 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -207,6 +207,7 @@ internal class RegistrationEventDelegate(
             }
         }
         if (isSuccess) {
+            userRepo.sendFirebaseToken()
             navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
             navigator.setScope(
                 WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
@@ -217,12 +218,16 @@ internal class RegistrationEventDelegate(
     }
 
     private suspend fun confirmCreateRetailer() {
-        navigator.withScope<PreviewUserScope> {
+        navigator.withScope<ManagementScope.AddRetailer.Address> {
             val (error, isSuccess) = withProgress {
-                userRepo.createRetailer(it.registration2, it.registration3)
+                userRepo.createRetailer(it.registration.value, it.registration3)
             }
             if (isSuccess) {
-                it.notifications.value = PreviewUserScope.Congratulations(it.tradeName)
+                dropScope(
+                    Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
+                    updateDataSource = false,
+                )
+                it.notifications.value = ManagementScope.Congratulations(it.registration3.tradeName)
             } else {
                 setHostError(error ?: ErrorCode())
             }
