@@ -11,15 +11,11 @@ jobs:
   deploy:
     runs-on: macos-latest
 
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == 'true' && contains(github.head_ref, 'ios/'))
     
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
-
-      - name: GITHUB CONTEXT
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
