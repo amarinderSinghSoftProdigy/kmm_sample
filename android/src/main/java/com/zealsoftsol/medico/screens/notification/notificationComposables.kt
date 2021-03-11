@@ -56,9 +56,9 @@ import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
-import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
@@ -121,7 +121,10 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             horizontalPadding = 0.dp,
             isSearchFocused = true,
             onSearch = { scope.search(it) },
-            onIconClick = { showSearchOverlay.value = true },
+            onIconClick = {
+                scope.search("")
+                showSearchOverlay.value = true
+            },
         )
     }
     Space(16.dp)
@@ -245,13 +248,13 @@ private fun SubscriptionDeatails(
     val isSeasonBoy = details.customerData.customerType == UserType.SEASON_BOY.serverValue
 
     if (!isSeasonBoy) {
-        Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().height(100.dp)) {
             CoilImage(
-                modifier = Modifier.size(123.dp),
+                modifier = Modifier.size(100.dp),
                 data = "",
                 contentDescription = null,
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
+                error = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
+                loading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
             )
             Space(24.dp)
             Column(

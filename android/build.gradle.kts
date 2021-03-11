@@ -8,7 +8,7 @@ plugins {
 }
 
 val isCiBuild = !System.getenv("CI_BUILD").isNullOrEmpty()
-println("CI Build: $isCiBuild")
+println("CI Build: ${if (isCiBuild) "YES" else "NO"}")
 
 android {
     compileSdkVersion(Config.Android.targetSdk)

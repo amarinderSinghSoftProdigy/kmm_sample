@@ -27,11 +27,13 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.NavigationCell
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun NavigationColumn(
-    userName: String,
+    fullName: String,
     userType: UserType,
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
@@ -55,14 +57,16 @@ fun NavigationColumn(
                 centerVerticallyTo(bg)
             }.padding(start = 16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.avatar),
+            CoilImage(
+                modifier = Modifier.size(96.dp),
+                data = "",
                 contentDescription = null,
-                modifier = Modifier.size(64.dp),
+                error = { UserLogoPlaceholder(fullName) },
+                loading = { UserLogoPlaceholder(fullName) },
             )
             Space(8.dp)
             Text(
-                text = userName,
+                text = fullName,
                 fontWeight = FontWeight.W700,
                 color = Color.White,
             )

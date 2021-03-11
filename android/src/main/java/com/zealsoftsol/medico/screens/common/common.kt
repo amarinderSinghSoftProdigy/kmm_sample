@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.common
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -45,7 +44,6 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -363,14 +361,6 @@ fun BasicScreen(
             }
         }
     }
-}
-
-@Composable
-fun ItemPlaceholder() {
-    Image(
-        painter = painterResource(R.drawable.ic_placeholder),
-        contentDescription = null,
-    )
 }
 
 object NoOpIndication : Indication {
