@@ -10,7 +10,7 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-#    if: contains(github.ref, 'android/')
+    if: contains(github.ref, 'android/')
 
     steps:
       - name: Checkout project
