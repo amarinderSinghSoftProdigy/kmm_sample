@@ -87,12 +87,14 @@ jobs:
         if: always()
 
       - name: Upload the build version to the GitHub repositoty
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ADMIN }}
         if: success()
         id: github_build_version_update
         run: |
           git status
           git add .
-          git commit -m "bump version"
+          git commit -m "bump ios version"
           git push origin HEAD
 
       - name: Slack Notification for the build version origin update

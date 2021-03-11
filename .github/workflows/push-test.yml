@@ -1,0 +1,24 @@
+name: push-test
+
+on:
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Upload the build version to the GitHub repositoty
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_ADMIN }}
+        run: |
+          touch test.temp
+          git status
+          git add .
+          git commit -m "bump ios version"
+          git push origin HEAD
