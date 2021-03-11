@@ -22,17 +22,21 @@ jobs:
 
       - name: Booleans
         env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          EVENT: ${{ github.event_name }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          REF: ${{ github.head_ref }}
         run: |
-          [ "$GITHUB_CONTEXT.event_name" = "workflow_dispatch" ]; echo $?
-          [ "$GITHUB_CONTEXT.event.pull_request.merged" = "true" ]; echo $?
-          echo $GITHUB_CONTEXT.head_ref
-          [ contains($GITHUB_CONTEXT.head_ref, 'ios/') ]; echo $?
+          echo $EVENT
+          echo $MERGED
+          echo $REF
+          [ "$EVENT" = "workflow_dispatch" ]; echo $?
+          [ "$MERGED" = "true" ]; echo $?
+          [ contains($REF, 'ios/') ]; echo $?
 
   deploy:
     runs-on: macos-latest
 
-    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == 'true' && contains(github.head_ref, 'ios/'))
+    if: github.event.pull_request.merged == 'true' && contains(github.head_ref, 'ios/')
     
     steps:
       - name: Checkout project
