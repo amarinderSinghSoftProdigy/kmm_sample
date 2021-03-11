@@ -29,14 +29,11 @@ jobs:
           echo $EVENT
           echo $MERGED
           echo $REF
-          [ "$EVENT" = "workflow_dispatch" ]; echo $?
-          [ "$MERGED" = "true" ]; echo $?
-          [ contains($REF, 'ios/') ]; echo $?
 
   deploy:
     runs-on: macos-latest
 
-    if: github.event.pull_request.merged == 'true' && contains(github.head_ref, 'ios/')
+    if: contains(github.head_ref, 'ios/')
     
     steps:
       - name: Checkout project
