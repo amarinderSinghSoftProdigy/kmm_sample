@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: macos-latest
 
-    if: contains(github.ref, 'ios/')
+    if: github.event.pull_request.merged == 'true' && contains(github.ref, 'ios/')
     
     steps:
       - name: Checkout project
