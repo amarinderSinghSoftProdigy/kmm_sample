@@ -1,25 +1,21 @@
 name: android-development
 
-on: push
-#on:
-#  pull_request:
-#    branches: [ develop ]
-#
-#  workflow_dispatch:
+on:
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]
+
+  workflow_dispatch:
 
 jobs:
   deploy-android:
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'android/')
+
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && startsWith(github.head_ref, 'android/'))
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
-
-      - name: GITHUB CONTEXT
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
