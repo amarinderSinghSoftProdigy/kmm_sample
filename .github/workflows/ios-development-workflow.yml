@@ -11,7 +11,7 @@ jobs:
   deploy:
     runs-on: macos-latest
 
-    if: github.event.pull_request.merged && contains(github.head_ref, 'ios/')
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && startsWith(github.head_ref, 'ios/'))
     
     steps:
       - name: Checkout project
