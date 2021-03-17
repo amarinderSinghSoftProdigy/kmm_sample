@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,6 +63,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
+import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.data.UserType as DataUserType
@@ -165,11 +167,13 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             }
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.password) {
+                val rectHolder = RectHolder()
                 PasswordFormatInputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
                     hint = stringResource(id = R.string.password),
                     text = registration.value.password,
                     onValueChange = { scope.changePassword(it) },
+                    onPositioned = { rectHolder.rect = it.boundsInParent() },
                 )
             }
             Space(dp = 12.dp)
@@ -178,12 +182,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             InputWithError(
                 errorText = if (!isValid) stringResource(id = R.string.password_doesnt_match) else null
             ) {
+                val rectHolder = RectHolder()
                 PasswordFormatInputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
                     hint = stringResource(id = R.string.repeat_password),
                     text = registration.value.verifyPassword,
                     isValid = isValid,
                     onValueChange = { scope.changeRepeatPassword(it) },
+                    onPositioned = { rectHolder.rect = it.boundsInParent() },
                 )
             }
             Space(dp = 12.dp)
@@ -508,7 +514,9 @@ private fun BasicAuthSignUpScreenWithButton(
         ) {
             body()
         }
-        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
             MedicoButton(
                 modifier = Modifier.padding(padding),
                 text = buttonText,

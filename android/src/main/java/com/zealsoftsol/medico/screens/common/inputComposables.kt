@@ -24,9 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
@@ -48,11 +49,11 @@ fun PasswordFormatInputField(
     text: String,
     isValid: Boolean = true,
     onValueChange: (String) -> Unit,
-//    onPositioned: ((LayoutCoordinates) -> Unit)? = null,
+    onPositioned: ((LayoutCoordinates) -> Unit)? = null,
 ) {
     Box(
         contentAlignment = Alignment.CenterEnd,
-//        modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
+        modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
     ) {
         val isPasswordHidden = remember { mutableStateOf(true) }
         InputField(
@@ -156,18 +157,35 @@ fun InputField(
     )
 }
 
+class RectHolder(var rect: Rect? = null)
+
 fun Modifier.scrollOnFocus(
     scrollState: ScrollState,
     coroutineScope: CoroutineScope,
-): Modifier = composed {
-    var bounds: Rect? = null
-    // TODO will not work if parent not the container we need
-    onGloballyPositioned { bounds = it.boundsInParent() }
-        .onFocusChanged { state ->
-            if (state == FocusState.Active) {
-                bounds?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
+): Modifier {
+    val rectHolder = RectHolder()
+    return composed {
+        onGloballyPositioned { rectHolder.rect = it.boundsInParent() }
+            .onFocusEvent {
+                if (it == FocusState.Active) {
+                    rectHolder.rect.takeIf { !scrollState.isScrollInProgress }
+                        ?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
+                }
             }
+    }
+}
+
+fun Modifier.scrollOnFocus(
+    rectHolder: RectHolder,
+    scrollState: ScrollState,
+    coroutineScope: CoroutineScope,
+): Modifier = composed {
+    onFocusEvent {
+        if (it == FocusState.Active) {
+            rectHolder.rect?.takeIf { !scrollState.isScrollInProgress }
+                ?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
         }
+    }
 }
 
 @Composable
