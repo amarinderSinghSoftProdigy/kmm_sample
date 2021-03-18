@@ -109,6 +109,7 @@
     <string name="see_on_the_map">See on the map</string>
     <string name="status">Status</string>
     <string name="gstin_num">GSTIN Number</string>
+    <string name="pan_num">PAN Number</string>
     <string name="payment_method">Payment method</string>
     <string name="orders">Orders</string>
     <string name="cancel">Cancel</string>
@@ -139,4 +140,6 @@
     <string name="order_request_button">View Order</string>
     <string name="credit_days">Credit days</string>
     <string name="discount_rate">Discount Rate</string>
+    <string name="gstin_pan_required">GSTIN or PAN is required for registration</string>
+    <string name="verified">Verified</string>
 </resources>

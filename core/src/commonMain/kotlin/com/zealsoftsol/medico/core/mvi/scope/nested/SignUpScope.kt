@@ -166,8 +166,8 @@ sealed class SignUpScope(titleId: String) :
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,
-                Fields.PAN.takeIf { registrationStep1.userType == UserType.STOCKIST.serverValue },
                 Fields.GSTIN,
+                Fields.PAN,
                 Fields.LICENSE1,
                 Fields.LICENSE2,
             )

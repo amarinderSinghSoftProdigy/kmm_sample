@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -185,11 +187,62 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
 }
 
 @Composable
-private fun NonSeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
+private fun NonSeasonBoyItem(
+    entityInfo: EntityInfo,
+    onClick: () -> Unit,
+) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.7f),
-            verticalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier.fillMaxHeight().weight(0.65f),
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = entityInfo.tradeName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    color = MaterialTheme.colors.background,
+                )
+                Space(8.dp)
+                if (entityInfo.isVerified == true) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_verified),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            }
+            GeoLocation(entityInfo.geoData.fullAddress())
+        }
+        entityInfo.subscriptionData?.let {
+            Column(
+                modifier = Modifier.fillMaxHeight().weight(0.35f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                Text(
+                    text = it.status.serverValue,
+                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    fontWeight = FontWeight.W500,
+                )
+                Text(
+                    text = entityInfo.geoData.formattedDistance,
+                    fontSize = 12.sp,
+                    color = ConstColors.gray,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
+    BaseManagementItem(onClick) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(0.65f),
+            verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
                 text = entityInfo.tradeName,
@@ -200,36 +253,24 @@ private fun NonSeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         entityInfo.subscriptionData?.let {
-            Box(modifier = Modifier.weight(0.3f)) {
+            Column(
+                modifier = Modifier.fillMaxHeight().weight(0.35f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 Text(
                     text = it.status.serverValue,
                     color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 4.dp),
+                    fontWeight = FontWeight.W500,
+                )
+                val formatter = rememberPhoneNumberFormatter()
+                Text(
+                    text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
+                    fontWeight = FontWeight.W600,
+                    color = ConstColors.lightBlue,
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
-    BaseManagementItem(onClick) {
-        Text(
-            text = entityInfo.tradeName,
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W700,
-            color = MaterialTheme.colors.background,
-            modifier = Modifier.align(Alignment.CenterVertically).padding(vertical = 8.dp)
-                .weight(0.5f),
-        )
-        val formatter = rememberPhoneNumberFormatter()
-        Text(
-            text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
-            fontWeight = FontWeight.W600,
-            textAlign = TextAlign.End,
-            color = ConstColors.lightBlue,
-            modifier = Modifier.align(Alignment.CenterVertically).weight(0.5f),
-        )
     }
 }
 
@@ -245,7 +286,10 @@ private fun BaseManagementItem(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             body()
         }
     }
