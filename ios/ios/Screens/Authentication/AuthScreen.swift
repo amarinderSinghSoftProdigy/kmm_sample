@@ -111,17 +111,13 @@ struct AuthTab: View {
             }
             .padding(.top)
             
-            (Text(LocalizedStringKey("sign_up"))
-                .font(.custom(TextWeight.bold.fontName, size: 14))
-            + Text(LocalizedStringKey("to_medico")))
-                .underline()
-                .medicoText(color: .lightBlue,
-                            testingIdentifier: "sign_up_to_medico")
-                .padding(.top, 4)
-                .padding(.bottom)
-                .onTapGesture {
-                    scope.goToSignUp()
-                }
+            MedicoButton(localizedStringKey: "register",
+                         fontColor: .white,
+                         buttonColor: .lightBlue) {
+                scope.goToSignUp()
+            }
+            .padding(.top, 4)
+            .padding(.bottom)
         }
         .padding(20)
     }

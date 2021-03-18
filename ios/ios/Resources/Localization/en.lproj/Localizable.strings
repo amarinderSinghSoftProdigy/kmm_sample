@@ -21,8 +21,7 @@
 "phone_number_or_email" = "Phone Number or Email";
 "password" = "Password";
 "forgot_password" = "Forgot password?";
-"sign_up" = "Sign up";
-"to_medico" = " to Medico Stores";
+"register" = "Register";
 "copyright" = "© Copyright mediostores.com 2021";
 
 // MARK: Authentication Password Restore Screen

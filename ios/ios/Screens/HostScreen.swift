@@ -20,21 +20,6 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-//                ZStack {
-//                    Color.gray
-//
-//                    Button(action: {
-//                        self.showSheet.toggle()
-//                    }) {
-//                        Text("Show")
-//                    }
-//                }
-//                .popover(isPresented: $showSheet,
-//                         attachmentAnchor: .point(.bottom),
-//                         arrowEdge: .bottom) {
-//                    AppColor.red.color.cornerRadius(5)
-//                        .frame(width: 150, height: 50, alignment: .center)
-//                }
                 BaseScopeView(scope: scope)
             }
         }
