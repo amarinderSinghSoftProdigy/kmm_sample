@@ -176,6 +176,7 @@
 "see_on_the_map" = "See on the map";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
+"pan_number:" = "PAN Number:";
 "payment_method" = "Payment Method:";
 "orders" = "Orders:";
 

@@ -20,7 +20,7 @@ struct EntityInfoBottomSheet: ViewModifier {
         
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened,
-                                maxHeight: bottomSheet.isSeasonBoy ? 275 : 350) {
+                                maxHeight: bottomSheet.isSeasonBoy ? 275 : 370) {
                 if bottomSheet.isSeasonBoy {
                     SeasonBoyDetailsItem(seasonBoy: bottomSheet.entityInfo)
                 }
@@ -61,6 +61,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: entityInfo.gstin)
+                    UserInfoItemDetailsPanel(titleKey: "pan_number", valueKey: entityInfo.panNumber)
                     
                     if let subscriptionData = entityInfo.subscriptionData {
                         UserInfoItemDetailsPanel(titleKey: "status", valueKey: subscriptionData.status.serverValue)
@@ -111,7 +112,10 @@ struct EntityInfoBottomSheet: ViewModifier {
                     .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
+                    UserInfoItemDetailsPanel(titleKey: "email_address:", valueKey: "email")
                     UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.geoData.fullAddress())
+                    UserInfoItemDetailsPanel(titleKey: "pending_orders", valueKey: "1")
+                    UserInfoItemDetailsPanel(titleKey: "total_orders", valueKey: "1")
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
@@ -129,7 +133,7 @@ struct NonSeasonBoyImageAndAddressItem: View {
     let fontSize: CGFloat
     
     var body: some View {
-        HStack(spacing: 50) {
+        HStack(alignment: .top, spacing: 50) {
             UserNameImage(username: previewItem.tradeName)
                 .frame(width: 96, height: 96)
             
@@ -142,11 +146,11 @@ struct NonSeasonBoyImageAndAddressItem: View {
                                     color: .grey3,
                                     multilineTextAlignment: .leading)
                     
-                    LocalizedText(localizationKey: "see_on_the_map",
-                                  textWeight: .bold,
-                                  fontSize: 12,
-                                  color: .lightBlue,
-                                  multilineTextAlignment: .leading)
+//                    LocalizedText(localizationKey: "see_on_the_map",
+//                                  textWeight: .bold,
+//                                  fontSize: 12,
+//                                  color: .lightBlue,
+//                                  multilineTextAlignment: .leading)
                 }
                 
                 if let onSubscribe = self.onSubscribe,
