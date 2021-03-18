@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func setUpAppNavigator() {
         #if DEBUG
         let testsHelper = TestsHelper()
-        let useMocks = testsHelper.testingEnabled
+        let useMocks = true//testsHelper.testingEnabled
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
         #else
@@ -44,6 +44,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         link.setStartingScope()
         
         #if DEBUG
+        DebugScopeCreator().signUpDetailsNonSeasonBoy(userType: .stockist,
+                                                      email: "a",
+                                                      phone: "")
         testsHelper.overrideCurrentScope()
         #endif
     }

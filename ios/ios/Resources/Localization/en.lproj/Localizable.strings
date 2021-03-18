@@ -82,6 +82,7 @@
 "gstin" = "GSTIN";
 "drug_license_No1" = "Drug License №1";
 "drug_license_No2" = "Drug License №2";
+"gstin_or_pan_number_are_required" = "GSTIN or PAN Number are required for the registration";
 
 // MARK: Authentication Sign Up Aadhaar Card
 "aadhaar_card" = "Aadhaar Card";

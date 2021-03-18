@@ -76,13 +76,41 @@ struct SignUpTraderDetails: View {
         case SignUpScope.Details.DetailsFields.gstin:
             let gstinErrorMessageKey = self.validation.value?.gstin
             return AnyView(
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
-                                             text: self.registration.value?.gstin,
-                                             onTextChange: { newValue in scope.changeGstin(gstin: newValue) },
-                                             isValid: gstinErrorMessageKey == nil,
-                                             errorMessageKey: gstinErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
+                VStack {
+                    HStack(spacing: 8) {
+                        LocalizedText(localizationKey: "gstin_or_pan_number_are_required",
+                                      textWeight: .medium,
+                                      fontSize: 12,
+                                      color: .black,
+                                      multilineTextAlignment: .leading)
+                            .padding(.vertical, 6)
+                            .padding(.leading, 11)
+
+                        Spacer()
+
+                        Image("Alert")
+                            .padding(5)
+                    }
+                    .background(
+                        HStack {
+                            AppColor.yellow.color
+                                .frame(width: 3)
+                                .cornerRadius(2, corners: [.topLeft, .bottomLeft])
+                            
+                            Spacer()
+                        }
+                        .frame(maxHeight: .infinity)
+                        .background(AppColor.yellow.color.opacity(0.12).cornerRadius(2))
+                    )
+                    
+                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
+                                                 text: self.registration.value?.gstin,
+                                                 onTextChange: { newValue in scope.changeGstin(gstin: newValue) },
+                                                 isValid: gstinErrorMessageKey == nil,
+                                                 errorMessageKey: gstinErrorMessageKey)
+                        .disableAutocorrection(true)
+                        .autocapitalization(.none)
+                })
             
         case SignUpScope.Details.DetailsFields.license1:
             let drugLicenseNo1ErrorMessageKey = self.validation.value?.drugLicenseNo1
