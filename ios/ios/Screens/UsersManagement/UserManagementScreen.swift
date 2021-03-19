@@ -189,26 +189,37 @@ struct UserManagementScreen: View {
                 AppColor.white.color
                     .cornerRadius(5)
                 
-                HStack {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(user.tradeName)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 16,
-                                        multilineTextAlignment: .leading)
+                VStack(spacing: 6) {
+                    HStack(spacing: 10) {
+                        HStack(alignment: .top, spacing: 4) {
+                            Text(user.tradeName)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
+                            
+                            if user.isVerified == true {
+                                Image("VerifyMark")
+                                    .padding(.top, 2)
+                            }
+                        }
                         
-                        SmallAddressView(location: user.geoData.fullAddress())
-                    }
-                    
-                    Spacer()
-                    
-                    if let status = user.subscriptionData?.status {
-                        VStack(alignment: .trailing, spacing: 6) {
+                        Spacer()
+                        
+                        if let status = user.subscriptionData?.status {
                             LocalizedText(localizationKey: status.serverValue,
                                           textWeight: .medium,
                                           fontSize: 15,
                                           color: status == .subscribed ? .lightBlue : .yellow)
-                            
-                            Text(user.geoData.distance)
+                        }
+                    }
+                    
+                    HStack(spacing: 10) {
+                        SmallAddressView(location: user.geoData.fullAddress())
+                        
+                        Spacer()
+                        
+                        if user.subscriptionData?.status != nil {
+                            Text(user.geoData.formattedDistance)
                                 .medicoText(fontSize: 12,
                                             color: .grey3,
                                             multilineTextAlignment: .leading)

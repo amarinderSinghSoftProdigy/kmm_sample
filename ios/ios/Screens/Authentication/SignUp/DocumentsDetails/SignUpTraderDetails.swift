@@ -54,29 +54,15 @@ struct SignUpTraderDetails: View {
         case SignUpScope.Details.DetailsFields.tradeName:
             let tradeNameErrorMessageKey = self.validation.value?.tradeName
             return AnyView(
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
-                                             text: self.registration.value?.tradeName,
-                                             onTextChange: { newValue in scope.changeTradeName(tradeName: newValue) },
-                                             isValid: tradeNameErrorMessageKey == nil,
-                                             errorMessageKey: tradeNameErrorMessageKey)
-                .disableAutocorrection(true)
-                .autocapitalization(.words))
-            
-        case SignUpScope.Details.DetailsFields.pan:
-            let panNumberErrorMessageKey = self.validation.value?.panNumber
-            return AnyView(
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pan_number",
-                                             text: self.registration.value?.panNumber,
-                                             onTextChange: { newValue in scope.changePan(panNumber: newValue) },
-                                             isValid: panNumberErrorMessageKey == nil,
-                                             errorMessageKey: panNumberErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
-            
-        case SignUpScope.Details.DetailsFields.gstin:
-            let gstinErrorMessageKey = self.validation.value?.gstin
-            return AnyView(
                 VStack {
+                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
+                                                 text: self.registration.value?.tradeName,
+                                                 onTextChange: { newValue in scope.changeTradeName(tradeName: newValue) },
+                                                 isValid: tradeNameErrorMessageKey == nil,
+                                                 errorMessageKey: tradeNameErrorMessageKey)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.words)
+                    
                     HStack(spacing: 8) {
                         LocalizedText(localizationKey: "gstin_or_pan_number_are_required",
                                       textWeight: .medium,
@@ -102,15 +88,29 @@ struct SignUpTraderDetails: View {
                         .frame(maxHeight: .infinity)
                         .background(AppColor.yellow.color.opacity(0.12).cornerRadius(2))
                     )
-                    
-                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
-                                                 text: self.registration.value?.gstin,
-                                                 onTextChange: { newValue in scope.changeGstin(gstin: newValue) },
-                                                 isValid: gstinErrorMessageKey == nil,
-                                                 errorMessageKey: gstinErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
                 })
+            
+        case SignUpScope.Details.DetailsFields.pan:
+            let panNumberErrorMessageKey = self.validation.value?.panNumber
+            return AnyView(
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pan_number",
+                                             text: self.registration.value?.panNumber,
+                                             onTextChange: { newValue in scope.changePan(panNumber: newValue) },
+                                             isValid: panNumberErrorMessageKey == nil,
+                                             errorMessageKey: panNumberErrorMessageKey)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none))
+            
+        case SignUpScope.Details.DetailsFields.gstin:
+            let gstinErrorMessageKey = self.validation.value?.gstin
+            return AnyView(
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
+                                             text: self.registration.value?.gstin,
+                                             onTextChange: { newValue in scope.changeGstin(gstin: newValue) },
+                                             isValid: gstinErrorMessageKey == nil,
+                                             errorMessageKey: gstinErrorMessageKey)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.none))
             
         case SignUpScope.Details.DetailsFields.license1:
             let drugLicenseNo1ErrorMessageKey = self.validation.value?.drugLicenseNo1

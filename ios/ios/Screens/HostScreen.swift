@@ -160,9 +160,6 @@ struct TabBarScreen: View {
         case let scope as ManagementScope.AddRetailer:
             return AnyView(AddRetailerScreen(scope: scope))
             
-        case let scope as PreviewUserScope:
-            return AnyView(PreviewUserScreen(scope: scope))
-            
         case let scope as DashboardScope:
             return AnyView(DashboardScreen(scope: scope))
             

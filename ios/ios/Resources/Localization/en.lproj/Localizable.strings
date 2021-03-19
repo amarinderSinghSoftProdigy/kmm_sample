@@ -174,17 +174,17 @@
 // MARK: Bottom Sheet User Details
 "subscribe" = "Subscribe";
 "see_on_the_map" = "See on the map";
+"verified" = "Verified";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
 "pan_number:" = "PAN Number:";
 "payment_method" = "Payment Method:";
 "orders" = "Orders:";
+"retailers:" = "Retailers:";
 
 // MARK: Bottom Sheet Season Boy Details
 "email_address:" = "Email Address:";
 "address:" = "Address:";
-"pending_orders" = "Pending Orders:";
-"total_orders" = "Total Orders:";
 
 // MARK: Notifications List
 "notifications" = "Notifications";

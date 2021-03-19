@@ -17,6 +17,7 @@ struct PickerSelector: View {
     
     let chosenOptionTextWeight: TextWeight
     let height: CGFloat
+    let optionsHeight: CGFloat
     
     let onChange: (String) -> Void
     
@@ -70,6 +71,7 @@ struct PickerSelector: View {
          chosenElement: String?,
          data: [String],
          height: CGFloat = 50,
+         optionsHeight: CGFloat? = nil,
          chosenOptionTextWeight: TextWeight = .regular,
          onChange: @escaping (String) -> Void) {
         self.placeholder = placeholder
@@ -77,6 +79,7 @@ struct PickerSelector: View {
         self.data = data
         
         self.height = height
+        self.optionsHeight = optionsHeight ?? height
         self.chosenOptionTextWeight = chosenOptionTextWeight
         
         self.onChange = onChange
@@ -96,7 +99,7 @@ struct PickerSelector: View {
                         Text(text)
                             .medicoText(fontSize: 15)
                             .padding([.top, .bottom], 8)
-                            .frame(height: height)
+                            .frame(height: optionsHeight)
                             .padding([.leading, .trailing], padding)
                     }
                 }

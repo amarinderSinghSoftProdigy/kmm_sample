@@ -54,24 +54,34 @@ struct EntityInfoBottomSheet: ViewModifier {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 
-                NonSeasonBoyImageAndAddressItem(previewItem: entityInfo,
+                NonSeasonBoyImageAndAddressItem(tradeName: entityInfo.tradeName,
+                                                fullAddress: entityInfo.geoData.fullAddress(),
+                                                formattedDistance: entityInfo.geoData.formattedDistance,
+                                                isVerified: entityInfo.isVerified == true,
+                                                subscriptionData: entityInfo.subscriptionData,
                                                 onSubscribe: onSubscribe,
                                                 imageSize: 96,
                                                 fontSize: 12)
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: entityInfo.gstin)
-                    UserInfoItemDetailsPanel(titleKey: "pan_number", valueKey: entityInfo.panNumber)
-                    
                     if let subscriptionData = entityInfo.subscriptionData {
                         UserInfoItemDetailsPanel(titleKey: "status", valueKey: subscriptionData.status.serverValue)
+                        
+                        self.gstinAndPanFields
+                        
                         UserInfoItemDetailsPanel(titleKey: "payment_method", valueKey: subscriptionData.paymentMethod.serverValue)
                         UserInfoItemDetailsPanel(titleKey: "orders", valueKey: String(subscriptionData.orders))
                     }
                     
-                    if let seasonBoyRetailerData = entityInfo.seasonBoyRetailerData {
+                    else if let seasonBoyRetailerData = entityInfo.seasonBoyRetailerData {
+                        self.gstinAndPanFields
+                        
                         UserInfoItemDetailsPanel(titleKey: "orders",
                                                  valueKey: String(seasonBoyRetailerData.orders))
+                    }
+                    
+                    else {
+                        self.gstinAndPanFields
                     }
                 }
                 
@@ -80,6 +90,17 @@ struct EntityInfoBottomSheet: ViewModifier {
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
             .padding(.horizontal, 25)
             .padding(.vertical, 22)
+        }
+        
+        private var gstinAndPanFields: some View {
+            Group {
+                if let gstin = entityInfo.gstin {
+                    UserInfoItemDetailsPanel(titleKey: "gstin_number", valueKey: gstin)
+                }
+                if let panNumber = entityInfo.panNumber {
+                    UserInfoItemDetailsPanel(titleKey: "pan_number", valueKey: panNumber)
+                }
+            }
         }
     }
     
@@ -112,10 +133,23 @@ struct EntityInfoBottomSheet: ViewModifier {
                     .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    UserInfoItemDetailsPanel(titleKey: "email_address:", valueKey: "email")
+                    if let status = seasonBoy.subscriptionData?.status {
+                        UserInfoItemDetailsPanel(titleKey: "status", valueKey: status.serverValue)
+                    }
+                    
+                    if let email = seasonBoy.seasonBoyData?.email {
+                        UserInfoItemDetailsPanel(titleKey: "email_address:", valueKey: email)
+                    }
+                    
                     UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.geoData.fullAddress())
-                    UserInfoItemDetailsPanel(titleKey: "pending_orders", valueKey: "1")
-                    UserInfoItemDetailsPanel(titleKey: "total_orders", valueKey: "1")
+                    
+                    if let orders = seasonBoy.subscriptionData?.orders {
+                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: String(orders))
+                    }
+                    
+                    if let retailers = seasonBoy.seasonBoyData?.retailers {
+                        UserInfoItemDetailsPanel(titleKey: "retailers:", valueKey: String(retailers))
+                    }
                 }
             }
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .topLeading)
@@ -126,7 +160,12 @@ struct EntityInfoBottomSheet: ViewModifier {
 }
 
 struct NonSeasonBoyImageAndAddressItem: View {
-    let previewItem: DataPreviewItem
+    let tradeName: String
+    let fullAddress: String
+    let formattedDistance: String
+    let isVerified: Bool
+    let subscriptionData: DataSubscriptionData?
+    
     let onSubscribe: (() -> ())?
     
     let imageSize: CGFloat
@@ -134,14 +173,14 @@ struct NonSeasonBoyImageAndAddressItem: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 50) {
-            UserNameImage(username: previewItem.tradeName)
+            UserNameImage(username: tradeName)
                 .frame(width: 96, height: 96)
             
             VStack(alignment: .leading, spacing: 13) {
-                VStack(alignment: .leading,spacing: 5) {
-                    SmallAddressView(location: previewItem.geoData.fullAddress())
+                VStack(alignment: .leading, spacing: 5) {
+                    SmallAddressView(location: fullAddress)
                     
-                    Text(previewItem.geoData.distance)
+                    Text(formattedDistance)
                         .medicoText(fontSize: 12,
                                     color: .grey3,
                                     multilineTextAlignment: .leading)
@@ -151,11 +190,22 @@ struct NonSeasonBoyImageAndAddressItem: View {
 //                                  fontSize: 12,
 //                                  color: .lightBlue,
 //                                  multilineTextAlignment: .leading)
+                    
+                    if isVerified {
+                        HStack(spacing: 4) {
+                            Image("VerifyMark")
+                            
+                            LocalizedText(localizationKey: "verified",
+                                          textWeight: .semiBold,
+                                          fontSize: 12,
+                                          color: .green,
+                                          multilineTextAlignment: .leading)
+                        }
+                    }
                 }
                 
                 if let onSubscribe = self.onSubscribe,
-                   let entityInfo = self.previewItem as? DataEntityInfo,
-                   entityInfo.subscriptionData == nil {
+                   subscriptionData == nil {
                     MedicoButton(localizedStringKey: "subscribe",
                                  width: 91,
                                  height: 31,
@@ -169,11 +219,19 @@ struct NonSeasonBoyImageAndAddressItem: View {
         }
     }
     
-    init(previewItem: DataPreviewItem,
+    init(tradeName: String,
+         fullAddress: String,
+         formattedDistance: String,
+         isVerified: Bool,
+         subscriptionData: DataSubscriptionData?,
          onSubscribe: (() -> ())?,
          imageSize: CGFloat = 125,
          fontSize: CGFloat = 14) {
-        self.previewItem = previewItem
+        self.tradeName = tradeName
+        self.fullAddress = fullAddress
+        self.formattedDistance = formattedDistance
+        self.isVerified = isVerified
+        self.subscriptionData = subscriptionData
         self.onSubscribe = onSubscribe
         
         self.imageSize = imageSize

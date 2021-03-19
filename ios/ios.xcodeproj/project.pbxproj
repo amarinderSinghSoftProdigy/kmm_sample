@@ -13,7 +13,6 @@
 		331BED592593614600757694 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331BED582593614600757694 /* GoogleService-Info.plist */; };
 		331BEDCC259385EC00757694 /* AuthNewPasswordScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */; };
 		331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */; };
-		331FC3AA25D3E2510072D3B3 /* PreviewUserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3A925D3E2500072D3B3 /* PreviewUserScreen.swift */; };
 		331FC3AC25D3F6C00072D3B3 /* ComplexNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3AB25D3F6C00072D3B3 /* ComplexNotifications.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
 		332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4025AF31FC00341A7E /* ScreenLogger.swift */; };
@@ -154,7 +153,6 @@
 		331BED582593614600757694 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		331BEDCB259385EB00757694 /* AuthNewPasswordScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNewPasswordScreenTests.swift; sourceTree = "<group>"; };
 		331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRetailerScreen.swift; sourceTree = "<group>"; };
-		331FC3A925D3E2500072D3B3 /* PreviewUserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewUserScreen.swift; sourceTree = "<group>"; };
 		331FC3AB25D3F6C00072D3B3 /* ComplexNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexNotifications.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		332CFD4025AF31FC00341A7E /* ScreenLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLogger.swift; sourceTree = "<group>"; };
@@ -558,7 +556,6 @@
 			isa = PBXGroup;
 			children = (
 				331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */,
-				331FC3A925D3E2500072D3B3 /* PreviewUserScreen.swift */,
 				3391B0BD25B824600025B945 /* UserManagementScreen.swift */,
 			);
 			path = UsersManagement;
@@ -1135,7 +1132,6 @@
 				33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */,
 				339C503D257A2D9B00AAB45F /* SignUpAddressScreen.swift in Sources */,
 				339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */,
-				331FC3AA25D3E2510072D3B3 /* PreviewUserScreen.swift in Sources */,
 				336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */,
