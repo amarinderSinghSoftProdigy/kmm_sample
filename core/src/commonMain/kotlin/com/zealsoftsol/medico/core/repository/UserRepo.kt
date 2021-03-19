@@ -174,6 +174,7 @@ class UserRepo(
         return networkSignUpScope.signUpValidation3(userRegistration3)
     }
 
+    @Deprecated("move to separate network scope")
     suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> {
         return networkSignUpScope.getLocationData(pincode)
     }

@@ -47,7 +47,8 @@ private fun longPaginatedData(size: Int) =
             .map {
                 EntityInfo(
                     geoData = GeoData(
-                        distance = "10 km away",
+                        distance = 10.0,
+                        formattedDistance = "10 km away",
                         origin = GeoPoints(0.0, 0.0),
                         destination = GeoPoints(0.0, 0.0),
                         location = "India",

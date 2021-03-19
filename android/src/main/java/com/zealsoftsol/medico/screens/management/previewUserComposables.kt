@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
-import com.zealsoftsol.medico.screens.NonSeasonBoyPreviewItem
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -39,7 +38,7 @@ fun PreviewUserScreen(scope: PreviewUserScope) {
                 modifier = Modifier.padding(end = 30.dp),
             )
             Space(4.dp)
-            NonSeasonBoyPreviewItem(scope, null)
+//            NonSeasonBoyPreviewItem(scope, null)
             Space(12.dp)
             DataWithLabel(label = R.string.gstin_num, data = scope.gstin)
             val formatter = rememberPhoneNumberFormatter()

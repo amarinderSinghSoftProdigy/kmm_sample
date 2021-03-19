@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,13 +28,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,6 +68,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
+import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.data.UserType as DataUserType
@@ -165,11 +172,13 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             }
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.password) {
+                val rectHolder = RectHolder()
                 PasswordFormatInputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
                     hint = stringResource(id = R.string.password),
                     text = registration.value.password,
                     onValueChange = { scope.changePassword(it) },
+                    onPositioned = { rectHolder.rect = it.boundsInParent() },
                 )
             }
             Space(dp = 12.dp)
@@ -178,12 +187,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             InputWithError(
                 errorText = if (!isValid) stringResource(id = R.string.password_doesnt_match) else null
             ) {
+                val rectHolder = RectHolder()
                 PasswordFormatInputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
                     hint = stringResource(id = R.string.repeat_password),
                     text = registration.value.verifyPassword,
                     isValid = isValid,
                     onValueChange = { scope.changeRepeatPassword(it) },
+                    onPositioned = { rectHolder.rect = it.boundsInParent() },
                 )
             }
             Space(dp = 12.dp)
@@ -299,67 +310,96 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.validate(registration.value) },
         body = {
-            if (SignUpScope.Details.Fields.TRADE_NAME in scope.inputFields) {
-                InputWithError(errorText = validation.value?.tradeName) {
-                    InputField(
-                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                        hint = stringResource(id = R.string.trade_name),
-                        text = registration.value.tradeName,
-                        onValueChange = { scope.changeTradeName(it) },
-                    )
-                }
-                Space(dp = 12.dp)
-            }
-            if (SignUpScope.Details.Fields.PAN in scope.inputFields) {
-                InputWithError(errorText = validation.value?.panNumber) {
-                    InputField(
-                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                        hint = stringResource(id = R.string.pan_number),
-                        text = registration.value.panNumber,
-                        isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber),
-                        keyboardOptions = KeyboardOptions.Default
-                            .copy(capitalization = KeyboardCapitalization.Characters),
-                        onValueChange = { scope.changePan(it) },
-                    )
-                }
-                Space(dp = 12.dp)
-            }
-            if (SignUpScope.Details.Fields.GSTIN in scope.inputFields) {
-                InputWithError(errorText = validation.value?.gstin) {
-                    InputField(
-                        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                        hint = stringResource(id = R.string.gstin),
-                        text = registration.value.gstin,
-                        isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
-                        keyboardOptions = KeyboardOptions.Default
-                            .copy(capitalization = KeyboardCapitalization.Characters),
-                        onValueChange = { scope.changeGstin(it) },
-                    )
-                }
-                Space(dp = 12.dp)
-            }
-            if (SignUpScope.Details.Fields.LICENSE1 in scope.inputFields) {
-                InputWithError(errorText = validation.value?.drugLicenseNo1) {
-                    InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
+            scope.inputFields.forEach {
+                if (it == SignUpScope.Details.Fields.TRADE_NAME) {
+                    InputWithError(errorText = validation.value?.tradeName) {
                         InputField(
                             modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                            hint = stringResource(id = R.string.drug_license_1),
-                            text = registration.value.drugLicenseNo1,
-                            onValueChange = { scope.changeDrugLicense1(it) },
+                            hint = stringResource(id = R.string.trade_name),
+                            text = registration.value.tradeName,
+                            onValueChange = { scope.changeTradeName(it) },
                         )
                     }
+                    Space(dp = 8.dp)
+                    Surface(
+                        color = Color(0xFFFFC122).copy(alpha = .12f),
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier.fillMaxWidth().height(26.dp),
+                    ) {
+                        Box {
+                            Box(
+                                modifier = Modifier.fillMaxHeight().width(3.dp)
+                                    .background(Color(0xFFFFC122))
+                            )
+                            Text(
+                                text = stringResource(id = R.string.gstin_pan_required),
+                                color = Color.Black,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 12.sp,
+                                modifier = Modifier.align(Alignment.CenterStart)
+                                    .padding(start = 12.dp),
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Warning,
+                                tint = Color(0xFFFFC122),
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp).align(Alignment.CenterEnd),
+                            )
+                        }
+                    }
+                    Space(dp = 8.dp)
                 }
-                Space(dp = 12.dp)
-            }
-            if (SignUpScope.Details.Fields.LICENSE2 in scope.inputFields) {
-                InputWithError(errorText = validation.value?.drugLicenseNo2) {
-                    InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
+                if (it == SignUpScope.Details.Fields.PAN) {
+                    InputWithError(errorText = validation.value?.panNumber) {
                         InputField(
                             modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                            hint = stringResource(id = R.string.drug_license_2),
-                            text = registration.value.drugLicenseNo2,
-                            onValueChange = { scope.changeDrugLicense2(it) },
+                            hint = stringResource(id = R.string.pan_number),
+                            text = registration.value.panNumber,
+                            isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
+                            keyboardOptions = KeyboardOptions.Default
+                                .copy(capitalization = KeyboardCapitalization.Characters),
+                            onValueChange = { scope.changePan(it) },
                         )
+                    }
+                    Space(dp = 12.dp)
+                }
+                if (it == SignUpScope.Details.Fields.GSTIN) {
+                    InputWithError(errorText = validation.value?.gstin) {
+                        InputField(
+                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                            hint = stringResource(id = R.string.gstin),
+                            text = registration.value.gstin,
+                            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
+                            keyboardOptions = KeyboardOptions.Default
+                                .copy(capitalization = KeyboardCapitalization.Characters),
+                            onValueChange = { scope.changeGstin(it) },
+                        )
+                    }
+                    Space(dp = 12.dp)
+                }
+                if (it == SignUpScope.Details.Fields.LICENSE1) {
+                    InputWithError(errorText = validation.value?.drugLicenseNo1) {
+                        InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.drug_license_1),
+                                text = registration.value.drugLicenseNo1,
+                                onValueChange = { scope.changeDrugLicense1(it) },
+                            )
+                        }
+                    }
+                    Space(dp = 12.dp)
+                }
+                if (it == SignUpScope.Details.Fields.LICENSE2) {
+                    InputWithError(errorText = validation.value?.drugLicenseNo2) {
+                        InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
+                            InputField(
+                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                hint = stringResource(id = R.string.drug_license_2),
+                                text = registration.value.drugLicenseNo2,
+                                onValueChange = { scope.changeDrugLicense2(it) },
+                            )
+                        }
                     }
                 }
             }
@@ -508,7 +548,9 @@ private fun BasicAuthSignUpScreenWithButton(
         ) {
             body()
         }
-        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
             MedicoButton(
                 modifier = Modifier.padding(padding),
                 text = buttonText,

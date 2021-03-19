@@ -18,15 +18,18 @@ data class PreviewUserScope(
     PreviewItem {
     override val tradeName = registration3.tradeName
     override val gstin = registration3.gstin
+    override val panNumber = registration3.panNumber
     override val geoData = GeoData(
         location = registration2.location,
         pincode = registration2.pincode,
         city = registration2.city,
-        distance = "",
+        distance = 0.0,
+        formattedDistance = "",
         origin = GeoPoints(0.0, 0.0),
         destination = GeoPoints(0.0, 0.0),
     )
     override val phoneNumber: String = ""
+    override val isVerified: Boolean? = null
 
     fun changeConfirm(value: Boolean) {
         isConfirmed.value = value

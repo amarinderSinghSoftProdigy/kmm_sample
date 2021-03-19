@@ -7,17 +7,25 @@ internal interface ManagementItem
 
 @Serializable
 data class EntityInfo(
-    override val tradeName: String,
+    val tradeName: String,
     @SerialName("mobileNumber")
-    override val phoneNumber: String,
-    override val gstin: String,
-    val panNumber: String,
+    val phoneNumber: String,
+    val gstin: String?,
+    val panNumber: String?,
     val unitCode: String,
     @SerialName("geoPoints")
-    override val geoData: GeoData,
+    val geoData: GeoData,
+    val isVerified: Boolean? = null,
     val subscriptionData: SubscriptionData? = null,
     val seasonBoyRetailerData: SeasonBoyRetailerData? = null,
-) : ManagementItem, PreviewItem
+    val seasonBoyData: SeasonBoyData? = null,
+) : ManagementItem
+
+@Serializable
+data class SeasonBoyData(
+    val retailers: Int,
+    val email: String,
+)
 
 @Serializable
 data class SeasonBoyRetailerData(
@@ -39,7 +47,8 @@ data class GeoData(
     val pincode: String,
     @SerialName("townOrCity")
     val city: String,
-    val distance: String,
+    val distance: Double,
+    val formattedDistance: String,
     @SerialName("originPoints")
     val origin: GeoPoints,
     @SerialName("destinationPoints")

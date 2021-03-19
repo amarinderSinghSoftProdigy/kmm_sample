@@ -35,9 +35,9 @@ object ConstColors {
 fun AppTheme(isDarkTheme: Boolean = false/*isSystemInDarkTheme()*/, content: @Composable () -> Unit) = MaterialTheme(
     colors = if (isDarkTheme) DarkColors else LightColors,
     shapes = Shapes(
-        small = RoundedCornerShape(2.dp),
-        medium = RoundedCornerShape(2.dp),
-        large = RoundedCornerShape(2.dp),
+        small = RoundedCornerShape(5.dp),
+        medium = RoundedCornerShape(5.dp),
+        large = RoundedCornerShape(5.dp),
     ),
     typography = Typography(
         h5 = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W700),
