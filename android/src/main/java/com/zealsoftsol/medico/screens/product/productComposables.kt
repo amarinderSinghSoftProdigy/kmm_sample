@@ -184,14 +184,14 @@ fun ProductScreen(scope: ProductInfoScope) {
                 )
             }
         }
-        Space(24.dp)
-        Text(
-            text = stringResource(id = R.string.alternative_brands),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W500,
-            fontSize = 16.sp,
-        )
         if (scope.alternativeBrands.isNotEmpty()) {
+            Space(24.dp)
+            Text(
+                text = stringResource(id = R.string.alternative_brands),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W500,
+                fontSize = 16.sp,
+            )
             Space(8.dp)
             scope.alternativeBrands.forEach {
                 ProductAlternative(it) { scope.selectAlternativeProduct(it) }

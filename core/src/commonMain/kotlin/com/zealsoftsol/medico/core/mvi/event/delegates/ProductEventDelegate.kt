@@ -23,7 +23,7 @@ internal class ProductEventDelegate(
         if (isSuccess && response != null) {
             navigator.setScope(
                 ProductInfoScope.get(
-                    product = response.productData,
+                    product = response.product,
                     alternativeBrands = response.alternateProducts,
                 )
             )
