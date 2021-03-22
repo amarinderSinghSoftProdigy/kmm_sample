@@ -79,24 +79,25 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
+    color: Color = ConstColors.yellow,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = ConstColors.yellow,
+            backgroundColor = color,
             disabledBackgroundColor = Color.LightGray,
-            contentColor = MaterialTheme.colors.onPrimary,
-            disabledContentColor = MaterialTheme.colors.onPrimary,
+            contentColor = contentColor,
+            disabledContentColor = contentColor,
         ),
         enabled = isEnabled,
-        shape = RoundedCornerShape(2.dp),
+        shape = MaterialTheme.shapes.medium,
         elevation = ButtonDefaults.elevation(),
         modifier = modifier.fillMaxWidth().height(48.dp),
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colors.onPrimary,
             fontSize = 15.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
         )

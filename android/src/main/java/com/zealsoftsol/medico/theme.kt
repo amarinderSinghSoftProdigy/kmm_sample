@@ -29,6 +29,9 @@ object ConstColors {
     val yellow = Color(0xffFFD600)
     val lightBlue = Color(0xff0084D4)
     val gray = Color(0xff666666)
+    val green = Color(0xff00c37d)
+    val orange = Color(0xffff912c)
+    val red = Color(0xffed5152)
 }
 
 @Composable

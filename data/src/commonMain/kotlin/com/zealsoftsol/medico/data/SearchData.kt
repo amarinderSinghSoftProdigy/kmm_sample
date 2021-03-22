@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,28 +25,67 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val baseProduct: String,
-    val baseProductId: String,
-    val composition: List<String>,
-    val drugType: String,
-    val drugTypeId: String,
+    val buyingOption: BuyingOption,
+    val compositions: List<String>,
     val formattedMrp: String,
-    val formattedPrice: String,
-    val hsnCode: String,
-    val hsnPercentage: String,
+    val formattedPrice: String?,
     val id: String,
     val manufacturer: String,
     val manufacturerId: String,
-    val medicineId: String,
-    val mrp: Double,
+    val marginPercent: String?,
     val name: String,
-    val packageForm: String,
-    val price: Double,
-    val productCode: String,
-    val ptrPercentage: String,
+    val productCategoryName: String,
     val shortName: String,
-    val uom: String,
-    val uomId: String,
+    val code: String,
+    val stockInfo: StockInfo?,
+    val uomName: String,
+)
+
+@Serializable
+data class SellerInfo(
+    val address: Address,
+    val tradeName: String,
+    val unitCode: String,
+    val stockInfo: StockInfo,
+)
+
+@Serializable
+data class Address(
+    val distance: Double,
+    val formattedDistance: String,
+    val location: String,
+    @SerialName("originPoints")
+    val geoPoints: GeoPoints,
+    val pincode: String,
+    @SerialName("townOrCity")
+    val city: String,
+)
+
+@Serializable
+data class StockInfo(
+    val availableQty: Int,
+    val expireDate: String,
+    val formattedStatus: String,
+    val status: StockStatus,
+)
+
+enum class StockStatus {
+    LOW_STOCK,
+    IN_STOCK,
+    OUT_OF_STOCK;
+}
+
+enum class BuyingOption {
+    BUY,
+    QUOTE;
+}
+
+@Serializable
+data class AutoComplete(
+    val query: String,
+    @SerialName("suggester")
+    val details: String,
+    val suggestion: String,
 )
 
 data class Filter(

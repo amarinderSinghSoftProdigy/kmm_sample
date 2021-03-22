@@ -1,16 +1,21 @@
 package com.zealsoftsol.medico.screens.product
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,7 +35,9 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
-import com.zealsoftsol.medico.data.ProductData
+import com.zealsoftsol.medico.data.AlternateProductData
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -47,7 +54,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             CoilImage(
                 modifier = Modifier.size(123.dp),
                 contentDescription = null,
-                data = CdnUrlProvider.urlFor(scope.product.medicineId, CdnUrlProvider.Size.Px123),
+                data = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
                 error = { ItemPlaceholder() },
                 loading = { ItemPlaceholder() },
             )
@@ -67,7 +74,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                 )
                 Space(10.dp)
                 Text(
-                    text = scope.product.formattedPrice,
+                    text = scope.product.formattedPrice.orEmpty(),
                     color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W700,
                     fontSize = 20.sp,
@@ -76,25 +83,68 @@ fun ProductScreen(scope: ProductInfoScope) {
         }
         Space(10.dp)
         Text(
-            text = "MRP: ${scope.product.mrp}",
+            text = "MRP: ${scope.product.formattedMrp}",
             color = ConstColors.gray,
             fontSize = 12.sp,
         )
         Space(4.dp)
         Text(
-            text = "PTR: ${scope.product.ptr}",
+            text = "Margin: ${scope.product.marginPercent}",
             color = ConstColors.gray,
             fontSize = 12.sp,
         )
         Space(4.dp)
-        Text(
-            text = "Description: ${scope.product.unitOfMeasureData.name}",
-            color = ConstColors.lightBlue,
-            fontSize = 14.sp,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "Description: ${scope.product.uomName}",
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+            )
+            scope.product.stockInfo?.let {
+                Text(
+                    text = it.formattedStatus,
+                    color = when (it.status) {
+                        StockStatus.IN_STOCK -> ConstColors.green
+                        StockStatus.LOW_STOCK -> ConstColors.orange
+                        StockStatus.OUT_OF_STOCK -> ConstColors.red
+                    },
+                    fontWeight = FontWeight.W700,
+                    fontSize = 12.sp,
+                )
+            }
+        }
         Space(12.dp)
-        MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
-            scope.addToCart()
+        when (scope.product.buyingOption) {
+            BuyingOption.BUY -> {
+                MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
+                    scope.addToCart()
+                }
+            }
+            BuyingOption.QUOTE -> {
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Transparent,
+                        disabledBackgroundColor = Color.Transparent,
+                        contentColor = MaterialTheme.colors.background,
+                        disabledContentColor = MaterialTheme.colors.background,
+                    ),
+                    elevation = null,
+                    enabled = true,
+                    border = BorderStroke(2.dp, ConstColors.yellow),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.get_quote),
+                        fontSize = 15.sp,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                    )
+                }
+            }
         }
         Space(32.dp)
         Box(
@@ -120,7 +170,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             Column {
                 ProductDetail(
                     title = stringResource(id = R.string.manufacturer),
-                    description = scope.product.manufacturer.name,
+                    description = scope.product.manufacturer,
                 )
                 Space(12.dp)
                 ProductDetail(
@@ -141,12 +191,12 @@ fun ProductScreen(scope: ProductInfoScope) {
             fontWeight = FontWeight.W500,
             fontSize = 16.sp,
         )
-//        if (scope.alternativeBrands.isNotEmpty()) {
-//            Space(8.dp)
-//            scope.alternativeBrands.forEach {
-//                ProductAlternative(it) { scope.selectAlternativeProduct(it) }
-//            }
-//        }
+        if (scope.alternativeBrands.isNotEmpty()) {
+            Space(8.dp)
+            scope.alternativeBrands.forEach {
+                ProductAlternative(it) { scope.selectAlternativeProduct(it) }
+            }
+        }
     }
 }
 
@@ -170,35 +220,36 @@ private fun ProductDetail(title: String, description: String) {
 }
 
 @Composable
-private fun ProductAlternative(product: ProductData, onClick: () -> Unit) {
+private fun ProductAlternative(product: AlternateProductData, onClick: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth()
             .background(color = Color.White, shape = MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
+            .padding(12.dp)
     ) {
         Column {
             Text(
-                text = product.name,
+                text = product.productName,
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W600,
                 fontSize = 16.sp,
             )
             Space(4.dp)
             Text(
-                text = product.manufacturer.name,
+                text = product.manufacturerName,
                 color = MaterialTheme.colors.background,
                 fontSize = 16.sp,
             )
             Space(18.dp)
             Text(
-                text = "from to",
+                text = product.priceRange,
                 color = ConstColors.lightBlue,
                 fontWeight = FontWeight.W700,
                 fontSize = 14.sp,
             )
         }
         Text(
-            text = "10 variants",
+            text = product.availableVariants,
             color = ConstColors.gray,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.TopEnd),

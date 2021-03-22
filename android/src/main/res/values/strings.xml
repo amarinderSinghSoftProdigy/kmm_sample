@@ -8,6 +8,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="sign_up_to_medico">Sign up to Medico Stores</string>
     <string name="sign_up">Sign up</string>
+    <string name="register">Register</string>
     <string name="log_out">Log out</string>
     <string name="password_reset">Password Reset</string>
     <string name="reset_password_hint">To reset your password please enter verified phone number:</string>
@@ -91,6 +92,7 @@
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
     <string name="add_to_cart">Add to cart</string>
+    <string name="get_quote">Get a Quote</string>
     <string name="details">Details</string>
     <string name="alternative_brands">Alternative Brands</string>
     <string name="manufacturer">Manufacturer</string>
