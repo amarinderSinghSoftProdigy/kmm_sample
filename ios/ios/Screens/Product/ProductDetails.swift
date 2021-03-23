@@ -17,10 +17,14 @@ struct ProductDetails: View {
             self.infoView
             
             DetailsView(isOpened: scope.isDetailsOpened,
-                        manufacturer: scope.product.manufacturer.name,
+                        manufacturer: scope.product.manufacturer,
                         compositions: scope.compositionsString,
                         storage: "storage_description") {
                 scope.toggleDetails()
+            }
+            
+            AlternativeBrandsView(alternativeBrands: scope.alternativeBrands) {
+                scope.selectAlternativeProduct(product: $0)
             }
         }
         .padding(.vertical, 33)
@@ -32,8 +36,8 @@ struct ProductDetails: View {
     
     private var infoView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 16) {
-                ProductImage(medicineId: scope.product.medicineId,
+            HStack(alignment: .top, spacing: 16) {
+                ProductImage(medicineId: scope.product.code,
                              size: .px123)
                     .frame(width: 123, height: 123)
                 
@@ -48,35 +52,63 @@ struct ProductDetails: View {
                                   color: .grey3,
                                   multilineTextAlignment: .leading)
                     
-                    Spacer()
-                    
-                    Text(scope.product.formattedPrice)
-                        .medicoText(textWeight: .bold,
-                                    fontSize: 20,
-                                    multilineTextAlignment: .leading)
+                    if let price = scope.product.formattedPrice {
+                        Text(price)
+                            .medicoText(textWeight: .bold,
+                                        fontSize: 20,
+                                        multilineTextAlignment: .leading)
+                    }
                 }
+                .fixedSize(horizontal: false, vertical: true)
             }
             
             VStack(alignment: .leading, spacing: 4) {
-                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(String(format: "%.2f", scope.product.mrp))"),
+                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(scope.product.formattedMrp)"),
                               testingIdentifier: "mrp",
                               color: .grey3,
                               multilineTextAlignment: .leading)
                 
-                LocalizedText(localizedStringKey: LocalizedStringKey("ptr \(scope.product.ptr)"),
-                              testingIdentifier: "ptr",
-                              color: .grey3,
-                              multilineTextAlignment: .leading)
+                if let margin = scope.product.marginPercent {
+                    LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
+                                  testingIdentifier: "margin",
+                                  color: .grey3,
+                                  multilineTextAlignment: .leading)
+                }
                 
-                LocalizedText(localizedStringKey: LocalizedStringKey("description \(scope.product.unitOfMeasureData.name)"),
-                              testingIdentifier: "description",
-                              fontSize: 16,
-                              color: .lightBlue,
-                              multilineTextAlignment: .leading)
+                HStack(alignment: .top, spacing: 10) {
+                    LocalizedText(localizedStringKey: LocalizedStringKey("description \(scope.product.uomName)"),
+                                  testingIdentifier: "description",
+                                  fontSize: 16,
+                                  color: .lightBlue,
+                                  multilineTextAlignment: .leading)
+                    
+                    Spacer()
+                    
+                    if let stockInfo = self.scope.product.stockInfo {
+                        LocalizedText(localizationKey: stockInfo.formattedStatus,
+                                      textWeight: .bold,
+                                      fontSize: 12,
+                                      color: stockInfo.statusColor,
+                                      multilineTextAlignment: .leading)
+                            .padding(.top, 2)
+                    }
+                }
             }
             
-            MedicoButton(localizedStringKey: "add_to_cart") {
-                scope.addToCart()
+            switch self.scope.product.buyingOption {
+            case .buy:
+                MedicoButton(localizedStringKey: "add_to_cart") {
+                    scope.addToCart()
+                }
+            case .quote:
+                MedicoButton(localizedStringKey: "get_quote",
+                             buttonColor: .clear) {
+                    
+                }
+                .background(RoundedRectangle(cornerRadius: 8)
+                                .stroke(AppColor.yellow.color, lineWidth: 2))
+            default:
+                EmptyView()
             }
         }
     }
@@ -155,6 +187,68 @@ struct ProductDetails: View {
                                   multilineTextAlignment: .leading)
                 }
             )
+        }
+    }
+    
+    private struct AlternativeBrandsView: View {
+        let alternativeBrands: [DataAlternateProductData]
+        let onBrandTap: (DataAlternateProductData) -> ()
+        
+        var body: some View {
+            guard !alternativeBrands.isEmpty else { return AnyView(EmptyView()) }
+            
+            return AnyView(
+                VStack(alignment: .leading, spacing: 15) {
+                    LocalizedText(localizationKey: "alternative_brands",
+                                  textWeight: .medium,
+                                  fontSize: 16,
+                                  multilineTextAlignment: .leading)
+                    
+                    VStack(spacing: 10) {
+                        ForEach(alternativeBrands, id: \.self) { alternativeBrand in
+                            AlternativeBrandView(alternativeBrand: alternativeBrand)
+                                .onTapGesture {
+                                    onBrandTap(alternativeBrand)
+                                }
+                        }
+                    }
+                })
+        }
+        
+        private struct AlternativeBrandView: View {
+            let alternativeBrand: DataAlternateProductData
+            
+            var body: some View {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 7) {
+                        HStack(alignment: .top, spacing: 10) {
+                            Text(alternativeBrand.productName)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
+                            
+                            Spacer()
+                            
+                            LocalizedText(localizationKey: alternativeBrand.availableVariants,
+                                          fontSize: 12,
+                                          color: .grey3,
+                                          multilineTextAlignment: .leading)
+                        }
+                        
+                        Text(alternativeBrand.manufacturerName)
+                            .medicoText(fontSize: 16,
+                                        multilineTextAlignment: .leading)
+                    }
+                    
+                    Text(alternativeBrand.priceRange)
+                        .medicoText(textWeight: .bold,
+                                    color: .lightBlue,
+                                    multilineTextAlignment: .leading)
+                    
+                }
+                .padding(12)
+                .background(AppColor.white.color.cornerRadius(5))
+            }
         }
     }
 }

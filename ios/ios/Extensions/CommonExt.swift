@@ -126,3 +126,18 @@ extension UIImage {
 extension StringProtocol {
     subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
 }
+
+extension DataStockInfo {
+    var statusColor: AppColor {
+        switch self.status {
+        case .inStock:
+            return .green
+        case .lowStock:
+            return .orange
+        case .outOfStock:
+            return .red
+        default:
+            return .darkBlue
+        }
+    }
+}

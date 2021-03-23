@@ -237,44 +237,61 @@ private struct ProductView: View {
     
     var body: some View {
         ZStack(alignment: Alignment(horizontal: alignment, vertical: .center)) {
-            AppColor.white.color
-                .cornerRadius(5)
+            let noStockInfoColor = AppColor.placeholderGrey
+            let statusColor = product.stockInfo?.statusColor ?? noStockInfoColor
+            
+            HStack {
+                statusColor.color
+                    .cornerRadius(5, corners: [.topLeft, .bottomLeft])
+                    .frame(width: 5)
+                
+                Spacer()
+            }
+            .background(AppColor.white.color.cornerRadius(5))
             
             VStack(alignment: alignment) {
-                HStack(spacing: 17) {
-                    ProductImage(medicineId: product.medicineId,
+                HStack(alignment: .top, spacing: 17) {
+                    ProductImage(medicineId: product.code,
                                  size: .px123)
                         .frame(width: 81, height: 81)
                     
+                    let labelColor: AppColor = product.stockInfo != nil ? .darkBlue : noStockInfoColor
                     VStack(alignment: alignment, spacing: 10) {
                         VStack(alignment: alignment, spacing: 5) {
                             Text(product.name)
                                 .medicoText(textWeight: .semiBold,
                                             fontSize: 16,
+                                            color: labelColor,
                                             multilineTextAlignment: textAlignment)
                             
-                            Text(product.formattedPrice)
-                                .medicoText(textWeight: .black,
-                                            fontSize: 16,
-                                            multilineTextAlignment: textAlignment)
+                            if let price = product.formattedPrice {
+                                Text(price)
+                                    .medicoText(textWeight: .black,
+                                                fontSize: 16,
+                                                color: labelColor,
+                                                multilineTextAlignment: textAlignment)
+                            }
                         }
+                        .fixedSize(horizontal: false, vertical: true)
                         
-                        VStack(alignment: alignment, spacing: 5) {
+                        VStack(alignment: alignment, spacing: 3) {
                             HStack(spacing: 20) {
-                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(String(format: "%.2f", product.mrp))"),
+                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(product.formattedMrp)"),
                                               testingIdentifier: "mrp",
                                               fontSize: 12,
                                               color: .grey3,
                                               multilineTextAlignment: textAlignment)
                                 
-                                LocalizedText(localizedStringKey: LocalizedStringKey("ptr \(product.ptrPercentage)"),
-                                              testingIdentifier: "ptr",
-                                              fontSize: 12,
-                                              color: .grey3,
-                                              multilineTextAlignment: .leading)
+                                if let margin = product.marginPercent {
+                                    LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
+                                                  testingIdentifier: "margin",
+                                                  fontSize: 12,
+                                                  color: .grey3,
+                                                  multilineTextAlignment: .leading)
+                                }
                             }
                             
-                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.productCode)"),
+                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.code)"),
                                           testingIdentifier: "code",
                                           fontSize: 12,
                                           color: .grey3,
@@ -283,11 +300,25 @@ private struct ProductView: View {
                     }
                 }
                 
-                Text(product.packageForm)
-                    .medicoText(color: .lightBlue,
-                                multilineTextAlignment: textAlignment)
+                HStack(alignment: .top, spacing: 10) {
+                    Text(product.uomName)
+                        .medicoText(color: product.stockInfo != nil ? .lightBlue : noStockInfoColor,
+                                    multilineTextAlignment: textAlignment)
+                    
+                    Spacer()
+                    
+                    if let stockInfo = product.stockInfo {
+                        LocalizedText(localizationKey: stockInfo.formattedStatus,
+                                      textWeight: .bold,
+                                      fontSize: 12,
+                                      color: stockInfo.statusColor,
+                                      multilineTextAlignment: .leading)
+                            .padding(.top, 2)
+                    }
+                }
             }
             .padding(11)
         }
+        .opacity(product.stockInfo != nil ? 1 : 0.6)
     }
 }

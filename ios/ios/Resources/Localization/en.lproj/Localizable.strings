@@ -123,15 +123,17 @@
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";
-"ptr %@" = "PTR: %@";
+"margin %@" = "Margin: %@";
 "code %@" = "Code: %@";
 "description %@" = "Description: %@";
 "add_to_cart" = "Add to cart";
+"get_quote" = "Get a Quote";
 "details" = "Details";
 "manufacturer" = "Manufacturer";
 "compositions" = "Compositions";
 "storage" = "Storage";
 "storage_description" = "Store at room temperature (10–30°C)";
+"alternative_brands" = "Alternative Brands";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
