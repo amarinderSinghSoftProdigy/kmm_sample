@@ -11,12 +11,12 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -262,19 +262,19 @@ class NetworkClient(
 
     override suspend fun search(
         pagination: Pagination,
-        product: String,
-        manufacturer: String,
+        latitude: Double,
+        longitude: Double,
         query: List<Pair<String, String>>,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
-        client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/products/search") {
+        client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/search/global") {
             withMainToken()
             url {
                 parameters.apply {
-                    if (product.isNotEmpty()) append("fullText", product)
-                    if (manufacturer.isNotEmpty()) append(Filter.MANUFACTURER_ID, manufacturer)
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
+                    append("latitude", latitude.toString())
+                    append("longitude", longitude.toString())
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                     append("sort", "ASC")
@@ -285,9 +285,19 @@ class NetworkClient(
         }
     }
 
+    override suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>> =
+        ktorDispatcher {
+            client.get<SimpleResponse<List<AutoComplete>>>("$SEARCH_URL/api/v1/search/suggest") {
+                withMainToken()
+                url {
+                    parameters.append("suggest", input)
+                }
+            }.getWrappedBody()
+        }
+
     override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
         ktorDispatcher {
-            client.get<SimpleResponse<ProductResponse>>("$PRODUCTS_URL/api/v1/product/$productCode") {
+            client.get<SimpleResponse<ProductResponse>>("$SEARCH_URL/api/v1/product/$productCode") {
                 withMainToken()
             }.getWrappedBody()
         }

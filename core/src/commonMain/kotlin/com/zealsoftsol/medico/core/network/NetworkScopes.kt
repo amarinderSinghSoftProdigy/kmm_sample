@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -78,10 +79,12 @@ interface NetworkScope {
     interface Search : NetworkScope {
         suspend fun search(
             pagination: Pagination,
-            product: String,
-            manufacturer: String,
+            latitude: Double,
+            longitude: Double,
             query: List<Pair<String, String>>,
         ): Response.Wrapped<SearchResponse>
+
+        suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>>
     }
 
     interface Management : NetworkScope {

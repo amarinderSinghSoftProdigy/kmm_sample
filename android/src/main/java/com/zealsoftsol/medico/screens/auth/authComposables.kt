@@ -24,10 +24,6 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.zealsoftsol.medico.ConstColors
@@ -38,6 +34,7 @@ import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneOrEmailFormatInputField
+import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.showErrorAlert
 
@@ -149,17 +146,14 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
         ) {
             scope.tryLogIn()
         }
-        val string = AnnotatedString.Builder(stringResource(id = R.string.sign_up_to_medico)).apply {
-            addStyle(SpanStyle(fontWeight = FontWeight.W700), 0, stringResource(id = R.string.sign_up).length)
-        }.toAnnotatedString()
-        Text(
-            text = string,
-            color = ConstColors.lightBlue,
-            style = MaterialTheme.typography.body2,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier.padding(vertical = 12.dp).clickable(onClick = {
-                scope.goToSignUp()
-            }),
-        )
+        Space(12.dp)
+        MedicoButton(
+            text = stringResource(id = R.string.register),
+            isEnabled = true,
+            color = Color(0xFF0084D4),
+            contentColor = Color(0xFFF4F9FD),
+        ) {
+            scope.goToSignUp()
+        }
     }
 }
