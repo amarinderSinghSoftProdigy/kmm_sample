@@ -48,8 +48,11 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
-        Space(12.dp)
+    Column(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Space(28.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
                 modifier = Modifier.size(123.dp),
@@ -232,7 +235,7 @@ private fun ProductAlternative(product: AlternateProductData, onClick: () -> Uni
     ) {
         Column {
             Text(
-                text = product.productName,
+                text = product.name,
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W600,
                 fontSize = 16.sp,
