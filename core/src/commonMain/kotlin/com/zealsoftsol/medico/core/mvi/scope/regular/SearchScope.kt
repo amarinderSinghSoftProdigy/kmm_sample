@@ -24,7 +24,7 @@ class SearchScope(
     val pagination: Pagination = Pagination()
 
     init {
-        EventCollector.sendEvent(Event.Action.Search.SearchInput(""))
+        EventCollector.sendEvent(Event.Action.Search.SearchInput())
     }
 
     fun toggleFilter() {

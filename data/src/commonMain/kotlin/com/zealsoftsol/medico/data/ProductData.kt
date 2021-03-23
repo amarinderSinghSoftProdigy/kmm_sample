@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,8 +11,11 @@ data class ProductResponse(
 
 @Serializable
 data class AlternateProductData(
-    val productCode: String,
-    val productName: String,
+    @SerialName("displayName")
+    val name: String,
+    @SerialName("queryId")
+    val query: String,
+    val baseProductName: String,
     val priceRange: String,
     val manufacturerName: String,
     val availableVariants: String,

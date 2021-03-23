@@ -32,7 +32,7 @@ class ProductInfoScope private constructor(
     }
 
     fun selectAlternativeProduct(product: AlternateProductData) =
-        EventCollector.sendEvent(Event.Action.Product.Select(product.productCode))
+        EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
 
     companion object {
         fun get(

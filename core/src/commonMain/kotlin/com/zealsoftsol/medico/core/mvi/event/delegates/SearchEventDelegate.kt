@@ -26,7 +26,7 @@ internal class SearchEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
-        is Event.Action.Search.SearchInput -> searchProduct(event.value)
+        is Event.Action.Search.SearchInput -> searchBy(event.search, event.query)
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Search.SearchManufacturer -> searchManufacturer(event.value)
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
@@ -35,12 +35,23 @@ internal class SearchEventDelegate(
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
     }
 
-    private suspend fun searchProduct(value: String) {
+    private suspend fun searchBy(search: String?, query: Map<String, String>) {
         navigator.withScope<SearchScope> {
             it.pagination.reset()
-            it.productSearch.value = value
-            updateQuery(search = value)
-            it.search()
+            query.forEach { (key, value) ->
+                activeFilters[key] = Option(value, false)
+            }
+//            updateQuery(search = search)
+            val isWildcardSearch = search == null && query.isEmpty()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = !isWildcardSearch,
+                onEnd = {
+                    query.keys.forEach { key -> activeFilters.remove(key) }
+                }
+            )
+            if (search != null) it.productSearch.value = search
         }
     }
 
@@ -49,7 +60,11 @@ internal class SearchEventDelegate(
             it.pagination.reset()
             it.manufacturerSearch.value = value
             updateQuery(manufacturer = value)
-            it.search()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = false,
+            )
         }
     }
 
@@ -74,6 +89,9 @@ internal class SearchEventDelegate(
             activeFilters[autoComplete.query] = Option(autoComplete.suggestion, false)
             it.pagination.reset()
             it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = true,
                 onEnd = {
                     activeFilters.remove(autoComplete.query)
                     it.autoComplete.value = emptyList()
@@ -106,7 +124,11 @@ internal class SearchEventDelegate(
                     f
                 }
             }
-            it.search()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = false,
+            )
         }
     }
 
@@ -132,7 +154,11 @@ internal class SearchEventDelegate(
                 }
             }
             if (filter == null) it.productSearch.value = ""
-            it.search()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = true,
+            )
         }
     }
 
@@ -140,16 +166,22 @@ internal class SearchEventDelegate(
         navigator.withScope<SearchScope> {
             if (!it.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
-                it.search(addPage = true)
+                it.search(
+                    addPage = true,
+                    withDelay = false,
+                    withProgress = true,
+                )
             }
         }
     }
 
     private suspend inline fun SearchScope.search(
-        addPage: Boolean = false,
+        addPage: Boolean,
+        withDelay: Boolean,
+        withProgress: Boolean,
         crossinline onEnd: () -> Unit = {}
     ) {
-        searchAsync(withDelay = !addPage, withProgress = addPage) {
+        searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val address = userRepo.requireUser().addressData
             val (result, isSuccess) = networkSearchScope.search(
                 pagination,

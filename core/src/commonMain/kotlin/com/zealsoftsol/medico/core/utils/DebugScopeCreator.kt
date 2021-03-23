@@ -230,8 +230,9 @@ object DebugScopeCreator {
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(
-                        productCode = "code",
-                        productName = "Augmentin 626 Duo Tablet",
+                        baseProductName = "code",
+                        query = "query",
+                        name = "Augmentin 626 Duo Tablet",
                         priceRange = "from ₹ 110.23 to ₹ 120.99",
                         manufacturerName = "Company Name",
                         availableVariants = "10 variants",

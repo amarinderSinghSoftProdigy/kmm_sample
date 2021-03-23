@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
@@ -112,6 +113,7 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                         },
                 )
                 filters.value.forEach { filter ->
+                    filter.log("filter")
                     FilterSection(
                         name = filter.name,
                         options = filter.options,
