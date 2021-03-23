@@ -222,7 +222,7 @@ struct ProductDetails: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 7) {
                         HStack(alignment: .top, spacing: 10) {
-                            Text(alternativeBrand.productName)
+                            Text(alternativeBrand.name)
                                 .medicoText(textWeight: .semiBold,
                                             fontSize: 16,
                                             multilineTextAlignment: .leading)
