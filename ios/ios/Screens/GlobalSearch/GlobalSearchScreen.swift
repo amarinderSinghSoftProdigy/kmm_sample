@@ -21,6 +21,8 @@ struct GlobalSearchScreen: View {
     @ObservedObject var filters: SwiftDataSource<NSArray>
     @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
     
+    @ObservedObject var autoComplete: SwiftDataSource<NSArray>
+    
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
     
@@ -35,6 +37,14 @@ struct GlobalSearchScreen: View {
         if isFilterOpened == true {
             view = AnyView(self.filtersView)
             screenName = "FiltersView"
+        }
+        else if let autoComplete = self.autoComplete.value as? [DataAutoComplete],
+                !autoComplete.isEmpty,
+                let searchInput = self.productSearch.value {
+            view = AnyView(AutoCompleteView(input: searchInput as String, autoCompleteData: autoComplete) {
+                scope.selectAutoComplete(autoComplete: $0)
+            })
+            screenName = "autoComplete"
         }
         else {
             view = AnyView(self.productsView)
@@ -58,6 +68,8 @@ struct GlobalSearchScreen: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.manufucturerSearch = SwiftDataSource(dataSource: scope.manufacturerSearch)
+        
+        self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
         
         self.products = SwiftDataSource(dataSource: scope.products)
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
@@ -138,6 +150,52 @@ struct GlobalSearchScreen: View {
             }
             .padding(.horizontal, 16)
         )
+    }
+    
+    private struct AutoCompleteView: View {
+        let input: String
+        let autoCompleteData: [DataAutoComplete]
+        let onAutoCompleteTap: (DataAutoComplete) -> ()
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(autoCompleteData, id: \.self) { element in
+                    Group {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                element.suggestion.getText(withBoldSubstring: input,
+                                                           withFontSize: 15)
+                                
+                                if !element.details.isEmpty {
+                                    Text(element.details)
+                                        .medicoText(textWeight: .medium,
+                                                    fontSize: 12,
+                                                    multilineTextAlignment: .leading)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.forward")
+                                .resizable()
+                                .foregroundColor(appColor: .lightBlue)
+                                .font(Font.title.weight(.medium))
+                                .frame(width: 12, height: 12)
+                        }
+                        .padding(.vertical, 11)
+                        .padding(.horizontal, 24)
+                        
+                        Divider()
+                            .foregroundColor(appColor: .navigationBar)
+                    }
+                    .background(appColor: .white)
+                    .onTapGesture {
+                        onAutoCompleteTap(element)
+                    }
+                }
+            }
+            .scrollView()
+        }
     }
 }
 
