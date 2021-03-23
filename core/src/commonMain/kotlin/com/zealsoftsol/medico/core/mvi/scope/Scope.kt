@@ -94,4 +94,6 @@ class Storage {
     }
 
     fun restore(key: String) = map[key]
+
+    fun clear(key: String) = map.remove(key)
 }

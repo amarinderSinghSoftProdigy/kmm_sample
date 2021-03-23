@@ -20,10 +20,10 @@ internal class ProductEventDelegate(
         val (response, isSuccess) = navigator.withProgress {
             networkProductScope.getProductData(productCode)
         }
-        if (isSuccess && response != null) {
+        if (isSuccess && response?.product != null) {
             navigator.setScope(
                 ProductInfoScope.get(
-                    product = response.product,
+                    product = response.product!!,
                     alternativeBrands = response.alternateProducts,
                 )
             )

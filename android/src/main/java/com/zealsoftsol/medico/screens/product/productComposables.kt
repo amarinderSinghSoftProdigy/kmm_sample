@@ -88,12 +88,14 @@ fun ProductScreen(scope: ProductInfoScope) {
             fontSize = 12.sp,
         )
         Space(4.dp)
-        Text(
-            text = "Margin: ${scope.product.marginPercent}",
-            color = ConstColors.gray,
-            fontSize = 12.sp,
-        )
-        Space(4.dp)
+        scope.product.marginPercent?.let {
+            Text(
+                text = "Margin: $it",
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+            )
+            Space(4.dp)
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -195,6 +197,7 @@ fun ProductScreen(scope: ProductInfoScope) {
             Space(8.dp)
             scope.alternativeBrands.forEach {
                 ProductAlternative(it) { scope.selectAlternativeProduct(it) }
+                Space(8.dp)
             }
         }
     }

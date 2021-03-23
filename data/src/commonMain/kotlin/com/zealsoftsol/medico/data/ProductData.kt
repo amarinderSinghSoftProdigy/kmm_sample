@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProductResponse(
     val alternateProducts: List<AlternateProductData>,
-    val product: ProductSearch,
+    val product: ProductSearch?,
 )
 
 @Serializable

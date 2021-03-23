@@ -94,9 +94,10 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 icon = Icons.Default.ArrowBack,
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
-                isSearchFocused = true,
+                isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
                 onSearch = { scope.searchProduct(it) },
             )
+            scope.storage.save("focus", false)
         }
         if (showFilter.value) {
             Column(
