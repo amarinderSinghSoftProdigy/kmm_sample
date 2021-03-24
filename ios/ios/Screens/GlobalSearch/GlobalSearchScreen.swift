@@ -21,6 +21,8 @@ struct GlobalSearchScreen: View {
     @ObservedObject var filters: SwiftDataSource<NSArray>
     @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
     
+    @ObservedObject var autoComplete: SwiftDataSource<NSArray>
+    
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
     
@@ -35,6 +37,14 @@ struct GlobalSearchScreen: View {
         if isFilterOpened == true {
             view = AnyView(self.filtersView)
             screenName = "FiltersView"
+        }
+        else if let autoComplete = self.autoComplete.value as? [DataAutoComplete],
+                !autoComplete.isEmpty,
+                let searchInput = self.productSearch.value {
+            view = AnyView(AutoCompleteView(input: searchInput as String, autoCompleteData: autoComplete) {
+                scope.selectAutoComplete(autoComplete: $0)
+            })
+            screenName = "autoComplete"
         }
         else {
             view = AnyView(self.productsView)
@@ -58,6 +68,8 @@ struct GlobalSearchScreen: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.manufucturerSearch = SwiftDataSource(dataSource: scope.manufacturerSearch)
+        
+        self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
         
         self.products = SwiftDataSource(dataSource: scope.products)
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
@@ -138,6 +150,52 @@ struct GlobalSearchScreen: View {
             }
             .padding(.horizontal, 16)
         )
+    }
+    
+    private struct AutoCompleteView: View {
+        let input: String
+        let autoCompleteData: [DataAutoComplete]
+        let onAutoCompleteTap: (DataAutoComplete) -> ()
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(autoCompleteData, id: \.self) { element in
+                    Group {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                element.suggestion.getText(withBoldSubstring: input,
+                                                           withFontSize: 15)
+                                
+                                if !element.details.isEmpty {
+                                    Text(element.details)
+                                        .medicoText(textWeight: .medium,
+                                                    fontSize: 12,
+                                                    multilineTextAlignment: .leading)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.forward")
+                                .resizable()
+                                .foregroundColor(appColor: .lightBlue)
+                                .font(Font.title.weight(.medium))
+                                .frame(width: 12, height: 12)
+                        }
+                        .padding(.vertical, 11)
+                        .padding(.horizontal, 24)
+                        
+                        Divider()
+                            .foregroundColor(appColor: .navigationBar)
+                    }
+                    .background(appColor: .white)
+                    .onTapGesture {
+                        onAutoCompleteTap(element)
+                    }
+                }
+            }
+            .scrollView()
+        }
     }
 }
 
@@ -237,44 +295,61 @@ private struct ProductView: View {
     
     var body: some View {
         ZStack(alignment: Alignment(horizontal: alignment, vertical: .center)) {
-            AppColor.white.color
-                .cornerRadius(5)
+            let noStockInfoColor = AppColor.placeholderGrey
+            let statusColor = product.stockInfo?.statusColor ?? noStockInfoColor
+            
+            HStack {
+                statusColor.color
+                    .cornerRadius(5, corners: [.topLeft, .bottomLeft])
+                    .frame(width: 5)
+                
+                Spacer()
+            }
+            .background(AppColor.white.color.cornerRadius(5))
             
             VStack(alignment: alignment) {
-                HStack(spacing: 17) {
-                    ProductImage(medicineId: product.medicineId,
+                HStack(alignment: .top, spacing: 17) {
+                    ProductImage(medicineId: product.code,
                                  size: .px123)
                         .frame(width: 81, height: 81)
                     
+                    let labelColor: AppColor = product.stockInfo != nil ? .darkBlue : noStockInfoColor
                     VStack(alignment: alignment, spacing: 10) {
                         VStack(alignment: alignment, spacing: 5) {
                             Text(product.name)
                                 .medicoText(textWeight: .semiBold,
                                             fontSize: 16,
+                                            color: labelColor,
                                             multilineTextAlignment: textAlignment)
                             
-                            Text(product.formattedPrice)
-                                .medicoText(textWeight: .black,
-                                            fontSize: 16,
-                                            multilineTextAlignment: textAlignment)
+                            if let price = product.formattedPrice {
+                                Text(price)
+                                    .medicoText(textWeight: .black,
+                                                fontSize: 16,
+                                                color: labelColor,
+                                                multilineTextAlignment: textAlignment)
+                            }
                         }
+                        .fixedSize(horizontal: false, vertical: true)
                         
-                        VStack(alignment: alignment, spacing: 5) {
+                        VStack(alignment: alignment, spacing: 3) {
                             HStack(spacing: 20) {
-                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(String(format: "%.2f", product.mrp))"),
+                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(product.formattedMrp)"),
                                               testingIdentifier: "mrp",
                                               fontSize: 12,
                                               color: .grey3,
                                               multilineTextAlignment: textAlignment)
                                 
-                                LocalizedText(localizedStringKey: LocalizedStringKey("ptr \(product.ptrPercentage)"),
-                                              testingIdentifier: "ptr",
-                                              fontSize: 12,
-                                              color: .grey3,
-                                              multilineTextAlignment: .leading)
+                                if let margin = product.marginPercent {
+                                    LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
+                                                  testingIdentifier: "margin",
+                                                  fontSize: 12,
+                                                  color: .grey3,
+                                                  multilineTextAlignment: .leading)
+                                }
                             }
                             
-                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.productCode)"),
+                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.code)"),
                                           testingIdentifier: "code",
                                           fontSize: 12,
                                           color: .grey3,
@@ -283,11 +358,25 @@ private struct ProductView: View {
                     }
                 }
                 
-                Text(product.packageForm)
-                    .medicoText(color: .lightBlue,
-                                multilineTextAlignment: textAlignment)
+                HStack(alignment: .top, spacing: 10) {
+                    Text(product.uomName)
+                        .medicoText(color: product.stockInfo != nil ? .lightBlue : noStockInfoColor,
+                                    multilineTextAlignment: textAlignment)
+                    
+                    Spacer()
+                    
+                    if let stockInfo = product.stockInfo {
+                        LocalizedText(localizationKey: stockInfo.formattedStatus,
+                                      textWeight: .bold,
+                                      fontSize: 12,
+                                      color: stockInfo.statusColor,
+                                      multilineTextAlignment: .leading)
+                            .padding(.top, 2)
+                    }
+                }
             }
             .padding(11)
         }
+        .opacity(product.stockInfo != nil ? 1 : 0.6)
     }
 }

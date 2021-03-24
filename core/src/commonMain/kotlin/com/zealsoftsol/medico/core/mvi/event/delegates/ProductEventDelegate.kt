@@ -2,43 +2,46 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
-import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.getUserDataSource
-import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.ErrorCode
 
 internal class ProductEventDelegate(
     navigator: Navigator,
-    private val userRepo: UserRepo,
     private val networkProductScope: NetworkScope.Product,
 ) : EventDelegate<Event.Action.Product>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
         is Event.Action.Product.Select -> selectProduct(event.productCode)
+        is Event.Action.Product.SelectAlternative -> selectAlternative(event.data)
     }
 
     private suspend fun selectProduct(productCode: String) {
         val (response, isSuccess) = navigator.withProgress {
             networkProductScope.getProductData(productCode)
         }
-        if (isSuccess && response != null) {
+        if (isSuccess && response?.product != null) {
             navigator.setScope(
                 ProductInfoScope.get(
-                    user = userRepo.requireUser(),
-                    userDataSource = userRepo.getUserDataSource(),
-                    product = response.productData,
-                    alternativeBrands = emptyList(),
+                    product = response.product!!,
+                    alternativeBrands = response.alternateProducts,
                 )
             )
-//            "alternate brands".warnIt()
-//            response.alternateBrands.forEach {
-//                it.logIt()
-//            }
         } else {
             navigator.setHostError(ErrorCode())
         }
+    }
+
+    private fun selectAlternative(product: AlternateProductData) {
+        navigator.dropScope()
+        EventCollector.sendEvent(
+            Event.Action.Search.SearchInput(
+                product.name,
+                mapOf(product.query to product.baseProductName)
+            )
+        )
     }
 }

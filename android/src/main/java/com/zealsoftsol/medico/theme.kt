@@ -29,15 +29,18 @@ object ConstColors {
     val yellow = Color(0xffFFD600)
     val lightBlue = Color(0xff0084D4)
     val gray = Color(0xff666666)
+    val green = Color(0xff00c37d)
+    val orange = Color(0xffff912c)
+    val red = Color(0xffed5152)
 }
 
 @Composable
 fun AppTheme(isDarkTheme: Boolean = false/*isSystemInDarkTheme()*/, content: @Composable () -> Unit) = MaterialTheme(
     colors = if (isDarkTheme) DarkColors else LightColors,
     shapes = Shapes(
-        small = RoundedCornerShape(2.dp),
-        medium = RoundedCornerShape(2.dp),
-        large = RoundedCornerShape(2.dp),
+        small = RoundedCornerShape(5.dp),
+        medium = RoundedCornerShape(5.dp),
+        large = RoundedCornerShape(5.dp),
     ),
     typography = Typography(
         h5 = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W700),

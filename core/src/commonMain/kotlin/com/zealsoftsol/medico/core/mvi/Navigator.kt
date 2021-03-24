@@ -133,7 +133,11 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
 
     private fun addToQueue(scope: Scope) {
         val queue = getQueue(scope.scopeId)
-        require(queue.firstOrNull()?.queueId != scope.queueId) { "setting the same scope again is not allowed" }
+        if (queue.firstOrNull()?.queueId == scope.queueId) {
+            queue.removeFirst()
+            "setting the same scope again".warnIt()
+        }
+//        require(queue.firstOrNull()?.queueId != scope.queueId) { "setting the same scope again is not allowed" }
         queue.addFirst(scope)
         activeQueue = scope.scopeId
     }

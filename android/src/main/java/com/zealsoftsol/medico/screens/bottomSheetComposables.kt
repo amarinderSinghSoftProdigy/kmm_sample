@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,6 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.PreviewItem
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -176,28 +176,6 @@ private fun PreviewItemBottomSheet(
                 } else {
                     NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
                 }
-                Space(12.dp)
-                Column {
-                    if (!isForSeasonBoy) {
-                        DataWithLabel(label = R.string.gstin_num, data = entityInfo.gstin)
-                        entityInfo.subscriptionData?.let {
-                            DataWithLabel(label = R.string.status, data = it.status.serverValue)
-                            DataWithLabel(
-                                label = R.string.payment_method,
-                                data = it.paymentMethod.serverValue
-                            )
-                            DataWithLabel(label = R.string.orders, data = it.orders.toString())
-                        }
-                        entityInfo.seasonBoyRetailerData?.let {
-                            DataWithLabel(label = R.string.orders, data = it.orders.toString())
-                        }
-                    } else {
-                        DataWithLabel(
-                            label = R.string.address,
-                            data = entityInfo.geoData.fullAddress()
-                        )
-                    }
-                }
             }
         }
     }
@@ -214,12 +192,26 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     )
     Space(12.dp)
     Separator(padding = 0.dp)
+    Space(12.dp)
+    entityInfo.subscriptionData?.let {
+        DataWithLabel(label = R.string.status, data = it.status.serverValue)
+    }
+    entityInfo.seasonBoyData?.let {
+        DataWithLabel(label = R.string.email, data = it.email)
+    }
+    DataWithLabel(label = R.string.address, data = entityInfo.geoData.fullAddress())
+    entityInfo.subscriptionData?.let {
+        DataWithLabel(label = R.string.orders, data = it.orders.toString())
+    }
+    entityInfo.seasonBoyData?.let {
+        DataWithLabel(label = R.string.retailers, data = it.retailers.toString())
+    }
 }
 
 @Composable
-fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?) {
+private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
     Text(
-        text = previewItem.geoData.city,
+        text = entityInfo.geoData.city,
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
@@ -229,17 +221,17 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?
             modifier = Modifier.size(123.dp),
             data = "",
             contentDescription = null,
-            error = { UserLogoPlaceholder(previewItem.tradeName) },
-            loading = { UserLogoPlaceholder(previewItem.tradeName) },
+            error = { UserLogoPlaceholder(entityInfo.tradeName) },
+            loading = { UserLogoPlaceholder(entityInfo.tradeName) },
         )
         Space(24.dp)
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            GeoLocation(previewItem.geoData.fullAddress(), isBold = true)
+            GeoLocation(entityInfo.geoData.fullAddress(), isBold = true)
             Text(
-                text = previewItem.geoData.distance,
+                text = entityInfo.geoData.formattedDistance,
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
@@ -251,16 +243,78 @@ fun NonSeasonBoyPreviewItem(previewItem: PreviewItem, onSubscribe: (() -> Unit)?
                 color = ConstColors.lightBlue,
                 modifier = Modifier.clickable {
                     activity.openMaps(
-                        previewItem.geoData.destination.latitude,
-                        previewItem.geoData.destination.longitude,
+                        entityInfo.geoData.destination.latitude,
+                        entityInfo.geoData.destination.longitude,
                     )
                 },
             )
-            if (previewItem is EntityInfo && onSubscribe != null) {
+            if (entityInfo.isVerified == true) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_verified),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Space(6.dp)
+                    Text(
+                        text = stringResource(id = R.string.verified),
+                        color = Color(0xFF00C37D),
+                        fontWeight = FontWeight.W600,
+                        fontSize = 12.sp,
+                    )
+                }
+            }
+            if (onSubscribe != null) {
                 MedicoSmallButton(
                     text = stringResource(id = R.string.subscribe),
                     onClick = onSubscribe,
                 )
+            }
+        }
+    }
+    when {
+        entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
+            DataWithLabel(
+                label = R.string.status,
+                data = data.status.serverValue
+            )
+            entityInfo.gstin?.let {
+                DataWithLabel(label = R.string.gstin_num, data = it)
+            }
+            entityInfo.panNumber?.let {
+                DataWithLabel(label = R.string.pan_num, data = it)
+            }
+            DataWithLabel(
+                label = R.string.payment_method,
+                data = data.paymentMethod.serverValue
+            )
+            DataWithLabel(
+                label = R.string.orders,
+                data = data.orders.toString()
+            )
+        }
+        entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
+            entityInfo.gstin?.let {
+                DataWithLabel(label = R.string.gstin_num, data = it)
+            }
+            entityInfo.panNumber?.let {
+                DataWithLabel(label = R.string.pan_num, data = it)
+            }
+            DataWithLabel(
+                label = R.string.pan_num,
+                data = entityInfo.panNumber.orEmpty()
+            )
+            DataWithLabel(
+                label = R.string.orders,
+                data = data.orders.toString()
+            )
+        }
+        else -> {
+            entityInfo.gstin?.let {
+                DataWithLabel(label = R.string.gstin_num, data = it)
+            }
+            entityInfo.panNumber?.let {
+                DataWithLabel(label = R.string.pan_num, data = it)
             }
         }
     }

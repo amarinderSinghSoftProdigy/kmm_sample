@@ -21,8 +21,7 @@
 "phone_number_or_email" = "Phone Number or Email";
 "password" = "Password";
 "forgot_password" = "Forgot password?";
-"sign_up" = "Sign up";
-"to_medico" = " to Medico Stores";
+"register" = "Register";
 "copyright" = "© Copyright mediostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
@@ -83,6 +82,7 @@
 "gstin" = "GSTIN";
 "drug_license_No1" = "Drug License №1";
 "drug_license_No2" = "Drug License №2";
+"gstin_or_pan_number_are_required" = "GSTIN or PAN Number are required for the registration";
 
 // MARK: Authentication Sign Up Aadhaar Card
 "aadhaar_card" = "Aadhaar Card";
@@ -123,15 +123,17 @@
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";
-"ptr %@" = "PTR: %@";
+"margin %@" = "Margin: %@";
 "code %@" = "Code: %@";
 "description %@" = "Description: %@";
 "add_to_cart" = "Add to cart";
+"get_quote" = "Get a Quote";
 "details" = "Details";
 "manufacturer" = "Manufacturer";
 "compositions" = "Compositions";
 "storage" = "Storage";
 "storage_description" = "Store at room temperature (10–30°C)";
+"alternative_brands" = "Alternative Brands";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
@@ -174,16 +176,17 @@
 // MARK: Bottom Sheet User Details
 "subscribe" = "Subscribe";
 "see_on_the_map" = "See on the map";
+"verified" = "Verified";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
+"pan_number:" = "PAN Number:";
 "payment_method" = "Payment Method:";
 "orders" = "Orders:";
+"retailers:" = "Retailers:";
 
 // MARK: Bottom Sheet Season Boy Details
 "email_address:" = "Email Address:";
 "address:" = "Address:";
-"pending_orders" = "Pending Orders:";
-"total_orders" = "Total Orders:";
 
 // MARK: Notifications List
 "notifications" = "Notifications";

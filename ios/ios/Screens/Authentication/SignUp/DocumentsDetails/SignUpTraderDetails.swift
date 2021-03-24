@@ -54,13 +54,41 @@ struct SignUpTraderDetails: View {
         case SignUpScope.Details.DetailsFields.tradeName:
             let tradeNameErrorMessageKey = self.validation.value?.tradeName
             return AnyView(
-                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
-                                             text: self.registration.value?.tradeName,
-                                             onTextChange: { newValue in scope.changeTradeName(tradeName: newValue) },
-                                             isValid: tradeNameErrorMessageKey == nil,
-                                             errorMessageKey: tradeNameErrorMessageKey)
-                .disableAutocorrection(true)
-                .autocapitalization(.words))
+                VStack {
+                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "trade_name",
+                                                 text: self.registration.value?.tradeName,
+                                                 onTextChange: { newValue in scope.changeTradeName(tradeName: newValue) },
+                                                 isValid: tradeNameErrorMessageKey == nil,
+                                                 errorMessageKey: tradeNameErrorMessageKey)
+                    .disableAutocorrection(true)
+                    .autocapitalization(.words)
+                    
+                    HStack(spacing: 8) {
+                        LocalizedText(localizationKey: "gstin_or_pan_number_are_required",
+                                      textWeight: .medium,
+                                      fontSize: 12,
+                                      color: .black,
+                                      multilineTextAlignment: .leading)
+                            .padding(.vertical, 6)
+                            .padding(.leading, 11)
+
+                        Spacer()
+
+                        Image("Alert")
+                            .padding(5)
+                    }
+                    .background(
+                        HStack {
+                            AppColor.yellow.color
+                                .frame(width: 3)
+                                .cornerRadius(2, corners: [.topLeft, .bottomLeft])
+                            
+                            Spacer()
+                        }
+                        .frame(maxHeight: .infinity)
+                        .background(AppColor.yellow.color.opacity(0.12).cornerRadius(2))
+                    )
+                })
             
         case SignUpScope.Details.DetailsFields.pan:
             let panNumberErrorMessageKey = self.validation.value?.panNumber

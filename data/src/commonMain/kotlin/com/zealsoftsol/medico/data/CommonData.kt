@@ -37,11 +37,14 @@ enum class SubscriptionStatus(val serverValue: String) {
     REJECTED("Rejected"),
 }
 
+@Deprecated("out of scope usage")
 interface PreviewItem {
     val phoneNumber: String
     val tradeName: String
-    val gstin: String
+    val gstin: String?
+    val panNumber: String?
     val geoData: GeoData
+    val isVerified: Boolean?
 }
 
 // BASE

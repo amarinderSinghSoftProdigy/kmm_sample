@@ -186,12 +186,14 @@ struct AddRetailerScreen: View {
                 PickerSelector(placeholder: "location",
                                chosenElement: self.registration.value?.location,
                                data: locations,
+                               optionsHeight: 30,
                                onChange: { newValue in scope.changeLocation(location: newValue) })
                 
                 let cities = locationData.value?.cities ?? [String]()
                 PickerSelector(placeholder: "city",
                                chosenElement: self.registration.value?.city,
                                data: cities,
+                               optionsHeight: 30,
                                onChange: { newValue in scope.changeCity(city: newValue) })
                 
                 ReadOnlyTextField(placeholder: "district",

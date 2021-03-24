@@ -20,21 +20,6 @@ struct HostScreen: View {
                 }
         } else {
             if let scope = currentScope.value {
-//                ZStack {
-//                    Color.gray
-//
-//                    Button(action: {
-//                        self.showSheet.toggle()
-//                    }) {
-//                        Text("Show")
-//                    }
-//                }
-//                .popover(isPresented: $showSheet,
-//                         attachmentAnchor: .point(.bottom),
-//                         arrowEdge: .bottom) {
-//                    AppColor.red.color.cornerRadius(5)
-//                        .frame(width: 150, height: 50, alignment: .center)
-//                }
                 BaseScopeView(scope: scope)
             }
         }
@@ -174,9 +159,6 @@ struct TabBarScreen: View {
             
         case let scope as ManagementScope.AddRetailer:
             return AnyView(AddRetailerScreen(scope: scope))
-            
-        case let scope as PreviewUserScope:
-            return AnyView(PreviewUserScreen(scope: scope))
             
         case let scope as DashboardScope:
             return AnyView(DashboardScreen(scope: scope))

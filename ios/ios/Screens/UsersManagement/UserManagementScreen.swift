@@ -189,23 +189,41 @@ struct UserManagementScreen: View {
                 AppColor.white.color
                     .cornerRadius(5)
                 
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(user.tradeName)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 16,
-                                        multilineTextAlignment: .leading)
+                VStack(spacing: 6) {
+                    HStack(spacing: 10) {
+                        HStack(alignment: .top, spacing: 4) {
+                            Text(user.tradeName)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
+                            
+                            if user.isVerified == true {
+                                Image("VerifyMark")
+                                    .padding(.top, 2)
+                            }
+                        }
                         
-                        SmallAddressView(location: user.geoData.fullAddress())
+                        Spacer()
+                        
+                        if let status = user.subscriptionData?.status {
+                            LocalizedText(localizationKey: status.serverValue,
+                                          textWeight: .medium,
+                                          fontSize: 15,
+                                          color: status == .subscribed ? .lightBlue : .yellow)
+                        }
                     }
                     
-                    Spacer()
-                    
-                    if let status = user.subscriptionData?.status {
-                        LocalizedText(localizationKey: status.serverValue,
-                                      textWeight: .medium,
-                                      fontSize: 15,
-                                      color: status == .subscribed ? .lightBlue : .yellow)
+                    HStack(spacing: 10) {
+                        SmallAddressView(location: user.geoData.fullAddress())
+                        
+                        Spacer()
+                        
+                        if user.subscriptionData?.status != nil {
+                            Text(user.geoData.formattedDistance)
+                                .medicoText(fontSize: 12,
+                                            color: .grey3,
+                                            multilineTextAlignment: .leading)
+                        }
                     }
                 }
                 .padding(.horizontal, 10)
@@ -222,23 +240,40 @@ struct UserManagementScreen: View {
                 AppColor.white.color
                     .cornerRadius(5)
                 
-                HStack {
-                    Text(seasonBoy.tradeName)
-                        .medicoText(textWeight: .bold,
-                                    fontSize: 15,
-                                    multilineTextAlignment: .leading)
+                VStack(spacing: 6) {
+                    HStack {
+                        Text(seasonBoy.tradeName)
+                            .medicoText(textWeight: .bold,
+                                        fontSize: 15,
+                                        multilineTextAlignment: .leading)
+                        
+                        Spacer()
+                        
+                        if let status = seasonBoy.subscriptionData?.status {
+                            LocalizedText(localizationKey: status.serverValue,
+                                          textWeight: .medium,
+                                          fontSize: 15,
+                                          color: status == .subscribed ? .lightBlue : .yellow)
+                        }
+                    }
                     
-                    Spacer()
-                    
-                    let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
-                    Text(phoneNumber)
-                        .medicoText(textWeight: .semiBold,
-                                    fontSize: 15,
-                                    color: .lightBlue,
-                                    multilineTextAlignment: .leading)
+                    HStack {
+                        Text(seasonBoy.geoData.fullAddress())
+                            .medicoText(textWeight: .medium,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
+                        
+                        Spacer()
+                        
+                        let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
+                        Text(phoneNumber)
+                            .medicoText(textWeight: .semiBold,
+                                        fontSize: 15,
+                                        color: .lightBlue,
+                                        multilineTextAlignment: .leading)
+                    }
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 14)
+                .padding(12)
             }
         }
     }

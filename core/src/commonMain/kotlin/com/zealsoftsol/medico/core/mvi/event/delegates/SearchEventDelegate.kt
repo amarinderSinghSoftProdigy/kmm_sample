@@ -6,6 +6,8 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
@@ -24,18 +26,32 @@ internal class SearchEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
-        is Event.Action.Search.SearchProduct -> searchProduct(event.value)
+        is Event.Action.Search.SearchInput -> searchBy(event.search, event.query)
+        is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Search.SearchManufacturer -> searchManufacturer(event.value)
+        is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
     }
 
-    private suspend fun searchProduct(value: String) {
+    private suspend fun searchBy(search: String?, query: Map<String, String>) {
         navigator.withScope<SearchScope> {
             it.pagination.reset()
-            it.productSearch.value = value
-            it.search()
+            query.forEach { (key, value) ->
+                activeFilters[key] = Option(value, false)
+            }
+//            updateQuery(search = search)
+            val isWildcardSearch = search == null && query.isEmpty()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = !isWildcardSearch,
+                onEnd = {
+                    query.keys.forEach { key -> activeFilters.remove(key) }
+                }
+            )
+            if (search != null) it.productSearch.value = search
         }
     }
 
@@ -43,7 +59,44 @@ internal class SearchEventDelegate(
         navigator.withScope<SearchScope> {
             it.pagination.reset()
             it.manufacturerSearch.value = value
-            it.search()
+            updateQuery(manufacturer = value)
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = false,
+            )
+        }
+    }
+
+    private suspend fun searchAutoComplete(value: String) {
+        navigator.withScope<SearchScope> {
+            it.productSearch.value = value
+            searchAsync(withDelay = true, withProgress = false) {
+                val (result, isSuccess) = networkSearchScope.autocomplete(value)
+                if (isSuccess && result != null) {
+                    it.autoComplete.value = result
+                    if (value.isNotEmpty() && result.isEmpty() && it.products.value.isNotEmpty()) {
+                        it.products.value = emptyList()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
+        navigator.withScope<SearchScope> {
+            it.productSearch.value = autoComplete.suggestion
+            activeFilters[autoComplete.query] = Option(autoComplete.suggestion, false)
+            it.pagination.reset()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = true,
+                onEnd = {
+                    activeFilters.remove(autoComplete.query)
+                    it.autoComplete.value = emptyList()
+                }
+            )
         }
     }
 
@@ -71,7 +124,11 @@ internal class SearchEventDelegate(
                     f
                 }
             }
-            it.search()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = false,
+            )
         }
     }
 
@@ -97,7 +154,11 @@ internal class SearchEventDelegate(
                 }
             }
             if (filter == null) it.productSearch.value = ""
-            it.search()
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = true,
+            )
         }
     }
 
@@ -105,20 +166,27 @@ internal class SearchEventDelegate(
         navigator.withScope<SearchScope> {
             if (!it.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
-                it.search(addPage = true)
+                it.search(
+                    addPage = true,
+                    withDelay = false,
+                    withProgress = true,
+                )
             }
         }
     }
 
-    private suspend fun SearchScope.search(addPage: Boolean = false) {
-        searchJob?.cancel()
-        searchJob = coroutineContext.toScope().launch {
-            if (!addPage) delay(500)
-            if (addPage) navigator.setHostProgress(true)
+    private suspend inline fun SearchScope.search(
+        addPage: Boolean,
+        withDelay: Boolean,
+        withProgress: Boolean,
+        crossinline onEnd: () -> Unit = {}
+    ) {
+        searchAsync(withDelay = withDelay, withProgress = withProgress) {
+            val address = userRepo.requireUser().addressData
             val (result, isSuccess) = networkSearchScope.search(
                 pagination,
-                productSearch.value,
-                manufacturerSearch.value,
+                address.latitude,
+                address.longitude,
                 activeFilters.map { (queryName, option) -> queryName to option.value },
             )
             if (isSuccess && result != null) {
@@ -126,7 +194,30 @@ internal class SearchEventDelegate(
                 filters.value = result.facets.toFilter()
                 products.value = if (!addPage) result.products else products.value + result.products
             }
-            if (addPage) navigator.setHostProgress(false)
+            onEnd()
+        }
+    }
+
+    private suspend fun searchAsync(
+        withDelay: Boolean,
+        withProgress: Boolean,
+        search: suspend () -> Unit
+    ) {
+        searchJob?.cancel()
+        searchJob = coroutineContext.toScope().launch {
+            if (withDelay) delay(500)
+            if (withProgress) navigator.setHostProgress(true)
+            search()
+            if (withProgress) navigator.setHostProgress(false)
+        }
+    }
+
+    private fun updateQuery(search: String? = null, manufacturer: String? = null) {
+        search?.let {
+            activeFilters["search"] = Option(it, false)
+        }
+        manufacturer?.let {
+            activeFilters[Filter.MANUFACTURER_ID] = Option(it, false)
         }
     }
 

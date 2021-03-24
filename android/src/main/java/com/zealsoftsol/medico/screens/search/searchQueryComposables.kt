@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,19 +16,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -50,17 +56,22 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Separator
@@ -72,20 +83,22 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 @Composable
 fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize()) {
-        val product = scope.productSearch.flow.collectAsState()
+        val search = scope.productSearch.flow.collectAsState()
+        val autoComplete = scope.autoComplete.flow.collectAsState()
         val manufacturer = scope.manufacturerSearch.flow.collectAsState()
         val filters = scope.filters.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
         TabBar {
             BasicSearchBar(
-                input = product.value,
+                input = search.value,
                 icon = Icons.Default.ArrowBack,
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
-                isSearchFocused = true,
+                isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
                 onSearch = { scope.searchProduct(it) },
             )
+            scope.storage.save("focus", false)
         }
         if (showFilter.value) {
             Column(
@@ -96,12 +109,11 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                     text = stringResource(id = R.string.clear_all),
                     modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp)
                         .clickable(indication = null) {
-                            scope.clearFilter(
-                                null
-                            )
+                            scope.clearFilter(null)
                         },
                 )
                 filters.value.forEach { filter ->
+                    filter.log("filter")
                     FilterSection(
                         name = filter.name,
                         options = filter.options,
@@ -116,84 +128,179 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 Space(16.dp)
             }
         } else {
-            LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                itemsIndexed(
-                    items = products.value,
-                    itemContent = { index, item ->
-                        ProductItem(item) { scope.selectProduct(item) }
-                        if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadMoreProducts()
-                        }
-                    },
-                )
+            if (autoComplete.value.isEmpty()) {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                    itemsIndexed(
+                        items = products.value,
+                        key = { _, item -> item.id },
+                        itemContent = { index, item ->
+                            ProductItem(item) { scope.selectProduct(item) }
+                            if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadMoreProducts()
+                            }
+                        },
+                    )
+                }
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    modifier = Modifier.fillMaxSize().background(color = Color.White)
+                ) {
+                    items(
+                        items = autoComplete.value,
+                        key = { item -> item.suggestion },
+                        itemContent = { item ->
+                            AutoCompleteItem(item, search.value) { scope.selectAutoComplete(item) }
+                        },
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
+private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
+    val regex = "(?i)$input".toRegex()
+    Box(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(vertical = 12.dp, horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Text(
+                    text = buildAnnotatedString {
+                        append(autoComplete.suggestion)
+                        regex.find(autoComplete.suggestion)?.let {
+                            addStyle(
+                                SpanStyle(fontWeight = FontWeight.W700),
+                                it.range.first,
+                                it.range.last + 1,
+                            )
+                        }
+                    },
+                    color = MaterialTheme.colors.background,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.W400,
+                )
+                if (autoComplete.details.isNotEmpty()) {
+                    Text(
+                        text = autoComplete.details,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W400,
+                    )
+                }
+            }
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                tint = ConstColors.lightBlue,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Divider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = Color(0xFFE6F0F7),
+        )
+    }
+}
+
+@Composable
 private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
-    Column(
+    Surface(
+        color = Color.White,
+        shape = MaterialTheme.shapes.medium,
         modifier = Modifier.fillMaxWidth()
+            .height(182.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(color = Color.White, shape = MaterialTheme.shapes.medium)
             .clickable(
                 indication = YellowOutlineIndication,
                 onClick = onClick,
             )
-            .padding(10.dp),
     ) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            CoilImage(
-                modifier = Modifier.size(123.dp),
-                data = CdnUrlProvider.urlFor(product.medicineId, CdnUrlProvider.Size.Px123),
-                contentDescription = null,
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
-            )
-            Space(10.dp)
-            Column {
-                Text(
-                    text = product.name,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
-                )
-                Space(4.dp)
-                Text(
-                    text = product.formattedPrice,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W900,
-                    fontSize = 16.sp,
-                )
-                Space(4.dp)
-                Row {
-                    Text(
-                        text = "MRP: ${product.mrp}",
-                        color = ConstColors.gray,
-                        fontSize = 12.sp,
+        Box {
+            val labelColor = when (product.stockInfo?.status) {
+                StockStatus.IN_STOCK -> ConstColors.green
+                StockStatus.LOW_STOCK -> ConstColors.orange
+                StockStatus.OUT_OF_STOCK -> ConstColors.red
+                null -> ConstColors.gray
+            }
+            Box(modifier = Modifier.width(5.dp).height(182.dp).background(labelColor))
+            Column(
+                modifier = Modifier.padding(horizontal = 12.dp).align(Alignment.Center),
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    CoilImage(
+                        modifier = Modifier.size(123.dp),
+                        data = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                        contentDescription = null,
+                        error = { ItemPlaceholder() },
+                        loading = { ItemPlaceholder() },
                     )
-                    Space(4.dp)
-                    Text(
-                        text = "PTR: ${product.ptrPercentage}",
-                        color = ConstColors.gray,
-                        fontSize = 12.sp,
-                    )
+                    Space(10.dp)
+                    Column {
+                        Text(
+                            text = product.name,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 16.sp,
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = product.formattedPrice.orEmpty(),
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W900,
+                            fontSize = 16.sp,
+                        )
+                        Space(4.dp)
+                        Row {
+                            Text(
+                                text = "MRP: ${product.formattedMrp}",
+                                color = ConstColors.gray,
+                                fontSize = 12.sp,
+                            )
+                            Space(4.dp)
+                            product.marginPercent?.let {
+                                Text(
+                                    text = "Margin: $it",
+                                    color = ConstColors.gray,
+                                    fontSize = 12.sp,
+                                )
+                            }
+                        }
+                        Space(4.dp)
+                        Text(
+                            text = "Code: ${product.code}",
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                        )
+                    }
                 }
-                Space(4.dp)
-                Text(
-                    text = "Code: ${product.productCode}",
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
-                )
+                Space(10.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = product.uomName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                    )
+                    product.stockInfo?.let {
+                        Text(
+                            text = it.formattedStatus,
+                            color = labelColor,
+                            fontWeight = FontWeight.W700,
+                            fontSize = 12.sp,
+                        )
+                    }
+                }
             }
         }
-        Space(10.dp)
-        Text(
-            text = product.packageForm,
-            color = ConstColors.lightBlue,
-            fontSize = 14.sp,
-        )
     }
 }
 

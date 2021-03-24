@@ -63,6 +63,7 @@ struct SignUpAddressScreen: View {
             PickerSelector(placeholder: "location",
                            chosenElement: self.registration.value?.location,
                            data: locations,
+                           optionsHeight: 30,
                            onChange: { newValue in scope.changeLocation(location: newValue) })
                 .fieldError(withLocalizedKey: self.userValidation.value?.location)
             
@@ -70,6 +71,7 @@ struct SignUpAddressScreen: View {
             PickerSelector(placeholder: "city",
                            chosenElement: self.registration.value?.city,
                            data: cities,
+                           optionsHeight: 30,
                            onChange: { newValue in scope.changeCity(city: newValue) })
                 .fieldError(withLocalizedKey: self.userValidation.value?.city)
             

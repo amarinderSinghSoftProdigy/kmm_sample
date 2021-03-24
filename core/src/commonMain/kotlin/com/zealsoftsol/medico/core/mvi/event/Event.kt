@@ -1,6 +1,8 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AlternateProductData
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -65,8 +67,14 @@ sealed class Event {
         sealed class Search : Action() {
             override val typeClazz: KClass<*> = Search::class
 
-            data class SearchProduct(val value: String) : Search()
+            data class SearchInput(
+                val search: String? = null,
+                val query: Map<String, String> = emptyMap()
+            ) : Search()
+
+            data class SearchAutoComplete(val value: String) : Search()
             data class SelectFilter(val filter: Filter, val option: Option<String>) : Search()
+            data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SearchManufacturer(val value: String) : Search()
             object LoadMoreProducts : Search()
@@ -76,6 +84,7 @@ sealed class Event {
             override val typeClazz: KClass<*> = Product::class
 
             data class Select(val productCode: String) : Product()
+            data class SelectAlternative(val data: AlternateProductData) : Product()
         }
 
         sealed class Management : Action() {
