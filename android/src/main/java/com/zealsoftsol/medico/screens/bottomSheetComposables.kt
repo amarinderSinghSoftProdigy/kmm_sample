@@ -185,7 +185,7 @@ private fun PreviewItemBottomSheet(
 private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     val formatter = rememberPhoneNumberFormatter()
     Text(
-        text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
+        text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty(),
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.End,
         color = ConstColors.lightBlue,
@@ -300,10 +300,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             entityInfo.panNumber?.let {
                 DataWithLabel(label = R.string.pan_num, data = it)
             }
-            DataWithLabel(
-                label = R.string.pan_num,
-                data = entityInfo.panNumber.orEmpty()
-            )
             DataWithLabel(
                 label = R.string.orders,
                 data = data.orders.toString()

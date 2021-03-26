@@ -9,7 +9,7 @@ internal interface ManagementItem
 data class EntityInfo(
     val tradeName: String,
     @SerialName("mobileNumber")
-    val phoneNumber: String,
+    val phoneNumber: String?,
     val gstin: String?,
     val panNumber: String?,
     val unitCode: String,

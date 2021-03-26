@@ -210,7 +210,7 @@ class NetworkClient(
 
     override suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> =
         ktorDispatcher {
-            client.get<Response.Body<LocationData, PincodeValidation>>("$GEO_URL/api/v1/pincode/$pincode") {
+            client.get<Response.Body<LocationData, PincodeValidation>>("$GEO_URL/api/v1/geolocation/pincode/$pincode") {
                 withTempToken(TempToken.REGISTRATION)
             }
         }

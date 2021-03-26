@@ -265,7 +265,8 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                 )
                 val formatter = rememberPhoneNumberFormatter()
                 Text(
-                    text = formatter.verifyNumber(entityInfo.phoneNumber) ?: entityInfo.phoneNumber,
+                    text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }
+                        .orEmpty(),
                     fontWeight = FontWeight.W600,
                     color = ConstColors.lightBlue,
                 )
