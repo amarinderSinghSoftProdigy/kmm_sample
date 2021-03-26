@@ -122,12 +122,14 @@ struct EntityInfoBottomSheet: ViewModifier {
                                     multilineTextAlignment: .leading)
                 }
                 
-                let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
-                Text(phoneNumber)
-                    .medicoText(textWeight: .semiBold,
-                                fontSize: 16,
-                                color: .lightBlue,
-                                multilineTextAlignment: .leading)
+                if let phoneNumber = seasonBoy.phoneNumber {
+                    let formattedphoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+                    Text(formattedphoneNumber)
+                        .medicoText(textWeight: .semiBold,
+                                    fontSize: 16,
+                                    color: .lightBlue,
+                                    multilineTextAlignment: .leading)
+                }
                 
                 AppColor.black.color.opacity(0.42)
                     .frame(height: 1)

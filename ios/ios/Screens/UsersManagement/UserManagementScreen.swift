@@ -265,12 +265,14 @@ struct UserManagementScreen: View {
                         
                         Spacer()
                         
-                        let phoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(seasonBoy.phoneNumber)
-                        Text(phoneNumber)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 15,
-                                        color: .lightBlue,
-                                        multilineTextAlignment: .leading)
+                        if let phoneNumber = seasonBoy.phoneNumber {
+                            let formattedphoneNumber = PhoneNumberUtil.shared.getFormattedPhoneNumber(phoneNumber)
+                            Text(formattedphoneNumber)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 15,
+                                            color: .lightBlue,
+                                            multilineTextAlignment: .leading)
+                        }
                     }
                 }
                 .padding(12)
