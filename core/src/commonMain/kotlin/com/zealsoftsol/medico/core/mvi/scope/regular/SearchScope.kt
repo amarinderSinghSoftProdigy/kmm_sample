@@ -14,9 +14,9 @@ import com.zealsoftsol.medico.data.ProductSearch
 
 class SearchScope(
     val productSearch: DataSource<String> = DataSource(""),
-    val manufacturerSearch: DataSource<String> = DataSource(""),
     val isFilterOpened: DataSource<Boolean> = DataSource(false),
     val filters: DataSource<List<Filter>> = DataSource(emptyList()),
+    val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
     val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
 ) : Scope.Host.Regular(),
@@ -34,15 +34,15 @@ class SearchScope(
     fun selectAutoComplete(autoComplete: AutoComplete) =
         EventCollector.sendEvent(Event.Action.Search.SelectAutoComplete(autoComplete))
 
-    fun selectFilter(filter: Filter, option: Option<String>) =
+    fun selectFilter(filter: Filter, option: Option) =
         EventCollector.sendEvent(Event.Action.Search.SelectFilter(filter, option))
 
     fun clearFilter(filter: Filter?) =
         EventCollector.sendEvent(Event.Action.Search.ClearFilter(filter))
 
-    fun searchManufacturer(input: String): Boolean {
-        return trimInput(input, manufacturerSearch.value) {
-            EventCollector.sendEvent(Event.Action.Search.SearchManufacturer(it))
+    fun searchFilter(filter: Filter, input: String): Boolean {
+        return trimInput(input, filterSearches.value[filter.queryId].orEmpty()) {
+            EventCollector.sendEvent(Event.Action.Search.SearchFilter(filter, it))
         }
     }
 

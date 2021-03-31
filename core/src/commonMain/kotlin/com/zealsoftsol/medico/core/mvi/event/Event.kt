@@ -73,10 +73,10 @@ sealed class Event {
             ) : Search()
 
             data class SearchAutoComplete(val value: String) : Search()
-            data class SelectFilter(val filter: Filter, val option: Option<String>) : Search()
+            data class SelectFilter(val filter: Filter, val option: Option) : Search()
+            data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
-            data class SearchManufacturer(val value: String) : Search()
             object LoadMoreProducts : Search()
         }
 

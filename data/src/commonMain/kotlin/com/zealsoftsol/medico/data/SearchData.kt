@@ -90,12 +90,17 @@ data class AutoComplete(
 
 data class Filter(
     val name: String,
-    val queryName: String,
-    val options: List<Option<String>>,
-) {
-    companion object Ids {
-        const val MANUFACTURER_ID = "manufacturers"
-    }
-}
+    val queryId: String,
+    val options: List<Option>,
+)
 
-data class Option<T>(val value: T, val isSelected: Boolean)
+sealed class Option {
+
+    data class StringValue(
+        val value: String,
+        val isSelected: Boolean,
+        val isVisible: Boolean = true
+    ) : Option()
+
+    object ViewMore : Option()
+}

@@ -22,13 +22,13 @@ internal class SearchEventDelegate(
     private val networkSearchScope: NetworkScope.Search,
 ) : EventDelegate<Event.Action.Search>(navigator) {
 
-    private val activeFilters = hashMapOf<String, Option<String>>()
+    private val activeFilters = hashMapOf<String, Option.StringValue>()
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
         is Event.Action.Search.SearchInput -> searchBy(event.search, event.query)
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
-        is Event.Action.Search.SearchManufacturer -> searchManufacturer(event.value)
+        is Event.Action.Search.SearchFilter -> searchFilter(event.filter, event.value)
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
@@ -39,9 +39,8 @@ internal class SearchEventDelegate(
         navigator.withScope<SearchScope> {
             it.pagination.reset()
             query.forEach { (key, value) ->
-                activeFilters[key] = Option(value, false)
+                activeFilters[key] = Option.StringValue(value, false)
             }
-//            updateQuery(search = search)
             val isWildcardSearch = search == null && query.isEmpty()
             it.search(
                 addPage = false,
@@ -49,22 +48,37 @@ internal class SearchEventDelegate(
                 withProgress = !isWildcardSearch,
                 onEnd = {
                     query.keys.forEach { key -> activeFilters.remove(key) }
-                }
+                },
             )
             if (search != null) it.productSearch.value = search
         }
     }
 
-    private suspend fun searchManufacturer(value: String) {
+    private fun searchFilter(filter: Filter, value: String) {
         navigator.withScope<SearchScope> {
             it.pagination.reset()
-            it.manufacturerSearch.value = value
-            updateQuery(manufacturer = value)
-            it.search(
-                addPage = false,
-                withDelay = false,
-                withProgress = false,
-            )
+            val oldSearches = it.filterSearches.value.toMutableMap()
+            oldSearches[filter.queryId] = value
+            it.filterSearches.value = oldSearches
+
+            it.filters.value = it.filters.value.map { f ->
+                if (f.queryId == filter.queryId) {
+                    var anyInvisible = false
+                    val newOptions =
+                        f.options.filterIsInstance<Option.StringValue>().mapIndexed { index, o ->
+                            val vis = if (value.isNotEmpty()) {
+                                o.value.contains(value, ignoreCase = true)
+                            } else {
+                                index < MAX_OPTIONS
+                            }
+                            anyInvisible = anyInvisible || !vis
+                            o.copy(isVisible = vis)
+                        }
+                    f.copy(options = if (value.isEmpty() || anyInvisible) newOptions + Option.ViewMore else newOptions)
+                } else {
+                    f
+                }
+            }
         }
     }
 
@@ -86,7 +100,7 @@ internal class SearchEventDelegate(
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
         navigator.withScope<SearchScope> {
             it.productSearch.value = autoComplete.suggestion
-            activeFilters[autoComplete.query] = Option(autoComplete.suggestion, false)
+            activeFilters[autoComplete.query] = Option.StringValue(autoComplete.suggestion, false)
             it.pagination.reset()
             it.search(
                 addPage = false,
@@ -100,35 +114,50 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun selectFilter(filter: Filter, option: Option<String>) {
+    private suspend fun selectFilter(filter: Filter, option: Option) {
         navigator.withScope<SearchScope> {
-            it.pagination.reset()
-            it.filters.value = it.filters.value.map { f ->
-                if (filter.name == f.name) {
-                    f.copy(options = f.options.map { op ->
-                        when {
-                            option.value == op.value -> {
-                                val newOption = op.copy(isSelected = !op.isSelected)
-                                if (newOption.isSelected) {
-                                    activeFilters[f.queryName] = newOption
-                                } else {
-                                    activeFilters.remove(f.queryName)
-                                }
-                                newOption
-                            }
-                            op.isSelected -> op.copy(isSelected = false)
-                            else -> op
+            when (option) {
+                is Option.ViewMore -> {
+                    it.filters.value = it.filters.value.map { f ->
+                        if (filter.queryId == f.queryId) {
+                            f.copy(
+                                options = f.options.filterIsInstance<Option.StringValue>()
+                                    .map { o -> o.copy(isVisible = true) })
+                        } else {
+                            f
                         }
-                    })
-                } else {
-                    f
+                    }
+                }
+                is Option.StringValue -> {
+                    it.pagination.reset()
+                    it.filters.value = it.filters.value.map { f ->
+                        if (filter.queryId == f.queryId) {
+                            f.copy(options = f.options.map { op ->
+                                when {
+                                    op is Option.StringValue && option.value == op.value -> {
+                                        val newOption = op.copy(isSelected = !op.isSelected)
+                                        if (newOption.isSelected) {
+                                            activeFilters[f.queryId] = newOption
+                                        } else {
+                                            activeFilters.remove(f.queryId)
+                                        }
+                                        newOption
+                                    }
+                                    op is Option.StringValue && op.isSelected -> op.copy(isSelected = false)
+                                    else -> op
+                                }
+                            })
+                        } else {
+                            f
+                        }
+                    }
+                    it.search(
+                        addPage = false,
+                        withDelay = false,
+                        withProgress = false,
+                    )
                 }
             }
-            it.search(
-                addPage = false,
-                withDelay = false,
-                withProgress = false,
-            )
         }
     }
 
@@ -137,23 +166,29 @@ internal class SearchEventDelegate(
             it.pagination.reset()
             it.filters.value = it.filters.value.map { f ->
                 when {
-                    filter == null || filter.name == f.name -> {
-                        f.copy(options = f.options.map { op ->
-                            if (op.isSelected) {
-                                if (f.queryName == Filter.MANUFACTURER_ID) {
-                                    it.manufacturerSearch.value = ""
+                    filter?.queryId == f.queryId -> {
+                        it.filterSearches.value = it.filterSearches.value.toMutableMap().apply {
+                            remove(f.queryId)
+                        }
+                        f.copy(
+                            options = f.options.map { op ->
+                                if (op is Option.StringValue && op.isSelected) {
+                                    activeFilters.remove(f.queryId)
+                                    op.copy(isSelected = false)
+                                } else {
+                                    op
                                 }
-                                activeFilters.remove(f.queryName)
-                                op.copy(isSelected = false)
-                            } else {
-                                op
                             }
-                        })
+                        )
                     }
                     else -> f
                 }
             }
-            if (filter == null) it.productSearch.value = ""
+            if (filter == null) {
+                activeFilters.clear()
+                it.productSearch.value = ""
+                it.filterSearches.value = emptyMap()
+            }
             it.search(
                 addPage = false,
                 withDelay = false,
@@ -212,28 +247,26 @@ internal class SearchEventDelegate(
         }
     }
 
-    private fun updateQuery(search: String? = null, manufacturer: String? = null) {
-        search?.let {
-            activeFilters["search"] = Option(it, false)
-        }
-        manufacturer?.let {
-            activeFilters[Filter.MANUFACTURER_ID] = Option(it, false)
+    private inline fun List<Facet>.toFilter(): List<Filter> {
+        return map { facet ->
+            val options = facet.values.mapIndexed { index, v ->
+                Option.StringValue(
+                    v.value,
+                    isSelected = activeFilters[facet.queryId]
+                        ?.takeIf { v.value == it.value }?.isSelected
+                        ?: false,
+                    isVisible = index < MAX_OPTIONS,
+                )
+            }
+            Filter(
+                name = facet.displayName,
+                queryId = facet.queryId,
+                options = if (facet.values.size > MAX_OPTIONS) options + Option.ViewMore else options,
+            )
         }
     }
 
-    private inline fun List<Facet>.toFilter(): List<Filter> {
-        return map { facet ->
-            Filter(
-                facet.displayName,
-                facet.queryId,
-                facet.values.map { v ->
-                    Option(
-                        v.value,
-                        activeFilters[facet.queryId]?.takeIf { v.value == it.value }?.isSelected
-                            ?: false
-                    )
-                },
-            )
-        }
+    companion object {
+        private const val MAX_OPTIONS = 5
     }
 }
