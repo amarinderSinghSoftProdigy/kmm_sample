@@ -119,7 +119,7 @@
 "cancel" = "Cancel";
 "clear_all" = "Clear All";
 "clear" = "Clear";
-"search_manufacturer" = "Search Manufacturer";
+"view_more" = "View More";
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";

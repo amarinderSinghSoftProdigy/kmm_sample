@@ -19,7 +19,7 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var filters: SwiftDataSource<NSArray>
-    @ObservedObject var manufucturerSearch: SwiftDataSource<NSString>
+    @ObservedObject var filterSearches: SwiftDataSource<NSDictionary>
     
     @ObservedObject var autoComplete: SwiftDataSource<NSArray>
     
@@ -67,7 +67,7 @@ struct GlobalSearchScreen: View {
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
-        self.manufucturerSearch = SwiftDataSource(dataSource: scope.manufacturerSearch)
+        self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
         
         self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
         
@@ -111,15 +111,17 @@ struct GlobalSearchScreen: View {
             
             if let filters = self.filters.value as? [DataFilter] {
                 ForEach(filters, id: \.self.name) { filter in
-                    let searchOption: SearchOption? = filter.queryName == DataFilter.Ids().MANUFACTURER_ID ?
-                        SearchOption(text: manufucturerSearch.value,
-                                     onSearch: { value in scope.searchManufacturer(input: value) }) : nil
+                    if let filtersSearches = self.filterSearches.value as? [String: String] {
 
-                    FilterView(filter: filter,
-                               searchOption: searchOption,
-                               onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                    option: option) },
-                               onClearFilter: { scope.clearFilter(filter: filter) })
+                        let searchOption = SearchOption(text: filtersSearches[filter.queryId],
+                                                        onSearch: { scope.searchFilter(filter: filter, input: $0) })
+                        
+                        FilterView(filter: filter,
+                                   searchOption: searchOption,
+                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                        option: option) },
+                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                    }
                 }
             }
         }
@@ -205,7 +207,7 @@ private struct FilterView: View {
     
     let searchOption: SearchOption?
     
-    let onSelectFilterOption: (DataOption<NSString>) -> ()
+    let onSelectFilterOption: (DataOption) -> ()
     let onClearFilter: () -> ()
     
     var body: some View {
@@ -230,13 +232,16 @@ private struct FilterView: View {
             }
             
             if let searchOption = self.searchOption {
-                SearchBar(placeholderLocalizationKey: "search_manufacturer",
-                          searchText: searchOption.text,
+                SearchBar(placeholderLocalizationKey: "search",
+                          searchText: searchOption.text as NSString?,
                           style: .small,
                           onTextChange: searchOption.onSearch)
             }
             
-            FlexibleView(data: filter.options,
+            let visibleFilterOptions = filter.options
+                .filter { ($0 as? DataOption.StringValue)?.isVisible != false  }
+            
+            FlexibleView(data: visibleFilterOptions,
                          spacing: 8,
                          alignment: .leading) { option in
                 FilterOption(option: option)
@@ -251,38 +256,77 @@ private struct FilterView: View {
 private struct FilterOption: View {
     private let height: CGFloat = 32
     
-    let option: DataOption<NSString>
+    let option: DataOption
     
     var body: some View {
-        guard let optionValue = option.value else { return AnyView(EmptyView()) }
+        Group {
+            let cornerRadius = height / 2
+            
+            switch option {
+            case let stringValueOption as DataOption.StringValue:
+                if stringValueOption.isVisible {
+                    StringValueOption(option: stringValueOption,
+                                      cornerRadius: cornerRadius)
+                        .frame(height: height)
+                }
+                
+            case is DataOption.ViewMore:
+                ViewMoreOption(cornerRadius: cornerRadius)
+                    .frame(height: height)
+                
+            default:
+                EmptyView()
+            }
+        }
+    }
+    
+    private struct StringValueOption: View {
+        let option: DataOption.StringValue
+        let cornerRadius: CGFloat
         
-        return AnyView(
+        var body: some View {
             ZStack {
                 let backgroundColor: AppColor = option.isSelected ? .yellow : .white
-                
+
                 backgroundColor.color
-                    .cornerRadius(height / 2)
-                
+                    .cornerRadius(cornerRadius)
+
                 HStack {
                     if option.isSelected {
                         Image(systemName: "checkmark")
                             .foregroundColor(appColor: .darkBlue)
                     }
-                    
+
                     let textWeight: TextWeight = option.isSelected ? .semiBold : .regular
-                    LocalizedText(localizationKey: optionValue as String,
+                    LocalizedText(localizationKey: option.value as String,
                                   textWeight: textWeight)
                 }
                 .padding(.horizontal, 10)
             }
-            .frame(height: height)
-        )
+        }
     }
     
+    private struct ViewMoreOption: View {
+        let cornerRadius: CGFloat
+        
+        var body: some View {
+            ZStack {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(AppColor.lightBlue.color,
+                            style: .init(lineWidth: 1))
+                
+                LocalizedText(localizationKey: "view_more",
+                              textWeight: .bold,
+                              fontSize: 12,
+                              color: .lightBlue)
+                .padding(.horizontal, 10)
+            }
+        }
+    }
 }
 
 private struct SearchOption {
-    let text: NSString?
+    let text: String?
     let onSearch: (String) -> ()
 }
 
