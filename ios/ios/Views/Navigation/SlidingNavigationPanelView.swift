@@ -190,6 +190,11 @@ private struct _SlidingPanelView: View {
                           style: style,
                           onTapAction: {
                             _ = navigationOption.select()
+                            
+                            if navigationOption == .LogOut() {
+                                NotificationCenter.default.post(.init(name: .RemoveDeviceNotificationToken))
+                            }
+                            
                             onTapActionCallback?()
                           })
         }

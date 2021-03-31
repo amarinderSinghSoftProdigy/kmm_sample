@@ -49,6 +49,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func registerForRemoteNotifications(with application: UIApplication) {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(removeDeviceNotificationsToken),
+                                               name: .RemoveDeviceNotificationToken,
+                                               object: nil)
+        
         UNUserNotificationCenter.current().delegate = self
 
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
@@ -69,6 +74,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+    
+    @objc func removeDeviceNotificationsToken() {
+        notificationsManager.removeDeviceToken()
     }
 }
 
