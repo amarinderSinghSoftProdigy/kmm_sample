@@ -218,12 +218,10 @@ struct UserManagementScreen: View {
                         
                         Spacer()
                         
-                        if user.subscriptionData?.status != nil {
-                            Text(user.geoData.formattedDistance)
-                                .medicoText(fontSize: 12,
-                                            color: .grey3,
-                                            multilineTextAlignment: .leading)
-                        }
+                        Text(user.geoData.formattedDistance)
+                            .medicoText(fontSize: 12,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
                     }
                 }
                 .padding(.horizontal, 10)
