@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +61,7 @@ private fun RowScope.BigButton(
 ) {
     Surface(
         modifier = Modifier.weight(1f).clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
         Column(

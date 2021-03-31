@@ -405,6 +405,7 @@ fun Dropdown(
     rememberChooseKey: Any?,
     value: String,
     dropDownItems: List<String>,
+    readOnly: Boolean = false,
     onSelected: (String) -> Unit,
 ) {
     val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
@@ -424,26 +425,28 @@ fun Dropdown(
             color = Color.Black,
             fontSize = 14.sp,
         )
-        Icon(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            imageVector = Icons.Default.ArrowDropDown,
-            contentDescription = null,
-            tint = ConstColors.gray,
-        )
-        DropdownMenu(
-            expanded = choosing.value,
-            onDismissRequest = { choosing.value = false },
-            content = {
-                dropDownItems.forEach {
-                    DropdownMenuItem(
-                        onClick = {
-                            choosing.value = false
-                            onSelected(it)
-                        },
-                        content = { Text(it) },
-                    )
-                }
-            },
-        )
+        if (!readOnly) {
+            Icon(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = ConstColors.gray,
+            )
+            DropdownMenu(
+                expanded = choosing.value,
+                onDismissRequest = { choosing.value = false },
+                content = {
+                    dropDownItems.forEach {
+                        DropdownMenuItem(
+                            onClick = {
+                                choosing.value = false
+                                onSelected(it)
+                            },
+                            content = { Text(it) },
+                        )
+                    }
+                },
+            )
+        }
     }
 }
