@@ -73,7 +73,3 @@ extension NotificationsManager: NotificationsServiceDelegate {
         firebaseMessaging.handleNewToken(token: newToken)
     }
 }
-
-extension NSNotification.Name {
-    static var RemoveDeviceNotificationToken = Notification.Name("RemoveDeviceNotificationToken")
-}
