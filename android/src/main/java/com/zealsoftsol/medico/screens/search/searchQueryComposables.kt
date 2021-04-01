@@ -457,7 +457,7 @@ fun BasicSearchBar(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = ConstColors.gray,
-                            modifier = modifier.clickable(onClick = { onSearch("") })
+                            modifier = modifier.clickable(indication = null, onClick = { onSearch("") })
                         )
                     }
                 }
@@ -466,7 +466,7 @@ fun BasicSearchBar(
                         painter = painterResource(id = R.drawable.ic_filter),
                         contentDescription = null,
                         tint = ConstColors.gray,
-                        modifier = modifier.clickable(onClick = { searchBarEnd.onClick() })
+                        modifier = modifier.clickable(indication = null, onClick = { searchBarEnd.onClick() })
                     )
                 }
             }

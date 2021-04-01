@@ -27,7 +27,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -66,9 +65,9 @@ fun TabBar(
     color: Color = MaterialTheme.colors.secondary,
     content: @Composable () -> Unit,
 ) {
-    Surface(
-        color = color,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
+    Box(
+        modifier = Modifier.fillMaxWidth().height(56.dp).background(color),
+        contentAlignment = Alignment.Center,
     ) {
         content()
     }
