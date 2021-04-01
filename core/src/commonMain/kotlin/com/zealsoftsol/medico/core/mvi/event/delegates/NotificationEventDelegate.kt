@@ -51,19 +51,14 @@ internal class NotificationEventDelegate(
     }
 
     private suspend fun select(data: NotificationData) {
-        require(data.actions.isNotEmpty()) { "can not select notification with no actions" }
-
         navigator.withScope<NotificationScope.All> {
             val nextScope = when (data.type) {
-                NotificationType.SUBSCRIBE_REQUEST ->
+                NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION ->
                     NotificationScope.Preview.SubscriptionRequest(data)
-                NotificationType.SUBSCRIBE_DECISION ->
-                    throw UnsupportedOperationException("subscription decision is not previewable")
                 NotificationType.ORDER_REQUEST -> TODO("not implemented")
             } as GenericNotificationScopePreview
             setScope(nextScope)
             val (result, isSuccess) = withProgress {
-//                notificationRepo.markNotification(data.id, NotificationStatus.READ)
                 notificationRepo.getNotificationDetails(data.id)
             }
             if (isSuccess && result != null) {
@@ -71,8 +66,9 @@ internal class NotificationEventDelegate(
                 when {
                     result.customerData != null && result.subscriptionOption != null -> {
                         nextScope.details.value = NotificationDetails.TypeSafe.Subscription(
-                            result.customerData!!,
-                            result.subscriptionOption!!
+                            isReadOnly = data.type == NotificationType.SUBSCRIBE_DECISION,
+                            customerData = result.customerData!!,
+                            option = result.subscriptionOption!!,
                         )
                     }
                     else -> {

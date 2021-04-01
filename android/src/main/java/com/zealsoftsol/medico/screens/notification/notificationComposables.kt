@@ -182,21 +182,19 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                 color = ConstColors.gray,
                 modifier = Modifier.align(Alignment.TopEnd),
             )
-            if (item.actions.isNotEmpty()) {
-                MedicoSmallButton(
-                    text = stringResourceByName(
-                        name = item.selectedAction?.completedActionStringId
-                            ?: item.type.buttonStringId
-                    ),
-                    enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    onClick = if (item.selectedAction == null) {
-                        onClick
-                    } else {
-                        {}
-                    },
-                )
-            }
+            MedicoSmallButton(
+                text = stringResourceByName(
+                    name = item.selectedAction?.completedActionStringId
+                        ?: item.type.buttonStringId
+                ),
+                enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
+                modifier = Modifier.align(Alignment.BottomEnd),
+                onClick = if (item.selectedAction == null) {
+                    onClick
+                } else {
+                    {}
+                },
+            )
         }
     }
 }
@@ -224,16 +222,18 @@ private fun PreviewNotifications(scope: NotificationScope.Preview<*, *>) {
                     }
                 }
             }
-            Space(40.dp)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                scope.notification.actions.forEach {
-                    MedicoSmallButton(
-                        modifier = Modifier.weight(1f),
-                        widthModifier = { fillMaxWidth() },
-                        text = stringResourceByName(name = it.actionStringId),
-                        enabledColor = if (it.isHighlighted) ConstColors.yellow else MaterialTheme.colors.secondary,
-                        onClick = { scope.selectAction(it) },
-                    )
+            if (scope.notification.actions.isNotEmpty()) {
+                Space(40.dp)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    scope.notification.actions.forEach {
+                        MedicoSmallButton(
+                            modifier = Modifier.weight(1f),
+                            widthModifier = { fillMaxWidth() },
+                            text = stringResourceByName(name = it.actionStringId),
+                            enabledColor = if (it.isHighlighted) ConstColors.yellow else MaterialTheme.colors.secondary,
+                            onClick = { scope.selectAction(it) },
+                        )
+                    }
                 }
             }
         }
@@ -302,7 +302,9 @@ private fun SubscriptionDeatails(
                     modifier = Modifier.width(100.dp),
                     rememberChooseKey = this,
                     value = details.option.paymentMethod.serverValue,
-                    dropDownItems = PaymentMethod.values().map { it.serverValue },
+                    dropDownItems = if (details.isReadOnly) emptyList() else PaymentMethod.values()
+                        .map { it.serverValue },
+                    readOnly = details.isReadOnly,
                     onSelected = {
                         val method = when (it) {
                             PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
@@ -327,9 +329,10 @@ private fun SubscriptionDeatails(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = ConstColors.lightBlue,
-                        unfocusedBorderColor = ConstColors.gray,
+                        unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
                     ),
                     maxLines = 1,
+                    readOnly = details.isReadOnly,
                     onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
                 )
             }
@@ -346,9 +349,10 @@ private fun SubscriptionDeatails(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = ConstColors.lightBlue,
-                    unfocusedBorderColor = ConstColors.gray,
+                    unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
                 ),
                 maxLines = 1,
+                readOnly = details.isReadOnly,
                 onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
             )
         }
