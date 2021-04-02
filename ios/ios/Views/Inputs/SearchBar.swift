@@ -107,7 +107,7 @@ struct SearchBar: View {
          leadingButton: SearchBarButton? = SearchBarButton(button: .smallMagnifyingGlass),
          trailingButton: SearchBarButton? = SearchBarButton(emptyTextButton: nil,
                                                             enteredTextButton: .clear),
-         onTextChange: ((String) -> Void)? = nil) {
+         onTextChange: ((String, Bool) -> Void)? = nil) {
         self.placeholderLocalizationKey = placeholderLocalizationKey
         
         self.style = style
@@ -120,7 +120,7 @@ struct SearchBar: View {
         self.isDisabled = onTextChange == nil
         
         self._text = Binding.init(get: { (searchText ?? "") as String },
-                                  set: { value in onTextChange?(value) })
+                                  set: { value in onTextChange?(value, false) })
     }
     
     enum Style {

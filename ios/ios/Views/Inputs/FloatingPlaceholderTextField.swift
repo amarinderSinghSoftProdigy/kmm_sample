@@ -206,7 +206,7 @@ struct FloatingPlaceholderModifier: ViewModifier {
                     .isHidden(!placeholderMoved && !text.isEmpty)
                     .animation(.easeOut)
                 
-                let textFieldHeight = height - 12
+                let textFieldHeight = height + (placeholderMoved ? textOffset + 4 : 0)
                 let textFieldAlignment: Alignment = placeholderMoved ? .bottomLeading : .leading
                 content
                     .medicoText(fontSize: 15,

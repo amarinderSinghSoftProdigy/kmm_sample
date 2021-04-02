@@ -94,7 +94,7 @@ struct UserManagementScreen: View {
                                                                        enteredTextButton: .smallMagnifyingGlass),
                               trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
                                                                         enteredTextButton: .clear),
-                              onTextChange: { newValue in scope.search(value: newValue) })
+                              onTextChange: { newValue, _ in scope.search(value: newValue) })
                     
                     if scope.tabs.count == 1 {
                         self.singleTabView

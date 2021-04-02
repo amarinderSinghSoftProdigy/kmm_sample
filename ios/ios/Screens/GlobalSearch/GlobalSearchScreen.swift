@@ -81,7 +81,8 @@ struct GlobalSearchScreen: View {
                       style: .small,
                       showsCancelButton: false,
                       trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
-                      onTextChange: { value in scope.searchProduct(input: value) })
+                      onTextChange: { value, isFromKeyboard in scope.searchProduct(input: value,
+                                                                                   isFromKeyboard: isFromKeyboard) })
             
             Button(LocalizedStringKey("cancel")) {
                 scrollData.clear(list: .globalSearchProducts)
@@ -235,7 +236,7 @@ private struct FilterView: View {
                 SearchBar(placeholderLocalizationKey: "search",
                           searchText: searchOption.text as NSString?,
                           style: .small,
-                          onTextChange: searchOption.onSearch)
+                          onTextChange: { value, _ in searchOption.onSearch(value) })
             }
             
             let visibleFilterOptions = filter.options

@@ -29,7 +29,7 @@ struct ErrorAlert: View {
                 CustomAlert<AnyView>(titleKey: error.title,
                                      descriptionKey: error.body,
                                      button: .standard(action: dismissAction),
-                                     dismissAction: dismissAction)
+                                     outsideTapAction: dismissAction)
             }
         }
         .animation(.default)
@@ -104,7 +104,7 @@ struct SimpleNotificationAlert: View {
         CustomAlert<AnyView>(titleKey: notification.title,
                              descriptionKey: notification.body,
                              button: .standard(action: dismissAction),
-                             dismissAction: dismissAction)
+                             outsideTapAction: dismissAction)
     }
 }
 
@@ -114,7 +114,8 @@ struct CustomAlert<Content: View>: View {
     let descriptionKey: String?
     
     let primaryButton: AlertButton
-    let dismissAction: (() -> ())?
+    let cancelButton: AlertButton?
+    let outsideTapAction: (() -> ())?
     
     let customBody: Content?
     
@@ -123,7 +124,7 @@ struct CustomAlert<Content: View>: View {
             BlurEffectView()
                 .edgesIgnoringSafeArea(.all)
                 .onTapGesture {
-                    dismissAction?()
+                    outsideTapAction?()
                 }
             
             VStack(spacing: 0) {
@@ -140,21 +141,21 @@ struct CustomAlert<Content: View>: View {
                     }
                 }
                 .padding(20)
+                .fixedSize(horizontal: false, vertical: true)
                 
                 self.customBody
 
                 VStack(spacing: 0) {
                     Separator()
                     
-                    Button(action: { primaryButton.action?() }) {
-                        ZStack {
-                            Color.clear
+                    HStack(spacing: 0) {
+                        if let cancelButton = self.cancelButton {
+                            AlertButtonView(alertButton: cancelButton)
                             
-                            LocalizedText(localizationKey: primaryButton.text,
-                                          textWeight: .medium,
-                                          fontSize: 17,
-                                          color: .lightBlue)
+                            Divider()
                         }
+                        
+                        AlertButtonView(alertButton: primaryButton)
                     }
                     .frame(height: 44)
                 }
@@ -167,12 +168,14 @@ struct CustomAlert<Content: View>: View {
     init(titleKey: String,
          descriptionKey: String? = nil,
          button: AlertButton,
-         dismissAction: (() -> ())? = nil) {
+         cancelButton: AlertButton? = nil,
+         outsideTapAction: (() -> ())? = nil) {
         self.titleKey = titleKey
         self.descriptionKey = descriptionKey
         
         self.primaryButton = button
-        self.dismissAction = dismissAction
+        self.cancelButton = cancelButton
+        self.outsideTapAction = outsideTapAction
         
         self.customBody = nil
     }
@@ -180,7 +183,8 @@ struct CustomAlert<Content: View>: View {
     init(titleKey: String,
          descriptionKey: String? = nil,
          button: AlertButton,
-         dismissAction: (() -> ())? = nil,
+         cancelButton: AlertButton? = nil,
+         outsideTapAction: (() -> ())? = nil,
          @ViewBuilder content: () -> Content) {
         self.titleKey = titleKey
         self.descriptionKey = descriptionKey
@@ -188,7 +192,8 @@ struct CustomAlert<Content: View>: View {
         self.customBody = content()
         
         self.primaryButton = button
-        self.dismissAction = dismissAction
+        self.cancelButton = cancelButton
+        self.outsideTapAction = outsideTapAction
     }
     
     struct Separator: View {
@@ -201,10 +206,31 @@ struct CustomAlert<Content: View>: View {
     
     struct AlertButton {
         let text: String
+        let isEnabled: Bool
         let action: (() -> ())?
         
         static func standard(action: (() -> ())?) -> AlertButton {
-            AlertButton(text: "okay", action: action)
+            AlertButton(text: "okay",
+                        isEnabled: true,
+                        action: action)
+        }
+    }
+    
+    struct AlertButtonView: View {
+        let alertButton: AlertButton
+        
+        var body: some View {
+            Button(action: { alertButton.action?() }) {
+                ZStack {
+                    Color.clear
+                    
+                    LocalizedText(localizationKey: alertButton.text,
+                                  textWeight: .medium,
+                                  fontSize: 17,
+                                  color: alertButton.isEnabled ? .lightBlue : .lightGrey)
+                }
+            }
+            .disabled(!alertButton.isEnabled)
         }
     }
 }

@@ -158,7 +158,7 @@
 "credit" = "Credit";
 "cash_on_delivery" = "Cash on delivery";
 "save" = "Save";
-"edit_number_of_days" = "Edit number of days";
+"no_of_credit_days" = "No. of Credit Days";
 "thank_you_for_request" = "Thank you for your request!";
 
 // MARK: Hospitals Management
