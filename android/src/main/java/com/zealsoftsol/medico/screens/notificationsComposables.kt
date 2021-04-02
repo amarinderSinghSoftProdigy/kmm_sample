@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.PaymentMethod
@@ -44,7 +43,6 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
         text = {
             when (notification) {
                 is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(notification)
-                is ManagementScope.ChooseNumberOfDays -> BodyForChooseNumberOfDays(notification)
                 is ManagementScope.Congratulations -> Text(
                     text = String.format(
                         stringResource(id = R.string.retailer_added_template),
@@ -56,17 +54,12 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
         },
         buttons = {
             when (notification) {
-                is ManagementScope.ChoosePaymentMethod -> ButtonsForChoosePaymentMethod(
-                    onCancel = onDismiss,
-                    onNext = { notification.sendRequest() },
-                )
-                is ManagementScope.ChooseNumberOfDays -> Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    AlertButton(
-                        onClick = { notification.save() },
-                        text = stringResource(id = R.string.save),
+                is ManagementScope.ChoosePaymentMethod -> {
+                    val isSendEnabled = notification.isSendEnabled.flow.collectAsState()
+                    ButtonsForChoosePaymentMethod(
+                        isSendEnabled = isSendEnabled.value,
+                        onCancel = onDismiss,
+                        onNext = { notification.sendRequest() },
                     )
                 }
                 is ManagementScope.Congratulations -> Row(
@@ -90,6 +83,7 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
 @Composable
 private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePaymentMethod) {
     val paymentMethod = notification.paymentMethod.flow.collectAsState()
+    val creditDays = notification.creditDays.flow.collectAsState()
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(
@@ -101,6 +95,14 @@ private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePayme
             Text(
                 text = stringResource(id = R.string.credit),
                 color = Color.Black,
+            )
+        }
+        if (paymentMethod.value == PaymentMethod.CREDIT) {
+            InputField(
+                hint = stringResource(id = R.string.no_of_credit_days),
+                text = creditDays.value,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                onValueChange = { notification.changeCreditDays(it) },
             )
         }
         Space(16.dp)
@@ -120,22 +122,11 @@ private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePayme
 }
 
 @Composable
-private fun BodyForChooseNumberOfDays(notification: ManagementScope.ChooseNumberOfDays) {
-    val days = notification.days.flow.collectAsState()
-    InputField(
-        hint = "",
-        text = days.value.toString().log("days"),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        onValueChange = { newValue ->
-            newValue.toIntOrNull()?.let {
-                notification.changeDays(it)
-            }
-        },
-    )
-}
-
-@Composable
-private fun ButtonsForChoosePaymentMethod(onCancel: () -> Unit, onNext: () -> Unit) {
+private fun ButtonsForChoosePaymentMethod(
+    isSendEnabled: Boolean,
+    onCancel: () -> Unit,
+    onNext: () -> Unit,
+) {
     Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
         AlertButton(
             onClick = onCancel,
@@ -144,6 +135,7 @@ private fun ButtonsForChoosePaymentMethod(onCancel: () -> Unit, onNext: () -> Un
         Space(8.dp)
         AlertButton(
             onClick = onNext,
+            isEnabled = isSendEnabled,
             text = stringResource(id = R.string.send_request),
         )
     }

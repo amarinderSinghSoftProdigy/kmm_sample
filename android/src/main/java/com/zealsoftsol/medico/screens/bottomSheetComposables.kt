@@ -272,6 +272,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             }
         }
     }
+    Space(8.dp)
     when {
         entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
             DataWithLabel(

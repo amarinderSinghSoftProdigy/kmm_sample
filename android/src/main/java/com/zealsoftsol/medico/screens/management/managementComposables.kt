@@ -44,14 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
-import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
@@ -123,7 +121,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
             elevation = 0.dp,
             horizontalPadding = 16.dp,
             isSearchFocused = true,
-            onSearch = { scope.search(it) },
+            onSearch = { v, _ -> scope.search(v) },
             onIconClick = {
                 scope.search("")
                 showSearchOverlay.value = true
@@ -183,7 +181,6 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
             },
         )
     }
-    if (scope is CommonScope.WithNotifications) scope.showNotificationAlert()
 }
 
 @Composable

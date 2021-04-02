@@ -39,8 +39,9 @@ internal class ProductEventDelegate(
         navigator.dropScope()
         EventCollector.sendEvent(
             Event.Action.Search.SearchInput(
+                isOneOf = true,
                 product.name,
-                mapOf(product.query to product.baseProductName)
+                hashMapOf(product.query to product.baseProductName)
             )
         )
     }

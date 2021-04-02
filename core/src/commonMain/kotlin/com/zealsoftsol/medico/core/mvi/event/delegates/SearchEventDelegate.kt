@@ -26,7 +26,7 @@ internal class SearchEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
-        is Event.Action.Search.SearchInput -> searchBy(event.search, event.query)
+        is Event.Action.Search.SearchInput -> searchBy(event.isOneOf, event.search, event.query)
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Search.SearchFilter -> searchFilter(event.filter, event.value)
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
@@ -35,9 +35,11 @@ internal class SearchEventDelegate(
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
     }
 
-    private suspend fun searchBy(search: String?, query: Map<String, String>) {
+    private suspend fun searchBy(isOneOf: Boolean, search: String?, query: Map<String, String>) {
         navigator.withScope<SearchScope> {
             it.pagination.reset()
+            if (search != null) it.productSearch.value = search
+            it.autoComplete.value = emptyList()
             query.forEach { (key, value) ->
                 activeFilters[key] = Option.StringValue(value, false)
             }
@@ -47,10 +49,11 @@ internal class SearchEventDelegate(
                 withDelay = false,
                 withProgress = !isWildcardSearch,
                 onEnd = {
-                    query.keys.forEach { key -> activeFilters.remove(key) }
+                    if (isOneOf) {
+                        query.keys.forEach { key -> activeFilters.remove(key) }
+                    }
                 },
             )
-            if (search != null) it.productSearch.value = search
         }
     }
 

@@ -24,7 +24,7 @@ class SearchScope(
     val pagination: Pagination = Pagination()
 
     init {
-        EventCollector.sendEvent(Event.Action.Search.SearchInput())
+        EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
     }
 
     fun toggleFilter() {
@@ -46,9 +46,14 @@ class SearchScope(
         }
     }
 
-    fun searchProduct(input: String): Boolean {
+    fun searchProduct(input: String, isFromKeyboard: Boolean): Boolean {
         return trimInput(input, productSearch.value) {
-            EventCollector.sendEvent(Event.Action.Search.SearchAutoComplete(it))
+            val event = if (isFromKeyboard) {
+                Event.Action.Search.SearchInput(isOneOf = false, search = input)
+            } else {
+                Event.Action.Search.SearchAutoComplete(it)
+            }
+            EventCollector.sendEvent(event)
         }
     }
 
