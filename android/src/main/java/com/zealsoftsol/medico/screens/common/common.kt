@@ -123,7 +123,7 @@ fun MedicoSmallButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-        modifier = modifier.widthModifier().height(32.dp),
+        modifier = modifier.widthModifier(),
     ) {
         Text(
             text = text,
@@ -179,11 +179,13 @@ private fun SimpleDialog(
 fun AlertButton(
     onClick: () -> Unit,
     text: String,
+    isEnabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+        enabled = isEnabled,
     ) {
         Text(
             text = text.toUpperCase(),

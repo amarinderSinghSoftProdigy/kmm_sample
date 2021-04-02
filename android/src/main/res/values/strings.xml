@@ -141,6 +141,7 @@
     <string name="subscribe_request_button">Action Required</string>
     <string name="order_request_button">View Order</string>
     <string name="credit_days">Credit days</string>
+    <string name="no_of_credit_days">No. of Credit Days</string>
     <string name="discount_rate">Discount Rate</string>
     <string name="gstin_pan_required">GSTIN or PAN is required for registration</string>
     <string name="verified">Verified</string>

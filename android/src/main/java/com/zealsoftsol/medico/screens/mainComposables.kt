@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
@@ -54,6 +55,7 @@ import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -206,6 +208,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                     is PreviewUserScope -> PreviewUserScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                 }
+                if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
     )

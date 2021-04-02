@@ -30,8 +30,10 @@ internal class ManagementEventDelegate(
         is Event.Action.Management.Search -> searchUserManagement(event.value)
         is Event.Action.Management.Select -> select(event.item)
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
-        is Event.Action.Management.ChoosePayment -> choosePayment(event.paymentMethod)
-        is Event.Action.Management.ChooseNumberOfDays -> chooseNumberOfDays(event.days)
+        is Event.Action.Management.ChoosePayment -> choosePayment(
+            event.paymentMethod,
+            event.creditDays
+        )
         is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
     }
 
@@ -91,22 +93,13 @@ internal class ManagementEventDelegate(
         }
     }
 
-    private suspend fun choosePayment(paymentMethod: PaymentMethod) {
+    private suspend fun choosePayment(paymentMethod: PaymentMethod, creditDays: Int?) {
         navigator.withScope<ManagementScope.User.Stockist> {
-            subscribeRequest =
-                requireNotNull(subscribeRequest).copy(paymentMethod = paymentMethod.serverValue)
-            it.notifications.value = if (paymentMethod == PaymentMethod.CREDIT) {
-                ManagementScope.ChooseNumberOfDays()
-            } else {
-                subscribe()
-                ManagementScope.ThankYou
-            }
-        }
-    }
-
-    private suspend fun chooseNumberOfDays(days: Int) {
-        navigator.withScope<ManagementScope.User.Stockist> {
-            subscribeRequest = requireNotNull(subscribeRequest).copy(noOfCreditDays = days)
+            subscribeRequest = requireNotNull(subscribeRequest).copy(
+                paymentMethod = paymentMethod.serverValue,
+                noOfCreditDays = creditDays ?: 0,
+            )
+            it.notifications.value = null
             subscribe()
             it.notifications.value = ManagementScope.ThankYou
         }

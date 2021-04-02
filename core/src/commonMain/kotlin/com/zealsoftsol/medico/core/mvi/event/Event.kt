@@ -68,9 +68,16 @@ sealed class Event {
             override val typeClazz: KClass<*> = Search::class
 
             data class SearchInput(
+                val isOneOf: Boolean,
                 val search: String? = null,
-                val query: Map<String, String> = emptyMap()
-            ) : Search()
+                val query: HashMap<String, String> = hashMapOf(),
+            ) : Search() {
+                init {
+                    if (search != null) {
+                        query["search"] = search
+                    }
+                }
+            }
 
             data class SearchAutoComplete(val value: String) : Search()
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
@@ -94,8 +101,8 @@ sealed class Event {
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
             data class RequestSubscribe(val item: EntityInfo) : Management()
-            data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
-            data class ChooseNumberOfDays(val days: Int) : Management()
+            data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
+                Management()
             object VerifyRetailerTraderDetails : Management()
         }
 

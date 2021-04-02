@@ -120,7 +120,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             elevation = 0.dp,
             horizontalPadding = 0.dp,
             isSearchFocused = true,
-            onSearch = { scope.search(it) },
+            onSearch = { v, _ -> scope.search(v) },
             onIconClick = {
                 scope.search("")
                 showSearchOverlay.value = true

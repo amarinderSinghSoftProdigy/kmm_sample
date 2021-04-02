@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -60,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -95,7 +98,7 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
                 isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
-                onSearch = { scope.searchProduct(it) },
+                onSearch = { value, isFromKeyboard -> scope.searchProduct(value, isFromKeyboard) },
             )
             scope.storage.save("focus", false)
         }
@@ -336,7 +339,7 @@ private fun FilterSection(
             Space(12.dp)
             BasicSearchBar(
                 input = it.input,
-                onSearch = it.onSearch,
+                onSearch = { v, _ -> it.onSearch(v) },
             )
         }
         if (options.isNotEmpty()) {
@@ -418,7 +421,7 @@ fun BasicSearchBar(
     elevation: Dp = 2.dp,
     horizontalPadding: Dp = 8.dp,
     isSearchFocused: Boolean = false,
-    onSearch: (String) -> Unit
+    onSearch: (String, Boolean) -> Unit
 ) {
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         Icon(
@@ -444,8 +447,10 @@ fun BasicSearchBar(
             BasicTextField(
                 value = input,
                 cursorBrush = SolidColor(ConstColors.lightBlue),
-                onValueChange = onSearch,
+                onValueChange = { onSearch(it, false) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions { onSearch(input, true) },
                 modifier = Modifier.focusRequester(focusRequester).fillMaxWidth()
                     .padding(end = 32.dp),
             )
@@ -457,7 +462,9 @@ fun BasicSearchBar(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = ConstColors.gray,
-                            modifier = modifier.clickable(indication = null, onClick = { onSearch("") })
+                            modifier = modifier.clickable(
+                                indication = null,
+                                onClick = { onSearch("", false) })
                         )
                     }
                 }

@@ -32,11 +32,11 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
         )
 
         internal fun default(userType: UserType) = listOfNotNull(
-            Settings,
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
             SeasonBoys.takeIf { userType == UserType.STOCKIST },
+            Settings,
         )
 
         internal fun footer() = listOf(
