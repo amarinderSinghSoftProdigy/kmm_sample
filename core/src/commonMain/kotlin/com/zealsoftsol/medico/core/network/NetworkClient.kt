@@ -29,6 +29,7 @@ import com.zealsoftsol.medico.data.PasswordResetRequest
 import com.zealsoftsol.medico.data.PasswordResetRequest2
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
@@ -298,6 +299,13 @@ class NetworkClient(
     override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
         ktorDispatcher {
             client.get<SimpleResponse<ProductResponse>>("$SEARCH_URL/api/v1/product/$productCode") {
+                withMainToken()
+            }.getWrappedBody()
+        }
+
+    override suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse> =
+        ktorDispatcher {
+            client.get<SimpleResponse<ProductBuyResponse>>("$SEARCH_URL/api/v1/search/buy/${productCode}") {
                 withMainToken()
             }.getWrappedBody()
         }

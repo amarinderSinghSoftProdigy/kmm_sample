@@ -213,20 +213,21 @@ object DebugScopeCreator {
                     marginPercent = "20%",
                     id = "VPR001560",
                     manufacturer = "Abbott",
-                    manufacturerId = "MA000021",
+//                    manufacturerId = "MA000021",
                     name = "Delok 30 Capsule DR",
                     shortName = "Delok 30 Capsule DR",
                     uomName = "strip of 10 Capsule DR",
                     buyingOption = BuyingOption.BUY,
                     compositions = listOf("Duloxetine 30mg"),
                     formattedMrp = "211.84",
-                    productCategoryName = "",
+//                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
                         "",
                         "In Stock",
                         StockStatus.IN_STOCK,
-                    )
+                    ),
+                    standardUnit = "1x20",
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(

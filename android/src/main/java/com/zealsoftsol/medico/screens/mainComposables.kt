@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -65,6 +66,7 @@ import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
+import com.zealsoftsol.medico.screens.product.BuyProductScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
@@ -202,6 +204,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                     }
                     is DashboardScope -> DashboardScreen(it)
                     is ProductInfoScope -> ProductScreen(it)
+                    is BuyProductScope -> BuyProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)

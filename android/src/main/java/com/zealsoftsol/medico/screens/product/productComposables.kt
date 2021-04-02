@@ -125,7 +125,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         when (scope.product.buyingOption) {
             BuyingOption.BUY -> {
                 MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
-                    scope.addToCart()
+                    scope.buy()
                 }
             }
             BuyingOption.QUOTE -> {

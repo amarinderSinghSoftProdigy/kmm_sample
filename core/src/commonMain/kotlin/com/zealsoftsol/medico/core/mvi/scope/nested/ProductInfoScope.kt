@@ -23,9 +23,7 @@ class ProductInfoScope private constructor(
     val compositionsString: String
         get() = product.compositions.reduce { acc, s -> "$acc\n$s" }
 
-    fun addToCart() {
-        TODO("not implemented")
-    }
+    fun buy() = EventCollector.sendEvent(Event.Action.Product.BuyProduct(product.code))
 
     fun toggleDetails() {
         isDetailsOpened.value = !isDetailsOpened.value
