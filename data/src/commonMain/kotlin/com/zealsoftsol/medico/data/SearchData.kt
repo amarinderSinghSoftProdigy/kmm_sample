@@ -25,20 +25,19 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val buyingOption: BuyingOption,
+    val buyingOption: BuyingOption? = null,
     val compositions: List<String>,
     val formattedMrp: String,
     val formattedPrice: String?,
     val id: String,
     val manufacturer: String,
-    val manufacturerId: String,
     val marginPercent: String?,
     val name: String,
-    val productCategoryName: String,
     val shortName: String,
     val code: String,
-    val stockInfo: StockInfo?,
+    val stockInfo: StockInfo? = null,
     val uomName: String,
+    val standardUnit: String?,
 )
 
 @Serializable
@@ -47,6 +46,20 @@ data class SellerInfo(
     val tradeName: String,
     val unitCode: String,
     val stockInfo: StockInfo,
+    val priceInfo: PriceInfo,
+)
+
+@Serializable
+data class PriceInfo(
+    val price: PriceData,
+    val mrp: PriceData,
+    val marginPercent: String
+)
+
+@Serializable
+data class PriceData(
+    val price: Double,
+    val formattedPrice: String
 )
 
 @Serializable
@@ -90,12 +103,17 @@ data class AutoComplete(
 
 data class Filter(
     val name: String,
-    val queryName: String,
-    val options: List<Option<String>>,
-) {
-    companion object Ids {
-        const val MANUFACTURER_ID = "manufacturers"
-    }
-}
+    val queryId: String,
+    val options: List<Option>,
+)
 
-data class Option<T>(val value: T, val isSelected: Boolean)
+sealed class Option {
+
+    data class StringValue(
+        val value: String,
+        val isSelected: Boolean,
+        val isVisible: Boolean = true
+    ) : Option()
+
+    object ViewMore : Option()
+}

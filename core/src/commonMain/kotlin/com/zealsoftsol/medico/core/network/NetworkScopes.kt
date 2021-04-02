@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -74,6 +75,7 @@ interface NetworkScope {
 
     interface Product : NetworkScope {
         suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse>
+        suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse>
     }
 
     interface Search : NetworkScope {

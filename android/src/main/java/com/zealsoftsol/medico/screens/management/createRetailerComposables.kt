@@ -38,7 +38,6 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
-import com.zealsoftsol.medico.screens.common.showNotificationAlert
 
 @Composable
 fun AddRetailerScreen(scope: ManagementScope.AddRetailer) {
@@ -200,6 +199,4 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     ReadOnlyField(registration.value.district, R.string.district)
     Space(dp = 12.dp)
     ReadOnlyField(registration.value.state, R.string.state)
-
-    scope.showNotificationAlert()
 }

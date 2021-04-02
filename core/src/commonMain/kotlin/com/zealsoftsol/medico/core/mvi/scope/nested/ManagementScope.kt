@@ -132,6 +132,8 @@ sealed class ManagementScope(
 
     class ChoosePaymentMethod(
         val paymentMethod: DataSource<PaymentMethod> = DataSource(PaymentMethod.CREDIT),
+        val creditDays: DataSource<String> = DataSource(""),
+        val isSendEnabled: DataSource<Boolean> = DataSource(false),
     ) : ScopeNotification {
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
@@ -140,26 +142,24 @@ sealed class ManagementScope(
 
         fun changePaymentMethod(paymentMethod: PaymentMethod) {
             this.paymentMethod.value = paymentMethod
+            isSendEnabled.value = when (paymentMethod) {
+                PaymentMethod.CASH -> true
+                PaymentMethod.CREDIT -> creditDays.value.toIntOrNull() != null
+            }
+        }
+
+        fun changeCreditDays(days: String) {
+            creditDays.value = days
+            isSendEnabled.value = days.toIntOrNull() != null
         }
 
         fun sendRequest() =
-            EventCollector.sendEvent(Event.Action.Management.ChoosePayment(paymentMethod.value))
-    }
-
-    class ChooseNumberOfDays(
-        val days: DataSource<Int> = DataSource(0),
-    ) : ScopeNotification {
-        override val isSimple: Boolean = false
-        override val isDismissible: Boolean = false
-        override val title: String = "enter_number_of_days"
-        override val body: String? = null
-
-        fun changeDays(days: Int) {
-            this.days.value = days
-        }
-
-        fun save() =
-            EventCollector.sendEvent(Event.Action.Management.ChooseNumberOfDays(days.value))
+            EventCollector.sendEvent(
+                Event.Action.Management.ChoosePayment(
+                    paymentMethod.value,
+                    creditDays.value.toIntOrNull()
+                )
+            )
     }
 
     object ThankYou : ScopeNotification {

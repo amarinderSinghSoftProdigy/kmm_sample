@@ -34,6 +34,7 @@ data class NotificationDetails(
         abstract fun withNewOption(option: NotificationOption): TypeSafe
 
         data class Subscription(
+            val isReadOnly: Boolean,
             val customerData: CustomerData,
             override val option: NotificationOption.Subscription,
         ) : TypeSafe() {
@@ -63,7 +64,7 @@ sealed class NotificationOption {
 
 enum class NotificationType(val buttonStringId: String) {
     SUBSCRIBE_REQUEST("subscribe_request_button"),
-    SUBSCRIBE_DECISION(""),
+    SUBSCRIBE_DECISION("subscribe_request_button"),
     ORDER_REQUEST("order_request_button"),
 }
 

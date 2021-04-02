@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -17,6 +18,7 @@ internal class ProductEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
         is Event.Action.Product.Select -> selectProduct(event.productCode)
         is Event.Action.Product.SelectAlternative -> selectAlternative(event.data)
+        is Event.Action.Product.BuyProduct -> buyProduct(event.productCode)
     }
 
     private suspend fun selectProduct(productCode: String) {
@@ -39,9 +41,21 @@ internal class ProductEventDelegate(
         navigator.dropScope()
         EventCollector.sendEvent(
             Event.Action.Search.SearchInput(
+                isOneOf = true,
                 product.name,
-                mapOf(product.query to product.baseProductName)
+                hashMapOf(product.query to product.baseProductName)
             )
         )
+    }
+
+    private suspend fun buyProduct(productCode: String) {
+        val (result, isSuccess) = navigator.withProgress {
+            networkProductScope.buyProductInfo(productCode)
+        }
+        if (isSuccess && result != null) {
+            navigator.setScope(BuyProductScope.get(result.product, result.sellerInfo))
+        } else {
+            navigator.setHostError(ErrorCode())
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.search
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.background
@@ -25,6 +26,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -59,16 +62,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
@@ -85,8 +87,8 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize()) {
         val search = scope.productSearch.flow.collectAsState()
         val autoComplete = scope.autoComplete.flow.collectAsState()
-        val manufacturer = scope.manufacturerSearch.flow.collectAsState()
         val filters = scope.filters.flow.collectAsState()
+        val filterSearches = scope.filterSearches.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
         TabBar {
@@ -96,7 +98,7 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
                 isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
-                onSearch = { scope.searchProduct(it) },
+                onSearch = { value, isFromKeyboard -> scope.searchProduct(value, isFromKeyboard) },
             )
             scope.storage.save("focus", false)
         }
@@ -113,14 +115,15 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                         },
                 )
                 filters.value.forEach { filter ->
-                    filter.log("filter")
                     FilterSection(
                         name = filter.name,
                         options = filter.options,
-                        searchOption = if (filter.queryName == Filter.MANUFACTURER_ID)
-                            SearchOption(manufacturer.value) { scope.searchManufacturer(it) }
-                        else
-                            null,
+                        searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                            scope.searchFilter(
+                                filter,
+                                it
+                            )
+                        },
                         onOptionClick = { scope.selectFilter(filter, it) },
                         onFilterClear = { scope.clearFilter(filter) },
                     )
@@ -307,9 +310,9 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
 @Composable
 private fun FilterSection(
     name: String,
-    options: List<Option<String>>,
+    options: List<Option>,
     searchOption: SearchOption? = null,
-    onOptionClick: (Option<String>) -> Unit,
+    onOptionClick: (Option) -> Unit,
     onFilterClear: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
@@ -336,7 +339,7 @@ private fun FilterSection(
             Space(12.dp)
             BasicSearchBar(
                 input = it.input,
-                onSearch = it.onSearch,
+                onSearch = { v, _ -> it.onSearch(v) },
             )
         }
         if (options.isNotEmpty()) {
@@ -351,33 +354,58 @@ private fun FilterSection(
 private data class SearchOption(val input: String, val onSearch: (String) -> Unit)
 
 @Composable
-private fun Chip(option: Option<String>, onClick: () -> Unit) {
-    Surface(
-        color = if (option.isSelected) ConstColors.yellow else Color.White,
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.padding(4.dp).clickable(
-            onClick = onClick,
-            indication = null,
-        )
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (option.isSelected) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.background,
-                    modifier = Modifier.padding(start = 10.dp).size(20.dp),
+private fun Chip(option: Option, onClick: () -> Unit) {
+    when (option) {
+        is Option.StringValue -> {
+            if (option.isVisible) Surface(
+                color = if (option.isSelected) ConstColors.yellow else Color.White,
+                shape = RoundedCornerShape(percent = 50),
+                modifier = Modifier.padding(4.dp).clickable(
+                    onClick = onClick,
+                    indication = null,
                 )
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (option.isSelected) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.background,
+                            modifier = Modifier.padding(start = 10.dp).size(20.dp),
+                        )
+                    }
+                    Text(
+                        text = option.value,
+                        color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                        fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(
+                            start = if (option.isSelected) 6.dp else 12.dp,
+                            end = 12.dp,
+                            top = 6.dp,
+                            bottom = 6.dp,
+                        ),
+                    )
+                }
             }
+        }
+        is Option.ViewMore -> Surface(
+            color = Color.Transparent,
+            border = BorderStroke(1.dp, ConstColors.lightBlue),
+            contentColor = ConstColors.lightBlue,
+            shape = RoundedCornerShape(percent = 50),
+            modifier = Modifier.padding(4.dp).clickable(
+                onClick = onClick,
+                indication = null,
+            )
+        ) {
             Text(
-                text = option.value,
-                color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
-                fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                text = stringResource(id = R.string.view_all),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W700,
                 modifier = Modifier.padding(
-                    start = if (option.isSelected) 6.dp else 12.dp,
-                    end = 12.dp,
-                    top = 6.dp,
-                    bottom = 6.dp,
+                    horizontal = 12.dp,
+                    vertical = 7.dp, // compensate for 2.sp smaller text
                 ),
             )
         }
@@ -393,7 +421,7 @@ fun BasicSearchBar(
     elevation: Dp = 2.dp,
     horizontalPadding: Dp = 8.dp,
     isSearchFocused: Boolean = false,
-    onSearch: (String) -> Unit
+    onSearch: (String, Boolean) -> Unit
 ) {
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         Icon(
@@ -419,8 +447,10 @@ fun BasicSearchBar(
             BasicTextField(
                 value = input,
                 cursorBrush = SolidColor(ConstColors.lightBlue),
-                onValueChange = onSearch,
+                onValueChange = { onSearch(it, false) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions { onSearch(input, true) },
                 modifier = Modifier.focusRequester(focusRequester).fillMaxWidth()
                     .padding(end = 32.dp),
             )
@@ -432,7 +462,9 @@ fun BasicSearchBar(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = ConstColors.gray,
-                            modifier = modifier.clickable(onClick = { onSearch("") })
+                            modifier = modifier.clickable(
+                                indication = null,
+                                onClick = { onSearch("", false) })
                         )
                     }
                 }
@@ -441,7 +473,7 @@ fun BasicSearchBar(
                         painter = painterResource(id = R.drawable.ic_filter),
                         contentDescription = null,
                         tint = ConstColors.gray,
-                        modifier = modifier.clickable(onClick = { searchBarEnd.onClick() })
+                        modifier = modifier.clickable(indication = null, onClick = { searchBarEnd.onClick() })
                     )
                 }
             }

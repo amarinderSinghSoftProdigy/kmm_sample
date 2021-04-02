@@ -68,15 +68,22 @@ sealed class Event {
             override val typeClazz: KClass<*> = Search::class
 
             data class SearchInput(
+                val isOneOf: Boolean,
                 val search: String? = null,
-                val query: Map<String, String> = emptyMap()
-            ) : Search()
+                val query: HashMap<String, String> = hashMapOf(),
+            ) : Search() {
+                init {
+                    if (search != null) {
+                        query["search"] = search
+                    }
+                }
+            }
 
             data class SearchAutoComplete(val value: String) : Search()
-            data class SelectFilter(val filter: Filter, val option: Option<String>) : Search()
+            data class SelectFilter(val filter: Filter, val option: Option) : Search()
+            data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
-            data class SearchManufacturer(val value: String) : Search()
             object LoadMoreProducts : Search()
         }
 
@@ -85,6 +92,7 @@ sealed class Event {
 
             data class Select(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
+            data class BuyProduct(val productCode: String) : Product()
         }
 
         sealed class Management : Action() {
@@ -94,8 +102,8 @@ sealed class Event {
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
             data class RequestSubscribe(val item: EntityInfo) : Management()
-            data class ChoosePayment(val paymentMethod: PaymentMethod) : Management()
-            data class ChooseNumberOfDays(val days: Int) : Management()
+            data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
+                Management()
             object VerifyRetailerTraderDetails : Management()
         }
 

@@ -27,7 +27,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -66,9 +65,9 @@ fun TabBar(
     color: Color = MaterialTheme.colors.secondary,
     content: @Composable () -> Unit,
 ) {
-    Surface(
-        color = color,
-        modifier = Modifier.fillMaxWidth().height(56.dp),
+    Box(
+        modifier = Modifier.fillMaxWidth().height(56.dp).background(color),
+        contentAlignment = Alignment.Center,
     ) {
         content()
     }
@@ -124,7 +123,7 @@ fun MedicoSmallButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
-        modifier = modifier.widthModifier().height(32.dp),
+        modifier = modifier.widthModifier(),
     ) {
         Text(
             text = text,
@@ -180,11 +179,13 @@ private fun SimpleDialog(
 fun AlertButton(
     onClick: () -> Unit,
     text: String,
+    isEnabled: Boolean = true,
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.textButtonColors(contentColor = ConstColors.lightBlue),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
+        enabled = isEnabled,
     ) {
         Text(
             text = text.toUpperCase(),
@@ -405,6 +406,7 @@ fun Dropdown(
     rememberChooseKey: Any?,
     value: String,
     dropDownItems: List<String>,
+    readOnly: Boolean = false,
     onSelected: (String) -> Unit,
 ) {
     val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
@@ -424,26 +426,28 @@ fun Dropdown(
             color = Color.Black,
             fontSize = 14.sp,
         )
-        Icon(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            imageVector = Icons.Default.ArrowDropDown,
-            contentDescription = null,
-            tint = ConstColors.gray,
-        )
-        DropdownMenu(
-            expanded = choosing.value,
-            onDismissRequest = { choosing.value = false },
-            content = {
-                dropDownItems.forEach {
-                    DropdownMenuItem(
-                        onClick = {
-                            choosing.value = false
-                            onSelected(it)
-                        },
-                        content = { Text(it) },
-                    )
-                }
-            },
-        )
+        if (!readOnly) {
+            Icon(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = ConstColors.gray,
+            )
+            DropdownMenu(
+                expanded = choosing.value,
+                onDismissRequest = { choosing.value = false },
+                content = {
+                    dropDownItems.forEach {
+                        DropdownMenuItem(
+                            onClick = {
+                                choosing.value = false
+                                onSelected(it)
+                            },
+                            content = { Text(it) },
+                        )
+                    }
+                },
+            )
+        }
     }
 }

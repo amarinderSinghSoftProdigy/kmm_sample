@@ -12,7 +12,6 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.screens.common.BasicScreen
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
-import com.zealsoftsol.medico.screens.common.showNotificationAlert
 
 @Composable
 fun VerifyCurrentPasswordScreen(scope: PasswordScope.VerifyCurrent) {
@@ -66,5 +65,4 @@ fun EnterNewPasswordScreen(scope: PasswordScope.EnterNew) {
         buttonText = stringResource(id = R.string.confirm),
         onButtonClick = { scope.submit() }
     )
-    scope.showNotificationAlert()
 }

@@ -28,10 +28,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -54,6 +56,7 @@ import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -63,6 +66,7 @@ import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
+import com.zealsoftsol.medico.screens.product.BuyProductScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
@@ -200,12 +204,14 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                     }
                     is DashboardScope -> DashboardScreen(it)
                     is ProductInfoScope -> ProductScreen(it)
+                    is BuyProductScope -> BuyProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is PreviewUserScope -> PreviewUserScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                 }
+                if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
     )
