@@ -108,6 +108,7 @@
 // MARK: Navigation Bar
 "log_out" = "Log Out";
 "settings" = "Settings";
+"dashboard" = "Dashboard";
 
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
