@@ -6,8 +6,6 @@ struct HostScreen: View {
     
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
-        @State var showSheet = false
-    
     var body: some View {
         if isSplashScreenActive {
             self.splashScreen
@@ -150,6 +148,9 @@ struct TabBarScreen: View {
             
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
+            
+        case let scope as BuyProductScope:
+            return AnyView(BuyProductScreen(scope: scope))
             
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))

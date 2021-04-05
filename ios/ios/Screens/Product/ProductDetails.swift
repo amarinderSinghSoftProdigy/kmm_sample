@@ -95,21 +95,23 @@ struct ProductDetails: View {
                 }
             }
             
-//            switch self.scope.product.buyingOption {
-//            case .buy:
-//                MedicoButton(localizedStringKey: "add_to_cart") {
-////                    scope.buy()
-//                }
-//            case .quote:
-//                MedicoButton(localizedStringKey: "get_quote",
-//                             buttonColor: .clear) {
-//
-//                }
-//                .background(RoundedRectangle(cornerRadius: 8)
-//                                .stroke(AppColor.yellow.color, lineWidth: 2))
-//            default:
+            switch self.scope.product.buyingOption {
+            case DataBuyingOption.buy:
+                MedicoButton(localizedStringKey: "add_to_cart") {
+                    scope.buy()
+                }
+                
+            case DataBuyingOption.quote:
+                MedicoButton(localizedStringKey: "get_quote",
+                             buttonColor: .clear) {
+
+                }
+                .background(RoundedRectangle(cornerRadius: 8)
+                                .stroke(AppColor.yellow.color, lineWidth: 2))
+                
+            default:
                 EmptyView()
-//            }
+            }
         }
     }
     

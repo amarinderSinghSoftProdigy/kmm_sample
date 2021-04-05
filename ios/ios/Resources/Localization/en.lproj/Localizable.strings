@@ -136,6 +136,14 @@
 "storage_description" = "Store at room temperature (10–30°C)";
 "alternative_brands" = "Alternative Brands";
 
+// MARK: Buy Product
+"units:" = "Units:";
+"choose_seller" = "Please, choose a seller";
+"mrp:" = "MRP:";
+"margin:" = "Margin:";
+"stocks:" = "Stocks:";
+"expiry:" = "Expiry:";
+
 // MARK: Settings
 "personal_profile" = "Personal Profile";
 "change_password" = "Change Password";

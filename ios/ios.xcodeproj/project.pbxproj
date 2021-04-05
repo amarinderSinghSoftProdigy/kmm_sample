@@ -33,6 +33,8 @@
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* PasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
+		33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */; };
+		33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33648DCE261B18A900CDB5D3 /* NumberPicker.swift */; };
 		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
@@ -175,6 +177,8 @@
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* PasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
+		33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyProductScreen.swift; sourceTree = "<group>"; };
+		33648DCE261B18A900CDB5D3 /* NumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberPicker.swift; sourceTree = "<group>"; };
 		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
@@ -285,6 +289,7 @@
 		3317B5D525A59CE3008681ED /* Product */ = {
 			isa = PBXGroup;
 			children = (
+				33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */,
 				3317B5D325A59C7C008681ED /* ProductDetails.swift */,
 			);
 			path = Product;
@@ -355,6 +360,7 @@
 			isa = PBXGroup;
 			children = (
 				3376EC792583875900570BB3 /* FilePicker.swift */,
+				33648DCE261B18A900CDB5D3 /* NumberPicker.swift */,
 				339C5044257A548F00AAB45F /* PickerSelector.swift */,
 			);
 			path = Pickers;
@@ -1069,6 +1075,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */,
 				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */,
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
@@ -1092,6 +1099,7 @@
 				331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33D0326125E3D3020046664C /* UserNameImage.swift in Sources */,
+				33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
