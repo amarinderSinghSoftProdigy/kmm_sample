@@ -21,6 +21,13 @@ data class AlternateProductData(
     val availableVariants: String,
 )
 
+@Serializable
+data class ProductBuyResponse(
+    @SerialName("productData")
+    val product: ProductSearch,
+    val sellerInfo: List<SellerInfo>,
+)
+
 //@Serializable
 //data class ProductData(
 //    val active: Boolean,

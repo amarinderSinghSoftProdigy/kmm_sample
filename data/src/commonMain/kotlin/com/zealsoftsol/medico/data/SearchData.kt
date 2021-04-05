@@ -25,20 +25,19 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val buyingOption: BuyingOption,
+    val buyingOption: BuyingOption? = null,
     val compositions: List<String>,
     val formattedMrp: String,
     val formattedPrice: String?,
     val id: String,
     val manufacturer: String,
-    val manufacturerId: String,
     val marginPercent: String?,
     val name: String,
-    val productCategoryName: String,
     val shortName: String,
     val code: String,
-    val stockInfo: StockInfo?,
+    val stockInfo: StockInfo? = null,
     val uomName: String,
+    val standardUnit: String?,
 )
 
 @Serializable
@@ -47,6 +46,20 @@ data class SellerInfo(
     val tradeName: String,
     val unitCode: String,
     val stockInfo: StockInfo,
+    val priceInfo: PriceInfo,
+)
+
+@Serializable
+data class PriceInfo(
+    val price: PriceData,
+    val mrp: PriceData,
+    val marginPercent: String
+)
+
+@Serializable
+data class PriceData(
+    val price: Double,
+    val formattedPrice: String
 )
 
 @Serializable
