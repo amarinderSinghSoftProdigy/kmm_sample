@@ -14,10 +14,11 @@ class MockSearchScope : NetworkScope.Search {
     }
 
     override suspend fun search(
-        pagination: Pagination,
+        query: List<Pair<String, String>>,
+        unitCode: String?,
         latitude: Double,
         longitude: Double,
-        query: List<Pair<String, String>>
+        pagination: Pagination
     ): Response.Wrapped<SearchResponse> = mockResponse {
         Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0), true)
     }

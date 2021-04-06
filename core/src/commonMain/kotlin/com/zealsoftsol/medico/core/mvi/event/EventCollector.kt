@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
@@ -38,6 +39,7 @@ internal class EventCollector(
     searchNetworkScope: NetworkScope.Search,
     productNetworkScope: NetworkScope.Product,
     managementNetworkScope: NetworkScope.Management,
+    storesNetworkScope: NetworkScope.Stores,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
 ) {
@@ -63,6 +65,12 @@ internal class EventCollector(
         Event.Action.Notification::class to NotificationEventDelegate(
             navigator,
             notificationRepo,
+            LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.Stores::class to StoresEventDelegate(
+            navigator,
+            userRepo,
+            storesNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         )
     )

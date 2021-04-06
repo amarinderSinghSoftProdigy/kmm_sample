@@ -36,6 +36,7 @@ import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
@@ -80,7 +81,8 @@ class NetworkClient(
     NetworkScope.Search,
     NetworkScope.Product,
     NetworkScope.Management,
-    NetworkScope.Notification {
+    NetworkScope.Notification,
+    NetworkScope.Stores {
 
     init {
         "USING NetworkClient".logIt()
@@ -262,10 +264,11 @@ class NetworkClient(
     }
 
     override suspend fun search(
-        pagination: Pagination,
+        query: List<Pair<String, String>>,
+        unitCode: String?,
         latitude: Double,
         longitude: Double,
-        query: List<Pair<String, String>>,
+        pagination: Pagination,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
         client.get<SimpleResponse<SearchResponse>>("$SEARCH_URL/api/v1/search/global") {
             withMainToken()
@@ -274,6 +277,7 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
+                    unitCode?.let { append("unitCode", it) }
                     append("latitude", latitude.toString())
                     append("longitude", longitude.toString())
                     append("page", pagination.nextPage().toString())
@@ -401,6 +405,25 @@ class NetworkClient(
                 withMainToken()
             }.getWrappedBody()
         }
+
+    override suspend fun getStores(
+        unitCode: String,
+        search: String,
+        pagination: Pagination,
+    ): Response.Wrapped<PaginatedData<Store>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Store>>>("$B2B_URL/api/v1/buyer/stores/${unitCode}") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
 
     // Utils
 

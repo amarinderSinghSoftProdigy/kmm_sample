@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UnreadNotifications
@@ -80,10 +81,11 @@ interface NetworkScope {
 
     interface Search : NetworkScope {
         suspend fun search(
-            pagination: Pagination,
+            query: List<Pair<String, String>>,
+            unitCode: String?,
             latitude: Double,
             longitude: Double,
-            query: List<Pair<String, String>>,
+            pagination: Pagination,
         ): Response.Wrapped<SearchResponse>
 
         suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>>
@@ -111,15 +113,19 @@ interface NetworkScope {
 
         suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
 
-//        suspend fun markNotification(
-//            id: String,
-//            status: NotificationStatus
-//        ): Response.Wrapped<ErrorCode>
-
         suspend fun selectNotificationAction(
             id: String,
             actionRequest: NotificationActionRequest
         ): Response.Wrapped<ErrorCode>
+
         suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails>
+    }
+
+    interface Stores : NetworkScope {
+        suspend fun getStores(
+            unitCode: String,
+            search: String,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Store>>
     }
 }

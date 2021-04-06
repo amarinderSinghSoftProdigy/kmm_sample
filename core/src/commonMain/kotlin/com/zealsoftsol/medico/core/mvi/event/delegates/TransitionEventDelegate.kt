@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -101,6 +102,9 @@ internal class TransitionEventDelegate(
                 }
                 is Event.Transition.Notifications -> setScope(
                     NotificationScope.All()
+                )
+                is Event.Transition.Stores -> setScope(
+                    StoresScope.All()
                 )
             }
         }

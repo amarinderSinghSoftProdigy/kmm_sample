@@ -1,10 +1,12 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AlternateProductData
@@ -26,11 +28,22 @@ internal class ProductEventDelegate(
             networkProductScope.getProductData(productCode)
         }
         if (isSuccess && response?.product != null) {
+            val isFromStores = navigator.searchQueuesFor<StoresScope.StorePreview>() != null
+            "go to product, from stores $isFromStores".errorIt()
             navigator.setScope(
-                ProductInfoScope.get(
-                    product = response.product!!,
-                    alternativeBrands = response.alternateProducts,
-                )
+                if (isFromStores) {
+                    ProductInfoScope.getAsNested(
+                        product = response.product!!,
+                        fromStoresPage = isFromStores,
+                        alternativeBrands = response.alternateProducts,
+                    )
+                } else {
+                    ProductInfoScope.getAsRegular(
+                        product = response.product!!,
+                        fromStoresPage = isFromStores,
+                        alternativeBrands = response.alternateProducts,
+                    )
+                }
             )
         } else {
             navigator.setHostError(ErrorCode())
