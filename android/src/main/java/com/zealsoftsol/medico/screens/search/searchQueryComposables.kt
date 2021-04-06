@@ -98,7 +98,12 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
                 searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
                 onIconClick = { scope.goBack() },
                 isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
-                onSearch = { value, isFromKeyboard -> scope.searchProduct(value, isFromKeyboard) },
+                onSearch = { value, isFromKeyboard ->
+                    scope.searchProduct(
+                        value,
+                        withAutoComplete = !isFromKeyboard
+                    )
+                },
             )
             scope.storage.save("focus", false)
         }
@@ -213,7 +218,7 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 }
 
 @Composable
-private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
+fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -308,7 +313,7 @@ private fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
 }
 
 @Composable
-private fun FilterSection(
+fun FilterSection(
     name: String,
     options: List<Option>,
     searchOption: SearchOption? = null,
@@ -351,7 +356,7 @@ private fun FilterSection(
     }
 }
 
-private data class SearchOption(val input: String, val onSearch: (String) -> Unit)
+data class SearchOption(val input: String, val onSearch: (String) -> Unit)
 
 @Composable
 private fun Chip(option: Option, onClick: () -> Unit) {
@@ -416,7 +421,7 @@ private fun Chip(option: Option, onClick: () -> Unit) {
 fun BasicSearchBar(
     input: String,
     searchBarEnd: SearchBarEnd = SearchBarEnd.Eraser,
-    icon: ImageVector = Icons.Default.Search,
+    icon: ImageVector? = Icons.Default.Search,
     onIconClick: (() -> Unit)? = null,
     elevation: Dp = 2.dp,
     horizontalPadding: Dp = 8.dp,
@@ -424,13 +429,15 @@ fun BasicSearchBar(
     onSearch: (String, Boolean) -> Unit
 ) {
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = ConstColors.gray,
-            modifier = Modifier.size(24.dp)
-                .run { if (onIconClick != null) clickable(onClick = onIconClick) else this },
-        )
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = ConstColors.gray,
+                modifier = Modifier.size(24.dp)
+                    .run { if (onIconClick != null) clickable(onClick = onIconClick) else this },
+            )
+        }
         Box(
             modifier = Modifier.padding(start = 24.dp).fillMaxWidth(),
             contentAlignment = Alignment.CenterStart,

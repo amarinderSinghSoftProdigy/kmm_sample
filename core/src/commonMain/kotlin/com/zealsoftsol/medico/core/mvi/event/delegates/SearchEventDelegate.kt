@@ -3,7 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BaseSearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -26,17 +26,18 @@ internal class SearchEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
-        is Event.Action.Search.SearchInput -> searchBy(event.isOneOf, event.search, event.query)
+        is Event.Action.Search.SearchInput -> searchInput(event.isOneOf, event.search, event.query)
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Search.SearchFilter -> searchFilter(event.filter, event.value)
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
+        is Event.Action.Search.Reset -> reset()
     }
 
-    private suspend fun searchBy(isOneOf: Boolean, search: String?, query: Map<String, String>) {
-        navigator.withScope<SearchScope> {
+    private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {
+        navigator.withScope<BaseSearchScope> {
             it.pagination.reset()
             if (search != null) it.productSearch.value = search
             it.autoComplete.value = emptyList()
@@ -47,7 +48,7 @@ internal class SearchEventDelegate(
             it.search(
                 addPage = false,
                 withDelay = false,
-                withProgress = !isWildcardSearch,
+                withProgress = if (it.supportsAutoComplete) !isWildcardSearch else false,
                 onEnd = {
                     if (isOneOf) {
                         query.keys.forEach { key -> activeFilters.remove(key) }
@@ -58,7 +59,7 @@ internal class SearchEventDelegate(
     }
 
     private fun searchFilter(filter: Filter, value: String) {
-        navigator.withScope<SearchScope> {
+        navigator.withScope<BaseSearchScope> {
             it.pagination.reset()
             val oldSearches = it.filterSearches.value.toMutableMap()
             oldSearches[filter.queryId] = value
@@ -86,7 +87,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun searchAutoComplete(value: String) {
-        navigator.withScope<SearchScope> {
+        navigator.withScope<BaseSearchScope> {
             it.productSearch.value = value
             searchAsync(withDelay = true, withProgress = false) {
                 val (result, isSuccess) = networkSearchScope.autocomplete(value)
@@ -101,7 +102,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
-        navigator.withScope<SearchScope> {
+        navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
             activeFilters[autoComplete.query] = Option.StringValue(autoComplete.suggestion, false)
             it.pagination.reset()
@@ -118,7 +119,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun selectFilter(filter: Filter, option: Option) {
-        navigator.withScope<SearchScope> {
+        navigator.withScope<BaseSearchScope> {
             when (option) {
                 is Option.ViewMore -> {
                     it.filters.value = it.filters.value.map { f ->
@@ -165,7 +166,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun clearFilter(filter: Filter?) {
-        navigator.withScope<SearchScope> {
+        navigator.withScope<BaseSearchScope> {
             it.pagination.reset()
             it.filters.value = it.filters.value.map { f ->
                 when {
@@ -201,8 +202,8 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun loadMoreProducts() {
-        navigator.withScope<SearchScope> {
-            if (!it.isInProgress.value && it.pagination.canLoadMore()) {
+        navigator.withScope<BaseSearchScope> {
+            if (!navigator.scope.value.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
                 it.search(
                     addPage = true,
@@ -213,7 +214,12 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend inline fun SearchScope.search(
+    private fun reset() {
+        searchJob?.cancel()
+        activeFilters.clear()
+    }
+
+    private suspend inline fun BaseSearchScope.search(
         addPage: Boolean,
         withDelay: Boolean,
         withProgress: Boolean,
@@ -222,10 +228,11 @@ internal class SearchEventDelegate(
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val address = userRepo.requireUser().addressData
             val (result, isSuccess) = networkSearchScope.search(
-                pagination,
+                activeFilters.map { (queryName, option) -> queryName to option.value },
+                unitCode,
                 address.latitude,
                 address.longitude,
-                activeFilters.map { (queryName, option) -> queryName to option.value },
+                pagination,
             )
             if (isSuccess && result != null) {
                 pagination.setTotal(result.totalResults)

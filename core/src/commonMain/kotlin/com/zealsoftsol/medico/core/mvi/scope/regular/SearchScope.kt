@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
@@ -12,20 +13,22 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 
-class SearchScope(
-    val productSearch: DataSource<String> = DataSource(""),
-    val isFilterOpened: DataSource<Boolean> = DataSource(false),
-    val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-    val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
-    val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
-    val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-) : Scope.Host.Regular(),
-    CommonScope.CanGoBack {
-    val pagination: Pagination = Pagination()
+internal interface BaseSearchScope : Scopable {
+    val productSearch: DataSource<String>
+    val isFilterOpened: DataSource<Boolean>
+    val filters: DataSource<List<Filter>>
+    val filterSearches: DataSource<Map<String, String>>
+    val autoComplete: DataSource<List<AutoComplete>>
+    val products: DataSource<List<ProductSearch>>
 
-    init {
-        EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
-    }
+    // store search if present
+    val unitCode: String?
+
+    // searches without loading if false
+    val supportsAutoComplete: Boolean
+    val pagination: Pagination
+
+    fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
 
     fun toggleFilter() {
         isFilterOpened.value = !isFilterOpened.value
@@ -46,12 +49,12 @@ class SearchScope(
         }
     }
 
-    fun searchProduct(input: String, isFromKeyboard: Boolean): Boolean {
+    fun searchProduct(input: String, withAutoComplete: Boolean): Boolean {
         return trimInput(input, productSearch.value) {
-            val event = if (isFromKeyboard) {
-                Event.Action.Search.SearchInput(isOneOf = false, search = input)
-            } else {
+            val event = if (withAutoComplete) {
                 Event.Action.Search.SearchAutoComplete(it)
+            } else {
+                Event.Action.Search.SearchInput(isOneOf = false, search = input)
             }
             EventCollector.sendEvent(event)
         }
@@ -62,4 +65,28 @@ class SearchScope(
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+}
+
+class SearchScope(
+    override val productSearch: DataSource<String> = DataSource(""),
+    override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+    override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
+    override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
+    override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
+    override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
+) : Scope.Host.Regular(),
+    CommonScope.CanGoBack,
+    BaseSearchScope {
+    override val unitCode: String? = null
+    override val supportsAutoComplete: Boolean = true
+    override val pagination: Pagination = Pagination()
+
+    init {
+        EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+    }
+
+    override fun goBack(): Boolean {
+        reset()
+        return super.goBack()
+    }
 }

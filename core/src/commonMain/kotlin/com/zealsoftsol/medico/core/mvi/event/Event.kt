@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -85,6 +86,7 @@ sealed class Event {
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             object LoadMoreProducts : Search()
+            object Reset : Search()
         }
 
         sealed class Product : Action() {
@@ -117,6 +119,14 @@ sealed class Event {
             data class ChangeOptions(val option: NotificationOption) : Notification()
 //            object UpdateUnreadMessages: Notification()
         }
+
+        sealed class Stores : Action() {
+            override val typeClazz: KClass<*> = Stores::class
+
+            data class Select(val item: Store) : Stores()
+            data class Search(val value: String) : Stores()
+            data class Load(val isFirstLoad: Boolean) : Stores()
+        }
     }
 
     sealed class Transition : Event() {
@@ -143,5 +153,6 @@ sealed class Event {
         object CloseNotification : Transition()
 
         object Notifications : Transition()
+        object Stores : Transition()
     }
 }

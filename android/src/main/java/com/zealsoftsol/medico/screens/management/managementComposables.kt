@@ -73,6 +73,7 @@ fun ManagementScreen(scope: ManagementScope.User) {
     }
 }
 
+// TODO reuse with stores
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User) {
     val search = scope.searchText.flow.collectAsState()
