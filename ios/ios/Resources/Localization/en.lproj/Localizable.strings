@@ -109,6 +109,7 @@
 "log_out" = "Log Out";
 "settings" = "Settings";
 "dashboard" = "Dashboard";
+"stores" = "Stores";
 
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
@@ -224,3 +225,6 @@
 "congratulations" = "Congratulations";
 "retailer_added_template %@" = "You have added %@ to your list of Retailes successfully";
 "retailers_list" = "Retailers List";
+
+// MARK: Store
+"store" = "Store";

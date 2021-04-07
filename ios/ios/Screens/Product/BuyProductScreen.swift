@@ -23,6 +23,8 @@ struct BuyProductScreen: View {
                              onQuantityDecrease: scope.dec,
                              onSellerInfoSelect: scope.addToCart)
         }
+        .screenLogger(withScreenName: "BuyProduct",
+                      withScreenClass: BuyProductScreen.self)
     }
     
     private struct ProductInfo: View {

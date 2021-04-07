@@ -231,6 +231,9 @@ extension NavigationOption {
         case .SeasonBoys():
             return "SeasonBoy"
             
+        case .Stores():
+            return "Store"
+            
         default:
             return nil
         }
@@ -258,6 +261,9 @@ extension NavigationOption {
             
         case .SeasonBoys():
             return "seasonBoys"
+            
+        case .Stores():
+            return "stores"
             
         default:
             return nil

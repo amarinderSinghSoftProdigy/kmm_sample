@@ -18,24 +18,22 @@ struct GlobalSearchScreen: View {
     @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
     
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
-    @ObservedObject var filters: SwiftDataSource<NSArray>
-    @ObservedObject var filterSearches: SwiftDataSource<NSDictionary>
     
     @ObservedObject var autoComplete: SwiftDataSource<NSArray>
-    
+
     @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
     
     var body: some View {
-        guard let isFilterOpened = self.isFilterOpened.value else {
-            return AnyView(EmptyView())
-        }
-        
         let view: AnyView
         let screenName: String
-        
-        if isFilterOpened == true {
-            view = AnyView(self.filtersView)
+
+        if self.isFilterOpened.value == true {
+            view = AnyView(
+                FiltersSection(scope: self.scope)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 32)
+            )
             screenName = "FiltersView"
         }
         else if let autoComplete = self.autoComplete.value as? [DataAutoComplete],
@@ -50,7 +48,7 @@ struct GlobalSearchScreen: View {
             view = AnyView(self.productsView)
             screenName = "ProductsView"
         }
-        
+
         return AnyView(
             view
                 .hideKeyboardOnTap()
@@ -66,11 +64,9 @@ struct GlobalSearchScreen: View {
         self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
-        self.filters = SwiftDataSource(dataSource: scope.filters)
-        self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
         
         self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
-        
+
         self.products = SwiftDataSource(dataSource: scope.products)
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
@@ -82,7 +78,7 @@ struct GlobalSearchScreen: View {
                       showsCancelButton: false,
                       trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
                       onTextChange: { value, isFromKeyboard in scope.searchProduct(input: value,
-                                                                                   isFromKeyboard: isFromKeyboard) })
+                                                                                   withAutoComplete: !isFromKeyboard) })
             
             Button(LocalizedStringKey("cancel")) {
                 scrollData.clear(list: .globalSearchProducts)
@@ -95,45 +91,9 @@ struct GlobalSearchScreen: View {
         .padding([.leading, .trailing], 6)
     }
     
-    private var filtersView: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Spacer()
-                
-                LocalizedText(localizationKey: "clear_all",
-                              textWeight: .medium,
-                              fontSize: 16,
-                              color: .textGrey,
-                              multilineTextAlignment: .trailing)
-                    .onTapGesture {
-                        scope.clearFilter(filter: nil)
-                    }
-            }
-            
-            if let filters = self.filters.value as? [DataFilter] {
-                ForEach(filters, id: \.self.name) { filter in
-                    if let filtersSearches = self.filterSearches.value as? [String: String] {
-
-                        let searchOption = SearchOption(text: filtersSearches[filter.queryId],
-                                                        onSearch: { scope.searchFilter(filter: filter, input: $0) })
-                        
-                        FilterView(filter: filter,
-                                   searchOption: searchOption,
-                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                        option: option) },
-                                   onClearFilter: { scope.clearFilter(filter: filter) })
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 32)
-        .scrollView()
-    }
-    
     private var productsView: some View {
         let productsCount = self.products.value?.count ?? 0
-        
+
         return AnyView (
             TransparentList(data: self.products,
                             dataType: DataProductSearch.self,
@@ -144,9 +104,9 @@ struct GlobalSearchScreen: View {
                             loadItems: { scope.loadMoreProducts() }) { index, product -> AnyView in
                 let topPadding: CGFloat = index == 0 ? 32 : 0
                 let bottomPadding: CGFloat = index == productsCount - 1 ? 16 : 0
-                
+
                 return AnyView(
-                    ProductView(product: product)
+                    ProductSearchView(product: product)
                         .padding(.top, topPadding)
                         .padding(.bottom, bottomPadding)
                 )
@@ -332,7 +292,7 @@ private struct SearchOption {
 }
 
 // MARK: Products
-private struct ProductView: View {
+struct ProductSearchView: View {
     private let alignment: HorizontalAlignment = .leading
     private let textAlignment: TextAlignment = .leading
     
@@ -423,5 +383,60 @@ private struct ProductView: View {
             .padding(11)
         }
         .opacity(product.stockInfo != nil ? 1 : 0.6)
+    }
+}
+
+struct FiltersSection: View {
+    let scope: BaseSearchScope
+    
+    @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
+    @ObservedObject var filters: SwiftDataSource<NSArray>
+    @ObservedObject var filterSearches: SwiftDataSource<NSDictionary>
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Spacer()
+                
+                LocalizedText(localizationKey: "clear_all",
+                              textWeight: .medium,
+                              fontSize: 16,
+                              color: .textGrey,
+                              multilineTextAlignment: .trailing)
+                    .onTapGesture {
+                        scope.clearFilter(filter: nil)
+                    }
+            }
+            
+            if let filters = self.filters.value as? [DataFilter] {
+                ForEach(filters, id: \.self.name) { filter in
+                    if let filtersSearches = self.filterSearches.value as? [String: String] {
+
+                        let searchOption = SearchOption(text: filtersSearches[filter.queryId],
+                                                        onSearch: { scope.searchFilter(filter: filter, input: $0) })
+                        
+                        FilterView(filter: filter,
+                                   searchOption: searchOption,
+                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                        option: option) },
+                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                    }
+                }
+            }
+        }
+        .scrollView()
+    }
+    
+    init(scope: BaseSearchScope) {
+        self.scope = scope
+        
+        self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
+        self.filters = SwiftDataSource(dataSource: scope.filters)
+        self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
+        
+//        self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
+//
+//        self.products = SwiftDataSource(dataSource: scope.products)
+//        self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
 }

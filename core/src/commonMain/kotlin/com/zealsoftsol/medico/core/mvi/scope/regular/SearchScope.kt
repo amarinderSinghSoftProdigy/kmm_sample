@@ -13,7 +13,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 
-internal interface BaseSearchScope : Scopable {
+interface BaseSearchScope : Scopable {
     val productSearch: DataSource<String>
     val isFilterOpened: DataSource<Boolean>
     val filters: DataSource<List<Filter>>

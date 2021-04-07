@@ -31,7 +31,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
         
         return AnyView(
             List {
-                ForEach(Array(data.enumerated()), id: \.element) { index, element in
+                ForEach(Array(data.enumerated()), id: \.offset) { index, element in
                     self.getCellView(index, element)
                         .padding(.bottom, elementsSpacing)
                         .listRowInsets(.init())
@@ -148,8 +148,10 @@ class ListScrollData: ObservableObject {
     
     enum Name {
         case globalSearchProducts
+        case storeProducts
         
         case notifications
+        case stores
         
         case allStockists
         case yourStockists
