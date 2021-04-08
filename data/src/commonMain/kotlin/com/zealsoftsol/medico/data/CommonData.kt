@@ -19,6 +19,22 @@ data class LocationData(
 )
 
 @Serializable
+data class GeoData(
+    val location: String,
+    val pincode: String,
+    @SerialName("townOrCity")
+    val city: String,
+    val distance: Double,
+    val formattedDistance: String,
+    @SerialName("originPoints")
+    val origin: GeoPoints,
+    @SerialName("destinationPoints")
+    val destination: GeoPoints? = null,
+) {
+    fun fullAddress() = "$location $pincode"
+}
+
+@Serializable
 data class PaginatedData<T>(
     @SerialName("results")
     val data: List<T>,

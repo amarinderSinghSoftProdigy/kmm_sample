@@ -1,6 +1,8 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.DetachedScopeId
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -12,14 +14,17 @@ import kotlin.reflect.KClass
 
 class BuyProductScope private constructor(
     val product: ProductSearch,
-    val sellersInfo: List<SellerInfo>,
+    val sellersInfo: DataSource<List<SellerInfo>>,
+    val sellersFilter: DataSource<String> = DataSource(""),
     val quantities: DataSource<Map<SellerInfo, Int>> = DataSource(mapOf()),
 ) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.BACK)),
     CommonScope.CanGoBack {
     override val scopeId: KClass<*> = DetachedScopeId::class
+    internal val allSellers = sellersInfo.value
 
     fun inc(sellerInfo: SellerInfo) {
         val count = quantities.value[sellerInfo] ?: 0
+        if (count == sellerInfo.stockInfo.availableQty) return
         quantities.value = quantities.value.toMutableMap().also {
             it[sellerInfo] = count + 1
         }
@@ -36,6 +41,9 @@ class BuyProductScope private constructor(
         // TODO not implemented
     }
 
+    fun filterSellers(filter: String) =
+        EventCollector.sendEvent(Event.Action.Product.FilterBuyProduct(filter))
+
     companion object {
         fun get(
             product: ProductSearch,
@@ -44,7 +52,7 @@ class BuyProductScope private constructor(
             return Host.TabBar(
                 childScope = BuyProductScope(
                     product,
-                    sellersInfo,
+                    DataSource(sellersInfo),
                 ),
                 navigationSectionValue = null,
             )
