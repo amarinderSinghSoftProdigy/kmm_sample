@@ -62,6 +62,7 @@ sealed class SignUpScope(titleId: String) :
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : SignUpScope("personal_data") {
+        private var isPhoneValid = false
 
         init {
             checkCanGoNext()
@@ -95,6 +96,11 @@ sealed class SignUpScope(titleId: String) :
             }
         }
 
+        fun setPhoneNumberValid(isValid: Boolean) {
+            isPhoneValid = isValid
+            checkCanGoNext()
+        }
+
         fun changePassword(password: String) {
             trimInput(password, registration.value.password) {
                 registration.value = registration.value.copy(password = it)
@@ -120,6 +126,7 @@ sealed class SignUpScope(titleId: String) :
                 firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()
                         && phoneNumber.isNotEmpty() && password.isNotEmpty()
                         && verifyPassword.isNotEmpty() && verifyPassword == password
+                        && isPhoneValid
             }
         }
     }

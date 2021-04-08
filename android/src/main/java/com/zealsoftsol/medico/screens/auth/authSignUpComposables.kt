@@ -163,12 +163,15 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             }
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.phoneNumber) {
-                PhoneFormatInputField(
+                val isValid = PhoneFormatInputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
-                    onValueChange = { scope.changePhoneNumber(it.filter { it.isDigit() }) }
+                    onValueChange = { phoneNumber ->
+                        scope.changePhoneNumber(phoneNumber.filter { it.isDigit() })
+                    },
                 )
+                scope.setPhoneNumberValid(isValid)
             }
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.password) {

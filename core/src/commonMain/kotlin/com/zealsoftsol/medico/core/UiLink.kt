@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Environment
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.UiNavigator
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.notifications.FirebaseMessaging
 import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
 import org.kodein.di.DI
@@ -21,6 +22,7 @@ object UiLink {
      * [useNavigatorSafeCasts] - the app will crash if navigator tries to reference the wrong scope
      * [useNetworkInterceptor] - prints detailed info about requests and responses with the server
      * [loggerLevel] - configures log level
+     * [networkUrl] - configure which base url will be used for network requests
      */
     fun appStart(
         context: Any,
@@ -28,10 +30,12 @@ object UiLink {
         useNavigatorSafeCasts: Boolean,
         useNetworkInterceptor: Boolean,
         loggerLevel: Logger.Level,
+        networkUrl: NetworkClient.BaseUrl,
     ): AppStartResult {
         logger = logger.copy(level = loggerLevel)
         if (useMocks) Environment.Override.mocks(Environment.Mocks())
-        val di = startKodein(context, useMocks, useNavigatorSafeCasts, useNetworkInterceptor)
+        val di =
+            startKodein(context, useMocks, useNavigatorSafeCasts, useNetworkInterceptor, networkUrl)
         val navigator = directDI.instance<Navigator>()
         val eventCollector = directDI.instance<EventCollector>()
         eventCollector.updateData()

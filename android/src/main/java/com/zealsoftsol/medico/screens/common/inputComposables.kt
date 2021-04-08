@@ -87,12 +87,12 @@ fun PhoneFormatInputField(
 ): Boolean {
     val formatter = rememberPhoneNumberFormatter()
     val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null || text.isEmpty()
+    val isValid = formatted != null
     InputField(
         modifier = modifier,
         hint = hint,
         text = formatted ?: text,
-        isValid = isValid,
+        isValid = isValid || text.isEmpty(),
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
         maxLines = 1,
         onValueChange = onValueChange,

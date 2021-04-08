@@ -212,25 +212,25 @@ private fun NonSeasonBoyItem(
             }
             GeoLocation(entityInfo.geoData.fullAddress())
         }
-        entityInfo.subscriptionData?.let {
-            Column(
-                modifier = Modifier.fillMaxHeight().weight(0.35f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.SpaceEvenly,
-            ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(0.35f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            entityInfo.subscriptionData?.let {
                 Text(
                     text = it.status.serverValue,
                     color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
                     fontWeight = FontWeight.W500,
                 )
-                Text(
-                    text = entityInfo.geoData.formattedDistance,
-                    fontSize = 12.sp,
-                    color = ConstColors.gray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
             }
+            Text(
+                text = entityInfo.geoData.formattedDistance,
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
         }
     }
 }

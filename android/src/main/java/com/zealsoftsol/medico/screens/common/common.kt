@@ -67,7 +67,7 @@ fun TabBar(
 ) {
     Box(
         modifier = Modifier.fillMaxWidth().height(56.dp).background(color),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.CenterStart,
     ) {
         content()
     }
