@@ -32,6 +32,11 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".CrashActivity"
+            android:launchMode="singleInstance"
+            android:process=":crash" />
+
         <service
             android:name=".FCMService"
             android:exported="false">

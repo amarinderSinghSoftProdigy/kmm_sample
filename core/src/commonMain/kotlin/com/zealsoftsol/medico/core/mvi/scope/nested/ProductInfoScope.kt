@@ -14,16 +14,24 @@ import kotlin.reflect.KClass
 
 class ProductInfoScope private constructor(
     val product: ProductSearch,
+    private val fromStoresPage: Boolean,
     val alternativeBrands: List<AlternateProductData>,
     val isDetailsOpened: DataSource<Boolean>,
 ) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.BACK)),
     CommonScope.CanGoBack {
-    override val scopeId: KClass<*> = DetachedScopeId::class
+    override val scopeId: KClass<*> =
+        if (fromStoresPage) Child.TabBar::class else DetachedScopeId::class
 
     val compositionsString: String
         get() = product.compositions.reduce { acc, s -> "$acc\n$s" }
 
-    fun buy() = EventCollector.sendEvent(Event.Action.Product.BuyProduct(product.code))
+    fun buy() {
+        if (!fromStoresPage) {
+            EventCollector.sendEvent(Event.Action.Product.BuyProduct(product.code))
+        } else {
+            TODO("not implemented")
+        }
+    }
 
     fun toggleDetails() {
         isDetailsOpened.value = !isDetailsOpened.value
@@ -33,19 +41,33 @@ class ProductInfoScope private constructor(
         EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
 
     companion object {
-        fun get(
+        fun getAsRegular(
             product: ProductSearch,
+            fromStoresPage: Boolean,
             alternativeBrands: List<AlternateProductData>,
             isDetailsOpened: DataSource<Boolean> = DataSource(false),
         ): Host.TabBar {
             return Host.TabBar(
                 childScope = ProductInfoScope(
                     product,
+                    fromStoresPage,
                     alternativeBrands,
                     isDetailsOpened,
                 ),
                 navigationSectionValue = null,
             )
         }
+
+        fun getAsNested(
+            product: ProductSearch,
+            fromStoresPage: Boolean,
+            alternativeBrands: List<AlternateProductData>,
+            isDetailsOpened: DataSource<Boolean> = DataSource(false),
+        ) = ProductInfoScope(
+            product,
+            fromStoresPage,
+            alternativeBrands,
+            isDetailsOpened,
+        )
     }
 }

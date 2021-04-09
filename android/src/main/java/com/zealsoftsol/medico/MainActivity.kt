@@ -65,6 +65,9 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.FLAVOR == "dev") {
+            handleCrashes()
+        }
         UiLink.setStartingScope()
         setContent {
             val coroutineScope = rememberCoroutineScope()
@@ -144,6 +147,16 @@ class MainActivity : ComponentActivity(), DIAware {
     private fun handleIntent(intent: Intent) {
         intent.extras?.getString(NotificationCenter.DISMISS_NOTIFICATION_ID)?.let {
             messaging.dismissMessage(it)
+        }
+    }
+
+    private fun handleCrashes() {
+        val default = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            val intent = Intent(this, CrashActivity::class.java)
+            intent.putExtra(CrashActivity.TRACE, throwable.stackTraceToString())
+            startActivity(intent)
+            default?.uncaughtException(thread, throwable)
         }
     }
 

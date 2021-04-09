@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -73,6 +74,7 @@ fun ManagementScreen(scope: ManagementScope.User) {
     }
 }
 
+// TODO reuse with stores
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User) {
     val search = scope.searchText.flow.collectAsState()
@@ -211,25 +213,25 @@ private fun NonSeasonBoyItem(
             }
             GeoLocation(entityInfo.geoData.fullAddress())
         }
-        entityInfo.subscriptionData?.let {
-            Column(
-                modifier = Modifier.fillMaxHeight().weight(0.35f),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.SpaceEvenly,
-            ) {
+        Column(
+            modifier = Modifier.fillMaxHeight().weight(0.35f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            entityInfo.subscriptionData?.let {
                 Text(
                     text = it.status.serverValue,
                     color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
                     fontWeight = FontWeight.W500,
                 )
-                Text(
-                    text = entityInfo.geoData.formattedDistance,
-                    fontSize = 12.sp,
-                    color = ConstColors.gray,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
             }
+            Text(
+                text = entityInfo.geoData.formattedDistance,
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
         }
     }
 }
@@ -294,20 +296,25 @@ private fun BaseManagementItem(
 }
 
 @Composable
-fun GeoLocation(location: String, isBold: Boolean = false) {
+fun GeoLocation(
+    location: String,
+    isBold: Boolean = false,
+    textSize: TextUnit = 14.sp,
+    tint: Color = ConstColors.gray,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Outlined.LocationOn,
             contentDescription = null,
-            tint = ConstColors.gray,
+            tint = tint,
             modifier = Modifier.size(10.dp),
         )
         Space(4.dp)
         Text(
             text = location,
-            fontSize = 14.sp,
+            fontSize = textSize,
             fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-            color = ConstColors.gray,
+            color = tint,
         )
     }
 }

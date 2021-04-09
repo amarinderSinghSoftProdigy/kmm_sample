@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthDetailsAadhaar
@@ -62,6 +63,7 @@ import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.PreviewUserScreen
+import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
@@ -210,6 +212,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is PreviewUserScope -> PreviewUserScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
+                    is StoresScope -> StoresScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

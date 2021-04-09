@@ -206,7 +206,8 @@ object DebugScopeCreator {
     fun productScreen() {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
-            ProductInfoScope.get(
+            ProductInfoScope.getAsRegular(
+                fromStoresPage = false,
                 product = ProductSearch(
                     code = "VD000307",
                     formattedPrice = "₹114.78",

@@ -242,10 +242,9 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 fontWeight = FontWeight.Bold,
                 color = ConstColors.lightBlue,
                 modifier = Modifier.clickable {
-                    activity.openMaps(
-                        entityInfo.geoData.destination.latitude,
-                        entityInfo.geoData.destination.longitude,
-                    )
+                    entityInfo.geoData.destination?.let {
+                        activity.openMaps(it.latitude, it.longitude)
+                    }
                 },
             )
             if (entityInfo.isVerified == true) {

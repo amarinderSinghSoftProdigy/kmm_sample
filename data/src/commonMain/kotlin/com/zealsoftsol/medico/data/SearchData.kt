@@ -42,7 +42,8 @@ data class ProductSearch(
 
 @Serializable
 data class SellerInfo(
-    val address: Address,
+    @SerialName("address")
+    val geoData: GeoData,
     val tradeName: String,
     val unitCode: String,
     val stockInfo: StockInfo,
@@ -60,18 +61,6 @@ data class PriceInfo(
 data class PriceData(
     val price: Double,
     val formattedPrice: String
-)
-
-@Serializable
-data class Address(
-    val distance: Double,
-    val formattedDistance: String,
-    val location: String,
-    @SerialName("originPoints")
-    val geoPoints: GeoPoints,
-    val pincode: String,
-    @SerialName("townOrCity")
-    val city: String,
 )
 
 @Serializable

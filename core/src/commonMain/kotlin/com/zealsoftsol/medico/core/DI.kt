@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
 import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
 import com.zealsoftsol.medico.core.network.mock.MockSignUpScope
+import com.zealsoftsol.medico.core.network.mock.MockStoresScope
 import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -32,13 +33,15 @@ fun startKodein(
     useMocks: Boolean,
     useNavigatorSafeCasts: Boolean,
     useNetworkInterceptor: Boolean,
+    baseUrl: NetworkClient.BaseUrl,
 ) = DI {
     platformDependencies(context, useMocks)
     bind<NetworkClient>() with singleton {
         NetworkClient(
             instance(),
             instance(),
-            useNetworkInterceptor
+            useNetworkInterceptor,
+            baseUrl,
         )
     }
     bind<NetworkScope.Auth>() with singleton {
@@ -97,6 +100,13 @@ fun startKodein(
             MockNotificationScope()
         }
     }
+    bind<NetworkScope.Stores>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockStoresScope()
+        }
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -115,6 +125,7 @@ fun startKodein(
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(
+            instance(),
             instance(),
             instance(),
             instance(),
