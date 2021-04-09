@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -23,19 +24,25 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
@@ -45,6 +52,8 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
+import com.zealsoftsol.medico.screens.management.GeoLocation
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -117,18 +126,38 @@ fun BuyProductScreen(scope: BuyProductScope) {
             }
         }
         Space(16.dp)
-        Text(
-            text = stringResource(id = R.string.choose_seller),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W500,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(start = 16.dp),
-        )
+        val filter = scope.sellersFilter.flow.collectAsState()
+        Box(
+            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            if (filter.value.isEmpty()) {
+                Text(
+                    text = stringResource(id = R.string.choose_seller),
+                    color = ConstColors.gray.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(start = 2.dp),
+                )
+            }
+            BasicTextField(
+                value = filter.value,
+                cursorBrush = SolidColor(ConstColors.lightBlue),
+                onValueChange = { scope.filterSellers(it) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
+            )
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colors.background,
+                modifier = Modifier.size(24.dp).align(Alignment.CenterEnd),
+            )
+        }
         Space(12.dp)
         Divider(modifier = Modifier.padding(horizontal = 16.dp))
         Space(12.dp)
         val quantities = scope.quantities.flow.collectAsState()
-        scope.sellersInfo.forEach {
+        val sellers = scope.sellersInfo.flow.collectAsState()
+        sellers.value.forEach {
             SellerInfoItem(
                 product = scope.product,
                 sellerInfo = it,
@@ -151,7 +180,7 @@ private fun SellerInfoItem(
     onInc: () -> Unit,
     onDec: () -> Unit,
 ) {
-    val h = 152.dp
+    val h = 180.dp
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -176,13 +205,13 @@ private fun SellerInfoItem(
                         modifier = Modifier.size(65.dp),
                         contentDescription = null,
                         data = "",
-                        error = { ItemPlaceholder() },
-                        loading = { ItemPlaceholder() },
+                        error = { UserLogoPlaceholder(sellerInfo.tradeName) },
+                        loading = { UserLogoPlaceholder(sellerInfo.tradeName) },
                     )
                     Space(16.dp)
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = product.name,
+                            text = sellerInfo.tradeName,
                             color = MaterialTheme.colors.background,
                             fontWeight = FontWeight.W600,
                             fontSize = 15.sp,
@@ -285,6 +314,50 @@ private fun SellerInfoItem(
                         }
                     }
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    GeoLocation(
+                        sellerInfo.geoData.fullAddress(),
+                        isBold = true,
+                        textSize = 12.sp,
+                        tint = MaterialTheme.colors.background,
+                    )
+                    Row {
+                        Text(
+                            text = "${sellerInfo.geoData.distance} km",
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                        Space(8.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Outlined.LocationOn,
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue,
+                                modifier = Modifier.size(10.dp),
+                            )
+                            Space(4.dp)
+                            val activity = LocalContext.current as MainActivity
+                            Text(
+                                text = stringResource(id = R.string.map_location),
+                                color = ConstColors.lightBlue,
+                                textDecoration = TextDecoration.Underline,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                                modifier = Modifier.clickable {
+                                    sellerInfo.geoData.origin.let {
+                                        activity.openMaps(it.latitude, it.longitude)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+                Space(10.dp)
                 Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.05f))
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
@@ -314,9 +387,13 @@ private fun SellerInfoItem(
                         Space(12.dp)
                         Icon(
                             imageVector = Icons.Default.Add,
-                            tint = ConstColors.lightBlue,
+                            tint = if (quantity < sellerInfo.stockInfo.availableQty) ConstColors.lightBlue else ConstColors.gray.copy(
+                                alpha = 0.5f
+                            ),
                             contentDescription = null,
-                            modifier = Modifier.clickable(onClick = onInc),
+                            modifier = if (quantity < sellerInfo.stockInfo.availableQty) Modifier.clickable(
+                                onClick = onInc
+                            ) else Modifier,
                         )
                     }
                     MedicoSmallButton(
