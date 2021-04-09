@@ -95,6 +95,7 @@ sealed class Event {
             data class Select(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
             data class BuyProduct(val productCode: String) : Product()
+            data class FilterBuyProduct(val filter: String) : Product()
         }
 
         sealed class Management : Action() {

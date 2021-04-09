@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -21,6 +20,7 @@ internal class ProductEventDelegate(
         is Event.Action.Product.Select -> selectProduct(event.productCode)
         is Event.Action.Product.SelectAlternative -> selectAlternative(event.data)
         is Event.Action.Product.BuyProduct -> buyProduct(event.productCode)
+        is Event.Action.Product.FilterBuyProduct -> filterProduct(event.filter)
     }
 
     private suspend fun selectProduct(productCode: String) {
@@ -29,7 +29,6 @@ internal class ProductEventDelegate(
         }
         if (isSuccess && response?.product != null) {
             val isFromStores = navigator.searchQueuesFor<StoresScope.StorePreview>() != null
-            "go to product, from stores $isFromStores".errorIt()
             navigator.setScope(
                 if (isFromStores) {
                     ProductInfoScope.getAsNested(
@@ -69,6 +68,19 @@ internal class ProductEventDelegate(
             navigator.setScope(BuyProductScope.get(result.product, result.sellerInfo))
         } else {
             navigator.setHostError(ErrorCode())
+        }
+    }
+
+    private fun filterProduct(filter: String) {
+        navigator.withScope<BuyProductScope> {
+            it.sellersFilter.value = filter
+            it.sellersInfo.value = if (filter.isNotEmpty()) {
+                it.allSellers.filter { seller ->
+                    seller.tradeName.contains(filter, ignoreCase = true)
+                }
+            } else {
+                it.allSellers
+            }
         }
     }
 }

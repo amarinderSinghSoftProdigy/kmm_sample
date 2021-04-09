@@ -42,22 +42,6 @@ data class SubscriptionData(
 )
 
 @Serializable
-data class GeoData(
-    val location: String,
-    val pincode: String,
-    @SerialName("townOrCity")
-    val city: String,
-    val distance: Double,
-    val formattedDistance: String,
-    @SerialName("originPoints")
-    val origin: GeoPoints,
-    @SerialName("destinationPoints")
-    val destination: GeoPoints,
-) {
-    fun fullAddress() = "$location $pincode"
-}
-
-@Serializable
 data class SubscribeRequest(
     val buyerUnitCode: String,
     val sellerUnitCode: String,
