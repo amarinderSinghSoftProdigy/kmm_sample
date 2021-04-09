@@ -37,7 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   useMocks: useMocks,
                                   useNavigatorSafeCasts: useNavigatorSafeCasts,
                                   useNetworkInterceptor: useNetworkInterceptor,
-                                  loggerLevel: Logger.Level.log)
+                                  loggerLevel: Logger.Level.log,
+                                  networkUrl: .dev)
         navigator = start.navigator
         notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
         

@@ -17,11 +17,13 @@ struct BuyProductScreen: View {
             ProductInfo(product: scope.product)
             
             ChooseSellerView(product: scope.product,
-                             sellersInfo: scope.sellersInfo,
+                             sellersFilter: SwiftDataSource(dataSource: scope.sellersFilter),
+                             sellersInfo: SwiftDataSource(dataSource: scope.sellersInfo),
                              quantities: SwiftDataSource(dataSource: scope.quantities),
                              onQuantityIncrease: scope.inc,
                              onQuantityDecrease: scope.dec,
-                             onSellerInfoSelect: scope.addToCart)
+                             onSellerInfoSelect: scope.addToCart,
+                             onSellerFilter: { scope.filterSellers(filter: $0) })
         }
         .screenLogger(withScreenName: "BuyProduct",
                       withScreenClass: BuyProductScreen.self)
@@ -76,39 +78,73 @@ struct BuyProductScreen: View {
     
     private struct ChooseSellerView: View {
         let product: DataProductSearch
-        let sellersInfo: [DataSellerInfo]
         
+        @State private var showsSearchBar = false
+        
+        @ObservedObject var sellersFilter: SwiftDataSource<NSString>
+        
+        @ObservedObject var sellersInfo: SwiftDataSource<NSArray>
         @ObservedObject var quantities: SwiftDataSource<NSDictionary>
         
         let onQuantityIncrease: (DataSellerInfo) -> ()
         let onQuantityDecrease: (DataSellerInfo) -> ()
         
         let onSellerInfoSelect: (DataSellerInfo) -> ()
+        let onSellerFilter: (String) -> ()
         
         var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                LocalizedText(localizationKey: "choose_seller",
-                              textWeight: .medium,
-                              fontSize: 16,
-                              multilineTextAlignment: .leading)
-                
-                Divider()
-                
-                let quantities = self.quantities.value as? [DataSellerInfo: Int]
-                
-                VStack(spacing: 12)  {
-                    ForEach(sellersInfo, id: \.self) {
-                        SellerView(product: product,
-                                   info: $0,
-                                   quantity: quantities?[$0] ?? 0,
-                                   onQuantityIncrease: onQuantityIncrease,
-                                   onQuantityDecrease: onQuantityDecrease,
-                                   onSellerInfoSelect: onSellerInfoSelect)
-                    }
-                }
-                .scrollView()
+            guard let sellersInfo = self.sellersInfo.value as? [DataSellerInfo] else {
+                return AnyView(EmptyView())
             }
-            .padding(.horizontal, 16)
+            
+            return AnyView(
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            LocalizedText(localizationKey: "choose_seller",
+                                          textWeight: .semiBold,
+                                          fontSize: 16,
+                                          multilineTextAlignment: .leading)
+                            
+                            Spacer()
+                            
+                            Button(action: { self.showsSearchBar.toggle() }) {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(appColor: .darkBlue)
+                                    .padding(7)
+                                    .background(
+                                        Circle()
+                                            .foregroundColor(appColor: .darkBlue)
+                                            .opacity(self.showsSearchBar ? 0.08 : 0)
+                                    )
+                            }
+                        }
+                            
+                        if showsSearchBar {
+                            SearchBar(searchText: sellersFilter.value,
+                                      style: .small,
+                                      showsCancelButton: false,
+                                      leadingButton: nil,
+                                      onTextChange: { value, _ in onSellerFilter(value) })
+                        }
+                    }
+                    
+                    let quantities = self.quantities.value as? [DataSellerInfo: Int]
+                    
+                    VStack(spacing: 12)  {
+                        ForEach(sellersInfo, id: \.self) {
+                            SellerView(product: product,
+                                       info: $0,
+                                       quantity: quantities?[$0] ?? 0,
+                                       onQuantityIncrease: onQuantityIncrease,
+                                       onQuantityDecrease: onQuantityDecrease,
+                                       onSellerInfoSelect: onSellerInfoSelect)
+                        }
+                    }
+                    .scrollView()
+                }
+                .padding(.horizontal, 16)
+            )
         }
         
         private struct SellerView: View {
@@ -124,55 +160,74 @@ struct BuyProductScreen: View {
             
             var body: some View {
                 ZStack(alignment: .leading) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        HStack(spacing: 17) {
-                            UserNameImage(username: info.tradeName)
-                                .frame(width: 65, height: 65)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Group {
+                            HStack(spacing: 17) {
+                                UserNameImage(username: info.tradeName)
+                                    .frame(width: 65, height: 65)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(info.tradeName)
+                                        .medicoText(textWeight: .semiBold,
+                                                    fontSize: 16,
+                                                    multilineTextAlignment: .leading)
+                                    
+                                    HStack {
+                                        Text(info.priceInfo.price.formattedPrice)
+                                            .medicoText(textWeight: .bold,
+                                                        fontSize: 18,
+                                                        multilineTextAlignment: .leading)
+                                        
+                                        Spacer()
+                                        
+                                        getDetailView(withTitleLocalizationKey: "mrp:",
+                                                      withBody: info.priceInfo.mrp.formattedPrice)
+                                    }
+                                    
+                                    HStack {
+                                        Text(product.code)
+                                            .medicoText(color: .grey3,
+                                                        multilineTextAlignment: .leading)
+                                        
+                                        Spacer()
+                                        
+                                        getDetailView(withTitleLocalizationKey: "margin:",
+                                                      withBody: info.priceInfo.marginPercent)
+                                    }
+                                    
+                                    HStack {
+                                        getDetailView(withTitleLocalizationKey: "expiry:",
+                                                      withBody: info.stockInfo.expireDate,
+                                                      withBodyColor: .orange)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(
+                                                AppColor.orange.color
+                                                    .opacity(0.12)
+                                                    .cornerRadius(4)
+                                            )
+                                        
+                                        Spacer()
+                                        
+                                        getDetailView(withTitleLocalizationKey: "stocks:",
+                                                      withBody: String(info.stockInfo.availableQty))
+                                    }
+                                }
+                            }
+                            .fixedSize(horizontal: false, vertical: true)
                             
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(info.tradeName)
+                            HStack {
+                                SmallAddressView(location: info.geoData.fullAddress())
+                                
+                                Spacer()
+                                
+                                Text(info.geoData.formattedDistance)
                                     .medicoText(textWeight: .semiBold,
-                                                fontSize: 16,
-                                                multilineTextAlignment: .leading)
-                                
-                                HStack {
-                                    Text(info.priceInfo.price.formattedPrice)
-                                        .medicoText(textWeight: .bold,
-                                                    fontSize: 18,
-                                                    multilineTextAlignment: .leading)
-                                    
-                                    Spacer()
-                                    
-                                    getDetailView(withTitleLocalizationKey: "mrp:",
-                                                  withBody: info.priceInfo.mrp.formattedPrice)
-                                }
-                                
-                                HStack {
-                                    Text(product.code)
-                                        .medicoText(color: .grey3,
-                                                    multilineTextAlignment: .leading)
-                                    
-                                    Spacer()
-                                    
-                                    getDetailView(withTitleLocalizationKey: "margin:",
-                                                  withBody: info.priceInfo.marginPercent)
-                                }
-                                
-                                HStack {
-                                    getDetailView(withTitleLocalizationKey: "expiry:",
-                                                  withBody: info.stockInfo.expireDate,
-                                                  withBodyColor: .orange)
-                                    
-                                    Spacer()
-                                    
-                                    getDetailView(withTitleLocalizationKey: "stocks:",
-                                                  withBody: String(info.stockInfo.availableQty))
-                                }
+                                                color: .lightBlue,
+                                                multilineTextAlignment: .trailing)
                             }
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .fixedSize(horizontal: false, vertical: true)
                         
                         AppColor.darkBlue.color
                             .opacity(0.12)
@@ -194,8 +249,8 @@ struct BuyProductScreen: View {
                             }
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 8)
                     }
+                    .padding(.vertical, 8)
                     
                     info.stockInfo.statusColor.color
                         .cornerRadius(5, corners: [.topLeft, .bottomLeft])
