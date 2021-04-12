@@ -6,8 +6,6 @@ struct HostScreen: View {
     
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
-        @State var showSheet = false
-    
     var body: some View {
         if isSplashScreenActive {
             self.splashScreen
@@ -151,6 +149,9 @@ struct TabBarScreen: View {
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
             
+        case let scope as BuyProductScope:
+            return AnyView(BuyProductScreen(scope: scope))
+            
         case let scope as SettingsScope:
             return AnyView(SettingsScreen(scope: scope))
             
@@ -169,6 +170,9 @@ struct TabBarScreen: View {
         case let scope as NotificationScopePreview<DataNotificationDetails.TypeSafeSubscription,
                                                    DataNotificationOption.Subscription>:
             return AnyView(NotificationDetailsScreen(scope: scope))
+            
+        case let scope as StoresScope:
+            return AnyView(StoresScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

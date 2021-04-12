@@ -96,17 +96,19 @@ struct ProductDetails: View {
             }
             
             switch self.scope.product.buyingOption {
-            case .buy:
+            case DataBuyingOption.buy:
                 MedicoButton(localizedStringKey: "add_to_cart") {
-                    scope.addToCart()
+                    scope.buy()
                 }
-            case .quote:
+                
+            case DataBuyingOption.quote:
                 MedicoButton(localizedStringKey: "get_quote",
                              buttonColor: .clear) {
-                    
+
                 }
                 .background(RoundedRectangle(cornerRadius: 8)
                                 .stroke(AppColor.yellow.color, lineWidth: 2))
+                
             default:
                 EmptyView()
             }

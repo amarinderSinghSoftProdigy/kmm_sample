@@ -24,6 +24,8 @@ struct SearchBar: View {
     @State private var isSelected: Bool = false
     @Binding private var text: String
     
+    let onTextChange: ((String, Bool) -> Void)?
+    
     // TECHNICAL DEBT
     //
     // Had to use the HStack instead the Search bar
@@ -44,7 +46,13 @@ struct SearchBar: View {
                     
                     CustomPlaceholderTextField(text: $text,
                                                fontSize: 17,
-                                               onEditingChanged: { self.isSelected = $0 }) {
+                                               onEditingChanged: { startedEditing in
+                                                if !startedEditing {
+                                                    onTextChange?(text, true)
+                                                }
+                                                
+                                                self.isSelected = startedEditing
+                                               }) {
                         LocalizedText(localizationKey: placeholderLocalizationKey,
                                       textWeight: style.fontWeight,
                                       fontSize: style.fontSize,
@@ -107,7 +115,7 @@ struct SearchBar: View {
          leadingButton: SearchBarButton? = SearchBarButton(button: .smallMagnifyingGlass),
          trailingButton: SearchBarButton? = SearchBarButton(emptyTextButton: nil,
                                                             enteredTextButton: .clear),
-         onTextChange: ((String) -> Void)? = nil) {
+         onTextChange: ((String, Bool) -> Void)? = nil) {
         self.placeholderLocalizationKey = placeholderLocalizationKey
         
         self.style = style
@@ -120,7 +128,9 @@ struct SearchBar: View {
         self.isDisabled = onTextChange == nil
         
         self._text = Binding.init(get: { (searchText ?? "") as String },
-                                  set: { value in onTextChange?(value) })
+                                  set: { value in onTextChange?(value, false) })
+        
+        self.onTextChange = onTextChange
     }
     
     enum Style {

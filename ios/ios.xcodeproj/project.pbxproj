@@ -33,6 +33,8 @@
 		33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621CF9257125B2004BD4CF /* ActivityView.swift */; };
 		33621D0225712DE6004BD4CF /* PasswordScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33621D0125712DE6004BD4CF /* PasswordScreen.swift */; };
 		33638EFD2574FB8400A9E8B4 /* SwiftDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */; };
+		33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */; };
+		33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33648DCE261B18A900CDB5D3 /* NumberPicker.swift */; };
 		336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */; };
 		336728222578E1CB00C7E73D /* KeyboardResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336728212578E1CB00C7E73D /* KeyboardResponder.swift */; };
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
@@ -99,6 +101,7 @@
 		33FD1266259238A700B956CC /* OtpPhoneVerificationScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD1265259238A700B956CC /* OtpPhoneVerificationScreenTests.swift */; };
 		33FD6A40259CAD640092887D /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A3F259CAD640092887D /* SearchBar.swift */; };
 		33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */; };
+		33FF142F261CB3E9004F9F98 /* StoresScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FF142E261CB3E9004F9F98 /* StoresScreen.swift */; };
 		33FF54E3257FBCD40018DE59 /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */; };
 		4BA0007DEC69B01DBC21A4C4 /* Pods_Medico.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AA80CF33BE2304862146BEE /* Pods_Medico.framework */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -175,6 +178,8 @@
 		33621CF9257125B2004BD4CF /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		33621D0125712DE6004BD4CF /* PasswordScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordScreen.swift; sourceTree = "<group>"; };
 		33638EFC2574FB8400A9E8B4 /* SwiftDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataSource.swift; sourceTree = "<group>"; };
+		33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyProductScreen.swift; sourceTree = "<group>"; };
+		33648DCE261B18A900CDB5D3 /* NumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberPicker.swift; sourceTree = "<group>"; };
 		336589BE257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLegalDocumentsScreen.swift; sourceTree = "<group>"; };
 		336728212578E1CB00C7E73D /* KeyboardResponder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardResponder.swift; sourceTree = "<group>"; };
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
@@ -235,6 +240,7 @@
 		33FD1265259238A700B956CC /* OtpPhoneVerificationScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneVerificationScreenTests.swift; sourceTree = "<group>"; };
 		33FD6A3F259CAD640092887D /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchScreen.swift; sourceTree = "<group>"; };
+		33FF142E261CB3E9004F9F98 /* StoresScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresScreen.swift; sourceTree = "<group>"; };
 		33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D65B56B42EA12578B135D16 /* Pods-Medico.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.release.xcconfig"; sourceTree = "<group>"; };
@@ -285,6 +291,7 @@
 		3317B5D525A59CE3008681ED /* Product */ = {
 			isa = PBXGroup;
 			children = (
+				33648DAC261AFB2500CDB5D3 /* BuyProductScreen.swift */,
 				3317B5D325A59C7C008681ED /* ProductDetails.swift */,
 			);
 			path = Product;
@@ -355,6 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				3376EC792583875900570BB3 /* FilePicker.swift */,
+				33648DCE261B18A900CDB5D3 /* NumberPicker.swift */,
 				339C5044257A548F00AAB45F /* PickerSelector.swift */,
 			);
 			path = Pickers;
@@ -480,6 +488,7 @@
 				334FF84325B5CC9600EC9663 /* Password */,
 				3317B5D525A59CE3008681ED /* Product */,
 				339D372025B05C6E00C57B2D /* Settings */,
+				33FF142D261CB3B8004F9F98 /* Store */,
 				3391B08C25B81E740025B945 /* UsersManagement */,
 				330867512566D67E000C3EB8 /* HostScreen.swift */,
 			);
@@ -737,6 +746,14 @@
 				33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */,
 			);
 			path = GlobalSearch;
+			sourceTree = "<group>";
+		};
+		33FF142D261CB3B8004F9F98 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				33FF142E261CB3E9004F9F98 /* StoresScreen.swift */,
+			);
+			path = Store;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -1069,6 +1086,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */,
 				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */,
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
@@ -1077,6 +1095,7 @@
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				332EB65325F2253C009BC392 /* PopSheet.swift in Sources */,
+				33FF142F261CB3E9004F9F98 /* StoresScreen.swift in Sources */,
 				334288AC25B3180F008F3890 /* MapView.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
@@ -1092,6 +1111,7 @@
 				331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */,
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33D0326125E3D3020046664C /* UserNameImage.swift in Sources */,
+				33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,

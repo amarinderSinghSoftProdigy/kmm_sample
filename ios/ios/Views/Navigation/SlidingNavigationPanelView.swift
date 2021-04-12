@@ -190,6 +190,7 @@ private struct _SlidingPanelView: View {
                           style: style,
                           onTapAction: {
                             _ = navigationOption.select()
+                            
                             onTapActionCallback?()
                           })
         }
@@ -209,6 +210,9 @@ private struct _SlidingPanelView: View {
 extension NavigationOption {
     var imageName: String? {
         switch self {
+//        case .Dashboard():
+//            return "Dashboard"
+            
         case .LogOut():
             return "Exit"
             
@@ -227,6 +231,9 @@ extension NavigationOption {
         case .SeasonBoys():
             return "SeasonBoy"
             
+        case .Stores():
+            return "Store"
+            
         default:
             return nil
         }
@@ -234,6 +241,9 @@ extension NavigationOption {
     
     var textLocalizationKey: String? {
         switch self {
+//        case .Dashboard():
+//            return "dashboard"
+            
         case .LogOut():
             return "log_out"
             
@@ -251,6 +261,9 @@ extension NavigationOption {
             
         case .SeasonBoys():
             return "seasonBoys"
+            
+        case .Stores():
+            return "stores"
             
         default:
             return nil

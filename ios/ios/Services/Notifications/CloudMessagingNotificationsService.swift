@@ -42,6 +42,14 @@ class CloudMessagingNotificationsService: NSObject, MessagingDelegate {
         // Print full message.
         print(userInfo)
     }
+    
+    func removeDeviceToken() {
+        messaging.deleteToken {
+            if let error = $0 {
+                print(error)
+            }
+        }
+    }
 }
  
 protocol NotificationsServiceDelegate {

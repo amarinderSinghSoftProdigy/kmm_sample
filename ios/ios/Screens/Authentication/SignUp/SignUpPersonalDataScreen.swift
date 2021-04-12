@@ -68,8 +68,13 @@ struct SignUpPersonalDataScreen: View {
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
             
+            let canSubmitPhone = Binding(get: { isPhoneValid },
+                                         set: {
+                                            isPhoneValid = $0
+                                            scope.setPhoneNumberValid(isValid: $0)
+                                         })
             PhoneTextField(phone: self.registration.value?.phoneNumber,
-                           canSubmitPhone: $isPhoneValid,
+                           canSubmitPhone: canSubmitPhone,
                            errorMessageKey: self.validation.value?.phoneNumber) { newValue in
                 scope.changePhoneNumber(phoneNumber: newValue)
             }

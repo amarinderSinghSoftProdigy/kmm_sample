@@ -30,6 +30,10 @@ class NotificationsManager {
         cloudMessagingNotificationsService.setDeviceToken(token)
     }
     
+    func removeDeviceToken() {
+        cloudMessagingNotificationsService.removeDeviceToken()
+    }
+    
     func handleNotificationFetch(withUserInfo userInfo: [AnyHashable: Any]) {
         if let data = userInfo as? [String: Any] {
             firebaseMessaging.handleMessage(data: data)

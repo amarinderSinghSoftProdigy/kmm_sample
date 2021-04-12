@@ -94,7 +94,7 @@ struct UserManagementScreen: View {
                                                                        enteredTextButton: .smallMagnifyingGlass),
                               trailingButton: SearchBar.SearchBarButton(emptyTextButton: .magnifyingGlass,
                                                                         enteredTextButton: .clear),
-                              onTextChange: { newValue in scope.search(value: newValue) })
+                              onTextChange: { newValue, _ in scope.search(value: newValue) })
                     
                     if scope.tabs.count == 1 {
                         self.singleTabView
@@ -218,12 +218,10 @@ struct UserManagementScreen: View {
                         
                         Spacer()
                         
-                        if user.subscriptionData?.status != nil {
-                            Text(user.geoData.formattedDistance)
-                                .medicoText(fontSize: 12,
-                                            color: .grey3,
-                                            multilineTextAlignment: .leading)
-                        }
+                        Text(user.geoData.formattedDistance)
+                            .medicoText(fontSize: 12,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
                     }
                 }
                 .padding(.horizontal, 10)

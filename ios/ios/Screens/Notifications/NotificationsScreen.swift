@@ -22,8 +22,8 @@ struct NotificationsScreen: View {
                       leadingButton: .init(emptyTextButton: .custom(AnyView(self.searchBarLeadingButton)),
                                            enteredTextButton: .smallMagnifyingGlass),
                       trailingButton: .init(emptyTextButton: .magnifyingGlass,
-                                            enteredTextButton: .clear)) {
-                scope.search(value: $0)
+                                            enteredTextButton: .clear)) { value, _ in
+                scope.search(value: value)
             }
             
             TransparentList(data: notifications,
@@ -105,7 +105,7 @@ struct NotificationsScreen: View {
                     
                     let buttonTextKey = data.selectedAction?.completedActionStringId ?? data.type.buttonStringId
                     
-                    if data.actions.isEmpty {
+                    if data.selectedAction != nil {
                         LocalizedText(localizationKey: buttonTextKey,
                                       textWeight: .semiBold,
                                       fontSize: 12,

@@ -13,31 +13,38 @@ struct ComplexNotificationAlert: View {
     let notification: ScopeNotification
     let dismissAction: (() -> ())?
     
+    @State var isSendEnabled = false
+    
     var body: some View {
         let titleKey: String
         let button: CustomAlert<AnyView>.AlertButton
+        var cancelButton: CustomAlert<AnyView>.AlertButton? = nil
         let body: AnyView
-        var dismissAction = self.dismissAction
+        var outsideTapAction = self.dismissAction
 
         switch self.notification {
 
         case let notification as ManagementScope.ChoosePaymentMethod:
             titleKey = "choose_payment_method_description"
-            button = .init(text: "save",
-                           action: { notification.sendRequest() })
-            body = AnyView(ManagementScopeChoosePaymentMethodView(notification: notification))
-
-        case let notification as ManagementScope.ChooseNumberOfDays:
-            titleKey = "edit_number_of_days"
-            button = .init(text: "save",
-                           action: { notification.save() })
-            body = AnyView(ManagementScopeChooseNumberOfDaysView(notification: notification))
             
-            if dismissAction == nil { dismissAction = { self.hideKeyboard() } }
+            button = .init(text: "save",
+                           isEnabled: isSendEnabled,
+                           action: { notification.sendRequest() })
+            body = AnyView(ManagementScopeChoosePaymentMethodView(notification: notification,
+                                                                  isSendEnabled: $isSendEnabled))
+            
+            if let dismissAction = self.dismissAction {
+                cancelButton = .init(text: "cancel",
+                                     isEnabled: true,
+                                     action: dismissAction)
+            }
+            
+            outsideTapAction = { self.hideKeyboard() }
             
         case let notification as ManagementScope.AddRetailerAddress.Congratulations:
             titleKey = "congratulations"
             button = .init(text: "retailers_list",
+                           isEnabled: true,
                            action: dismissAction)
             body = AnyView(
                 LocalizedText(localizedStringKey: LocalizedStringKey("retailer_added_template \(notification.tradeName)"),
@@ -56,7 +63,8 @@ struct ComplexNotificationAlert: View {
         return AnyView(
             CustomAlert(titleKey: titleKey,
                         button: button,
-                        dismissAction: dismissAction) {
+                        cancelButton: cancelButton,
+                        outsideTapAction: outsideTapAction) {
                 body
             }
         )
@@ -66,6 +74,7 @@ struct ComplexNotificationAlert: View {
         let notification: ManagementScope.ChoosePaymentMethod
         
         @ObservedObject var paymentMethod: SwiftDataSource<DataPaymentMethod>
+        @ObservedObject var daysNumber: SwiftDataSource<NSString>
         
         var body: some View {
             Group {
@@ -75,10 +84,16 @@ struct ComplexNotificationAlert: View {
             }
         }
         
-        init(notification: ManagementScope.ChoosePaymentMethod) {
+        init(notification: ManagementScope.ChoosePaymentMethod,
+             isSendEnabled: Binding<Bool>) {
             self.notification = notification
             
             self.paymentMethod = SwiftDataSource(dataSource: notification.paymentMethod)
+            self.daysNumber = SwiftDataSource(dataSource: notification.creditDays)
+            
+            SwiftDataSource(dataSource: notification.isSendEnabled).onValueDidSet = {
+                isSendEnabled.wrappedValue = $0 == true
+            }
         }
         
         private func getOptionView(for option: DataPaymentMethod) -> some View {
@@ -86,21 +101,32 @@ struct ComplexNotificationAlert: View {
                 CustomAlert<AnyView>.Separator()
                 
                 Button(action: { notification.changePaymentMethod(paymentMethod: option) }) {
-                    HStack {
-                        LocalizedText(localizationKey: getLocalizationKey(for: option),
-                                      fontSize: 17,
-                                      color: .black)
+                    VStack(spacing: 12) {
+                        HStack {
+                            LocalizedText(localizationKey: getLocalizationKey(for: option),
+                                          fontSize: 17,
+                                          color: .black)
 
-                        Spacer()
+                            Spacer()
 
-                        if paymentMethod.value == option {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(appColor: .lightBlue)
+                            if paymentMethod.value == option {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(appColor: .lightBlue)
+                            }
+                        }
+                        
+                        if paymentMethod.value == option && paymentMethod.value == .credit {
+                            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "no_of_credit_days",
+                                                         text: self.daysNumber.value as String?,
+                                                         onTextChange: { notification.changeCreditDays(days: $0) },
+                                                         height: 40,
+                                                         keyboardType: .numberPad)
                         }
                     }
                     .padding(.horizontal, 17)
+                    .padding(.vertical, 10)
                 }
-                .frame(height: 44)
+                .frame(minHeight: 44)
             }
         }
         
@@ -115,45 +141,6 @@ struct ComplexNotificationAlert: View {
             default:
                 return ""
             }
-        }
-    }
-    
-    private struct ManagementScopeChooseNumberOfDaysView: View {
-        let notification: ManagementScope.ChooseNumberOfDays
-        
-        @ObservedObject var daysNumber: SwiftDataSource<KotlinInt>
-        
-        var body: some View {
-            let text: Binding<String> = Binding(
-                get: {
-                    if let days = self.daysNumber.value {
-                        return "\(days)"
-                    }
-                    
-                    return ""
-                },
-                set: {
-                    if let days = Int32($0) {
-                        notification.changeDays(days: days)
-                    }
-                })
-            
-            CustomPlaceholderTextField(text: text) {
-                LocalizedText(localizationKey: "0",
-                              fontSize: 13,
-                              color: .placeholderGrey)
-            }
-            .keyboardType(.numberPad)
-            .padding(4)
-            .frame(height: 25)
-            .background(AppColor.white.color.cornerRadius(5))
-            .padding([.horizontal, .bottom], 16)
-        }
-        
-        init(notification: ManagementScope.ChooseNumberOfDays) {
-            self.notification = notification
-
-            self.daysNumber = SwiftDataSource(dataSource: notification.days)
         }
     }
 }

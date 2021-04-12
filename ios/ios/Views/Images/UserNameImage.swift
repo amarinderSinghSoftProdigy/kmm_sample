@@ -35,6 +35,7 @@ struct UserNameImage: View {
             Text(usernameAbbreviation)
                 .medicoText(textWeight: .bold,
                             fontSize: 36)
+                .minimumScaleFactor(0.01)
                 .padding()
         }
     }

@@ -87,10 +87,10 @@ struct NotificationDetailsScreen: View {
                                 .medicoText(color: .lightBlue,
                                             multilineTextAlignment: .leading)
                             
-                            LocalizedText(localizationKey: "see_on_the_map",
-                                          textWeight: .bold,
-                                          color: .lightBlue,
-                                          multilineTextAlignment: .leading)
+//                            LocalizedText(localizationKey: "see_on_the_map",
+//                                          textWeight: .bold,
+//                                          color: .lightBlue,
+//                                          multilineTextAlignment: .leading)
                         }
                     }
                     
@@ -126,6 +126,7 @@ struct NotificationDetailsScreen: View {
                                     .stroke(AppColor.navigationBar.color)
                             )
                             .frame(width: 136)
+                            .allowsHitTesting(!details.isReadOnly)
                         }
                         
                         let text = Binding(get: { details.option.discountRate },
@@ -136,6 +137,7 @@ struct NotificationDetailsScreen: View {
                                            })
                         NumberTextFieldPanel(titleLocalizedKey: "discount_rate",
                                              text: text)
+                            .allowsHitTesting(!details.isReadOnly)
                         
                         if details.option.paymentMethod == .credit {
                             let text = Binding(get: { details.option.creditDays },
@@ -147,6 +149,7 @@ struct NotificationDetailsScreen: View {
                             
                             NumberTextFieldPanel(titleLocalizedKey: "credit_days",
                                                  text: text)
+                                .allowsHitTesting(!details.isReadOnly)
                         }
                     }
                 }
