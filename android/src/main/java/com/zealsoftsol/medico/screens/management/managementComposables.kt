@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -295,20 +296,25 @@ private fun BaseManagementItem(
 }
 
 @Composable
-fun GeoLocation(location: String, isBold: Boolean = false) {
+fun GeoLocation(
+    location: String,
+    isBold: Boolean = false,
+    textSize: TextUnit = 14.sp,
+    tint: Color = ConstColors.gray,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = Icons.Outlined.LocationOn,
             contentDescription = null,
-            tint = ConstColors.gray,
+            tint = tint,
             modifier = Modifier.size(10.dp),
         )
         Space(4.dp)
         Text(
             text = location,
-            fontSize = 14.sp,
+            fontSize = textSize,
             fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-            color = ConstColors.gray,
+            color = tint,
         )
     }
 }
