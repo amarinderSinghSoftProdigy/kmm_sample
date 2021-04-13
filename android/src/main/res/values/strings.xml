@@ -140,6 +140,7 @@
     <string name="decline">Decline</string>
     <string name="declined">Declined</string>
     <string name="subscribe_request_button">Action Required</string>
+    <string name="subscribe_decision_button">Information</string>
     <string name="order_request_button">View Order</string>
     <string name="credit_days">Credit days</string>
     <string name="no_of_credit_days">No. of Credit Days</string>
@@ -149,4 +150,5 @@
     <string name="view_all">View All</string>
     <string name="choose_seller">Please, choose a seller</string>
     <string name="map_location">Map Location</string>
+    <string name="dashboard">Dashboard</string>
 </resources>

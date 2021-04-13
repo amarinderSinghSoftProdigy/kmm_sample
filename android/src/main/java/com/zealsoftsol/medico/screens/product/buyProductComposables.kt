@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ProductSearch
@@ -180,13 +182,10 @@ private fun SellerInfoItem(
     onInc: () -> Unit,
     onDec: () -> Unit,
 ) {
-    val h = 180.dp
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth()
-            .height(h)
-            .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     ) {
         Box {
             val labelColor = when (sellerInfo.stockInfo.status) {
@@ -325,7 +324,7 @@ private fun SellerInfoItem(
                         textSize = 12.sp,
                         tint = MaterialTheme.colors.background,
                     )
-                    Row {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "${sellerInfo.geoData.distance} km",
                             color = ConstColors.lightBlue,
@@ -403,7 +402,11 @@ private fun SellerInfoItem(
                     )
                 }
             }
-            Box(modifier = Modifier.width(5.dp).height(h).background(labelColor))
+            val maxWidth =
+                LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp - 5.dp
+            Box(
+                modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
+            )
         }
     }
 }

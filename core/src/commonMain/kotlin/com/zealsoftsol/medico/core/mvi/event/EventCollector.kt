@@ -46,7 +46,7 @@ internal class EventCollector(
     private val loadHelperScope = CoroutineScope(compatDispatcher)
 
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
-        Event.Transition::class to TransitionEventDelegate(navigator, userRepo),
+        Event.Transition::class to TransitionEventDelegate(navigator, userRepo, notificationRepo),
         Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo, notificationRepo),
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
