@@ -203,6 +203,7 @@
 "unread" = "Unread";
 "read" = "Read";
 "subscribe_request_button" = "Action Required";
+"subscribe_decision_button" = "Information";
 "order_request_button" = "View Order";
 "accepted" = "Accepted Request";
 "declined" = "Declined Request";

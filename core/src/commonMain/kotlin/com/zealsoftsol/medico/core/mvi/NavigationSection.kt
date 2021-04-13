@@ -16,6 +16,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     fun select() = EventCollector.sendEvent(event)
 
+    object Dashboard : NavigationOption(Event.Transition.Dashboard, "dashboard")
     object Settings : NavigationOption(Event.Transition.Settings, "settings")
     object Stockists : NavigationOption(Event.Transition.Management(UserType.STOCKIST), "stockists")
     object Retailers : NavigationOption(Event.Transition.Management(UserType.RETAILER), "retailers")
@@ -34,6 +35,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
         )
 
         internal fun default(userType: UserType) = listOfNotNull(
+            Dashboard,
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },

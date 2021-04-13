@@ -139,6 +139,7 @@ sealed class Event {
         object ForgetPassword : Transition()
         object ChangePassword : Transition()
         object Search : Transition()
+        object Dashboard : Transition()
         object Settings : Transition()
         object Profile : Transition()
         object Address : Transition()

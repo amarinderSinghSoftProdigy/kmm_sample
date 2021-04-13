@@ -116,11 +116,12 @@ fun NavigationColumn(
 
 @Composable
 private inline fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
-    NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
+    NavigationOption.Dashboard -> painterResource(id = R.drawable.ic_dashboard)
     NavigationOption.Stores -> painterResource(id = R.drawable.ic_stores)
     NavigationOption.Stockists -> painterResource(id = R.drawable.ic_stockist)
     NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
     NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
     NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
+    NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
     NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)
 } to stringResourceByName(stringId)

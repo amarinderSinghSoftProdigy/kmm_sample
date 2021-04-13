@@ -64,7 +64,7 @@ sealed class NotificationOption {
 
 enum class NotificationType(val buttonStringId: String) {
     SUBSCRIBE_REQUEST("subscribe_request_button"),
-    SUBSCRIBE_DECISION("subscribe_request_button"),
+    SUBSCRIBE_DECISION("subscribe_decision_button"),
     ORDER_REQUEST("order_request_button"),
 }
 
