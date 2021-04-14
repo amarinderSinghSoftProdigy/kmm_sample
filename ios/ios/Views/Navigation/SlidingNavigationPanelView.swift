@@ -210,8 +210,8 @@ private struct _SlidingPanelView: View {
 extension NavigationOption {
     var imageName: String? {
         switch self {
-//        case .Dashboard():
-//            return "Dashboard"
+        case .Dashboard():
+            return "Dashboard"
             
         case .LogOut():
             return "Exit"
@@ -241,8 +241,8 @@ extension NavigationOption {
     
     var textLocalizationKey: String? {
         switch self {
-//        case .Dashboard():
-//            return "dashboard"
+        case .Dashboard():
+            return "dashboard"
             
         case .LogOut():
             return "log_out"
