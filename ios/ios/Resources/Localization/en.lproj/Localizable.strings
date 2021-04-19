@@ -91,13 +91,15 @@
 
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
-"drug_license_request" = "Please provide a drug license to activate the account";
+"drug_license_request" = "Please provide a drug license to\nactivate the account";
 "aadhaar_card_request" = "Please upload Aadhaar card";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
 "choose_from_photo_library" = "Choose From Photo Library";
 "choose_from_device" = "Upload From Device";
+"available_file_formats" = "Available File Formats";
+"maximum_file_size" = "Maximum file size:";
 
 // MARK: Alert
 "success" = "Success!";
@@ -225,7 +227,7 @@
 
 // MARK: Add Retailer
 "add_retailer" = "Add Retailer";
-"i_consest_for_terms_and_conditions" = "I consest for Terms and Conditions";
+"i_consent_for_terms_and_conditions" = "I consent for Terms and Conditions";
 "add_retailer_address" = "Add Retailer’s Address";
 "confirm_the_information" = "Confirm if the information above is correct";
 "congratulations" = "Congratulations";
