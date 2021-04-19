@@ -129,6 +129,9 @@ struct EntityInfoBottomSheet: ViewModifier {
                                     fontSize: 16,
                                     color: .lightBlue,
                                     multilineTextAlignment: .leading)
+                        .onTapGesture {
+                            self.call(formattedphoneNumber)
+                        }
                 }
                 
                 AppColor.black.color.opacity(0.42)

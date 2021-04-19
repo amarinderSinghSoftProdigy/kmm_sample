@@ -128,6 +128,13 @@ extension View {
             .keyboardResponder()
             .hideKeyboardOnTap()
     }
+    
+    func call(_ phoneNumber: String) {
+        let formattedString = "tel://\(phoneNumber)"
+        guard let url = URL(string: formattedString) else { return }
+        
+        UIApplication.shared.open(url)
+    }
 }
 
 private struct RoundedCorner: Shape {
