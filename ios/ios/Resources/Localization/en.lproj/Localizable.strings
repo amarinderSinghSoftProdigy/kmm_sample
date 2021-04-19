@@ -207,7 +207,12 @@
 "order_request_button" = "View Order";
 "accepted" = "Accepted Request";
 "declined" = "Declined Request";
-"hours %lld" = "%lld h";
+"minutes %lld" = "%lldm";
+"hours %lld" = "%lldh";
+"days %lld" = "%lldd";
+"weeks %lld" = "%lldw";
+"months %lld" = "%lldmths";
+"years %lld" = "%lldy";
 
 // MARK: Notification Details
 "new_request_to_subscribe_from" = "New request to subscribe from";

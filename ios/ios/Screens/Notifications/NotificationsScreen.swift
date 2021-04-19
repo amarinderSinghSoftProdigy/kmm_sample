@@ -81,8 +81,7 @@ struct NotificationsScreen: View {
                         
                         Spacer()
                         
-                        let hours = (Time().now - data.sentAt) / (1000 * 60 * 60)
-                        LocalizedText(localizedStringKey: LocalizedStringKey("hours \(hours)"),
+                        LocalizedText(localizedStringKey: getFormattedTimeLocalizedStringKey(forSentAt: data.sentAt),
                                       testingIdentifier: "hours",
                                       color: .grey3,
                                       multilineTextAlignment: .leading)
@@ -125,6 +124,37 @@ struct NotificationsScreen: View {
             }
             .padding(11)
             .background(AppColor.white.color.cornerRadius(5))
+        }
+        
+        private func getFormattedTimeLocalizedStringKey(forSentAt sentAt: Int64) -> LocalizedStringKey {
+            let sentAtDate = Date(timeIntervalSince1970: (Double(sentAt) / 1000.0))
+            let currrentDate = Date()
+            
+            let components = Calendar.current.dateComponents([.minute, .hour, .day, .month, .year],
+                                                             from: sentAtDate,
+                                                             to: currrentDate)
+            
+            if let years = components.year, years > 0 {
+                return LocalizedStringKey("years \(years)")
+            }
+            
+            if let months = components.month, months > 0 {
+                return LocalizedStringKey("months \(months)")
+            }
+            
+            if let days = components.day, days > 0 {
+                if days >= 7 {
+                    return LocalizedStringKey("weeks \(days / 7)")
+                }
+                    
+                return LocalizedStringKey("days \(days)")
+            }
+            
+            if let hours = components.hour, hours > 0 {
+                return LocalizedStringKey("hours \(hours)")
+            }
+            
+            return LocalizedStringKey("minutes \(components.minute ?? 0)")
         }
     }
 }
