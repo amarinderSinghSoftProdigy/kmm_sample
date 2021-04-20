@@ -236,3 +236,12 @@
 
 // MARK: Store
 "store" = "Store";
+
+// MARK: Help
+"instantly_connect_with_us" = "Instantly Connect with us";
+"call_now" = "Call Now";
+"contact_information" = "Contact Information";
+"call_sales" = "Call Sales";
+"send_email" = "Send Email";
+"terms_and_conditions" = "Terms & Conditions";
+"privacy_policy" = "Privacy Policy";
