@@ -209,7 +209,7 @@ struct UserManagementScreen: View {
                             LocalizedText(localizationKey: status.serverValue,
                                           textWeight: .medium,
                                           fontSize: 15,
-                                          color: status == .subscribed ? .lightBlue : .yellow)
+                                          color: status.statusColor)
                         }
                     }
                     
@@ -251,7 +251,7 @@ struct UserManagementScreen: View {
                             LocalizedText(localizationKey: status.serverValue,
                                           textWeight: .medium,
                                           fontSize: 15,
-                                          color: status == .subscribed ? .lightBlue : .yellow)
+                                          color: status.statusColor)
                         }
                     }
                     

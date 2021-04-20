@@ -132,12 +132,71 @@ extension DataStockInfo {
         switch self.status {
         case .inStock:
             return .green
+            
         case .lowStock:
             return .orange
+            
         case .outOfStock:
             return .red
+            
         default:
             return .darkBlue
+        }
+    }
+}
+
+
+extension DataSubscriptionStatus {
+    var statusColor: AppColor {
+        switch self {
+        case .subscribed:
+            return .green
+            
+        case .pending:
+            return .lightBlue
+            
+        case .rejected:
+            return .red
+            
+        default:
+            return .darkBlue
+        }
+    }
+}
+
+extension DataNotificationAction {
+    var statusColor: AppColor {
+        switch self {
+        case .accept:
+            return .green
+            
+        case .decline:
+            return .red
+            
+        default:
+            return .darkBlue
+        }
+    }
+}
+
+extension DataNotificationType {
+    var statusButtonColor: AppColor {
+        switch self {
+        case .orderRequest, .subscribeRequest:
+            return .yellow
+            
+        default:
+            return .lightBlue
+        }
+    }
+    
+    var statusButtonTextColor: AppColor {
+        switch self {
+        case .orderRequest, .subscribeRequest:
+            return .darkBlue
+            
+        default:
+            return .white
         }
     }
 }
