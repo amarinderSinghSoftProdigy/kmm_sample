@@ -46,6 +46,7 @@
     <string name="stores">Stores</string>
     <string name="next">Next</string>
     <string name="first_name">First Name</string>
+    <string name="letters_only">Letters only</string>
     <string name="last_name">Last Name</string>
     <string name="email">Email Address</string>
     <string name="repeat_password">Repeat Password</string>
@@ -67,6 +68,7 @@
     <string name="drug_license_1">Drug License №1</string>
     <string name="drug_license_2">Drug License №2</string>
     <string name="aadhaar_card">Aadhaar Card</string>
+    <string name="aadhaar_card_invalid">Invalid Aadhaar Card</string>
     <string name="share_code">Share Code</string>
     <string name="provide_drug_license_hint">Please provide drug license to activate the account</string>
     <string name="provide_aadhaar_hint">Please upload Aadhaar card</string>
@@ -130,7 +132,7 @@
     <string name="confirm_info">Confirm if the information above is correct</string>
     <string name="add_retailer">Add Retailer</string>
     <string name="add_retailer_address">Add Retailer\'s Address</string>
-    <string name="consent_terms">I consest for Terms and Conditions</string>
+    <string name="consent_terms">I consent for Terms and Conditions</string>
     <string name="notifications">Notifications</string>
     <string name="active_orders">Active orders</string>
     <string name="read">Read</string>

@@ -76,7 +76,11 @@ fun AuthAwaitVerificationScreen(
                 hint = stringResource(id = R.string.verification_code),
                 text = code.value,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                onValueChange = { code.value = it },
+                onValueChange = {
+                    if (it.isEmpty() || it.toIntOrNull() != null) {
+                        code.value = it
+                    }
+                },
             )
             code.value.isNotEmpty()
         },

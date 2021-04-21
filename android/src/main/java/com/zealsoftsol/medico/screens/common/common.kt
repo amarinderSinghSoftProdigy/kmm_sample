@@ -254,6 +254,7 @@ fun rememberPhoneNumberFormatter() = getCountryCode().let {
 
 @Composable
 private fun getCountryCode(): String {
+    return "IN"
     return when {
         BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
         BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease

@@ -190,24 +190,24 @@ private fun NonSeasonBoyItem(
     entityInfo: EntityInfo,
     onClick: () -> Unit,
 ) {
-    BaseManagementItem(onClick) {
+    BaseManagementRowItem(onClick) {
         Column(
             modifier = Modifier.fillMaxHeight().weight(0.65f),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = entityInfo.tradeName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W600,
                     color = MaterialTheme.colors.background,
+                    modifier = Modifier.padding(end = if (entityInfo.isVerified == true) 18.dp + 8.dp else 0.dp)
                 )
-                Space(8.dp)
                 if (entityInfo.isVerified == true) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_verified),
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(18.dp).align(Alignment.TopEnd),
                     )
                 }
             }
@@ -238,7 +238,7 @@ private fun NonSeasonBoyItem(
 
 @Composable
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
-    BaseManagementItem(onClick) {
+    BaseManagementRowItem(onClick) {
         Column(
             modifier = Modifier.fillMaxHeight().weight(0.65f),
             verticalArrangement = Arrangement.SpaceEvenly,
@@ -275,7 +275,7 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BaseManagementItem(
+private fun BaseManagementRowItem(
     onClick: () -> Unit,
     body: @Composable RowScope.() -> Unit,
 ) {

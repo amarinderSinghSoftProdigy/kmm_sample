@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
@@ -115,8 +114,6 @@ private fun DocumentUploadBottomSheet(
                 if (file != null) {
                     onDismiss()
                     onFileReady(file)
-                } else {
-                    activity.toast(activity.getString(R.string.something_went_wrong))
                 }
             }
         },
