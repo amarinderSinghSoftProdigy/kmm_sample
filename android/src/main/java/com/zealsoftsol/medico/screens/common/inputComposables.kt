@@ -30,12 +30,10 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.ConstColors
@@ -134,7 +132,7 @@ fun InputField(
     onValueChange: (String) -> Unit,
 ) {
     TextField(
-        value = TextFieldValue(text, TextRange(text.length)),
+        value = text,//TextFieldValue(text, TextRange(text.length)),
         label = {
             Text(
                 text = hint,
@@ -148,7 +146,7 @@ fun InputField(
             focusedLabelColor = ConstColors.lightBlue,
             focusedIndicatorColor = ConstColors.lightBlue,
         ),
-        onValueChange = { onValueChange(it.text) },
+        onValueChange = onValueChange,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         singleLine = maxLines == 1,

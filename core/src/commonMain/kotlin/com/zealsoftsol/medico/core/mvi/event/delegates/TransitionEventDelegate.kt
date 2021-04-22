@@ -1,20 +1,24 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -27,6 +31,7 @@ internal class TransitionEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val notificationRepo: NotificationRepo,
+    private val cartRepo: CartRepo,
 ) : EventDelegate<Event.Transition>(navigator) {
 
     override suspend fun handleEvent(event: Event.Transition) {
@@ -34,7 +39,7 @@ internal class TransitionEventDelegate(
             when (event) {
                 is Event.Transition.Back -> dropScope()
                 is Event.Transition.Refresh -> refresh()
-                is Event.Transition.ForgetPassword -> setScope(
+                is Event.Transition.Otp -> setScope(
                     OtpScope.PhoneNumberInput.get(
                         phoneNumber = DataSource(""),
                         isForRegisteredUsersOnly = true,
@@ -42,13 +47,17 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.SignUp -> setScope(SignUpScope.SelectUserType.get())
                 is Event.Transition.Search -> setScope(SearchScope())
-                is Event.Transition.Dashboard -> setScope(
-                    DashboardScope.get(
-                        userRepo.requireUser(),
-                        userRepo.getUserDataSource(),
-                        notificationRepo.getUnreadMessagesDataSource(),
+                is Event.Transition.Dashboard -> {
+                    dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                    setScope(
+                        DashboardScope.get(
+                            userRepo.requireUser(),
+                            userRepo.getUserDataSource(),
+                            notificationRepo.getUnreadMessagesDataSource(),
+                            cartRepo.getEntriesCountDataSource(),
+                        )
                     )
-                )
+                }
                 is Event.Transition.Settings -> {
                     val user = userRepo.requireUser()
                     setScope(
@@ -117,6 +126,12 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Stores -> setScope(
                     StoresScope.All()
+                )
+                is Event.Transition.Cart -> setScope(
+                    CartScope(
+                        items = ReadOnlyDataSource(cartRepo.entries),
+                        total = ReadOnlyDataSource(cartRepo.total),
+                    )
                 )
             }
         }

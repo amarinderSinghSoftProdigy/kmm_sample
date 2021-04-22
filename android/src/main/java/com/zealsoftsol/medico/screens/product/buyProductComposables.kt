@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -190,9 +191,8 @@ private fun SellerInfoItem(
         Box {
             val labelColor = when (sellerInfo.stockInfo.status) {
                 StockStatus.IN_STOCK -> ConstColors.green
-                StockStatus.LOW_STOCK -> ConstColors.orange
+                StockStatus.LIMITED_STOCK -> ConstColors.orange
                 StockStatus.OUT_OF_STOCK -> ConstColors.red
-                null -> ConstColors.gray
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -237,23 +237,33 @@ private fun SellerInfoItem(
                                     fontSize = 12.sp,
                                 )
                                 Space(4.dp)
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append("Expiry: ")
-                                        val startIndex = length
-                                        append(sellerInfo.stockInfo.expireDate)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = ConstColors.orange,
-                                                fontWeight = FontWeight.W800
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray,
-                                    fontSize = 12.sp,
-                                )
+                                val expiry = sellerInfo.stockInfo.expiry
+                                val color = Color(expiry.color.toColorInt())
+                                Box(
+                                    modifier = Modifier.background(
+                                        color = color.copy(alpha = 0.1f),
+                                        shape = MaterialTheme.shapes.small
+                                    )
+                                ) {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append("Expiry: ")
+                                            val startIndex = length
+                                            append(expiry.formattedDate)
+                                            addStyle(
+                                                SpanStyle(
+                                                    color = color,
+                                                    fontWeight = FontWeight.W800
+                                                ),
+                                                startIndex,
+                                                length,
+                                            )
+                                        },
+                                        color = ConstColors.gray,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(4.dp),
+                                    )
+                                }
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
@@ -363,38 +373,12 @@ private fun SellerInfoItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        modifier = Modifier.defaultMinSize(minWidth = 100.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            tint = if (quantity > 0) ConstColors.lightBlue else ConstColors.gray.copy(
-                                alpha = 0.5f
-                            ),
-                            contentDescription = null,
-                            modifier = if (quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
-                        )
-                        Space(12.dp)
-                        Text(
-                            text = quantity.toString(),
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W700,
-                            fontSize = 22.sp,
-                        )
-                        Space(12.dp)
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            tint = if (quantity < sellerInfo.stockInfo.availableQty) ConstColors.lightBlue else ConstColors.gray.copy(
-                                alpha = 0.5f
-                            ),
-                            contentDescription = null,
-                            modifier = if (quantity < sellerInfo.stockInfo.availableQty) Modifier.clickable(
-                                onClick = onInc
-                            ) else Modifier,
-                        )
-                    }
+                    PlusMinusQuantity(
+                        quantity = quantity,
+                        max = sellerInfo.stockInfo.availableQty,
+                        onInc = onInc,
+                        onDec = onDec,
+                    )
                     MedicoSmallButton(
                         text = stringResource(id = R.string.add_to_cart),
                         isEnabled = quantity > 0,
@@ -408,5 +392,43 @@ private fun SellerInfoItem(
                 modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
             )
         }
+    }
+}
+
+@Composable
+fun PlusMinusQuantity(
+    modifier: Modifier = Modifier,
+    quantity: Int,
+    max: Int = Int.MAX_VALUE,
+    onInc: () -> Unit,
+    onDec: () -> Unit,
+) {
+    Row(
+        modifier = modifier.defaultMinSize(minWidth = 100.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Remove,
+            tint = if (quantity > 0) ConstColors.lightBlue else ConstColors.gray.copy(
+                alpha = 0.5f
+            ),
+            contentDescription = null,
+            modifier = if (quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
+        )
+        Space(12.dp)
+        Text(
+            text = quantity.toString(),
+            color = MaterialTheme.colors.background,
+            fontWeight = FontWeight.W700,
+            fontSize = 22.sp,
+        )
+        Space(12.dp)
+        Icon(
+            imageVector = Icons.Default.Add,
+            tint = if (quantity < max) ConstColors.lightBlue else ConstColors.gray.copy(alpha = 0.5f),
+            contentDescription = null,
+            modifier = if (quantity < max) Modifier.clickable(onClick = onInc) else Modifier,
+        )
     }
 }

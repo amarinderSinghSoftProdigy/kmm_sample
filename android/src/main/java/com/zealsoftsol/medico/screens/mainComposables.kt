@@ -2,8 +2,11 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,15 +29,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -42,9 +48,12 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthDetailsAadhaar
@@ -55,6 +64,7 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.cart.CartScreen
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
@@ -70,14 +80,18 @@ import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
 import com.zealsoftsol.medico.screens.product.BuyProductScreen
 import com.zealsoftsol.medico.screens.product.ProductScreen
+import com.zealsoftsol.medico.screens.search.BasicSearchBar
+import com.zealsoftsol.medico.screens.search.SearchBarEnd
+import com.zealsoftsol.medico.screens.search.SearchScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
+fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val scaffoldState = rememberScaffoldState()
     val notificationList = rememberLazyListState()
+    val searchList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
@@ -99,78 +113,19 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     when (val info = tabBarInfo.value) {
-                        is TabBarInfo.Simple -> {
-                            if (info.icon != ScopeIcon.NO_ICON) {
-                                Icon(
-                                    imageVector = info.icon.toLocalIcon(),
-                                    contentDescription = null,
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                        .fillMaxHeight()
-                                        .padding(16.dp)
-                                        .clickable(
-                                            indication = null,
-                                            onClick = {
-                                                when (info.icon) {
-                                                    ScopeIcon.BACK -> scope.goBack()
-                                                    ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
-                                                }
-                                            },
-                                        )
-                                )
-                            }
-                            info.titleId?.let { stringId ->
-                                Text(
-                                    text = stringResourceByName(stringId),
-                                    style = MaterialTheme.typography.h6,
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                        .padding(start = 16.dp),
-                                )
-                            }
-                        }
-                        is TabBarInfo.Search -> {
-                            Icon(
-                                imageVector = info.icon.toLocalIcon(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .weight(0.15f)
-                                    .padding(16.dp)
-                                    .clickable(indication = null) {
-                                        when (info.icon) {
-                                            ScopeIcon.BACK -> scope.goBack()
-                                            ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
-                                        }
-                                    }
-                            )
-                            Row(
-                                modifier = Modifier
-                                    .weight(0.7f)
-                                    .fillMaxHeight()
-                                    .clickable(indication = null) { info.goToSearch() }
-                                    .padding(vertical = 4.dp)
-                                    .background(Color.White, MaterialTheme.shapes.medium)
-                                    .padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    tint = ConstColors.gray,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.search),
-                                    color = ConstColors.gray.copy(alpha = 0.5f),
-                                    modifier = Modifier.padding(start = 24.dp),
-                                )
-                            }
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_cart),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .weight(0.15f)
-                                    .padding(16.dp),
-                            )
-                        }
+                        is TabBarInfo.Simple -> SimpleTabBar(
+                            scope,
+                            info,
+                            scaffoldState,
+                            coroutineScope
+                        )
+                        is TabBarInfo.Search -> SearchTabBar(
+                            scope,
+                            info,
+                            scaffoldState,
+                            coroutineScope
+                        )
+                        is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
                     }
                 }
             }
@@ -205,6 +160,7 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                         )
                     }
                     is DashboardScope -> DashboardScreen(it)
+                    is SearchScope -> SearchScreen(it, searchList)
                     is ProductInfoScope -> ProductScreen(it)
                     is BuyProductScope -> BuyProductScreen(it)
                     is SettingsScope -> SettingsScreen(it)
@@ -213,11 +169,143 @@ fun TabBarScreen(scope: Scope.Host.TabBar, coroutineScope: CoroutineScope) {
                     is PreviewUserScope -> PreviewUserScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> StoresScreen(it)
+                    is CartScope -> CartScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
     )
+}
+
+
+@Composable
+private fun RowScope.SimpleTabBar(
+    scope: TabBarScope,
+    info: TabBarInfo.Simple,
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope,
+) {
+    if (info.icon != ScopeIcon.NO_ICON) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier.align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        when (info.icon) {
+                            ScopeIcon.BACK -> scope.goBack()
+                            ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
+                        }
+                    },
+                )
+        )
+    }
+    when (val res = info.title) {
+        is StringResource.Static -> Text(
+            text = stringResourceByName(res.id),
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.align(Alignment.CenterVertically)
+                .padding(start = 16.dp),
+        )
+        is StringResource.Raw -> Text(
+            text = res.string,
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.align(Alignment.CenterVertically)
+                .padding(start = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun RowScope.SearchTabBar(
+    scope: TabBarScope,
+    info: TabBarInfo.Search,
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope,
+) {
+    Icon(
+        imageVector = info.icon.toLocalIcon(),
+        contentDescription = null,
+        modifier = Modifier
+            .weight(0.15f)
+            .clickable(indication = null) {
+                when (info.icon) {
+                    ScopeIcon.BACK -> scope.goBack()
+                    ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
+                }
+            }
+            .padding(16.dp)
+    )
+    Row(
+        modifier = Modifier
+            .weight(0.7f)
+            .fillMaxHeight()
+            .clickable(indication = null) { info.goToSearch() }
+            .padding(vertical = 4.dp)
+            .background(Color.White, MaterialTheme.shapes.medium)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            tint = ConstColors.gray,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+        )
+        Text(
+            text = stringResource(id = R.string.search),
+            color = ConstColors.gray.copy(alpha = 0.5f),
+            modifier = Modifier.padding(start = 24.dp),
+        )
+    }
+    Box(
+        modifier = Modifier.weight(0.15f)
+            .clickable(indication = null) { info.goToCart() }
+            .padding(10.dp),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_cart),
+            contentDescription = null,
+            modifier = Modifier.padding(6.dp).align(Alignment.Center)
+        )
+        val cartItems = info.cartItemsCount.flow.collectAsState()
+        Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
+            Canvas(modifier = Modifier.size(15.dp)) {
+                drawCircle(Color.White)
+            }
+            Text(
+                text = cartItems.value.toString(),
+                color = ConstColors.red,
+                fontWeight = FontWeight.W700,
+                fontSize = 10.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActiveSearchTabBar(
+    scope: TabBarScope,
+    info: TabBarInfo.ActiveSearch,
+) {
+    val search = info.search.flow.collectAsState()
+    BasicSearchBar(
+        input = search.value,
+        icon = Icons.Default.ArrowBack,
+        searchBarEnd = SearchBarEnd.Filter { info.toggleFilter() },
+        onIconClick = { scope.goBack() },
+        isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
+        onSearch = { value, isFromKeyboard ->
+            info.searchProduct(
+                value,
+                withAutoComplete = !isFromKeyboard
+            )
+        },
+    )
+    scope.storage.save("focus", false)
 }
 
 private inline fun ScopeIcon.toLocalIcon(): ImageVector = when (this) {

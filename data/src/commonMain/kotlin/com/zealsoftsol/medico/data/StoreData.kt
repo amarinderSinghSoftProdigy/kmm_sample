@@ -25,5 +25,5 @@ data class Store(
     @SerialName("unitGeoPoints")
     val geoPoints: GeoPoints,
 ) {
-    fun fullAddress() = "$location $pincode"
+    fun fullAddress() = "$city $pincode"
 }

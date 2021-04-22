@@ -8,7 +8,7 @@ import com.zealsoftsol.medico.data.AuthCredentials
 
 class LogInScope(
     val credentials: DataSource<AuthCredentials>,
-) : Scope.Host.Regular() {
+) : Scope.Host() {
 
     /**
      * Updates current scope, result posted to [credentials]
@@ -24,7 +24,7 @@ class LogInScope(
     /**
      * Transition to [OtpScope.PhoneNumberInput]
      */
-    fun goToForgetPassword() = EventCollector.sendEvent(Event.Transition.ForgetPassword)
+    fun goToForgetPassword() = EventCollector.sendEvent(Event.Transition.Otp)
 
     /**
      * Transition to [SignUpScope.SelectUserType]

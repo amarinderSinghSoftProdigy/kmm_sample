@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -87,6 +88,7 @@ sealed class Event {
             data class ClearFilter(val filter: Filter?) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
+            object ToggleFilter : Search()
         }
 
         sealed class Product : Action() {
@@ -128,6 +130,37 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
         }
+
+        sealed class Cart : Action() {
+            override val typeClazz: KClass<*> = Cart::class
+
+            data class AddItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val spid: String,
+                val quantity: Int,
+            ) : Cart()
+
+            data class UpdateItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val spid: String,
+                val quantity: Int,
+            ) : Cart()
+
+            data class RemoveItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val spid: String,
+            ) : Cart()
+
+            data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
+
+            object ClearCart : Cart()
+        }
     }
 
     sealed class Transition : Event() {
@@ -136,7 +169,7 @@ sealed class Event {
         object Back : Transition()
         object Refresh : Transition()
         object SignUp : Transition()
-        object ForgetPassword : Transition()
+        object Otp : Transition()
         object ChangePassword : Transition()
         object Search : Transition()
         object Dashboard : Transition()
@@ -156,5 +189,6 @@ sealed class Event {
 
         object Notifications : Transition()
         object Stores : Transition()
+        object Cart : Transition()
     }
 }

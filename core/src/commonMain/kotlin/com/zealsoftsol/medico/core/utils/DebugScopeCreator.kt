@@ -8,13 +8,14 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CustomerAddressData
+import com.zealsoftsol.medico.data.Expiry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
@@ -194,7 +195,8 @@ object DebugScopeCreator {
             DashboardScope.get(
                 testUser,
                 ReadOnlyDataSource(MutableStateFlow(testUser)),
-                ReadOnlyDataSource(MutableStateFlow(0))
+                ReadOnlyDataSource(MutableStateFlow(0)),
+                ReadOnlyDataSource(MutableStateFlow(0)),
             )
         )
     }
@@ -206,8 +208,8 @@ object DebugScopeCreator {
     fun productScreen() {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
-            ProductInfoScope.getAsRegular(
-                fromStoresPage = false,
+            ProductInfoScope(
+                sellerUnitCode = null,
                 product = ProductSearch(
                     code = "VD000307",
                     formattedPrice = "₹114.78",
@@ -224,7 +226,7 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        "",
+                        Expiry(0, "", "#FF00FF"),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),

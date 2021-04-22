@@ -19,9 +19,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.zealsoftsol.medico.core.UiLink
 import com.zealsoftsol.medico.core.mvi.UiNavigator
-import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.screens.TabBarScreen
@@ -30,7 +29,6 @@ import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.common.IndefiniteProgressBar
 import com.zealsoftsol.medico.screens.common.showErrorAlert
-import com.zealsoftsol.medico.screens.search.SearchQueryScreen
 import com.zealsoftsol.medico.screens.showBottomSheet
 import com.zealsoftsol.medico.utils.FileUtil
 import kotlinx.coroutines.CompletableDeferred
@@ -65,7 +63,7 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildConfig.FLAVOR == "dev") {
+        if (BuildConfig.FLAVOR == "dev" && !BuildConfig.DEBUG) { // devRelease
             handleCrashes()
         }
         UiLink.setStartingScope()
@@ -83,8 +81,7 @@ class MainActivity : ComponentActivity(), DIAware {
                                 option = WelcomeOption.Thanks { it.accept() }
                             )
                         }
-                        is SearchScope -> Surface { SearchQueryScreen(it, searchList) }
-                        is Scope.Host.TabBar -> TabBarScreen(it, coroutineScope)
+                        is TabBarScope -> TabBarScreen(it, coroutineScope)
                     }
                 }
                 val isInProgress = hostScope.value.isInProgress.flow.collectAsState()

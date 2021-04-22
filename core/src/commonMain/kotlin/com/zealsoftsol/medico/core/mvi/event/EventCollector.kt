@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
@@ -19,8 +20,10 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -42,12 +45,23 @@ internal class EventCollector(
     storesNetworkScope: NetworkScope.Stores,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
+    private val cartRepo: CartRepo,
 ) {
     private val loadHelperScope = CoroutineScope(compatDispatcher)
 
     private val delegateMap = mapOf<KClass<*>, EventDelegate<*>>(
-        Event.Transition::class to TransitionEventDelegate(navigator, userRepo, notificationRepo),
-        Event.Action.Auth::class to AuthEventDelegate(navigator, userRepo, notificationRepo),
+        Event.Transition::class to TransitionEventDelegate(
+            navigator,
+            userRepo,
+            notificationRepo,
+            cartRepo
+        ),
+        Event.Action.Auth::class to AuthEventDelegate(
+            navigator,
+            userRepo,
+            notificationRepo,
+            cartRepo
+        ),
         Event.Action.Otp::class to OtpEventDelegate(navigator, userRepo),
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
@@ -72,6 +86,11 @@ internal class EventCollector(
             userRepo,
             storesNetworkScope,
             LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.Cart::class to CartEventDelegate(
+            navigator,
+            userRepo,
+            cartRepo,
         )
     )
 
@@ -87,6 +106,7 @@ internal class EventCollector(
                 user = userRepo.requireUser(),
                 userDataSource = userRepo.getUserDataSource(),
                 unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                cartItemsCount = cartRepo.getEntriesCountDataSource(),
             )
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
                 userRepo.requireUser(),
@@ -101,6 +121,7 @@ internal class EventCollector(
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadUserFromServer()
                 notificationRepo.loadUnreadMessagesFromServer()
+                cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
             }
         }
     }
