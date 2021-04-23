@@ -25,7 +25,7 @@ class CartScope(
                     item.productCode,
                     item.buyingOption,
                     item.id,
-                    quantity.coerceIn(0, item.stock.availableQty),
+                    quantity.coerceIn(0, item.stockInfo.availableQty),
                 )
             )
         }

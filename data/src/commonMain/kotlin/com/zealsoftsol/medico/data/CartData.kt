@@ -58,7 +58,8 @@ data class CartItem(
     val quantity: FormattedData<Double>,
     val sellerId: String,
     val standardUnit: String,
-    val stock: StockInfo,
+    @SerialName("stock")
+    val stockInfo: StockInfo,
     val type: String,
 )
 
