@@ -58,6 +58,7 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+            object UploadFileTooBig : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
@@ -161,6 +162,12 @@ sealed class Event {
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object ClearCart : Cart()
+        }
+
+        sealed class Help : Action() {
+            override val typeClazz: KClass<*> = Help::class
+
+            object GetHelp : Help()
         }
     }
 

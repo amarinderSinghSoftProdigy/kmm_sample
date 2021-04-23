@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
@@ -43,6 +44,7 @@ internal class EventCollector(
     productNetworkScope: NetworkScope.Product,
     managementNetworkScope: NetworkScope.Management,
     storesNetworkScope: NetworkScope.Stores,
+    helpNetworkScope: NetworkScope.Help,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -91,6 +93,10 @@ internal class EventCollector(
             navigator,
             userRepo,
             cartRepo,
+        ),
+        Event.Action.Help::class to HelpEventDelegate(
+            navigator,
+            helpNetworkScope,
         )
     )
 
@@ -120,8 +126,12 @@ internal class EventCollector(
         if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) {
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadUserFromServer()
-                notificationRepo.loadUnreadMessagesFromServer()
+            }
+            GlobalScope.launch(compatDispatcher) {
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+            }
+            GlobalScope.launch(compatDispatcher) {
+                notificationRepo.loadUnreadMessagesFromServer()
             }
         }
     }

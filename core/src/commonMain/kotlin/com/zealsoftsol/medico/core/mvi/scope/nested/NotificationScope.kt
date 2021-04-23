@@ -24,8 +24,10 @@ sealed class NotificationScope : Scope.Child.TabBar() {
 
         override val pagination: Pagination = Pagination()
 
-        fun selectItem(item: NotificationData) =
-            EventCollector.sendEvent(Event.Action.Notification.Select(item))
+        fun selectItem(item: NotificationData): Boolean {
+            if (item.selectedAction != null) return false
+            return EventCollector.sendEvent(Event.Action.Notification.Select(item))
+        }
 
         fun search(value: String) =
             EventCollector.sendEvent(Event.Action.Notification.Search(value))

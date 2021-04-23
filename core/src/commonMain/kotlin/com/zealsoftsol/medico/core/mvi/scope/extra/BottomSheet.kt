@@ -12,11 +12,35 @@ sealed class BottomSheet {
         val isSeasonBoy: Boolean,
     ) : BottomSheet() {
 
-        fun uploadAadhaar(base64: String) =
-            EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+        fun uploadAadhaar(base64: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
+            } else {
+                EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
 
-        fun uploadDrugLicense(base64: String, fileType: FileType) =
-            EventCollector.sendEvent(Event.Action.Registration.UploadDrugLicense(base64, fileType))
+        fun uploadDrugLicense(base64: String, fileType: FileType): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadDrugLicense(
+                        base64,
+                        fileType
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 1_000_000
+        }
     }
 
     class PreviewManagementItem(

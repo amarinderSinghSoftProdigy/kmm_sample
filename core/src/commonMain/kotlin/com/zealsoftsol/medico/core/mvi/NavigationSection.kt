@@ -18,6 +18,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object Dashboard : NavigationOption(Event.Transition.Dashboard, "dashboard")
     object Settings : NavigationOption(Event.Transition.Settings, "settings")
+    object Help : NavigationOption(Event.Action.Help.GetHelp, "help")
     object Stockists : NavigationOption(Event.Transition.Management(UserType.STOCKIST), "stockists")
     object Retailers : NavigationOption(Event.Transition.Management(UserType.RETAILER), "retailers")
     object Hospitals : NavigationOption(Event.Transition.Management(UserType.HOSPITAL), "hospitals")
@@ -41,6 +42,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             Hospitals.takeIf { userType == UserType.STOCKIST },
             SeasonBoys.takeIf { userType == UserType.STOCKIST },
             Stores,
+            Help,
             Settings,
         )
 

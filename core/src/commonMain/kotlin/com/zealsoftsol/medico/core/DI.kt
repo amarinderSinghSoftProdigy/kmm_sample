@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.network.mock.MockAuthScope
 import com.zealsoftsol.medico.core.network.mock.MockCartScope
 import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
+import com.zealsoftsol.medico.core.network.mock.MockHelpScope
 import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockNotificationScope
 import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
@@ -116,6 +117,13 @@ fun startKodein(
             MockCartScope()
         }
     }
+    bind<NetworkScope.Help>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockHelpScope()
+        }
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -135,6 +143,7 @@ fun startKodein(
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(
+            instance(),
             instance(),
             instance(),
             instance(),

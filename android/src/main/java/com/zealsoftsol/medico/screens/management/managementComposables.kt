@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -195,19 +197,22 @@ private fun NonSeasonBoyItem(
             modifier = Modifier.fillMaxHeight().weight(0.65f),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = entityInfo.tradeName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    color = MaterialTheme.colors.background,
-                    modifier = Modifier.padding(end = if (entityInfo.isVerified == true) 18.dp + 8.dp else 0.dp)
-                )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BoxWithConstraints {
+                    Text(
+                        text = entityInfo.tradeName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.widthIn(max = maxWidth - 22.dp)
+                    )
+                }
                 if (entityInfo.isVerified == true) {
+                    Space(4.dp)
                     Image(
                         painter = painterResource(id = R.drawable.ic_verified),
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp).align(Alignment.TopEnd),
+                        modifier = Modifier.size(18.dp),
                     )
                 }
             }
@@ -221,10 +226,15 @@ private fun NonSeasonBoyItem(
             entityInfo.subscriptionData?.let {
                 Text(
                     text = it.status.serverValue,
-                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    color = when (it.status) {
+                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
+                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                        SubscriptionStatus.REJECTED -> ConstColors.red
+                    },
                     fontWeight = FontWeight.W500,
                 )
             }
+            Space(8.dp)
             Text(
                 text = entityInfo.geoData.formattedDistance,
                 fontSize = 12.sp,
@@ -240,7 +250,7 @@ private fun NonSeasonBoyItem(
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     BaseManagementRowItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.65f),
+            modifier = Modifier.fillMaxHeight().weight(0.6f),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
@@ -253,15 +263,21 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
         }
         entityInfo.subscriptionData?.let {
             Column(
-                modifier = Modifier.fillMaxHeight().weight(0.35f),
+                modifier = Modifier.fillMaxHeight().weight(0.4f),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
                     text = it.status.serverValue,
-                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    color = when (it.status) {
+                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
+                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                        SubscriptionStatus.REJECTED -> ConstColors.red
+                    },
                     fontWeight = FontWeight.W500,
+                    fontSize = 15.sp,
                 )
+                Space(8.dp)
                 val formatter = rememberPhoneNumberFormatter()
                 Text(
                     text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }

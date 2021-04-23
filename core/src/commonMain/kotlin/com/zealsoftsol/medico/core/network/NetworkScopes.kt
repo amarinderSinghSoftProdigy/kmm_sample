@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -144,5 +145,9 @@ interface NetworkScope {
             cartId: String,
             sellerUnitCode: String
         ): Response.Wrapped<CartData>
+    }
+
+    interface Help : NetworkScope {
+        suspend fun getHelp(): Response.Wrapped<HelpData>
     }
 }

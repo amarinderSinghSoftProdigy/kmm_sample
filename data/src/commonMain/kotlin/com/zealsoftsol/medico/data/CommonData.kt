@@ -107,4 +107,9 @@ typealias SimpleResponse<T> = Response.Body<T, MapBody>
 typealias MapBody = Map<String, String>
 
 @Serializable
-data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong")
+data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong") {
+
+    companion object {
+        val uploadFileTooBig = ErrorCode("error", "upload_file_too_big")
+    }
+}
