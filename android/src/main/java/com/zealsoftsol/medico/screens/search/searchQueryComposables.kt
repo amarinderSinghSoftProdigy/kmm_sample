@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -35,7 +37,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -68,7 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.regular.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Option
@@ -78,12 +79,11 @@ import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
+fun SearchScreen(scope: SearchScope, listState: LazyListState) {
     Column(modifier = Modifier.fillMaxSize()) {
         val search = scope.productSearch.flow.collectAsState()
         val autoComplete = scope.autoComplete.flow.collectAsState()
@@ -91,22 +91,6 @@ fun SearchQueryScreen(scope: SearchScope, listState: LazyListState) {
         val filterSearches = scope.filterSearches.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
-        TabBar {
-            BasicSearchBar(
-                input = search.value,
-                icon = Icons.Default.ArrowBack,
-                searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
-                onIconClick = { scope.goBack() },
-                isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
-                onSearch = { value, isFromKeyboard ->
-                    scope.searchProduct(
-                        value,
-                        withAutoComplete = !isFromKeyboard
-                    )
-                },
-            )
-            scope.storage.save("focus", false)
-        }
         if (showFilter.value) {
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
@@ -178,29 +162,31 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
-                Text(
-                    text = buildAnnotatedString {
-                        append(autoComplete.suggestion)
-                        regex.find(autoComplete.suggestion)?.let {
-                            addStyle(
-                                SpanStyle(fontWeight = FontWeight.W700),
-                                it.range.first,
-                                it.range.last + 1,
-                            )
-                        }
-                    },
-                    color = MaterialTheme.colors.background,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.W400,
-                )
-                if (autoComplete.details.isNotEmpty()) {
+            BoxWithConstraints {
+                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
                     Text(
-                        text = autoComplete.details,
-                        fontSize = 12.sp,
+                        text = buildAnnotatedString {
+                            append(autoComplete.suggestion)
+                            regex.find(autoComplete.suggestion)?.let {
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W700),
+                                    it.range.first,
+                                    it.range.last + 1,
+                                )
+                            }
+                        },
                         color = MaterialTheme.colors.background,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.W400,
                     )
+                    if (autoComplete.details.isNotEmpty()) {
+                        Text(
+                            text = autoComplete.details,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W400,
+                        )
+                    }
                 }
             }
             Icon(
@@ -233,7 +219,7 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
         Box {
             val labelColor = when (product.stockInfo?.status) {
                 StockStatus.IN_STOCK -> ConstColors.green
-                StockStatus.LOW_STOCK -> ConstColors.orange
+                StockStatus.LIMITED_STOCK -> ConstColors.orange
                 StockStatus.OUT_OF_STOCK -> ConstColors.red
                 null -> ConstColors.gray
             }

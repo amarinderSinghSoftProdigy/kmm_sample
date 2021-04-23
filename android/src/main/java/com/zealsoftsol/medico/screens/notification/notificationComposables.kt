@@ -333,7 +333,11 @@ private fun SubscriptionDeatails(
                     ),
                     maxLines = 1,
                     readOnly = details.isReadOnly,
-                    onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
+                    onValueChange = {
+                        if (it.isEmpty() || it.toIntOrNull() != null) {
+                            onOptionChange(details.option.copy(creditDays = it))
+                        }
+                    },
                 )
             }
         }
@@ -353,7 +357,11 @@ private fun SubscriptionDeatails(
                 ),
                 maxLines = 1,
                 readOnly = details.isReadOnly,
-                onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
+                onValueChange = {
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        onOptionChange(details.option.copy(discountRate = it))
+                    }
+                },
             )
         }
     } else {

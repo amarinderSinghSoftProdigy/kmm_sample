@@ -132,26 +132,47 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val validation = scope.validation.flow.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+
+    val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
+    val isLastNameError = registration.value.lastName.any { !it.isLetter() }
+
     BasicAuthSignUpScreenWithButton(
         progress = 0.4,
         scrollState = scrollState,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.validate(registration.value) },
+        buttonExtraValid = !isFirstNameError && !isLastNameError,
         body = {
-            InputField(
-                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                hint = stringResource(id = R.string.first_name),
-                text = registration.value.firstName,
-                onValueChange = { scope.changeFirstName(it) }
-            )
+            InputWithError(
+                errorText = if (isFirstNameError)
+                    stringResource(R.string.letters_only)
+                else
+                    null
+            ) {
+                InputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.first_name),
+                    text = registration.value.firstName,
+                    isValid = !isFirstNameError,
+                    onValueChange = { scope.changeFirstName(it) }
+                )
+            }
             Space(dp = 12.dp)
-            InputField(
-                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                hint = stringResource(id = R.string.last_name),
-                text = registration.value.lastName,
-                onValueChange = { scope.changeLastName(it) }
-            )
+            InputWithError(
+                errorText = if (isLastNameError)
+                    stringResource(R.string.letters_only)
+                else
+                    null
+            ) {
+                InputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.last_name),
+                    text = registration.value.lastName,
+                    isValid = !isLastNameError,
+                    onValueChange = { scope.changeLastName(it) }
+                )
+            }
             Space(dp = 12.dp)
             InputWithError(errorText = validation.value?.email) {
                 InputField(
@@ -168,7 +189,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
                     onValueChange = { phoneNumber ->
-                        scope.changePhoneNumber(phoneNumber.filter { it.isDigit() })
+                        scope.changePhoneNumber(phoneNumber.filter { it == '+' || it.isDigit() })
                     },
                 )
                 scope.setPhoneNumberValid(isValid)
@@ -474,12 +495,19 @@ fun AadhaarInputFields(
         verticalArrangement = Arrangement.Top,
     ) {
         val aadhaar = aadhaarData.flow.collectAsState()
-        InputField(
-            hint = stringResource(id = R.string.aadhaar_card),
-            text = aadhaar.value.cardNumber,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            onValueChange = onCardChange,
-        )
+        val isAadhaarValid =
+            Validator.Aadhaar.isValid(aadhaar.value.cardNumber) || aadhaar.value.cardNumber.length < Validator.Aadhaar.MAX_LENGTH
+        InputWithError(
+            errorText = if (!isAadhaarValid) stringResource(id = R.string.aadhaar_card_invalid) else null
+        ) {
+            InputField(
+                hint = stringResource(id = R.string.aadhaar_card),
+                text = aadhaar.value.cardNumber,
+                isValid = isAadhaarValid,
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                onValueChange = onCardChange,
+            )
+        }
         Space(dp = 12.dp)
         InputField(
             hint = stringResource(id = R.string.share_code),
@@ -521,6 +549,7 @@ private fun BasicAuthSignUpScreenWithButton(
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     body: @Composable ColumnScope.() -> Unit,
     buttonText: String,
+    buttonExtraValid: Boolean? = null,
     onSkip: (() -> Unit)? = null,
     onButtonClick: () -> Unit,
 ) {
@@ -557,7 +586,7 @@ private fun BasicAuthSignUpScreenWithButton(
             MedicoButton(
                 modifier = Modifier.padding(padding),
                 text = buttonText,
-                isEnabled = isEnabled.value,
+                isEnabled = (buttonExtraValid ?: true) && isEnabled.value,
                 onClick = onButtonClick,
             )
             onSkip?.let {

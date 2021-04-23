@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.StartScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.ErrorCode
 import kotlin.reflect.KClass
 
@@ -22,7 +23,7 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
 
     fun setScope(scope: Scope) {
         addToQueue(scope)
-        if (scope is Scope.Host.TabBar) addToQueue(scope.childScope.value)
+        if (scope is TabBarScope) addToQueue(scope.childScope.value)
 
         updateCurrentScope(scope)
     }
@@ -49,7 +50,7 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                 } else {
                     val next = queue.firstOrNull()
                     if (updateDataSource && next != null) {
-                        if (next is Scope.Host.TabBar) {
+                        if (next is TabBarScope) {
                             activeQueue = next.childScope.value.scopeId
                         }
                         updateCurrentScope(next)
@@ -133,9 +134,12 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
 
     private fun addToQueue(scope: Scope) {
         val queue = getQueue(scope.scopeId)
+        if (scope is Scope.Child.TabBar && scope.isRoot) {
+            queue.clear()
+        }
         if (queue.firstOrNull()?.queueId == scope.queueId) {
-            queue.removeFirst()
-            "setting the same scope again".warnIt()
+            val removed = queue.removeFirst()
+            "setting the same scope again $scope => $removed".warnIt()
         }
 //        require(queue.firstOrNull()?.queueId != scope.queueId) { "setting the same scope again is not allowed" }
         queue.addFirst(scope)
@@ -148,8 +152,8 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
                 hostScope.value = scope
             }
             is Scope.Child.TabBar -> {
-                (getQueue(scope.parentScopeId).first() as Scope.Host.TabBar)
-                    .setChildScope(scope)
+                (getQueue(scope.parentScopeId).first() as TabBarScope)
+                    .setChildScope(scope, getQueue(scope.scopeId).size)
             }
         }
     }

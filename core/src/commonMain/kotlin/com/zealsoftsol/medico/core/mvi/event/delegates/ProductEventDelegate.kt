@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -28,21 +29,14 @@ internal class ProductEventDelegate(
             networkProductScope.getProductData(productCode)
         }
         if (isSuccess && response?.product != null) {
-            val isFromStores = navigator.searchQueuesFor<StoresScope.StorePreview>() != null
+            val sellerUnitCode =
+                navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.sellerUnitCode
             navigator.setScope(
-                if (isFromStores) {
-                    ProductInfoScope.getAsNested(
-                        product = response.product!!,
-                        fromStoresPage = isFromStores,
-                        alternativeBrands = response.alternateProducts,
-                    )
-                } else {
-                    ProductInfoScope.getAsRegular(
-                        product = response.product!!,
-                        fromStoresPage = isFromStores,
-                        alternativeBrands = response.alternateProducts,
-                    )
-                }
+                ProductInfoScope(
+                    sellerUnitCode = sellerUnitCode,
+                    product = response.product!!,
+                    alternativeBrands = response.alternateProducts,
+                )
             )
         } else {
             navigator.setHostError(ErrorCode())
@@ -65,7 +59,7 @@ internal class ProductEventDelegate(
             networkProductScope.buyProductInfo(productCode)
         }
         if (isSuccess && result != null) {
-            navigator.setScope(BuyProductScope.get(result.product, result.sellerInfo))
+            navigator.setScope(BuyProductScope(result.product, DataSource(result.sellerInfo)))
         } else {
             navigator.setHostError(ErrorCode())
         }

@@ -25,7 +25,7 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val buyingOption: BuyingOption? = null,
+    val buyingOption: BuyingOption,
     val compositions: List<String>,
     val formattedMrp: String,
     val formattedPrice: String?,
@@ -46,6 +46,7 @@ data class SellerInfo(
     val geoData: GeoData,
     val tradeName: String,
     val unitCode: String,
+    val spid: String,
     val stockInfo: StockInfo,
     val priceInfo: PriceInfo,
 )
@@ -66,13 +67,24 @@ data class PriceData(
 @Serializable
 data class StockInfo(
     val availableQty: Int,
-    val expireDate: String,
+    @SerialName("expiryDate")
+    val expiry: Expiry,
     val formattedStatus: String,
     val status: StockStatus,
 )
 
+@Serializable
+data class Expiry(
+    @SerialName("expiryDate")
+    val date: Long,
+    @SerialName("formattedExpiryDate")
+    val formattedDate: String,
+    @SerialName("hexCode")
+    val color: String,
+)
+
 enum class StockStatus {
-    LOW_STOCK,
+    LIMITED_STOCK,
     IN_STOCK,
     OUT_OF_STOCK;
 }

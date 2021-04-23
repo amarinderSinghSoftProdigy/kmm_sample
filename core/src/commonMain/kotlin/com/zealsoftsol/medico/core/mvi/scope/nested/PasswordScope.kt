@@ -5,17 +5,20 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.PasswordValidation
 
 sealed class PasswordScope(
-    titleId: String,
+    private val titleId: String,
     val password: DataSource<String> = DataSource(""),
     val passwordValidation: DataSource<PasswordValidation?> = DataSource(null),
-) : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
-    CommonScope.CanGoBack {
+) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
+    }
 
     fun changePassword(password: String) {
         this.password.value = password

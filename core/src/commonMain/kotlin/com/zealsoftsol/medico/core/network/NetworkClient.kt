@@ -12,6 +12,8 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -83,7 +85,8 @@ class NetworkClient(
     NetworkScope.Product,
     NetworkScope.Management,
     NetworkScope.Notification,
-    NetworkScope.Stores {
+    NetworkScope.Stores,
+    NetworkScope.Cart {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -283,7 +286,6 @@ class NetworkClient(
                     append("longitude", longitude.toString())
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
-                    append("sort", "ASC")
                 }
             }
         }.getWrappedBody().also {
@@ -424,6 +426,64 @@ class NetworkClient(
         }.getWrappedBody().also {
             if (it.isSuccess) pagination.pageLoaded()
         }
+    }
+
+    override suspend fun getCart(unitCode: String): Response.Wrapped<CartData> = ktorDispatcher {
+        client.get<SimpleResponse<CartData>>("${baseUrl.url}/cart") {
+            withMainToken()
+            url {
+                parameters.append("buyerUnitCode", unitCode)
+            }
+        }.getWrappedBody()
+    }
+
+    override suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/add") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/cart/deleteCart") {
+                withMainToken()
+                jsonBody(mapOf("cartId" to cartId, "buyerUnitCode" to unitCode))
+            }.getWrappedError()
+        }
+
+    override suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/updateEntry") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteEntry") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteSellerCart(
+        unitCode: String,
+        cartId: String,
+        sellerUnitCode: String
+    ): Response.Wrapped<CartData> = ktorDispatcher {
+        client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteSellerCart") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "cartId" to cartId,
+                    "buyerUnitCode" to unitCode,
+                    "sellerUnitCode" to sellerUnitCode
+                )
+            )
+        }.getWrappedBody()
     }
 
     // Utils

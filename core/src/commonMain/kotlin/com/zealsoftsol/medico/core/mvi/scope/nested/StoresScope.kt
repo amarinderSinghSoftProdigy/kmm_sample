@@ -5,21 +5,20 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
-import com.zealsoftsol.medico.core.mvi.scope.regular.BaseSearchScope
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.Store
 
-sealed class StoresScope(
-    icon: ScopeIcon = ScopeIcon.HAMBURGER,
-) : Scope.Child.TabBar(TabBarInfo.Search(icon)) {
+sealed class StoresScope : Scope.Child.TabBar() {
 
     class All : StoresScope(), Loadable<Store> {
+
+        override val isRoot: Boolean = true
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<Store>> = DataSource(emptyList())
@@ -45,7 +44,7 @@ sealed class StoresScope(
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-    ) : StoresScope(ScopeIcon.BACK), BaseSearchScope, CommonScope.CanGoBack {
+    ) : StoresScope(), BaseSearchScope, CommonScope.CanGoBack {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination()
@@ -54,6 +53,10 @@ sealed class StoresScope(
 
         init {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        }
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+            return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Raw(store.tradeName))
         }
 
         override fun goBack(): Boolean {

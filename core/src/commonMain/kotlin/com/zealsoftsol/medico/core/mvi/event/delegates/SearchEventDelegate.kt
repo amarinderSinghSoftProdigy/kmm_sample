@@ -3,7 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.regular.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -33,6 +33,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
+        is Event.Action.Search.ToggleFilter -> toggleFilter()
         is Event.Action.Search.Reset -> reset()
     }
 
@@ -211,6 +212,12 @@ internal class SearchEventDelegate(
                     withProgress = true,
                 )
             }
+        }
+    }
+
+    private fun toggleFilter() {
+        navigator.withScope<BaseSearchScope> {
+            it.isFilterOpened.value = !it.isFilterOpened.value
         }
     }
 

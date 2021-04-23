@@ -10,6 +10,8 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
@@ -23,16 +25,19 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class SignUpScope(titleId: String) :
-    Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
+sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
+    }
+
     protected open fun checkCanGoNext() = Unit
 
     class SelectUserType private constructor(
-        val userType: DataSource<UserType>,
+        val userType: DataSource<UserType> = DataSource(UserType.STOCKIST),
     ) : SignUpScope("user_type") {
 
         init {
@@ -50,11 +55,11 @@ sealed class SignUpScope(titleId: String) :
             EventCollector.sendEvent(Event.Action.Registration.SelectUserType(userType.value))
 
         companion object {
-            fun get(userType: DataSource<UserType> = DataSource(UserType.STOCKIST)) =
-                Host.TabBar(
-                    childScope = SelectUserType(userType),
-                    navigationSectionValue = null,
-                )
+            fun get() = TabBarScope(
+                childScope = SelectUserType(),
+                initialNavigationSection = null,
+                initialTabBarInfo = TabBarInfo.Simple(icon = ScopeIcon.BACK, title = null)
+            )
         }
     }
 

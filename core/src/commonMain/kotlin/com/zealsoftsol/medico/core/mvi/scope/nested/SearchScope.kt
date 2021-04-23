@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.core.mvi.scope.regular
+package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
@@ -30,9 +31,7 @@ interface BaseSearchScope : Scopable {
 
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
 
-    fun toggleFilter() {
-        isFilterOpened.value = !isFilterOpened.value
-    }
+    fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
     fun selectAutoComplete(autoComplete: AutoComplete) =
         EventCollector.sendEvent(Event.Action.Search.SelectAutoComplete(autoComplete))
@@ -74,15 +73,18 @@ class SearchScope(
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
     override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-) : Scope.Host.Regular(),
-    CommonScope.CanGoBack,
-    BaseSearchScope {
+) : Scope.Child.TabBar(), CommonScope.CanGoBack, BaseSearchScope {
+
     override val unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
     override val pagination: Pagination = Pagination()
 
     init {
         EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+    }
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.ActiveSearch(productSearch)
     }
 
     override fun goBack(): Boolean {

@@ -8,10 +8,14 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.core.utils.StringResource
 
-sealed class OtpScope(titleId: String) :
-    Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.BACK, titleId)),
-    CommonScope.CanGoBack {
+sealed class OtpScope(private val titleId: String) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
+    }
 
     class PhoneNumberInput private constructor(
         val phoneNumber: DataSource<String>,
@@ -34,10 +38,11 @@ sealed class OtpScope(titleId: String) :
             fun get(
                 phoneNumber: DataSource<String>,
                 isForRegisteredUsersOnly: Boolean,
-            ): Host.TabBar {
-                return Host.TabBar(
+            ): TabBarScope {
+                return TabBarScope(
                     childScope = PhoneNumberInput(phoneNumber, isForRegisteredUsersOnly),
-                    navigationSectionValue = null,
+                    initialNavigationSection = null,
+                    initialTabBarInfo = TabBarInfo.Simple(icon = ScopeIcon.BACK, title = null)
                 )
             }
         }

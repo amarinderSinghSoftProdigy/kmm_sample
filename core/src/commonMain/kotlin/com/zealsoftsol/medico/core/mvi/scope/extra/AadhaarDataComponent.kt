@@ -10,7 +10,7 @@ interface AadhaarDataComponent {
     val isVerified: DataSource<Boolean>
 
     fun changeCard(card: String) {
-        if (card.length <= 12) {
+        if (card.length <= Validator.Aadhaar.MAX_LENGTH) {
             trimInput(card, aadhaarData.value.cardNumber) {
                 aadhaarData.value = aadhaarData.value.copy(cardNumber = it)
                 verify()

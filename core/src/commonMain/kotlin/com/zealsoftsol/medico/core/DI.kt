@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.network.NetworkClient
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.network.mock.MockAuthScope
+import com.zealsoftsol.medico.core.network.mock.MockCartScope
 import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
 import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockNotificationScope
@@ -15,6 +16,7 @@ import com.zealsoftsol.medico.core.network.mock.MockSearchScope
 import com.zealsoftsol.medico.core.network.mock.MockSignUpScope
 import com.zealsoftsol.medico.core.network.mock.MockStoresScope
 import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
@@ -107,6 +109,13 @@ fun startKodein(
             MockStoresScope()
         }
     }
+    bind<NetworkScope.Cart>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockCartScope()
+        }
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -121,10 +130,12 @@ fun startKodein(
         )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
+    bind<CartRepo>() with singleton { CartRepo(instance()) }
     bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(
+            instance(),
             instance(),
             instance(),
             instance(),

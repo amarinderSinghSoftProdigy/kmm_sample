@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -36,6 +39,7 @@ import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneOrEmailFormatInputField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.common.showErrorAlert
 
 @Composable
@@ -99,14 +103,18 @@ fun AuthScreen(scope: LogInScope) {
 }
 
 @Composable
-fun AuthTab(modifier: Modifier, scope: LogInScope) {
+private fun AuthTab(modifier: Modifier, scope: LogInScope) {
     val credentialsState = scope.credentials.flow.collectAsState()
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.fillMaxWidth()
             .padding(12.dp)
             .background(MaterialTheme.colors.primary)
-            .padding(24.dp)
+            .padding(horizontal = 24.dp)
+            .verticalScroll(scrollState)
     ) {
+        Space(24.dp)
         Text(
             text = stringResource(id = R.string.log_in),
             color = MaterialTheme.colors.onPrimary,
@@ -118,6 +126,7 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
             hint = stringResource(id = R.string.phone_number_or_email),
             text = credentialsState.value.phoneNumberOrEmail,
             isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE,
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
         ) {
             scope.updateAuthCredentials(it, credentialsState.value.password)
         }
@@ -126,11 +135,9 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
             hint = stringResource(id = R.string.password),
             text = credentialsState.value.password,
             onValueChange = {
-                scope.updateAuthCredentials(
-                    credentialsState.value.phoneNumberOrEmail,
-                    it
-                )
+                scope.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
             },
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
         )
         Text(
             text = stringResource(id = R.string.forgot_password),
@@ -155,5 +162,6 @@ fun AuthTab(modifier: Modifier, scope: LogInScope) {
         ) {
             scope.goToSignUp()
         }
+        Space(24.dp)
     }
 }
