@@ -133,7 +133,7 @@ extension DataStockInfo {
         case .inStock:
             return .green
             
-        case .lowStock:
+        case .limitedStock:
             return .orange
             
         case .outOfStock:

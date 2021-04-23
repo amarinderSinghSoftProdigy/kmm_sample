@@ -22,8 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func setUpAppNavigator() {
         #if DEBUG
-        let testsHelper = TestsHelper()
-        let useMocks = testsHelper.testingEnabled
+        let useMocks = false
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
         #else
@@ -43,10 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
         
         link.setStartingScope()
-        
-        #if DEBUG
-        testsHelper.overrideCurrentScope()
-        #endif
     }
     
     private func registerForRemoteNotifications(with application: UIApplication) {

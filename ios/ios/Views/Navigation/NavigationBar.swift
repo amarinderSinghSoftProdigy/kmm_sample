@@ -148,10 +148,21 @@ private struct _CustomizedNavigationBar: View {
                             Spacer()
                         }
                         
-                        if let titleId = simpleBarInfo.titleId {
-                            LocalizedText(localizationKey: titleId,
-                                          textWeight: .semiBold,
-                                          fontSize: 17)
+                        if let title = simpleBarInfo.title {
+                            switch title {
+                            case let staticTitle as StringResource.Static:
+                                LocalizedText(localizationKey: staticTitle.id,
+                                              textWeight: .semiBold,
+                                              fontSize: 17)
+                                
+                            case let rawTitle as StringResource.Raw:
+                                Text(rawTitle.string)
+                                    .medicoText(textWeight: .semiBold,
+                                                fontSize: 17)
+                                
+                            default:
+                                EmptyView()
+                            }
                         }
                     }
                     
@@ -188,6 +199,11 @@ private struct _CustomizedNavigationBar: View {
                         }
                     }
                     .padding([.leading, .trailing], 6)
+                    
+                case let searchBarInfo as TabBarInfo.ActiveSearch:
+                    ActiveSearchTabBar(searchBarInfo: searchBarInfo) {
+                        handleGoBack()
+                    }
                     
                 default:
                     EmptyView()
@@ -228,6 +244,43 @@ private struct _CustomizedNavigationBar: View {
             closeSlidingPanel(false)
         default:
             return
+        }
+    }
+    
+    private struct ActiveSearchTabBar: View {
+        @EnvironmentObject var scrollData: ListScrollData
+        
+        let searchBarInfo: TabBarInfo.ActiveSearch
+        let onCancelTap: () -> ()
+        
+        @ObservedObject var search: SwiftDataSource<NSString>
+        
+        var body: some View {
+            HStack {
+                SearchBar(searchText: search.value,
+                          style: .small,
+                          showsCancelButton: false,
+                          trailingButton: SearchBar.SearchBarButton(button: .filter({ searchBarInfo.toggleFilter() })),
+                          onTextChange: { value, isFromKeyboard in searchBarInfo.searchProduct(input: value,
+                                                                                               withAutoComplete: !isFromKeyboard) })
+                
+                Button(LocalizedStringKey("cancel")) {
+                    scrollData.clear(list: .globalSearchProducts)
+                    
+                    onCancelTap()
+                }
+                .medicoText(fontSize: 17,
+                            color: .blue)
+            }
+            .padding([.leading, .trailing], 6)
+        }
+        
+        init(searchBarInfo: TabBarInfo.ActiveSearch,
+             onCancelTap: @escaping () -> ()) {
+            self.searchBarInfo = searchBarInfo
+            self.onCancelTap = onCancelTap
+            
+            self.search = SwiftDataSource(dataSource: searchBarInfo.search)
         }
     }
 }

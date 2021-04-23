@@ -22,7 +22,7 @@ struct BuyProductScreen: View {
                              quantities: SwiftDataSource(dataSource: scope.quantities),
                              onQuantityIncrease: scope.inc,
                              onQuantityDecrease: scope.dec,
-                             onSellerInfoSelect: scope.addToCart,
+                             onSellerInfoSelect: { scope.addToCart(sellerInfo: $0) },
                              onSellerFilter: { scope.filterSellers(filter: $0) })
         }
         .screenLogger(withScreenName: "BuyProduct",
@@ -197,7 +197,7 @@ struct BuyProductScreen: View {
                                     
                                     HStack {
                                         getDetailView(withTitleLocalizationKey: "expiry:",
-                                                      withBody: info.stockInfo.expireDate,
+                                                      withBody: info.stockInfo.expiry.formattedDate,
                                                       withBodyColor: .orange)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
