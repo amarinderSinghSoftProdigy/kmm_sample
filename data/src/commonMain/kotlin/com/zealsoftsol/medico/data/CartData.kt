@@ -9,7 +9,8 @@ data class CartRequest(
     val sellerUnitCode: String,
     val productCode: String,
     val buyingOption: BuyingOption,
-    val spid: String,
+    @SerialName("cartIdentifier")
+    val id: CartIdentifier,
     val quantity: Int? = null,
 )
 
@@ -32,20 +33,21 @@ data class CartData(
 data class SellerCart(
     @SerialName("cartEntries")
     val items: List<CartItem>,
-    val paymentType: String,
+    @SerialName("paymentType")
+    val paymentMethod: PaymentMethod,
     val sellerCode: String,
-    val sellerName: String
+    val sellerName: String,
 )
 
 @Serializable
 data class CartItem(
-    val spid: String,
+    @SerialName("cartIdentifier")
+    val id: CartIdentifier,
     val buyerId: String,
     val buyingOption: BuyingOption,
     @SerialName("cartEntryId")
     val entryId: String,
     val entryNumber: Int,
-    val expiryDate: FormattedData<String>,
     val gst: FormattedData<Double>,
     val hsnCode: String,
     val manufacturerCode: String,
@@ -56,6 +58,12 @@ data class CartItem(
     val quantity: FormattedData<Double>,
     val sellerId: String,
     val standardUnit: String,
-    val stock: FormattedData<Int>,
+    val stock: StockInfo,
     val type: String,
+)
+
+@Serializable
+data class CartIdentifier(
+    val spid: String,
+    val seasonBoyRetailerId: String? = null,
 )

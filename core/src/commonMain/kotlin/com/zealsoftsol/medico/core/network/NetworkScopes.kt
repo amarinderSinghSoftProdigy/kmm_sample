@@ -135,7 +135,7 @@ interface NetworkScope {
         suspend fun getCart(unitCode: String): Response.Wrapped<CartData>
         suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode>
 
-        suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData>
+        suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData>
         suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData>
         suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData>
 

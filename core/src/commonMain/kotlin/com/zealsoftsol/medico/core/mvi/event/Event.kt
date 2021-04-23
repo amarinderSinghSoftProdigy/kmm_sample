@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -138,7 +139,7 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
                 val quantity: Int,
             ) : Cart()
 
@@ -146,7 +147,7 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
                 val quantity: Int,
             ) : Cart()
 
@@ -154,7 +155,7 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
             ) : Cart()
 
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()

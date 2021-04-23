@@ -437,9 +437,9 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
-    override suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData> =
+    override suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData> =
         ktorDispatcher {
-            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/add") {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/addEntry") {
                 withMainToken()
                 jsonBody(request)
             }.getWrappedBody()
