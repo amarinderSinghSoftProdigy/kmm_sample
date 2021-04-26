@@ -142,42 +142,47 @@ struct UserManagementScreen: View {
         guard let activeTab = self.activeTab.value else { return AnyView(EmptyView()) }
         
         return AnyView(
-            VStack {
-                LocalizedText(localizationKey: activeTab.stringId,
-                              fontSize: 15)
-                
-                AppColor.darkBlue.color
-                    .frame(height: 1)
-            }
+            TabOptionView(localizationKey: activeTab.stringId,
+                          isSelected: true)
         )
     }
     
     private func getOptionsPicker(withSelectedOption selectedOption: Binding<Int>) -> some View {
-        Picker(selection: selectedOption, label: Text("")) {
+        HStack {
             ForEach(0..<scope.tabs.count) { index in
-                LocalizedText(localizationKey: scope.tabs[index].stringId)
+                TabOptionView(localizationKey: scope.tabs[index].stringId,
+                              isSelected: selectedOption.wrappedValue == index)
+                    .onTapGesture {
+                        selectedOption.wrappedValue = index
+                    }
             }
         }
-        .pickerStyle(SegmentedPickerStyle())
-        .onAppear {
-            let segmentedControlAppearance = UISegmentedControl.appearance()
-
-            segmentedControlAppearance.selectedSegmentTintColor = .white
-
-            segmentedControlAppearance.tintColor = UIColor(named: "NavigationBar")
-            segmentedControlAppearance.backgroundColor = UIColor(named: "NavigationBar")
-
-            let textColor = UIColor(named: "DarkBlue") ?? .darkGray
-            let selectedStateFont = UIFont(name: "Barlow-SemiBold", size: 14) ?? .boldSystemFont(ofSize: 14)
-            let normalStateFont = UIFont(name: "Barlow-Medium", size: 14) ?? .systemFont(ofSize: 14)
-
-            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
-                                                               .font: selectedStateFont],
-                                                              for: .selected)
-
-            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
-                                                               .font: normalStateFont],
-                                                              for: .normal)
+        .padding(.vertical, 2)
+        .padding(.horizontal, 3)
+        .background(AppColor.navigationBar.color.cornerRadius(8))
+    }
+    
+    private struct TabOptionView: View {
+        let localizationKey: String
+        let isSelected: Bool
+        
+        var body: some View {
+            let tabBackgroundColor: AppColor = isSelected ? .lightBlue : .clear
+            
+            HStack(spacing: 7) {
+                LocalizedText(localizationKey: localizationKey,
+                              textWeight: isSelected ? .semiBold : .medium,
+                              color: isSelected ? .white : .darkBlue)
+    
+                if isSelected {
+                    Text("29")
+                        .medicoText(textWeight: .bold,
+                                    color: AppColor.yellow)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 7)
+            .background(tabBackgroundColor.color.cornerRadius(7))
         }
     }
     
