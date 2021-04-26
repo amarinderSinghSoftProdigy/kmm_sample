@@ -87,8 +87,7 @@ struct FilePicker: ViewModifier {
             let documentTypes = getAvailableDocumentTypes(from: self.bottomSheet.supportedFileTypes)
             return AnyView(
                 DocumentPicker(documentTypes: documentTypes,
-                               onDocumentPicked: uploadFile,
-                               onAboveLimitDocumentPicked: handleAboveLimitDocumentPick))
+                               onDocumentPicked: uploadFile))
             
         case .imagePicker:
             guard let sourceType = self.imageSourceType else { return AnyView(EmptyView()) }
@@ -126,10 +125,6 @@ struct FilePicker: ViewModifier {
         let fileExtension = filePath.pathExtension
         
         bottomSheet.uploadData(fileData, withFileExtension: fileExtension)
-    }
-    
-    private func handleAboveLimitDocumentPick() {
-        // Show error
     }
 }
 

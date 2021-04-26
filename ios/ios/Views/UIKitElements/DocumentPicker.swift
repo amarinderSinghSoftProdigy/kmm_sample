@@ -12,21 +12,14 @@ struct DocumentPicker: UIViewControllerRepresentable {
     @Environment(\.presentationMode) private var presentationMode
     
     let documentTypes: [String]
-    /// The max uploaded document size in MB
-    let maxDocumentSize: Double
     
     let onDocumentPicked: (URL) -> Void
-    let onAboveLimitDocumentPicked: (() -> ())?
     
     init(documentTypes: [String],
-         maxDocumentSize: Double = 1.0,
-         onDocumentPicked: @escaping (URL) -> Void,
-         onAboveLimitDocumentPicked: (() -> ())? = nil) {
+         onDocumentPicked: @escaping (URL) -> Void) {
         self.documentTypes = documentTypes
-        self.maxDocumentSize = maxDocumentSize
         
         self.onDocumentPicked = onDocumentPicked
-        self.onAboveLimitDocumentPicked = onAboveLimitDocumentPicked
     }
     
     func makeCoordinator() -> Coordinator {
@@ -58,14 +51,7 @@ struct DocumentPicker: UIViewControllerRepresentable {
                   let url = urls.first
             else { return }
             
-            if let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-               let fileSize = attributes[FileAttributeKey.size] as? Double,
-               fileSize <= parent.maxDocumentSize * 1000000.0 {
-                parent.onDocumentPicked(url)
-            }
-            else {
-                parent.onAboveLimitDocumentPicked?()
-            }
+            parent.onDocumentPicked(url)
             
             parent.presentationMode.wrappedValue.dismiss()
         }

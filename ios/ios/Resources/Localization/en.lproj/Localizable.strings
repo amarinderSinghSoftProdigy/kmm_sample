@@ -100,6 +100,7 @@
 "choose_from_device" = "Upload From Device";
 "available_file_formats" = "Available File Formats";
 "maximum_file_size" = "Maximum file size:";
+"upload_file_too_big" = "The chosen file is too big.\nPlease, select a file smaller than 1 MB";
 
 // MARK: Alert
 "success" = "Success!";
