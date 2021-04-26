@@ -11,9 +11,5 @@ target 'Medico' do
   pod 'Firebase/Messaging'
   
   pod 'libPhoneNumber-iOS'
-
-  target 'MedicoUITests' do
-    pod 'libPhoneNumber-iOS'
-  end
-
+  
 end

@@ -19,6 +19,8 @@ enum AppColor: String {
     case green
     case orange
     
+    case lightPink
+    
     case blue
     case lightBlue
     case darkBlue

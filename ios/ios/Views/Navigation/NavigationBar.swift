@@ -135,8 +135,6 @@ private struct _CustomizedNavigationBar: View {
     var body: some View {
         guard let info = navigationBarInfo.value else { return AnyView(EmptyView()) }
         
-        let spacing: CGFloat = 19
-        
         return AnyView(
             Group {
                 switch info {
@@ -167,38 +165,8 @@ private struct _CustomizedNavigationBar: View {
                     }
                     
                 case let searchBarInfo as TabBarInfo.Search:
-                    HStack(spacing: spacing) {
-                        self.getScopeButton(for: searchBarInfo.icon)
-                        
-                        HStack(spacing: spacing - 4) {
-                            SearchBar(style: .small)
-                                .onTapGesture {
-                                    searchBarInfo.goToSearch()
-                                }
-                            
-                            Button(action: { }) {
-                                let cartObjectsNumberPadding: CGFloat = 6
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    Image("Cart")
-                                        .padding(cartObjectsNumberPadding)
-                                    
-                                    ZStack {
-                                        AppColor.white.color
-                                            .cornerRadius(7)
-                                        
-                                        Text("10")
-                                            .medicoText(textWeight: .bold,
-                                                        fontSize: 12,
-                                                        color: .red)
-                                    }
-                                    .frame(width: 14, height: 14)
-                                }
-                                .padding(-cartObjectsNumberPadding)
-                            }
-                        }
-                    }
-                    .padding([.leading, .trailing], 6)
+                    SearchTabBar(searchBarInfo: searchBarInfo,
+                                 getScopeButton: getScopeButton)
                     
                 case let searchBarInfo as TabBarInfo.ActiveSearch:
                     ActiveSearchTabBar(searchBarInfo: searchBarInfo) {
@@ -244,6 +212,61 @@ private struct _CustomizedNavigationBar: View {
             closeSlidingPanel(false)
         default:
             return
+        }
+    }
+    
+    private struct SearchTabBar<Content: View>: View {
+        private let spacing: CGFloat = 19
+        
+        let searchBarInfo: TabBarInfo.Search
+        let getScopeButton: (ScopeIcon) -> Content
+        
+        @ObservedObject var cartItemsCount: SwiftDataSource<KotlinInt>
+        
+        var body: some View {
+            HStack(spacing: spacing) {
+                getScopeButton(searchBarInfo.icon)
+                
+                HStack(spacing: spacing - 4) {
+                    SearchBar(style: .small)
+                        .onTapGesture {
+                            searchBarInfo.goToSearch()
+                        }
+                    
+                    Button(action: { searchBarInfo.goToCart() }) {
+                        let cartObjectsNumberPadding: CGFloat = 6
+                        
+                        ZStack(alignment: .topTrailing) {
+                            Image("Cart")
+                                .padding(cartObjectsNumberPadding)
+                            
+                            if let cartItemsCount = self.cartItemsCount.value as? Int,
+                               cartItemsCount > 0 {
+                                ZStack {
+                                    AppColor.white.color
+                                        .cornerRadius(7)
+                                    
+                                    Text(String(cartItemsCount))
+                                        .medicoText(textWeight: .bold,
+                                                    fontSize: 12,
+                                                    color: .red)
+                                }
+                                .frame(width: 14, height: 14)
+                            }
+                        }
+                        .padding(-cartObjectsNumberPadding)
+                    }
+                }
+            }
+            .padding([.leading, .trailing], 6)
+        }
+        
+        init(searchBarInfo: TabBarInfo.Search,
+             getScopeButton: @escaping (ScopeIcon) -> Content) {
+            self.searchBarInfo = searchBarInfo
+            self.getScopeButton = getScopeButton
+            
+            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount)
         }
     }
     

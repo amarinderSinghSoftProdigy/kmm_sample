@@ -245,3 +245,14 @@
 "send_email" = "Send Email";
 "terms_and_conditions" = "Terms & Conditions";
 "privacy_policy" = "Privacy Policy";
+
+// MARK: Cart
+"go_back" = "Go Back";
+"empty_cart_title" = "Looks like you dont have anything!";
+"empty_cart_description" = "Please, try to add something on cart then try again.";
+"empty_cart" = "Empty Cart";
+"available" = "Available";
+"limited" = "Limited";
+"quoted" = "Quoted";
+"continue" = "Continue";
+"total" = "Total:";

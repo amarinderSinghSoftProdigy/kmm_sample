@@ -407,10 +407,5 @@ struct FiltersSection: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
-        
-//        self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
-//
-//        self.products = SwiftDataSource(dataSource: scope.products)
-//        self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
 }
