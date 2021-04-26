@@ -42,6 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
         
         link.setStartingScope()
+        
+//        DebugScopeCreator().uploadDrugLicense(userType: .hospital, email: "", phone: "")
     }
     
     private func registerForRemoteNotifications(with application: UIApplication) {

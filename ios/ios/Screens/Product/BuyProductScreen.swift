@@ -241,6 +241,7 @@ struct BuyProductScreen: View {
                             Spacer()
                             
                             MedicoButton(localizedStringKey: "add_to_cart",
+                                         isEnabled: quantity > 0,
                                          width: 120,
                                          height: 32,
                                          fontSize: 14,

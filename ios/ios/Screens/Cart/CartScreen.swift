@@ -12,6 +12,8 @@ import SwiftUI
 struct CartScreen: View {
     let scope: CartScope
     
+    @State private var expandedItems = [String: Bool]()
+    
     @ObservedObject var items: SwiftDataSource<NSArray>
     @ObservedObject var total: SwiftDataSource<DataTotal>
     
@@ -82,6 +84,9 @@ struct CartScreen: View {
             
             VStack(spacing: 8) {
                 ForEach(sellersCartData, id: \.self) { seller in
+                    let expanded = Binding(get: { expandedItems[seller.sellerCode] == true },
+                                           set: { expandedItems[seller.sellerCode] = $0 })
+                    
                     SellerCartDataView(seller: seller,
                                        onRemoveSeller: { scope.removeSellerItems(sellerCart: seller) },
                                        onIncreaseItem: { updateItemCount($0,
@@ -91,7 +96,8 @@ struct CartScreen: View {
                                                                          forSeller: seller,
                                                                          increment: -1)},
                                        onRemoveItem: { scope.removeItem(sellerCart: seller,
-                                                                        item: $0)})
+                                                                        item: $0)},
+                                       expanded: expanded)
                 }
             }.scrollView()
             
@@ -149,7 +155,7 @@ struct CartScreen: View {
         let onDecreaseItem: (DataCartItem) -> ()
         let onRemoveItem: (DataCartItem) -> ()
         
-        @State private var expanded = false
+        @Binding var expanded: Bool
         
         var body: some View {
             VStack {
@@ -166,24 +172,34 @@ struct CartScreen: View {
                         onRemoveSeller()
                     }
                     
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(seller.sellerName)
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 16,
                                         multilineTextAlignment: .leading)
                         
-                        Text("One Town, Vijaywada, 722212")
-                            .medicoText(textWeight: .medium,
-                                        fontSize: 12,
-                                        color: .grey3,
-                                        multilineTextAlignment: .leading)
+                        HStack(spacing: 4) {
+                            LocalizedText(localizationKey: "payment_method",
+                                          textWeight: .medium,
+                                          fontSize: 12,
+                                          color: .grey3,
+                                          multilineTextAlignment: .leading)
+                            
+                            Text(seller.paymentMethod.serverValue)
+                                .medicoText(textWeight: .medium,
+                                            fontSize: 12,
+                                            color: .lightBlue,
+                                            multilineTextAlignment: .leading)
+                        }
                     }
+                    .padding(.vertical, 8)
                     
                     Spacer()
                     
                     Button(action: { expanded.toggle() }) {
                         Image(systemName: "chevron.right")
                             .foregroundColor(appColor: .darkBlue)
+                            .opacity(0.54)
                             .rotationEffect(.degrees(expanded ? -90 : 90))
                             .animation(.linear(duration: 0.2))
                             .padding(.trailing, 18)
@@ -225,77 +241,72 @@ struct CartScreen: View {
             var body: some View {
                 ZStack(alignment: .leading) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Group {
-                            HStack(alignment: .top) {
-                                Text(item.productName)
-                                    .medicoText(textWeight: .bold,
-                                                fontSize: 16,
-                                                multilineTextAlignment: .leading)
-                                
-                                Spacer()
-                                
-                                Button(action: { onRemoveItem(item) }) {
-                                    Image(systemName: "cross")
-                                        .foregroundColor(.red)
-                                        .padding(6)
-                                        .background(
-                                            Circle()
-                                                .foregroundColor(appColor: .lightPink)
-                                        )
-                                }
-                            }
+                        HStack(alignment: .top) {
+                            Text(item.productName)
+                                .medicoText(textWeight: .bold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
+                                .padding(.top, 5)
                             
-                            HStack(spacing: 8) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "info.fill")
-                                        .foregroundColor(appColor: .lightBlue)
-                                    
-                                    Text(item.manufacturerName)
-                                        .medicoText(textWeight: .medium,
-                                                    color: .lightBlue,
-                                                    multilineTextAlignment: .leading)
-                                }
-                                
-                                AppColor.darkBlue.color
-                                    .opacity(0.33)
-                                    .frame(width: 2)
-                                    .cornerRadius(1)
-                                
-                                Text(item.standardUnit)
-                                    .medicoText(textWeight: .medium,
-                                                color: .grey3,
-                                                multilineTextAlignment: .leading)
-                            }
+                            Spacer()
                             
-                            HStack {
-                                Text(item.price.formatted)
-                                    .medicoText(textWeight: .semiBold,
-                                                fontSize: 16,
-                                                multilineTextAlignment: .leading)
-                                
-                                Spacer()
-                                
-                                NumberPicker(quantity: item.quantity.value as? Int ?? 0,
-                                             onQuantityIncrease: { onIncreaseItem(self.item) },
-                                             onQuantityDecrease: { onDecreaseItem(self.item) })
+                            Button(action: { onRemoveItem(item) }) {
+                                Image(systemName: "xmark")
+                                    .resizable()
+                                    .frame(width: 11, height: 11)
+                                    .font(Font.system(size: 14, weight: .medium))
+                                    .foregroundColor(.red)
+                                    .padding(7)
+                                    .background(
+                                        Circle()
+                                            .foregroundColor(appColor: .lightPink)
+                                    )
                             }
                         }
-                        .padding(.horizontal)
                         
-                        AppColor.darkBlue.color
-                            .opacity(0.12)
-                            .frame(height: 1)
+                        HStack(alignment: .top, spacing: 8) {
+                            HStack(alignment: .top, spacing: 4) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundColor(appColor: .lightBlue)
+                                
+                                Text(item.manufacturerName)
+                                    .medicoText(textWeight: .medium,
+                                                color: .lightBlue,
+                                                multilineTextAlignment: .leading)
+                            }
+                            
+                            AppColor.darkBlue.color
+                                .opacity(0.33)
+                                .frame(width: 2, height: 13)
+                                .padding(.top, 2)
+                                .cornerRadius(1)
+                            
+                            Text(item.standardUnit)
+                                .medicoText(textWeight: .medium,
+                                            color: .grey3,
+                                            multilineTextAlignment: .leading)
+                        }
                         
                         HStack {
+                            Text(item.price.formatted)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
                             
+                            Spacer()
+                            
+                            NumberPicker(quantity: item.quantity.value as? Int ?? 0,
+                                         onQuantityIncrease: { onIncreaseItem(self.item) },
+                                         onQuantityDecrease: { onDecreaseItem(self.item) })
                         }
-                        .padding(.horizontal, 20)
                     }
-                    .padding(.vertical, 8)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding([.vertical, .trailing], 8)
+                    .padding(.leading, 12)
                     
-//                    info.stockInfo.statusColor.color
-//                        .cornerRadius(5, corners: [.topLeft, .bottomLeft])
-//                        .frame(width: 5)
+                    item.stockInfo.statusColor.color
+                        .cornerRadius(5, corners: [.topLeft, .bottomLeft])
+                        .frame(width: 5)
                 }
                 .strokeBorder(.darkBlue,
                               borderOpacity: 0.12,
