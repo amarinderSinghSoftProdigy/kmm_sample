@@ -81,7 +81,7 @@ extension View {
     
     func medicoText(textWeight: TextWeight = .regular,
                     fontSize: CGFloat = 14,
-                    color: AppColor = .darkBlue,
+                    color: Color,
                     multilineTextAlignment: TextAlignment = .center,
                     testingIdentifier: String? = nil) -> some View {
         let view = AnyView(
@@ -98,6 +98,18 @@ extension View {
         return AnyView(
             view.testingIdentifier(testingIdentifier)
         )
+    }
+    
+    func medicoText(textWeight: TextWeight = .regular,
+                    fontSize: CGFloat = 14,
+                    color: AppColor = .darkBlue,
+                    multilineTextAlignment: TextAlignment = .center,
+                    testingIdentifier: String? = nil) -> some View {
+        self.medicoText(textWeight: textWeight,
+                        fontSize: fontSize,
+                        color: color.color,
+                        multilineTextAlignment: multilineTextAlignment,
+                        testingIdentifier: testingIdentifier)
     }
     
     func navigationBar(withNavigationSection navigationSection: DataSource<NavigationSection>,

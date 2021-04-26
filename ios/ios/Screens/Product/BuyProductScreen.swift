@@ -196,13 +196,15 @@ struct BuyProductScreen: View {
                                     }
                                     
                                     HStack {
+                                        let expiryColor = Color(hex: info.stockInfo.expiry.color)
+                                        
                                         getDetailView(withTitleLocalizationKey: "expiry:",
                                                       withBody: info.stockInfo.expiry.formattedDate,
-                                                      withBodyColor: .orange)
+                                                      withBodyColor: expiryColor)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
                                             .background(
-                                                AppColor.orange.color
+                                                expiryColor
                                                     .opacity(0.12)
                                                     .cornerRadius(4)
                                             )
@@ -262,7 +264,7 @@ struct BuyProductScreen: View {
             
             private func getDetailView(withTitleLocalizationKey titleLocalizationKey: String,
                                        withBody body: String,
-                                       withBodyColor bodyColor: AppColor = .lightBlue) -> some View {
+                                       withBodyColor bodyColor: Color = AppColor.lightBlue.color) -> some View {
                 return AnyView(
                     HStack(spacing: 4) {
                         LocalizedText(localizationKey: titleLocalizationKey,
