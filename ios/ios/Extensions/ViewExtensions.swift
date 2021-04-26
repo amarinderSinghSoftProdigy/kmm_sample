@@ -131,7 +131,9 @@ extension View {
     }
     
     func call(_ phoneNumber: String) {
-        let formattedString = "tel://\(phoneNumber)"
+        let cleanedPhoneNumber = phoneNumber.filter { character in !"()- ".contains(character) }
+        
+        let formattedString = "tel://\(cleanedPhoneNumber)"
         guard let url = URL(string: formattedString) else { return }
         
         UIApplication.shared.open(url)
@@ -155,6 +157,22 @@ extension View {
                         .cornerRadius(cornerRadius, corners: corners)
                 )
         )
+    }
+    
+    func centerWithStacks() -> some View {
+        VStack {
+            Spacer()
+            
+            HStack {
+                Spacer()
+                
+                self
+                
+                Spacer()
+            }
+            
+            Spacer()
+        }
     }
 }
 

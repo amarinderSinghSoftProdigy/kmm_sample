@@ -177,6 +177,9 @@ struct TabBarScreen: View {
         case let scope as CartScope:
             return AnyView(CartScreen(scope: scope))
             
+        case let scope as HelpScope:
+            return AnyView(HelpScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }

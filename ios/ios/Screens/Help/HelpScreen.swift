@@ -6,11 +6,13 @@
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
+import core
 import SwiftUI
 
 struct HelpScreen: View {
-    @State private var activeSheet: ActiveSheet?
+    let scope: HelpScope
     
+    @State private var activeSheet: ActiveSheet?
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -27,7 +29,7 @@ struct HelpScreen: View {
                              height: 30,
                              fontSize: 14,
                              fontWeight: .bold) {
-                    self.call("111")
+                    self.call(scope.helpData.contactUs.customerCarePhoneNumber)
                 }
             }
             .padding(10)
@@ -44,7 +46,7 @@ struct HelpScreen: View {
             VStack(spacing: 22) {
                 Divider()
                 
-                let phone = "+911234567890"
+                let phone = scope.helpData.contactUs.salesPhoneNumber
                 VStack(spacing: 16) {
                     InfoItem(titleLocalizationKey: "call_sales",
                              onTapGesture: { self.call(phone) }) {
@@ -62,9 +64,7 @@ struct HelpScreen: View {
                     
                     InfoItem(titleLocalizationKey: "send_email",
                              onTapGesture: { self.activeSheet = .mail }) {
-                        let email = "help@medicostores.com"
-                        
-                        Text(email)
+                        Text(scope.helpData.contactUs.email)
                             .medicoText(textWeight: .medium,
                                         fontSize: 15,
                                         color: .lightBlue)
@@ -78,34 +78,35 @@ struct HelpScreen: View {
                     LinkItem(titleLocalizationKey: "terms_and_conditions",
                              imageName: "TermsAndConditions")
                         .onTapGesture {
-                            self.openLink("https://google.com")
+                            self.openLink(scope.helpData.tosUrl)
                         }
                     
                     LinkItem(titleLocalizationKey: "privacy_policy",
                              systemImageName: "shield.checkerboard")
                         .onTapGesture {
-                            self.openLink("https://google.com")
+                            self.openLink(scope.helpData.privacyPolicyUrl)
                         }
                 }
                 .padding(.horizontal, 20)
             }
+            .padding(.bottom, 20)
         }
         .background(AppColor.white.color.cornerRadius(8))
         .frame(maxWidth: 345)
-        .padding(16)
         .sheet(item: $activeSheet) {
             switch $0 {
             case .mail:
                 let isShowingMailView = Binding(get: { self.activeSheet == .mail },
                                                 set: { if !$0 { self.activeSheet = nil } })
                 
-                MailView(recipientEmail: "help@medicostores.com",
+                MailView(recipientEmail: scope.helpData.contactUs.email,
                          isShowing: isShowingMailView)
                 
             case .safari(let url):
                 SafariView(url: url)
             }
         }
+        .centerWithStacks()
     }
     
     private func openLink(_ link: String) {

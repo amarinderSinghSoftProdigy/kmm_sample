@@ -239,6 +239,7 @@
 "store" = "Store";
 
 // MARK: Help
+"help" = "Help";
 "instantly_connect_with_us" = "Instantly Connect with us";
 "call_now" = "Call Now";
 "contact_information" = "Contact Information";

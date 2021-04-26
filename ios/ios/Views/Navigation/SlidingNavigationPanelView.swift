@@ -234,6 +234,9 @@ extension NavigationOption {
         case .Stores():
             return "Store"
             
+        case .Help():
+            return "Help"
+            
         default:
             return nil
         }
@@ -264,6 +267,9 @@ extension NavigationOption {
             
         case .Stores():
             return "stores"
+            
+        case .Help():
+            return "help"
             
         default:
             return nil
