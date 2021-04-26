@@ -40,8 +40,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,9 +52,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
+import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -169,7 +175,7 @@ private fun SellerCartItem(
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = BorderStroke(1.dp, Color.LightGray),
+        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -202,8 +208,19 @@ private fun SellerCartItem(
                             fontWeight = FontWeight.W600,
                             fontSize = 14.sp,
                         )
+                        Space(2.dp)
                         Text(
-                            text = "some address",
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.payment_method))
+                                append(": ")
+                                val startIndex = length
+                                append(sellerCart.paymentMethod.serverValue)
+                                addStyle(
+                                    SpanStyle(color = ConstColors.lightBlue),
+                                    startIndex,
+                                    length,
+                                )
+                            },
                             color = ConstColors.gray,
                             fontWeight = FontWeight.W500,
                             fontSize = 12.sp,
@@ -248,7 +265,7 @@ private fun CartItem(
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color.LightGray),
+        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -327,16 +344,21 @@ private fun CartItem(
             }
             PlusMinusQuantity(
                 quantity = cartItem.quantity.value.toInt(),
-                max = cartItem.stock.value,
+                max = cartItem.stockInfo.availableQty,
                 onInc = onInc,
                 onDec = onDec,
                 modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
             )
-//            val labelColor = when (sellerInfo.stockInfo.status) {
-//                StockStatus.IN_STOCK -> ConstColors.green
-//                StockStatus.LIMITED_STOCK -> ConstColors.orange
-//                StockStatus.OUT_OF_STOCK -> ConstColors.red
-//            }
+            val labelColor = when (cartItem.stockInfo.status) {
+                StockStatus.IN_STOCK -> ConstColors.green
+                StockStatus.LIMITED_STOCK -> ConstColors.orange
+                StockStatus.OUT_OF_STOCK -> ConstColors.red
+            }
+            val maxWidth =
+                LocalContext.current.let { it.screenWidth / it.density }.dp - 37.dp - 5.dp
+            Box(
+                modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
+            )
         }
     }
 }

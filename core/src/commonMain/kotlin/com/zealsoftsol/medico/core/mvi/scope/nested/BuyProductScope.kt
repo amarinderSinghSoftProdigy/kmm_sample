@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 
@@ -38,7 +39,7 @@ class BuyProductScope(
                 sellerInfo.unitCode,
                 product.code,
                 product.buyingOption,
-                sellerInfo.spid,
+                CartIdentifier(sellerInfo.spid),
                 quantities.value[sellerInfo]!!
             )
         )

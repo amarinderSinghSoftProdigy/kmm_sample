@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Response
@@ -32,15 +33,15 @@ class CartRepo(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
         quantity: Int,
-    ) = cartStoresScope.addToCart(
+    ) = cartStoresScope.addCartEntry(
         CartRequest(
             unitCode,
             sellerUnitCode,
             productCode,
             buyingOption,
-            spid,
+            id,
             quantity
         )
     )
@@ -51,7 +52,7 @@ class CartRepo(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
         quantity: Int,
     ) = cartStoresScope.updateCartEntry(
         CartRequest(
@@ -59,7 +60,7 @@ class CartRepo(
             sellerUnitCode,
             productCode,
             buyingOption,
-            spid,
+            id,
             quantity
         )
     )
@@ -70,14 +71,14 @@ class CartRepo(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
     ) = cartStoresScope.deleteCartEntry(
         CartRequest(
             unitCode,
             sellerUnitCode,
             productCode,
             buyingOption,
-            spid
+            id,
         )
     )
         .handleResponse()

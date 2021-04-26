@@ -24,8 +24,8 @@ class CartScope(
                     sellerCart.sellerCode,
                     item.productCode,
                     item.buyingOption,
-                    item.spid,
-                    quantity.coerceIn(0, item.quantity.value.toInt())
+                    item.id,
+                    quantity.coerceIn(0, item.stockInfo.availableQty),
                 )
             )
         }
@@ -37,7 +37,7 @@ class CartScope(
                 sellerCart.sellerCode,
                 item.productCode,
                 item.buyingOption,
-                item.spid
+                item.id,
             )
         )
 

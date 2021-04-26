@@ -110,6 +110,7 @@ fun MedicoSmallButton(
     text: String,
     isEnabled: Boolean = true,
     enabledColor: Color = ConstColors.yellow,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
     onClick: () -> Unit,
 ) {
     Button(
@@ -117,7 +118,7 @@ fun MedicoSmallButton(
         colors = ButtonDefaults.buttonColors(
             backgroundColor = enabledColor,
             disabledBackgroundColor = Color.LightGray,
-            contentColor = MaterialTheme.colors.onPrimary,
+            contentColor = contentColor,
             disabledContentColor = MaterialTheme.colors.onPrimary,
         ),
         enabled = isEnabled,
@@ -127,7 +128,6 @@ fun MedicoSmallButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colors.onPrimary,
             fontSize = 12.sp,
             fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),

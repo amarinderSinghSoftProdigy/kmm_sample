@@ -7,13 +7,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.content.FileProvider
+import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -69,7 +70,6 @@ class MainActivity : ComponentActivity(), DIAware {
         UiLink.setStartingScope()
         setContent {
             val coroutineScope = rememberCoroutineScope()
-            val searchList = rememberLazyListState()
             AppTheme {
                 val hostScope = navigator.scope.flow.collectAsState()
                 Crossfade(hostScope.value, animationSpec = tween(durationMillis = 200)) {
@@ -139,6 +139,25 @@ class MainActivity : ComponentActivity(), DIAware {
         val uri = String.format("geo:%f,%f", latitude, longitude).toUri()
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    fun openDialer(phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phoneNumber")
+        startActivity(intent)
+    }
+
+    fun sendMail(email: String) {
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:$email")
+        startActivity(intent)
+    }
+
+    fun openUrl(url: String) {
+        CustomTabsIntent.Builder()
+            .setToolbarColor("#0084D4".toColorInt())
+            .build()
+            .launchUrl(this, url.toUri())
     }
 
     private fun handleIntent(intent: Intent) {

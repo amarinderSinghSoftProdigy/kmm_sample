@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -181,11 +182,15 @@ private fun PreviewItemBottomSheet(
 @Composable
 private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     val formatter = rememberPhoneNumberFormatter()
+    val phoneNumber = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty()
+    val activity = (LocalContext.current as MainActivity)
     Text(
-        text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty(),
+        text = phoneNumber,
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.End,
         color = ConstColors.lightBlue,
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier.clickable { activity.openDialer(phoneNumber) },
     )
     Space(12.dp)
     Separator(padding = 0.dp)

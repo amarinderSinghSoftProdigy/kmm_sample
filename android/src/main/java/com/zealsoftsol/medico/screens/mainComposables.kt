@@ -41,6 +41,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
@@ -70,6 +71,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
+import com.zealsoftsol.medico.screens.help.HelpScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.PreviewUserScreen
@@ -170,6 +172,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> StoresScreen(it)
                     is CartScope -> CartScreen(it)
+                    is HelpScope -> HelpScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

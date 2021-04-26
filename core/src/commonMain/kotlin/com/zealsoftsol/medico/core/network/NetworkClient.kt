@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -86,7 +87,8 @@ class NetworkClient(
     NetworkScope.Management,
     NetworkScope.Notification,
     NetworkScope.Stores,
-    NetworkScope.Cart {
+    NetworkScope.Cart,
+    NetworkScope.Help {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -437,9 +439,9 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
-    override suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData> =
+    override suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData> =
         ktorDispatcher {
-            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/add") {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/addEntry") {
                 withMainToken()
                 jsonBody(request)
             }.getWrappedBody()
@@ -483,6 +485,12 @@ class NetworkClient(
                     "sellerUnitCode" to sellerUnitCode
                 )
             )
+        }.getWrappedBody()
+    }
+
+    override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
+        client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {
+            withMainToken()
         }.getWrappedBody()
     }
 

@@ -49,6 +49,7 @@
     <string name="letters_only">Letters only</string>
     <string name="last_name">Last Name</string>
     <string name="email">Email Address</string>
+    <string name="email_short">Email</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="tos_line_1">Continuing, I accept the</string>
     <string name="tos_line_2">Terms of Conditions and Privacy Policy</string>
@@ -162,4 +163,12 @@
     <string name="limited">Limited</string>
     <string name="quoted">Quoted</string>
     <string name="empty_cart">Empty Cart</string>
+    <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 1MB.</string>
+    <string name="connect_with_us">Instantly Connect with us</string>
+    <string name="contact_info">Contact Information</string>
+    <string name="sales">Sales</string>
+    <string name="tos">Terms &amp; Conditions</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="call_now">Call Now</string>
+    <string name="help">Help</string>
 </resources>

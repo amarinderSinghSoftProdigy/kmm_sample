@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -135,7 +136,7 @@ interface NetworkScope {
         suspend fun getCart(unitCode: String): Response.Wrapped<CartData>
         suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode>
 
-        suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData>
+        suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData>
         suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData>
         suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData>
 
@@ -144,5 +145,9 @@ interface NetworkScope {
             cartId: String,
             sellerUnitCode: String
         ): Response.Wrapped<CartData>
+    }
+
+    interface Help : NetworkScope {
+        suspend fun getHelp(): Response.Wrapped<HelpData>
     }
 }

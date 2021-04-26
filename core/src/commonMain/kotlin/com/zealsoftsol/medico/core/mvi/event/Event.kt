@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -57,6 +58,7 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+            object UploadFileTooBig : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
@@ -138,7 +140,7 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
                 val quantity: Int,
             ) : Cart()
 
@@ -146,7 +148,7 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
                 val quantity: Int,
             ) : Cart()
 
@@ -154,12 +156,18 @@ sealed class Event {
                 val sellerUnitCode: String,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val spid: String,
+                val id: CartIdentifier,
             ) : Cart()
 
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object ClearCart : Cart()
+        }
+
+        sealed class Help : Action() {
+            override val typeClazz: KClass<*> = Help::class
+
+            object GetHelp : Help()
         }
     }
 

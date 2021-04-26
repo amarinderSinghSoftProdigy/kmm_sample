@@ -22,7 +22,7 @@ class MockCartScope : NetworkScope.Cart {
             Response.Wrapped(null, false)
         }
 
-    override suspend fun addToCart(request: CartRequest): Response.Wrapped<CartData> =
+    override suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData> =
         mockResponse {
             Response.Wrapped(null, false)
         }

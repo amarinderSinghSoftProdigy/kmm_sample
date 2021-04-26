@@ -34,6 +34,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
         is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
+        is Event.Action.Registration.UploadFileTooBig -> uploadFileTooBig()
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
         is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
         is Event.Action.Registration.SignUp -> signUp()
@@ -125,6 +126,12 @@ internal class RegistrationEventDelegate(
                     aadhaarData = aadhaarData,
                 )
             )
+        }
+    }
+
+    private fun uploadFileTooBig() {
+        navigator.withScope<CommonScope.UploadDocument> {
+            setHostError(ErrorCode.uploadFileTooBig)
         }
     }
 

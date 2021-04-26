@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 
 internal class CartEventDelegate(
     navigator: Navigator,
@@ -23,7 +24,7 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid,
+                id,
                 quantity
             )
         }
@@ -32,7 +33,7 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid,
+                id,
                 quantity
             )
         }
@@ -41,7 +42,7 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid
+                id,
             )
         }
         is Event.Action.Cart.RemoveSellerItems -> event.run { removeSellerItems(sellerUnitCode) }
@@ -52,7 +53,7 @@ internal class CartEventDelegate(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
         quantity: Int,
     ) = async {
         val error = navigator.withProgress {
@@ -61,8 +62,8 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid,
-                quantity
+                id,
+                quantity,
             )
         }
         if (error == null) {
@@ -81,7 +82,7 @@ internal class CartEventDelegate(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
         quantity: Int,
     ) = async {
         navigator.withScope<CartScope> {
@@ -90,7 +91,7 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid,
+                id,
                 quantity
             )?.let { setHostError(it) }
         }
@@ -100,7 +101,7 @@ internal class CartEventDelegate(
         sellerUnitCode: String,
         productCode: String,
         buyingOption: BuyingOption,
-        spid: String,
+        id: CartIdentifier,
     ) = async {
         navigator.withScope<CartScope> {
             cartRepo.removeCartItem(
@@ -108,7 +109,7 @@ internal class CartEventDelegate(
                 sellerUnitCode,
                 productCode,
                 buyingOption,
-                spid
+                id,
             )?.let { setHostError(it) }
         }
     }
