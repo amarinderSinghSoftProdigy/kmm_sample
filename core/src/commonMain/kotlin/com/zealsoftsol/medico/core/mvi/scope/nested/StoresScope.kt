@@ -22,6 +22,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<Store>> = DataSource(emptyList())
+        override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
 
         init {

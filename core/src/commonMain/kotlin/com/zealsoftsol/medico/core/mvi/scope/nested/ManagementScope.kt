@@ -31,6 +31,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        override val totalItems: DataSource<Int> = DataSource(0)
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
         override val searchText: DataSource<String> = DataSource("")
 

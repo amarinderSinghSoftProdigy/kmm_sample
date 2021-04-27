@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -133,31 +132,46 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
         )
     }
     val activeTab = scope.activeTab.flow.collectAsState()
+    val totalItems = scope.totalItems.flow.collectAsState()
     if (scope.tabs.isNotEmpty()) {
         Space(16.dp)
-        Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .height(41.dp)
+                .padding(horizontal = 16.dp)
+                .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
+        ) {
             scope.tabs.forEach {
                 var boxMod = Modifier.weight(1f).fillMaxHeight()
                 boxMod = if (scope.tabs.size == 1) {
-                    boxMod.padding(horizontal = 16.dp)
+                    boxMod
                 } else {
-                    boxMod.clickable { scope.selectTab(it) }
+                    boxMod.padding(5.dp).clickable { scope.selectTab(it) }
                 }
-                Box(modifier = boxMod) {
-                    val isActive = activeTab.value == it
+                val isActive = activeTab.value == it
+                boxMod = if (isActive) {
+                    boxMod.background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                } else {
+                    boxMod
+                }
+                Row(
+                    modifier = boxMod,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
                     Text(
                         text = stringResourceByName(it.stringId),
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Center,
-                        color = if (isActive) MaterialTheme.colors.background else ConstColors.gray,
-                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = if (isActive) Color.White else MaterialTheme.colors.background,
                     )
-                    if (isActive) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .height(2.dp)
-                                .background(color = MaterialTheme.colors.background)
-                                .align(Alignment.BottomCenter),
+                    if (isActive && totalItems.value != 0) {
+                        Space(6.dp)
+                        Text(
+                            text = totalItems.value.toString(),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700,
+                            color = ConstColors.yellow,
                         )
                     }
                 }

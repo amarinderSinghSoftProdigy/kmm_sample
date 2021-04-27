@@ -15,6 +15,7 @@ sealed class NotificationScope : Scope.Child.TabBar() {
 
     class All(
         override val items: DataSource<List<NotificationData>> = DataSource(emptyList()),
+        override val totalItems: DataSource<Int> = DataSource(0),
         override val searchText: DataSource<String> = DataSource(""),
     ) : NotificationScope(), Loadable<NotificationData> {
 
