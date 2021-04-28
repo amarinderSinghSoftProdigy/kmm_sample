@@ -70,6 +70,10 @@ interface PreviewItem {
     val isVerified: Boolean?
 }
 
+interface WithTradeName {
+    val tradeName: String
+}
+
 // BASE
 
 @Serializable

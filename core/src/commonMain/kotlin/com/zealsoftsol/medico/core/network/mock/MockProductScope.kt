@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.Response
 
 class MockProductScope : NetworkScope.Product {
@@ -21,4 +22,12 @@ class MockProductScope : NetworkScope.Product {
         mockResponse {
             Response.Wrapped(null, false)
         }
+
+    override suspend fun buyProductSelectSeasonBoyRetailer(
+        productCode: String,
+        unitCode: String,
+        sellerUnitCode: String
+    ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = mockResponse {
+        Response.Wrapped(null, false)
+    }
 }

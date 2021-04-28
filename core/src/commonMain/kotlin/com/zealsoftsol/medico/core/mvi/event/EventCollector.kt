@@ -70,6 +70,7 @@ internal class EventCollector(
         Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, searchNetworkScope),
         Event.Action.Product::class to ProductEventDelegate(
             navigator,
+            userRepo,
             productNetworkScope,
         ),
         Event.Action.Management::class to ManagementEventDelegate(
