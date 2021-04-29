@@ -146,22 +146,26 @@ private struct _CustomizedNavigationBar: View {
                             Spacer()
                         }
                         
-                        if let title = simpleBarInfo.title {
-                            switch title {
-                            case let staticTitle as StringResource.Static:
-                                LocalizedText(localizationKey: staticTitle.id,
-                                              textWeight: .semiBold,
-                                              fontSize: 17)
-                                
-                            case let rawTitle as StringResource.Raw:
-                                Text(rawTitle.string)
-                                    .medicoText(textWeight: .semiBold,
-                                                fontSize: 17)
-                                
-                            default:
-                                EmptyView()
+                        Group {
+                            if let title = simpleBarInfo.title {
+                                switch title {
+                                case let staticTitle as StringResource.Static:
+                                    LocalizedText(localizationKey: staticTitle.id,
+                                                  textWeight: .semiBold,
+                                                  fontSize: 17)
+                                    
+                                case let rawTitle as StringResource.Raw:
+                                    Text(rawTitle.string)
+                                        .medicoText(textWeight: .semiBold,
+                                                    fontSize: 17)
+                                    
+                                default:
+                                    EmptyView()
+                                }
                             }
                         }
+                        .padding(.vertical, 3)
+                        .frame(maxWidth: 240)
                     }
                     
                 case let searchBarInfo as TabBarInfo.Search:

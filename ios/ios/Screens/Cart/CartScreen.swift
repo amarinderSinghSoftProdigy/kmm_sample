@@ -160,19 +160,6 @@ struct CartScreen: View {
         var body: some View {
             VStack {
                 HStack(spacing: 16) {
-                    ZStack {
-                        AppColor.red.color
-                            .cornerRadius(cornerRadius,
-                                          corners: expanded ? .topLeft : [.topLeft, .bottomLeft])
-                        
-                        Image("Bin")
-                    }
-                    .frame(width: 45)
-                    .frame(maxHeight: .infinity)
-                    .onTapGesture {
-                        onRemoveSeller()
-                    }
-                    
                     VStack(alignment: .leading, spacing: 4) {
                         Text(seller.sellerName)
                             .medicoText(textWeight: .semiBold,
@@ -206,6 +193,24 @@ struct CartScreen: View {
                             .padding(.trailing, 18)
                     }
                 }
+                .padding(.leading, 60)
+                .background(
+                    HStack {
+                        ZStack {
+                            AppColor.red.color
+                                .cornerRadius(cornerRadius,
+                                              corners: expanded ? .topLeft : [.topLeft, .bottomLeft])
+                            
+                            Image("Bin")
+                        }
+                        .frame(width: 45)
+                        .onTapGesture {
+                            onRemoveSeller()
+                        }
+                        
+                        Spacer()
+                    }
+                )
                 .strokeBorder(.darkBlue,
                               borderOpacity: 0.12,
                               fill: .darkBlue,
