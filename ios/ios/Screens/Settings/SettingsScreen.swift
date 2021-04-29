@@ -93,6 +93,9 @@ struct SettingsScreen: View {
                 
                 ReadOnlyTextField(placeholder: "address_line",
                                   text: scope.addressData.address)
+                
+                ReadOnlyTextField(placeholder: "landmark",
+                                  text: scope.addressData.landmark)
             
                 ReadOnlyTextField(placeholder: "location",
                                   text: scope.addressData.location)
