@@ -59,6 +59,16 @@ struct SignUpAddressScreen: View {
                 .textContentType(.fullStreetAddress)
                 .autocapitalization(.words)
             
+            let landmarkErrorMessageKey = self.userValidation.value?.landmark
+            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "landmark",
+                                         text: self.registration.value?.landmark,
+                                         onTextChange: { scope.changeLandmark(landmark: $0) },
+                                         isValid: landmarkErrorMessageKey == nil,
+                                         errorMessageKey: landmarkErrorMessageKey)
+                .disableAutocorrection(true)
+                .textContentType(.sublocality)
+                .autocapitalization(.words)
+            
             let locations = locationData.value?.locations ?? [String]()
             PickerSelector(placeholder: "location",
                            chosenElement: self.registration.value?.location,

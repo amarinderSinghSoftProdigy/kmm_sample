@@ -69,6 +69,7 @@
 "address" = "Address";
 "pincode" = "Pincode";
 "address_line" = "Address Line";
+"landmark" = "Landmark";
 "location" = "Location";
 "city" = "City";
 "district" = "District";

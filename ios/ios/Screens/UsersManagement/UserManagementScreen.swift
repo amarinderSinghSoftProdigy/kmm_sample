@@ -201,28 +201,35 @@ struct UserManagementScreen: View {
                 AppColor.white.color
                     .cornerRadius(5)
                 
-                VStack(spacing: 6) {
-                    HStack(spacing: 10) {
-                        HStack(alignment: .top, spacing: 4) {
-                            Text(user.tradeName)
-                                .medicoText(textWeight: .semiBold,
-                                            fontSize: 16,
-                                            multilineTextAlignment: .leading)
+                VStack(spacing: 5) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 10) {
+                            HStack(alignment: .top, spacing: 4) {
+                                Text(user.tradeName)
+                                    .medicoText(textWeight: .semiBold,
+                                                fontSize: 16,
+                                                multilineTextAlignment: .leading)
+                                
+                                if user.isVerified == true {
+                                    Image("VerifyMark")
+                                        .padding(.top, 2)
+                                }
+                            }
                             
-                            if user.isVerified == true {
-                                Image("VerifyMark")
-                                    .padding(.top, 2)
+                            Spacer()
+                            
+                            if let status = user.subscriptionData?.status {
+                                LocalizedText(localizationKey: status.serverValue,
+                                              textWeight: .medium,
+                                              fontSize: 15,
+                                              color: status.statusColor)
                             }
                         }
                         
-                        Spacer()
-                        
-                        if let status = user.subscriptionData?.status {
-                            LocalizedText(localizationKey: status.serverValue,
-                                          textWeight: .medium,
-                                          fontSize: 15,
-                                          color: status.statusColor)
-                        }
+                        Text(user.geoData.landmark)
+                            .medicoText(textWeight: .medium,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
                     }
                     
                     HStack(spacing: 10) {
