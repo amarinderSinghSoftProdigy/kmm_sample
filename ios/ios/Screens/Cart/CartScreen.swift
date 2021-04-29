@@ -304,7 +304,8 @@ struct CartScreen: View {
                     .padding([.vertical, .trailing], 8)
                     .padding(.leading, 12)
                     
-                    item.stockInfo.statusColor.color
+                    let statusColor = item.stockInfo?.statusColor ?? .placeholderGrey
+                    statusColor.color
                         .cornerRadius(5, corners: [.topLeft, .bottomLeft])
                         .frame(width: 5)
                 }

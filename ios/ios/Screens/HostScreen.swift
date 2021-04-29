@@ -146,7 +146,7 @@ struct TabBarScreen: View {
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
             
-        case let scope as BuyProductScope:
+        case let scope as BuyProductScope<DataWithTradeName>:
             return AnyView(BuyProductScreen(scope: scope))
             
         case let scope as SettingsScope:

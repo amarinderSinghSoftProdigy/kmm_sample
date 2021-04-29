@@ -10,20 +10,20 @@ import core
 import SwiftUI
 
 struct BuyProductScreen: View {
-    let scope: BuyProductScope
+    let scope: BuyProductScope<DataWithTradeName>
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16)  {
             ProductInfo(product: scope.product)
             
             ChooseSellerView(product: scope.product,
-                             sellersFilter: SwiftDataSource(dataSource: scope.sellersFilter),
-                             sellersInfo: SwiftDataSource(dataSource: scope.sellersInfo),
+                             sellersFilter: SwiftDataSource(dataSource: scope.itemsFilter),
+                             sellersInfo: SwiftDataSource(dataSource: scope.items),
                              quantities: SwiftDataSource(dataSource: scope.quantities),
                              onQuantityIncrease: scope.inc,
                              onQuantityDecrease: scope.dec,
-                             onSellerInfoSelect: { scope.addToCart(sellerInfo: $0) },
-                             onSellerFilter: { scope.filterSellers(filter: $0) })
+                             onSellerInfoSelect: { scope.select(item: $0) },
+                             onSellerFilter: { scope.filterItems(filter: $0) })
         }
         .screenLogger(withScreenName: "BuyProduct",
                       withScreenClass: BuyProductScreen.self)

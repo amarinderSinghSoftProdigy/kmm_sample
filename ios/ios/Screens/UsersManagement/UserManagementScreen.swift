@@ -14,6 +14,8 @@ struct UserManagementScreen: View {
     
     @ObservedObject var userSearchText: SwiftDataSource<NSString>
     @ObservedObject var activeTab: SwiftDataSource<ManagementScope.Tab>
+    
+    @ObservedObject var totalUsersNumber: SwiftDataSource<KotlinInt>
     @ObservedObject var users: SwiftDataSource<NSArray>
 
     var body: some View {
@@ -69,6 +71,8 @@ struct UserManagementScreen: View {
         
         self.userSearchText = SwiftDataSource(dataSource: scope.searchText)
         self.activeTab = SwiftDataSource(dataSource: scope.activeTab)
+        
+        self.totalUsersNumber = SwiftDataSource(dataSource: scope.totalItems)
         self.users = SwiftDataSource(dataSource: scope.items)
     }
     
@@ -143,7 +147,8 @@ struct UserManagementScreen: View {
         
         return AnyView(
             TabOptionView(localizationKey: activeTab.stringId,
-                          isSelected: true)
+                          isSelected: true,
+                          itemsNumber: (self.totalUsersNumber.value as? Int) ?? 0)
         )
     }
     
@@ -151,7 +156,8 @@ struct UserManagementScreen: View {
         HStack {
             ForEach(0..<scope.tabs.count) { index in
                 TabOptionView(localizationKey: scope.tabs[index].stringId,
-                              isSelected: selectedOption.wrappedValue == index)
+                              isSelected: selectedOption.wrappedValue == index,
+                              itemsNumber: (self.totalUsersNumber.value as? Int) ?? 0)
                     .onTapGesture {
                         selectedOption.wrappedValue = index
                     }
@@ -165,6 +171,7 @@ struct UserManagementScreen: View {
     private struct TabOptionView: View {
         let localizationKey: String
         let isSelected: Bool
+        let itemsNumber: Int
         
         var body: some View {
             let tabBackgroundColor: AppColor = isSelected ? .lightBlue : .clear
@@ -174,8 +181,8 @@ struct UserManagementScreen: View {
                               textWeight: isSelected ? .semiBold : .medium,
                               color: isSelected ? .white : .darkBlue)
     
-                if isSelected {
-                    Text("29")
+                if isSelected && itemsNumber > 0 {
+                    Text(String(itemsNumber))
                         .medicoText(textWeight: .bold,
                                     color: AppColor.yellow)
                 }
