@@ -143,6 +143,8 @@
 // MARK: Buy Product
 "units:" = "Units:";
 "choose_seller" = "Please, choose a seller";
+"choose_retailer" = "Please, choose a retailer";
+"select" = "Select";
 "mrp:" = "MRP:";
 "margin:" = "Margin:";
 "stocks:" = "Stocks:";
