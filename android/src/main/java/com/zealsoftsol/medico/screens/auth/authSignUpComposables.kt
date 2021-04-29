@@ -279,6 +279,15 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 )
             }
             Space(dp = 12.dp)
+            InputWithError(errorText = userValidation.value?.landmark) {
+                InputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.landmark),
+                    text = registration.value.landmark,
+                    onValueChange = { scope.changeLandmark(it) }
+                )
+            }
+            Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.addressLine1) {
                 InputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),

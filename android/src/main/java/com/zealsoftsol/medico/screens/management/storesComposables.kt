@@ -1,17 +1,15 @@
 package com.zealsoftsol.medico.screens.management
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +48,7 @@ import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption
 
+// TODO reuse with management
 @Composable
 fun StoresScreen(scope: StoresScope) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -79,7 +76,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         Space(16.dp)
     }
     val search = scope.productSearch.flow.collectAsState()
-    val autoComplete = scope.autoComplete.flow.collectAsState()
     val filters = scope.filters.flow.collectAsState()
     val filterSearches = scope.filterSearches.flow.collectAsState()
     val products = scope.products.flow.collectAsState()
@@ -208,9 +204,9 @@ private fun StoreItem(
     store: Store,
     onClick: () -> Unit,
 ) {
-    BaseItem(onClick) {
+    BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.65f),
+            modifier = Modifier.width(maxWidth * 0.65f).align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -221,18 +217,25 @@ private fun StoreItem(
                     color = MaterialTheme.colors.background,
                 )
             }
+            Space(8.dp)
             GeoLocation(store.fullAddress())
         }
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.35f),
+            modifier = Modifier.width(maxWidth * 0.35f).align(Alignment.CenterEnd),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
                 text = store.status.serverValue,
-                color = if (store.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                color = when (store.status) {
+                    SubscriptionStatus.SUBSCRIBED -> ConstColors.green
+                    SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                    SubscriptionStatus.REJECTED -> ConstColors.red
+                },
                 fontWeight = FontWeight.W500,
+                fontSize = 15.sp,
             )
+            Space(8.dp)
             Text(
                 text = store.formattedDistance,
                 fontSize = 12.sp,
@@ -240,27 +243,6 @@ private fun StoreItem(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
-        }
-    }
-}
-
-@Composable
-private fun BaseItem(
-    onClick: () -> Unit,
-    body: @Composable RowScope.() -> Unit,
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            body()
         }
     }
 }

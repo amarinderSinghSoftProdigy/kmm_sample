@@ -47,7 +47,6 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PreviewUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
@@ -75,7 +74,6 @@ import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.help.HelpScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
-import com.zealsoftsol.medico.screens.management.PreviewUserScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
@@ -169,7 +167,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
-                    is PreviewUserScope -> PreviewUserScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> StoresScreen(it)
                     is CartScope -> CartScreen(it)

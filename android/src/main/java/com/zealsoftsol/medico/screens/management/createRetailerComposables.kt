@@ -178,6 +178,13 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
         onValueChange = { scope.changeAddressLine(it) }
     )
     Space(dp = 12.dp)
+    InputField(
+        modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+        hint = stringResource(id = R.string.landmark),
+        text = registration.value.landmark,
+        onValueChange = { scope.changeLandmark(it) }
+    )
+    Space(dp = 12.dp)
     Dropdown(
         modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,

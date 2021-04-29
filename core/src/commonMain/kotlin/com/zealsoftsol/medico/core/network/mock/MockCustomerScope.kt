@@ -24,6 +24,7 @@ class MockCustomerScope : NetworkScope.Customer {
             "2194129343",
             CustomerAddressData(
                 "India",
+                "landmark",
                 "Delhi",
                 "Vijayawada",
                 0.0,
