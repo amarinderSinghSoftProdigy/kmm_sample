@@ -10,39 +10,19 @@ import core
 import SwiftUI
 
 struct BuyProductScreen: View {
-    @State private var stockInfo: DataStockInfo?
+    private var stockInfo: DataStockInfo?
+    private var itemsSelectable = false
+    private var searchTitleLocalizationKey = ""
+    private var scopeSpecificView: AnyView?
     
     let scope: BuyProductScope<DataWithTradeName>
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16)  {
-            var itemsSelectable = false
-            var searchTitleLocalizationKey = ""
-            
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 0) {
                 ProductInfo(product: scope.product)
                 
-                Group { () -> AnyView in
-                    if let scope = (self.scope as? BuyProductScope<DataSellerInfo>) as? BuyProductScopeChooseStockist {
-                        itemsSelectable = scope.isSeasonBoy
-                        searchTitleLocalizationKey = "choose_seller"
-                    }
-                    else if let scope = (self.scope as? BuyProductScope<DataSeasonBoyRetailer>) as? BuyProductScopeChooseRetailer {
-                        searchTitleLocalizationKey = "choose_retailer"
-                        stockInfo = scope.sellerInfo.stockInfo
-                        
-                        return AnyView(
-                            Group {
-                                AppColor.darkBlue.color
-                                    .opacity(0.12)
-                                    .frame(height: 1)
-                                
-                                StockistInfoView(seller: scope.sellerInfo)
-                            }
-                        )
-                    }
-                    return AnyView(EmptyView())
-                }
+                self.scopeSpecificView
             }
             .background(appColor: .white)
             
@@ -60,6 +40,29 @@ struct BuyProductScreen: View {
         }
         .screenLogger(withScreenName: "BuyProduct",
                       withScreenClass: BuyProductScreen.self)
+    }
+    
+    init(scope: BuyProductScope<DataWithTradeName>) {
+        self.scope = scope
+        
+        if let scope = (self.scope as? BuyProductScope<DataSellerInfo>) as? BuyProductScopeChooseStockist {
+            itemsSelectable = scope.isSeasonBoy
+            searchTitleLocalizationKey = "choose_seller"
+        }
+        else if let scope = (self.scope as? BuyProductScope<DataSeasonBoyRetailer>) as? BuyProductScopeChooseRetailer {
+            searchTitleLocalizationKey = "choose_retailer"
+            stockInfo = scope.sellerInfo.stockInfo
+            
+            self.scopeSpecificView = AnyView(
+                Group {
+                    AppColor.darkBlue.color
+                        .opacity(0.12)
+                        .frame(height: 1)
+                    
+                    StockistInfoView(seller: scope.sellerInfo)
+                }
+            )
+        }
     }
     
     private struct ProductInfo: View {
@@ -102,6 +105,8 @@ struct BuyProductScreen: View {
                         .medicoText(color: .lightBlue,
                                     multilineTextAlignment: .leading)
                 }
+                
+                Spacer()
             }
             .padding(16)
             .frame(maxWidth: .infinity)
@@ -112,7 +117,7 @@ struct BuyProductScreen: View {
         let seller: DataSellerInfo
         
         var body: some View {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(seller.tradeName)
                     .medicoText(textWeight: .medium,
                                 fontSize: 15,
@@ -123,11 +128,13 @@ struct BuyProductScreen: View {
                                bodyText: seller.priceInfo.mrp.formattedPrice)
                     
                     Divider()
+                        .frame(height: 13)
                     
                     DetailView(titleLocalizationKey: "stocks:",
                                bodyText: String(seller.stockInfo.availableQty))
                     
                     Divider()
+                        .frame(height: 13)
                     
                     DetailView(titleLocalizationKey: "expiry:",
                                bodyText: seller.stockInfo.expiry.formattedDate,
@@ -198,15 +205,13 @@ struct BuyProductScreen: View {
                     }
                 }
                 
-                
-                
                 VStack(spacing: 12)  {
                     if let sellersInfo = self.items.value as? [DataSellerInfo],
                        let quantities = self.quantities.value as? [DataSellerInfo: Int] {
                         ForEach(sellersInfo, id: \.self) {
                             SellerView(product: product,
                                        info: $0,
-                                       isSelectable: false,
+                                       isSelectable: itemsSelectable,
                                        quantity: quantities[$0] ?? 0,
                                        onQuantityIncrease: onQuantityIncrease,
                                        onQuantityDecrease: onQuantityDecrease,
@@ -323,7 +328,8 @@ struct BuyProductScreen: View {
                         
                         Group {
                             if isSelectable {
-                                MedicoButton(localizedStringKey: "select") {
+                                MedicoButton(localizedStringKey: "select",
+                                             height: 32) {
                                     onInfoSelect(self.info)
                                 }
                             }

@@ -168,6 +168,7 @@ struct CartScreen: View {
                         Image("Bin")
                     }
                     .frame(width: 45)
+                    .frame(maxHeight: .infinity)
                     .onTapGesture {
                         onRemoveSeller()
                     }
