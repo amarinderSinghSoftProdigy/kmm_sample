@@ -5,16 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -74,7 +76,6 @@ fun ManagementScreen(scope: ManagementScope.User) {
     }
 }
 
-// TODO reuse with stores
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User) {
     val search = scope.searchText.flow.collectAsState()
@@ -131,31 +132,46 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
         )
     }
     val activeTab = scope.activeTab.flow.collectAsState()
+    val totalItems = scope.totalItems.flow.collectAsState()
     if (scope.tabs.isNotEmpty()) {
         Space(16.dp)
-        Row(modifier = Modifier.fillMaxWidth().height(48.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .height(41.dp)
+                .padding(horizontal = 16.dp)
+                .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
+        ) {
             scope.tabs.forEach {
                 var boxMod = Modifier.weight(1f).fillMaxHeight()
                 boxMod = if (scope.tabs.size == 1) {
-                    boxMod.padding(horizontal = 16.dp)
+                    boxMod
                 } else {
-                    boxMod.clickable { scope.selectTab(it) }
+                    boxMod.padding(5.dp).clickable { scope.selectTab(it) }
                 }
-                Box(modifier = boxMod) {
-                    val isActive = activeTab.value == it
+                val isActive = activeTab.value == it
+                boxMod = if (isActive) {
+                    boxMod.background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                } else {
+                    boxMod
+                }
+                Row(
+                    modifier = boxMod,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
                     Text(
                         text = stringResourceByName(it.stringId),
-                        fontSize = 15.sp,
-                        textAlign = TextAlign.Center,
-                        color = if (isActive) MaterialTheme.colors.background else ConstColors.gray,
-                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = if (isActive) Color.White else MaterialTheme.colors.background,
                     )
-                    if (isActive) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .height(2.dp)
-                                .background(color = MaterialTheme.colors.background)
-                                .align(Alignment.BottomCenter),
+                    if (isActive && totalItems.value != 0) {
+                        Space(6.dp)
+                        Text(
+                            text = totalItems.value.toString(),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W700,
+                            color = ConstColors.yellow,
                         )
                     }
                 }
@@ -192,18 +208,20 @@ private fun NonSeasonBoyItem(
 ) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.65f),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.widthIn(max = maxWidth * 0.65f),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = entityInfo.tradeName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    color = MaterialTheme.colors.background,
-                )
-                Space(8.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                BoxWithConstraints {
+                    Text(
+                        text = entityInfo.tradeName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.widthIn(max = maxWidth - 22.dp)
+                    )
+                }
                 if (entityInfo.isVerified == true) {
+                    Space(4.dp)
                     Image(
                         painter = painterResource(id = R.drawable.ic_verified),
                         contentDescription = null,
@@ -211,20 +229,32 @@ private fun NonSeasonBoyItem(
                     )
                 }
             }
+            Space(4.dp)
+            Text(
+                text = entityInfo.geoData.landmark,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W500,
+                color = ConstColors.gray,
+            )
+            Space(4.dp)
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.35f),
+            modifier = Modifier.matchParentSize().padding(start = maxWidth * 0.65f),
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             entityInfo.subscriptionData?.let {
                 Text(
                     text = it.status.serverValue,
-                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    color = when (it.status) {
+                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
+                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                        SubscriptionStatus.REJECTED -> ConstColors.red
+                    },
                     fontWeight = FontWeight.W500,
                 )
-            }
+            } ?: Space(4.dp)
             Text(
                 text = entityInfo.geoData.formattedDistance,
                 fontSize = 12.sp,
@@ -240,7 +270,7 @@ private fun NonSeasonBoyItem(
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.65f),
+            modifier = Modifier.width(maxWidth * 0.6f).align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
@@ -249,19 +279,26 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colors.background,
             )
+            Space(8.dp)
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         entityInfo.subscriptionData?.let {
             Column(
-                modifier = Modifier.fillMaxHeight().weight(0.35f),
+                modifier = Modifier.width(maxWidth * 0.4f).align(Alignment.CenterEnd),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
                     text = it.status.serverValue,
-                    color = if (it.status == SubscriptionStatus.SUBSCRIBED) ConstColors.lightBlue else ConstColors.yellow,
+                    color = when (it.status) {
+                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
+                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                        SubscriptionStatus.REJECTED -> ConstColors.red
+                    },
                     fontWeight = FontWeight.W500,
+                    fontSize = 15.sp,
                 )
+                Space(8.dp)
                 val formatter = rememberPhoneNumberFormatter()
                 Text(
                     text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }
@@ -275,9 +312,9 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BaseManagementItem(
+fun BaseManagementItem(
     onClick: () -> Unit,
-    body: @Composable RowScope.() -> Unit,
+    body: @Composable BoxWithConstraintsScope.() -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth()
@@ -286,9 +323,8 @@ private fun BaseManagementItem(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
-        Row(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxWidth().padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             body()
         }

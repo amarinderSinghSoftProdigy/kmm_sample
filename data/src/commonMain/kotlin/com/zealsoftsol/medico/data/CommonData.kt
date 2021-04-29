@@ -22,6 +22,7 @@ data class LocationData(
 data class GeoData(
     val location: String,
     val pincode: String,
+    val landmark: String,
     @SerialName("townOrCity")
     val city: String,
     val distance: Double,
@@ -31,8 +32,16 @@ data class GeoData(
     @SerialName("destinationPoints")
     val destination: GeoPoints? = null,
 ) {
-    fun fullAddress() = "$location $pincode"
+    fun fullAddress() = "$city $pincode"
+    fun fullLandmark() = "$landmark, $city"
 }
+
+@Serializable
+data class FormattedData<T>(
+    @SerialName("formattedValue")
+    val formatted: String,
+    val value: T,
+)
 
 @Serializable
 data class PaginatedData<T>(
@@ -61,6 +70,10 @@ interface PreviewItem {
     val panNumber: String?
     val geoData: GeoData
     val isVerified: Boolean?
+}
+
+interface WithTradeName {
+    val tradeName: String
 }
 
 // BASE
@@ -100,4 +113,9 @@ typealias SimpleResponse<T> = Response.Body<T, MapBody>
 typealias MapBody = Map<String, String>
 
 @Serializable
-data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong")
+data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong") {
+
+    companion object {
+        val uploadFileTooBig = ErrorCode("error", "upload_file_too_big")
+    }
+}

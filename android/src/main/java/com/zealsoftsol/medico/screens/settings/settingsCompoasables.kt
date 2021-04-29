@@ -68,6 +68,8 @@ private fun Address(addressData: CustomerAddressData) {
     Space(12.dp)
     ReadOnlyField(addressData.address, R.string.address_line)
     Space(12.dp)
+    ReadOnlyField(addressData.landmark, R.string.landmark)
+    Space(12.dp)
     ReadOnlyField(addressData.location, R.string.location)
     Space(12.dp)
     ReadOnlyField(addressData.city, R.string.city)

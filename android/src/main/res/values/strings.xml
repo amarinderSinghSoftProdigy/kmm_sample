@@ -46,8 +46,10 @@
     <string name="stores">Stores</string>
     <string name="next">Next</string>
     <string name="first_name">First Name</string>
+    <string name="letters_only">Letters only</string>
     <string name="last_name">Last Name</string>
     <string name="email">Email Address</string>
+    <string name="email_short">Email</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="tos_line_1">Continuing, I accept the</string>
     <string name="tos_line_2">Terms of Conditions and Privacy Policy</string>
@@ -55,6 +57,7 @@
     <string name="pincode">Pincode</string>
     <string name="wrong_pincode">Wrong pincode</string>
     <string name="address_line">Address Line</string>
+    <string name="landmark">Landmark</string>
     <string name="location">Location</string>
     <string name="city">City</string>
     <string name="district">District</string>
@@ -67,6 +70,7 @@
     <string name="drug_license_1">Drug License №1</string>
     <string name="drug_license_2">Drug License №2</string>
     <string name="aadhaar_card">Aadhaar Card</string>
+    <string name="aadhaar_card_invalid">Invalid Aadhaar Card</string>
     <string name="share_code">Share Code</string>
     <string name="provide_drug_license_hint">Please provide drug license to activate the account</string>
     <string name="provide_aadhaar_hint">Please upload Aadhaar card</string>
@@ -130,7 +134,7 @@
     <string name="confirm_info">Confirm if the information above is correct</string>
     <string name="add_retailer">Add Retailer</string>
     <string name="add_retailer_address">Add Retailer\'s Address</string>
-    <string name="consent_terms">I consest for Terms and Conditions</string>
+    <string name="consent_terms">I consent for Terms and Conditions</string>
     <string name="notifications">Notifications</string>
     <string name="active_orders">Active orders</string>
     <string name="read">Read</string>
@@ -151,4 +155,22 @@
     <string name="choose_seller">Please, choose a seller</string>
     <string name="map_location">Map Location</string>
     <string name="dashboard">Dashboard</string>
+    <string name="total">Total:</string>
+    <string name="continue_text">Continue</string>
+    <string name="empty_cart_hint_1">Looks like you dont have anything!</string>
+    <string name="empty_cart_hint_2">Please try to add something on cart then try again.</string>
+    <string name="go_back">Go Back</string>
+    <string name="available">Available</string>
+    <string name="limited">Limited</string>
+    <string name="quoted">Quoted</string>
+    <string name="empty_cart">Empty Cart</string>
+    <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 1MB.</string>
+    <string name="connect_with_us">Instantly Connect with us</string>
+    <string name="contact_info">Contact Information</string>
+    <string name="sales">Sales</string>
+    <string name="tos">Terms &amp; Conditions</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="call_now">Call Now</string>
+    <string name="help">Help</string>
+    <string name="select">Select</string>
 </resources>

@@ -12,11 +12,14 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -31,6 +34,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -83,7 +87,9 @@ class NetworkClient(
     NetworkScope.Product,
     NetworkScope.Management,
     NetworkScope.Notification,
-    NetworkScope.Stores {
+    NetworkScope.Stores,
+    NetworkScope.Cart,
+    NetworkScope.Help {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -283,7 +289,6 @@ class NetworkClient(
                     append("longitude", longitude.toString())
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
-                    append("sort", "ASC")
                 }
             }
         }.getWrappedBody().also {
@@ -314,6 +319,20 @@ class NetworkClient(
                 withMainToken()
             }.getWrappedBody()
         }
+
+    override suspend fun buyProductSelectSeasonBoyRetailer(
+        productCode: String,
+        unitCode: String,
+        sellerUnitCode: String
+    ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = ktorDispatcher {
+        client.get<SimpleResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
+            withMainToken()
+            url {
+                parameters.append("buyerUnitCode", unitCode)
+                parameters.append("sellerUnitCode", sellerUnitCode)
+            }
+        }.getWrappedBody()
+    }
 
     override suspend fun getManagementInfo(
         unitCode: String,
@@ -424,6 +443,70 @@ class NetworkClient(
         }.getWrappedBody().also {
             if (it.isSuccess) pagination.pageLoaded()
         }
+    }
+
+    override suspend fun getCart(unitCode: String): Response.Wrapped<CartData> = ktorDispatcher {
+        client.get<SimpleResponse<CartData>>("${baseUrl.url}/cart") {
+            withMainToken()
+            url {
+                parameters.append("buyerUnitCode", unitCode)
+            }
+        }.getWrappedBody()
+    }
+
+    override suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/addEntry") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/cart/deleteCart") {
+                withMainToken()
+                jsonBody(mapOf("cartId" to cartId, "buyerUnitCode" to unitCode))
+            }.getWrappedError()
+        }
+
+    override suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/updateEntry") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteEntry") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun deleteSellerCart(
+        unitCode: String,
+        cartId: String,
+        sellerUnitCode: String
+    ): Response.Wrapped<CartData> = ktorDispatcher {
+        client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteSellerCart") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "cartId" to cartId,
+                    "buyerUnitCode" to unitCode,
+                    "sellerUnitCode" to sellerUnitCode
+                )
+            )
+        }.getWrappedBody()
+    }
+
+    override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
+        client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {
+            withMainToken()
+        }.getWrappedBody()
     }
 
     // Utils

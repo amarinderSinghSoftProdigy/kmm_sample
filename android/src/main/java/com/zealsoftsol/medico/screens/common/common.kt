@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -108,8 +109,10 @@ fun MedicoSmallButton(
     modifier: Modifier = Modifier,
     widthModifier: Modifier.() -> Modifier = { wrapContentWidth(unbounded = true) },
     text: String,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     isEnabled: Boolean = true,
     enabledColor: Color = ConstColors.yellow,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
     onClick: () -> Unit,
 ) {
     Button(
@@ -117,9 +120,10 @@ fun MedicoSmallButton(
         colors = ButtonDefaults.buttonColors(
             backgroundColor = enabledColor,
             disabledBackgroundColor = Color.LightGray,
-            contentColor = MaterialTheme.colors.onPrimary,
+            contentColor = contentColor,
             disabledContentColor = MaterialTheme.colors.onPrimary,
         ),
+        contentPadding = contentPadding,
         enabled = isEnabled,
         shape = RoundedCornerShape(5.dp),
         elevation = ButtonDefaults.elevation(0.dp, 0.dp, 0.dp),
@@ -127,7 +131,6 @@ fun MedicoSmallButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colors.onPrimary,
             fontSize = 12.sp,
             fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),

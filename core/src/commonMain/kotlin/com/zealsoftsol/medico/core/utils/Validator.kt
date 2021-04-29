@@ -15,6 +15,8 @@ object Validator {
 
     object Aadhaar {
 
+        const val MAX_LENGTH = 12
+
         private val d by lazy {
             arrayOf(
                 intArrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),

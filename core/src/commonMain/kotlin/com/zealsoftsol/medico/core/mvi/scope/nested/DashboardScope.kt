@@ -6,13 +6,18 @@ import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.User
 
+/**
+ * Entry scope for authorized activated users
+ */
 class DashboardScope private constructor(
     val unreadNotifications: ReadOnlyDataSource<Int>,
-) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.HAMBURGER)) {
+) : Scope.Child.TabBar() {
+
+    override val isRoot: Boolean = true
 
     fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
 
@@ -21,9 +26,11 @@ class DashboardScope private constructor(
             user: User,
             userDataSource: ReadOnlyDataSource<User>,
             unreadNotifications: ReadOnlyDataSource<Int>,
-        ) = Host.TabBar(
+            cartItemsCount: ReadOnlyDataSource<Int>,
+        ) = TabBarScope(
             childScope = DashboardScope(unreadNotifications),
-            navigationSectionValue = NavigationSection(
+            initialTabBarInfo = TabBarInfo.Search(cartItemsCount = cartItemsCount),
+            initialNavigationSection = NavigationSection(
                 userDataSource,
                 NavigationOption.default(user.type),
                 NavigationOption.footer()

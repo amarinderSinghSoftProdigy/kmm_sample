@@ -3,11 +3,14 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -18,6 +21,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -77,6 +81,11 @@ interface NetworkScope {
     interface Product : NetworkScope {
         suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse>
         suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse>
+        suspend fun buyProductSelectSeasonBoyRetailer(
+            productCode: String,
+            unitCode: String,
+            sellerUnitCode: String
+        ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse>
     }
 
     interface Search : NetworkScope {
@@ -127,5 +136,24 @@ interface NetworkScope {
             search: String,
             pagination: Pagination,
         ): Response.Wrapped<PaginatedData<Store>>
+    }
+
+    interface Cart : NetworkScope {
+        suspend fun getCart(unitCode: String): Response.Wrapped<CartData>
+        suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode>
+
+        suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData>
+        suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData>
+        suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData>
+
+        suspend fun deleteSellerCart(
+            unitCode: String,
+            cartId: String,
+            sellerUnitCode: String
+        ): Response.Wrapped<CartData>
+    }
+
+    interface Help : NetworkScope {
+        suspend fun getHelp(): Response.Wrapped<HelpData>
     }
 }

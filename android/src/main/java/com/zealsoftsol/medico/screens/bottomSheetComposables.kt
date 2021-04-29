@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -33,12 +34,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
@@ -115,8 +116,6 @@ private fun DocumentUploadBottomSheet(
                 if (file != null) {
                     onDismiss()
                     onFileReady(file)
-                } else {
-                    activity.toast(activity.getString(R.string.something_went_wrong))
                 }
             }
         },
@@ -184,11 +183,15 @@ private fun PreviewItemBottomSheet(
 @Composable
 private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     val formatter = rememberPhoneNumberFormatter()
+    val phoneNumber = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty()
+    val activity = (LocalContext.current as MainActivity)
     Text(
-        text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty(),
+        text = phoneNumber,
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.End,
         color = ConstColors.lightBlue,
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier.clickable { activity.openDialer(phoneNumber) },
     )
     Space(12.dp)
     Separator(padding = 0.dp)
@@ -211,12 +214,12 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
     Text(
-        text = entityInfo.geoData.city,
+        text = entityInfo.geoData.fullLandmark(),
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
-    Space(12.dp)
-    Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
+    Space(16.dp)
+    Row(modifier = Modifier.fillMaxWidth()) {
         CoilImage(
             modifier = Modifier.size(123.dp),
             data = "",
@@ -226,7 +229,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         )
         Space(24.dp)
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 123.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             GeoLocation(entityInfo.geoData.fullAddress(), isBold = true)
@@ -271,7 +274,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             }
         }
     }
-    Space(8.dp)
+    Space(24.dp)
     when {
         entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
             DataWithLabel(

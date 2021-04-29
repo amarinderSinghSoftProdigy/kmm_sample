@@ -6,15 +6,18 @@ import com.zealsoftsol.medico.core.mvi.NavigationOption
 import com.zealsoftsol.medico.core.mvi.NavigationSection
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
+import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 
-sealed class LimitedAccessScope : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon.HAMBURGER, null)),
+/**
+ * Entry scope for authorized unactivated users
+ */
+sealed class LimitedAccessScope : Scope.Child.TabBar(),
     CommonScope.UploadDocument,
     CommonScope.WithUser {
 
@@ -36,9 +39,9 @@ sealed class LimitedAccessScope : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon
     }
 
     companion object {
-        fun get(user: User, dataSource: ReadOnlyDataSource<User>): Host.TabBar {
-            return Host.TabBar(
-                if (user.type == UserType.SEASON_BOY) {
+        fun get(user: User, dataSource: ReadOnlyDataSource<User>): TabBarScope {
+            return TabBarScope(
+                childScope = if (user.type == UserType.SEASON_BOY) {
                     val details = (user.details as User.Details.Aadhaar)
                     SeasonBoy(
                         user = dataSource,
@@ -55,7 +58,8 @@ sealed class LimitedAccessScope : Scope.Child.TabBar(TabBarInfo.Simple(ScopeIcon
                         user = dataSource,
                     )
                 },
-                NavigationSection(
+                initialTabBarInfo = TabBarInfo.Simple(title = null),
+                initialNavigationSection = NavigationSection(
                     dataSource,
                     NavigationOption.limited(),
                     NavigationOption.footer()

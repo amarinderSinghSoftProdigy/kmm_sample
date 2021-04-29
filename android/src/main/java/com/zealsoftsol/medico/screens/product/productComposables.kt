@@ -113,7 +113,7 @@ fun ProductScreen(scope: ProductInfoScope) {
                     text = it.formattedStatus,
                     color = when (it.status) {
                         StockStatus.IN_STOCK -> ConstColors.green
-                        StockStatus.LOW_STOCK -> ConstColors.orange
+                        StockStatus.LIMITED_STOCK -> ConstColors.orange
                         StockStatus.OUT_OF_STOCK -> ConstColors.red
                     },
                     fontWeight = FontWeight.W700,

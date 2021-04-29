@@ -21,7 +21,7 @@ interface AddressComponent : Scopable {
 
     fun checkData() {
         val isValid = registration.value.run {
-            pincode.length == 6 && addressLine1.isNotEmpty() && location.isNotEmpty()
+            pincode.length == 6 && addressLine1.isNotEmpty() && landmark.isNotEmpty() && location.isNotEmpty()
                     && city.isNotEmpty() && district.isNotEmpty() && state.isNotEmpty()
         }
         onDataValid(isValid)
@@ -41,6 +41,14 @@ interface AddressComponent : Scopable {
     fun changeAddressLine(address: String) {
         trimInput(address, registration.value.addressLine1) {
             registration.value = registration.value.copy(addressLine1 = it)
+            checkData()
+        }
+    }
+
+    fun changeLandmark(landmark: String) {
+        if (landmark.length > 15) return
+        trimInput(landmark, registration.value.landmark) {
+            registration.value = registration.value.copy(landmark = it)
             checkData()
         }
     }

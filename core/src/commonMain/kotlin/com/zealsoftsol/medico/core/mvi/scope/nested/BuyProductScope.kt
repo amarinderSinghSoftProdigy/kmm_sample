@@ -4,58 +4,88 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.DetachedScopeId
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
-import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
-import kotlin.reflect.KClass
+import com.zealsoftsol.medico.data.WithTradeName
 
-class BuyProductScope private constructor(
+sealed class BuyProductScope<T : WithTradeName>(
     val product: ProductSearch,
-    val sellersInfo: DataSource<List<SellerInfo>>,
-    val sellersFilter: DataSource<String> = DataSource(""),
-    val quantities: DataSource<Map<SellerInfo, Int>> = DataSource(mapOf()),
-) : Scope.Child.TabBar(TabBarInfo.Search(ScopeIcon.BACK)),
-    CommonScope.CanGoBack {
-    override val scopeId: KClass<*> = DetachedScopeId::class
-    internal val allSellers = sellersInfo.value
+    val items: DataSource<List<T>>,
+    val itemsFilter: DataSource<String> = DataSource(""),
+    val quantities: DataSource<Map<T, Int>> = DataSource(mapOf()),
+) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
-    fun inc(sellerInfo: SellerInfo) {
-        val count = quantities.value[sellerInfo] ?: 0
-        if (count == sellerInfo.stockInfo.availableQty) return
+    internal val allItems = items.value
+
+    abstract fun select(item: T): Boolean
+    abstract fun ensureMaxQuantity(item: T, count: Int): Boolean
+
+    fun inc(item: T) {
+        val count = quantities.value[item] ?: 0
+        if (!ensureMaxQuantity(item, count)) return
         quantities.value = quantities.value.toMutableMap().also {
-            it[sellerInfo] = count + 1
+            it[item] = count + 1
         }
     }
 
-    fun dec(sellerInfo: SellerInfo) {
+    fun dec(item: T) {
         quantities.value = quantities.value
             .mapValues { (info, count) ->
-                if (sellerInfo == info) (count - 1).coerceAtLeast(0) else count
+                if (item == info) (count - 1).coerceAtLeast(0) else count
             }
     }
 
-    fun addToCart(sellerInfo: SellerInfo) {
-        // TODO not implemented
-    }
-
-    fun filterSellers(filter: String) =
+    fun filterItems(filter: String) =
         EventCollector.sendEvent(Event.Action.Product.FilterBuyProduct(filter))
 
-    companion object {
-        fun get(
-            product: ProductSearch,
-            sellersInfo: List<SellerInfo>,
-        ): Host.TabBar {
-            return Host.TabBar(
-                childScope = BuyProductScope(
-                    product,
-                    DataSource(sellersInfo),
-                ),
-                navigationSectionValue = null,
-            )
+    class ChooseStockist(
+        val isSeasonBoy: Boolean,
+        product: ProductSearch,
+        sellersInfo: DataSource<List<SellerInfo>>
+    ) : BuyProductScope<SellerInfo>(product, sellersInfo) {
+
+        override fun ensureMaxQuantity(item: SellerInfo, count: Int): Boolean =
+            count < item.stockInfo.availableQty
+
+        override fun select(item: SellerInfo): Boolean {
+            val event = if (isSeasonBoy) {
+                Event.Action.Product.SelectSeasonBoyRetailer(
+                    product.code,
+                    item,
+                )
+            } else {
+                Event.Action.Cart.AddItem(
+                    item.unitCode,
+                    product.code,
+                    product.buyingOption,
+                    CartIdentifier(item.spid),
+                    quantities.value[item]!!
+                )
+            }
+            return EventCollector.sendEvent(event)
         }
+    }
+
+    class ChooseRetailer(
+        product: ProductSearch,
+        val sellerInfo: SellerInfo,
+        retailers: DataSource<List<SeasonBoyRetailer>>,
+    ) : BuyProductScope<SeasonBoyRetailer>(product, retailers) {
+
+        override fun ensureMaxQuantity(item: SeasonBoyRetailer, count: Int): Boolean =
+            count < sellerInfo.stockInfo.availableQty
+
+        override fun select(item: SeasonBoyRetailer) = EventCollector.sendEvent(
+            Event.Action.Cart.AddItem(
+                sellerInfo.unitCode,
+                product.code,
+                product.buyingOption,
+                CartIdentifier(sellerInfo.spid, seasonBoyRetailerId = item.id),
+                quantities.value[item]!!
+            )
+        )
     }
 }

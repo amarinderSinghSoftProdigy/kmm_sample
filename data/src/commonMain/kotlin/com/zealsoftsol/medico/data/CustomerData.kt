@@ -28,6 +28,7 @@ data class CustomerData(
 data class CustomerAddressData(
     @SerialName("addressLine1")
     val address: String,
+    val landmark: String,
     @SerialName("cityTown")
     val city: String,
     val district: String,

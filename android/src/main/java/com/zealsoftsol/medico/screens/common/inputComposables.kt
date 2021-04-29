@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -134,7 +132,7 @@ fun InputField(
     onValueChange: (String) -> Unit,
 ) {
     TextField(
-        value = text,
+        value = text,//TextFieldValue(text, TextRange(text.length)),
         label = {
             Text(
                 text = hint,
@@ -217,13 +215,24 @@ fun InputWithPrefix(prefix: String, input: @Composable () -> Unit) {
 
 @Composable
 fun ReadOnlyField(text: String, labelId: Int) {
-    Text(
-        text = if (text.isEmpty()) stringResource(id = labelId) else text,
-        color = if (text.isEmpty()) ConstColors.gray else Color.Black,
-        fontSize = 14.sp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(vertical = 20.dp, horizontal = 16.dp),
+    TextField(
+        value = text,
+        label = {
+            Text(
+                text = stringResource(id = labelId),
+                style = TextStyle.Default,
+            )
+        },
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            cursorColor = ConstColors.lightBlue,
+            disabledLabelColor = ConstColors.lightBlue,
+            disabledTextColor = ConstColors.gray,
+        ),
+        enabled = false,
+        onValueChange = { },
+        singleLine = true,
+        maxLines = 1,
+        modifier = Modifier.fillMaxWidth(),
     )
 }

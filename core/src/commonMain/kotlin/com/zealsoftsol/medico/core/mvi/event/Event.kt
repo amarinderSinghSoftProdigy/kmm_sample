@@ -3,6 +3,8 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -11,6 +13,7 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -56,6 +59,7 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+            object UploadFileTooBig : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
@@ -87,15 +91,20 @@ sealed class Event {
             data class ClearFilter(val filter: Filter?) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
+            object ToggleFilter : Search()
         }
 
         sealed class Product : Action() {
             override val typeClazz: KClass<*> = Product::class
 
-            data class Select(val productCode: String) : Product()
+            data class SelectFromSearch(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
             data class BuyProduct(val productCode: String) : Product()
             data class FilterBuyProduct(val filter: String) : Product()
+            data class SelectSeasonBoyRetailer(
+                val productCode: String,
+                val sellerInfo: SellerInfo
+            ) : Product()
         }
 
         sealed class Management : Action() {
@@ -128,6 +137,43 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
         }
+
+        sealed class Cart : Action() {
+            override val typeClazz: KClass<*> = Cart::class
+
+            data class AddItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier,
+                val quantity: Int,
+            ) : Cart()
+
+            data class UpdateItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier,
+                val quantity: Int,
+            ) : Cart()
+
+            data class RemoveItem(
+                val sellerUnitCode: String,
+                val productCode: String,
+                val buyingOption: BuyingOption,
+                val id: CartIdentifier,
+            ) : Cart()
+
+            data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
+
+            object ClearCart : Cart()
+        }
+
+        sealed class Help : Action() {
+            override val typeClazz: KClass<*> = Help::class
+
+            object GetHelp : Help()
+        }
     }
 
     sealed class Transition : Event() {
@@ -136,7 +182,7 @@ sealed class Event {
         object Back : Transition()
         object Refresh : Transition()
         object SignUp : Transition()
-        object ForgetPassword : Transition()
+        object Otp : Transition()
         object ChangePassword : Transition()
         object Search : Transition()
         object Dashboard : Transition()
@@ -156,5 +202,6 @@ sealed class Event {
 
         object Notifications : Transition()
         object Stores : Transition()
+        object Cart : Transition()
     }
 }

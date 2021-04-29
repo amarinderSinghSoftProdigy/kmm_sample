@@ -49,6 +49,8 @@ data class UserRegistration2(
     @Required
     val addressLine1: String = "",
     @Required
+    val landmark: String = "",
+    @Required
     val location: String = "",
     @SerialName("cityTown")
     @Required
@@ -63,6 +65,7 @@ data class UserRegistration2(
 data class UserValidation2(
     val addressLine1: String? = null,
     val location: String? = null,
+    val landmark: String? = null,
     @SerialName("cityTown")
     val city: String? = null,
     val district: String? = null,
@@ -128,6 +131,7 @@ data class SubmitRegistration(
     val termsAndConditions: Boolean = true,
     val pincode: String,
     val addressLine1: String,
+    val landmark: String,
     val location: String,
     @SerialName("cityTown")
     val city: String,
@@ -164,6 +168,7 @@ data class SubmitRegistration(
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
+            landmark = userRegistration2.landmark,
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
@@ -191,6 +196,7 @@ data class SubmitRegistration(
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
+            landmark = userRegistration2.landmark,
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,
@@ -212,6 +218,7 @@ data class CreateRetailer(
     val pincode: String,
     val addressLine1: String,
     val location: String,
+    val landmark: String,
     @SerialName("cityTown")
     val city: String,
     val district: String,
@@ -234,6 +241,7 @@ data class CreateRetailer(
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
+            landmark = userRegistration2.landmark,
             city = userRegistration2.city,
             district = userRegistration2.district,
             state = userRegistration2.state,

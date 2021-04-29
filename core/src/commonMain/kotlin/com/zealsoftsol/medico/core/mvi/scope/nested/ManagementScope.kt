@@ -5,9 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
-import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
@@ -22,17 +20,18 @@ import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation3
 
-sealed class ManagementScope(
-    icon: ScopeIcon = ScopeIcon.HAMBURGER,
-) : Scope.Child.TabBar(TabBarInfo.Search(icon)) {
+sealed class ManagementScope : Scope.Child.TabBar() {
 
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
     ) : ManagementScope(), Loadable<EntityInfo> {
 
+        override val isRoot: Boolean = true
+
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        override val totalItems: DataSource<Int> = DataSource(0)
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
         override val searchText: DataSource<String> = DataSource("")
 
@@ -51,7 +50,13 @@ sealed class ManagementScope(
         fun selectItem(item: EntityInfo) =
             EventCollector.sendEvent(Event.Action.Management.Select(item))
 
-        fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
+        fun search(value: String): Boolean {
+            return if (searchText.value != value) {
+                EventCollector.sendEvent(Event.Action.Management.Search(value))
+            } else {
+                false
+            }
+        }
 
         fun loadItems() =
             EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))
@@ -82,7 +87,7 @@ sealed class ManagementScope(
         )
     }
 
-    sealed class AddRetailer : ManagementScope(ScopeIcon.BACK) {
+    sealed class AddRetailer : ManagementScope() {
 
         val canGoNext: DataSource<Boolean> = DataSource(false)
 

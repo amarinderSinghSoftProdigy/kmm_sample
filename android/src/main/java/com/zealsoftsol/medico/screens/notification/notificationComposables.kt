@@ -48,10 +48,12 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.NotificationStatus
+import com.zealsoftsol.medico.data.NotificationType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.DataWithLabel
@@ -66,7 +68,11 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import dev.chrisbanes.accompanist.coil.CoilImage
-import java.util.concurrent.TimeUnit
+import org.joda.time.Duration
+import org.joda.time.Period
+import org.joda.time.PeriodType
+import org.joda.time.format.PeriodFormatter
+import org.joda.time.format.PeriodFormatterBuilder
 
 @Composable
 fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
@@ -177,7 +183,7 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                 }
             }
             Text(
-                text = "${TimeUnit.HOURS.convert(Time.now - item.sentAt, TimeUnit.MILLISECONDS)}h",
+                text = Duration(Time.now - item.sentAt).format(),
                 fontSize = 14.sp,
                 color = ConstColors.gray,
                 modifier = Modifier.align(Alignment.TopEnd),
@@ -187,16 +193,40 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                     name = item.selectedAction?.completedActionStringId
                         ?: item.type.buttonStringId
                 ),
-                enabledColor = if (item.selectedAction != null) Color.Transparent else MaterialTheme.colors.secondary,
-                modifier = Modifier.align(Alignment.BottomEnd),
-                onClick = if (item.selectedAction == null) {
-                    onClick
-                } else {
-                    {}
+                enabledColor = if (item.selectedAction != null)
+                    Color.Transparent
+                else when (item.type) {
+                    NotificationType.SUBSCRIBE_REQUEST, NotificationType.ORDER_REQUEST -> ConstColors.yellow
+                    NotificationType.SUBSCRIBE_DECISION -> ConstColors.lightBlue
                 },
+                contentColor = when (item.selectedAction) {
+                    NotificationAction.ACCEPT -> ConstColors.green
+                    NotificationAction.DECLINE -> ConstColors.red
+                    else -> when (item.type) {
+                        NotificationType.SUBSCRIBE_REQUEST, NotificationType.ORDER_REQUEST -> MaterialTheme.colors.onPrimary
+                        NotificationType.SUBSCRIBE_DECISION -> Color.White
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomEnd),
+                onClick = onClick,
             )
         }
     }
+}
+
+private fun Duration.format(): String {
+    val formatter: PeriodFormatter = PeriodFormatterBuilder()
+        .appendMonths()
+        .appendSuffix("m ")
+        .appendDays()
+        .appendSuffix("d ")
+        .appendHours()
+        .appendSuffix("h")
+        .toFormatter()
+
+    val period: Period = toPeriod()
+    val dayTimePeriod: Period = period.normalizedStandard(PeriodType.dayTime())
+    return formatter.print(dayTimePeriod)
 }
 
 @Composable
@@ -333,7 +363,11 @@ private fun SubscriptionDeatails(
                     ),
                     maxLines = 1,
                     readOnly = details.isReadOnly,
-                    onValueChange = { onOptionChange(details.option.copy(creditDays = it)) },
+                    onValueChange = {
+                        if (it.isEmpty() || it.toIntOrNull() != null) {
+                            onOptionChange(details.option.copy(creditDays = it))
+                        }
+                    },
                 )
             }
         }
@@ -353,7 +387,11 @@ private fun SubscriptionDeatails(
                 ),
                 maxLines = 1,
                 readOnly = details.isReadOnly,
-                onValueChange = { onOptionChange(details.option.copy(discountRate = it)) },
+                onValueChange = {
+                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                        onOptionChange(details.option.copy(discountRate = it))
+                    }
+                },
             )
         }
     } else {

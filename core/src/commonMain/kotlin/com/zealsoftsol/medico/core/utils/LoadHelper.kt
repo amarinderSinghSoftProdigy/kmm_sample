@@ -60,9 +60,13 @@ internal class LoadHelper(
         loadJob?.cancel()
         loadJob = scope.launch {
             if (debounce > 0) delay(debounce)
+            if (!addPage) {
+                totalItems.value = 0
+            }
             loader()?.let {
                 pagination.setTotal(it.total)
                 items.value = if (addPage) items.value + it.data else it.data
+                totalItems.value = it.total
             }
             if (withProgress) _navigator.setHostProgress(false)
         }
@@ -71,6 +75,7 @@ internal class LoadHelper(
 
 interface Loadable<T> : Scopable {
     val items: DataSource<List<T>>
+    val totalItems: DataSource<Int>
     val searchText: DataSource<String>
     val pagination: Pagination
 }
