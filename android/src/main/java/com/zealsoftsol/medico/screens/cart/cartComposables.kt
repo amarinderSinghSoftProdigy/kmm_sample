@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -61,6 +62,7 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
 
 @Composable
@@ -270,7 +272,7 @@ private fun CartItem(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
             ) {
                 Space(12.dp)
                 Text(
@@ -326,6 +328,28 @@ private fun CartItem(
                     fontSize = 15.sp
                 )
                 Space(12.dp)
+                cartItem.seasonBoyRetailer?.let {
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                            .padding(end = 8.dp),
+                    ) {
+                        BoxWithConstraints {
+                            Text(
+                                text = it.tradeName,
+                                color = ConstColors.gray,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.sizeIn(maxWidth = maxWidth * 2 / 3)
+                            )
+                        }
+                        GeoLocation(it.city, textSize = 12.sp, tint = ConstColors.lightBlue)
+                    }
+                }
             }
             Surface(
                 shape = CircleShape,
@@ -344,15 +368,17 @@ private fun CartItem(
             }
             PlusMinusQuantity(
                 quantity = cartItem.quantity.value.toInt(),
-                max = cartItem.stockInfo.availableQty,
+                max = cartItem.stockInfo?.availableQty ?: Int.MAX_VALUE,
                 onInc = onInc,
                 onDec = onDec,
-                modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(if (cartItem.seasonBoyRetailer == null) 12.dp else 28.dp)
             )
-            val labelColor = when (cartItem.stockInfo.status) {
+            val labelColor = when (cartItem.stockInfo?.status) {
                 StockStatus.IN_STOCK -> ConstColors.green
                 StockStatus.LIMITED_STOCK -> ConstColors.orange
                 StockStatus.OUT_OF_STOCK -> ConstColors.red
+                null -> ConstColors.gray
             }
             val maxWidth =
                 LocalContext.current.let { it.screenWidth / it.density }.dp - 37.dp - 5.dp
