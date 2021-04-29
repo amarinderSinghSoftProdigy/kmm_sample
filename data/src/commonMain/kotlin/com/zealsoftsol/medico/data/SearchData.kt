@@ -44,12 +44,12 @@ data class ProductSearch(
 data class SellerInfo(
     @SerialName("address")
     val geoData: GeoData,
-    val tradeName: String,
+    override val tradeName: String,
     val unitCode: String,
     val spid: String,
     val stockInfo: StockInfo,
     val priceInfo: PriceInfo,
-)
+) : WithTradeName
 
 @Serializable
 data class PriceInfo(

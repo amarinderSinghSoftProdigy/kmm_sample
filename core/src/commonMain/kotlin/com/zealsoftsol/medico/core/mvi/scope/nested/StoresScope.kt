@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.Store
 
+// TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
 
     class All : StoresScope(), Loadable<Store> {
@@ -22,6 +24,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<Store>> = DataSource(emptyList())
+        override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
 
         init {
@@ -55,8 +58,11 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
 
-        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-            return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Raw(store.tradeName))
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+            return TabBarInfo.Simple(
+                icon = ScopeIcon.BACK,
+                title = StringResource.Raw(store.tradeName)
+            )
         }
 
         override fun goBack(): Boolean {

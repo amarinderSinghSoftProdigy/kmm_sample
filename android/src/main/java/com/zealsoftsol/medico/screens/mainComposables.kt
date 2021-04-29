@@ -55,6 +55,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
 import com.zealsoftsol.medico.screens.auth.AuthDetailsAadhaar
@@ -164,7 +165,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is DashboardScope -> DashboardScreen(it)
                     is SearchScope -> SearchScreen(it, searchList)
                     is ProductInfoScope -> ProductScreen(it)
-                    is BuyProductScope -> BuyProductScreen(it)
+                    is BuyProductScope<*> -> BuyProductScreen(it as BuyProductScope<WithTradeName>)
                     is SettingsScope -> SettingsScreen(it)
                     is ManagementScope.User -> ManagementScreen(it)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)

@@ -34,6 +34,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
+import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -318,6 +319,20 @@ class NetworkClient(
                 withMainToken()
             }.getWrappedBody()
         }
+
+    override suspend fun buyProductSelectSeasonBoyRetailer(
+        productCode: String,
+        unitCode: String,
+        sellerUnitCode: String
+    ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = ktorDispatcher {
+        client.get<SimpleResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
+            withMainToken()
+            url {
+                parameters.append("buyerUnitCode", unitCode)
+                parameters.append("sellerUnitCode", sellerUnitCode)
+            }
+        }.getWrappedBody()
+    }
 
     override suspend fun getManagementInfo(
         unitCode: String,

@@ -31,6 +31,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())
+        override val totalItems: DataSource<Int> = DataSource(0)
         val activeTab: DataSource<Tab> = DataSource(tabs.first())
         override val searchText: DataSource<String> = DataSource("")
 
@@ -49,7 +50,13 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         fun selectItem(item: EntityInfo) =
             EventCollector.sendEvent(Event.Action.Management.Select(item))
 
-        fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
+        fun search(value: String): Boolean {
+            return if (searchText.value != value) {
+                EventCollector.sendEvent(Event.Action.Management.Search(value))
+            } else {
+                false
+            }
+        }
 
         fun loadItems() =
             EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))

@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -96,10 +97,14 @@ sealed class Event {
         sealed class Product : Action() {
             override val typeClazz: KClass<*> = Product::class
 
-            data class Select(val productCode: String) : Product()
+            data class SelectFromSearch(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
             data class BuyProduct(val productCode: String) : Product()
             data class FilterBuyProduct(val filter: String) : Product()
+            data class SelectSeasonBoyRetailer(
+                val productCode: String,
+                val sellerInfo: SellerInfo
+            ) : Product()
         }
 
         sealed class Management : Action() {

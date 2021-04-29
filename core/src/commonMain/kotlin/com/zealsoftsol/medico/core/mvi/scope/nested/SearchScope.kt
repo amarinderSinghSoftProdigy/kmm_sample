@@ -60,7 +60,7 @@ interface BaseSearchScope : Scopable {
     }
 
     fun selectProduct(product: ProductSearch) =
-        EventCollector.sendEvent(Event.Action.Product.Select(product.code))
+        EventCollector.sendEvent(Event.Action.Product.SelectFromSearch(product.code))
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)

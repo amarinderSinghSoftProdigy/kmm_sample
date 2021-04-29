@@ -59,8 +59,10 @@ data class CartItem(
     val sellerId: String,
     val standardUnit: String,
     @SerialName("stock")
-    val stockInfo: StockInfo,
+    val stockInfo: StockInfo? = null,
     val type: String,
+    @SerialName("sbRetailer")
+    val seasonBoyRetailer: SeasonBoyRetailer? = null,
 )
 
 @Serializable
