@@ -50,7 +50,13 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         fun selectItem(item: EntityInfo) =
             EventCollector.sendEvent(Event.Action.Management.Select(item))
 
-        fun search(value: String) = EventCollector.sendEvent(Event.Action.Management.Search(value))
+        fun search(value: String): Boolean {
+            return if (searchText.value != value) {
+                EventCollector.sendEvent(Event.Action.Management.Search(value))
+            } else {
+                false
+            }
+        }
 
         fun loadItems() =
             EventCollector.sendEvent(Event.Action.Management.Load(isFirstLoad = false))

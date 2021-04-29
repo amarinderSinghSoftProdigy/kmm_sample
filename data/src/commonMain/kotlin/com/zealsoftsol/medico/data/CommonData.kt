@@ -22,6 +22,7 @@ data class LocationData(
 data class GeoData(
     val location: String,
     val pincode: String,
+    val landmark: String,
     @SerialName("townOrCity")
     val city: String,
     val distance: Double,
@@ -32,6 +33,7 @@ data class GeoData(
     val destination: GeoPoints? = null,
 ) {
     fun fullAddress() = "$city $pincode"
+    fun fullLandmark() = "$landmark, $city"
 }
 
 @Serializable
