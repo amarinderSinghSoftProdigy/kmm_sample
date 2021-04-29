@@ -57,6 +57,7 @@
     <string name="pincode">Pincode</string>
     <string name="wrong_pincode">Wrong pincode</string>
     <string name="address_line">Address Line</string>
+    <string name="landmark">Landmark</string>
     <string name="location">Location</string>
     <string name="city">City</string>
     <string name="district">District</string>

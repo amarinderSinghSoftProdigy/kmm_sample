@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -213,12 +214,12 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
     Text(
-        text = entityInfo.geoData.city,
+        text = entityInfo.geoData.fullLandmark(),
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
-    Space(12.dp)
-    Row(modifier = Modifier.fillMaxWidth().height(123.dp)) {
+    Space(16.dp)
+    Row(modifier = Modifier.fillMaxWidth()) {
         CoilImage(
             modifier = Modifier.size(123.dp),
             data = "",
@@ -228,7 +229,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         )
         Space(24.dp)
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 123.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             GeoLocation(entityInfo.geoData.fullAddress(), isBold = true)
@@ -273,7 +274,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             }
         }
     }
-    Space(8.dp)
+    Space(24.dp)
     when {
         entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
             DataWithLabel(

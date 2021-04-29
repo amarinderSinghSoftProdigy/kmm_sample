@@ -6,16 +6,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -75,7 +76,6 @@ fun ManagementScreen(scope: ManagementScope.User) {
     }
 }
 
-// TODO reuse with stores
 @Composable
 private fun EntityManagementScreen(scope: ManagementScope.User) {
     val search = scope.searchText.flow.collectAsState()
@@ -206,10 +206,9 @@ private fun NonSeasonBoyItem(
     entityInfo: EntityInfo,
     onClick: () -> Unit,
 ) {
-    BaseManagementRowItem(onClick) {
+    BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.65f),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.widthIn(max = maxWidth * 0.65f),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 BoxWithConstraints {
@@ -230,12 +229,20 @@ private fun NonSeasonBoyItem(
                     )
                 }
             }
+            Space(4.dp)
+            Text(
+                text = entityInfo.geoData.landmark,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W500,
+                color = ConstColors.gray,
+            )
+            Space(4.dp)
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.35f),
+            modifier = Modifier.matchParentSize().padding(start = maxWidth * 0.65f),
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             entityInfo.subscriptionData?.let {
                 Text(
@@ -247,8 +254,7 @@ private fun NonSeasonBoyItem(
                     },
                     fontWeight = FontWeight.W500,
                 )
-            }
-            Space(8.dp)
+            } ?: Space(4.dp)
             Text(
                 text = entityInfo.geoData.formattedDistance,
                 fontSize = 12.sp,
@@ -262,9 +268,9 @@ private fun NonSeasonBoyItem(
 
 @Composable
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
-    BaseManagementRowItem(onClick) {
+    BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.fillMaxHeight().weight(0.6f),
+            modifier = Modifier.width(maxWidth * 0.6f).align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
@@ -273,11 +279,12 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colors.background,
             )
+            Space(8.dp)
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         entityInfo.subscriptionData?.let {
             Column(
-                modifier = Modifier.fillMaxHeight().weight(0.4f),
+                modifier = Modifier.width(maxWidth * 0.4f).align(Alignment.CenterEnd),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
@@ -305,9 +312,9 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BaseManagementRowItem(
+fun BaseManagementItem(
     onClick: () -> Unit,
-    body: @Composable RowScope.() -> Unit,
+    body: @Composable BoxWithConstraintsScope.() -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth()
@@ -316,9 +323,8 @@ private fun BaseManagementRowItem(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
-        Row(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxWidth().padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
             body()
         }
