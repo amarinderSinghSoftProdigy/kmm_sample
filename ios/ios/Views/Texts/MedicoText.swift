@@ -12,20 +12,20 @@ struct MedicoText: ViewModifier {
     let textWeight: TextWeight
     let fontSize: CGFloat
     
-    let color: AppColor
+    let color: Color
     
     let multilineTextAlignment: TextAlignment
     
     func body(content: Content) -> some View {
         content
             .font(.custom(textWeight.fontName, size: fontSize))
-            .foregroundColor(appColor: color)
+            .foregroundColor(color)
             .multilineTextAlignment(multilineTextAlignment)
     }
     
     init(textWeight: TextWeight = .regular,
          fontSize: CGFloat = 14,
-         color: AppColor = .darkBlue,
+         color: Color = AppColor.darkBlue.color,
          multilineTextAlignment: TextAlignment = .center) {
         self.textWeight = textWeight
         self.fontSize = fontSize

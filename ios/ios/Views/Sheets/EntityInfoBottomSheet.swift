@@ -47,7 +47,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                                     fontSize: 20,
                                     multilineTextAlignment: .leading)
                     
-                    Text(entityInfo.geoData.city)
+                    Text(entityInfo.geoData.fullLandmark())
                         .medicoText(textWeight: .medium,
                                     color: .grey3,
                                     multilineTextAlignment: .leading)
@@ -129,6 +129,9 @@ struct EntityInfoBottomSheet: ViewModifier {
                                     fontSize: 16,
                                     color: .lightBlue,
                                     multilineTextAlignment: .leading)
+                        .onTapGesture {
+                            self.call(formattedphoneNumber)
+                        }
                 }
                 
                 AppColor.black.color.opacity(0.42)

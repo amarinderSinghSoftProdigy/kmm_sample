@@ -8,6 +8,7 @@
 
 import SwiftUI
 import core
+import MessageUI
 
 extension View {
     @ViewBuilder func isHidden(_ hidden: Bool, remove: Bool = false) -> some View {
@@ -80,7 +81,7 @@ extension View {
     
     func medicoText(textWeight: TextWeight = .regular,
                     fontSize: CGFloat = 14,
-                    color: AppColor = .darkBlue,
+                    color: Color,
                     multilineTextAlignment: TextAlignment = .center,
                     testingIdentifier: String? = nil) -> some View {
         let view = AnyView(
@@ -97,6 +98,18 @@ extension View {
         return AnyView(
             view.testingIdentifier(testingIdentifier)
         )
+    }
+    
+    func medicoText(textWeight: TextWeight = .regular,
+                    fontSize: CGFloat = 14,
+                    color: AppColor = .darkBlue,
+                    multilineTextAlignment: TextAlignment = .center,
+                    testingIdentifier: String? = nil) -> some View {
+        self.medicoText(textWeight: textWeight,
+                        fontSize: fontSize,
+                        color: color.color,
+                        multilineTextAlignment: multilineTextAlignment,
+                        testingIdentifier: testingIdentifier)
     }
     
     func navigationBar(withNavigationSection navigationSection: DataSource<NavigationSection>,
@@ -127,6 +140,51 @@ extension View {
         self
             .keyboardResponder()
             .hideKeyboardOnTap()
+    }
+    
+    func call(_ phoneNumber: String) {
+        let cleanedPhoneNumber = phoneNumber.filter { character in !"()- ".contains(character) }
+        
+        let formattedString = "tel://\(cleanedPhoneNumber)"
+        guard let url = URL(string: formattedString) else { return }
+        
+        UIApplication.shared.open(url)
+    }
+    
+    func strokeBorder(_ borderColor: AppColor,
+                      borderOpacity: Double = 1,
+                      fill: AppColor,
+                      fillOpacity: Double = 1,
+                      lineWidth: CGFloat = 1,
+                      cornerRadius: CGFloat = 8,
+                      corners: UIRectCorner = .allCorners) -> some View {
+        self.background(
+            RoundedCorner(radius: cornerRadius, corners: corners)
+                .stroke(lineWidth: lineWidth)
+                .foregroundColor(appColor: borderColor)
+                .opacity(borderOpacity)
+                .background(
+                    fill.color
+                        .opacity(fillOpacity)
+                        .cornerRadius(cornerRadius, corners: corners)
+                )
+        )
+    }
+    
+    func centerWithStacks() -> some View {
+        VStack {
+            Spacer()
+            
+            HStack {
+                Spacer()
+                
+                self
+                
+                Spacer()
+            }
+            
+            Spacer()
+        }
     }
 }
 

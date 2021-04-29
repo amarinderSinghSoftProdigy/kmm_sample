@@ -69,6 +69,7 @@
 "address" = "Address";
 "pincode" = "Pincode";
 "address_line" = "Address Line";
+"landmark" = "Landmark";
 "location" = "Location";
 "city" = "City";
 "district" = "District";
@@ -91,13 +92,16 @@
 
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
-"drug_license_request" = "Please provide a drug license to activate the account";
+"drug_license_request" = "Please provide a drug license to\nactivate the account";
 "aadhaar_card_request" = "Please upload Aadhaar card";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
 "choose_from_photo_library" = "Choose From Photo Library";
 "choose_from_device" = "Upload From Device";
+"available_file_formats" = "Available File Formats";
+"maximum_file_size" = "Maximum file size:";
+"upload_file_too_big" = "The chosen file is too big.\nPlease, select a file smaller than 1 MB";
 
 // MARK: Alert
 "success" = "Success!";
@@ -140,6 +144,8 @@
 // MARK: Buy Product
 "units:" = "Units:";
 "choose_seller" = "Please, choose a seller";
+"choose_retailer" = "Please, choose a retailer";
+"select" = "Select";
 "mrp:" = "MRP:";
 "margin:" = "Margin:";
 "stocks:" = "Stocks:";
@@ -225,7 +231,7 @@
 
 // MARK: Add Retailer
 "add_retailer" = "Add Retailer";
-"i_consest_for_terms_and_conditions" = "I consest for Terms and Conditions";
+"i_consent_for_terms_and_conditions" = "I consent for Terms and Conditions";
 "add_retailer_address" = "Add Retailer’s Address";
 "confirm_the_information" = "Confirm if the information above is correct";
 "congratulations" = "Congratulations";
@@ -234,3 +240,24 @@
 
 // MARK: Store
 "store" = "Store";
+
+// MARK: Help
+"help" = "Help";
+"instantly_connect_with_us" = "Instantly Connect with us";
+"call_now" = "Call Now";
+"contact_information" = "Contact Information";
+"call_sales" = "Call Sales";
+"send_email" = "Send Email";
+"terms_and_conditions" = "Terms & Conditions";
+"privacy_policy" = "Privacy Policy";
+
+// MARK: Cart
+"go_back" = "Go Back";
+"empty_cart_title" = "Looks like you dont have anything!";
+"empty_cart_description" = "Please, try to add something on cart then try again.";
+"empty_cart" = "Empty Cart";
+"available" = "Available";
+"limited" = "Limited";
+"quoted" = "Quoted";
+"continue" = "Continue";
+"total" = "Total:";

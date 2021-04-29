@@ -104,10 +104,11 @@ struct NotificationsScreen: View {
                     
                     let buttonTextKey = data.selectedAction?.completedActionStringId ?? data.type.buttonStringId
                     
-                    if data.selectedAction != nil {
+                    if let selectedAction = data.selectedAction {
                         LocalizedText(localizationKey: buttonTextKey,
                                       textWeight: .semiBold,
                                       fontSize: 12,
+                                      color: selectedAction.statusColor,
                                       multilineTextAlignment: .leading)
                     }
                     else {
@@ -115,7 +116,9 @@ struct NotificationsScreen: View {
                                      width: 150,
                                      height: 30,
                                      fontSize: 12,
-                                     buttonColor: .navigationBar) {
+                                     fontWeight: .bold,
+                                     fontColor: data.type.statusButtonTextColor,
+                                     buttonColor: data.type.statusButtonColor) {
                             onButtonTap()
                         }
                         .buttonStyle(BorderlessButtonStyle())

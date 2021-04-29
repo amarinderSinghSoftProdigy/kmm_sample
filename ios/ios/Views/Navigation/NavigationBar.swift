@@ -135,8 +135,6 @@ private struct _CustomizedNavigationBar: View {
     var body: some View {
         guard let info = navigationBarInfo.value else { return AnyView(EmptyView()) }
         
-        let spacing: CGFloat = 19
-        
         return AnyView(
             Group {
                 switch info {
@@ -148,46 +146,36 @@ private struct _CustomizedNavigationBar: View {
                             Spacer()
                         }
                         
-                        if let titleId = simpleBarInfo.titleId {
-                            LocalizedText(localizationKey: titleId,
-                                          textWeight: .semiBold,
-                                          fontSize: 17)
+                        Group {
+                            if let title = simpleBarInfo.title {
+                                switch title {
+                                case let staticTitle as StringResource.Static:
+                                    LocalizedText(localizationKey: staticTitle.id,
+                                                  textWeight: .semiBold,
+                                                  fontSize: 17)
+                                    
+                                case let rawTitle as StringResource.Raw:
+                                    Text(rawTitle.string)
+                                        .medicoText(textWeight: .semiBold,
+                                                    fontSize: 17)
+                                    
+                                default:
+                                    EmptyView()
+                                }
+                            }
                         }
+                        .padding(.vertical, 3)
+                        .frame(maxWidth: 240)
                     }
                     
                 case let searchBarInfo as TabBarInfo.Search:
-                    HStack(spacing: spacing) {
-                        self.getScopeButton(for: searchBarInfo.icon)
-                        
-                        HStack(spacing: spacing - 4) {
-                            SearchBar(style: .small)
-                                .onTapGesture {
-                                    searchBarInfo.goToSearch()
-                                }
-                            
-                            Button(action: { }) {
-                                let cartObjectsNumberPadding: CGFloat = 6
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    Image("Cart")
-                                        .padding(cartObjectsNumberPadding)
-                                    
-                                    ZStack {
-                                        AppColor.white.color
-                                            .cornerRadius(7)
-                                        
-                                        Text("10")
-                                            .medicoText(textWeight: .bold,
-                                                        fontSize: 12,
-                                                        color: .red)
-                                    }
-                                    .frame(width: 14, height: 14)
-                                }
-                                .padding(-cartObjectsNumberPadding)
-                            }
-                        }
+                    SearchTabBar(searchBarInfo: searchBarInfo,
+                                 getScopeButton: getScopeButton)
+                    
+                case let searchBarInfo as TabBarInfo.ActiveSearch:
+                    ActiveSearchTabBar(searchBarInfo: searchBarInfo) {
+                        handleGoBack()
                     }
-                    .padding([.leading, .trailing], 6)
                     
                 default:
                     EmptyView()
@@ -228,6 +216,98 @@ private struct _CustomizedNavigationBar: View {
             closeSlidingPanel(false)
         default:
             return
+        }
+    }
+    
+    private struct SearchTabBar<Content: View>: View {
+        private let spacing: CGFloat = 19
+        
+        let searchBarInfo: TabBarInfo.Search
+        let getScopeButton: (ScopeIcon) -> Content
+        
+        @ObservedObject var cartItemsCount: SwiftDataSource<KotlinInt>
+        
+        var body: some View {
+            HStack(spacing: spacing) {
+                getScopeButton(searchBarInfo.icon)
+                
+                HStack(spacing: spacing - 4) {
+                    SearchBar(style: .small)
+                        .onTapGesture {
+                            searchBarInfo.goToSearch()
+                        }
+                    
+                    Button(action: { searchBarInfo.goToCart() }) {
+                        let cartObjectsNumberPadding: CGFloat = 6
+                        
+                        ZStack(alignment: .topTrailing) {
+                            Image("Cart")
+                                .padding(cartObjectsNumberPadding)
+                            
+                            if let cartItemsCount = self.cartItemsCount.value as? Int,
+                               cartItemsCount > 0 {
+                                ZStack {
+                                    AppColor.white.color
+                                        .cornerRadius(7)
+                                    
+                                    Text(String(cartItemsCount))
+                                        .medicoText(textWeight: .bold,
+                                                    fontSize: 12,
+                                                    color: .red)
+                                }
+                                .frame(width: 14, height: 14)
+                            }
+                        }
+                        .padding(-cartObjectsNumberPadding)
+                    }
+                }
+            }
+            .padding([.leading, .trailing], 6)
+        }
+        
+        init(searchBarInfo: TabBarInfo.Search,
+             getScopeButton: @escaping (ScopeIcon) -> Content) {
+            self.searchBarInfo = searchBarInfo
+            self.getScopeButton = getScopeButton
+            
+            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount)
+        }
+    }
+    
+    private struct ActiveSearchTabBar: View {
+        @EnvironmentObject var scrollData: ListScrollData
+        
+        let searchBarInfo: TabBarInfo.ActiveSearch
+        let onCancelTap: () -> ()
+        
+        @ObservedObject var search: SwiftDataSource<NSString>
+        
+        var body: some View {
+            HStack {
+                SearchBar(searchText: search.value,
+                          style: .small,
+                          showsCancelButton: false,
+                          trailingButton: SearchBar.SearchBarButton(button: .filter({ searchBarInfo.toggleFilter() })),
+                          onTextChange: { value, isFromKeyboard in searchBarInfo.searchProduct(input: value,
+                                                                                               withAutoComplete: !isFromKeyboard) })
+                
+                Button(LocalizedStringKey("cancel")) {
+                    scrollData.clear(list: .globalSearchProducts)
+                    
+                    onCancelTap()
+                }
+                .medicoText(fontSize: 17,
+                            color: .blue)
+            }
+            .padding([.leading, .trailing], 6)
+        }
+        
+        init(searchBarInfo: TabBarInfo.ActiveSearch,
+             onCancelTap: @escaping () -> ()) {
+            self.searchBarInfo = searchBarInfo
+            self.onCancelTap = onCancelTap
+            
+            self.search = SwiftDataSource(dataSource: searchBarInfo.search)
         }
     }
 }

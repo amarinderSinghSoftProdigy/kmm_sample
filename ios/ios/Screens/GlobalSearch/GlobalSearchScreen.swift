@@ -15,8 +15,6 @@ struct GlobalSearchScreen: View {
     
     let scope: SearchScope
     
-    @ObservedObject var isInProgress: SwiftDataSource<KotlinBoolean>
-    
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     
     @ObservedObject var autoComplete: SwiftDataSource<NSArray>
@@ -52,7 +50,6 @@ struct GlobalSearchScreen: View {
         return AnyView(
             view
                 .hideKeyboardOnTap()
-                .navigationBar(withNavigationBarContent: AnyView(searchBarPanel))
                 .screenLogger(withScreenName: "GlobalSearchScreen.\(screenName)",
                               withScreenClass: GlobalSearchScreen.self)
         )
@@ -60,8 +57,6 @@ struct GlobalSearchScreen: View {
     
     init(scope: SearchScope) {
         self.scope = scope
-        
-        self.isInProgress = SwiftDataSource(dataSource: scope.isInProgress)
         
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         
@@ -71,26 +66,6 @@ struct GlobalSearchScreen: View {
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
     
-    private var searchBarPanel: some View {
-        HStack {
-            SearchBar(searchText: productSearch.value,
-                      style: .small,
-                      showsCancelButton: false,
-                      trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
-                      onTextChange: { value, isFromKeyboard in scope.searchProduct(input: value,
-                                                                                   withAutoComplete: !isFromKeyboard) })
-            
-            Button(LocalizedStringKey("cancel")) {
-                scrollData.clear(list: .globalSearchProducts)
-                
-                scope.goBack()
-            }
-            .medicoText(fontSize: 17,
-                        color: .blue)
-        }
-        .padding([.leading, .trailing], 6)
-    }
-    
     private var productsView: some View {
         let productsCount = self.products.value?.count ?? 0
 
@@ -98,7 +73,6 @@ struct GlobalSearchScreen: View {
             TransparentList(data: self.products,
                             dataType: DataProductSearch.self,
                             listName: .globalSearchProducts,
-                            isInProgress: scope.isInProgress,
                             pagination: scope.pagination,
                             onTapGesture: { scope.selectProduct(product: $0) },
                             loadItems: { scope.loadMoreProducts() }) { index, product -> AnyView in
@@ -433,10 +407,5 @@ struct FiltersSection: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
-        
-//        self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
-//
-//        self.products = SwiftDataSource(dataSource: scope.products)
-//        self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
 }

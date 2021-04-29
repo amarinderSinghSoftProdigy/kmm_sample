@@ -162,6 +162,28 @@ extension DataFileType {
             return nil
         }
     }
+    
+    func getFormattedString() -> String? {
+        switch self {
+        case .jpeg:
+            return "JPEG"
+            
+        case .jpg:
+            return "JPG"
+        
+        case .pdf:
+            return "PDF"
+            
+        case .png:
+            return "PNG"
+            
+        case .zip:
+            return "ZIP"
+            
+        default:
+            return nil
+        }
+    }
 }
 
 extension BottomSheet.UploadDocuments {

@@ -139,7 +139,7 @@ struct AddRetailerScreen: View {
                     
                     CheckBoxView(checked: isChecked)
                     
-                    LocalizedText(localizationKey: "i_consest_for_terms_and_conditions",
+                    LocalizedText(localizationKey: "i_consent_for_terms_and_conditions",
                                   color: .grey3,
                                   multilineTextAlignment: .leading)
                 }

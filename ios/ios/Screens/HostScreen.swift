@@ -66,10 +66,7 @@ struct BaseScopeView: View {
             return AnyView(WelcomeScreen(welcomeOption: WelcomeOption.Thanks { scopeValue.accept() },
                                          userName: scopeValue.fullName))
             
-        case let scopeValue as SearchScope:
-            return AnyView(GlobalSearchScreen(scope: scopeValue))
-            
-        case let scopeValue as Scope.Host.HostTabBar:
+        case let scopeValue as TabBarScope:
             return AnyView(TabBarScreen(tabBarScope: scopeValue))
             
         default:
@@ -114,7 +111,7 @@ struct BaseScopeView: View {
 }
 
 struct TabBarScreen: View {
-    let tabBarScope: Scope.Host.HostTabBar
+    let tabBarScope: TabBarScope
     
     @ObservedObject var scope: SwiftDataSource<Scope.ChildTabBar>
     
@@ -125,7 +122,7 @@ struct TabBarScreen: View {
                            handleGoBack: { tabBarScope.goBack() })
     }
     
-    init(tabBarScope: Scope.Host.HostTabBar) {
+    init(tabBarScope: TabBarScope) {
         self.tabBarScope = tabBarScope
         
         self.scope = SwiftDataSource(dataSource: tabBarScope.childScope)
@@ -149,7 +146,7 @@ struct TabBarScreen: View {
         case let scope as ProductInfoScope:
             return AnyView(ProductDetails(scope: scope))
             
-        case let scope as BuyProductScope:
+        case let scope as BuyProductScope<DataWithTradeName>:
             return AnyView(BuyProductScreen(scope: scope))
             
         case let scope as SettingsScope:
@@ -173,6 +170,15 @@ struct TabBarScreen: View {
             
         case let scope as StoresScope:
             return AnyView(StoresScreen(scope: scope))
+            
+        case let scope as SearchScope:
+            return AnyView(GlobalSearchScreen(scope: scope))
+            
+        case let scope as CartScope:
+            return AnyView(CartScreen(scope: scope))
+            
+        case let scope as HelpScope:
+            return AnyView(HelpScreen(scope: scope))
             
         default:
             return AnyView(EmptyView())

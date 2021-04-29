@@ -12,7 +12,15 @@ struct DocumentPicker: UIViewControllerRepresentable {
     @Environment(\.presentationMode) private var presentationMode
     
     let documentTypes: [String]
+    
     let onDocumentPicked: (URL) -> Void
+    
+    init(documentTypes: [String],
+         onDocumentPicked: @escaping (URL) -> Void) {
+        self.documentTypes = documentTypes
+        
+        self.onDocumentPicked = onDocumentPicked
+    }
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)

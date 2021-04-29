@@ -14,6 +14,8 @@ struct UserManagementScreen: View {
     
     @ObservedObject var userSearchText: SwiftDataSource<NSString>
     @ObservedObject var activeTab: SwiftDataSource<ManagementScope.Tab>
+    
+    @ObservedObject var totalUsersNumber: SwiftDataSource<KotlinInt>
     @ObservedObject var users: SwiftDataSource<NSArray>
 
     var body: some View {
@@ -69,6 +71,8 @@ struct UserManagementScreen: View {
         
         self.userSearchText = SwiftDataSource(dataSource: scope.searchText)
         self.activeTab = SwiftDataSource(dataSource: scope.activeTab)
+        
+        self.totalUsersNumber = SwiftDataSource(dataSource: scope.totalItems)
         self.users = SwiftDataSource(dataSource: scope.items)
     }
     
@@ -142,42 +146,50 @@ struct UserManagementScreen: View {
         guard let activeTab = self.activeTab.value else { return AnyView(EmptyView()) }
         
         return AnyView(
-            VStack {
-                LocalizedText(localizationKey: activeTab.stringId,
-                              fontSize: 15)
-                
-                AppColor.darkBlue.color
-                    .frame(height: 1)
-            }
+            TabOptionView(localizationKey: activeTab.stringId,
+                          isSelected: true,
+                          itemsNumber: (self.totalUsersNumber.value as? Int) ?? 0)
         )
     }
     
     private func getOptionsPicker(withSelectedOption selectedOption: Binding<Int>) -> some View {
-        Picker(selection: selectedOption, label: Text("")) {
+        HStack {
             ForEach(0..<scope.tabs.count) { index in
-                LocalizedText(localizationKey: scope.tabs[index].stringId)
+                TabOptionView(localizationKey: scope.tabs[index].stringId,
+                              isSelected: selectedOption.wrappedValue == index,
+                              itemsNumber: (self.totalUsersNumber.value as? Int) ?? 0)
+                    .onTapGesture {
+                        selectedOption.wrappedValue = index
+                    }
             }
         }
-        .pickerStyle(SegmentedPickerStyle())
-        .onAppear {
-            let segmentedControlAppearance = UISegmentedControl.appearance()
-
-            segmentedControlAppearance.selectedSegmentTintColor = .white
-
-            segmentedControlAppearance.tintColor = UIColor(named: "NavigationBar")
-            segmentedControlAppearance.backgroundColor = UIColor(named: "NavigationBar")
-
-            let textColor = UIColor(named: "DarkBlue") ?? .darkGray
-            let selectedStateFont = UIFont(name: "Barlow-SemiBold", size: 14) ?? .boldSystemFont(ofSize: 14)
-            let normalStateFont = UIFont(name: "Barlow-Medium", size: 14) ?? .systemFont(ofSize: 14)
-
-            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
-                                                               .font: selectedStateFont],
-                                                              for: .selected)
-
-            segmentedControlAppearance.setTitleTextAttributes([.foregroundColor: textColor,
-                                                               .font: normalStateFont],
-                                                              for: .normal)
+        .padding(.vertical, 2)
+        .padding(.horizontal, 3)
+        .background(AppColor.navigationBar.color.cornerRadius(8))
+    }
+    
+    private struct TabOptionView: View {
+        let localizationKey: String
+        let isSelected: Bool
+        let itemsNumber: Int
+        
+        var body: some View {
+            let tabBackgroundColor: AppColor = isSelected ? .lightBlue : .clear
+            
+            HStack(spacing: 7) {
+                LocalizedText(localizationKey: localizationKey,
+                              textWeight: isSelected ? .semiBold : .medium,
+                              color: isSelected ? .white : .darkBlue)
+    
+                if isSelected && itemsNumber > 0 {
+                    Text(String(itemsNumber))
+                        .medicoText(textWeight: .bold,
+                                    color: AppColor.yellow)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 7)
+            .background(tabBackgroundColor.color.cornerRadius(7))
         }
     }
     
@@ -189,28 +201,35 @@ struct UserManagementScreen: View {
                 AppColor.white.color
                     .cornerRadius(5)
                 
-                VStack(spacing: 6) {
-                    HStack(spacing: 10) {
-                        HStack(alignment: .top, spacing: 4) {
-                            Text(user.tradeName)
-                                .medicoText(textWeight: .semiBold,
-                                            fontSize: 16,
-                                            multilineTextAlignment: .leading)
+                VStack(spacing: 5) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 10) {
+                            HStack(alignment: .top, spacing: 4) {
+                                Text(user.tradeName)
+                                    .medicoText(textWeight: .semiBold,
+                                                fontSize: 16,
+                                                multilineTextAlignment: .leading)
+                                
+                                if user.isVerified == true {
+                                    Image("VerifyMark")
+                                        .padding(.top, 2)
+                                }
+                            }
                             
-                            if user.isVerified == true {
-                                Image("VerifyMark")
-                                    .padding(.top, 2)
+                            Spacer()
+                            
+                            if let status = user.subscriptionData?.status {
+                                LocalizedText(localizationKey: status.serverValue,
+                                              textWeight: .medium,
+                                              fontSize: 15,
+                                              color: status.statusColor)
                             }
                         }
                         
-                        Spacer()
-                        
-                        if let status = user.subscriptionData?.status {
-                            LocalizedText(localizationKey: status.serverValue,
-                                          textWeight: .medium,
-                                          fontSize: 15,
-                                          color: status == .subscribed ? .lightBlue : .yellow)
-                        }
+                        Text(user.geoData.landmark)
+                            .medicoText(textWeight: .medium,
+                                        color: .grey3,
+                                        multilineTextAlignment: .leading)
                     }
                     
                     HStack(spacing: 10) {
@@ -251,7 +270,7 @@ struct UserManagementScreen: View {
                             LocalizedText(localizationKey: status.serverValue,
                                           textWeight: .medium,
                                           fontSize: 15,
-                                          color: status == .subscribed ? .lightBlue : .yellow)
+                                          color: status.statusColor)
                         }
                     }
                     

@@ -10,6 +10,8 @@ import SwiftUI
 import core
 
 struct SignUpLegalDocumentsScreen: View {
+    private var availableDocumentTypes: [String]!
+    
     let scope: SignUpScope.LegalDocuments
     
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
@@ -24,6 +26,10 @@ struct SignUpLegalDocumentsScreen: View {
         self.scope = scope
 
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
+        
+        defer {
+            self.availableDocumentTypes = self.getAvailableDocumentTypes(from: scope.supportedFileTypes)
+        }
     }
     
     private func getView() -> some View {
@@ -46,30 +52,73 @@ struct SignUpLegalDocumentsScreen: View {
         }
         
         return AnyView(
-            GeometryReader { geometry in
-                HStack {
-                    Spacer()
+            VStack(spacing: 20) {
+                Spacer()
+                
+                VStack(spacing: 28) {
+                    Image("UploadDocuments")
                     
-                    VStack(spacing: 28) {
-                        Spacer()
-                        
-                        Image("UploadDocuments")
-                        
-                        LocalizedText(localizationKey: documentRequestTextKey,
-                                      fontSize: 16,
-                                      color: .grey1)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, geometry.size.width * 0.17)
-                    
-                    Spacer()
+                    LocalizedText(localizationKey: documentRequestTextKey,
+                                  fontSize: 16,
+                                  color: .grey1)
                 }
+                
+                VStack {
+                    LocalizedText(localizationKey: "available_file_formats",
+                                  textWeight: .semiBold,
+                                  fontSize: 16,
+                                  color: .grey2)
+                    
+                    HStack {
+                        ForEach(self.availableDocumentTypes, id: \.self) {
+                            Text($0)
+                                .medicoText(textWeight: .medium)
+                                .padding(.vertical, 4)
+                                .padding(.horizontal, 8)
+                                .background(AppColor.darkBlue.color
+                                                .opacity(0.1)
+                                                .cornerRadius(4))
+                        }
+                    }
+                    
+                    HStack(spacing: 3) {
+                        LocalizedText(localizationKey: "maximum_file_size",
+                                      fontSize: 16,
+                                      color: .grey2)
+                        
+                        Text("1 MB")
+                            .medicoText(textWeight: .semiBold,
+                                        fontSize: 16)
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 23)
+                .background(RoundedRectangle(cornerRadius: 8)
+                                .stroke(AppColor.darkBlue.color
+                                            .opacity(0.12)))
+                
+                Spacer()
             }
+            .padding()
             .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                    buttonTextKey: buttonTextKey,
                                    skipButtonAction: { scope.skip() },
                                    action: { scope.showBottomSheet() }))
         )
+    }
+    
+    private func getAvailableDocumentTypes(from fileTypes: KotlinArray<DataFileType>) -> [String] {
+        var documentTypes = [String]()
+        
+        let iterator = fileTypes.iterator()
+        while iterator.hasNext() {
+            guard let fileType = iterator.next_() as? DataFileType,
+                  fileType.isMandatory,
+                  let formattedType = fileType.getFormattedString() else { continue }
+            
+            documentTypes.append(formattedType)
+        }
+        
+        return documentTypes
     }
 }

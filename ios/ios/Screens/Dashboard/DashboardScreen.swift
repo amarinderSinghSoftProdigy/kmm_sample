@@ -53,7 +53,7 @@ struct DashboardScreen: View {
                             Text(String(counter))
                                 .medicoText(textWeight: .bold,
                                             fontSize: 16,
-                                            color: .white)
+                                            color: AppColor.white)
                         }
                     }
                 }

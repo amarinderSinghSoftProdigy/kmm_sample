@@ -10,23 +10,59 @@ import core
 import SwiftUI
 
 struct BuyProductScreen: View {
-    let scope: BuyProductScope
+    private var stockInfo: DataStockInfo?
+    private var itemsSelectable = false
+    private var searchTitleLocalizationKey = ""
+    private var scopeSpecificView: AnyView?
+    
+    let scope: BuyProductScope<DataWithTradeName>
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16)  {
-            ProductInfo(product: scope.product)
+            VStack(alignment: .leading, spacing: 0) {
+                ProductInfo(product: scope.product)
+                
+                self.scopeSpecificView
+            }
+            .background(appColor: .white)
             
             ChooseSellerView(product: scope.product,
-                             sellersFilter: SwiftDataSource(dataSource: scope.sellersFilter),
-                             sellersInfo: SwiftDataSource(dataSource: scope.sellersInfo),
+                             itemsSelectable: itemsSelectable,
+                             stockInfo: stockInfo,
+                             searchTitleLocalizationKey: searchTitleLocalizationKey,
+                             filter: SwiftDataSource(dataSource: scope.itemsFilter),
+                             items: SwiftDataSource(dataSource: scope.items),
                              quantities: SwiftDataSource(dataSource: scope.quantities),
                              onQuantityIncrease: scope.inc,
                              onQuantityDecrease: scope.dec,
-                             onSellerInfoSelect: scope.addToCart,
-                             onSellerFilter: { scope.filterSellers(filter: $0) })
+                             onInfoSelect: { scope.select(item: $0) },
+                             onSellerFilter: { scope.filterItems(filter: $0) })
         }
         .screenLogger(withScreenName: "BuyProduct",
                       withScreenClass: BuyProductScreen.self)
+    }
+    
+    init(scope: BuyProductScope<DataWithTradeName>) {
+        self.scope = scope
+        
+        if let scope = (self.scope as? BuyProductScope<DataSellerInfo>) as? BuyProductScopeChooseStockist {
+            itemsSelectable = scope.isSeasonBoy
+            searchTitleLocalizationKey = "choose_seller"
+        }
+        else if let scope = (self.scope as? BuyProductScope<DataSeasonBoyRetailer>) as? BuyProductScopeChooseRetailer {
+            searchTitleLocalizationKey = "choose_retailer"
+            stockInfo = scope.sellerInfo.stockInfo
+            
+            self.scopeSpecificView = AnyView(
+                Group {
+                    AppColor.darkBlue.color
+                        .opacity(0.12)
+                        .frame(height: 1)
+                    
+                    StockistInfoView(seller: scope.sellerInfo)
+                }
+            )
+        }
     }
     
     private struct ProductInfo: View {
@@ -69,94 +105,149 @@ struct BuyProductScreen: View {
                         .medicoText(color: .lightBlue,
                                     multilineTextAlignment: .leading)
                 }
+                
+                Spacer()
             }
             .padding(16)
             .frame(maxWidth: .infinity)
-            .background(appColor: .white)
+        }
+    }
+    
+    private struct StockistInfoView: View {
+        let seller: DataSellerInfo
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(seller.tradeName)
+                    .medicoText(textWeight: .medium,
+                                fontSize: 15,
+                                multilineTextAlignment: .leading)
+                
+                HStack(spacing: 8) {
+                    DetailView(titleLocalizationKey: "mrp:",
+                               bodyText: seller.priceInfo.mrp.formattedPrice)
+                    
+                    Divider()
+                        .frame(height: 13)
+                    
+                    DetailView(titleLocalizationKey: "stocks:",
+                               bodyText: String(seller.stockInfo.availableQty))
+                    
+                    Divider()
+                        .frame(height: 13)
+                    
+                    DetailView(titleLocalizationKey: "expiry:",
+                               bodyText: seller.stockInfo.expiry.formattedDate,
+                               bodyColor: Color(hex: seller.stockInfo.expiry.color))
+                    
+                    Spacer()
+                    
+                    Text(seller.priceInfo.price.formattedPrice)
+                        .medicoText(textWeight: .bold,
+                                    fontSize: 16,
+                                    multilineTextAlignment: .leading)
+                }
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
         }
     }
     
     private struct ChooseSellerView: View {
         let product: DataProductSearch
         
+        let itemsSelectable: Bool
+        let stockInfo: DataStockInfo?
+        let searchTitleLocalizationKey: String
+        
         @State private var showsSearchBar = false
         
-        @ObservedObject var sellersFilter: SwiftDataSource<NSString>
+        @ObservedObject var filter: SwiftDataSource<NSString>
         
-        @ObservedObject var sellersInfo: SwiftDataSource<NSArray>
+        @ObservedObject var items: SwiftDataSource<NSArray>
         @ObservedObject var quantities: SwiftDataSource<NSDictionary>
         
-        let onQuantityIncrease: (DataSellerInfo) -> ()
-        let onQuantityDecrease: (DataSellerInfo) -> ()
+        let onQuantityIncrease: (DataWithTradeName) -> ()
+        let onQuantityDecrease: (DataWithTradeName) -> ()
         
-        let onSellerInfoSelect: (DataSellerInfo) -> ()
+        let onInfoSelect: (DataWithTradeName) -> ()
         let onSellerFilter: (String) -> ()
         
         var body: some View {
-            guard let sellersInfo = self.sellersInfo.value as? [DataSellerInfo] else {
-                return AnyView(EmptyView())
-            }
-            
-            return AnyView(
-                VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            LocalizedText(localizationKey: "choose_seller",
-                                          textWeight: .semiBold,
-                                          fontSize: 16,
-                                          multilineTextAlignment: .leading)
-                            
-                            Spacer()
-                            
-                            Button(action: { self.showsSearchBar.toggle() }) {
-                                Image(systemName: "magnifyingglass")
-                                    .foregroundColor(appColor: .darkBlue)
-                                    .padding(7)
-                                    .background(
-                                        Circle()
-                                            .foregroundColor(appColor: .darkBlue)
-                                            .opacity(self.showsSearchBar ? 0.08 : 0)
-                                    )
-                            }
-                        }
-                            
-                        if showsSearchBar {
-                            SearchBar(searchText: sellersFilter.value,
-                                      style: .small,
-                                      showsCancelButton: false,
-                                      leadingButton: nil,
-                                      onTextChange: { value, _ in onSellerFilter(value) })
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        LocalizedText(localizationKey: searchTitleLocalizationKey,
+                                      textWeight: .semiBold,
+                                      fontSize: 16,
+                                      multilineTextAlignment: .leading)
+                        
+                        Spacer()
+                        
+                        Button(action: { self.showsSearchBar.toggle() }) {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(appColor: .darkBlue)
+                                .padding(7)
+                                .background(
+                                    Circle()
+                                        .foregroundColor(appColor: .darkBlue)
+                                        .opacity(self.showsSearchBar ? 0.08 : 0)
+                                )
                         }
                     }
-                    
-                    let quantities = self.quantities.value as? [DataSellerInfo: Int]
-                    
-                    VStack(spacing: 12)  {
+                        
+                    if showsSearchBar {
+                        SearchBar(searchText: filter.value,
+                                  style: .small,
+                                  showsCancelButton: false,
+                                  leadingButton: nil,
+                                  onTextChange: { value, _ in onSellerFilter(value) })
+                    }
+                }
+                
+                VStack(spacing: 12)  {
+                    if let sellersInfo = self.items.value as? [DataSellerInfo],
+                       let quantities = self.quantities.value as? [DataSellerInfo: Int] {
                         ForEach(sellersInfo, id: \.self) {
                             SellerView(product: product,
                                        info: $0,
-                                       quantity: quantities?[$0] ?? 0,
+                                       isSelectable: itemsSelectable,
+                                       quantity: quantities[$0] ?? 0,
                                        onQuantityIncrease: onQuantityIncrease,
                                        onQuantityDecrease: onQuantityDecrease,
-                                       onSellerInfoSelect: onSellerInfoSelect)
+                                       onInfoSelect: onInfoSelect)
                         }
                     }
-                    .scrollView()
+                    else if let retailerInfo = self.items.value as? [DataSeasonBoyRetailer],
+                            let quantities = self.quantities.value as? [DataSeasonBoyRetailer: Int],
+                            let stockInfo = self.stockInfo {
+                        ForEach(retailerInfo, id: \.self) {
+                            RetailerView(info: $0,
+                                         stockInfo: stockInfo,
+                                         quantity: quantities[$0] ?? 0,
+                                         onQuantityIncrease: onQuantityIncrease,
+                                         onQuantityDecrease: onQuantityDecrease,
+                                         onInfoSelect: onInfoSelect)
+                        }
+                    }
+                    
                 }
-                .padding(.horizontal, 16)
-            )
+                .scrollView()
+            }
+            .padding(.horizontal, 16)
         }
         
         private struct SellerView: View {
             let product: DataProductSearch
             let info: DataSellerInfo
+            let isSelectable: Bool
             
             let quantity: Int
             
             let onQuantityIncrease: (DataSellerInfo) -> ()
             let onQuantityDecrease: (DataSellerInfo) -> ()
             
-            let onSellerInfoSelect: (DataSellerInfo) -> ()
+            let onInfoSelect: (DataSellerInfo) -> ()
             
             var body: some View {
                 ZStack(alignment: .leading) {
@@ -180,8 +271,8 @@ struct BuyProductScreen: View {
                                         
                                         Spacer()
                                         
-                                        getDetailView(withTitleLocalizationKey: "mrp:",
-                                                      withBody: info.priceInfo.mrp.formattedPrice)
+                                        DetailView(titleLocalizationKey: "mrp:",
+                                                   bodyText: info.priceInfo.mrp.formattedPrice)
                                     }
                                     
                                     HStack {
@@ -191,26 +282,28 @@ struct BuyProductScreen: View {
                                         
                                         Spacer()
                                         
-                                        getDetailView(withTitleLocalizationKey: "margin:",
-                                                      withBody: info.priceInfo.marginPercent)
+                                        DetailView(titleLocalizationKey: "margin:",
+                                                   bodyText: info.priceInfo.marginPercent)
                                     }
                                     
                                     HStack {
-                                        getDetailView(withTitleLocalizationKey: "expiry:",
-                                                      withBody: info.stockInfo.expireDate,
-                                                      withBodyColor: .orange)
+                                        let expiryColor = Color(hex: info.stockInfo.expiry.color)
+                                        
+                                        DetailView(titleLocalizationKey: "expiry:",
+                                                   bodyText: info.stockInfo.expiry.formattedDate,
+                                                   bodyColor: expiryColor)
                                             .padding(.horizontal, 6)
                                             .padding(.vertical, 2)
                                             .background(
-                                                AppColor.orange.color
+                                                expiryColor
                                                     .opacity(0.12)
                                                     .cornerRadius(4)
                                             )
                                         
                                         Spacer()
                                         
-                                        getDetailView(withTitleLocalizationKey: "stocks:",
-                                                      withBody: String(info.stockInfo.availableQty))
+                                        DetailView(titleLocalizationKey: "stocks:",
+                                                   bodyText: String(info.stockInfo.availableQty))
                                     }
                                 }
                             }
@@ -233,19 +326,30 @@ struct BuyProductScreen: View {
                             .opacity(0.12)
                             .frame(height: 1)
                         
-                        HStack {
-                            NumberPicker(quantity: quantity,
-                                         onQuantityIncrease: { onQuantityIncrease(self.info) },
-                                         onQuantityDecrease: { onQuantityDecrease(self.info) })
-                            
-                            Spacer()
-                            
-                            MedicoButton(localizedStringKey: "add_to_cart",
-                                         width: 120,
-                                         height: 32,
-                                         fontSize: 14,
-                                         fontWeight: .bold) {
-                                onSellerInfoSelect(self.info)
+                        Group {
+                            if isSelectable {
+                                MedicoButton(localizedStringKey: "select",
+                                             height: 32) {
+                                    onInfoSelect(self.info)
+                                }
+                            }
+                            else {
+                                HStack {
+                                    NumberPicker(quantity: quantity,
+                                                 onQuantityIncrease: { onQuantityIncrease(self.info) },
+                                                 onQuantityDecrease: { onQuantityDecrease(self.info) })
+                                    
+                                    Spacer()
+                                    
+                                    MedicoButton(localizedStringKey: "add_to_cart",
+                                                 isEnabled: quantity > 0,
+                                                 width: 120,
+                                                 height: 32,
+                                                 fontSize: 14,
+                                                 fontWeight: .bold) {
+                                        onInfoSelect(self.info)
+                                    }
+                                }
                             }
                         }
                         .padding(.horizontal, 20)
@@ -258,23 +362,99 @@ struct BuyProductScreen: View {
                 }
                 .background(AppColor.white.color.cornerRadius(5))
             }
-            
-            private func getDetailView(withTitleLocalizationKey titleLocalizationKey: String,
-                                       withBody body: String,
-                                       withBodyColor bodyColor: AppColor = .lightBlue) -> some View {
-                return AnyView(
-                    HStack(spacing: 4) {
-                        LocalizedText(localizationKey: titleLocalizationKey,
-                                      color: .grey3,
-                                      multilineTextAlignment: .leading)
-                        
-                        Text(body)
-                            .medicoText(textWeight: .bold,
-                                        color: bodyColor,
-                                        multilineTextAlignment: .leading)
-                    }
-                )
-            }
         }
     }
+    
+    private struct RetailerView: View {
+        let info: DataSeasonBoyRetailer
+        let stockInfo: DataStockInfo
+        
+        let quantity: Int
+        
+        let onQuantityIncrease: (DataSeasonBoyRetailer) -> ()
+        let onQuantityDecrease: (DataSeasonBoyRetailer) -> ()
+        
+        let onInfoSelect: (DataSeasonBoyRetailer) -> ()
+        
+        var body: some View {
+            ZStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 17) {
+                        UserNameImage(username: info.tradeName)
+                            .frame(width: 65, height: 65)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(info.tradeName)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 16,
+                                            multilineTextAlignment: .leading)
+                            
+                            
+                            SmallAddressView(location: info.fullAddress())
+                        }
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 20)
+                    
+                    AppColor.darkBlue.color
+                        .opacity(0.12)
+                        .frame(height: 1)
+                    
+                    HStack {
+                        NumberPicker(quantity: quantity,
+                                     onQuantityIncrease: { onQuantityIncrease(self.info) },
+                                     onQuantityDecrease: { onQuantityDecrease(self.info) })
+                        
+                        Spacer()
+                        
+                        MedicoButton(localizedStringKey: "add_to_cart",
+                                     isEnabled: quantity > 0,
+                                     width: 120,
+                                     height: 32,
+                                     fontSize: 14,
+                                     fontWeight: .bold) {
+                            onInfoSelect(self.info)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .padding(.vertical, 8)
+                
+                stockInfo.statusColor.color
+                    .cornerRadius(5, corners: [.topLeft, .bottomLeft])
+                    .frame(width: 5)
+            }
+            .background(AppColor.white.color.cornerRadius(5))
+        }
+    }
+    
+    private struct DetailView: View {
+        let titleLocalizationKey: String
+        let bodyText: String
+        
+        let bodyColor: Color
+        
+        var body: some View {
+            HStack(spacing: 4) {
+                LocalizedText(localizationKey: titleLocalizationKey,
+                              color: .grey3,
+                              multilineTextAlignment: .leading)
+                
+                Text(bodyText)
+                    .medicoText(textWeight: .bold,
+                                color: bodyColor,
+                                multilineTextAlignment: .leading)
+            }
+        }
+        
+        init(titleLocalizationKey: String,
+             bodyText: String,
+             bodyColor: Color = AppColor.lightBlue.color) {
+            self.titleLocalizationKey = titleLocalizationKey
+            self.bodyText = bodyText
+            
+            self.bodyColor = bodyColor
+        }
+    }
+    
 }
