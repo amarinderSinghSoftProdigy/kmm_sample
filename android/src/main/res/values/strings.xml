@@ -140,9 +140,9 @@
     <string name="read">Read</string>
     <string name="unread">Unread</string>
     <string name="accept">Accept</string>
-    <string name="accepted">Accepted</string>
+    <string name="accepted">Accepted request</string>
     <string name="decline">Decline</string>
-    <string name="declined">Declined</string>
+    <string name="declined">Declined request</string>
     <string name="subscribe_request_button">Action Required</string>
     <string name="subscribe_decision_button">Information</string>
     <string name="order_request_button">View Order</string>

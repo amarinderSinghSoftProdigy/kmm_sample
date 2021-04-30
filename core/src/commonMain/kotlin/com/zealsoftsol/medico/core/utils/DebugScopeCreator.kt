@@ -231,6 +231,7 @@ object DebugScopeCreator {
                         StockStatus.IN_STOCK,
                     ),
                     standardUnit = "1x20",
+                    sellerInfo = null,
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(
