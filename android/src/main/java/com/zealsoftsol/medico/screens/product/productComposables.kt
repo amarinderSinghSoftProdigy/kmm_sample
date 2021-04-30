@@ -27,12 +27,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AlternateProductData
@@ -124,8 +126,11 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(12.dp)
         when (scope.product.buyingOption) {
             BuyingOption.BUY -> {
+                val context = LocalContext.current
                 MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
-                    scope.buy()
+                    if (!scope.buy()) {
+                        context.toast(R.string.something_went_wrong)
+                    }
                 }
             }
             BuyingOption.QUOTE -> {

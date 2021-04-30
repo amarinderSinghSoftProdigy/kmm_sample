@@ -28,7 +28,7 @@ data class ProductSearch(
     val buyingOption: BuyingOption,
     val compositions: List<String>,
     val formattedMrp: String,
-    val formattedPrice: String?,
+    val formattedPrice: String? = null,
     val id: String,
     val manufacturer: String,
     val marginPercent: String?,
@@ -37,7 +37,8 @@ data class ProductSearch(
     val code: String,
     val stockInfo: StockInfo? = null,
     val uomName: String,
-    val standardUnit: String?,
+    val standardUnit: String? = null,
+    val sellerInfo: SellerInfo? = null,
 )
 
 @Serializable

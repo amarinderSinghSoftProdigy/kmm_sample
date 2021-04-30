@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.AlternateProductData
+import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 
 class ProductInfoScope(
@@ -19,16 +20,18 @@ class ProductInfoScope(
         get() = product.compositions.reduce { acc, s -> "$acc\n$s" }
 
     fun buy(): Boolean {
-        return sellerUnitCode?.let {
-            EventCollector.sendEvent(
-                Event.Action.Cart.AddItem(
-                    it,
-                    product.code,
-                    product.buyingOption,
-                    TODO("no spid"),
-                    1
+        return sellerUnitCode?.let { unitCode ->
+            product.sellerInfo?.spid?.let { spid ->
+                EventCollector.sendEvent(
+                    Event.Action.Cart.AddItem(
+                        unitCode,
+                        product.code,
+                        product.buyingOption,
+                        CartIdentifier(spid),
+                        1,
+                    )
                 )
-            )
+            } ?: false
         } ?: EventCollector.sendEvent(Event.Action.Product.BuyProduct(product.code))
     }
 
