@@ -305,6 +305,29 @@ struct CartScreen: View {
                                          onQuantityIncrease: { onIncreaseItem(self.item) },
                                          onQuantityDecrease: { onDecreaseItem(self.item) })
                         }
+                        
+                        if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
+                            VStack(spacing: 4) {
+                                AppColor.darkBlue.color
+                                    .opacity(0.33)
+                                    .frame(height: 1)
+                                    .padding(.leading, -12)
+                                    .padding(.trailing, -8)
+                                
+                                HStack {
+                                    Text(seasonBoyRetailerInfo.tradeName)
+                                        .medicoText(textWeight: .medium,
+                                                    fontSize: 12,
+                                                    color: AppColor.grey3,
+                                                    multilineTextAlignment: .leading)
+                                    
+                                    Spacer()
+                                    
+                                    SmallAddressView(location: seasonBoyRetailerInfo.city)
+                                }
+                                .frame(height: 20)
+                            }
+                        }
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     .padding([.vertical, .trailing], 8)
