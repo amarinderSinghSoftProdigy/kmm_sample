@@ -10,12 +10,10 @@ import SwiftUI
 import Combine
 
 struct FloatingPlaceholderTextField: View {
+    @ObservedObject private var textBindingManager: TextBindingManager
+    
     let placeholderLocalizedStringKey: String
     let keyboardType: UIKeyboardType
-    
-    private var text: Binding<String>
-    
-    let onTextChange: (String) -> Void
     
     let constText: String?
     
@@ -35,7 +33,7 @@ struct FloatingPlaceholderTextField: View {
                               multilineTextAlignment: .leading)
             }
             
-            TextField("", text: text, onEditingChanged: { (changed) in
+            TextField("", text: $textBindingManager.text, onEditingChanged: { (changed) in
                 self.fieldSelected = changed
             }, onCommit: {
                 self.fieldSelected = false
@@ -43,7 +41,7 @@ struct FloatingPlaceholderTextField: View {
             .keyboardType(keyboardType)
         }
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                              text: text.wrappedValue,
+                                              text: textBindingManager.text,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
@@ -61,13 +59,9 @@ struct FloatingPlaceholderTextField: View {
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self.text = Binding<String>(get: {
-            text ?? ""
-        }, set: {
+        self.textBindingManager = TextBindingManager(initialText: text) {
             onTextChange($0)
-        })
-        
-        self.onTextChange = onTextChange
+        }
         
         self.constText = constText
         
@@ -80,11 +74,9 @@ struct FloatingPlaceholderTextField: View {
 }
 
 struct FloatingPlaceholderSecureField: View {
+    @ObservedObject private var textBindingManager: TextBindingManager
+    
     let placeholderLocalizedStringKey: String
-    
-    private var text: Binding<String>
-    
-    let onTextChange: (String) -> Void
     
     let height: CGFloat
     
@@ -99,16 +91,16 @@ struct FloatingPlaceholderSecureField: View {
     var body: some View {
         HStack {
             if showsPassword {
-                TextField("", text: text)
+                TextField("", text: $textBindingManager.text)
                     .disableAutocorrection(true)
                     
                     .autocapitalization(.none)
             }
             else {
-                SecureField("", text: text)
+                SecureField("", text: $textBindingManager.text)
             }
             
-            if !text.wrappedValue.isEmpty {
+            if !textBindingManager.text.isEmpty {
                 Button(action: { self.showsPassword.toggle() }) {
                     Image(systemName: self.showsPassword ? "eye" : "eye.slash")
                         .foregroundColor(appColor: .darkBlue)
@@ -116,7 +108,7 @@ struct FloatingPlaceholderSecureField: View {
             }
         }
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                              text: text.wrappedValue,
+                                              text: textBindingManager.text,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
@@ -143,13 +135,9 @@ struct FloatingPlaceholderSecureField: View {
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self.text = Binding<String>(get: {
-            text ?? ""
-        }, set: {
+        self.textBindingManager = TextBindingManager(initialText: text) {
             onTextChange($0)
-        })
-        
-        self.onTextChange = onTextChange
+        }
         
         self.height = height
         self.showPlaceholderWithText = showPlaceholderWithText
@@ -253,5 +241,28 @@ struct FloatingPlaceholderModifier: ViewModifier {
         
         self.alwaysPlaceholderMoved = alwaysPlaceholderMoved
         self.errorMessageKey = errorMessageKey
+    }
+}
+
+private class TextBindingManager: ObservableObject {
+    private var previousText: String
+    
+    @Published var text = "" {
+        didSet {
+            if self.text != self.previousText {
+                onTextChange(text)
+                
+                self.text = self.previousText
+            }
+        }
+    }
+    private let onTextChange: (String) -> ()
+
+    init(initialText: String?,
+         onTextChange: @escaping (String) -> ()) {
+        self.previousText = initialText ?? ""
+        self.text = initialText ?? ""
+        
+        self.onTextChange = onTextChange
     }
 }
