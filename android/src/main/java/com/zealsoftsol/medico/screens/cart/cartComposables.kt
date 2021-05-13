@@ -209,6 +209,8 @@ private fun SellerCartItem(
                             color = MaterialTheme.colors.background,
                             fontWeight = FontWeight.W600,
                             fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
                         Space(2.dp)
                         Text(

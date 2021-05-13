@@ -15,10 +15,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,10 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,6 +56,7 @@ import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
+import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
@@ -354,32 +350,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                         )
                     }
                     Space(dp = 8.dp)
-                    Surface(
-                        color = Color(0xFFFFC122).copy(alpha = .12f),
-                        shape = MaterialTheme.shapes.small,
-                        modifier = Modifier.fillMaxWidth().height(26.dp),
-                    ) {
-                        Box {
-                            Box(
-                                modifier = Modifier.fillMaxHeight().width(3.dp)
-                                    .background(Color(0xFFFFC122))
-                            )
-                            Text(
-                                text = stringResource(id = R.string.gstin_pan_required),
-                                color = Color.Black,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 12.sp,
-                                modifier = Modifier.align(Alignment.CenterStart)
-                                    .padding(start = 12.dp),
-                            )
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                tint = Color(0xFFFFC122),
-                                contentDescription = null,
-                                modifier = Modifier.size(15.dp).align(Alignment.CenterEnd),
-                            )
-                        }
-                    }
+                    GstinOrPanRequiredBadge()
                     Space(dp = 8.dp)
                 }
                 if (it == SignUpScope.Details.Fields.PAN) {

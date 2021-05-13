@@ -31,6 +31,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
+import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
@@ -97,13 +98,27 @@ private fun TraderDetails(
             onValueChange = { scope.changeTradeName(it) },
         )
     }
+    Space(dp = 8.dp)
+    GstinOrPanRequiredBadge()
+    Space(dp = 8.dp)
+    InputWithError(errorText = validation.value?.panNumber) {
+        InputField(
+            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+            hint = stringResource(id = R.string.pan_number),
+            text = registration.value.panNumber,
+            isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
+            keyboardOptions = KeyboardOptions.Default
+                .copy(capitalization = KeyboardCapitalization.Characters),
+            onValueChange = { scope.changePan(it) },
+        )
+    }
     Space(dp = 12.dp)
     InputWithError(errorText = validation.value?.gstin) {
         InputField(
             modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.gstin),
             text = registration.value.gstin,
-            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin),
+            isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
             keyboardOptions = KeyboardOptions.Default
                 .copy(capitalization = KeyboardCapitalization.Characters),
             onValueChange = { scope.changeGstin(it) },
