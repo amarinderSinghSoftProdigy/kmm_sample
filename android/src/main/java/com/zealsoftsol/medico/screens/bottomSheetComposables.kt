@@ -285,7 +285,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 DataWithLabel(label = R.string.gstin_num, data = it)
             }
             entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_num, data = it)
+                DataWithLabel(label = R.string.pan_number, data = it)
             }
             DataWithLabel(
                 label = R.string.payment_method,
@@ -301,7 +301,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 DataWithLabel(label = R.string.gstin_num, data = it)
             }
             entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_num, data = it)
+                DataWithLabel(label = R.string.pan_number, data = it)
             }
             DataWithLabel(
                 label = R.string.orders,
@@ -313,7 +313,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 DataWithLabel(label = R.string.gstin_num, data = it)
             }
             entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_num, data = it)
+                DataWithLabel(label = R.string.pan_number, data = it)
             }
         }
     }

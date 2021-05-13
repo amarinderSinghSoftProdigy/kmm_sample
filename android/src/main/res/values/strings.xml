@@ -116,7 +116,6 @@
     <string name="see_on_the_map">See on the map</string>
     <string name="status">Status</string>
     <string name="gstin_num">GSTIN Number</string>
-    <string name="pan_num">PAN Number</string>
     <string name="payment_method">Payment method</string>
     <string name="orders">Orders</string>
     <string name="cancel">Cancel</string>
