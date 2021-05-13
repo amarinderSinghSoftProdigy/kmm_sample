@@ -182,6 +182,13 @@ struct AddRetailerScreen: View {
                     .textContentType(.fullStreetAddress)
                     .autocapitalization(.words)
                 
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "landmark",
+                                             text: self.registration.value?.landmark,
+                                             onTextChange: { scope.changeLandmark(landmark: $0) })
+                    .disableAutocorrection(true)
+                    .textContentType(.sublocality)
+                    .autocapitalization(.words)
+                
                 let locations = locationData.value?.locations ?? [String]()
                 PickerSelector(placeholder: "location",
                                chosenElement: self.registration.value?.location,
