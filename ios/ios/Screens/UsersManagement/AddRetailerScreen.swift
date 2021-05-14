@@ -103,12 +103,24 @@ struct AddRetailerScreen: View {
                         .disableAutocorrection(true)
                         .autocapitalization(.words)
                     
+                    GstinOrPanRequiredWarningView()
+                    
                     let gstinErrorMessageKey = self.validation.value?.gstin
+                    let isGstinValid = Validator.TraderDetails().isGstinValid(gstin: self.registration.value?.gstin ?? "")
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "gstin",
                                                  text: self.registration.value?.gstin,
                                                  onTextChange: { scope.changeGstin(gstin: $0) },
-                                                 isValid: gstinErrorMessageKey == nil,
+                                                 isValid: gstinErrorMessageKey == nil && isGstinValid,
                                                  errorMessageKey: gstinErrorMessageKey)
+                        .disableAutocorrection(true)
+                        .autocapitalization(.none)
+                    
+                    let panErrorMessageKey = self.validation.value?.panNumber
+                    FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pan_number",
+                                                 text: self.registration.value?.panNumber,
+                                                 onTextChange: { scope.changePan(panNumber: $0) },
+                                                 isValid: panErrorMessageKey == nil,
+                                                 errorMessageKey: panErrorMessageKey)
                         .disableAutocorrection(true)
                         .autocapitalization(.none)
                     

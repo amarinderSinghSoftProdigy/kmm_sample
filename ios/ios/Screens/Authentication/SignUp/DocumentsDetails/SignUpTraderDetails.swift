@@ -63,31 +63,7 @@ struct SignUpTraderDetails: View {
                     .disableAutocorrection(true)
                     .autocapitalization(.words)
                     
-                    HStack(spacing: 8) {
-                        LocalizedText(localizationKey: "gstin_or_pan_number_are_required",
-                                      textWeight: .medium,
-                                      fontSize: 12,
-                                      color: .black,
-                                      multilineTextAlignment: .leading)
-                            .padding(.vertical, 6)
-                            .padding(.leading, 11)
-
-                        Spacer()
-
-                        Image("Alert")
-                            .padding(5)
-                    }
-                    .background(
-                        HStack {
-                            AppColor.yellow.color
-                                .frame(width: 3)
-                                .cornerRadius(2, corners: [.topLeft, .bottomLeft])
-                            
-                            Spacer()
-                        }
-                        .frame(maxHeight: .infinity)
-                        .background(AppColor.yellow.color.opacity(0.12).cornerRadius(2))
-                    )
+                    GstinOrPanRequiredWarningView()
                 })
             
         case SignUpScope.Details.DetailsFields.pan:
@@ -145,5 +121,35 @@ struct SignUpTraderDetails: View {
         guard let registration = self.registration.value else { return }
         
         _ = scope.validate(userRegistration: registration)
+    }
+}
+
+struct GstinOrPanRequiredWarningView: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            LocalizedText(localizationKey: "gstin_or_pan_number_are_required",
+                          textWeight: .medium,
+                          fontSize: 12,
+                          color: .black,
+                          multilineTextAlignment: .leading)
+                .padding(.vertical, 6)
+                .padding(.leading, 11)
+
+            Spacer()
+
+            Image("Alert")
+                .padding(5)
+        }
+        .background(
+            HStack {
+                AppColor.yellow.color
+                    .frame(width: 3)
+                    .cornerRadius(2, corners: [.topLeft, .bottomLeft])
+                
+                Spacer()
+            }
+            .frame(maxHeight: .infinity)
+            .background(AppColor.yellow.color.opacity(0.12).cornerRadius(2))
+        )
     }
 }
