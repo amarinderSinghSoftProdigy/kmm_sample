@@ -42,19 +42,12 @@ internal class SearchEventDelegate(
             it.pagination.reset()
             if (search != null) it.productSearch.value = search
             it.autoComplete.value = emptyList()
-            query.forEach { (key, value) ->
-                activeFilters[key] = Option.StringValue(value, false)
-            }
             val isWildcardSearch = search == null && query.isEmpty()
             it.search(
                 addPage = false,
                 withDelay = false,
                 withProgress = if (it.supportsAutoComplete) !isWildcardSearch else false,
-                onEnd = {
-                    if (isOneOf) {
-                        query.keys.forEach { key -> activeFilters.remove(key) }
-                    }
-                },
+                extraFilters = query.mapValues { (_, value) -> Option.StringValue(value, false) },
             )
         }
     }
@@ -105,16 +98,18 @@ internal class SearchEventDelegate(
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
-            activeFilters[autoComplete.query] = Option.StringValue(autoComplete.suggestion, false)
             it.pagination.reset()
             it.search(
                 addPage = false,
                 withDelay = false,
                 withProgress = true,
-                onEnd = {
-                    activeFilters.remove(autoComplete.query)
-                    it.autoComplete.value = emptyList()
-                }
+                extraFilters = mapOf(
+                    autoComplete.query to Option.StringValue(
+                        autoComplete.suggestion,
+                        false
+                    )
+                ),
+                onEnd = { it.autoComplete.value = emptyList() },
             )
         }
     }
@@ -230,12 +225,13 @@ internal class SearchEventDelegate(
         addPage: Boolean,
         withDelay: Boolean,
         withProgress: Boolean,
+        extraFilters: Map<String, Option.StringValue> = emptyMap(),
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val address = userRepo.requireUser().addressData
             val (result, isSuccess) = networkSearchScope.search(
-                activeFilters.map { (queryName, option) -> queryName to option.value },
+                (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
                 unitCode,
                 address.latitude,
                 address.longitude,

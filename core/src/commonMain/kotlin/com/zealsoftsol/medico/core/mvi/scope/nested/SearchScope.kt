@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
@@ -73,7 +72,7 @@ class SearchScope(
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
     override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-) : Scope.Child.TabBar(), CommonScope.CanGoBack, BaseSearchScope {
+) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
@@ -85,10 +84,5 @@ class SearchScope(
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         return TabBarInfo.ActiveSearch(productSearch)
-    }
-
-    override fun goBack(): Boolean {
-        reset()
-        return super.goBack()
     }
 }
