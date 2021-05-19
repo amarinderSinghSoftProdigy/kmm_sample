@@ -323,16 +323,25 @@ class NetworkClient(
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
-        sellerUnitCode: String
+        sellerUnitCode: String?
     ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = ktorDispatcher {
         client.get<SimpleResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
             withMainToken()
             url {
                 parameters.append("buyerUnitCode", unitCode)
-                parameters.append("sellerUnitCode", sellerUnitCode)
+                if (sellerUnitCode != null) {
+                    parameters.append("sellerUnitCode", sellerUnitCode)
+                }
             }
         }.getWrappedBody()
     }
+
+    override suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse> =
+        ktorDispatcher {
+            client.get<SimpleResponse<ProductBuyResponse>>("${baseUrl.url}/search/quote/${productCode}") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     override suspend fun getManagementInfo(
         unitCode: String,

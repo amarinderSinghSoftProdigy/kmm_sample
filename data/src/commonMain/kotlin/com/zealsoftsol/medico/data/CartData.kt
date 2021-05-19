@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CartRequest(
     val buyerUnitCode: String,
-    val sellerUnitCode: String,
+    val sellerUnitCode: String? = null,
     val productCode: String,
     val buyingOption: BuyingOption,
     @SerialName("cartIdentifier")
-    val id: CartIdentifier,
+    val id: CartIdentifier? = null,
     val quantity: Int? = null,
 )
 
@@ -67,6 +67,11 @@ data class CartItem(
 
 @Serializable
 data class CartIdentifier(
-    val spid: String,
+    val spid: String? = null,
     val seasonBoyRetailerId: String? = null,
+)
+
+@Serializable
+data class CartInfo(
+    val quantity: FormattedData<Double>,
 )

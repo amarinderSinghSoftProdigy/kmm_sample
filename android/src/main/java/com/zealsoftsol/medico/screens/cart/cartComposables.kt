@@ -371,6 +371,7 @@ private fun CartItem(
             PlusMinusQuantity(
                 quantity = cartItem.quantity.value.toInt(),
                 max = cartItem.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
                 modifier = Modifier.align(Alignment.BottomEnd)

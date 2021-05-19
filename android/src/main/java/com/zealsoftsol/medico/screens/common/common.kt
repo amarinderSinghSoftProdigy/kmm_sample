@@ -6,6 +6,7 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
@@ -405,37 +407,46 @@ fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun Dropdown(
-    modifier: Modifier = Modifier,
     rememberChooseKey: Any?,
-    value: String,
+    value: String?,
+    hint: String,
     dropDownItems: List<String>,
     readOnly: Boolean = false,
     onSelected: (String) -> Unit,
+    backgroundColor: Color = Color.White,
+    arrowTintColor: Color = ConstColors.gray,
+    width: Dp? = null,
 ) {
     val choosing = remember(rememberChooseKey) { mutableStateOf(false) }
-    Row(
-        modifier = modifier
-            .background(color = Color.White)
-            .clickable(onClick = {
-                if (dropDownItems.isNotEmpty()) {
-                    choosing.value = true
-                }
-            })
-            .padding(vertical = 16.dp, horizontal = 16.dp)
-    ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            text = value,
-            color = Color.Black,
-            fontSize = 14.sp,
-        )
-        if (!readOnly) {
-            Icon(
+    Box(modifier = width?.let { Modifier.width(it) } ?: Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = backgroundColor)
+                .clickable(onClick = {
+                    if (dropDownItems.isNotEmpty()) {
+                        choosing.value = true
+                    }
+                })
+                .padding(vertical = 16.dp, horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                tint = ConstColors.gray,
+                text = value ?: hint,
+                color = Color.Black,
+                fontSize = 14.sp,
             )
+            if (!readOnly) {
+                Icon(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = arrowTintColor,
+                )
+            }
+        }
+        if (!readOnly) {
             DropdownMenu(
                 expanded = choosing.value,
                 onDismissRequest = { choosing.value = false },

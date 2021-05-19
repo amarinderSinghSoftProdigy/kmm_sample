@@ -329,12 +329,13 @@ private fun SubscriptionDeatails(
                 )
             ) {
                 Dropdown(
-                    modifier = Modifier.width(100.dp),
                     rememberChooseKey = this,
                     value = details.option.paymentMethod.serverValue,
+                    hint = "",
                     dropDownItems = if (details.isReadOnly) emptyList() else PaymentMethod.values()
                         .map { it.serverValue },
                     readOnly = details.isReadOnly,
+                    width = 100.dp,
                     onSelected = {
                         val method = when (it) {
                             PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT

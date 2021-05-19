@@ -172,4 +172,7 @@
     <string name="call_now">Call Now</string>
     <string name="help">Help</string>
     <string name="select">Select</string>
+    <string name="quote_existing_stockist">Do you want to add to cart for an existing Subscribers Stockists?</string>
+    <string name="quote_anyone">Do you want to add to cart for anyone in Market?</string>
+    <string name="select_stockist">Select Stockist</string>
 </resources>

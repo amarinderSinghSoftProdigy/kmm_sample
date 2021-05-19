@@ -31,7 +31,7 @@ data class ProductSearch(
     val formattedPrice: String? = null,
     val id: String,
     val manufacturer: String,
-    val marginPercent: String?,
+    val marginPercent: String? = null,
     val name: String,
     val shortName: String,
     val code: String,
@@ -48,15 +48,50 @@ data class SellerInfo(
     override val tradeName: String,
     val unitCode: String,
     val spid: String,
-    val stockInfo: StockInfo,
-    val priceInfo: PriceInfo,
-) : WithTradeName
+    val stockInfo: StockInfo?,
+    val priceInfo: PriceInfo?,
+    val cartInfo: CartInfo? = null,
+) : WithTradeName {
+
+    companion object {
+        val anyone = SellerInfo(
+            geoData = GeoData(
+                distance = 0.0,
+                formattedDistance = "",
+                origin = GeoPoints(0.0, 0.0),
+                destination = GeoPoints(0.0, 0.0),
+                location = "",
+                pincode = "",
+                city = "",
+                landmark = "",
+            ),
+            tradeName = "",
+            unitCode = "",
+            spid = "",
+            stockInfo = StockInfo(
+                availableQty = 0,
+                expiry = Expiry(
+                    date = 0,
+                    formattedDate = "",
+                    color = "",
+                ),
+                formattedStatus = "",
+                status = StockStatus.OUT_OF_STOCK,
+            ),
+            priceInfo = PriceInfo(
+                price = PriceData(0.0, ""),
+                mrp = PriceData(0.0, ""),
+                marginPercent = "",
+            )
+        )
+    }
+}
 
 @Serializable
 data class PriceInfo(
     val price: PriceData,
     val mrp: PriceData,
-    val marginPercent: String
+    val marginPercent: String,
 )
 
 @Serializable

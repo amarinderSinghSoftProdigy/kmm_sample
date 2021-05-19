@@ -124,9 +124,9 @@ fun ProductScreen(scope: ProductInfoScope) {
             }
         }
         Space(12.dp)
+        val context = LocalContext.current
         when (scope.product.buyingOption) {
             BuyingOption.BUY -> {
-                val context = LocalContext.current
                 MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
                     if (!scope.buy()) {
                         context.toast(R.string.something_went_wrong)
@@ -135,7 +135,11 @@ fun ProductScreen(scope: ProductInfoScope) {
             }
             BuyingOption.QUOTE -> {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (!scope.buy()) {
+                            context.toast(R.string.something_went_wrong)
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent,
                         disabledBackgroundColor = Color.Transparent,

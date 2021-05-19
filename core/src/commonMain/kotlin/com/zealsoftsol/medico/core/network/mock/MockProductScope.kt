@@ -26,8 +26,13 @@ class MockProductScope : NetworkScope.Product {
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
-        sellerUnitCode: String
+        sellerUnitCode: String?
     ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = mockResponse {
         Response.Wrapped(null, false)
     }
+
+    override suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse> =
+        mockResponse {
+            Response.Wrapped(null, false)
+        }
 }

@@ -46,6 +46,7 @@ data class SeasonBoyRetailer(
     val city: String,
     val location: String,
     val pincode: String,
+    val cartInfo: CartInfo? = null,
 ) : WithTradeName {
     fun fullAddress() = "$city $pincode"
 }

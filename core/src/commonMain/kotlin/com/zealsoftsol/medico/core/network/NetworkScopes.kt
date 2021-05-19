@@ -84,8 +84,10 @@ interface NetworkScope {
         suspend fun buyProductSelectSeasonBoyRetailer(
             productCode: String,
             unitCode: String,
-            sellerUnitCode: String
+            sellerUnitCode: String?,
         ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse>
+
+        suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse>
     }
 
     interface Search : NetworkScope {

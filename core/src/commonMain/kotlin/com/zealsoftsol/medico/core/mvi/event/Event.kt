@@ -99,11 +99,13 @@ sealed class Event {
 
             data class SelectFromSearch(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
-            data class BuyProduct(val productCode: String) : Product()
+            data class BuyProduct(val productCode: String, val buyingOption: BuyingOption) :
+                Product()
+
             data class FilterBuyProduct(val filter: String) : Product()
             data class SelectSeasonBoyRetailer(
                 val productCode: String,
-                val sellerInfo: SellerInfo
+                val sellerInfo: SellerInfo?,
             ) : Product()
         }
 
@@ -142,10 +144,10 @@ sealed class Event {
             override val typeClazz: KClass<*> = Cart::class
 
             data class AddItem(
-                val sellerUnitCode: String,
+                val sellerUnitCode: String?,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val id: CartIdentifier,
+                val id: CartIdentifier?,
                 val quantity: Int,
             ) : Cart()
 
