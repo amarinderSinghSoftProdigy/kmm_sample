@@ -261,3 +261,8 @@
 "quoted" = "Quoted";
 "continue" = "Continue";
 "total" = "Total:";
+
+// MARK: Get Quote
+"select_stockists" = "Select Stockists";
+"quote_existing_stockist" = "Do you want to add to cart for an existing Subscribers Stockists?";
+"quote_any_stockist" = "Do you want to add to cart for anyone in Market?";

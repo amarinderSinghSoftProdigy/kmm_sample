@@ -53,7 +53,7 @@ data class SellerInfo(
     val cartInfo: CartInfo? = null,
 ) : WithTradeName {
 
-    companion object {
+    companion object Anyone {
         val anyone = SellerInfo(
             geoData = GeoData(
                 distance = 0.0,

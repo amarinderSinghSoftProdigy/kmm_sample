@@ -26,17 +26,24 @@ struct BuyProductScreen: View {
             }
             .background(appColor: .white)
             
-            ChooseSellerView(product: scope.product,
-                             itemsSelectable: itemsSelectable,
-                             stockInfo: stockInfo,
-                             searchTitleLocalizationKey: searchTitleLocalizationKey,
-                             filter: SwiftDataSource(dataSource: scope.itemsFilter),
-                             items: SwiftDataSource(dataSource: scope.items),
-                             quantities: SwiftDataSource(dataSource: scope.quantities),
-                             onQuantityIncrease: scope.inc,
-                             onQuantityDecrease: scope.dec,
-                             onInfoSelect: { scope.select(item: $0) },
-                             onSellerFilter: { scope.filterItems(filter: $0) })
+            Group {
+                if let scope = (self.scope as? BuyProductScope<DataSellerInfo>) as? BuyProductScopeChooseQuote {
+                    ChooseQuoteView(scope: scope)
+                }
+                else {
+                    ChooseSellerView(product: scope.product,
+                                     itemsSelectable: itemsSelectable,
+                                     stockInfo: stockInfo,
+                                     searchTitleLocalizationKey: searchTitleLocalizationKey,
+                                     filter: SwiftDataSource(dataSource: scope.itemsFilter),
+                                     items: SwiftDataSource(dataSource: scope.items),
+                                     quantities: SwiftDataSource(dataSource: scope.quantities),
+                                     onQuantityIncrease: scope.inc,
+                                     onQuantityDecrease: scope.dec,
+                                     onInfoSelect: { scope.select(item: $0) },
+                                     onSellerFilter: { scope.filterItems(filter: $0) })
+                }
+            }
         }
         .screenLogger(withScreenName: "BuyProduct",
                       withScreenClass: BuyProductScreen.self)
@@ -51,15 +58,17 @@ struct BuyProductScreen: View {
         }
         else if let scope = (self.scope as? BuyProductScope<DataSeasonBoyRetailer>) as? BuyProductScopeChooseRetailer {
             searchTitleLocalizationKey = "choose_retailer"
-            stockInfo = scope.sellerInfo.stockInfo
+            stockInfo = scope.sellerInfo?.stockInfo
             
             self.scopeSpecificView = AnyView(
                 Group {
-                    AppColor.darkBlue.color
-                        .opacity(0.12)
-                        .frame(height: 1)
-                    
-                    StockistInfoView(seller: scope.sellerInfo)
+                    if let sellerInfo = scope.sellerInfo {
+                        AppColor.darkBlue.color
+                            .opacity(0.12)
+                            .frame(height: 1)
+                        
+                        StockistInfoView(seller: sellerInfo)
+                    }
                 }
             )
         }
@@ -85,7 +94,8 @@ struct BuyProductScreen: View {
                             .medicoText(color: .grey3,
                                         multilineTextAlignment: .leading)
                         
-                        if let units = product.standardUnit {
+                        if let units = product.standardUnit,
+                           !units.isEmpty {
                             Divider()
                                 .frame(height: 13)
                             
@@ -124,25 +134,29 @@ struct BuyProductScreen: View {
                                 multilineTextAlignment: .leading)
                 
                 HStack(spacing: 8) {
-                    DetailView(titleLocalizationKey: "mrp:",
-                               bodyText: seller.priceInfo.mrp.formattedPrice)
+                    if let mrp = seller.priceInfo?.mrp.formattedPrice {
+                        DetailView(titleLocalizationKey: "mrp:",
+                                   bodyText: mrp)
+                        
+                        Divider()
+                            .frame(height: 13)
+                    }
                     
-                    Divider()
-                        .frame(height: 13)
-                    
-                    DetailView(titleLocalizationKey: "stocks:",
-                               bodyText: String(seller.stockInfo.availableQty))
-                    
-                    Divider()
-                        .frame(height: 13)
-                    
-                    DetailView(titleLocalizationKey: "expiry:",
-                               bodyText: seller.stockInfo.expiry.formattedDate,
-                               bodyColor: Color(hex: seller.stockInfo.expiry.color))
+                    if let stockInfo = seller.stockInfo {
+                        DetailView(titleLocalizationKey: "stocks:",
+                                   bodyText: String(stockInfo.availableQty))
+                        
+                        Divider()
+                            .frame(height: 13)
+                        
+                        DetailView(titleLocalizationKey: "expiry:",
+                                   bodyText: stockInfo.expiry.formattedDate,
+                                   bodyColor: Color(hex: stockInfo.expiry.color))
+                    }
                     
                     Spacer()
                     
-                    Text(seller.priceInfo.price.formattedPrice)
+                    Text(seller.priceInfo?.price.formattedPrice ?? "")
                         .medicoText(textWeight: .bold,
                                     fontSize: 16,
                                     multilineTextAlignment: .leading)
@@ -263,47 +277,51 @@ struct BuyProductScreen: View {
                                                     fontSize: 16,
                                                     multilineTextAlignment: .leading)
                                     
-                                    HStack {
-                                        Text(info.priceInfo.price.formattedPrice)
-                                            .medicoText(textWeight: .bold,
-                                                        fontSize: 18,
-                                                        multilineTextAlignment: .leading)
+                                    if let priceInfo = info.priceInfo {
+                                        HStack {
+                                            Text(priceInfo.price.formattedPrice)
+                                                .medicoText(textWeight: .bold,
+                                                            fontSize: 18,
+                                                            multilineTextAlignment: .leading)
+                                            
+                                            Spacer()
+                                            
+                                            DetailView(titleLocalizationKey: "mrp:",
+                                                       bodyText: priceInfo.mrp.formattedPrice)
+                                        }
                                         
-                                        Spacer()
-                                        
-                                        DetailView(titleLocalizationKey: "mrp:",
-                                                   bodyText: info.priceInfo.mrp.formattedPrice)
+                                        HStack {
+                                            Text(product.code)
+                                                .medicoText(color: .grey3,
+                                                            multilineTextAlignment: .leading)
+                                            
+                                            Spacer()
+                                            
+                                            DetailView(titleLocalizationKey: "margin:",
+                                                       bodyText: priceInfo.marginPercent)
+                                        }
                                     }
                                     
-                                    HStack {
-                                        Text(product.code)
-                                            .medicoText(color: .grey3,
-                                                        multilineTextAlignment: .leading)
-                                        
-                                        Spacer()
-                                        
-                                        DetailView(titleLocalizationKey: "margin:",
-                                                   bodyText: info.priceInfo.marginPercent)
-                                    }
-                                    
-                                    HStack {
-                                        let expiryColor = Color(hex: info.stockInfo.expiry.color)
-                                        
-                                        DetailView(titleLocalizationKey: "expiry:",
-                                                   bodyText: info.stockInfo.expiry.formattedDate,
-                                                   bodyColor: expiryColor)
-                                            .padding(.horizontal, 6)
-                                            .padding(.vertical, 2)
-                                            .background(
-                                                expiryColor
-                                                    .opacity(0.12)
-                                                    .cornerRadius(4)
-                                            )
-                                        
-                                        Spacer()
-                                        
-                                        DetailView(titleLocalizationKey: "stocks:",
-                                                   bodyText: String(info.stockInfo.availableQty))
+                                    if let stockInfo = info.stockInfo {
+                                        HStack {
+                                            let expiryColor = Color(hex: stockInfo.expiry.color)
+                                            
+                                            DetailView(titleLocalizationKey: "expiry:",
+                                                       bodyText: stockInfo.expiry.formattedDate,
+                                                       bodyColor: expiryColor)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(
+                                                    expiryColor
+                                                        .opacity(0.12)
+                                                        .cornerRadius(4)
+                                                )
+                                            
+                                            Spacer()
+                                            
+                                            DetailView(titleLocalizationKey: "stocks:",
+                                                       bodyText: String(stockInfo.availableQty))
+                                        }
                                     }
                                 }
                             }
@@ -357,7 +375,7 @@ struct BuyProductScreen: View {
                     }
                     .padding(.vertical, 8)
                     
-                    info.stockInfo.statusColor.color
+                    info.stockInfo?.statusColor.color
                         .cornerRadius(5, corners: [.topLeft, .bottomLeft])
                         .frame(width: 5)
                 }
@@ -459,4 +477,160 @@ struct BuyProductScreen: View {
         }
     }
     
+    private struct ChooseQuoteView: View {
+        let scope: BuyProductScopeChooseQuote
+        
+        @ObservedObject var selectedOption: SwiftDataSource<BuyProductScopeChooseQuote.Option>
+        
+        @ObservedObject var availableStockists: SwiftDataSource<NSArray>
+        @ObservedObject var selectedStockist: SwiftDataSource<DataSellerInfo>
+        
+        @ObservedObject var quantities: SwiftDataSource<NSDictionary>
+        
+        var body: some View {
+            VStack(spacing: 16) {
+                let quantities = self.quantities.value as? [DataSellerInfo: Int]
+                
+                getQuoteOptionView(localizationKey: "quote_existing_stockist",
+                                   isSelected: self.selectedOption.value == .existingStockist,
+                                   quantity: self.selectedStockist.value == nil ? 0 : (quantities?[self.selectedStockist.value!] ?? 0),
+                                   needsSelectedStockist: true,
+                                   onQuantityIncrease: {
+                                      if let selectedStockist = self.selectedStockist.value {
+                                          scope.inc(item: selectedStockist)
+                                      }
+                                   },
+                                   onQuantityDecrease: {
+                                      if let selectedStockist = self.selectedStockist.value {
+                                          scope.dec(item: selectedStockist)
+                                      }
+                                   },
+                                   onButtonTap: {
+                                      if let selectedStockist = self.selectedStockist.value {
+                                          scope.select(item: selectedStockist)
+                                      }
+                                   }) {
+                    scope.toggleOption(option: .existingStockist)
+                }
+                
+                getQuoteOptionView(localizationKey: "quote_any_stockist",
+                                   isSelected: self.selectedOption.value == .anyone,
+                                   quantity: quantities?[DataSellerInfo.Anyone().anyone] ?? 0,
+                                   needsSelectedStockist: false,
+                                   onQuantityIncrease: { scope.inc(item: DataSellerInfo.Anyone().anyone) },
+                                   onQuantityDecrease: { scope.dec(item: DataSellerInfo.Anyone().anyone) },
+                                   onButtonTap: { _ = scope.selectAnyone() }) {
+                    scope.toggleOption(option: .anyone)
+                }
+            }
+            .padding(.horizontal, 16)
+            .scrollView()
+        }
+        
+        init(scope: BuyProductScopeChooseQuote) {
+            self.scope = scope
+            
+            self.selectedOption = SwiftDataSource(dataSource: scope.selectedOption)
+            
+            self.availableStockists = SwiftDataSource(dataSource: scope.items)
+            self.selectedStockist = SwiftDataSource(dataSource: scope.chosenSeller)
+            
+            self.quantities = SwiftDataSource(dataSource: scope.quantities)
+        }
+        
+        private func getQuoteOptionView(localizationKey: String,
+                                        isSelected: Bool,
+                                        quantity: Int,
+                                        needsSelectedStockist: Bool,
+                                        onQuantityIncrease: @escaping () -> (),
+                                        onQuantityDecrease: @escaping () -> (),
+                                        onButtonTap: @escaping () -> (),
+                                        onToggle: @escaping () -> ()) -> some View {
+            let horizontalPadding: CGFloat = 20
+        
+            return AnyView(
+                VStack(alignment: .leading, spacing: 20)  {
+                    HStack(spacing: 16) {
+                        Circle()
+                            .foregroundColor(appColor: isSelected ? .lightBlue : .white)
+                            .frame(width: 15, height: 15)
+                            .padding(5)
+                            .background(
+                                Circle()
+                                    .stroke(lineWidth: 1)
+                                    .foregroundColor(appColor: .lightBlue)
+                                    .opacity(isSelected ? 1 : 0.25)
+                            )
+                            .onTapGesture {
+                                onToggle()
+                            }
+                        
+                        LocalizedText(localizationKey: localizationKey,
+                                      textWeight: isSelected ? .bold : .medium,
+                                      fontSize: 16,
+                                      color: .black,
+                                      multilineTextAlignment: .leading)
+                    }
+                    .padding(.horizontal, horizontalPadding)
+                    
+                    if isSelected {
+                        AppColor.darkBlue.color
+                            .opacity(0.12)
+                            .frame(height: 1)
+                        
+                        VStack(alignment: .leading, spacing: 30) {
+                            if needsSelectedStockist,
+                               let availableStockists = self.availableStockists.value as? [DataSellerInfo] {
+                                PickerSelector(placeholder: "select_stockists",
+                                               chosenElement: self.selectedStockist.value?.tradeName,
+                                               data: availableStockists.map { $0.tradeName },
+                                               optionsHeight: 40,
+                                               backgroundColor: .primary,
+                                               chevronColor: .lightBlue) { tradeName in
+                                    if let seller = availableStockists.first(where: { $0.tradeName == tradeName }) {
+                                        self.scope.chooseSeller(sellerInfo: seller)
+                                    }
+                                }
+                            }
+                            
+                            HStack {
+                                if !scope.isSeasonBoy {
+                                    NumberPicker(quantity: quantity,
+                                                 onQuantityIncrease: onQuantityIncrease,
+                                                 onQuantityDecrease: onQuantityDecrease,
+                                                 longPressEnabled: true)
+                                    
+                                    Spacer()
+                                
+                                    MedicoButton(localizedStringKey: "add_to_cart",
+                                                 isEnabled: quantity > 0 && (!needsSelectedStockist || self.selectedStockist.value != nil),
+                                                 width: 120,
+                                                 height: 48,
+                                                 fontSize: 15,
+                                                 fontWeight: .bold) {
+                                        onButtonTap()
+                                    }
+                                }
+                                else {
+                                    MedicoButton(localizedStringKey: "select",
+                                                 isEnabled: !needsSelectedStockist || self.selectedStockist.value != nil,
+                                                 height: 48) {
+                                        onButtonTap()
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.top, 10)
+                        .padding(.horizontal, horizontalPadding)
+                    }
+                }
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundColor(appColor: .white)
+                )
+            )
+        }
+    }
 }

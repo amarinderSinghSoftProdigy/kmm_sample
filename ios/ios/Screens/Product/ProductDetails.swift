@@ -104,7 +104,7 @@ struct ProductDetails: View {
             case DataBuyingOption.quote:
                 MedicoButton(localizedStringKey: "get_quote",
                              buttonColor: .clear) {
-
+                    scope.buy()
                 }
                 .background(RoundedRectangle(cornerRadius: 8)
                                 .stroke(AppColor.yellow.color, lineWidth: 2))
