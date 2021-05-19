@@ -295,10 +295,9 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.location) {
                 Dropdown(
-                    modifier = Modifier.fillMaxWidth(),
                     rememberChooseKey = locationData.value,
-                    value = registration.value.location.takeIf { it.isNotEmpty() }
-                        ?: stringResource(id = R.string.location),
+                    value = registration.value.location,
+                    hint = stringResource(id = R.string.location),
                     dropDownItems = locationData.value?.locations.orEmpty(),
                     onSelected = { scope.changeLocation(it) }
                 )
@@ -306,10 +305,9 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.city) {
                 Dropdown(
-                    modifier = Modifier.fillMaxWidth(),
                     rememberChooseKey = locationData.value,
-                    value = registration.value.city.takeIf { it.isNotEmpty() }
-                        ?: stringResource(id = R.string.city),
+                    value = registration.value.city,
+                    hint = stringResource(id = R.string.city),
                     dropDownItems = locationData.value?.cities.orEmpty(),
                     onSelected = { scope.changeCity(it) }
                 )

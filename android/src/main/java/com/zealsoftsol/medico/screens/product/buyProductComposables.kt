@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.screens.product
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +23,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -56,6 +60,7 @@ import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.WithTradeName
+import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -66,7 +71,7 @@ import dev.chrisbanes.accompanist.coil.CoilImage
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
@@ -155,7 +160,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         text = buildAnnotatedString {
                             append("MRP: ")
                             val startIndex = length
-                            append(it.priceInfo.mrp.formattedPrice)
+                            append(it.priceInfo?.mrp?.formattedPrice.orEmpty())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -179,7 +184,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         text = buildAnnotatedString {
                             append("Stock: ")
                             val startIndex = length
-                            append(it.stockInfo.availableQty.toString())
+                            append(it.stockInfo?.availableQty?.toString().orEmpty())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -203,7 +208,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         text = buildAnnotatedString {
                             append("Expiry: ")
                             val startIndex = length
-                            append(it.stockInfo.expiry.formattedDate)
+                            append(it.stockInfo?.expiry?.formattedDate.orEmpty())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.orange,
@@ -217,7 +222,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = it.priceInfo.price.formattedPrice,
+                        text = it.priceInfo?.price?.formattedPrice.orEmpty(),
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W700,
                         fontSize = 16.sp,
@@ -226,58 +231,190 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             }
         }
         Space(16.dp)
-        val filter = scope.itemsFilter.flow.collectAsState()
-        Box(
-            contentAlignment = Alignment.CenterStart,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            if (filter.value.isEmpty()) {
-                Text(
-                    text = stringResource(id = R.string.choose_seller),
-                    color = ConstColors.gray.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(start = 2.dp),
-                )
-            }
-            BasicTextField(
-                value = filter.value,
-                cursorBrush = SolidColor(ConstColors.lightBlue),
-                onValueChange = { scope.filterItems(it) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
+        (scope as? BuyProductScope.ChooseQuote)?.let { chooseQuote ->
+            val selectedOption = chooseQuote.selectedOption.flow.collectAsState()
+            val sellers = chooseQuote.items.flow.collectAsState()
+            val chosenSeller = chooseQuote.chosenSeller.flow.collectAsState()
+            val quantities = scope.quantities.flow.collectAsState()
+
+            QuotedItem(
+                title = stringResource(id = R.string.quote_existing_stockist),
+                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST,
+                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST) },
+                body = {
+                    Column {
+                        Dropdown(
+                            rememberChooseKey = chosenSeller.value,
+                            value = chosenSeller.value?.tradeName,
+                            hint = stringResource(id = R.string.select_stockist),
+                            dropDownItems = sellers.value.map { it.tradeName },
+                            backgroundColor = MaterialTheme.colors.primary,
+                            arrowTintColor = ConstColors.lightBlue,
+                            onSelected = { selected -> chooseQuote.chooseSeller(sellers.value.first { it.tradeName == selected }) },
+                        )
+                        Space(16.dp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (!chooseQuote.isSeasonBoy) {
+                                val quantity = chosenSeller.value?.let { quantities.value[it] } ?: 0
+                                PlusMinusQuantity(
+                                    quantity = quantity,
+                                    max = Int.MAX_VALUE,
+                                    isEnabled = chosenSeller.value != null,
+                                    onInc = { chooseQuote.inc(chosenSeller.value!!) },
+                                    onDec = { chooseQuote.dec(chosenSeller.value!!) },
+                                )
+                                MedicoSmallButton(
+                                    text = stringResource(id = R.string.add_to_cart),
+                                    isEnabled = quantity > 0 && chosenSeller.value != null,
+                                    onClick = { chooseQuote.select(chosenSeller.value!!) },
+                                )
+                            } else {
+                                MedicoSmallButton(
+                                    text = stringResource(id = R.string.select),
+                                    widthModifier = { fillMaxWidth() },
+                                    isEnabled = chosenSeller.value != null,
+                                    onClick = { chooseQuote.select(chosenSeller.value!!) },
+                                )
+                            }
+                        }
+                    }
+                },
             )
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null,
-                tint = MaterialTheme.colors.background,
-                modifier = Modifier.size(24.dp).align(Alignment.CenterEnd),
+            Space(16.dp)
+            QuotedItem(
+                title = stringResource(id = R.string.quote_anyone),
+                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.ANYONE,
+                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.ANYONE) },
+                body = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (!chooseQuote.isSeasonBoy) {
+                            val quantity = quantities.value[SellerInfo.anyone] ?: 0
+                            PlusMinusQuantity(
+                                quantity = quantity,
+                                max = Int.MAX_VALUE,
+                                isEnabled = true,
+                                onInc = { chooseQuote.inc(SellerInfo.anyone) },
+                                onDec = { chooseQuote.dec(SellerInfo.anyone) },
+                            )
+                            MedicoSmallButton(
+                                text = stringResource(id = R.string.add_to_cart),
+                                isEnabled = quantity > 0,
+                                onClick = { chooseQuote.selectAnyone() },
+                            )
+                        } else {
+                            MedicoSmallButton(
+                                text = stringResource(id = R.string.select),
+                                widthModifier = { fillMaxWidth() },
+                                isEnabled = true,
+                                onClick = { chooseQuote.selectAnyone() },
+                            )
+                        }
+                    }
+                }
             )
-        }
-        Space(12.dp)
-        Divider(modifier = Modifier.padding(horizontal = 16.dp))
-        Space(12.dp)
-        val quantities = scope.quantities.flow.collectAsState()
-        val sellers = scope.items.flow.collectAsState()
-        sellers.value.forEach {
-            when (it) {
-                is SellerInfo -> SellerInfoItem(
-                    product = scope.product,
-                    sellerInfo = it,
-                    isSelectable = (scope as? BuyProductScope.ChooseStockist)?.isSeasonBoy == true,
-                    quantity = quantities.value[it] ?: 0,
-                    onAddToCart = { scope.select(it) },
-                    onInc = { scope.inc(it) },
-                    onDec = { scope.dec(it) },
+        } ?: run {
+            val filter = scope.itemsFilter.flow.collectAsState()
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                if (filter.value.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.choose_seller),
+                        color = ConstColors.gray.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 2.dp),
+                    )
+                }
+                BasicTextField(
+                    value = filter.value,
+                    cursorBrush = SolidColor(ConstColors.lightBlue),
+                    onValueChange = { scope.filterItems(it) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
                 )
-                is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
-                    sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo,
-                    seasonBoyRetailer = it,
-                    quantity = quantities.value[it] ?: 0,
-                    onAddToCart = { scope.select(it) },
-                    onInc = { scope.inc(it) },
-                    onDec = { scope.dec(it) },
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.background,
+                    modifier = Modifier.size(24.dp).align(Alignment.CenterEnd),
                 )
             }
             Space(12.dp)
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            Space(12.dp)
+            val quantities = scope.quantities.flow.collectAsState()
+            val sellers = scope.items.flow.collectAsState()
+            sellers.value.forEach {
+                when (it) {
+                    is SellerInfo -> SellerInfoItem(
+                        product = scope.product,
+                        sellerInfo = it,
+                        isSelectable = (scope as? BuyProductScope.ChooseStockist)?.isSeasonBoy == true,
+                        quantity = quantities.value[it] ?: 0,
+                        onAddToCart = { scope.select(it) },
+                        onInc = { scope.inc(it) },
+                        onDec = { scope.dec(it) },
+                    )
+                    is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
+                        sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo!!,
+                        seasonBoyRetailer = it,
+                        quantity = quantities.value[it] ?: 0,
+                        onAddToCart = { scope.select(it) },
+                        onInc = { scope.inc(it) },
+                        onDec = { scope.dec(it) },
+                    )
+                }
+                Space(12.dp)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun QuotedItem(
+    title: String,
+    isSelected: Boolean,
+    onToggle: () -> Unit,
+    body: @Composable () -> Unit,
+) {
+    Surface(
+        color = Color.White,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = isSelected,
+                    enabled = true,
+                    onClick = onToggle,
+                    colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+                )
+                Space(16.dp)
+                Text(
+                    text = title,
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = if (isSelected) FontWeight.W700 else FontWeight.W400,
+                )
+            }
+            AnimatedVisibility(visible = isSelected) {
+                Column {
+                    Space(16.dp)
+                    Divider()
+                    Space(16.dp)
+                    body()
+                }
+            }
         }
     }
 }
@@ -293,7 +430,7 @@ private fun SellerInfoItem(
     onDec: () -> Unit,
 ) {
     BaseSellerItem(
-        stockStatus = sellerInfo.stockInfo.status,
+        stockStatus = sellerInfo.stockInfo?.status,
         sellerName = sellerInfo.tradeName,
         mainBodyContent = {
             Text(
@@ -312,7 +449,7 @@ private fun SellerInfoItem(
             ) {
                 Column {
                     Text(
-                        text = sellerInfo.priceInfo.price.formattedPrice,
+                        text = sellerInfo.priceInfo?.price?.formattedPrice.orEmpty(),
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W700,
                         fontSize = 16.sp,
@@ -324,32 +461,33 @@ private fun SellerInfoItem(
                         fontSize = 12.sp,
                     )
                     Space(4.dp)
-                    val expiry = sellerInfo.stockInfo.expiry
-                    val color = Color(expiry.color.toColorInt())
-                    Box(
-                        modifier = Modifier.background(
-                            color = color.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.small
-                        )
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append("Expiry: ")
-                                val startIndex = length
-                                append(expiry.formattedDate)
-                                addStyle(
-                                    SpanStyle(
-                                        color = color,
-                                        fontWeight = FontWeight.W800
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(4.dp),
-                        )
+                    sellerInfo.stockInfo?.expiry?.let { expiry ->
+                        val color = Color(expiry.color.toColorInt())
+                        Box(
+                            modifier = Modifier.background(
+                                color = color.copy(alpha = 0.1f),
+                                shape = MaterialTheme.shapes.small
+                            )
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Expiry: ")
+                                    val startIndex = length
+                                    append(expiry.formattedDate)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = color,
+                                            fontWeight = FontWeight.W800
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(4.dp),
+                            )
+                        }
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -357,7 +495,7 @@ private fun SellerInfoItem(
                         text = buildAnnotatedString {
                             append("MRP: ")
                             val startIndex = length
-                            append(sellerInfo.priceInfo.mrp.formattedPrice)
+                            append(sellerInfo.priceInfo?.mrp?.formattedPrice.orEmpty())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -375,7 +513,7 @@ private fun SellerInfoItem(
                         text = buildAnnotatedString {
                             append("Margin: ")
                             val startIndex = length
-                            append(sellerInfo.priceInfo.marginPercent)
+                            append(sellerInfo.priceInfo?.marginPercent.orEmpty())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -393,7 +531,7 @@ private fun SellerInfoItem(
                         text = buildAnnotatedString {
                             append("Stock: ")
                             val startIndex = length
-                            append(sellerInfo.stockInfo.availableQty.toString())
+                            append(sellerInfo.stockInfo?.availableQty.toString())
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -459,7 +597,8 @@ private fun SellerInfoItem(
             } else {
                 PlusMinusQuantity(
                     quantity = quantity,
-                    max = sellerInfo.stockInfo.availableQty,
+                    max = sellerInfo.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                    isEnabled = true,
                     onInc = onInc,
                     onDec = onDec,
                 )
@@ -483,7 +622,7 @@ private fun SeasonBoyReatilerInfoItem(
     onDec: () -> Unit,
 ) {
     BaseSellerItem(
-        stockStatus = sellerInfo.stockInfo.status,
+        stockStatus = sellerInfo.stockInfo?.status,
         sellerName = seasonBoyRetailer.tradeName,
         mainBodyContent = {
             Text(
@@ -534,7 +673,8 @@ private fun SeasonBoyReatilerInfoItem(
         onBottomOfDivider = {
             PlusMinusQuantity(
                 quantity = quantity,
-                max = sellerInfo.stockInfo.availableQty,
+                max = sellerInfo.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
             )
@@ -549,7 +689,7 @@ private fun SeasonBoyReatilerInfoItem(
 
 @Composable
 private fun BaseSellerItem(
-    stockStatus: StockStatus,
+    stockStatus: StockStatus?,
     sellerName: String,
     mainBodyContent: @Composable ColumnScope.() -> Unit,
     onTopOfDivider: @Composable (RowScope.() -> Unit)?,
@@ -565,6 +705,7 @@ private fun BaseSellerItem(
                 StockStatus.IN_STOCK -> ConstColors.green
                 StockStatus.LIMITED_STOCK -> ConstColors.orange
                 StockStatus.OUT_OF_STOCK -> ConstColors.red
+                null -> null
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
@@ -603,11 +744,14 @@ private fun BaseSellerItem(
                     onBottomOfDivider()
                 }
             }
-            val maxWidth =
-                LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp - 5.dp
-            Box(
-                modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
-            )
+            if (labelColor != null) {
+                val maxWidth =
+                    LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp - 5.dp
+                Box(
+                    modifier = Modifier.matchParentSize().padding(end = maxWidth)
+                        .background(labelColor)
+                )
+            }
         }
     }
 }
@@ -616,6 +760,7 @@ private fun BaseSellerItem(
 fun PlusMinusQuantity(
     modifier: Modifier = Modifier,
     quantity: Int,
+    isEnabled: Boolean,
     max: Int = Int.MAX_VALUE,
     onInc: () -> Unit,
     onDec: () -> Unit,
@@ -627,25 +772,27 @@ fun PlusMinusQuantity(
     ) {
         Icon(
             imageVector = Icons.Default.Remove,
-            tint = if (quantity > 0) ConstColors.lightBlue else ConstColors.gray.copy(
+            tint = if (isEnabled && quantity > 0) ConstColors.lightBlue else ConstColors.gray.copy(
                 alpha = 0.5f
             ),
             contentDescription = null,
-            modifier = if (quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
+            modifier = if (isEnabled && quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
         )
         Space(12.dp)
         Text(
             text = quantity.toString(),
-            color = MaterialTheme.colors.background,
+            color = MaterialTheme.colors.background.copy(if (isEnabled) 1f else 0.5f),
             fontWeight = FontWeight.W700,
             fontSize = 22.sp,
         )
         Space(12.dp)
         Icon(
             imageVector = Icons.Default.Add,
-            tint = if (quantity < max) ConstColors.lightBlue else ConstColors.gray.copy(alpha = 0.5f),
+            tint = if (isEnabled && quantity < max) ConstColors.lightBlue else ConstColors.gray.copy(
+                alpha = 0.5f
+            ),
             contentDescription = null,
-            modifier = if (quantity < max) Modifier.clickable(onClick = onInc) else Modifier,
+            modifier = if (isEnabled && quantity < max) Modifier.clickable(onClick = onInc) else Modifier,
         )
     }
 }

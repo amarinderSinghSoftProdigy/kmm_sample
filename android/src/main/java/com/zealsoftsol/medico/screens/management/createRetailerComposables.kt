@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -201,19 +200,17 @@ private fun Address(scope: ManagementScope.AddRetailer.Address, scrollState: Scr
     )
     Space(dp = 12.dp)
     Dropdown(
-        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
-        value = registration.value.location.takeIf { it.isNotEmpty() }
-            ?: stringResource(id = R.string.location),
+        value = registration.value.location,
+        hint = stringResource(id = R.string.location),
         dropDownItems = locationData.value?.locations.orEmpty(),
         onSelected = { scope.changeLocation(it) }
     )
     Space(dp = 12.dp)
     Dropdown(
-        modifier = Modifier.fillMaxWidth(),
         rememberChooseKey = locationData.value,
-        value = registration.value.city.takeIf { it.isNotEmpty() }
-            ?: stringResource(id = R.string.city),
+        value = registration.value.city,
+        hint = stringResource(id = R.string.city),
         dropDownItems = locationData.value?.cities.orEmpty(),
         onSelected = { scope.changeCity(it) }
     )
