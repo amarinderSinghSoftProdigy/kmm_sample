@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AlternateProductData
+import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.UserType
@@ -26,7 +27,7 @@ internal class ProductEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
         is Event.Action.Product.SelectFromSearch -> selectProduct(event.productCode)
         is Event.Action.Product.SelectAlternative -> selectAlternative(event.data)
-        is Event.Action.Product.BuyProduct -> buyProduct(event.productCode)
+        is Event.Action.Product.BuyProduct -> buyProduct(event.productCode, event.buyingOption)
         is Event.Action.Product.FilterBuyProduct -> filterProduct(event.filter)
         is Event.Action.Product.SelectSeasonBoyRetailer -> selectSeasonBoyRetailer(
             event.productCode,
@@ -64,18 +65,28 @@ internal class ProductEventDelegate(
         )
     }
 
-    private suspend fun buyProduct(productCode: String) {
+    private suspend fun buyProduct(productCode: String, buyingOption: BuyingOption) {
         val (result, isSuccess) = navigator.withProgress {
-            networkProductScope.buyProductInfo(productCode)
+            when (buyingOption) {
+                BuyingOption.BUY -> networkProductScope.buyProductInfo(productCode)
+                BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(productCode)
+            }
         }
         if (isSuccess && result != null) {
-            navigator.setScope(
-                BuyProductScope.ChooseStockist(
-                    isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY,
+            val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
+            val nextScope = when (buyingOption) {
+                BuyingOption.BUY -> BuyProductScope.ChooseStockist(
+                    isSeasonBoy = isSeasonBoy,
                     product = result.product,
-                    sellersInfo = DataSource(result.sellerInfo)
-                ),
-            )
+                    sellersInfo = DataSource(result.sellerInfo),
+                )
+                BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
+                    isSeasonBoy = isSeasonBoy,
+                    product = result.product,
+                    sellersInfo = DataSource(result.sellerInfo),
+                )
+            }
+            navigator.setScope(nextScope)
         } else {
             navigator.setHostError(ErrorCode())
         }
@@ -94,13 +105,13 @@ internal class ProductEventDelegate(
         }
     }
 
-    private suspend fun selectSeasonBoyRetailer(productCode: String, sellerInfo: SellerInfo) {
+    private suspend fun selectSeasonBoyRetailer(productCode: String, sellerInfo: SellerInfo?) {
         navigator.withScope<BuyProductScope<WithTradeName>> {
             val (result, isSuccess) = withProgress {
                 networkProductScope.buyProductSelectSeasonBoyRetailer(
                     productCode,
                     userRepo.requireUser().unitCode,
-                    sellerInfo.unitCode
+                    sellerInfo?.unitCode
                 )
             }
             if (isSuccess && result != null) {

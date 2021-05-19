@@ -41,14 +41,82 @@ sealed class BuyProductScope<T : WithTradeName>(
     fun filterItems(filter: String) =
         EventCollector.sendEvent(Event.Action.Product.FilterBuyProduct(filter))
 
+    class ChooseQuote(
+        val isSeasonBoy: Boolean,
+        val selectedOption: DataSource<Option> = DataSource(Option.EXISTING_STOCKIST),
+        val chosenSeller: DataSource<SellerInfo?> = DataSource(null),
+        product: ProductSearch,
+        sellersInfo: DataSource<List<SellerInfo>>,
+    ) : BuyProductScope<SellerInfo>(product, sellersInfo) {
+
+        fun toggleOption(option: Option) {
+            selectedOption.value = option
+        }
+
+        fun chooseSeller(sellerInfo: SellerInfo) {
+            chosenSeller.value = sellerInfo
+        }
+
+        override fun ensureMaxQuantity(item: SellerInfo, count: Int): Boolean = true
+
+        override fun select(item: SellerInfo): Boolean {
+            val event = if (isSeasonBoy) {
+                Event.Action.Product.SelectSeasonBoyRetailer(
+                    product.code,
+                    item,
+                )
+            } else {
+                Event.Action.Cart.AddItem(
+                    item.unitCode,
+                    product.code,
+                    product.buyingOption,
+                    CartIdentifier(item.spid),
+                    quantities.value[item]!!
+                )
+            }
+            return EventCollector.sendEvent(event)
+        }
+
+        fun selectAnyone(): Boolean {
+            val event = if (isSeasonBoy) {
+                Event.Action.Product.SelectSeasonBoyRetailer(
+                    product.code,
+                    sellerInfo = null,
+                )
+            } else {
+                Event.Action.Cart.AddItem(
+                    sellerUnitCode = null,
+                    product.code,
+                    product.buyingOption,
+                    id = null,
+                    quantities.value[SellerInfo.anyone]!!,
+                )
+            }
+            return EventCollector.sendEvent(event)
+        }
+
+        enum class Option {
+            EXISTING_STOCKIST, ANYONE
+        }
+    }
+
     class ChooseStockist(
         val isSeasonBoy: Boolean,
         product: ProductSearch,
-        sellersInfo: DataSource<List<SellerInfo>>
+        sellersInfo: DataSource<List<SellerInfo>>,
     ) : BuyProductScope<SellerInfo>(product, sellersInfo) {
 
+        init {
+            if (!isSeasonBoy) {
+                quantities.value = allItems.filter { it.cartInfo != null }
+                    .map { it to it.cartInfo!!.quantity.value.toInt() }.toMap()
+            }
+        }
+
         override fun ensureMaxQuantity(item: SellerInfo, count: Int): Boolean =
-            count < item.stockInfo.availableQty
+            item.stockInfo?.let {
+                count < it.availableQty
+            } ?: true
 
         override fun select(item: SellerInfo): Boolean {
             val event = if (isSeasonBoy) {
@@ -71,19 +139,26 @@ sealed class BuyProductScope<T : WithTradeName>(
 
     class ChooseRetailer(
         product: ProductSearch,
-        val sellerInfo: SellerInfo,
+        val sellerInfo: SellerInfo?,
         retailers: DataSource<List<SeasonBoyRetailer>>,
     ) : BuyProductScope<SeasonBoyRetailer>(product, retailers) {
 
+        init {
+            quantities.value = allItems.filter { it.cartInfo != null }
+                .map { it to it.cartInfo!!.quantity.value.toInt() }.toMap()
+        }
+
         override fun ensureMaxQuantity(item: SeasonBoyRetailer, count: Int): Boolean =
-            count < sellerInfo.stockInfo.availableQty
+            sellerInfo?.stockInfo?.let {
+                count < it.availableQty
+            } ?: true
 
         override fun select(item: SeasonBoyRetailer) = EventCollector.sendEvent(
             Event.Action.Cart.AddItem(
-                sellerInfo.unitCode,
+                sellerInfo?.unitCode,
                 product.code,
                 product.buyingOption,
-                CartIdentifier(sellerInfo.spid, seasonBoyRetailerId = item.id),
+                CartIdentifier(spid = sellerInfo?.spid, seasonBoyRetailerId = item.id),
                 quantities.value[item]!!
             )
         )

@@ -32,7 +32,12 @@ class ProductInfoScope(
                     )
                 )
             } ?: false
-        } ?: EventCollector.sendEvent(Event.Action.Product.BuyProduct(product.code))
+        } ?: EventCollector.sendEvent(
+            Event.Action.Product.BuyProduct(
+                product.code,
+                product.buyingOption
+            )
+        )
     }
 
     fun toggleDetails() {

@@ -30,10 +30,10 @@ class CartRepo(
 
     suspend fun addCartItem(
         unitCode: String,
-        sellerUnitCode: String,
+        sellerUnitCode: String?,
         productCode: String,
         buyingOption: BuyingOption,
-        id: CartIdentifier,
+        id: CartIdentifier?,
         quantity: Int,
     ) = cartStoresScope.addCartEntry(
         CartRequest(

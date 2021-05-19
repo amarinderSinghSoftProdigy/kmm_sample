@@ -50,10 +50,10 @@ internal class CartEventDelegate(
     }
 
     private suspend fun addItem(
-        sellerUnitCode: String,
+        sellerUnitCode: String?,
         productCode: String,
         buyingOption: BuyingOption,
-        id: CartIdentifier,
+        id: CartIdentifier?,
         quantity: Int,
     ) = async {
         val error = navigator.withProgress {
