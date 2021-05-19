@@ -337,7 +337,8 @@ struct BuyProductScreen: View {
                                 HStack {
                                     NumberPicker(quantity: quantity,
                                                  onQuantityIncrease: { onQuantityIncrease(self.info) },
-                                                 onQuantityDecrease: { onQuantityDecrease(self.info) })
+                                                 onQuantityDecrease: { onQuantityDecrease(self.info) },
+                                                 longPressEnabled: true)
                                     
                                     Spacer()
                                     
@@ -403,7 +404,8 @@ struct BuyProductScreen: View {
                     HStack {
                         NumberPicker(quantity: quantity,
                                      onQuantityIncrease: { onQuantityIncrease(self.info) },
-                                     onQuantityDecrease: { onQuantityDecrease(self.info) })
+                                     onQuantityDecrease: { onQuantityDecrease(self.info) },
+                                     longPressEnabled: true)
                         
                         Spacer()
                         
