@@ -169,6 +169,9 @@ sealed class Event {
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object ClearCart : Cart()
+            object PreviewCart : Cart()
+            object ConfirmCartOrder : Cart()
+            data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
         }
 
         sealed class Help : Action() {

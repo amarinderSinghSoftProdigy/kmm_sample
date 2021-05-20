@@ -12,8 +12,11 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -511,6 +514,22 @@ class NetworkClient(
             )
         }.getWrappedBody()
     }
+
+    override suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartConfirmData>>("${baseUrl.url}/cart/confirm") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
 
     override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
         client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {

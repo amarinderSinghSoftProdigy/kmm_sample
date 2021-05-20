@@ -44,7 +44,7 @@ interface ScopeNotification {
     /**
      * Localized string key
      */
-    val title: String
+    val title: String?
 
     /**
      * Localized string key
