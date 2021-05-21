@@ -3,8 +3,11 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -153,6 +156,9 @@ interface NetworkScope {
             cartId: String,
             sellerUnitCode: String
         ): Response.Wrapped<CartData>
+
+        suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData>
+        suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse>
     }
 
     interface Help : NetworkScope {

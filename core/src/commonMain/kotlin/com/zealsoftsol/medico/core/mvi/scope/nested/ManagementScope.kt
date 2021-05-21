@@ -142,7 +142,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
     ) : ScopeNotification {
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
-        override val title: String = "choose_payment_method"
+        override val title: String? = "choose_payment_method"
         override val body: String? = null
 
         fun changePaymentMethod(paymentMethod: PaymentMethod) {
@@ -170,7 +170,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
     object ThankYou : ScopeNotification {
         override val isSimple: Boolean = true
         override val isDismissible: Boolean = true
-        override val title: String = "thank_you_for_request"
+        override val title: String? = "thank_you_for_request"
         override val body: String? = null
     }
 
@@ -178,7 +178,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         override val dismissEvent: Event = Event.Transition.Refresh
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = true
-        override val title: String = "congratulations"
+        override val title: String? = "congratulations"
         override val body: String = "retailer_added_template"
     }
 

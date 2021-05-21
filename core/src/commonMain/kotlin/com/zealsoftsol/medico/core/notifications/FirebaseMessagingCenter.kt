@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.notifications
 
 import com.zealsoftsol.medico.core.compatDispatcher
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.network.createJson
 import com.zealsoftsol.medico.core.repository.NotificationRepo
@@ -21,7 +20,6 @@ internal class FirebaseMessagingCenter(
     private val json by lazy { createJson() }
 
     override fun handleMessage(data: Map<String, Any>) {
-        data.log("handle message")
         val notificationJson = data["NOTIFICATIONS"] as String
         (data["unreadNotifications"] as String).toIntOrNull()
             ?.let(notificationRepo::updateUnreadMessages)

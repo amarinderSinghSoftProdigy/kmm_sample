@@ -15,6 +15,19 @@ data class CartRequest(
 )
 
 @Serializable
+data class CartOrderRequest(
+    val cartId: String,
+    val buyerUnitCode: String,
+)
+
+@Serializable
+data class CartConfirmData(
+    val cartData: CartData,
+//    val modifiedEntries
+//    val addressData: CustomerAddressData
+)
+
+@Serializable
 data class Total(
     val formattedPrice: String,
     val price: Double,
@@ -35,6 +48,7 @@ data class SellerCart(
     val items: List<CartItem>,
     @SerialName("paymentType")
     val paymentMethod: PaymentMethod,
+    val total: Total,
     val sellerCode: String,
     val sellerName: String,
 )
@@ -53,6 +67,8 @@ data class CartItem(
     val manufacturerCode: String,
     val manufacturerName: String,
     val price: FormattedData<Double>,
+    @SerialName("totalPrice")
+    val subtotalPrice: FormattedData<Double>,
     val productCode: String,
     val productName: String,
     val quantity: FormattedData<Double>,
@@ -74,4 +90,27 @@ data class CartIdentifier(
 @Serializable
 data class CartInfo(
     val quantity: FormattedData<Double>,
+)
+
+@Serializable
+data class CartSubmitResponse(
+    @SerialName("buyerEmail")
+    val email: String,
+    val orderDate: String,
+    val orderTime: String,
+    val sellersOrder: List<SellerOrder>,
+    @SerialName("totalAmount")
+    val total: Total,
+)
+
+@Serializable
+data class SellerOrder(
+    val orderId: String,
+    @SerialName("sellerUnitCode")
+    val unitCode: String,
+    val tradeName: String,
+    @SerialName("type")
+    val paymentMethod: PaymentMethod,
+    @SerialName("totalAmount")
+    val total: Total,
 )
