@@ -79,8 +79,11 @@ struct NotificationAlert: View {
     var body: some View {
         ZStack {
             if let notification = self.notification.value {
-                let dismissAction: (() -> ())? = notification.isDismissible ?
-                    { _ = notificationsHandler.dismissNotification() } : nil
+                let dismissAction: (Bool) -> () = { outsideTap in
+                    if notification.isDismissible || !outsideTap {
+                        notificationsHandler.dismissNotification()
+                    }
+                }
                 
                 if notification.isSimple {
                     SimpleNotificationAlert(notification: notification,
@@ -98,13 +101,13 @@ struct NotificationAlert: View {
 
 struct SimpleNotificationAlert: View {
     let notification: ScopeNotification
-    let dismissAction: (() -> ())?
+    let dismissAction: (_ outsideTap: Bool) -> ()
     
     var body: some View {
         CustomAlert<AnyView>(titleKey: notification.title ?? "",
                              descriptionKey: notification.body,
-                             button: .standard(action: dismissAction),
-                             outsideTapAction: dismissAction)
+                             button: .standard(action: { dismissAction(false) }),
+                             outsideTapAction: { dismissAction(true) })
     }
 }
 

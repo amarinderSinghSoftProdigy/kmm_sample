@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ComplexNotificationAlert: View {
     let notification: ScopeNotification
-    let dismissAction: (() -> ())?
+    let dismissAction: (_ outsideTap: Bool) -> ()
     
     @State var isSendEnabled = false
     
@@ -20,7 +20,7 @@ struct ComplexNotificationAlert: View {
         let button: CustomAlert<AnyView>.AlertButton
         var cancelButton: CustomAlert<AnyView>.AlertButton? = nil
         let body: AnyView
-        var outsideTapAction = self.dismissAction
+        var outsideTapAction = { self.dismissAction(true) }
 
         switch self.notification {
 
@@ -33,11 +33,9 @@ struct ComplexNotificationAlert: View {
             body = AnyView(ManagementScopeChoosePaymentMethodView(notification: notification,
                                                                   isSendEnabled: $isSendEnabled))
             
-            if let dismissAction = self.dismissAction {
-                cancelButton = .init(text: "cancel",
-                                     isEnabled: true,
-                                     action: dismissAction)
-            }
+            cancelButton = .init(text: "cancel",
+                                 isEnabled: true,
+                                 action: { self.dismissAction(false) })
             
             outsideTapAction = { self.hideKeyboard() }
             
@@ -45,7 +43,7 @@ struct ComplexNotificationAlert: View {
             titleKey = "congratulations"
             button = .init(text: "retailers_list",
                            isEnabled: true,
-                           action: dismissAction)
+                           action: { self.dismissAction(false) })
             body = AnyView(
                 LocalizedText(localizedStringKey: LocalizedStringKey("retailer_added_template \(notification.tradeName)"),
                               testingIdentifier: "alert_text",
@@ -53,7 +51,31 @@ struct ComplexNotificationAlert: View {
                               color: .black)
                     .padding(.bottom, 20)
             )
-
+            
+        case let notification as CartPreviewScope.OrderModified:
+            titleKey = "order_modified_body"
+            button = .init(text: "yes",
+                           isEnabled: true,
+                           action: { notification.placeOrder() })
+            
+            cancelButton = .init(text: "no",
+                                 isEnabled: true,
+                                 action: { self.dismissAction(false) })
+            
+            body = AnyView(EmptyView())
+            
+        case let notification as CartPreviewScope.OrderWithQuotedItems:
+            titleKey = "order_with_quote_body"
+            button = .init(text: "yes",
+                           isEnabled: true,
+                           action: { notification.placeOrder() })
+            
+            cancelButton = .init(text: "no",
+                                 isEnabled: true,
+                                 action: { self.dismissAction(false) })
+            
+            body = AnyView(EmptyView())
+            
         default:
             return AnyView(
                 SimpleNotificationAlert(notification: notification,

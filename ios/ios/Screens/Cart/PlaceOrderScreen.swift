@@ -102,6 +102,7 @@ struct PlaceOrderScreen: View {
         .padding(.horizontal, 22)
         .padding(.top, 28)
         .padding(.bottom, 20)
+        .notificationAlertSender(withHandler: self.scope)
     }
     
     init(scope: CartPreviewScope) {
