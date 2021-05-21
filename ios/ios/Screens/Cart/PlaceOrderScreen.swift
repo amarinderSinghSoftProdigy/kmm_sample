@@ -56,42 +56,7 @@ struct PlaceOrderScreen: View {
             
             VStack(spacing: 32) {
                 if let totalPrice = self.total.value?.formattedPrice {
-                    HStack {
-                        LocalizedText(localizationKey: "order_total:",
-                                      textWeight: .medium,
-                                      fontSize: 20,
-                                      multilineTextAlignment: .leading)
-                        
-                        Spacer()
-                        
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text(totalPrice)
-                                .medicoText(textWeight: .bold,
-                                            fontSize: 20,
-                                            multilineTextAlignment: .trailing)
-                            
-                            LocalizedText(localizationKey: "exclusive_of_all_taxes",
-                                          textWeight: .semiBold,
-                                          fontSize: 10,
-                                          color: .lightBlue,
-                                          multilineTextAlignment: .trailing)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(
-                        VStack {
-                            AppColor.black.color
-                                .opacity(0.27)
-                                .frame(height: 1)
-                            
-                            Spacer()
-                            
-                            AppColor.black.color
-                                .opacity(0.27)
-                                .frame(height: 1)
-                        }
-                    )
+                    CartOrderTotalPriceView(price: totalPrice)
                 }
                 
                 MedicoButton(localizedStringKey: "place_order") {
@@ -143,5 +108,48 @@ struct PlaceOrderScreen: View {
                 .padding(.leading, 20)
             }
         }
+    }
+}
+
+struct CartOrderTotalPriceView: View {
+    let price: String
+    
+    var body: some View {
+        HStack {
+            LocalizedText(localizationKey: "order_total:",
+                          textWeight: .medium,
+                          fontSize: 20,
+                          multilineTextAlignment: .leading)
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(price)
+                    .medicoText(textWeight: .bold,
+                                fontSize: 20,
+                                multilineTextAlignment: .trailing)
+                
+                LocalizedText(localizationKey: "exclusive_of_all_taxes",
+                              textWeight: .semiBold,
+                              fontSize: 10,
+                              color: .lightBlue,
+                              multilineTextAlignment: .trailing)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 10)
+        .background(
+            VStack {
+                AppColor.black.color
+                    .opacity(0.27)
+                    .frame(height: 1)
+                
+                Spacer()
+                
+                AppColor.black.color
+                    .opacity(0.27)
+                    .frame(height: 1)
+            }
+        )
     }
 }

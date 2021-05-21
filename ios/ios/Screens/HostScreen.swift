@@ -183,6 +183,9 @@ struct TabBarScreen: View {
         case let scope as CartPreviewScope:
             return AnyView(PlaceOrderScreen(scope: scope))
             
+        case let scope as CartOrderCompletedScope:
+            return AnyView(CompletedCartOrderScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }

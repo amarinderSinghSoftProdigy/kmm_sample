@@ -281,3 +281,11 @@
 "no" = "No";
 "order_with_quote_body" = "Are you sure you want to place an order with a quoted item?";
 "order_modified_body" = "It looks like one item quantity is missing. Are you sure you want to continue?";
+
+// MARK: Completed Cart Order
+"home" = "Home";
+"order_success" = "Order placed successfully!";
+"date:" = "Date:";
+"time:" = "Time:";
+"sent_confirmation" = "A confirmation of your order has been sent to";
+"type:" = "Type:";
