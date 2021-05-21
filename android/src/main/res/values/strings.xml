@@ -175,4 +175,16 @@
     <string name="quote_existing_stockist">Do you want to add to cart for an existing Subscribers Stockists?</string>
     <string name="quote_anyone">Do you want to add to cart for anyone in Market?</string>
     <string name="select_stockist">Select Stockist</string>
+    <string name="place_order">Place your order</string>
+    <string name="price">Price</string>
+    <string name="qty">Qty</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="order_total">Order Total:</string>
+    <string name="tax_exclusive">*Exclusive of all taxes</string>
+    <string name="order_with_quote_body">Are you sure you want to place order with a quoted item?</string>
+    <string name="order_modified_body">It looks like one item quantity is missing, Are you sure you want to continue?</string>
+    <string name="order_success">Order placed successfully!</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="order_email_confirmation">A confirmation of your order has been sent to</string>
 </resources>

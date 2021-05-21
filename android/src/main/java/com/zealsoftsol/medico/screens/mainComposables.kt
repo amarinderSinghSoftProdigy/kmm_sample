@@ -39,6 +39,8 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
@@ -65,6 +67,8 @@ import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
+import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
+import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
@@ -170,6 +174,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> StoresScreen(it)
                     is CartScope -> CartScreen(it)
+                    is CartPreviewScope -> CartPreviewScreen(it)
+                    is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
                     is HelpScope -> HelpScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()

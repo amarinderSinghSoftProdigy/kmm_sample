@@ -99,7 +99,6 @@ data class CartSubmitResponse(
     val orderDate: String,
     val orderTime: String,
     val sellersOrder: List<SellerOrder>,
-    @SerialName("totalAmount")
     val total: Total,
 )
 
@@ -108,9 +107,10 @@ data class SellerOrder(
     val orderId: String,
     @SerialName("sellerUnitCode")
     val unitCode: String,
+    @SerialName("sbRetailerTradeName")
+    val seasonBoyRetailerName: String?,
     val tradeName: String,
     @SerialName("type")
     val paymentMethod: PaymentMethod,
-    @SerialName("totalAmount")
     val total: Total,
 )

@@ -364,7 +364,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         onDec = { scope.dec(it) },
                     )
                     is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
-                        sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo!!,
+                        sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo,
                         seasonBoyRetailer = it,
                         quantity = quantities.value[it] ?: 0,
                         onAddToCart = { scope.select(it) },
@@ -614,7 +614,7 @@ private fun SellerInfoItem(
 
 @Composable
 private fun SeasonBoyReatilerInfoItem(
-    sellerInfo: SellerInfo,
+    sellerInfo: SellerInfo?,
     seasonBoyRetailer: SeasonBoyRetailer,
     quantity: Int,
     onAddToCart: () -> Unit,
@@ -622,7 +622,7 @@ private fun SeasonBoyReatilerInfoItem(
     onDec: () -> Unit,
 ) {
     BaseSellerItem(
-        stockStatus = sellerInfo.stockInfo?.status,
+        stockStatus = sellerInfo?.stockInfo?.status,
         sellerName = seasonBoyRetailer.tradeName,
         mainBodyContent = {
             Text(
@@ -661,9 +661,7 @@ private fun SeasonBoyReatilerInfoItem(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W700,
                         modifier = Modifier.clickable {
-                            sellerInfo.geoData.origin.let {
-                                activity.openMaps(it.latitude, it.longitude)
-                            }
+                            // TODO not implemented
                         }
                     )
                 }
@@ -673,7 +671,7 @@ private fun SeasonBoyReatilerInfoItem(
         onBottomOfDivider = {
             PlusMinusQuantity(
                 quantity = quantity,
-                max = sellerInfo.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                max = sellerInfo?.stockInfo?.availableQty ?: Int.MAX_VALUE,
                 isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
