@@ -101,7 +101,7 @@ struct SimpleNotificationAlert: View {
     let dismissAction: (() -> ())?
     
     var body: some View {
-        CustomAlert<AnyView>(titleKey: notification.title,
+        CustomAlert<AnyView>(titleKey: notification.title ?? "",
                              descriptionKey: notification.body,
                              button: .standard(action: dismissAction),
                              outsideTapAction: dismissAction)

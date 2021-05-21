@@ -354,6 +354,7 @@ struct BuyProductScreen: View {
                             else {
                                 HStack {
                                     NumberPicker(quantity: quantity,
+                                                 maxQuantity: Int(info.stockInfo?.availableQty ?? .max),
                                                  onQuantityIncrease: { onQuantityIncrease(self.info) },
                                                  onQuantityDecrease: { onQuantityDecrease(self.info) },
                                                  longPressEnabled: true)
@@ -421,6 +422,7 @@ struct BuyProductScreen: View {
                     
                     HStack {
                         NumberPicker(quantity: quantity,
+                                     maxQuantity: Int(stockInfo.availableQty),
                                      onQuantityIncrease: { onQuantityIncrease(self.info) },
                                      onQuantityDecrease: { onQuantityDecrease(self.info) },
                                      longPressEnabled: true)
@@ -494,6 +496,7 @@ struct BuyProductScreen: View {
                 getQuoteOptionView(localizationKey: "quote_existing_stockist",
                                    isSelected: self.selectedOption.value == .existingStockist,
                                    quantity: self.selectedStockist.value == nil ? 0 : (quantities?[self.selectedStockist.value!] ?? 0),
+                                   maxQuantity: .max,
                                    needsSelectedStockist: true,
                                    onQuantityIncrease: {
                                       if let selectedStockist = self.selectedStockist.value {
@@ -516,6 +519,7 @@ struct BuyProductScreen: View {
                 getQuoteOptionView(localizationKey: "quote_any_stockist",
                                    isSelected: self.selectedOption.value == .anyone,
                                    quantity: quantities?[DataSellerInfo.Anyone().anyone] ?? 0,
+                                   maxQuantity: .max,
                                    needsSelectedStockist: false,
                                    onQuantityIncrease: { scope.inc(item: DataSellerInfo.Anyone().anyone) },
                                    onQuantityDecrease: { scope.dec(item: DataSellerInfo.Anyone().anyone) },
@@ -541,6 +545,7 @@ struct BuyProductScreen: View {
         private func getQuoteOptionView(localizationKey: String,
                                         isSelected: Bool,
                                         quantity: Int,
+                                        maxQuantity: Int,
                                         needsSelectedStockist: Bool,
                                         onQuantityIncrease: @escaping () -> (),
                                         onQuantityDecrease: @escaping () -> (),
@@ -596,6 +601,7 @@ struct BuyProductScreen: View {
                             HStack {
                                 if !scope.isSeasonBoy {
                                     NumberPicker(quantity: quantity,
+                                                 maxQuantity: maxQuantity,
                                                  onQuantityIncrease: onQuantityIncrease,
                                                  onQuantityDecrease: onQuantityDecrease,
                                                  longPressEnabled: true)

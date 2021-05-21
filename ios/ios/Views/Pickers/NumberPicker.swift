@@ -12,6 +12,7 @@ struct NumberPicker: View {
     @State private var longPressTimer: Timer?
     
     let quantity: Int
+    let maxQuantity: Int
     
     let onQuantityIncrease: () -> ()
     let onQuantityDecrease: () -> ()
@@ -21,9 +22,8 @@ struct NumberPicker: View {
     var body: some View {
         HStack(spacing: 15) {
             self.getActionButton(withImageName: "minus",
-                                 canBeDisabled: true,
+                                 disabled: quantity <= 0,
                                  for: self.onQuantityDecrease)
-                .disabled(quantity <= 0)
             
             Text(String(quantity))
                 .medicoText(textWeight: .bold,
@@ -31,16 +31,19 @@ struct NumberPicker: View {
                 .frame(width: 40)
             
             self.getActionButton(withImageName: "plus",
+                                 disabled: quantity > maxQuantity,
                                  for: self.onQuantityIncrease)
         }
     }
     
     init(quantity: Int,
+         maxQuantity: Int = .max,
          onQuantityIncrease: @escaping () -> (),
          onQuantityDecrease: @escaping () -> (),
          longPressEnabled: Bool = false
     ) {
         self.quantity = quantity
+        self.maxQuantity = maxQuantity
         
         self.onQuantityIncrease = onQuantityIncrease
         self.onQuantityDecrease = onQuantityDecrease
@@ -49,13 +52,13 @@ struct NumberPicker: View {
     }
     
     private func getActionButton(withImageName imageName: String,
-                                 canBeDisabled: Bool = false,
+                                 disabled: Bool = false,
                                  for action: @escaping () -> ()) -> some View {
         Button(action: { }) {
             Image(systemName: imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundColor(appColor: !canBeDisabled || quantity > 0 ? .lightBlue : .grey3)
+                .foregroundColor(appColor: !disabled ? .lightBlue : .grey3)
                 .font(Font.title.weight(.bold))
                 .frame(width: 14, height: 14)
                 .background(appColor: .white)
@@ -73,6 +76,7 @@ struct NumberPicker: View {
                     self.longPressTimer?.invalidate()
                 }
         }
+        .disabled(disabled)
     }
     
     private func getLongPressTimer(handleTimeElapse: @escaping () -> ()) -> Timer {

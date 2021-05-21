@@ -28,6 +28,7 @@
 		333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F45D225A4B5A8008DE1D2 /* URLImage.swift */; };
 		334288AC25B3180F008F3890 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334288AB25B3180F008F3890 /* MapView.swift */; };
 		334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334574EF25762A5F002839C5 /* SignUpScreen.swift */; };
+		3354F95E26579C9400A4D252 /* PlaceOrderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3354F95D26579C9400A4D252 /* PlaceOrderScreen.swift */; };
 		3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3356497325AC453300F2D3CE /* NavigationBar.swift */; };
 		335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */; };
 		335FFAF925DD07F600BC5FC1 /* DashboardScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335FFAF825DD07F600BC5FC1 /* DashboardScreen.swift */; };
@@ -136,6 +137,7 @@
 		333F45D225A4B5A8008DE1D2 /* URLImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImage.swift; sourceTree = "<group>"; };
 		334288AB25B3180F008F3890 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		334574EF25762A5F002839C5 /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
+		3354F95D26579C9400A4D252 /* PlaceOrderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceOrderScreen.swift; sourceTree = "<group>"; };
 		3356497325AC453300F2D3CE /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
 		335EE0D4257A7EF90004AD42 /* SignUpTraderDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpTraderDetails.swift; sourceTree = "<group>"; };
 		335FFAF825DD07F600BC5FC1 /* DashboardScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardScreen.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				33377B1B2632D49D00B619F9 /* CartScreen.swift */,
+				3354F95D26579C9400A4D252 /* PlaceOrderScreen.swift */,
 			);
 			path = Cart;
 			sourceTree = "<group>";
@@ -879,6 +882,7 @@
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				332EB65325F2253C009BC392 /* PopSheet.swift in Sources */,
+				3354F95E26579C9400A4D252 /* PlaceOrderScreen.swift in Sources */,
 				33FF142F261CB3E9004F9F98 /* StoresScreen.swift in Sources */,
 				334288AC25B3180F008F3890 /* MapView.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,

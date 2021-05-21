@@ -180,6 +180,9 @@ struct TabBarScreen: View {
         case let scope as HelpScope:
             return AnyView(HelpScreen(scope: scope))
             
+        case let scope as CartPreviewScope:
+            return AnyView(PlaceOrderScreen(scope: scope))
+            
         default:
             return AnyView(EmptyView())
         }

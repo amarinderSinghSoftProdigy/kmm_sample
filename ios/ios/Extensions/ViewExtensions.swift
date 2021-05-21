@@ -21,6 +21,57 @@ extension View {
         }
     }
     
+    // MARK: Actions
+    
+    func call(_ phoneNumber: String) {
+        let cleanedPhoneNumber = phoneNumber.filter { character in !"()- ".contains(character) }
+        
+        let formattedString = "tel://\(cleanedPhoneNumber)"
+        guard let url = URL(string: formattedString) else { return }
+        
+        UIApplication.shared.open(url)
+    }
+    
+    // MARK: Border
+    
+    func strokeBorder(_ borderColor: AppColor,
+                      borderOpacity: Double = 1,
+                      fill: AppColor,
+                      fillOpacity: Double = 1,
+                      lineWidth: CGFloat = 1,
+                      cornerRadius: CGFloat = 8,
+                      corners: UIRectCorner = .allCorners) -> some View {
+        self.background(
+            RoundedCorner(radius: cornerRadius, corners: corners)
+                .stroke(lineWidth: lineWidth)
+                .foregroundColor(appColor: borderColor)
+                .opacity(borderOpacity)
+                .background(
+                    fill.color
+                        .opacity(fillOpacity)
+                        .cornerRadius(cornerRadius, corners: corners)
+                )
+        )
+    }
+    
+    // MARK: Alignment
+    
+    func centerWithStacks() -> some View {
+        VStack {
+            Spacer()
+            
+            HStack {
+                Spacer()
+                
+                self
+                
+                Spacer()
+            }
+            
+            Spacer()
+        }
+    }
+    
     // MARK: Corners
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
@@ -142,49 +193,12 @@ extension View {
             .hideKeyboardOnTap()
     }
     
-    func call(_ phoneNumber: String) {
-        let cleanedPhoneNumber = phoneNumber.filter { character in !"()- ".contains(character) }
-        
-        let formattedString = "tel://\(cleanedPhoneNumber)"
-        guard let url = URL(string: formattedString) else { return }
-        
-        UIApplication.shared.open(url)
-    }
-    
-    func strokeBorder(_ borderColor: AppColor,
-                      borderOpacity: Double = 1,
-                      fill: AppColor,
-                      fillOpacity: Double = 1,
-                      lineWidth: CGFloat = 1,
-                      cornerRadius: CGFloat = 8,
-                      corners: UIRectCorner = .allCorners) -> some View {
-        self.background(
-            RoundedCorner(radius: cornerRadius, corners: corners)
-                .stroke(lineWidth: lineWidth)
-                .foregroundColor(appColor: borderColor)
-                .opacity(borderOpacity)
-                .background(
-                    fill.color
-                        .opacity(fillOpacity)
-                        .cornerRadius(cornerRadius, corners: corners)
-                )
+    func expandableView<T: View>(expanded: Binding<Bool>,
+                                 @ViewBuilder header: () -> T) -> some View {
+        self.modifier(
+            ExpandableViewViewModifier(header: header(),
+                                       expanded: expanded)
         )
-    }
-    
-    func centerWithStacks() -> some View {
-        VStack {
-            Spacer()
-            
-            HStack {
-                Spacer()
-                
-                self
-                
-                Spacer()
-            }
-            
-            Spacer()
-        }
     }
 }
 
