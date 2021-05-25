@@ -60,13 +60,13 @@ import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.WithTradeName
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.management.GeoLocation
-import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
@@ -78,11 +78,10 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
-                modifier = Modifier.size(71.dp),
-                contentDescription = null,
-                data = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
+                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                size = 71.dp,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
             )
             Space(16.dp)
             Column(
@@ -712,11 +711,10 @@ private fun BaseSellerItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CoilImage(
-                        modifier = Modifier.size(65.dp),
-                        contentDescription = null,
-                        data = "",
-                        error = { UserLogoPlaceholder(sellerName) },
-                        loading = { UserLogoPlaceholder(sellerName) },
+                        src = "",
+                        size = 65.dp,
+                        onError = { UserLogoPlaceholder(sellerName) },
+                        onLoading = { UserLogoPlaceholder(sellerName) },
                     )
                     Space(16.dp)
                     Column(modifier = Modifier.fillMaxWidth()) {

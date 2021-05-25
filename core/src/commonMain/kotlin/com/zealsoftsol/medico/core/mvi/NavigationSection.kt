@@ -27,6 +27,10 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object Stores : NavigationOption(Event.Transition.Stores, "stores")
 
+    object Orders : NavigationOption(Event.Transition.Orders, "orders")
+
+    object NewOrders : NavigationOption(Event.Transition.NewOrders, "new_orders")
+
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
 
     companion object {
@@ -42,6 +46,8 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             Hospitals.takeIf { userType == UserType.STOCKIST },
             SeasonBoys.takeIf { userType == UserType.STOCKIST },
             Stores,
+            NewOrders.takeIf { userType == UserType.STOCKIST },
+            Orders,
             Help,
             Settings,
         )

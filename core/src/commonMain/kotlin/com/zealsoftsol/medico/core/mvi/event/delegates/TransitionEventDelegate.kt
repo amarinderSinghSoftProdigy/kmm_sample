@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
@@ -22,6 +23,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -132,6 +134,12 @@ internal class TransitionEventDelegate(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
                     )
+                )
+                is Event.Transition.Orders -> setScope(
+                    OrdersScope(OrderType.SENT)
+                )
+                is Event.Transition.NewOrders -> setScope(
+                    OrdersScope(OrderType.RECEIVED)
                 )
             }
         }

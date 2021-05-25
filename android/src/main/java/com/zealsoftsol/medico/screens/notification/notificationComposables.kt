@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.NotificationType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
@@ -67,7 +68,6 @@ import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
-import dev.chrisbanes.accompanist.coil.CoilImage
 import org.joda.time.Duration
 import org.joda.time.Period
 import org.joda.time.PeriodType
@@ -280,11 +280,10 @@ private fun SubscriptionDeatails(
     if (!isSeasonBoy) {
         Row(modifier = Modifier.fillMaxWidth().height(100.dp)) {
             CoilImage(
-                modifier = Modifier.size(100.dp),
-                data = "",
-                contentDescription = null,
-                error = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
-                loading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
+                src = "",
+                size = 100.dp,
+                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
+                onLoading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
             )
             Space(24.dp)
             Column(

@@ -118,6 +118,8 @@
     <string name="gstin_num">GSTIN Number</string>
     <string name="payment_method">Payment method</string>
     <string name="orders">Orders</string>
+    <string name="new_orders">New orders</string>
+    <string name="search_orders">Search orders</string>
     <string name="cancel">Cancel</string>
     <string name="send_request">Send Request</string>
     <string name="save">Save</string>
@@ -186,5 +188,8 @@
     <string name="order_success">Order placed successfully!</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
+    <string name="type">Type</string>
     <string name="order_email_confirmation">A confirmation of your order has been sent to</string>
+    <string name="from">From:</string>
+    <string name="to">To:</string>
 </resources>

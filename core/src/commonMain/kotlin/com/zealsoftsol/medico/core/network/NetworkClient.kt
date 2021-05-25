@@ -29,6 +29,9 @@ import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -92,7 +95,8 @@ class NetworkClient(
     NetworkScope.Notification,
     NetworkScope.Stores,
     NetworkScope.Cart,
-    NetworkScope.Help {
+    NetworkScope.Help,
+    NetworkScope.Orders {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -534,6 +538,44 @@ class NetworkClient(
     override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
         client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {
             withMainToken()
+        }.getWrappedBody()
+    }
+
+    override suspend fun getOrders(
+        type: OrderType,
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination,
+    ): Response.Wrapped<PaginatedData<Order>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Order>>>("${baseUrl.url}/orders/${type.path}") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun getOrder(
+        type: OrderType,
+        unitCode: String,
+        orderId: String
+    ): Response.Wrapped<OrderResponse> = ktorDispatcher {
+        client.get<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders/${type.path}/$orderId") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("b2bUnitCode", unitCode)
+                }
+            }
         }.getWrappedBody()
     }
 
