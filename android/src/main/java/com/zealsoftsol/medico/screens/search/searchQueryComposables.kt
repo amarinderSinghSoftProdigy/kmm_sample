@@ -75,12 +75,12 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun SearchScreen(scope: SearchScope, listState: LazyListState) {
@@ -229,11 +229,10 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     CoilImage(
-                        modifier = Modifier.size(123.dp),
-                        data = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
-                        contentDescription = null,
-                        error = { ItemPlaceholder() },
-                        loading = { ItemPlaceholder() },
+                        src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                        size = 123.dp,
+                        onError = { ItemPlaceholder() },
+                        onLoading = { ItemPlaceholder() },
                     )
                     Space(10.dp)
                     Column {

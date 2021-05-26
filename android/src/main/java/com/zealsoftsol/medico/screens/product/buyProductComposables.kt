@@ -60,13 +60,13 @@ import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.WithTradeName
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.management.GeoLocation
-import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
@@ -78,11 +78,10 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
-                modifier = Modifier.size(71.dp),
-                contentDescription = null,
-                data = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
+                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                size = 71.dp,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
             )
             Space(16.dp)
             Column(
@@ -364,7 +363,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         onDec = { scope.dec(it) },
                     )
                     is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
-                        sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo!!,
+                        sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo,
                         seasonBoyRetailer = it,
                         quantity = quantities.value[it] ?: 0,
                         onAddToCart = { scope.select(it) },
@@ -614,7 +613,7 @@ private fun SellerInfoItem(
 
 @Composable
 private fun SeasonBoyReatilerInfoItem(
-    sellerInfo: SellerInfo,
+    sellerInfo: SellerInfo?,
     seasonBoyRetailer: SeasonBoyRetailer,
     quantity: Int,
     onAddToCart: () -> Unit,
@@ -622,7 +621,7 @@ private fun SeasonBoyReatilerInfoItem(
     onDec: () -> Unit,
 ) {
     BaseSellerItem(
-        stockStatus = sellerInfo.stockInfo?.status,
+        stockStatus = sellerInfo?.stockInfo?.status,
         sellerName = seasonBoyRetailer.tradeName,
         mainBodyContent = {
             Text(
@@ -661,9 +660,7 @@ private fun SeasonBoyReatilerInfoItem(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W700,
                         modifier = Modifier.clickable {
-                            sellerInfo.geoData.origin.let {
-                                activity.openMaps(it.latitude, it.longitude)
-                            }
+                            // TODO not implemented
                         }
                     )
                 }
@@ -673,7 +670,7 @@ private fun SeasonBoyReatilerInfoItem(
         onBottomOfDivider = {
             PlusMinusQuantity(
                 quantity = quantity,
-                max = sellerInfo.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                max = sellerInfo?.stockInfo?.availableQty ?: Int.MAX_VALUE,
                 isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
@@ -714,11 +711,10 @@ private fun BaseSellerItem(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CoilImage(
-                        modifier = Modifier.size(65.dp),
-                        contentDescription = null,
-                        data = "",
-                        error = { UserLogoPlaceholder(sellerName) },
-                        loading = { UserLogoPlaceholder(sellerName) },
+                        src = "",
+                        size = 65.dp,
+                        onError = { UserLogoPlaceholder(sellerName) },
+                        onLoading = { UserLogoPlaceholder(sellerName) },
                     )
                     Space(16.dp)
                     Column(modifier = Modifier.fillMaxWidth()) {

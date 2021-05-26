@@ -95,7 +95,7 @@ dependencies {
     Deps.Android.Compose.all.forEach {
         implementation(it)
     }
-    implementation(Deps.Android.accompanist)
+    implementation(Deps.Android.coil)
     implementation(platform(Deps.Firebase.BOM))
     implementation(Deps.Firebase.analytics)
     implementation(Deps.Firebase.crashlytics)

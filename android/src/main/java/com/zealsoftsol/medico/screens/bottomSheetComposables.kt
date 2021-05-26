@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -53,7 +54,6 @@ import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
-import dev.chrisbanes.accompanist.coil.CoilImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -221,11 +221,10 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
     Space(16.dp)
     Row(modifier = Modifier.fillMaxWidth()) {
         CoilImage(
-            modifier = Modifier.size(123.dp),
-            data = "",
-            contentDescription = null,
-            error = { UserLogoPlaceholder(entityInfo.tradeName) },
-            loading = { UserLogoPlaceholder(entityInfo.tradeName) },
+            src = "",
+            size = 123.dp,
+            onError = { UserLogoPlaceholder(entityInfo.tradeName) },
+            onLoading = { UserLogoPlaceholder(entityInfo.tradeName) },
         )
         Space(24.dp)
         Column(

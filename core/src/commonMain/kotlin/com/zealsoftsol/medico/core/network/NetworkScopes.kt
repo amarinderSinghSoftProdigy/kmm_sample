@@ -19,6 +19,9 @@ import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -159,6 +162,24 @@ interface NetworkScope {
 
         suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData>
         suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse>
+    }
+
+    interface Orders : NetworkScope {
+
+        suspend fun getOrders(
+            type: OrderType,
+            unitCode: String,
+            search: String,
+            from: Long?,
+            to: Long?,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Order>>
+
+        suspend fun getOrder(
+            type: OrderType,
+            unitCode: String,
+            orderId: String
+        ): Response.Wrapped<OrderResponse>
     }
 
     interface Help : NetworkScope {

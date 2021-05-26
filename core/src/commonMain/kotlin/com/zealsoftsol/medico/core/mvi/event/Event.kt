@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.Store
@@ -179,6 +180,14 @@ sealed class Event {
 
             object GetHelp : Help()
         }
+
+        sealed class Orders : Action() {
+            override val typeClazz: KClass<*> = Orders::class
+
+            data class Search(val value: String) : Orders()
+            data class Load(val isFirstLoad: Boolean) : Orders()
+            data class Select(val item: Order) : Orders()
+        }
     }
 
     sealed class Transition : Event() {
@@ -208,5 +217,7 @@ sealed class Event {
         object Notifications : Transition()
         object Stores : Transition()
         object Cart : Transition()
+        object Orders : Transition()
+        object NewOrders : Transition()
     }
 }

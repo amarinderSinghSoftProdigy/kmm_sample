@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -45,6 +46,7 @@ internal class EventCollector(
     managementNetworkScope: NetworkScope.Management,
     storesNetworkScope: NetworkScope.Stores,
     helpNetworkScope: NetworkScope.Help,
+    ordersNetworkScope: NetworkScope.Orders,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -98,6 +100,12 @@ internal class EventCollector(
         Event.Action.Help::class to HelpEventDelegate(
             navigator,
             helpNetworkScope,
+        ),
+        Event.Action.Orders::class to OrdersEventDelegate(
+            navigator,
+            userRepo,
+            ordersNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
         )
     )
 

@@ -71,3 +71,5 @@ enum class ManagementCriteria(val serverValue: String) {
     ALL("ALL"),
     PERSONAL("YOUR");
 }
+
+data class DateRange(val fromMs: Long? = null, val toMs: Long? = null)

@@ -22,6 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.common.AlertButton
@@ -29,16 +30,21 @@ import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
-fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotification) {
+fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotification) {
     AlertDialog(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
-        title = {
-            Text(
-                text = title,
-                color = MaterialTheme.colors.onPrimary,
-                style = MaterialTheme.typography.h6,
-            )
+        title =
+        if (title != null) {
+            {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colors.onPrimary,
+                    style = MaterialTheme.typography.h6,
+                )
+            }
+        } else {
+            null
         },
         text = {
             when (notification) {
@@ -48,6 +54,14 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
                         stringResource(id = R.string.retailer_added_template),
                         notification.tradeName
                     ),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                is CartPreviewScope.OrderWithQuotedItems -> Text(
+                    text = stringResource(id = R.string.order_with_quote_body),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                is CartPreviewScope.OrderModified -> Text(
+                    text = stringResource(id = R.string.order_modified_body),
                     style = MaterialTheme.typography.subtitle1,
                 )
             }
@@ -71,6 +85,12 @@ fun Notification(title: String, onDismiss: () -> Unit, notification: ScopeNotifi
                         text = stringResource(id = R.string.retailers_list)
                     )
                 }
+                is CartPreviewScope.OrderWithQuotedItems -> CartNotificationButtons(
+                    onDismiss,
+                    onContinue = { notification.placeOrder() })
+                is CartPreviewScope.OrderModified -> CartNotificationButtons(
+                    onDismiss,
+                    onContinue = { notification.placeOrder() })
             }
         },
         properties = DialogProperties(
@@ -137,6 +157,23 @@ private fun ButtonsForChoosePaymentMethod(
             onClick = onNext,
             isEnabled = isSendEnabled,
             text = stringResource(id = R.string.send_request),
+        )
+    }
+}
+
+@Composable
+private fun CartNotificationButtons(onCancel: () -> Unit, onContinue: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        AlertButton(
+            onClick = onCancel,
+            text = stringResource(id = R.string.cancel)
+        )
+        AlertButton(
+            onClick = onContinue,
+            text = stringResource(id = R.string.continue_)
         )
     }
 }

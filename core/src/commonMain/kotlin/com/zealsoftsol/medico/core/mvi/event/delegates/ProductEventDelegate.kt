@@ -117,8 +117,8 @@ internal class ProductEventDelegate(
             if (isSuccess && result != null) {
                 setScope(
                     BuyProductScope.ChooseRetailer(
-                        product = it.product,
-                        sellerInfo = sellerInfo,
+                        product = result.product,
+                        sellerInfo = result.sellerInfo,
                         retailers = DataSource(result.retailers),
                     )
                 )
