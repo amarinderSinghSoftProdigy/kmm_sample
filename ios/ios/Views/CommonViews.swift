@@ -309,3 +309,28 @@ struct CheckBoxView: View {
         }
     }
 }
+
+struct TabOptionView: View {
+    let localizationKey: String
+    let isSelected: Bool
+    let itemsNumber: Int
+    
+    var body: some View {
+        let tabBackgroundColor: AppColor = isSelected ? .lightBlue : .clear
+        
+        HStack(spacing: 7) {
+            LocalizedText(localizationKey: localizationKey,
+                          textWeight: isSelected ? .semiBold : .medium,
+                          color: isSelected ? .white : .darkBlue)
+
+            if isSelected && itemsNumber > 0 {
+                Text(String(itemsNumber))
+                    .medicoText(textWeight: .bold,
+                                color: AppColor.yellow)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 7)
+        .background(tabBackgroundColor.color.cornerRadius(7))
+    }
+}

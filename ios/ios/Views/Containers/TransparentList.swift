@@ -158,5 +158,7 @@ class ListScrollData: ObservableObject {
         case yourRetailers
         case yourHospitals
         case yourSeasonBoys
+        
+        case orders
     }
 }

@@ -44,6 +44,7 @@
 		3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3367284C2579294F00C7E73D /* PhoneTextField.swift */; };
 		336D347025C973470021F39A /* NotificationsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336D346F25C973470021F39A /* NotificationsScreen.swift */; };
 		3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */; };
+		3373ED66265FB99700118DD9 /* DatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3373ED65265FB99700118DD9 /* DatePicker.swift */; };
 		3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */; };
 		3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3376EC792583875900570BB3 /* FilePicker.swift */; };
 		33789562256E3BE70034D79F /* FloatingPlaceholderTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */; };
@@ -81,6 +82,7 @@
 		33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */; };
 		33F1520A256FF5D200C4C656 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33F15209256FF5D200C4C656 /* Colors.xcassets */; };
 		33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */; };
+		33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */; };
 		33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */; };
 		33F8DFC525763A91009E98EE /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
 		33F8DFC625763A91009E98EE /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -154,6 +156,7 @@
 		3367284C2579294F00C7E73D /* PhoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneTextField.swift; sourceTree = "<group>"; };
 		336D346F25C973470021F39A /* NotificationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsScreen.swift; sourceTree = "<group>"; };
 		3372E215259A10570034EF2D /* SignUpWelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpWelcomeScreen.swift; sourceTree = "<group>"; };
+		3373ED65265FB99700118DD9 /* DatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePicker.swift; sourceTree = "<group>"; };
 		3376EC752583737800570BB3 /* LimitedAppAccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedAppAccessScreen.swift; sourceTree = "<group>"; };
 		3376EC792583875900570BB3 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPlaceholderTextField.swift; sourceTree = "<group>"; };
@@ -191,6 +194,7 @@
 		33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpPhoneVerification.swift; sourceTree = "<group>"; };
 		33F15209256FF5D200C4C656 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtpFlowScreen.swift; sourceTree = "<group>"; };
+		33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrdersScreen.swift; sourceTree = "<group>"; };
 		33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectUserTypeScreen.swift; sourceTree = "<group>"; };
 		33F8DFC425763A91009E98EE /* core.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = core.framework; path = "../core/build/xcode-frameworks/core.framework"; sourceTree = "<group>"; };
 		33F8DFE225764253009E98EE /* Barlow-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Bold.ttf"; sourceTree = "<group>"; };
@@ -326,6 +330,7 @@
 		333F45D425A4B608008DE1D2 /* Pickers */ = {
 			isa = PBXGroup;
 			children = (
+				3373ED65265FB99700118DD9 /* DatePicker.swift */,
 				3376EC792583875900570BB3 /* FilePicker.swift */,
 				33648DCE261B18A900CDB5D3 /* NumberPicker.swift */,
 				339C5044257A548F00AAB45F /* PickerSelector.swift */,
@@ -434,6 +439,7 @@
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333D3266262EBAAE0075E1D3 /* Help */,
 				3376EC742583736200570BB3 /* LimitedAppAccess */,
+				33F55EF2265E6DA800298BE7 /* Orders */,
 				336D346E25C9732F0021F39A /* Notifications */,
 				334FF84325B5CC9600EC9663 /* Password */,
 				3317B5D525A59CE3008681ED /* Product */,
@@ -623,6 +629,14 @@
 				33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		33F55EF2265E6DA800298BE7 /* Orders */ = {
+			isa = PBXGroup;
+			children = (
+				33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */,
+			);
+			path = Orders;
 			sourceTree = "<group>";
 		};
 		33FD6A42259CBE7E0092887D /* GlobalSearch */ = {
@@ -902,6 +916,7 @@
 				3395031325824C060080CC88 /* BlurEffectView.swift in Sources */,
 				33D0326125E3D3020046664C /* UserNameImage.swift in Sources */,
 				33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */,
+				3373ED66265FB99700118DD9 /* DatePicker.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
@@ -921,6 +936,7 @@
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
 				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
+				33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */,
 				333D3268262EBABF0075E1D3 /* HelpScreen.swift in Sources */,
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,

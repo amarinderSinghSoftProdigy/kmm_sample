@@ -200,9 +200,13 @@ extension View {
                                        expanded: expanded)
         )
     }
+    
+    func userInteractionDisabled() -> some View {
+        self.modifier(NoHitTesting())
+    }
 }
 
-private struct RoundedCorner: Shape {
+struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
 

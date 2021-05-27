@@ -173,3 +173,19 @@ struct ExpandableViewViewModifier<Header: View>: ViewModifier {
                       cornerRadius: cornerRadius)
     }
 }
+
+struct NoHitTesting: ViewModifier {
+    func body(content: Content) -> some View {
+        SwiftUIWrapper { content }.allowsHitTesting(false)
+    }
+    
+    private struct SwiftUIWrapper<T: View>: UIViewControllerRepresentable {
+        let content: () -> T
+        
+        func makeUIViewController(context: Context) -> UIHostingController<T> {
+            UIHostingController(rootView: content())
+        }
+      
+        func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) { }
+    }
+}

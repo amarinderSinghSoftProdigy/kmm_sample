@@ -197,7 +197,7 @@
 "gstin_number" = "GSTIN Number:";
 "pan_number:" = "PAN Number:";
 "payment_method" = "Payment Method:";
-"orders" = "Orders:";
+"orders:" = "Orders:";
 "retailers:" = "Retailers:";
 
 // MARK: Bottom Sheet Season Boy Details
@@ -289,3 +289,13 @@
 "time:" = "Time:";
 "sent_confirmation" = "A confirmation of your order has been sent to";
 "type:" = "Type:";
+
+// MARK: New Orders
+"new_orders" = "New Orders";
+
+// MARK: Orders
+"orders" = "Orders";
+"search_orders" = "Search in Orders";
+"date" = "Date";
+"from:" = "From:";
+"to:" = "To:";

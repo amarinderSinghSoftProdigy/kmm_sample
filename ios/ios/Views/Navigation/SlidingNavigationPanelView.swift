@@ -146,7 +146,7 @@ private struct _SlidingPanelView: View {
     }
     
     private var optionsPanel: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             AppColor.primary.color
                 .testingIdentifier("sliding_panel")
                 .edgesIgnoringSafeArea(.all)
@@ -159,6 +159,7 @@ private struct _SlidingPanelView: View {
                         }
                     }
                 }
+                .scrollView()
                 
                 Spacer()
                 
@@ -237,6 +238,12 @@ extension NavigationOption {
         case .Help():
             return "Help"
             
+        case .NewOrders():
+            return "Cart.Fill"
+            
+        case .Orders():
+            return "Cart.Arrow"
+            
         default:
             return nil
         }
@@ -270,6 +277,12 @@ extension NavigationOption {
             
         case .Help():
             return "help"
+            
+        case .NewOrders():
+            return "new_orders"
+            
+        case .Orders():
+            return "orders"
             
         default:
             return nil

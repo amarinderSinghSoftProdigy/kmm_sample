@@ -44,14 +44,14 @@ struct BaseScopeView: View {
                 .hideKeyboardOnTap()
             
             currentView
-            
+
             BottomSheetView(bottomSheet: scope.bottomSheet,
                             dismissBottomSheet: { scope.dismissBottomSheet() })
-            
+
             NotificationsListener()
-            
+
             ErrorAlert(errorsHandler: scope)
-            
+
             ActivityScreen(isInProgress: scope.isInProgress)
         }
     }
@@ -128,66 +128,71 @@ struct TabBarScreen: View {
         self.scope = SwiftDataSource(dataSource: tabBarScope.childScope)
     }
     
-    private var currentView: AnyView {
-        switch scope.value {
-            
-        case let scope as OtpScope:
-            return AnyView(OtpFlowScreen(scope: scope))
-            
-        case let scope as PasswordScope:
-            return AnyView(PasswordScreen(scope: scope))
-            
-        case let scope as SignUpScope:
-            return AnyView(SignUpScreen(scope: scope))
-            
-        case let scope as LimitedAccessScope:
-            return AnyView(LimitedAppAccessScreen(scope: scope))
-            
-        case let scope as ProductInfoScope:
-            return AnyView(ProductDetails(scope: scope))
-            
-        case let scope as BuyProductScope<DataWithTradeName>:
-            return AnyView(BuyProductScreen(scope: scope))
-            
-        case let scope as SettingsScope:
-            return AnyView(SettingsScreen(scope: scope))
-            
-        case let scope as ManagementScope.User:
-            return AnyView(UserManagementScreen(scope: scope))
-            
-        case let scope as ManagementScope.AddRetailer:
-            return AnyView(AddRetailerScreen(scope: scope))
-            
-        case let scope as DashboardScope:
-            return AnyView(DashboardScreen(scope: scope))
-            
-        case let scope as NotificationScope.All:
-            return AnyView(NotificationsScreen(scope: scope))
-            
-        case let scope as NotificationScopePreview<DataNotificationDetails.TypeSafeSubscription,
-                                                   DataNotificationOption.Subscription>:
-            return AnyView(NotificationDetailsScreen(scope: scope))
-            
-        case let scope as StoresScope:
-            return AnyView(StoresScreen(scope: scope))
-            
-        case let scope as SearchScope:
-            return AnyView(GlobalSearchScreen(scope: scope))
-            
-        case let scope as CartScope:
-            return AnyView(CartScreen(scope: scope))
-            
-        case let scope as HelpScope:
-            return AnyView(HelpScreen(scope: scope))
-            
-        case let scope as CartPreviewScope:
-            return AnyView(PlaceOrderScreen(scope: scope))
-            
-        case let scope as CartOrderCompletedScope:
-            return AnyView(CompletedCartOrderScreen(scope: scope))
-            
-        default:
-            return AnyView(EmptyView())
+    private var currentView: some View {
+        Group {
+            switch scope.value {
+                
+            case let scope as OtpScope:
+                OtpFlowScreen(scope: scope)
+                
+            case let scope as PasswordScope:
+                PasswordScreen(scope: scope)
+                
+            case let scope as SignUpScope:
+                SignUpScreen(scope: scope)
+                
+            case let scope as LimitedAccessScope:
+                LimitedAppAccessScreen(scope: scope)
+                
+            case let scope as ProductInfoScope:
+                ProductDetails(scope: scope)
+                
+            case let scope as BuyProductScope<DataWithTradeName>:
+                BuyProductScreen(scope: scope)
+                
+            case let scope as SettingsScope:
+                SettingsScreen(scope: scope)
+                
+            case let scope as ManagementScope.User:
+                UserManagementScreen(scope: scope)
+                
+            case let scope as ManagementScope.AddRetailer:
+                AddRetailerScreen(scope: scope)
+                
+            case let scope as DashboardScope:
+                DashboardScreen(scope: scope)
+                
+            case let scope as NotificationScope.All:
+                NotificationsScreen(scope: scope)
+                
+            case let scope as NotificationScopePreview<DataNotificationDetails.TypeSafeSubscription,
+                                                       DataNotificationOption.Subscription>:
+                NotificationDetailsScreen(scope: scope)
+                
+            case let scope as StoresScope:
+                StoresScreen(scope: scope)
+                
+            case let scope as SearchScope:
+                GlobalSearchScreen(scope: scope)
+                
+            case let scope as CartScope:
+                CartScreen(scope: scope)
+                
+            case let scope as HelpScope:
+                HelpScreen(scope: scope)
+                
+            case let scope as CartPreviewScope:
+                PlaceOrderScreen(scope: scope)
+                
+            case let scope as CartOrderCompletedScope:
+                CompletedCartOrderScreen(scope: scope)
+                
+            case let scope as OrdersScope:
+                OrdersScreen(scope: scope)
+                
+            default:
+                EmptyView()
+            }
         }
     }
 }
