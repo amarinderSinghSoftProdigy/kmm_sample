@@ -151,7 +151,7 @@ struct BuyProductScreen: View {
                         
                         DetailView(titleLocalizationKey: "expiry:",
                                    bodyText: stockInfo.expiry.formattedDate,
-                                   bodyColor: Color(hex: stockInfo.expiry.color))
+                                   bodyColor: .hex(stockInfo.expiry.color))
                     }
                     
                     Spacer()
@@ -304,7 +304,7 @@ struct BuyProductScreen: View {
                                     
                                     if let stockInfo = info.stockInfo {
                                         HStack {
-                                            let expiryColor = Color(hex: stockInfo.expiry.color)
+                                            let expiryColor = AppColor.hex(stockInfo.expiry.color)
                                             
                                             DetailView(titleLocalizationKey: "expiry:",
                                                        bodyText: stockInfo.expiry.formattedDate,
@@ -312,7 +312,7 @@ struct BuyProductScreen: View {
                                                 .padding(.horizontal, 6)
                                                 .padding(.vertical, 2)
                                                 .background(
-                                                    expiryColor
+                                                    expiryColor.color
                                                         .opacity(0.12)
                                                         .cornerRadius(4)
                                                 )
@@ -454,7 +454,7 @@ struct BuyProductScreen: View {
         let titleLocalizationKey: String
         let bodyText: String
         
-        let bodyColor: Color
+        let bodyColor: AppColor
         
         var body: some View {
             HStack(spacing: 4) {
@@ -471,7 +471,7 @@ struct BuyProductScreen: View {
         
         init(titleLocalizationKey: String,
              bodyText: String,
-             bodyColor: Color = AppColor.lightBlue.color) {
+             bodyColor: AppColor = .lightBlue) {
             self.titleLocalizationKey = titleLocalizationKey
             self.bodyText = bodyText
             

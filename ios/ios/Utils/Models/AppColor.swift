@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-enum AppColor: String {
+enum AppColor {
     case primary
     case navigationBar
     
@@ -36,6 +36,8 @@ enum AppColor: String {
     
     case clear
     
+    case hex(String)
+    
     var color: Color {
         switch self {
         case .white:
@@ -44,8 +46,11 @@ enum AppColor: String {
         case .clear:
             return Color.clear
             
+        case .hex(let hex):
+            return Color(hex: hex)
+            
         default:
-            return Color(self.rawValue.capitalizeFirstLetter())
+            return Color(String(describing: self).capitalizeFirstLetter())
         }
     }
 }

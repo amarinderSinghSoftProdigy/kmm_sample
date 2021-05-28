@@ -81,7 +81,7 @@ struct NotificationDetailsScreen: View {
                             .frame(width: 96, height: 96)
                         
                         VStack(alignment: .leading, spacing: 5) {
-                            SmallAddressView(location: details.customerData.customerAddressData.location)
+                            SmallAddressView(location: details.customerData.addressData.location)
                             
                             Text("25 km from you")
                                 .medicoText(color: .lightBlue,
@@ -161,7 +161,7 @@ struct NotificationDetailsScreen: View {
                 UserInfoItemDetailsPanel(titleKey: "email_address:",
                                          valueKey: details.value?.customerData.email ?? "")
                 UserInfoItemDetailsPanel(titleKey: "address:",
-                                         valueKey: details.value?.customerData.customerAddressData.address ?? "")
+                                         valueKey: details.value?.customerData.addressData.address ?? "")
                 
                 let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(details.value?.customerData.phoneNumber ?? "")
                 UserInfoItemDetailsPanel(titleKey: "phone",

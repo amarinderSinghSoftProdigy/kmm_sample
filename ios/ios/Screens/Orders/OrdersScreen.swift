@@ -146,21 +146,22 @@ struct OrdersScreen: View {
                 }
                 .padding(8)
                 
-                HStack {
-                    getDetailsView(titleLocalizationKey: "type:",
-                                   body: order.info.paymentMethod.serverValue)
+                HStack(spacing: 10) {
+                    OrderDetailsView(titleLocalizationKey: "type:",
+                                     bodyText: order.info.paymentMethod.serverValue)
                     
                     Spacer()
                     
                     Text(order.info.id)
                         .medicoText(textWeight: .medium,
                                     color: .grey3)
+                        .lineLimit(1)
                     
                     Spacer()
                     
-                    getDetailsView(titleLocalizationKey: "total:",
-                                   body: order.info.total.formattedPrice,
-                                   bodyColor: .lightBlue)
+                    OrderDetailsView(titleLocalizationKey: "total:",
+                                     bodyText: order.info.total.formattedPrice,
+                                     bodyColor: .lightBlue)
                 }
                 .padding(8)
                 .background(
@@ -174,20 +175,6 @@ struct OrdersScreen: View {
                           borderOpacity: 0.12,
                           fill: .white,
                           cornerRadius: 5)
-        }
-        
-        private func getDetailsView(titleLocalizationKey: String,
-                                    body: String,
-                                    bodyColor: AppColor = .darkBlue) -> some View {
-            HStack(spacing: 2) {
-                LocalizedText(localizationKey: titleLocalizationKey,
-                              textWeight: .medium,
-                              color: .grey3)
-                
-                Text(body)
-                    .medicoText(textWeight: .bold,
-                                color: bodyColor)
-            }
         }
     }
 }
@@ -207,5 +194,33 @@ extension DataOrderType {
         default:
             return ""
         }
+    }
+}
+
+struct OrderDetailsView: View {
+    let titleLocalizationKey: String
+    let bodyText: String
+    let bodyColor: AppColor
+    
+    var body: some View {
+        HStack(spacing: 2) {
+            LocalizedText(localizationKey: titleLocalizationKey,
+                          textWeight: .medium,
+                          color: .grey3)
+            
+            Text(bodyText)
+                .medicoText(textWeight: .bold,
+                            color: bodyColor)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.4)
+    }
+    
+    init(titleLocalizationKey: String,
+         bodyText: String,
+         bodyColor: AppColor = .darkBlue) {
+        self.titleLocalizationKey =  titleLocalizationKey
+        self.bodyText = bodyText
+        self.bodyColor = bodyColor
     }
 }

@@ -190,6 +190,9 @@ struct TabBarScreen: View {
             case let scope as OrdersScope:
                 OrdersScreen(scope: scope)
                 
+            case let scope as ViewOrderScope:
+                ViewOrderScreen(scope: scope)
+                
             default:
                 EmptyView()
             }
@@ -214,6 +217,11 @@ struct BottomSheetView: View {
                 Color.clear
                     .modifier(EntityInfoBottomSheet(bottomSheet: managementItemSheet,
                                                     onBottomSheetDismiss: { dismissBottomSheet() }))
+                
+            case let modifyOrderEntrySheet as BottomSheet.ModifyOrderEntry:
+                Color.clear
+                    .modifier(ModifyOrderEntryBottomSheet(bottomSheet: modifyOrderEntrySheet,
+                                                          onBottomSheetDismiss: { dismissBottomSheet() }))
                         
             default:
                 Color.clear

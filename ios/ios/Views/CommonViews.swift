@@ -334,3 +334,27 @@ struct TabOptionView: View {
         .background(tabBackgroundColor.color.cornerRadius(7))
     }
 }
+
+struct CheckBox: View {
+    var selected: Binding<Bool>
+    
+    var body: some View {
+        Group {
+            if selected.wrappedValue {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(appColor: .lightBlue)
+                    
+            }
+            else {
+                Circle()
+                    .stroke(lineWidth: 2)
+                    .foregroundColor(appColor: .darkBlue)
+            }
+        }
+        .onTapGesture {
+            selected.wrappedValue.toggle()
+        }
+    }
+}

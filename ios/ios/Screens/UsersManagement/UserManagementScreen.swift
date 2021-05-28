@@ -276,15 +276,33 @@ struct UserManagementScreen: View {
 struct SmallAddressView: View {
     let location: String
     
+    let fontWeight: TextWeight
+    let fontSize: CGFloat
+    let color: AppColor
+    
     var body: some View {
         HStack(spacing: 5) {
             Image("SmallAddress")
+                .renderingMode(.template)
+                .foregroundColor(appColor: color)
             
             Text(location)
-                .medicoText(textWeight: .bold,
-                            color: .grey3,
+                .medicoText(textWeight: fontWeight,
+                            fontSize: fontSize,
+                            color: color,
                             multilineTextAlignment: .leading)
         }
+    }
+    
+    init(location: String,
+         fontWeight: TextWeight = .bold,
+         fontSize: CGFloat = 14,
+         color: AppColor = .grey3) {
+        self.location = location
+        
+        self.fontWeight = fontWeight
+        self.fontSize = fontSize
+        self.color = color
     }
 }
 

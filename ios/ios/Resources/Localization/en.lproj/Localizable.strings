@@ -299,3 +299,12 @@
 "date" = "Date";
 "from:" = "From:";
 "to:" = "To:";
+"order_no:" = "Order No:";
+"accept_all" = "Accept All";
+"reject_all" = "Reject All";
+"quote" = "Quote";
+"batch_no %@" = "Batch No: %@";
+"subtotal %@" = "Subtotal: %@";
+"requested_qty:" = "Requested QTY:";
+"accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
+"reject_all_products_notification" = "Are you sure you want to Reject all products?";
