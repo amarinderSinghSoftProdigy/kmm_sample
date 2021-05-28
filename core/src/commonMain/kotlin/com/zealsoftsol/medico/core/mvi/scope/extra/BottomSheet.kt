@@ -61,7 +61,7 @@ sealed class BottomSheet {
         val isChecked: DataSource<Boolean>,
     ) : BottomSheet() {
 
-        val quantity = DataSource(orderEntry.requestedQty.value.toInt())
+        val quantity = DataSource(orderEntry.servedQty.value.toInt())
 
         fun inc() {
             quantity.value = quantity.value + 1
