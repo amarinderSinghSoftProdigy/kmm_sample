@@ -17,6 +17,7 @@ import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -30,6 +31,7 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.OtpRequest
@@ -549,13 +551,15 @@ class NetworkClient(
         to: Long?,
         pagination: Pagination,
     ): Response.Wrapped<PaginatedData<Order>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<Order>>>("${baseUrl.url}/orders/${type.path}") {
+        client.get<SimpleResponse<PaginatedData<Order>>>("${baseUrl.url}/orders${type.path}") {
             withMainToken()
             url {
                 parameters.apply {
                     append("search", search)
                     append("b2bUnitCode", unitCode)
                     append("page", pagination.nextPage().toString())
+                    from?.let { append("fromDate", it.toString()) }
+                    to?.let { append("toDate", it.toString()) }
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
@@ -569,7 +573,7 @@ class NetworkClient(
         unitCode: String,
         orderId: String
     ): Response.Wrapped<OrderResponse> = ktorDispatcher {
-        client.get<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders/${type.path}/$orderId") {
+        client.get<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
             withMainToken()
             url {
                 parameters.apply {
@@ -578,6 +582,22 @@ class NetworkClient(
             }
         }.getWrappedBody()
     }
+
+    override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/accept") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedError()
+        }
+
+    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse> =
+        ktorDispatcher {
+            client.post<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders/po/entries/save") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
 
     // Utils
 

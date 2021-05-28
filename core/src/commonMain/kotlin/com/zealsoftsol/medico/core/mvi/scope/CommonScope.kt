@@ -26,8 +26,11 @@ interface CommonScope : Scopable {
     interface WithNotifications : CommonScope {
         val notifications: DataSource<ScopeNotification?>
 
-        fun dismissNotification() =
-            notifications.value?.dismissEvent?.let { EventCollector.sendEvent(it) } ?: false
+        fun dismissNotification() {
+            notifications.value?.dismissEvent?.let { EventCollector.sendEvent(it) } ?: kotlin.run {
+                notifications.value = null
+            }
+        }
     }
 
     interface WithUser : CommonScope {
@@ -38,8 +41,8 @@ interface CommonScope : Scopable {
 interface ScopeNotification {
     val isSimple: Boolean
     val isDismissible: Boolean
-    val dismissEvent: Event
-        get() = Event.Transition.CloseNotification
+    val dismissEvent: Event?
+        get() = null
 
     /**
      * Localized string key

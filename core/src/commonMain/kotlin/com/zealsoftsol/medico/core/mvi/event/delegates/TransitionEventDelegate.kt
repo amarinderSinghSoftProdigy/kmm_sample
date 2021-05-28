@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -118,11 +117,6 @@ internal class TransitionEventDelegate(
 //                        )
 //                    )
 //                }
-                is Event.Transition.CloseNotification -> withScope<CommonScope.WithNotifications>(
-                    forceSafe = true
-                ) {
-                    it.notifications.value = null
-                }
                 is Event.Transition.Notifications -> setScope(
                     NotificationScope.All()
                 )
@@ -140,6 +134,9 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.NewOrders -> setScope(
                     OrdersScope(OrderType.RECEIVED)
+                )
+                is Event.Transition.OrdersHistory -> setScope(
+                    OrdersScope(OrderType.HISTORY)
                 )
             }
         }

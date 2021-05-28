@@ -29,7 +29,9 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object Orders : NavigationOption(Event.Transition.Orders, "orders")
 
-    object NewOrders : NavigationOption(Event.Transition.NewOrders, "new_orders")
+    object NewOrders : NavigationOption(Event.Transition.NewOrders, "purchase_orders")
+
+    object OrdersHistory : NavigationOption(Event.Transition.OrdersHistory, "orders_history")
 
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
 
@@ -41,13 +43,14 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
         internal fun default(userType: UserType) = listOfNotNull(
             Dashboard,
+            Orders,
+            NewOrders.takeIf { userType == UserType.STOCKIST },
+            OrdersHistory.takeIf { userType == UserType.STOCKIST },
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
             SeasonBoys.takeIf { userType == UserType.STOCKIST },
             Stores,
-            NewOrders.takeIf { userType == UserType.STOCKIST },
-            Orders,
             Help,
             Settings,
         )

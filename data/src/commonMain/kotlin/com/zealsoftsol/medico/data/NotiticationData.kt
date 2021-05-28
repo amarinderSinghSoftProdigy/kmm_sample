@@ -73,8 +73,8 @@ enum class NotificationAction(
     val actionStringId: String,
     val completedActionStringId: String
 ) {
-    ACCEPT(true, "accept", "accepted"),
-    DECLINE(false, "decline", "declined"),
+    ACCEPT(true, "accept", "accepted_req"),
+    DECLINE(false, "decline", "declined_req"),
 }
 
 enum class NotificationStatus(val stringId: String) {

@@ -4,8 +4,11 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderInfo
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
@@ -40,6 +43,16 @@ class MockOrderScope : NetworkScope.Orders {
     ): Response.Wrapped<OrderResponse> = mockResponse {
         Response.Wrapped(null, false)
     }
+
+    override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
+        mockResponse {
+            Response.Wrapped(null, true)
+        }
+
+    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse> =
+        mockResponse {
+            Response.Wrapped(null, true)
+        }
 }
 
 private fun longPaginatedData(size: Int, rnd: Random) =

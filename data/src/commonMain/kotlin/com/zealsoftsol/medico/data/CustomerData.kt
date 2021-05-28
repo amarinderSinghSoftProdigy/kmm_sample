@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CustomerData(
     val aadhaarCardNo: String?,
-    val customerAddressData: CustomerAddressData,
-    val customerMetaData: CustomerMetaData?,
+    val addressData: AddressData,
+    val metaData: CustomerMetaData?,
     val customerType: String,
     val drugLicenseNo1: String?,
     val drugLicenseNo2: String?,
@@ -22,23 +22,6 @@ data class CustomerData(
     val panNumber: String?,
     val tradeName: String,
     val unitCode: String?,
-)
-
-@Serializable
-data class CustomerAddressData(
-    @SerialName("addressLine1")
-    val address: String,
-    val landmark: String,
-    @SerialName("cityTown")
-    val city: String,
-    val district: String,
-    @SerialName("latitidue")
-    val latitude: Double,
-    val location: String,
-    val longitude: Double,
-    val pincode: Int,
-    val placeId: String?,
-    val state: String,
 )
 
 @Serializable

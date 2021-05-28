@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
@@ -20,6 +21,7 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
@@ -180,6 +182,9 @@ interface NetworkScope {
             unitCode: String,
             orderId: String
         ): Response.Wrapped<OrderResponse>
+
+        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse>
+        suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode>
     }
 
     interface Help : NetworkScope {

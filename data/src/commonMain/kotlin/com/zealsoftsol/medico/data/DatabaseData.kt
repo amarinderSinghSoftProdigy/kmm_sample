@@ -13,7 +13,7 @@ data class User(
     val details: Details,
     val isActivated: Boolean,
     val isDocumentUploaded: Boolean,
-    val addressData: CustomerAddressData,
+    val addressData: AddressData,
 ) {
     fun fullName() = "$firstName $lastName"
 
