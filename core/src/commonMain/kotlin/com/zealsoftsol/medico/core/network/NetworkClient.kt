@@ -585,7 +585,7 @@ class NetworkClient(
 
     override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/accept") {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/submit") {
                 withMainToken()
                 jsonBody(request)
             }.getWrappedError()

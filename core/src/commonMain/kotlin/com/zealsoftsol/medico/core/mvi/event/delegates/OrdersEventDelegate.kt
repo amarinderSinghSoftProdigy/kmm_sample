@@ -35,7 +35,7 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.Select -> selectOrder(event.item)
         is Event.Action.Orders.ViewOrderAction -> viewOrderAction(
             event.action,
-            event.fromNotification
+            event.fromNotification,
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
@@ -218,7 +218,8 @@ internal class OrdersEventDelegate(
             }
 
             if (isSuccess) {
-                dropScope(strategy = Navigator.DropStrategy.ToRoot)
+                dropScope(updateDataSource = false)
+                dropScope()
             } else {
                 setHostError(error ?: ErrorCode())
             }
