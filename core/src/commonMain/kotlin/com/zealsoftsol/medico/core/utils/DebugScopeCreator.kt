@@ -12,9 +12,9 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
-import com.zealsoftsol.medico.data.CustomerAddressData
 import com.zealsoftsol.medico.data.Expiry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockInfo
@@ -264,5 +264,5 @@ private inline val testUser
         User.Details.DrugLicense("", "", "", "", "url"),
         true,
         true,
-        CustomerAddressData("", "", "", "", 0.0, "", 0.0, 0, "", "")
+        AddressData("", "", "", "", 0.0, "", 0.0, 0, "", "")
     )

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
@@ -13,6 +14,7 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.Store
@@ -187,6 +189,16 @@ sealed class Event {
             data class Search(val value: String) : Orders()
             data class Load(val isFirstLoad: Boolean) : Orders()
             data class Select(val item: Order) : Orders()
+
+            data class ViewOrderAction(
+                val action: ViewOrderScope.Action,
+                val fromNotification: Boolean
+            ) : Orders()
+
+            data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
+            object Confirm : Orders()
         }
     }
 
@@ -212,12 +224,11 @@ sealed class Event {
 //            val registration3: UserRegistration3,
 //        ) : Transition()
 
-        object CloseNotification : Transition()
-
         object Notifications : Transition()
         object Stores : Transition()
         object Cart : Transition()
         object Orders : Transition()
         object NewOrders : Transition()
+        object OrdersHistory : Transition()
     }
 }
