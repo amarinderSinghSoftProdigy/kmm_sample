@@ -76,6 +76,7 @@
 		33D4743925CAAEDA00BB21CC /* NotificationDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D4743825CAAEDA00BB21CC /* NotificationDetailsScreen.swift */; };
 		33D57335259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */; };
 		33D7F29925BEBCB40070C9DB /* EntityInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */; };
+		33DE40C32664CB83001EB277 /* ConfirmOrderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
@@ -190,6 +191,7 @@
 		33D4743825CAAEDA00BB21CC /* NotificationDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDetailsScreen.swift; sourceTree = "<group>"; };
 		33D57334259B167100A9B5C5 /* SignUpAadhaarCardDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAadhaarCardDetailsScreen.swift; sourceTree = "<group>"; };
 		33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityInfoBottomSheet.swift; sourceTree = "<group>"; };
+		33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderScreen.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -639,6 +641,7 @@
 		33F55EF2265E6DA800298BE7 /* Orders */ = {
 			isa = PBXGroup;
 			children = (
+				33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */,
 				33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */,
 				33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */,
 			);
@@ -928,6 +931,7 @@
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
+				33DE40C32664CB83001EB277 /* ConfirmOrderScreen.swift in Sources */,
 				33A0202425B9920000615349 /* TransparentList.swift in Sources */,
 				334574F025762A5F002839C5 /* SignUpScreen.swift in Sources */,
 				333D329B262ED4BC0075E1D3 /* SafariView.swift in Sources */,

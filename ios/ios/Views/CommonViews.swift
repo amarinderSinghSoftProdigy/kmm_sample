@@ -312,11 +312,14 @@ struct CheckBoxView: View {
 
 struct TabOptionView: View {
     let localizationKey: String
+    
     let isSelected: Bool
+    let selectedColor: AppColor
+    
     let itemsNumber: Int
     
     var body: some View {
-        let tabBackgroundColor: AppColor = isSelected ? .lightBlue : .clear
+        let tabBackgroundColor: AppColor = isSelected ? selectedColor : .clear
         
         HStack(spacing: 7) {
             LocalizedText(localizationKey: localizationKey,
@@ -332,6 +335,18 @@ struct TabOptionView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 7)
         .background(tabBackgroundColor.color.cornerRadius(7))
+    }
+    
+    init(localizationKey: String,
+         isSelected: Bool,
+         selectedColor: AppColor = .lightBlue,
+         itemsNumber: Int) {
+        self.localizationKey = localizationKey
+        
+        self.isSelected = isSelected
+        self.selectedColor = selectedColor
+        
+        self.itemsNumber = itemsNumber
     }
 }
 

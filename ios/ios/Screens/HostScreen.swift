@@ -193,6 +193,9 @@ struct TabBarScreen: View {
             case let scope as ViewOrderScope:
                 ViewOrderScreen(scope: scope)
                 
+            case let scope as ConfirmOrderScope:
+                ConfirmOrderScreen(scope: scope)
+                
             default:
                 EmptyView()
             }

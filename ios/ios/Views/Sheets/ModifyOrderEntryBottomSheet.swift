@@ -53,6 +53,9 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                             getDetailsView(titleLocalizationKey: "price:",
                                            bodyText: bottomSheet.orderEntry.price.formatted)
                             
+                            getDetailsView(titleLocalizationKey: "mrp:",
+                                           bodyText: bottomSheet.orderEntry.mrp.formatted)
+                            
                             getDetailsView(titleLocalizationKey: "requested_qty:",
                                            bodyText: bottomSheet.orderEntry.requestedQty.formatted,
                                            bodyColor: .lightBlue)

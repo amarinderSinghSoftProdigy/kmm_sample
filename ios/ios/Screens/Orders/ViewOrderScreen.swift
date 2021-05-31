@@ -28,9 +28,10 @@ struct ViewOrderScreen: View {
             
             self.orderView
             
-            self.entriesView
-            
-            Spacer()
+            OrderEntriesView(selectableOrderEntry: scope,
+                             entries: entries.value) {
+                scope.selectEntry(entry: $0)
+            }
             
             if let price = order.value?.info.total.formattedPrice {
                 CartOrderTotalPriceView(price: price)
@@ -160,26 +161,6 @@ struct ViewOrderScreen: View {
         }
     }
     
-    private var entriesView: some View {
-        Group {
-            if let entries = self.entries.value as? [DataOrderEntry] {
-                let checkedEntries = self.checkedEntries.value as? [DataOrderEntry]
-                
-                VStack {
-                    ForEach(entries, id: \.self) { entry in
-                        EntryView(entry: entry,
-                                  selected: checkedEntries?.contains(entry) == true,
-                                  canEdit: scope.canEdit)
-                            .onTapGesture {
-                                scope.selectEntry(entry: entry)
-                            }
-                    }
-                }
-                .scrollView()
-            }
-        }
-    }
-    
     private var actionsView: some View {
         Group {
             if let actions = self.actions.value as? [ViewOrderScope.Action] {
@@ -206,16 +187,75 @@ struct ViewOrderScreen: View {
             .frame(height: 1)
     }
     
+}
+
+extension DataBuyingOption {
+    var borderColor: AppColor {
+        switch self {
+        case .quote:
+            return .placeholderGrey
+            
+        default:
+            return .white
+        }
+    }
+}
+
+struct OrderEntriesView: View {
+    let selectableOrderEntry: SelectableOrderEntry
+    
+    let entries: NSArray?
+    @ObservedObject var checkedEntries: SwiftDataSource<NSArray>
+    
+    let onEntrySelect: ((DataOrderEntry) -> ())?
+    
+    var body: some View {
+        Group {
+            if let entries = self.entries as? [DataOrderEntry] {
+                let checkedEntries = self.checkedEntries.value as? [DataOrderEntry]
+                
+                VStack {
+                    ForEach(entries, id: \.self) { entry in
+                        EntryView(entry: entry,
+                                  selected: checkedEntries?.contains(entry) == true,
+                                  canEdit: selectableOrderEntry.canEdit) {
+                            selectableOrderEntry.toggleCheck(entry: entry)
+                        }
+                        .onTapGesture {
+                            onEntrySelect?(entry)
+                        }
+                    }
+                }
+                .scrollView()
+            }
+        }
+        .frame(maxHeight: .infinity, alignment: .topLeading)
+    }
+    
+    init(selectableOrderEntry: SelectableOrderEntry,
+         entries: NSArray?,
+         onEntrySelect: ((DataOrderEntry) -> ())? = nil) {
+        self.selectableOrderEntry = selectableOrderEntry
+        
+        self.entries = entries
+        self.checkedEntries = .init(dataSource: selectableOrderEntry.checkedEntries)
+        
+        self.onEntrySelect = onEntrySelect
+    }
+    
     private struct EntryView: View {
         let entry: DataOrderEntry
         
         let selected: Bool
         let canEdit: Bool
         
+        let onCheckBoxToggle: () -> ()
+        
         var body: some View {
             HStack(spacing: 10) {
                 if canEdit {
-                    CheckBox(selected: .constant(selected))
+                    CheckBox(selected: .init(get: { selected },
+                                             set: { _ in onCheckBoxToggle() }))
                         .frame(width: 22, height: 22)
                 }
                 
@@ -258,18 +298,6 @@ struct ViewOrderScreen: View {
                             .foregroundColor(appColor: entry.buyingOption.borderColor)
                     )
             )
-        }
-    }
-}
-
-extension DataBuyingOption {
-    var borderColor: AppColor {
-        switch self {
-        case .quote:
-            return .placeholderGrey
-            
-        default:
-            return .white
         }
     }
 }

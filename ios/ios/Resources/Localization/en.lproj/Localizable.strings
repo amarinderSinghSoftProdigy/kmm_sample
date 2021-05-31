@@ -309,3 +309,10 @@
 "served_qty:" = "Served QTY:";
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
 "reject_all_products_notification" = "Are you sure you want to Reject all products?";
+
+// MARK: Confirm Order
+"action_confirmation" = "Action Confirmation";
+"accepted" = "Accepted";
+"rejected" = "Rejected";
+"accept_selected" = "Accept Selected";
+"reject_selected" = "Reject Selected";
