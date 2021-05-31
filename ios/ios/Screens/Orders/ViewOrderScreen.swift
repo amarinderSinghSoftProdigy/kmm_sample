@@ -36,7 +36,9 @@ struct ViewOrderScreen: View {
                 CartOrderTotalPriceView(price: price)
             }
             
-            self.actionsView
+            if scope.canEdit {
+                self.actionsView
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 24)
@@ -166,7 +168,8 @@ struct ViewOrderScreen: View {
                 VStack {
                     ForEach(entries, id: \.self) { entry in
                         EntryView(entry: entry,
-                                  selected: checkedEntries?.contains(entry) == true)
+                                  selected: checkedEntries?.contains(entry) == true,
+                                  canEdit: scope.canEdit)
                             .onTapGesture {
                                 scope.selectEntry(entry: entry)
                             }
@@ -205,12 +208,16 @@ struct ViewOrderScreen: View {
     
     private struct EntryView: View {
         let entry: DataOrderEntry
+        
         let selected: Bool
+        let canEdit: Bool
         
         var body: some View {
             HStack(spacing: 10) {
-                CheckBox(selected: .constant(selected))
-                    .frame(width: 22, height: 22)
+                if canEdit {
+                    CheckBox(selected: .constant(selected))
+                        .frame(width: 22, height: 22)
+                }
                 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(entry.productName)

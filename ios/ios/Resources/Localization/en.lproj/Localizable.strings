@@ -306,5 +306,6 @@
 "batch_no %@" = "Batch No: %@";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
+"served_qty:" = "Served QTY:";
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
 "reject_all_products_notification" = "Are you sure you want to Reject all products?";

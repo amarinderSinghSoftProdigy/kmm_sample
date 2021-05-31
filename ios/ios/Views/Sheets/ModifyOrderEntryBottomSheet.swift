@@ -26,9 +26,11 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                                 maxHeight: 370) {
                 VStack(spacing: 30) {
                     HStack(alignment: .top, spacing: 20) {
-                        CheckBox(selected: .init(get: { checked.value == true },
-                                                 set: { _ in bottomSheet.toggleCheck() }))
-                            .frame(width: 22, height: 22)
+                        if bottomSheet.canEdit {
+                            CheckBox(selected: .init(get: { checked.value == true },
+                                                     set: { _ in bottomSheet.toggleCheck() }))
+                                .frame(width: 22, height: 22)
+                        }
                         
                         VStack(alignment: .leading) {
                             Text(bottomSheet.orderEntry.productName)
@@ -58,10 +60,17 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                         
                         Spacer()
                         
-                        NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
-                                     onQuantityIncrease: { bottomSheet.inc() },
-                                     onQuantityDecrease: { bottomSheet.dec() },
-                                     longPressEnabled: true)
+                        if bottomSheet.canEdit {
+                            NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
+                                         onQuantityIncrease: { bottomSheet.inc() },
+                                         onQuantityDecrease: { bottomSheet.dec() },
+                                         longPressEnabled: true)
+                        }
+                        else {
+                            getDetailsView(titleLocalizationKey: "served_qty:",
+                                           bodyText: bottomSheet.orderEntry.servedQty.formatted,
+                                           bodyColor: .lightBlue)
+                        }
                     }
                     .padding(.vertical, 20)
                     .background(
@@ -84,17 +93,19 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                                       textWeight: .semiBold,
                                       fontSize: 20)
                         
-                        Spacer()
-                        
-                        MedicoButton(localizedStringKey: "save",
-                                     isEnabled: true,
-                                     width: 88,
-                                     height: 40,
-                                     cornerRadius: 6,
-                                     fontSize: 14,
-                                     fontColor: .white,
-                                     buttonColor: .lightBlue) {
-                            bottomSheet.save()
+                        if bottomSheet.canEdit {
+                            Spacer()
+                            
+                            MedicoButton(localizedStringKey: "save",
+                                         isEnabled: true,
+                                         width: 88,
+                                         height: 40,
+                                         cornerRadius: 6,
+                                         fontSize: 14,
+                                         fontColor: .white,
+                                         buttonColor: .lightBlue) {
+                                bottomSheet.save()
+                            }
                         }
                     }
                 }
