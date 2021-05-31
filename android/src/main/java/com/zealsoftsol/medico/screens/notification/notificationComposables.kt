@@ -290,7 +290,7 @@ private fun SubscriptionDeatails(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                GeoLocation(details.customerData.customerAddressData.location, isBold = true)
+                GeoLocation(details.customerData.addressData.location, isBold = true)
 //                Text(
 //                    text = previewItem.geoData.distance,
 //                    fontSize = 12.sp,
@@ -304,8 +304,8 @@ private fun SubscriptionDeatails(
                     color = ConstColors.lightBlue,
                     modifier = Modifier.clickable {
                         activity.openMaps(
-                            details.customerData.customerAddressData.latitude,
-                            details.customerData.customerAddressData.longitude,
+                            details.customerData.addressData.latitude,
+                            details.customerData.addressData.longitude,
                         )
                     },
                 )
@@ -395,8 +395,8 @@ private fun SubscriptionDeatails(
             )
         }
     } else {
-        DataWithLabel(R.string.email, details.customerData.email)
-        DataWithLabel(R.string.address, details.customerData.customerAddressData.address)
+        DataWithLabel(R.string.email, details.customerData.email.orEmpty())
+        DataWithLabel(R.string.address, details.customerData.addressData.address)
         DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
     }
 }

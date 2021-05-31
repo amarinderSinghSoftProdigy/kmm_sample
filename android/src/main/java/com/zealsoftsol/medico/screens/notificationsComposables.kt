@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.common.AlertButton
 import com.zealsoftsol.medico.screens.common.InputField
@@ -64,6 +65,14 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
                     text = stringResource(id = R.string.order_modified_body),
                     style = MaterialTheme.typography.subtitle1,
                 )
+                is ViewOrderScope.ServeQuotedProduct -> Text(
+                    text = stringResource(id = R.string.serve_quoted),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                is ViewOrderScope.RejectAll -> Text(
+                    text = stringResource(id = R.string.sure_reject_all),
+                    style = MaterialTheme.typography.subtitle1,
+                )
             }
         },
         buttons = {
@@ -87,10 +96,20 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
                 }
                 is CartPreviewScope.OrderWithQuotedItems -> CartNotificationButtons(
                     onDismiss,
-                    onContinue = { notification.placeOrder() })
+                    onContinue = { notification.placeOrder() }
+                )
                 is CartPreviewScope.OrderModified -> CartNotificationButtons(
                     onDismiss,
-                    onContinue = { notification.placeOrder() })
+                    onContinue = { notification.placeOrder() }
+                )
+                is ViewOrderScope.ServeQuotedProduct -> CartNotificationButtons(
+                    onDismiss,
+                    onContinue = { notification.`continue`() }
+                )
+                is ViewOrderScope.RejectAll -> CartNotificationButtons(
+                    onDismiss,
+                    onContinue = { notification.`continue`() }
+                )
             }
         },
         properties = DialogProperties(

@@ -57,7 +57,7 @@ fun OrdersScreen(scope: OrdersScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
-            searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
+            searchBarEnd = if (scope.type != OrderType.RECEIVED) SearchBarEnd.Filter { scope.toggleFilter() } else null,
             icon = Icons.Default.Search,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
@@ -227,7 +227,6 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 Text(
                     text = buildAnnotatedString {
                         append(stringResource(id = R.string.total))
-                        append(": ")
                         val startIndex = length
                         append(order.info.total.formattedPrice)
                         addStyle(

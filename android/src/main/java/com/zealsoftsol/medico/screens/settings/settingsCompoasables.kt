@@ -9,7 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
-import com.zealsoftsol.medico.data.CustomerAddressData
+import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.screens.common.NavigationCell
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
@@ -63,7 +63,7 @@ private fun Profile(user: User) {
 }
 
 @Composable
-private fun Address(addressData: CustomerAddressData) {
+private fun Address(addressData: AddressData) {
     ReadOnlyField(addressData.pincode.toString(), R.string.pincode)
     Space(12.dp)
     ReadOnlyField(addressData.address, R.string.address_line)

@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -32,9 +35,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -44,6 +50,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
@@ -54,6 +61,7 @@ import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -84,6 +92,232 @@ fun Scope.Host.showBottomSheet(
                 } else null,
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.ModifyOrderEntry -> {
+                val quantity = bs.quantity.flow.collectAsState()
+                val isChecked = bs.isChecked.flow.collectAsState()
+                ModifyOrderEntryBottomSheet(
+                    bs.orderEntry,
+                    quantity.value,
+                    canEdit = bs.canEdit,
+                    isChecked = isChecked.value,
+                    onChecked = { bs.toggleCheck() },
+                    onInc = { bs.inc() },
+                    onDec = { bs.dec() },
+                    onSave = { bs.save() },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModifyOrderEntryBottomSheet(
+    entry: OrderEntry,
+    quantity: Int,
+    canEdit: Boolean,
+    isChecked: Boolean,
+    onChecked: (Boolean) -> Unit,
+    onInc: () -> Unit,
+    onDec: () -> Unit,
+    onSave: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 24.dp)) {
+            Surface(
+                shape = CircleShape,
+                color = Color.Black.copy(alpha = 0.12f),
+                modifier = Modifier.align(Alignment.TopEnd)
+                    .size(24.dp)
+                    .clickable(
+                        indication = rememberRipple(radius = 12.dp),
+                        onClick = onDismiss,
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = ConstColors.gray,
+                    modifier = Modifier.size(16.dp),
+                )
+            }
+            Column {
+                Row(modifier = Modifier.padding(end = 30.dp)) {
+                    if (canEdit) {
+                        Checkbox(
+                            checked = isChecked,
+                            colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                            onCheckedChange = onChecked,
+                        )
+                        Space(18.dp)
+                    }
+                    Column {
+                        Text(
+                            text = entry.productName,
+                            color = MaterialTheme.colors.background,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = "${stringResource(id = R.string.batch_no)} ${entry.batchNo}",
+                            color = MaterialTheme.colors.background,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = "${stringResource(id = R.string.expiry)} ${entry.expiryDate?.formatted.orEmpty()}",
+                            color = MaterialTheme.colors.background,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                Space(20.dp)
+                Divider()
+                Space(20.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = if (canEdit) Alignment.CenterVertically else Alignment.Top,
+                ) {
+                    Column {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.price))
+                                append(": ")
+                                val startIndex = length
+                                append(entry.price.formatted)
+                                addStyle(
+                                    SpanStyle(
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W600
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(8.dp)
+                        if (!canEdit) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.mrp))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(entry.mrp.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Space(8.dp)
+                        }
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.requested_qty))
+                                append(" ")
+                                val startIndex = length
+                                append(entry.requestedQty.formatted)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W600
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Column {
+                        if (canEdit) {
+                            PlusMinusQuantity(
+                                quantity = quantity,
+                                onInc = onInc,
+                                onDec = onDec,
+                                isEnabled = true,
+                            )
+                        } else {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.served_qty))
+                                    append(" ")
+                                    val startIndex = length
+                                    append(entry.servedQty.formatted)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.lightBlue,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+                Space(20.dp)
+                Divider()
+                Space(8.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "${stringResource(id = R.string.subtotal)}: ${entry.totalAmount.formatted}",
+                        color = MaterialTheme.colors.background,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W600,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    if (canEdit) {
+                        MedicoSmallButton(
+                            text = stringResource(id = R.string.save),
+                            enabledColor = ConstColors.lightBlue,
+                            contentColor = Color.White,
+                            onClick = onSave,
+                        )
+                    }
+                }
+//                Space(8.dp)
+            }
         }
     }
 }

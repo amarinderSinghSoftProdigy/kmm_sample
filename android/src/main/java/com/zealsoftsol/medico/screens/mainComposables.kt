@@ -42,6 +42,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
@@ -83,6 +84,7 @@ import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
+import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
 import com.zealsoftsol.medico.screens.orders.OrdersScreen
 import com.zealsoftsol.medico.screens.orders.ViewOrderScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
@@ -183,6 +185,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is HelpScope -> HelpScreen(it)
                     is OrdersScope -> OrdersScreen(it)
                     is ViewOrderScope -> ViewOrderScreen(it)
+                    is ConfirmOrderScope -> ConfirmOrderScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -109,14 +108,14 @@ fun NavigationColumn(
 @Composable
 private fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
     NavigationOption.Dashboard -> painterResource(id = R.drawable.ic_dashboard)
+    NavigationOption.Orders -> painterResource(id = R.drawable.ic_cart_filled)
+    NavigationOption.NewOrders, NavigationOption.OrdersHistory -> painterResource(id = R.drawable.ic_cart_arrow)
     NavigationOption.Stores -> painterResource(id = R.drawable.ic_stores)
     NavigationOption.Stockists -> painterResource(id = R.drawable.ic_stockist)
     NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
     NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
     NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
     NavigationOption.Help -> rememberVectorPainter(Icons.Filled.Help)
-    NavigationOption.Orders -> rememberVectorPainter(Icons.Filled.Circle)
-    NavigationOption.NewOrders -> rememberVectorPainter(Icons.Filled.Circle)
     NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
     NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)
 } to stringResourceByName(stringId)

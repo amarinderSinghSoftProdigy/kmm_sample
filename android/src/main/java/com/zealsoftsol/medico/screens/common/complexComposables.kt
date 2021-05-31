@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.screens.common
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun <T> FoldableItem(
     expanded: Boolean,
@@ -43,13 +46,15 @@ fun <T> FoldableItem(
             ) {
                 header(isExpanded.value)
             }
-            if (isExpanded.value) Column(
-                modifier = Modifier.background(Color.White).padding(horizontal = 8.dp)
-            ) {
-                Space(12.dp)
-                childItems.forEach {
-                    item(it)
+            AnimatedVisibility(isExpanded.value) {
+                Column(
+                    modifier = Modifier.background(Color.White).padding(horizontal = 8.dp)
+                ) {
                     Space(12.dp)
+                    childItems.forEach {
+                        item(it)
+                        Space(12.dp)
+                    }
                 }
             }
         }

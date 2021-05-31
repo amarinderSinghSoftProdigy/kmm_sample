@@ -50,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -83,6 +84,7 @@ fun MedicoButton(
     isEnabled: Boolean,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
+    textSize: TextUnit = 15.sp,
     onClick: () -> Unit,
 ) {
     Button(
@@ -100,7 +102,7 @@ fun MedicoButton(
     ) {
         Text(
             text = text,
-            fontSize = 15.sp,
+            fontSize = textSize,
             modifier = Modifier.align(Alignment.CenterVertically),
         )
     }

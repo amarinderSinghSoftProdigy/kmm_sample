@@ -56,35 +56,7 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
                 OrderItem(it)
                 Space(12.dp)
             }
-            Divider()
-            Row(
-                modifier = Modifier.fillMaxWidth().height(66.dp).padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = stringResource(id = R.string.order_total),
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 20.sp,
-                )
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = scope.total.formattedPrice,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 20.sp,
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = stringResource(id = R.string.tax_exclusive),
-                        color = ConstColors.lightBlue,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 10.sp,
-                    )
-                }
-            }
-            Divider()
+            OrderTotal(scope.total.formattedPrice)
         }
 
         Column {
@@ -297,5 +269,40 @@ private fun OrderItem(seller: SellerOrder) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun OrderTotal(price: String) {
+    Column {
+        Divider()
+        Row(
+            modifier = Modifier.fillMaxWidth().height(66.dp).padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(id = R.string.order_total),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W500,
+                fontSize = 20.sp,
+            )
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = price,
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 20.sp,
+                )
+                Space(4.dp)
+                Text(
+                    text = stringResource(id = R.string.tax_exclusive),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 10.sp,
+                )
+            }
+        }
+        Divider()
     }
 }

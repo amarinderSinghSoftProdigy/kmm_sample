@@ -79,35 +79,7 @@ fun CartPreviewScreen(scope: CartPreviewScope) {
         }
 
         Column {
-            Divider()
-            Row(
-                modifier = Modifier.fillMaxWidth().height(66.dp).padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = stringResource(id = R.string.order_total),
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 20.sp,
-                )
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = total.value?.formattedPrice.orEmpty(),
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 20.sp,
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = stringResource(id = R.string.tax_exclusive),
-                        color = ConstColors.lightBlue,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 10.sp,
-                    )
-                }
-            }
-            Divider()
+            OrderTotal(total.value?.formattedPrice.orEmpty())
             Space(16.dp)
             MedicoButton(
                 text = stringResource(R.string.place_order),
