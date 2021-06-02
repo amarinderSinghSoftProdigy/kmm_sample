@@ -24,8 +24,8 @@ struct OrdersScreen: View {
         .init(get: {
             self.msToDate(dateRange.value?.fromMs)
         }, set: {
-            if let timeInterval = $0?.timeIntervalSince1970 {
-                scope.setFrom(fromMs: Int64(timeInterval))
+            if let milliseconds = $0?.millisecondsSince1970 {
+                scope.setFrom(fromMs: Int64(milliseconds))
             }
         })
     }
@@ -34,8 +34,8 @@ struct OrdersScreen: View {
         .init(get: {
             self.msToDate(dateRange.value?.toMs)
         }, set: {
-            if let timeInterval = $0?.timeIntervalSince1970 {
-                scope.setTo(toMs: Int64(timeInterval))
+            if let milliseconds = $0?.millisecondsSince1970 {
+                scope.setTo(toMs: Int64(milliseconds))
             }
         })
     }
@@ -118,9 +118,9 @@ struct OrdersScreen: View {
     }
     
     private func msToDate(_ ms: KotlinLong?) -> Date? {
-        guard let ms = ms as? Double else { return nil }
+        guard let ms = ms as? Int64 else { return nil }
         
-        return Date(timeIntervalSince1970: ms)
+        return Date(milliseconds: ms)
     }
     
     private struct OrderView: View {
