@@ -20,7 +20,7 @@ class MockCustomerScope : NetworkScope.Customer {
 
     companion object {
 
-        fun getMockCustomerData(userType: UserType = UserType.SEASON_BOY) = CustomerData(
+        fun getMockCustomerData(userType: UserType = UserType.STOCKIST) = CustomerData(
             "2194129343",
             AddressData(
                 "India",

@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
@@ -204,6 +205,15 @@ sealed class Event {
             data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
             object Confirm : Orders()
         }
+
+        sealed class Invoices : Action() {
+            override val typeClazz: KClass<*> = Invoices::class
+
+            data class Search(val value: String) : Invoices()
+            data class Load(val isFirstLoad: Boolean) : Invoices()
+            data class Select(val item: Invoice) : Invoices()
+            object Download : Invoices()
+        }
     }
 
     sealed class Transition : Event() {
@@ -234,5 +244,6 @@ sealed class Event {
         object Orders : Transition()
         object NewOrders : Transition()
         object OrdersHistory : Transition()
+        object Invoices : Transition()
     }
 }

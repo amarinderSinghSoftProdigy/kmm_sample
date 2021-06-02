@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
@@ -107,6 +108,12 @@ internal class EventCollector(
             helpNetworkScope,
         ),
         Event.Action.Orders::class to OrdersEventDelegate(
+            navigator,
+            userRepo,
+            ordersNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.Invoices::class to InvoicesEventDelegate(
             navigator,
             userRepo,
             ordersNetworkScope,

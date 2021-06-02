@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
@@ -140,6 +141,9 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.OrdersHistory -> setScope(
                     OrdersScope(OrderType.HISTORY)
+                )
+                is Event.Transition.Invoices -> setScope(
+                    InvoicesScope()
                 )
             }
         }

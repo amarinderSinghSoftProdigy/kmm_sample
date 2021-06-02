@@ -4,8 +4,15 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.AddressData
+import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.FormattedData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.InvoiceInfo
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderInfo
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
@@ -33,7 +40,7 @@ class MockOrderScope : NetworkScope.Orders {
         to: Long?,
         pagination: Pagination
     ): Response.Wrapped<PaginatedData<Order>> = mockResponse {
-        Response.Wrapped(longPaginatedData(20, rnd), true)
+        Response.Wrapped(longPaginatedOrderData(20, rnd), true)
     }
 
     override suspend fun getOrder(
@@ -53,9 +60,69 @@ class MockOrderScope : NetworkScope.Orders {
         mockResponse {
             Response.Wrapped(null, true)
         }
+
+    override suspend fun getInvoice(
+        unitCode: String,
+        invoiceId: String
+    ): Response.Wrapped<InvoiceResponse> = mockResponse {
+        Response.Wrapped(
+            InvoiceResponse(
+                data = B2BData(
+                    addressData = AddressData(
+                        "India",
+                        "landmark",
+                        "Delhi",
+                        "Vijayawada",
+                        0.0,
+                        "Some location",
+                        0.0,
+                        520001,
+                        "",
+                        ""
+                    ),
+                    drugLicenseNo1 = "drug1",
+                    drugLicenseNo2 = "drug2",
+                    gstin = "12345",
+                    phoneNumber = "+1111111",
+                    panNumber = "55532",
+                    tradeName = "Test Trader",
+                ),
+                invoiceInfo = InvoiceInfo(
+                    id = Time.now.toString(),
+                    date = "${rnd.nextInt(31)}/05/2021",
+                    time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
+                    total = Total(
+                        formattedPrice = "₹${rnd.nextInt(10_000)}",
+                        price = 0.0,
+                        itemCount = 0,
+                    )
+                ),
+                invoiceEntries = listOf(
+                    InvoiceEntry(
+                        productName = "Some product",
+                        manufacturerName = "Some manufacturer",
+                        price = FormattedData("₹ 1,110.09", 0.0),
+                        totalAmount = FormattedData("₹ 110.09", 0.0),
+                        quantity = FormattedData("2", 2.0),
+                    )
+                )
+            ),
+            true
+        )
+    }
+
+    override suspend fun getInvoices(
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<Invoice>> = mockResponse {
+        Response.Wrapped(longPaginatedInvoiceData(20, rnd), true)
+    }
 }
 
-private fun longPaginatedData(size: Int, rnd: Random) =
+private fun longPaginatedOrderData(size: Int, rnd: Random) =
     PaginatedData(
         (0 until size)
             .map {
@@ -68,6 +135,27 @@ private fun longPaginatedData(size: Int, rnd: Random) =
                         time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
                         status = "status",
                         paymentMethod = if (rnd.nextBoolean()) PaymentMethod.CASH else PaymentMethod.CREDIT,
+                        total = Total(
+                            formattedPrice = "₹${rnd.nextInt(10_000)}",
+                            price = 0.0,
+                            itemCount = 0,
+                        )
+                    ),
+                )
+            },
+        9999999,
+    )
+
+private fun longPaginatedInvoiceData(size: Int, rnd: Random) =
+    PaginatedData(
+        (0 until size)
+            .map {
+                Invoice(
+                    tradeName = "Buyer $it",
+                    info = InvoiceInfo(
+                        id = Time.now.toString(),
+                        date = "${rnd.nextInt(31)}/05/2021",
+                        time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
                         total = Total(
                             formattedPrice = "₹${rnd.nextInt(10_000)}",
                             price = 0.0,

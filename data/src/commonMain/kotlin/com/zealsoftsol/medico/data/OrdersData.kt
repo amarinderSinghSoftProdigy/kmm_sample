@@ -94,3 +94,39 @@ data class ConfirmOrderRequest(
     val sellerUnitCode: String,
     val acceptedEntries: List<String>,
 )
+
+@Serializable
+data class Invoice(
+    @SerialName("invoiceInfo")
+    val info: InvoiceInfo,
+    val tradeName: String,
+)
+
+@Serializable
+data class InvoiceInfo(
+    @SerialName("invoiceId")
+    val id: String,
+    @SerialName("invoiceDate")
+    val date: String,
+    @SerialName("invoiceTime")
+    val time: String,
+    @SerialName("orderStatus")
+    val total: Total,
+)
+
+@Serializable
+data class InvoiceResponse(
+    @SerialName("b2BUnitData")
+    val data: B2BData,
+    val invoiceInfo: InvoiceInfo,
+    val invoiceEntries: List<InvoiceEntry>,
+)
+
+@Serializable
+data class InvoiceEntry(
+    val productName: String,
+    val manufacturerName: String,
+    val price: FormattedData<Double>,
+    val totalAmount: FormattedData<Double>,
+    val quantity: FormattedData<Double>,
+)

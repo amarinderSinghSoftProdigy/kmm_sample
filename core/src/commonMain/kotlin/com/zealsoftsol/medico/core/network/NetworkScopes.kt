@@ -15,6 +15,8 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
@@ -188,6 +190,19 @@ interface NetworkScope {
 
         suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse>
         suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode>
+
+        suspend fun getInvoices(
+            unitCode: String,
+            search: String,
+            from: Long?,
+            to: Long?,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Invoice>>
+
+        suspend fun getInvoice(
+            unitCode: String,
+            invoiceId: String
+        ): Response.Wrapped<InvoiceResponse>
     }
 
     interface Help : NetworkScope {

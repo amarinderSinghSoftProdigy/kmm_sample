@@ -24,6 +24,8 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -602,6 +604,27 @@ class NetworkClient(
                 jsonBody(request)
             }.getWrappedBody()
         }
+
+    override suspend fun getInvoices(
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<Invoice>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+            withMainToken()
+        }.getWrappedBody()
+    }
+
+    override suspend fun getInvoice(
+        unitCode: String,
+        invoiceId: String
+    ): Response.Wrapped<InvoiceResponse> = ktorDispatcher {
+        client.get<SimpleResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+            withMainToken()
+        }.getWrappedBody()
+    }
 
     // Utils
 
