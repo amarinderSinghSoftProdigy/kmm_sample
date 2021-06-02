@@ -209,4 +209,9 @@
     <string name="accepted">Accepted</string>
     <string name="rejected">Rejected</string>
     <string name="mrp">MRP</string>
+    <string name="all">All</string>
+    <string name="sort_by">Sort By</string>
+    <string name="available_formats">Available File Formats</string>
+    <string name="max_file_size">Maximum file size:</string>
+    <string name="mb_1">1 MB</string>
 </resources>

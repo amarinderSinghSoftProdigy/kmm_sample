@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.SortOption
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
         is Event.Action.Search.ClearFilter -> clearFilter(event.filter)
+        is Event.Action.Search.SelectSortOption -> selectSortOption(event.option)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
         is Event.Action.Search.Reset -> reset()
@@ -186,6 +188,7 @@ internal class SearchEventDelegate(
             }
             if (filter == null) {
                 activeFilters.clear()
+                it.selectedSortOption.value = it.sortOptions.value.firstOrNull()
                 it.productSearch.value = ""
                 it.filterSearches.value = emptyMap()
             }
@@ -194,6 +197,13 @@ internal class SearchEventDelegate(
                 withDelay = false,
                 withProgress = true,
             )
+        }
+    }
+
+    private suspend fun selectSortOption(option: SortOption?) {
+        navigator.withScope<BaseSearchScope> {
+            it.selectedSortOption.value = option ?: it.sortOptions.value.firstOrNull()
+            searchInput(false, null, emptyMap())
         }
     }
 
@@ -231,6 +241,7 @@ internal class SearchEventDelegate(
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val address = userRepo.requireUser().addressData
             val (result, isSuccess) = networkSearchScope.search(
+                selectedSortOption.value?.code,
                 (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
                 unitCode,
                 address.latitude,
@@ -241,6 +252,10 @@ internal class SearchEventDelegate(
                 pagination.setTotal(result.totalResults)
                 filters.value = result.facets.toFilter()
                 products.value = if (!addPage) result.products else products.value + result.products
+                sortOptions.value = result.sortOptions
+                if (selectedSortOption.value == null) {
+                    selectedSortOption.value = sortOptions.value.firstOrNull()
+                }
             }
             onEnd()
         }

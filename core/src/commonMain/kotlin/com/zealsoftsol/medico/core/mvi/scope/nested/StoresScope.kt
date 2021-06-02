@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
@@ -13,6 +12,7 @@ import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 
 // TODO make part of management scope
@@ -47,7 +47,9 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
-    ) : StoresScope(), BaseSearchScope, CommonScope.CanGoBack {
+        override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
+        override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
+    ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination()
@@ -63,11 +65,6 @@ sealed class StoresScope : Scope.Child.TabBar() {
                 icon = ScopeIcon.BACK,
                 title = StringResource.Raw(store.tradeName)
             )
-        }
-
-        override fun goBack(): Boolean {
-            reset()
-            return super.goBack()
         }
     }
 }

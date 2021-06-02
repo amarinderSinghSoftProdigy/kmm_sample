@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.NotificationType
@@ -31,7 +32,8 @@ class MockNotificationScope : NetworkScope.Notification {
 
     override suspend fun getNotifications(
         search: String,
-        pagination: Pagination
+        filter: NotificationFilter,
+        pagination: Pagination,
     ): Response.Wrapped<PaginatedData<NotificationData>> =
         mockResponse {
             Response.Wrapped(longPaginatedData(20, rnd), true)

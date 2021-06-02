@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -100,6 +101,7 @@ interface NetworkScope {
 
     interface Search : NetworkScope {
         suspend fun search(
+            sort: String?,
             query: List<Pair<String, String>>,
             unitCode: String?,
             latitude: Double,
@@ -127,7 +129,8 @@ interface NetworkScope {
         suspend fun sendFirebaseToken(token: String): Boolean
         suspend fun getNotifications(
             search: String,
-            pagination: Pagination
+            filter: NotificationFilter,
+            pagination: Pagination,
         ): Response.Wrapped<PaginatedData<NotificationData>>
 
         suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>

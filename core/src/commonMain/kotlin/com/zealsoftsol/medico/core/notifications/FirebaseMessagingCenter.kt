@@ -2,6 +2,8 @@ package com.zealsoftsol.medico.core.notifications
 
 import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.network.createJson
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -34,9 +36,10 @@ internal class FirebaseMessagingCenter(
         scope.launch { userRepo.sendFirebaseToken(token) }
     }
 
-    override fun dismissMessage(id: String) {
+    override fun messageClicked(id: String) {
         if (notificationMessage.value?.id == id) {
             notificationMessage.value = null
+            EventCollector.sendEvent(Event.Transition.Notifications)
         }
     }
 }
@@ -55,5 +58,5 @@ interface FirebaseMessaging {
 
     fun handleNewToken(token: String)
 
-    fun dismissMessage(id: String)
+    fun messageClicked(id: String)
 }

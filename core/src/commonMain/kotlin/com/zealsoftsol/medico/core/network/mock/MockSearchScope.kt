@@ -14,13 +14,14 @@ class MockSearchScope : NetworkScope.Search {
     }
 
     override suspend fun search(
+        sort: String?,
         query: List<Pair<String, String>>,
         unitCode: String?,
         latitude: Double,
         longitude: Double,
         pagination: Pagination
     ): Response.Wrapped<SearchResponse> = mockResponse {
-        Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0), true)
+        Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0, emptyList()), true)
     }
 
     override suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>> =

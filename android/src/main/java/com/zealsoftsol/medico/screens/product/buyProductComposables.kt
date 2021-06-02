@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -59,6 +61,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.Dropdown
@@ -67,6 +70,7 @@ import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
@@ -263,8 +267,8 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                                     quantity = quantity,
                                     max = Int.MAX_VALUE,
                                     isEnabled = chosenSeller.value != null,
-                                    onInc = { chooseQuote.inc(chosenSeller.value!!) },
-                                    onDec = { chooseQuote.dec(chosenSeller.value!!) },
+                                    onInc = { mode -> chooseQuote.inc(mode, chosenSeller.value!!) },
+                                    onDec = { mode -> chooseQuote.dec(mode, chosenSeller.value!!) },
                                 )
                                 MedicoSmallButton(
                                     text = stringResource(id = R.string.add_to_cart),
@@ -300,8 +304,8 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                                 quantity = quantity,
                                 max = Int.MAX_VALUE,
                                 isEnabled = true,
-                                onInc = { chooseQuote.inc(SellerInfo.anyone) },
-                                onDec = { chooseQuote.dec(SellerInfo.anyone) },
+                                onInc = { mode -> chooseQuote.inc(mode, SellerInfo.anyone) },
+                                onDec = { mode -> chooseQuote.dec(mode, SellerInfo.anyone) },
                             )
                             MedicoSmallButton(
                                 text = stringResource(id = R.string.add_to_cart),
@@ -359,16 +363,16 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                         isSelectable = (scope as? BuyProductScope.ChooseStockist)?.isSeasonBoy == true,
                         quantity = quantities.value[it] ?: 0,
                         onAddToCart = { scope.select(it) },
-                        onInc = { scope.inc(it) },
-                        onDec = { scope.dec(it) },
+                        onInc = { mode -> scope.inc(mode, it) },
+                        onDec = { mode -> scope.dec(mode, it) },
                     )
                     is SeasonBoyRetailer -> SeasonBoyReatilerInfoItem(
                         sellerInfo = (scope as BuyProductScope.ChooseRetailer).sellerInfo,
                         seasonBoyRetailer = it,
                         quantity = quantities.value[it] ?: 0,
                         onAddToCart = { scope.select(it) },
-                        onInc = { scope.inc(it) },
-                        onDec = { scope.dec(it) },
+                        onInc = { mode -> scope.inc(mode, it) },
+                        onDec = { mode -> scope.dec(mode, it) },
                     )
                 }
                 Space(12.dp)
@@ -425,8 +429,8 @@ private fun SellerInfoItem(
     quantity: Int,
     isSelectable: Boolean,
     onAddToCart: () -> Unit,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
 ) {
     BaseSellerItem(
         stockStatus = sellerInfo.stockInfo?.status,
@@ -617,8 +621,8 @@ private fun SeasonBoyReatilerInfoItem(
     seasonBoyRetailer: SeasonBoyRetailer,
     quantity: Int,
     onAddToCart: () -> Unit,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
 ) {
     BaseSellerItem(
         stockStatus = sellerInfo?.stockInfo?.status,
@@ -752,14 +756,15 @@ private fun BaseSellerItem(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun PlusMinusQuantity(
     modifier: Modifier = Modifier,
     quantity: Int,
     isEnabled: Boolean,
     max: Int = Int.MAX_VALUE,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
 ) {
     Row(
         modifier = modifier.defaultMinSize(minWidth = 100.dp),
@@ -772,7 +777,25 @@ fun PlusMinusQuantity(
                 alpha = 0.5f
             ),
             contentDescription = null,
-            modifier = if (isEnabled && quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
+            modifier = if (isEnabled && quantity > 0) Modifier.pointerInput(isEnabled) {
+                var isLongTap = false
+                detectTapGestures(
+                    onLongPress = {
+                        isLongTap = true
+                        onDec(TapMode.LONG_PRESS)
+                    },
+                    onTap = {
+                        onDec(TapMode.CLICK)
+                    },
+                    onPress = {
+                        tryAwaitRelease()
+                        if (isLongTap) {
+                            onDec(TapMode.RELEASE)
+                            isLongTap = false
+                        }
+                    },
+                )
+            } else Modifier,
         )
         Space(12.dp)
         Text(
@@ -788,7 +811,25 @@ fun PlusMinusQuantity(
                 alpha = 0.5f
             ),
             contentDescription = null,
-            modifier = if (isEnabled && quantity < max) Modifier.clickable(onClick = onInc) else Modifier,
+            modifier = if (isEnabled && quantity < max) Modifier.pointerInput(isEnabled) {
+                var isLongTap = false
+                detectTapGestures(
+                    onLongPress = {
+                        isLongTap = true
+                        onInc(TapMode.LONG_PRESS)
+                    },
+                    onTap = {
+                        onInc(TapMode.CLICK)
+                    },
+                    onPress = {
+                        tryAwaitRelease()
+                        if (isLongTap) {
+                            onInc(TapMode.RELEASE)
+                            isLongTap = false
+                        }
+                    },
+                )
+            } else Modifier,
         )
     }
 }

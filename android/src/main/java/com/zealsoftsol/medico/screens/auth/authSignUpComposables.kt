@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -26,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,6 +40,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,6 +60,7 @@ import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
+import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
@@ -457,6 +462,59 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 color = ConstColors.gray,
                 textAlign = TextAlign.Center,
             )
+            Space(24.dp)
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = Color.Transparent,
+                border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.available_formats),
+                        color = ConstColors.gray,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                    Space(10.dp)
+                    FlowRow(horizontalGap = 12.dp) {
+                        listOf("PDF", "PNG", "JPEG/PEG", "ZIP").forEach {
+                            Text(
+                                modifier = Modifier.background(
+                                    color = ConstColors.gray.copy(alpha = .25f),
+                                    shape = MaterialTheme.shapes.small
+                                ).padding(4.dp),
+                                text = it,
+                                color = MaterialTheme.colors.background,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                            )
+                        }
+                    }
+                    Space(10.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.max_file_size))
+                            val startIndex = length
+                            append(" ")
+                            append(stringResource(id = R.string.mb_1))
+                            addStyle(
+                                SpanStyle(
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W600
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                }
+            }
         }
     )
 }

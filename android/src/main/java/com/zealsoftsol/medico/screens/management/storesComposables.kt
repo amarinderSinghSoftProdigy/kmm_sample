@@ -47,6 +47,7 @@ import com.zealsoftsol.medico.screens.search.ProductItem
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption
+import com.zealsoftsol.medico.screens.search.SortSection
 
 // TODO reuse with management
 @Composable
@@ -80,6 +81,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val filterSearches = scope.filterSearches.flow.collectAsState()
     val products = scope.products.flow.collectAsState()
     val showFilter = scope.isFilterOpened.flow.collectAsState()
+    val sortOptions = scope.sortOptions.flow.collectAsState()
+    val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
     BasicSearchBar(
         input = search.value,
         icon = null,
@@ -101,6 +104,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     .clickable(indication = null) {
                         scope.clearFilter(null)
                     },
+            )
+            SortSection(
+                options = sortOptions.value,
+                selectedOption = selectedSortOption.value,
+                onClick = { scope.selectSortOption(it) },
             )
             filters.value.forEach { filter ->
                 FilterSection(

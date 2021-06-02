@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ErrorCode
@@ -22,6 +23,7 @@ internal class ProductEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val networkProductScope: NetworkScope.Product,
+    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Action.Product>(navigator) {
 
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
@@ -79,11 +81,13 @@ internal class ProductEventDelegate(
                     isSeasonBoy = isSeasonBoy,
                     product = result.product,
                     sellersInfo = DataSource(result.sellerInfo),
+                    tapModeHelper = tapModeHelper,
                 )
                 BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
                     isSeasonBoy = isSeasonBoy,
                     product = result.product,
                     sellersInfo = DataSource(result.sellerInfo),
+                    tapModeHelper = tapModeHelper,
                 )
             }
             navigator.setScope(nextScope)
@@ -120,6 +124,7 @@ internal class ProductEventDelegate(
                         product = result.product,
                         sellerInfo = result.sellerInfo,
                         retailers = DataSource(result.retailers),
+                        tapModeHelper = tapModeHelper,
                     )
                 )
             } else {

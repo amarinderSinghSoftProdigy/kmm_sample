@@ -30,6 +30,7 @@ import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -50,6 +51,7 @@ internal class EventCollector(
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
+    tapModeHelper: TapModeHelper,
 ) {
     private val loadHelperScope = CoroutineScope(compatDispatcher)
 
@@ -58,7 +60,8 @@ internal class EventCollector(
             navigator,
             userRepo,
             notificationRepo,
-            cartRepo
+            cartRepo,
+            tapModeHelper,
         ),
         Event.Action.Auth::class to AuthEventDelegate(
             navigator,
@@ -74,6 +77,7 @@ internal class EventCollector(
             navigator,
             userRepo,
             productNetworkScope,
+            tapModeHelper,
         ),
         Event.Action.Management::class to ManagementEventDelegate(
             navigator,
@@ -96,6 +100,7 @@ internal class EventCollector(
             navigator,
             userRepo,
             cartRepo,
+            tapModeHelper,
         ),
         Event.Action.Help::class to HelpEventDelegate(
             navigator,

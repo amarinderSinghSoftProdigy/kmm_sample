@@ -11,12 +11,14 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -92,6 +94,7 @@ sealed class Event {
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
+            data class SelectSortOption(val option: SortOption?) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -132,6 +135,7 @@ sealed class Event {
             data class Select(val notification: NotificationData) : Notification()
             data class SelectAction(val action: NotificationAction) : Notification()
             data class ChangeOptions(val option: NotificationOption) : Notification()
+            data class SelectFilter(val filter: NotificationFilter) : Notification()
 //            object UpdateUnreadMessages: Notification()
         }
 
