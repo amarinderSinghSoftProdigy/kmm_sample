@@ -405,7 +405,7 @@ private fun Chip(option: Option, onClick: () -> Unit) {
 @Composable
 fun BasicSearchBar(
     input: String,
-    searchBarEnd: SearchBarEnd = SearchBarEnd.Eraser,
+    searchBarEnd: SearchBarEnd? = SearchBarEnd.Eraser,
     icon: ImageVector? = Icons.Default.Search,
     onIconClick: (() -> Unit)? = null,
     elevation: Dp = 2.dp,
