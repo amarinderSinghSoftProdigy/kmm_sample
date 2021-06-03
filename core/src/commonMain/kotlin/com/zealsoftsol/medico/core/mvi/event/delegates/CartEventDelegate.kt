@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ErrorCode
@@ -19,6 +20,7 @@ internal class CartEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
+    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Action.Cart>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.Cart) = when (event) {
@@ -77,6 +79,7 @@ internal class CartEventDelegate(
                 CartScope(
                     items = ReadOnlyDataSource(cartRepo.entries),
                     total = ReadOnlyDataSource(cartRepo.total),
+                    tapModeHelper = tapModeHelper,
                 )
             )
         } else {

@@ -8,6 +8,13 @@ data class SearchResponse(
     val facets: List<Facet>,
     val products: List<ProductSearch>,
     val totalResults: Int,
+    val sortOptions: List<SortOption>,
+)
+
+@Serializable
+data class SortOption(
+    val code: String,
+    val name: String,
 )
 
 @Serializable

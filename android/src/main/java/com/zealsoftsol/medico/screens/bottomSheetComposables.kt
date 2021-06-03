@@ -51,6 +51,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
@@ -101,8 +102,8 @@ fun Scope.Host.showBottomSheet(
                     canEdit = bs.canEdit,
                     isChecked = isChecked.value,
                     onChecked = { bs.toggleCheck() },
-                    onInc = { bs.inc() },
-                    onDec = { bs.dec() },
+                    onInc = { bs.inc(it) },
+                    onDec = { bs.dec(it) },
                     onSave = { bs.save() },
                     onDismiss = { dismissBottomSheet() },
                 )
@@ -118,8 +119,8 @@ private fun ModifyOrderEntryBottomSheet(
     canEdit: Boolean,
     isChecked: Boolean,
     onChecked: (Boolean) -> Unit,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
     onSave: () -> Unit,
     onDismiss: () -> Unit,
 ) {

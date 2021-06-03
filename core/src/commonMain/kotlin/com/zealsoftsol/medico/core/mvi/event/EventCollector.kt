@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
@@ -30,6 +31,7 @@ import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
@@ -50,6 +52,7 @@ internal class EventCollector(
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
+    tapModeHelper: TapModeHelper,
 ) {
     private val loadHelperScope = CoroutineScope(compatDispatcher)
 
@@ -58,7 +61,8 @@ internal class EventCollector(
             navigator,
             userRepo,
             notificationRepo,
-            cartRepo
+            cartRepo,
+            tapModeHelper,
         ),
         Event.Action.Auth::class to AuthEventDelegate(
             navigator,
@@ -74,6 +78,7 @@ internal class EventCollector(
             navigator,
             userRepo,
             productNetworkScope,
+            tapModeHelper,
         ),
         Event.Action.Management::class to ManagementEventDelegate(
             navigator,
@@ -96,12 +101,19 @@ internal class EventCollector(
             navigator,
             userRepo,
             cartRepo,
+            tapModeHelper,
         ),
         Event.Action.Help::class to HelpEventDelegate(
             navigator,
             helpNetworkScope,
         ),
         Event.Action.Orders::class to OrdersEventDelegate(
+            navigator,
+            userRepo,
+            ordersNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.Invoices::class to InvoicesEventDelegate(
             navigator,
             userRepo,
             ordersNetworkScope,

@@ -9,14 +9,17 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -92,6 +95,7 @@ sealed class Event {
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
+            data class SelectSortOption(val option: SortOption?) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -132,6 +136,7 @@ sealed class Event {
             data class Select(val notification: NotificationData) : Notification()
             data class SelectAction(val action: NotificationAction) : Notification()
             data class ChangeOptions(val option: NotificationOption) : Notification()
+            data class SelectFilter(val filter: NotificationFilter) : Notification()
 //            object UpdateUnreadMessages: Notification()
         }
 
@@ -200,6 +205,15 @@ sealed class Event {
             data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
             object Confirm : Orders()
         }
+
+        sealed class Invoices : Action() {
+            override val typeClazz: KClass<*> = Invoices::class
+
+            data class Search(val value: String) : Invoices()
+            data class Load(val isFirstLoad: Boolean) : Invoices()
+            data class Select(val item: Invoice) : Invoices()
+            object Download : Invoices()
+        }
     }
 
     sealed class Transition : Event() {
@@ -230,5 +244,6 @@ sealed class Event {
         object Orders : Transition()
         object NewOrders : Transition()
         object OrdersHistory : Transition()
+        object Invoices : Transition()
     }
 }

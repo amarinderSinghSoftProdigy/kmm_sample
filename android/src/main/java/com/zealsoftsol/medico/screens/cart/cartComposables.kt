@@ -57,6 +57,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -109,18 +110,18 @@ fun CartScreen(scope: CartScope) {
                         sellerCart = value,
                         expand = index == 0,
                         onRemoveSeller = { scope.removeSellerItems(value) },
-                        onIncItem = {
+                        onIncItem = { _, item ->
                             scope.updateItemCount(
                                 value,
-                                it,
-                                it.quantity.value.toInt() + 1
+                                item,
+                                item.quantity.value.toInt() + 1
                             )
                         },
-                        onDecItem = {
+                        onDecItem = { _, item ->
                             scope.updateItemCount(
                                 value,
-                                it,
-                                it.quantity.value.toInt() - 1
+                                item,
+                                item.quantity.value.toInt() - 1
                             )
                         },
                         onRemoveItem = { scope.removeItem(value, it) },
@@ -168,8 +169,8 @@ private fun SellerCartItem(
     sellerCart: SellerCart,
     expand: Boolean,
     onRemoveSeller: () -> Unit,
-    onIncItem: (CartItem) -> Unit,
-    onDecItem: (CartItem) -> Unit,
+    onIncItem: (TapMode, CartItem) -> Unit,
+    onDecItem: (TapMode, CartItem) -> Unit,
     onRemoveItem: (CartItem) -> Unit,
 ) {
     FoldableItem(
@@ -232,8 +233,8 @@ private fun SellerCartItem(
         item = {
             CartItem(
                 cartItem = it,
-                onInc = { onIncItem(it) },
-                onDec = { onDecItem(it) },
+                onInc = { mode -> onIncItem(mode, it) },
+                onDec = { mode -> onDecItem(mode, it) },
                 onRemove = { onRemoveItem(it) },
             )
         }
@@ -243,8 +244,8 @@ private fun SellerCartItem(
 @Composable
 private fun CartItem(
     cartItem: CartItem,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
     onRemove: () -> Unit,
 ) {
     Surface(

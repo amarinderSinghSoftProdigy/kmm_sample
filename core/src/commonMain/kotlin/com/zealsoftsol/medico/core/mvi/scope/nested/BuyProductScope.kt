@@ -5,10 +5,12 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.data.WithTradeName
 
 sealed class BuyProductScope<T : WithTradeName>(
@@ -16,6 +18,7 @@ sealed class BuyProductScope<T : WithTradeName>(
     val items: DataSource<List<T>>,
     val itemsFilter: DataSource<String> = DataSource(""),
     val quantities: DataSource<Map<T, Int>> = DataSource(mapOf()),
+    private val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     internal val allItems = items.value
@@ -23,19 +26,32 @@ sealed class BuyProductScope<T : WithTradeName>(
     abstract fun select(item: T): Boolean
     abstract fun ensureMaxQuantity(item: T, count: Int): Boolean
 
-    fun inc(item: T) {
-        val count = quantities.value[item] ?: 0
+    fun inc(mode: TapMode, item: T) {
+        var count = quantities.value[item] ?: 0
         if (!ensureMaxQuantity(item, count)) return
-        quantities.value = quantities.value.toMutableMap().also {
-            it[item] = count + 1
+        tapModeHelper.action(mode) {
+            count = quantities.value[item] ?: count
+            quantities.value = quantities.value.toMutableMap().also {
+                it[item] = count + 1
+            }
+            ensureMaxQuantity(item, count + 1)
         }
     }
 
-    fun dec(item: T) {
-        quantities.value = quantities.value
-            .mapValues { (info, count) ->
-                if (item == info) (count - 1).coerceAtLeast(0) else count
-            }
+    fun dec(mode: TapMode, item: T) {
+        tapModeHelper.action(mode) {
+            var changedCount = 0
+            quantities.value = quantities.value
+                .mapValues { (info, count) ->
+                    if (item == info) {
+                        changedCount = (count - 1).coerceAtLeast(0)
+                        changedCount
+                    } else {
+                        count
+                    }
+                }
+            changedCount > 0
+        }
     }
 
     fun filterItems(filter: String) =
@@ -47,7 +63,8 @@ sealed class BuyProductScope<T : WithTradeName>(
         val chosenSeller: DataSource<SellerInfo?> = DataSource(null),
         product: ProductSearch,
         sellersInfo: DataSource<List<SellerInfo>>,
-    ) : BuyProductScope<SellerInfo>(product, sellersInfo) {
+        tapModeHelper: TapModeHelper,
+    ) : BuyProductScope<SellerInfo>(product, sellersInfo, tapModeHelper = tapModeHelper) {
 
         fun toggleOption(option: Option) {
             selectedOption.value = option
@@ -104,7 +121,8 @@ sealed class BuyProductScope<T : WithTradeName>(
         val isSeasonBoy: Boolean,
         product: ProductSearch,
         sellersInfo: DataSource<List<SellerInfo>>,
-    ) : BuyProductScope<SellerInfo>(product, sellersInfo) {
+        tapModeHelper: TapModeHelper,
+    ) : BuyProductScope<SellerInfo>(product, sellersInfo, tapModeHelper = tapModeHelper) {
 
         init {
             if (!isSeasonBoy) {
@@ -141,7 +159,8 @@ sealed class BuyProductScope<T : WithTradeName>(
         product: ProductSearch,
         val sellerInfo: SellerInfo?,
         retailers: DataSource<List<SeasonBoyRetailer>>,
-    ) : BuyProductScope<SeasonBoyRetailer>(product, retailers) {
+        tapModeHelper: TapModeHelper,
+    ) : BuyProductScope<SeasonBoyRetailer>(product, retailers, tapModeHelper = tapModeHelper) {
 
         init {
             quantities.value = allItems.filter { it.cartInfo != null }

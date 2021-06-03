@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.NotificationType
 
@@ -27,6 +28,7 @@ internal class NotificationEventDelegate(
         is Event.Action.Notification.Select -> select(event.notification)
         is Event.Action.Notification.SelectAction -> selectAction(event.action)
         is Event.Action.Notification.ChangeOptions -> changeOption(event.option)
+        is Event.Action.Notification.SelectFilter -> selectFilter(event.filter)
 //        is Event.Action.Notification.UpdateUnreadMessages -> updateUnreadMessages()
     }
 
@@ -35,6 +37,7 @@ internal class NotificationEventDelegate(
             val (result, isSuccess) = notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
+                filter = filter.value,
             )
             if (isSuccess) result else null
         }
@@ -45,6 +48,7 @@ internal class NotificationEventDelegate(
             val (result, isSuccess) = notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
+                filter = filter.value,
             )
             if (isSuccess) result else null
         }
@@ -106,6 +110,13 @@ internal class NotificationEventDelegate(
     private fun changeOption(option: NotificationOption) {
         navigator.withScope<GenericNotificationScopePreview> {
             it.details.value = it.details.value?.withNewOption(option)
+        }
+    }
+
+    private suspend fun selectFilter(filter: NotificationFilter) {
+        navigator.withScope<NotificationScope.All> {
+            it.filter.value = filter
+            load(isFirstLoad = true)
         }
     }
 

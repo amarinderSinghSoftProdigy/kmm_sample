@@ -23,6 +23,9 @@ import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
+import com.zealsoftsol.medico.core.utils.TapModeHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
 import org.kodein.di.bind
@@ -161,6 +164,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
         )
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
@@ -168,9 +172,10 @@ fun startKodein(
     bind<FirebaseMessagingCenter>() with singleton {
         FirebaseMessagingCenter(
             instance(),
-            instance()
+            instance(),
         )
     }
+    bind<TapModeHelper>() with singleton { TapModeHelper(CoroutineScope(SupervisorJob() + compatDispatcher)) }
 }.also {
     directDI = it.direct
 }

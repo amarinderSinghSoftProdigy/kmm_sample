@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.TapMode
 
 sealed class BottomSheet {
 
@@ -63,11 +64,13 @@ sealed class BottomSheet {
 
         val quantity = DataSource(orderEntry.servedQty.value.toInt())
 
-        fun inc() {
+        fun inc(tapMode: TapMode) {
+            if (tapMode != TapMode.CLICK) return
             quantity.value = quantity.value + 1
         }
 
-        fun dec() {
+        fun dec(tapMode: TapMode) {
+            if (tapMode != TapMode.CLICK) return
             quantity.value = (quantity.value - 1).coerceAtLeast(0)
         }
 

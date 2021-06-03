@@ -74,6 +74,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
@@ -91,6 +92,8 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val filterSearches = scope.filterSearches.flow.collectAsState()
         val products = scope.products.flow.collectAsState()
         val showFilter = scope.isFilterOpened.flow.collectAsState()
+        val sortOptions = scope.sortOptions.flow.collectAsState()
+        val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
         if (showFilter.value) {
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
@@ -102,6 +105,11 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                         .clickable(indication = null) {
                             scope.clearFilter(null)
                         },
+                )
+                SortSection(
+                    options = sortOptions.value,
+                    selectedOption = selectedSortOption.value,
+                    onClick = { scope.selectSortOption(it) },
                 )
                 filters.value.forEach { filter ->
                     FilterSection(
@@ -292,6 +300,47 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SortSection(
+    options: List<SortOption>,
+    selectedOption: SortOption?,
+    onClick: (SortOption?) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+        Separator(padding = 2.dp)
+        Space(12.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(id = R.string.sort_by),
+                color = MaterialTheme.colors.background,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Text(
+                text = stringResource(id = R.string.clear),
+                color = ConstColors.gray,
+                fontWeight = FontWeight.W500,
+                modifier = Modifier.clickable(
+                    onClick = { onClick(null) },
+                    indication = null,
+                ),
+            )
+        }
+        Space(12.dp)
+        FlowRow {
+            options.forEach {
+                Chip(
+                    option = Option.StringValue(it.name, isSelected = it == selectedOption),
+                    onClick = { onClick(it) },
+                )
             }
         }
     }

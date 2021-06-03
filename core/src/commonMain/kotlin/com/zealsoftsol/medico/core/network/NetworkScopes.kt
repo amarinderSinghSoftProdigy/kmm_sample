@@ -15,11 +15,14 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -100,6 +103,7 @@ interface NetworkScope {
 
     interface Search : NetworkScope {
         suspend fun search(
+            sort: String?,
             query: List<Pair<String, String>>,
             unitCode: String?,
             latitude: Double,
@@ -127,7 +131,8 @@ interface NetworkScope {
         suspend fun sendFirebaseToken(token: String): Boolean
         suspend fun getNotifications(
             search: String,
-            pagination: Pagination
+            filter: NotificationFilter,
+            pagination: Pagination,
         ): Response.Wrapped<PaginatedData<NotificationData>>
 
         suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
@@ -185,6 +190,19 @@ interface NetworkScope {
 
         suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse>
         suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode>
+
+        suspend fun getInvoices(
+            unitCode: String,
+            search: String,
+            from: Long?,
+            to: Long?,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Invoice>>
+
+        suspend fun getInvoice(
+            unitCode: String,
+            invoiceId: String
+        ): Response.Wrapped<InvoiceResponse>
     }
 
     interface Help : NetworkScope {

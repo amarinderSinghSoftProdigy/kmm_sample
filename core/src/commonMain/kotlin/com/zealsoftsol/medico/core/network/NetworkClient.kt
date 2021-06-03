@@ -24,12 +24,15 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -280,6 +283,7 @@ class NetworkClient(
     }
 
     override suspend fun search(
+        sort: String?,
         query: List<Pair<String, String>>,
         unitCode: String?,
         latitude: Double,
@@ -293,6 +297,7 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
+                    sort?.let { append("sort", it) }
                     unitCode?.let { append("unitCode", it) }
                     append("latitude", latitude.toString())
                     append("longitude", longitude.toString())
@@ -394,7 +399,8 @@ class NetworkClient(
 
     override suspend fun getNotifications(
         search: String,
-        pagination: Pagination
+        filter: NotificationFilter,
+        pagination: Pagination,
     ): Response.Wrapped<PaginatedData<NotificationData>> = ktorDispatcher {
         client.get<SimpleResponse<PaginatedData<NotificationData>>>("${baseUrl.url}/notifications/all") {
             withMainToken()
@@ -403,7 +409,7 @@ class NetworkClient(
                     if (search.isNotEmpty()) append("search", search)
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
-                    append("notificationType", "")
+                    append("notificationType", filter.serverValue)
                 }
             }
         }.getWrappedBody().also {
@@ -598,6 +604,27 @@ class NetworkClient(
                 jsonBody(request)
             }.getWrappedBody()
         }
+
+    override suspend fun getInvoices(
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<Invoice>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+            withMainToken()
+        }.getWrappedBody()
+    }
+
+    override suspend fun getInvoice(
+        unitCode: String,
+        invoiceId: String
+    ): Response.Wrapped<InvoiceResponse> = ktorDispatcher {
+        client.get<SimpleResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+            withMainToken()
+        }.getWrappedBody()
+    }
 
     // Utils
 

@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.SellerCart
@@ -15,6 +16,7 @@ import com.zealsoftsol.medico.data.Total
 class CartScope(
     val items: ReadOnlyDataSource<List<SellerCart>>,
     val total: ReadOnlyDataSource<Total?>,
+    val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     fun updateItemCount(sellerCart: SellerCart, item: CartItem, quantity: Int): Boolean {

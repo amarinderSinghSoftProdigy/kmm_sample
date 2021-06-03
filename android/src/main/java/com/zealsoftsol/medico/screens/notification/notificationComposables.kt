@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.data.NotificationStatus
 import com.zealsoftsol.medico.data.NotificationType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.Chip
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
@@ -89,6 +90,7 @@ fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
 private fun AllNotifications(scope: NotificationScope.All, listState: LazyListState) {
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
+    val filter = scope.filter.flow.collectAsState()
     if (showSearchOverlay.value) {
         SearchBarBox(
             modifier = Modifier.clickable(indication = null) {
@@ -133,7 +135,17 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             },
         )
     }
-    Space(16.dp)
+    Space(12.dp)
+    Row {
+        scope.allFilters.forEach {
+            Chip(
+                text = stringResourceByName(it.stringId),
+                isSelected = filter.value == it,
+                onClick = { scope.selectFilter(it) }
+            )
+        }
+    }
+    Space(12.dp)
     val items = scope.items.flow.collectAsState()
     LazyColumn(
         state = listState,
@@ -320,30 +332,39 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.payment_method, "")
-            Surface(
-                modifier = Modifier.border(
-                    1.dp,
-                    ConstColors.gray.copy(alpha = ContentAlpha.medium),
-                    RoundedCornerShape(4.dp)
+            if (details.isReadOnly) {
+                Text(
+                    text = details.option.paymentMethod.serverValue,
+                    color = MaterialTheme.colors.background,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W600,
                 )
-            ) {
-                Dropdown(
-                    rememberChooseKey = this,
-                    value = details.option.paymentMethod.serverValue,
-                    hint = "",
-                    dropDownItems = if (details.isReadOnly) emptyList() else PaymentMethod.values()
-                        .map { it.serverValue },
-                    readOnly = details.isReadOnly,
-                    width = 100.dp,
-                    onSelected = {
-                        val method = when (it) {
-                            PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
-                            PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
-                            else -> throw UnsupportedOperationException("unknown payment method")
+            } else {
+                Surface(
+                    modifier = Modifier.border(
+                        1.dp,
+                        ConstColors.gray.copy(alpha = ContentAlpha.medium),
+                        RoundedCornerShape(4.dp)
+                    )
+                ) {
+                    Dropdown(
+                        rememberChooseKey = this,
+                        value = details.option.paymentMethod.serverValue,
+                        hint = "",
+                        dropDownItems = if (details.isReadOnly) emptyList() else PaymentMethod.values()
+                            .map { it.serverValue },
+                        readOnly = details.isReadOnly,
+                        width = 100.dp,
+                        onSelected = {
+                            val method = when (it) {
+                                PaymentMethod.CREDIT.serverValue -> PaymentMethod.CREDIT
+                                PaymentMethod.CASH.serverValue -> PaymentMethod.CASH
+                                else -> throw UnsupportedOperationException("unknown payment method")
+                            }
+                            onOptionChange(details.option.copy(paymentMethod = method))
                         }
-                        onOptionChange(details.option.copy(paymentMethod = method))
-                    }
-                )
+                    )
+                }
             }
         }
         if (details.option.paymentMethod == PaymentMethod.CREDIT) {
@@ -353,22 +374,31 @@ private fun SubscriptionDeatails(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 DataWithLabel(R.string.credit_days, "")
-                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
-                OutlinedTextField(
-                    value = details.option.creditDays,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = ConstColors.lightBlue,
-                        unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
-                    ),
-                    maxLines = 1,
-                    readOnly = details.isReadOnly,
-                    onValueChange = {
-                        if (it.isEmpty() || it.toIntOrNull() != null) {
-                            onOptionChange(details.option.copy(creditDays = it))
-                        }
-                    },
-                )
+                if (details.isReadOnly) {
+                    Text(
+                        text = details.option.creditDays,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                } else {
+                    BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
+                    OutlinedTextField(
+                        value = details.option.creditDays,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = ConstColors.lightBlue,
+                            unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
+                        ),
+                        maxLines = 1,
+                        readOnly = details.isReadOnly,
+                        onValueChange = {
+                            if (it.isEmpty() || it.toIntOrNull() != null) {
+                                onOptionChange(details.option.copy(creditDays = it))
+                            }
+                        },
+                    )
+                }
             }
         }
         Row(
@@ -377,25 +407,34 @@ private fun SubscriptionDeatails(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             DataWithLabel(R.string.discount_rate, "")
-            BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
-            OutlinedTextField(
-                value = details.option.discountRate,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = ConstColors.lightBlue,
-                    unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
-                ),
-                maxLines = 1,
-                readOnly = details.isReadOnly,
-                onValueChange = {
-                    if (it.isEmpty() || it.toDoubleOrNull() != null) {
-                        onOptionChange(details.option.copy(discountRate = it))
-                    }
-                },
-            )
+            if (details.isReadOnly) {
+                Text(
+                    text = details.option.discountRate,
+                    color = MaterialTheme.colors.background,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                )
+            } else {
+                BoxWithConstraints { Spacer(Modifier.width(maxWidth - 100.dp)) }
+                OutlinedTextField(
+                    value = details.option.discountRate,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = ConstColors.lightBlue,
+                        unfocusedBorderColor = ConstColors.gray.copy(if (details.isReadOnly) 0.5f else 1f),
+                    ),
+                    maxLines = 1,
+                    readOnly = details.isReadOnly,
+                    onValueChange = {
+                        if (it.isEmpty() || it.toDoubleOrNull() != null) {
+                            onOptionChange(details.option.copy(discountRate = it))
+                        }
+                    },
+                )
+            }
         }
     } else {
-        DataWithLabel(R.string.email, details.customerData.email.orEmpty())
+        DataWithLabel(R.string.email, details.customerData.email)
         DataWithLabel(R.string.address, details.customerData.addressData.address)
         DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
     }

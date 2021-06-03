@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.SortOption
 
 interface BaseSearchScope : Scopable {
     val productSearch: DataSource<String>
@@ -20,6 +21,8 @@ interface BaseSearchScope : Scopable {
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
     val products: DataSource<List<ProductSearch>>
+    val sortOptions: DataSource<List<SortOption>>
+    val selectedSortOption: DataSource<SortOption?>
 
     // store search if present
     val unitCode: String?
@@ -40,6 +43,9 @@ interface BaseSearchScope : Scopable {
 
     fun clearFilter(filter: Filter?) =
         EventCollector.sendEvent(Event.Action.Search.ClearFilter(filter))
+
+    fun selectSortOption(option: SortOption?) =
+        EventCollector.sendEvent(Event.Action.Search.SelectSortOption(option))
 
     fun searchFilter(filter: Filter, input: String): Boolean {
         return trimInput(input, filterSearches.value[filter.queryId].orEmpty()) {
@@ -72,6 +78,8 @@ class SearchScope(
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
     override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
+    override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
+    override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null
