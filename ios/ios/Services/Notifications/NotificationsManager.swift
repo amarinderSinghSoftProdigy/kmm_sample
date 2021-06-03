@@ -46,7 +46,7 @@ class NotificationsManager {
     
     func handleNotificationTap(withUserInfo userInfo: [AnyHashable: Any]) {
         if let messageId = userInfo[notificationId] as? String {
-            firebaseMessaging.dismissMessage(id: messageId)
+            firebaseMessaging.messageClicked(id: messageId)
         }
     }
     

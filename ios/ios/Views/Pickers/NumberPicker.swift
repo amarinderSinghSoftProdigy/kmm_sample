@@ -14,8 +14,8 @@ struct NumberPicker: View {
     let quantity: Int
     let maxQuantity: Int
     
-    let onQuantityIncrease: () -> ()
-    let onQuantityDecrease: () -> ()
+    let onQuantityIncrease: (_ isLongPress: Bool) -> ()
+    let onQuantityDecrease: (_ isLongPress: Bool) -> ()
     
     let longPressEnabled: Bool
     
@@ -38,8 +38,8 @@ struct NumberPicker: View {
     
     init(quantity: Int,
          maxQuantity: Int = .max,
-         onQuantityIncrease: @escaping () -> (),
-         onQuantityDecrease: @escaping () -> (),
+         onQuantityIncrease: @escaping (_ isLongPress: Bool) -> (),
+         onQuantityDecrease: @escaping (_ isLongPress: Bool) -> (),
          longPressEnabled: Bool = false
     ) {
         self.quantity = quantity
@@ -53,7 +53,7 @@ struct NumberPicker: View {
     
     private func getActionButton(withImageName imageName: String,
                                  disabled: Bool = false,
-                                 for action: @escaping () -> ()) -> some View {
+                                 for action: @escaping (_ isLongPress: Bool) -> ()) -> some View {
         Button(action: { }) {
             Image(systemName: imageName)
                 .resizable()
@@ -63,11 +63,11 @@ struct NumberPicker: View {
                 .frame(width: 14, height: 14)
                 .background(appColor: .white)
                 .onTapGesture {
-                    action()
+                    action(false)
                 }
                 .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
                     if inProgress && longPressEnabled {
-                        self.longPressTimer = getLongPressTimer(handleTimeElapse: action)
+                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(true) })
                     }
                     else {
                         self.longPressTimer?.invalidate()

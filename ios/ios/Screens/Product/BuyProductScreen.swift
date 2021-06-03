@@ -181,8 +181,8 @@ struct BuyProductScreen: View {
         @ObservedObject var items: SwiftDataSource<NSArray>
         @ObservedObject var quantities: SwiftDataSource<NSDictionary>
         
-        let onQuantityIncrease: (DataWithTradeName) -> ()
-        let onQuantityDecrease: (DataWithTradeName) -> ()
+        let onQuantityIncrease: (DataTapMode, DataWithTradeName) -> ()
+        let onQuantityDecrease: (DataTapMode, DataWithTradeName) -> ()
         
         let onInfoSelect: (DataWithTradeName) -> ()
         let onSellerFilter: (String) -> ()
@@ -258,8 +258,8 @@ struct BuyProductScreen: View {
             
             let quantity: Int
             
-            let onQuantityIncrease: (DataSellerInfo) -> ()
-            let onQuantityDecrease: (DataSellerInfo) -> ()
+            let onQuantityIncrease: (DataTapMode, DataWithTradeName) -> ()
+            let onQuantityDecrease: (DataTapMode, DataWithTradeName) -> ()
             
             let onInfoSelect: (DataSellerInfo) -> ()
             
@@ -355,8 +355,8 @@ struct BuyProductScreen: View {
                                 HStack {
                                     NumberPicker(quantity: quantity,
                                                  maxQuantity: Int(info.stockInfo?.availableQty ?? .max),
-                                                 onQuantityIncrease: { onQuantityIncrease(self.info) },
-                                                 onQuantityDecrease: { onQuantityDecrease(self.info) },
+                                                 onQuantityIncrease: { onQuantityIncrease($0 ? .longPress : .click, self.info) },
+                                                 onQuantityDecrease: { onQuantityDecrease($0 ? .longPress : .click, self.info) },
                                                  longPressEnabled: true)
                                     
                                     Spacer()
@@ -391,8 +391,8 @@ struct BuyProductScreen: View {
         
         let quantity: Int
         
-        let onQuantityIncrease: (DataSeasonBoyRetailer) -> ()
-        let onQuantityDecrease: (DataSeasonBoyRetailer) -> ()
+        let onQuantityIncrease: (DataTapMode, DataWithTradeName) -> ()
+        let onQuantityDecrease: (DataTapMode, DataWithTradeName) -> ()
         
         let onInfoSelect: (DataSeasonBoyRetailer) -> ()
         
@@ -423,8 +423,8 @@ struct BuyProductScreen: View {
                     HStack {
                         NumberPicker(quantity: quantity,
                                      maxQuantity: Int(stockInfo.availableQty),
-                                     onQuantityIncrease: { onQuantityIncrease(self.info) },
-                                     onQuantityDecrease: { onQuantityDecrease(self.info) },
+                                     onQuantityIncrease: { onQuantityIncrease($0 ? .longPress : .click, self.info) },
+                                     onQuantityDecrease: { onQuantityDecrease($0 ? .longPress : .click, self.info) },
                                      longPressEnabled: true)
                         
                         Spacer()
@@ -500,12 +500,14 @@ struct BuyProductScreen: View {
                                    needsSelectedStockist: true,
                                    onQuantityIncrease: {
                                       if let selectedStockist = self.selectedStockist.value {
-                                          scope.inc(item: selectedStockist)
+                                          scope.inc(mode: $0 ? .longPress : .click,
+                                                    item: selectedStockist)
                                       }
                                    },
                                    onQuantityDecrease: {
                                       if let selectedStockist = self.selectedStockist.value {
-                                          scope.dec(item: selectedStockist)
+                                          scope.dec(mode: $0 ? .longPress : .click,
+                                                    item: selectedStockist)
                                       }
                                    },
                                    onButtonTap: {
@@ -521,8 +523,10 @@ struct BuyProductScreen: View {
                                    quantity: quantities?[DataSellerInfo.Anyone().anyone] ?? 0,
                                    maxQuantity: .max,
                                    needsSelectedStockist: false,
-                                   onQuantityIncrease: { scope.inc(item: DataSellerInfo.Anyone().anyone) },
-                                   onQuantityDecrease: { scope.dec(item: DataSellerInfo.Anyone().anyone) },
+                                   onQuantityIncrease: { scope.inc(mode: $0 ? .longPress : .click,
+                                                                   item: DataSellerInfo.Anyone().anyone) },
+                                   onQuantityDecrease: { scope.dec(mode: $0 ? .longPress : .click,
+                                                                   item: DataSellerInfo.Anyone().anyone) },
                                    onButtonTap: { _ = scope.selectAnyone() }) {
                     scope.toggleOption(option: .anyone)
                 }
@@ -547,8 +551,8 @@ struct BuyProductScreen: View {
                                         quantity: Int,
                                         maxQuantity: Int,
                                         needsSelectedStockist: Bool,
-                                        onQuantityIncrease: @escaping () -> (),
-                                        onQuantityDecrease: @escaping () -> (),
+                                        onQuantityIncrease: @escaping (_ isLongPress: Bool) -> (),
+                                        onQuantityDecrease: @escaping (_ isLongPress: Bool) -> (),
                                         onButtonTap: @escaping () -> (),
                                         onToggle: @escaping () -> ()) -> some View {
             let horizontalPadding: CGFloat = 20

@@ -208,6 +208,7 @@
 "notifications" = "Notifications";
 "unread" = "Unread";
 "read" = "Read";
+"all" = "All";
 "subscribe_request_button" = "Action Required";
 "subscribe_decision_button" = "Information";
 "order_request_button" = "View Order";

@@ -336,8 +336,8 @@ struct CartItemView: View {
                        let onDecreaseItem = self.onDecreaseItem {
                         NumberPicker(quantity: item.quantity.value as? Int ?? 0,
                                      maxQuantity: Int(item.stockInfo?.availableQty ?? .max),
-                                     onQuantityIncrease: { onIncreaseItem(self.item) },
-                                     onQuantityDecrease: { onDecreaseItem(self.item) })
+                                     onQuantityIncrease: { _ in onIncreaseItem(self.item) },
+                                     onQuantityDecrease: { _ in onDecreaseItem(self.item) })
                     }
                     else {
                         getDetailView(withLocalizationKey: "subtotal:") {
