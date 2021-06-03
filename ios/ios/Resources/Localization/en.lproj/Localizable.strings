@@ -126,6 +126,7 @@
 "clear_all" = "Clear All";
 "clear" = "Clear";
 "view_more" = "View More";
+"sort_by" = "Sort By";
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";
