@@ -226,8 +226,8 @@
 "new_request_to_subscribe_from" = "New request to subscribe from";
 "phone" = "Phone:";
 "edit_credit" = "Edit Credit";
-"discount_rate" = "Discount rate:";
-"credit_days" = "Credit days:";
+"discount_rate:" = "Discount rate:";
+"credit_days:" = "Credit days:";
 "accept" = "Accept";
 "decline" = "Decline";
 
