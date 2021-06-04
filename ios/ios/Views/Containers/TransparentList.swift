@@ -160,5 +160,6 @@ class ListScrollData: ObservableObject {
         case yourSeasonBoys
         
         case orders
+        case invoices
     }
 }

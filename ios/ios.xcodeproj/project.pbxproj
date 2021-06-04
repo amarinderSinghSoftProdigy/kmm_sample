@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		330867522566D67E000C3EB8 /* HostScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330867512566D67E000C3EB8 /* HostScreen.swift */; };
+		330D8C51266A0F85005D46DB /* InvoicesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330D8C50266A0F85005D46DB /* InvoicesScreen.swift */; };
+		330D8C53266A0FFF005D46DB /* InvoiceDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330D8C52266A0FFF005D46DB /* InvoiceDetailsScreen.swift */; };
 		3317B5D425A59C7C008681ED /* ProductDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3317B5D325A59C7C008681ED /* ProductDetails.swift */; };
 		331BED592593614600757694 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331BED582593614600757694 /* GoogleService-Info.plist */; };
 		331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */; };
@@ -121,6 +123,8 @@
 		289BFD22E9FAC8B5DB1DEF7A /* Pods-Medico.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.debug.xcconfig"; sourceTree = "<group>"; };
 		2F2D1DD0CD71D0C64852DCA3 /* Pods_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		330867512566D67E000C3EB8 /* HostScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostScreen.swift; sourceTree = "<group>"; };
+		330D8C50266A0F85005D46DB /* InvoicesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoicesScreen.swift; sourceTree = "<group>"; };
+		330D8C52266A0FFF005D46DB /* InvoiceDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceDetailsScreen.swift; sourceTree = "<group>"; };
 		3317B5D325A59C7C008681ED /* ProductDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetails.swift; sourceTree = "<group>"; };
 		331BED582593614600757694 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRetailerScreen.swift; sourceTree = "<group>"; };
@@ -243,6 +247,15 @@
 				332CFD4325AF334A00341A7E /* Services */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		330D8C4F266A0F6B005D46DB /* Invoices */ = {
+			isa = PBXGroup;
+			children = (
+				330D8C52266A0FFF005D46DB /* InvoiceDetailsScreen.swift */,
+				330D8C50266A0F85005D46DB /* InvoicesScreen.swift */,
+			);
+			path = Invoices;
 			sourceTree = "<group>";
 		};
 		3317B5D525A59CE3008681ED /* Product */ = {
@@ -444,6 +457,7 @@
 				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333D3266262EBAAE0075E1D3 /* Help */,
+				330D8C4F266A0F6B005D46DB /* Invoices */,
 				3376EC742583736200570BB3 /* LimitedAppAccess */,
 				33F55EF2265E6DA800298BE7 /* Orders */,
 				336D346E25C9732F0021F39A /* Notifications */,
@@ -906,6 +920,7 @@
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				333D3299262EC6A20075E1D3 /* MailView.swift in Sources */,
 				3354F9702657D4CA00A4D252 /* CompletedCartOrderScreen.swift in Sources */,
+				330D8C53266A0FFF005D46DB /* InvoiceDetailsScreen.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
@@ -962,6 +977,7 @@
 				331FC3AC25D3F6C00072D3B3 /* ComplexNotifications.swift in Sources */,
 				33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
+				330D8C51266A0F85005D46DB /* InvoicesScreen.swift in Sources */,
 				3376EC762583737800570BB3 /* LimitedAppAccessScreen.swift in Sources */,
 				3372E216259A10570034EF2D /* SignUpWelcomeScreen.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,

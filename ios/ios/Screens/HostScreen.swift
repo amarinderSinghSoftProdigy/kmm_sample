@@ -196,6 +196,12 @@ struct TabBarScreen: View {
             case let scope as ConfirmOrderScope:
                 ConfirmOrderScreen(scope: scope)
                 
+            case let scope as InvoicesScope:
+                InvoicesScreen(scope: scope)
+                
+            case let scope as ViewInvoiceScope:
+                InvoiceDetailsScreen(scope: scope)
+                
             default:
                 EmptyView()
             }

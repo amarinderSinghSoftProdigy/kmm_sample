@@ -1,24 +1,22 @@
 //
-//  OrdersScreen.swift
+//  InvoicesScreen.swift
 //  Medico
 //
-//  Created by Dasha Gurinovich on 26.05.21.
+//  Created by Dasha Gurinovich on 4.06.21.
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
 import core
 import SwiftUI
 
-struct OrdersScreen: View {
-    let scope: OrdersScope
+struct InvoicesScreen: View {
+    let scope: InvoicesScope
     
     @ObservedObject var filterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var dateRange: SwiftDataSource<DataDateRange>
     
-    @ObservedObject var ordersNumber: SwiftDataSource<KotlinInt>
-    
-    @ObservedObject var ordersSearch: SwiftDataSource<NSString>
-    @ObservedObject var orders: SwiftDataSource<NSArray>
+    @ObservedObject var invoicesSearch: SwiftDataSource<NSString>
+    @ObservedObject var invoices: SwiftDataSource<NSArray>
     
     private var fromDate: Binding<Date?> {
         .init(get: {
@@ -41,8 +39,8 @@ struct OrdersScreen: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
-            SearchBar(searchText: ordersSearch.value,
+        VStack(spacing: 32) {
+            SearchBar(searchText: invoicesSearch.value,
                       style: .custom(fontWeight: .medium, placeholderOpacity: 0.5),
                       leadingButton: .init(button: .custom(
                                             AnyView(
@@ -65,32 +63,34 @@ struct OrdersScreen: View {
         .padding(.horizontal, 16)
     }
     
-    init(scope: OrdersScope) {
+    init(scope: InvoicesScope) {
         self.scope = scope
         
         self.filterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.dateRange = SwiftDataSource(dataSource: scope.dateRange)
         
-        self.ordersNumber = SwiftDataSource(dataSource: scope.totalItems)
-        
-        self.ordersSearch = SwiftDataSource(dataSource: scope.searchText)
-        self.orders = SwiftDataSource(dataSource: scope.items)
+        self.invoicesSearch = SwiftDataSource(dataSource: scope.searchText)
+        self.invoices = SwiftDataSource(dataSource: scope.items)
     }
     
     private var ordersView: some View {
-        VStack(spacing: 16) {
-            TabOptionView(localizationKey: scope.type.localizationKey,
-                          isSelected: true,
-                          itemsNumber: (self.ordersNumber.value as? Int) ?? 0)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image("Invoice")
+                
+                LocalizedText(localizationKey: "invoices",
+                              textWeight: .bold,
+                              fontSize: 20)
+            }
             
-            TransparentList(data: self.orders,
-                            dataType: DataOrder.self,
-                            listName: .orders,
+            TransparentList(data: self.invoices,
+                            dataType: DataInvoice.self,
+                            listName: .invoices,
                             pagination: scope.pagination,
                             elementsSpacing: 8,
                             onTapGesture: { scope.selectItem(item: $0) },
-                            loadItems: { scope.loadItems() }) { _, order in
-                OrderView(order: order)
+                            loadItems: { scope.loadItems() }) { _, invoice in
+                InvoiceView(invoice: invoice)
             }
         }
     }
@@ -117,23 +117,23 @@ struct OrdersScreen: View {
         }
     }
     
-    private struct OrderView: View {
-        let order: DataOrder
+    private struct InvoiceView: View {
+        let invoice: DataInvoice
         
         var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(order.tradeName)
+                    Text(invoice.tradeName)
                         .medicoText(textWeight: .medium,
                                     fontSize: 15,
                                     color: .darkBlue)
                         .lineLimit(1)
                     
                     HStack(spacing: 2) {
-                        Text(order.info.date)
+                        Text(invoice.info.date)
                             .medicoText(textWeight: .medium)
                         
-                        Text(order.info.time)
+                        Text(invoice.info.time)
                             .medicoText(textWeight: .semiBold)
                     }
                     .opacity(0.6)
@@ -141,20 +141,14 @@ struct OrdersScreen: View {
                 .padding(8)
                 
                 HStack(spacing: 10) {
-                    OrderDetailsView(titleLocalizationKey: "type:",
-                                     bodyText: order.info.paymentMethod.serverValue)
-                    
-                    Spacer()
-                    
-                    Text(order.info.id)
+                    Text(invoice.info.id)
                         .medicoText(textWeight: .medium,
                                     color: .grey3)
-                        .lineLimit(1)
                     
                     Spacer()
                     
-                    OrderDetailsView(titleLocalizationKey: "total:",
-                                     bodyText: order.info.total.formattedPrice,
+                    OrderDetailsView(titleLocalizationKey: "inv_total:",
+                                     bodyText: invoice.info.total.formattedPrice,
                                      bodyColor: .lightBlue)
                 }
                 .padding(8)
@@ -170,51 +164,5 @@ struct OrdersScreen: View {
                           fill: .white,
                           cornerRadius: 5)
         }
-    }
-}
-
-extension DataOrderType {
-    var localizationKey: String {
-        switch self {
-        case .history:
-            return ""
-            
-        case .received:
-            return "new_orders"
-            
-        case .sent:
-            return "orders"
-            
-        default:
-            return ""
-        }
-    }
-}
-
-struct OrderDetailsView: View {
-    let titleLocalizationKey: String
-    let bodyText: String
-    let bodyColor: AppColor
-    
-    var body: some View {
-        HStack(spacing: 2) {
-            LocalizedText(localizationKey: titleLocalizationKey,
-                          textWeight: .medium,
-                          color: .grey3)
-            
-            Text(bodyText)
-                .medicoText(textWeight: .bold,
-                            color: bodyColor)
-        }
-        .lineLimit(1)
-        .minimumScaleFactor(0.4)
-    }
-    
-    init(titleLocalizationKey: String,
-         bodyText: String,
-         bodyColor: AppColor = .darkBlue) {
-        self.titleLocalizationKey =  titleLocalizationKey
-        self.bodyText = bodyText
-        self.bodyColor = bodyColor
     }
 }

@@ -210,3 +210,11 @@ extension DataNotificationType {
         }
     }
 }
+
+extension KotlinLong {
+    static func msToDate(_ ms: KotlinLong?) -> Date? {
+        guard let ms = ms as? Int64 else { return nil }
+        
+        return Date(milliseconds: ms)
+    }
+}

@@ -24,7 +24,8 @@ struct ViewOrderScreen: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            self.customerView
+            CustomerView(b2bData: b2bData.value,
+                         seasonBoyRetailerName: self.order.value?.seasonBoyRetailerName)
             
             self.orderView
             
@@ -55,77 +56,6 @@ struct ViewOrderScreen: View {
         
         self.checkedEntries = .init(dataSource: scope.checkedEntries)
         self.entries = .init(dataSource: scope.entries)
-    }
-    
-    private var customerView: some View {
-        Group {
-            if let b2bData = self.b2bData.value {
-                VStack(spacing: 8) {
-                    Group {
-                        HStack {
-                            Text(b2bData.addressData.address)
-                            
-                            Spacer()
-                            
-                            Text(b2bData.gstin)
-                        }
-                        
-                        HStack {
-                            SmallAddressView(location: b2bData.addressData.fullAddress(),
-                                             fontWeight: .medium,
-                                             fontSize: 12,
-                                             color: .darkBlue)
-                            
-                            Spacer()
-                            
-                            Text(b2bData.panNumber)
-                        }
-                        
-                        HStack {
-                            Text(b2bData.drugLicenseNo1)
-                            
-                            Spacer()
-                            
-                            Text(b2bData.drugLicenseNo2)
-                        }
-                    }
-                    .medicoText(textWeight: .medium,
-                                fontSize: 12)
-                    .padding(.horizontal, 4)
-                    
-                    if let seasonBoyRetailerName = self.order.value?.seasonBoyRetailerName {
-                        self.divider
-                            .padding(.horizontal, -12)
-                        
-                        HStack {
-                            Text(seasonBoyRetailerName)
-                                .medicoText(textWeight: .bold,
-                                            fontSize: 12)
-                            
-                            Spacer()
-                            
-                            Text(b2bData.phoneNumber)
-                                .medicoText(textWeight: .medium,
-                                            fontSize: 12)
-                        }
-                        .padding(.horizontal, 4)
-                    }
-                }
-                .lineLimit(1)
-                .expandableView(expanded: $expandedCustomerView) {
-                    HStack(spacing: 8) {
-                        Image("OrderCustomer")
-                        
-                        Text(b2bData.tradeName)
-                            .medicoText(textWeight: .bold,
-                                        fontSize: 15)
-                            .lineLimit(1)
-                    }
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-        }
     }
     
     private var orderView: some View {
@@ -266,8 +196,15 @@ struct OrderEntriesView: View {
                         .lineLimit(1)
                     
                     if entry.buyingOption == .buy {
-                        OrderDetailsView(titleLocalizationKey: "price:",
-                                         bodyText: entry.price.formatted)
+                        HStack(spacing: 2) {
+                            LocalizedText(localizationKey: "price:",
+                                          textWeight: .medium,
+                                          color: .grey3)
+                            
+                            PriceWithFootnoteView(price: entry.price.formatted, fontSize: 14)
+                        }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
                     }
                 }
                 
@@ -299,5 +236,91 @@ struct OrderEntriesView: View {
                     )
             )
         }
+    }
+}
+
+struct CustomerView: View {
+    let b2bData: DataB2BData?
+    let seasonBoyRetailerName: String?
+    
+    @State private var expandedCustomerView = false
+    
+    var body: some View {
+        Group {
+            if let b2bData = self.b2bData {
+                VStack(spacing: 8) {
+                    Group {
+                        HStack {
+                            Text(b2bData.addressData.address)
+
+                            Spacer()
+
+                            Text(b2bData.gstin)
+                        }
+
+                        HStack {
+                            SmallAddressView(location: b2bData.addressData.fullAddress(),
+                                             fontWeight: .medium,
+                                             fontSize: 12,
+                                             color: .darkBlue)
+
+                            Spacer()
+
+                            Text(b2bData.panNumber)
+                        }
+
+                        HStack {
+                            Text(b2bData.drugLicenseNo1)
+
+                            Spacer()
+
+                            Text(b2bData.drugLicenseNo2)
+                        }
+                    }
+                    .medicoText(textWeight: .medium,
+                                fontSize: 12)
+                    .padding(.horizontal, 4)
+                    
+                    if let seasonBoyRetailerName = self.seasonBoyRetailerName {
+                        TransparentDivider()
+                            .padding(.horizontal, -12)
+
+                        HStack {
+                            Text(seasonBoyRetailerName)
+                                .medicoText(textWeight: .bold,
+                                            fontSize: 12)
+
+                            Spacer()
+
+                            Text(b2bData.phoneNumber)
+                                .medicoText(textWeight: .medium,
+                                            fontSize: 12)
+                        }
+                        .padding(.horizontal, 4)
+                    }
+                }
+                .lineLimit(1)
+                .expandableView(expanded: $expandedCustomerView) {
+                    HStack(spacing: 8) {
+                        Image("OrderCustomer")
+                        
+                        Text(b2bData.tradeName)
+                            .medicoText(textWeight: .bold,
+                                        fontSize: 15)
+                            .lineLimit(1)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+}
+
+struct TransparentDivider: View {
+    var body: some View {
+        AppColor.black.color
+            .opacity(0.12)
+            .frame(height: 1)
     }
 }

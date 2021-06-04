@@ -318,3 +318,8 @@
 "rejected" = "Rejected";
 "accept_selected" = "Accept Selected";
 "reject_selected" = "Reject Selected";
+
+// MARK: Invoices
+"invoices" = "Invoices";
+"inv_total:" = "INV Total:";
+"invoice_no:" = "Invoice No:";

@@ -244,6 +244,9 @@ extension NavigationOption {
         case .Orders():
             return "Cart.Arrow"
             
+        case .Invoices():
+            return "Invoice"
+            
         default:
             return nil
         }
@@ -283,6 +286,9 @@ extension NavigationOption {
             
         case .Orders():
             return "orders"
+            
+        case .Invoices():
+            return "invoices"
             
         default:
             return nil
