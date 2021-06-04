@@ -67,5 +67,5 @@ class ViewInvoiceScope(
     val entries: DataSource<List<InvoiceEntry>>,
 ) : Scope.Child.TabBar() {
 
-    fun download() = EventCollector.sendEvent(Event.Action.Invoices.Download)
+//    fun download() = EventCollector.sendEvent(Event.Action.Invoices.Download)
 }

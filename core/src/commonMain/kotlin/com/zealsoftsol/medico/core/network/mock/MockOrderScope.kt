@@ -95,7 +95,8 @@ class MockOrderScope : NetworkScope.Orders {
                         formattedPrice = "₹${rnd.nextInt(10_000)}",
                         price = 0.0,
                         itemCount = 0,
-                    )
+                    ),
+                    paymentMethod = PaymentMethod.CASH,
                 ),
                 invoiceEntries = listOf(
                     InvoiceEntry(
@@ -160,7 +161,8 @@ private fun longPaginatedInvoiceData(size: Int, rnd: Random) =
                             formattedPrice = "₹${rnd.nextInt(10_000)}",
                             price = 0.0,
                             itemCount = 0,
-                        )
+                        ),
+                        paymentMethod = if (rnd.nextBoolean()) PaymentMethod.CASH else PaymentMethod.CREDIT,
                     ),
                 )
             },

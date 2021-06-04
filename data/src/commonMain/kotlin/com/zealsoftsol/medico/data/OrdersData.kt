@@ -112,6 +112,7 @@ data class InvoiceInfo(
     val time: String,
     @SerialName("orderStatus")
     val total: Total,
+    val paymentMethod: PaymentMethod,
 )
 
 @Serializable

@@ -48,6 +48,7 @@ android {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("debug")
             buildConfigField("boolean", "ANDROID_DEV", "${Config.isAndroidDev}")
+            buildConfigField("boolean", "CI_BUILD", "$isCiBuild")
         }
         getByName("release") {
             // TODO enable proguard
@@ -55,6 +56,7 @@ android {
 //            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), File("proguard-rules.pro"))
             signingConfig = signingConfigs.getByName("release")
             buildConfigField("boolean", "ANDROID_DEV", "false")
+            buildConfigField("boolean", "CI_BUILD", "$isCiBuild")
         }
     }
     flavorDimensions("default")
