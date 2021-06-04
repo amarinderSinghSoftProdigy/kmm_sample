@@ -45,6 +45,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
@@ -56,6 +57,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
@@ -79,6 +81,8 @@ import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.help.HelpScreen
+import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
+import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
@@ -186,6 +190,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is OrdersScope -> OrdersScreen(it)
                     is ViewOrderScope -> ViewOrderScreen(it)
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
+                    is InvoicesScope -> InvoicesScreen(it)
+                    is ViewInvoiceScope -> ViewInvoiceScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

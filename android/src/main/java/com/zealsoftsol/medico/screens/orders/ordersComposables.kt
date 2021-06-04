@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
+import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.screens.common.Space
@@ -115,43 +116,58 @@ fun OrdersScreen(scope: OrdersScope) {
                 )
             }
         } else {
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.date),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500,
-                        color = Color.Black,
-                    )
-                    Text(
-                        text = stringResource(id = R.string.clear),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500,
-                        color = ConstColors.gray,
-                        modifier = Modifier.clickable { scope.clearFilters() },
-                    )
-                }
-                Space(12.dp)
-
-                val dateRange = scope.dateRange.flow.collectAsState()
-                DatePicker(
-                    pickedTimeMs = dateRange.value?.fromMs,
-                    hint = stringResource(id = R.string.from)
-                ) {
-                    scope.setFrom(it)
-                }
-                Space(12.dp)
-                DatePicker(
-                    pickedTimeMs = dateRange.value?.toMs,
-                    hint = stringResource(id = R.string.to)
-                ) {
-                    scope.setTo(it)
-                }
-            }
+            val dateRange = scope.dateRange.flow.collectAsState()
+            DateRangeSelection(
+                dateRange = dateRange.value,
+                onClear = { scope.clearFilters() },
+                onFrom = { scope.setFrom(it) },
+                onTo = { scope.setTo(it) },
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
         }
+    }
+}
+
+@Composable
+fun DateRangeSelection(
+    dateRange: DateRange?,
+    onClear: () -> Unit,
+    onFrom: (Long) -> Unit,
+    onTo: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(id = R.string.date),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                color = Color.Black,
+            )
+            Text(
+                text = stringResource(id = R.string.clear),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                color = ConstColors.gray,
+                modifier = Modifier.clickable(onClick = onClear),
+            )
+        }
+        Space(12.dp)
+
+        DatePicker(
+            pickedTimeMs = dateRange?.fromMs,
+            hint = stringResource(id = R.string.from),
+            onPicked = onFrom,
+        )
+        Space(12.dp)
+        DatePicker(
+            pickedTimeMs = dateRange?.toMs,
+            hint = stringResource(id = R.string.to),
+            onPicked = onTo,
+        )
     }
 }
 
@@ -252,7 +268,7 @@ private fun DatePicker(pickedTimeMs: Long?, hint: String, onPicked: (Long) -> Un
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color.White)
+                .background(color = Color.White, shape = MaterialTheme.shapes.medium)
                 .clickable(onClick = {
                     val now = DateTime.now()
                     val dialog = DatePickerDialog(

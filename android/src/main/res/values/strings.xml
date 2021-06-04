@@ -159,6 +159,7 @@
     <string name="map_location">Map Location</string>
     <string name="dashboard">Dashboard</string>
     <string name="total">Total:</string>
+    <string name="invoice_total">INV Total:</string>
     <string name="continue_text">Continue</string>
     <string name="empty_cart_hint_1">Looks like you dont have anything!</string>
     <string name="empty_cart_hint_2">Please try to add something on cart then try again.</string>
@@ -195,6 +196,7 @@
     <string name="from">From:</string>
     <string name="to">To:</string>
     <string name="order_no">Order No:</string>
+    <string name="invoice_no">Invoice No:</string>
     <string name="reject_all">Reject All</string>
     <string name="accept_all">Accept All</string>
     <string name="reject_selected">Reject Selected</string>
@@ -214,4 +216,6 @@
     <string name="available_formats">Available File Formats</string>
     <string name="max_file_size">Maximum file size:</string>
     <string name="mb_1">1 MB</string>
+    <string name="invoices">Invoices</string>
+    <string name="download">Download</string>
 </resources>

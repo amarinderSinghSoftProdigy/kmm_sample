@@ -53,7 +53,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             Hospitals.takeIf { userType == UserType.STOCKIST },
             SeasonBoys.takeIf { userType == UserType.STOCKIST },
             Stores,
-            Invoices.takeIf { userType == UserType.STOCKIST },
+            Invoices,
             Help,
             Settings,
         )

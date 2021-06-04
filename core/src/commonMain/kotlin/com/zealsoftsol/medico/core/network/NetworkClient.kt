@@ -591,7 +591,7 @@ class NetworkClient(
 
     override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
         ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/submit") {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/accept") {
                 withMainToken()
                 jsonBody(request)
             }.getWrappedError()
@@ -614,7 +614,19 @@ class NetworkClient(
     ): Response.Wrapped<PaginatedData<Invoice>> = ktorDispatcher {
         client.get<SimpleResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
             withMainToken()
-        }.getWrappedBody()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    from?.let { append("fromDate", it.toString()) }
+                    to?.let { append("toDate", it.toString()) }
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
     }
 
     override suspend fun getInvoice(
@@ -623,6 +635,11 @@ class NetworkClient(
     ): Response.Wrapped<InvoiceResponse> = ktorDispatcher {
         client.get<SimpleResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
             withMainToken()
+            url {
+                parameters.apply {
+                    append("b2bUnitCode", unitCode)
+                }
+            }
         }.getWrappedBody()
     }
 
