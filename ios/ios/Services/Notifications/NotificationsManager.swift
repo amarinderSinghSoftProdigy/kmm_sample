@@ -11,6 +11,8 @@ import core
 import NotificationCenter
 
 class NotificationsManager {
+    static let isLocalNotificationKey = "isLocalNotification"
+    
     private let notificationId = "id"
     private let cloudMessagingNotificationsService = CloudMessagingNotificationsService()
     
@@ -46,7 +48,9 @@ class NotificationsManager {
     
     func handleNotificationTap(withUserInfo userInfo: [AnyHashable: Any]) {
         if let messageId = userInfo[notificationId] as? String {
-            firebaseMessaging.messageClicked(id: messageId)
+            DispatchQueue.main.async {
+                self.firebaseMessaging.messageClicked(id: messageId)
+            }
         }
     }
     
@@ -54,7 +58,8 @@ class NotificationsManager {
         let content = UNMutableNotificationContent()
         content.title = notificationData.title
         content.body = notificationData.body
-        content.userInfo = [notificationId: notificationData.id]
+        content.userInfo = [notificationId: notificationData.id,
+                            NotificationsManager.isLocalNotificationKey: true]
 
         let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest.init(identifier: notificationData.id,

@@ -59,9 +59,9 @@ struct InvoiceDetailsScreen: View {
                     }
                     
                     HStack {
-//                        OrderDetailsView(titleLocalizationKey: "type:",
-//                                         bodyText: order.info.paymentMethod.serverValue,
-//                                         bodyColor: .lightBlue)
+                        OrderDetailsView(titleLocalizationKey: "type:",
+                                         bodyText: invoice.info.paymentMethod.serverValue,
+                                         bodyColor: .lightBlue)
                         
                         Spacer()
                         

@@ -2,31 +2,11 @@ import SwiftUI
 import core
 
 struct HostScreen: View {
-    @State private var isSplashScreenActive = true
-    
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
     var body: some View {
-        if isSplashScreenActive {
-            self.splashScreen
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            self.isSplashScreenActive = false
-                        }
-                    }
-                }
-        } else {
-            if let scope = currentScope.value {
-                BaseScopeView(scope: scope)
-            }
-        }
-    }
-    
-    var splashScreen: some View {
-        ZStack {
-            AppColor.primary.color.edgesIgnoringSafeArea(.all)
-            Image("medico_logo")
+        if let scope = currentScope.value {
+            BaseScopeView(scope: scope)
         }
     }
     
