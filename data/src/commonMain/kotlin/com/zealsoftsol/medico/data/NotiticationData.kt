@@ -26,6 +26,8 @@ data class UnreadNotifications(
 data class NotificationDetails(
     val customerData: CustomerData? = null,
     val subscriptionOption: NotificationOption.Subscription? = null,
+    val orderOption: NotificationOption.Order? = null,
+    val invoiceOption: NotificationOption.Invoice? = null,
 ) {
 
     sealed class TypeSafe {
@@ -59,6 +61,17 @@ sealed class NotificationOption {
         val discountRate: String,
         val creditDays: String,
     ) : NotificationOption()
+
+    @Serializable
+    data class Order(
+        val orderId: String,
+        val type: OrderType,
+    ) : NotificationOption()
+
+    @Serializable
+    data class Invoice(
+        val invoiceId: String,
+    ) : NotificationOption()
 }
 
 
@@ -66,6 +79,7 @@ enum class NotificationType(val buttonStringId: String) {
     SUBSCRIBE_REQUEST("subscribe_request_button"),
     SUBSCRIBE_DECISION("subscribe_decision_button"),
     ORDER_REQUEST("order_request_button"),
+    INVOICE_REQUEST("order_request_button"),
 }
 
 enum class NotificationAction(

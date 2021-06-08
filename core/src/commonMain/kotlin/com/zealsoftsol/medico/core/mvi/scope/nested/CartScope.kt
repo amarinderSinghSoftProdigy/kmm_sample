@@ -91,5 +91,5 @@ class CartOrderCompletedScope(
 
     override val isRoot: Boolean = true
 
-    fun goToOrders(): Boolean = TODO("not implemented")
+    fun goToOrders(): Boolean = EventCollector.sendEvent(Event.Transition.Orders)
 }

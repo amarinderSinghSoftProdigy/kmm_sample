@@ -9,14 +9,13 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
-import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
-import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
@@ -193,7 +192,7 @@ sealed class Event {
 
             data class Search(val value: String) : Orders()
             data class Load(val isFirstLoad: Boolean) : Orders()
-            data class Select(val item: Order) : Orders()
+            data class Select(val orderId: String, val type: OrderType) : Orders()
 
             data class ViewOrderAction(
                 val action: ViewOrderScope.Action,
@@ -211,7 +210,7 @@ sealed class Event {
 
             data class Search(val value: String) : Invoices()
             data class Load(val isFirstLoad: Boolean) : Invoices()
-            data class Select(val item: Invoice) : Invoices()
+            data class Select(val invoiceId: String) : Invoices()
             object Download : Invoices()
         }
     }

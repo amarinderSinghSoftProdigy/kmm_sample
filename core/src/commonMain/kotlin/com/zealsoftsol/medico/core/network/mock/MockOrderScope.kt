@@ -87,16 +87,19 @@ class MockOrderScope : NetworkScope.Orders {
                     panNumber = "55532",
                     tradeName = "Test Trader",
                 ),
-                invoiceInfo = InvoiceInfo(
-                    id = Time.now.toString(),
-                    date = "${rnd.nextInt(31)}/05/2021",
-                    time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
-                    total = Total(
-                        formattedPrice = "₹${rnd.nextInt(10_000)}",
-                        price = 0.0,
-                        itemCount = 0,
+                invoice = Invoice(
+                    info = InvoiceInfo(
+                        id = Time.now.toString(),
+                        date = "${rnd.nextInt(31)}/05/2021",
+                        time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
+                        total = Total(
+                            formattedPrice = "₹${rnd.nextInt(10_000)}",
+                            price = 0.0,
+                            itemCount = 0,
+                        ),
+                        paymentMethod = PaymentMethod.CASH,
                     ),
-                    paymentMethod = PaymentMethod.CASH,
+                    tradeName = "Trader 1",
                 ),
                 invoiceEntries = listOf(
                     InvoiceEntry(

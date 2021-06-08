@@ -179,10 +179,10 @@ extension DataOrderType {
         case .history:
             return ""
             
-        case .received:
+        case .purchaseOrder:
             return "new_orders"
             
-        case .sent:
+        case .orders:
             return "orders"
             
         default:

@@ -43,17 +43,17 @@ class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
     }
 
     fun selectItem(item: Order) =
-        EventCollector.sendEvent(Event.Action.Orders.Select(item))
+        EventCollector.sendEvent(Event.Action.Orders.Select(item.info.id, type))
 
     fun setFrom(fromMs: Long) {
-        if (type == OrderType.RECEIVED) throw UnsupportedOperationException("can not set range for received orders")
+        if (type == OrderType.PURCHASE_ORDER) throw UnsupportedOperationException("can not set range for received orders")
 
         this.dateRange.value = dateRange.value?.copy(fromMs = fromMs) ?: DateRange(fromMs = fromMs)
         EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = true))
     }
 
     fun setTo(toMs: Long) {
-        if (type == OrderType.RECEIVED) throw UnsupportedOperationException("can not set range for received orders")
+        if (type == OrderType.PURCHASE_ORDER) throw UnsupportedOperationException("can not set range for received orders")
 
         this.dateRange.value = dateRange.value?.copy(toMs = toMs) ?: DateRange(toMs = toMs)
         EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = true))
