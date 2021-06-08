@@ -11,13 +11,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Config.Android.targetSdk)
-    buildToolsVersion(Config.Android.buildTools)
+    compileSdk = Config.Android.targetSdk
+    buildToolsVersion = Config.Android.buildTools
     defaultConfig {
-        minSdkVersion(Config.Android.minSdk)
-        targetSdkVersion(Config.Android.minSdk)
-        versionCode = Config.Version.code
-        versionName = Config.Version.name
+        minSdk = Config.Android.minSdk
+        targetSdk = Config.Android.minSdk
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {

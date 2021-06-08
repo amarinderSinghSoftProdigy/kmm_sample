@@ -32,6 +32,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -96,12 +97,16 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
         if (showFilter.value) {
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
             ) {
                 Space(16.dp)
                 Text(
                     text = stringResource(id = R.string.clear_all),
-                    modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp)
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(horizontal = 16.dp)
                         .clickable(indication = null) {
                             scope.clearFilter(null)
                         },
@@ -144,7 +149,9 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
             } else {
                 LazyColumn(
                     state = rememberLazyListState(),
-                    modifier = Modifier.fillMaxSize().background(color = Color.White)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color.White)
                 ) {
                     items(
                         items = autoComplete.value,
@@ -163,10 +170,14 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
 private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
     val regex = "(?i)$input".toRegex()
     Box(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.fillMaxSize().padding(vertical = 12.dp, horizontal = 24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 12.dp, horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -211,18 +222,18 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth()
+        onClick = onClick,
+        indication = YellowOutlineIndication,
+        modifier = Modifier
+            .fillMaxWidth()
             .height(182.dp)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(
-                indication = YellowOutlineIndication,
-                onClick = onClick,
-            )
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Box {
             val labelColor = when (product.stockInfo?.status) {
@@ -231,9 +242,14 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit) {
                 StockStatus.OUT_OF_STOCK -> ConstColors.red
                 null -> ConstColors.gray
             }
-            Box(modifier = Modifier.width(5.dp).height(182.dp).background(labelColor))
+            Box(modifier = Modifier
+                .width(5.dp)
+                .height(182.dp)
+                .background(labelColor))
             Column(
-                modifier = Modifier.padding(horizontal = 12.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .align(Alignment.Center),
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     CoilImage(
@@ -311,7 +327,9 @@ fun SortSection(
     selectedOption: SortOption?,
     onClick: (SortOption?) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
         Separator(padding = 2.dp)
         Space(12.dp)
         Row(
@@ -354,7 +372,9 @@ fun FilterSection(
     onOptionClick: (Option) -> Unit,
     onFilterClear: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
         Separator(padding = 2.dp)
         Space(12.dp)
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -368,10 +388,12 @@ fun FilterSection(
                 text = stringResource(id = R.string.clear),
                 color = ConstColors.gray,
                 fontWeight = FontWeight.W500,
-                modifier = Modifier.align(Alignment.CenterEnd).clickable(
-                    onClick = onFilterClear,
-                    indication = null,
-                ),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable(
+                        onClick = onFilterClear,
+                        indication = null,
+                    ),
             )
         }
         searchOption?.let {
@@ -392,6 +414,7 @@ fun FilterSection(
 
 data class SearchOption(val input: String, val onSearch: (String) -> Unit)
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Chip(option: Option, onClick: () -> Unit) {
     when (option) {
@@ -399,10 +422,8 @@ private fun Chip(option: Option, onClick: () -> Unit) {
             if (option.isVisible) Surface(
                 color = if (option.isSelected) ConstColors.yellow else Color.White,
                 shape = RoundedCornerShape(percent = 50),
-                modifier = Modifier.padding(4.dp).clickable(
-                    onClick = onClick,
-                    indication = null,
-                )
+                onClick = onClick,
+                modifier = Modifier.padding(4.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (option.isSelected) {
@@ -410,7 +431,9 @@ private fun Chip(option: Option, onClick: () -> Unit) {
                             imageVector = Icons.Default.Check,
                             contentDescription = null,
                             tint = MaterialTheme.colors.background,
-                            modifier = Modifier.padding(start = 10.dp).size(20.dp),
+                            modifier = Modifier
+                                .padding(start = 10.dp)
+                                .size(20.dp),
                         )
                     }
                     Text(
@@ -433,10 +456,8 @@ private fun Chip(option: Option, onClick: () -> Unit) {
             border = BorderStroke(1.dp, ConstColors.lightBlue),
             contentColor = ConstColors.lightBlue,
             shape = RoundedCornerShape(percent = 50),
-            modifier = Modifier.padding(4.dp).clickable(
-                onClick = onClick,
-                indication = null,
-            )
+            onClick = onClick,
+            modifier = Modifier.padding(4.dp),
         ) {
             Text(
                 text = stringResource(id = R.string.view_all),
@@ -473,7 +494,9 @@ fun BasicSearchBar(
             )
         }
         Box(
-            modifier = Modifier.padding(start = 24.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(start = 24.dp)
+                .fillMaxWidth(),
             contentAlignment = Alignment.CenterStart,
         ) {
             if (input.isEmpty()) {
@@ -492,10 +515,14 @@ fun BasicSearchBar(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions { onSearch(input, true) },
-                modifier = Modifier.focusRequester(focusRequester).fillMaxWidth()
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth()
                     .padding(end = 32.dp),
             )
-            val modifier = Modifier.size(24.dp).align(Alignment.CenterEnd)
+            val modifier = Modifier
+                .size(24.dp)
+                .align(Alignment.CenterEnd)
             when (searchBarEnd) {
                 is SearchBarEnd.Eraser -> {
                     if (input.isNotEmpty()) {
@@ -538,12 +565,14 @@ fun SearchBarBox(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
         elevation = elevation,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .height(48.dp)
             .padding(horizontal = horizontalPadding)
     ) {
         Row(
-            modifier = modifier.fillMaxSize()
+            modifier = modifier
+                .fillMaxSize()
                 .padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

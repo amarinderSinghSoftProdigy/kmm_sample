@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -44,7 +45,6 @@ import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
@@ -53,7 +53,9 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     Box(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
         Column(modifier = Modifier.padding(bottom = 150.dp)) {
             Space(10.dp)
@@ -81,7 +83,9 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         )
                     }
                     Row(
-                        modifier = Modifier.weight(.2f).padding(end = 12.dp),
+                        modifier = Modifier
+                            .weight(.2f)
+                            .padding(end = 12.dp),
                         horizontalArrangement = Arrangement.End,
                     ) {
                         Icon(
@@ -234,6 +238,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderEntryItem(
     canEdit: Boolean,
@@ -243,8 +248,10 @@ fun OrderEntryItem(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            .clickable(indication = null, onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = if (entry.buyingOption == BuyingOption.QUOTE) BorderStroke(

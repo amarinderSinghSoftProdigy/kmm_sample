@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.invoices
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -44,7 +44,9 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
 fun InvoicesScreen(scope: InvoicesScope) {
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 16.dp)) {
         val search = scope.searchText.flow.collectAsState()
         val isFilterOpened = scope.isFilterOpened.flow.collectAsState()
         Space(16.dp)
@@ -103,12 +105,14 @@ fun InvoicesScreen(scope: InvoicesScope) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun InvoiceItem(invoice: Invoice, onClick: () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable(onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
@@ -140,7 +144,8 @@ private fun InvoiceItem(invoice: Invoice, onClick: () -> Unit) {
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .background(ConstColors.gray.copy(0.05f))
                     .padding(vertical = 6.dp, horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,

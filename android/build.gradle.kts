@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.konan.properties.Properties
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -11,12 +9,12 @@ val isCiBuild = !System.getenv("CI_BUILD").isNullOrEmpty()
 println("CI Build: ${if (isCiBuild) "YES" else "NO"}")
 
 android {
-    compileSdkVersion(Config.Android.targetSdk)
-    buildToolsVersion(Config.Android.buildTools)
+    compileSdk = Config.Android.targetSdk
+    buildToolsVersion = Config.Android.buildTools
     defaultConfig {
         applicationId = "com.zealsoftsol.medico"
-        minSdkVersion(Config.Android.minSdk)
-        targetSdkVersion(Config.Android.minSdk)
+        minSdk = Config.Android.minSdk
+        targetSdk = Config.Android.minSdk
         versionCode = Config.Version.code
         versionName = Config.Version.name
         vectorDrawables.useSupportLibrary = true
@@ -59,7 +57,7 @@ android {
             buildConfigField("boolean", "CI_BUILD", "$isCiBuild")
         }
     }
-    flavorDimensions("default")
+    flavorDimensions += "default"
     productFlavors {
         create("dev") {
             dimension = "default"
@@ -70,7 +68,6 @@ android {
         }
     }
     buildFeatures {
-        // Enables Jetpack Compose for this module
         compose = true
     }
     compileOptions {
@@ -78,14 +75,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     composeOptions {
-        kotlinCompilerVersion = Versions.kotlin
         kotlinCompilerExtensionVersion = Versions.compose
     }
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            useIR = true
-        }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
