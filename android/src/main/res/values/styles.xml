@@ -1,11 +1,9 @@
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">#F4F9FD</item>
-        <item name="colorPrimaryDark">#003657</item>
-        <item name="colorAccent">#FFD600</item>
 
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#003657</item>
+        <item name="android:colorPrimaryDark">#003657</item>
+        <item name="android:colorAccent">#FFD600</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme">

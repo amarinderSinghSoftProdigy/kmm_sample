@@ -53,7 +53,9 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(Deps.Ktor.Client.jvm)
-                api(Deps.Kodein.DI.android)
+                api(Deps.Kodein.DI.android) {
+                    exclude(group = "androidx.appcompat", module = "appcompat")
+                }
                 api(Deps.Android.Ktx.core)
                 implementation(Deps.okhttpinterceptor)
             }

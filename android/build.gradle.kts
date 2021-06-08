@@ -86,9 +86,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    implementation(Deps.Android.appCompat)
     implementation(Deps.Android.customTabs)
-    implementation(Deps.Android.activity)
     Deps.Android.Compose.all.forEach {
         implementation(it)
     }
@@ -100,4 +98,7 @@ dependencies {
     implementation(Deps.libphonenumber)
     implementation("io.karn:notify:1.3.0")
     implementation("joda-time:joda-time:2.10.5")
+
+    // for lint
+    implementation("androidx.fragment:fragment-ktx:1.3.4")
 }

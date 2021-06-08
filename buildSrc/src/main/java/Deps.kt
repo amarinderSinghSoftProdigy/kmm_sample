@@ -23,22 +23,16 @@ object Deps {
     }
 
     object Android {
-        const val appCompat = "androidx.appcompat:appcompat:1.2.0"
-        const val material = "com.google.android.material:material:1.2.0"
-        const val constraint = "androidx.constraintlayout:constraintlayout:1.1.3"
         const val dynamic = "androidx.dynamicanimation:dynamicanimation:1.0.0"
         const val exif = "androidx.exifinterface:exifinterface:1.0.0"
-        const val lifecycle = "androidx.lifecycle:lifecycle-process:2.2.0"
         const val customTabs = "androidx.browser:browser:1.2.0"
         const val workManager = "androidx.work:work-runtime-ktx:2.2.0"
         const val emoji = "androidx.emoji:emoji-bundled:1.0.0"
-        const val swipe = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
         const val playcore = "com.google.android.play:core:1.7.3"
         const val playcorektx = "com.google.android.play:core-ktx:1.7.0"
-        const val activity = "androidx.activity:activity-ktx:1.1.0"
 
         object Ktx {
-            const val core = "androidx.core:core-ktx:1.3.2"
+            const val core = "androidx.core:core-ktx:1.5.0"
         }
 
         object Compose {

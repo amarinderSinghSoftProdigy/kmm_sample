@@ -119,9 +119,9 @@ sealed class Response {
 
         fun getWrappedBody(): Wrapped<T> = Wrapped(body, isSuccess)
 
-        inline fun getWrappedValidation(): Wrapped<V> = Wrapped(validations, isSuccess)
+        fun getWrappedValidation(): Wrapped<V> = Wrapped(validations, isSuccess)
 
-        inline fun getWrappedError(): Wrapped<ErrorCode> = Wrapped(error, isSuccess)
+        fun getWrappedError(): Wrapped<ErrorCode> = Wrapped(error, isSuccess)
     }
 
     data class Wrapped<V>(val entity: V?, val isSuccess: Boolean)
