@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -33,7 +34,6 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -61,7 +61,6 @@ import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.management.GeoLocation
 import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
 
@@ -75,10 +74,14 @@ fun CartScreen(scope: CartScope) {
     } else {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
             ) {
                 Space(16.dp)
                 Row(
@@ -131,7 +134,9 @@ fun CartScreen(scope: CartScope) {
             }
 
             total.value?.let {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)) {
                     Divider()
                     Space(16.dp)
                     Row(
@@ -177,7 +182,9 @@ private fun SellerCartItem(
         expanded = expand,
         header = { isExpanded ->
             Box(
-                modifier = Modifier.background(ConstColors.red).size(50.dp)
+                modifier = Modifier
+                    .background(ConstColors.red)
+                    .size(50.dp)
                     .clickable(onClick = onRemoveSeller),
                 contentAlignment = Alignment.Center,
             ) {
@@ -241,6 +248,7 @@ private fun SellerCartItem(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CartItem(
     cartItem: CartItem,
@@ -256,7 +264,9 @@ private fun CartItem(
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp),
             ) {
                 Space(12.dp)
                 Text(
@@ -274,7 +284,9 @@ private fun CartItem(
                         imageVector = Icons.Default.Info,
                         tint = ConstColors.lightBlue,
                         contentDescription = null,
-                        modifier = Modifier.size(14.dp).align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .size(14.dp)
+                            .align(Alignment.CenterVertically),
                     )
                     Space(6.dp)
                     BoxWithConstraints {
@@ -317,7 +329,9 @@ private fun CartItem(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
                             .padding(end = 8.dp),
                     ) {
                         BoxWithConstraints {
@@ -338,10 +352,11 @@ private fun CartItem(
             Surface(
                 shape = CircleShape,
                 color = ConstColors.red.copy(alpha = 0.12f),
-                modifier = Modifier.align(Alignment.TopEnd)
+                onClick = onRemove,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .size(24.dp)
-                    .clickable(indication = rememberRipple(radius = 12.dp), onClick = onRemove)
+                    .size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
@@ -356,7 +371,8 @@ private fun CartItem(
                 isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
-                modifier = Modifier.align(Alignment.BottomEnd)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
                     .padding(if (cartItem.seasonBoyRetailer == null) 12.dp else 28.dp)
             )
             val labelColor = when (cartItem.stockInfo?.status) {
@@ -368,7 +384,10 @@ private fun CartItem(
             val maxWidth =
                 LocalContext.current.let { it.screenWidth / it.density }.dp - 37.dp - 5.dp
             Box(
-                modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(end = maxWidth)
+                    .background(labelColor)
             )
         }
     }
@@ -396,7 +415,9 @@ private fun ColorItem(color: Color, label: Int) {
 private fun EmptyCart(onBack: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.align(Alignment.Center).padding(bottom = 64.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(bottom = 64.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
@@ -423,7 +444,9 @@ private fun EmptyCart(onBack: () -> Unit) {
             )
         }
         MedicoButton(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp),
             text = stringResource(id = R.string.go_back),
             isEnabled = true,

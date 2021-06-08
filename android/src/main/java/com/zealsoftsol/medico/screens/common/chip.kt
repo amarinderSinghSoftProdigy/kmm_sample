@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens.common
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Chip(
     text: String,
@@ -24,10 +26,8 @@ fun Chip(
         color = if (isSelected) color else Color.Transparent,
         border = if (!isSelected) BorderStroke(1.dp, color) else null,
         shape = RoundedCornerShape(percent = 50),
-        modifier = Modifier.padding(4.dp).clickable(
-            onClick = onClick,
-            indication = null,
-        )
+        onClick = onClick,
+        modifier = Modifier.padding(4.dp),
     ) {
         Text(
             text = text,

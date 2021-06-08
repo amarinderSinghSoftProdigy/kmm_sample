@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -70,7 +71,8 @@ fun OrdersScreen(scope: OrdersScope) {
         if (!isFilterOpened.value) {
             val totalItems = scope.totalItems.flow.collectAsState()
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(41.dp)
                     .padding(horizontal = 16.dp)
                     .background(ConstColors.lightBlue, MaterialTheme.shapes.medium),
@@ -103,7 +105,9 @@ fun OrdersScreen(scope: OrdersScope) {
             LazyColumn(
                 state = rememberLazyListState(),
                 contentPadding = PaddingValues(top = 16.dp),
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
             ) {
                 itemsIndexed(
                     items = items.value,
@@ -171,12 +175,14 @@ fun DateRangeSelection(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun OrderItem(order: Order, onClick: () -> Unit) {
     Surface(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable(onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
@@ -208,7 +214,8 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .background(ConstColors.gray.copy(0.05f))
                     .padding(vertical = 6.dp, horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -275,7 +282,10 @@ private fun DatePicker(pickedTimeMs: Long?, hint: String, onPicked: (Long) -> Un
                         context,
                         { _, year, month, day ->
                             onPicked(
-                                DateTime.now().withYear(year).withMonthOfYear(month)
+                                DateTime
+                                    .now()
+                                    .withYear(year)
+                                    .withMonthOfYear(month)
                                     .withDayOfMonth(day).millis
                             )
                         },

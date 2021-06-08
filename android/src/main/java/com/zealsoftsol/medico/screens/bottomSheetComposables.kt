@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -112,6 +112,7 @@ fun Scope.Host.showBottomSheet(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ModifyOrderEntryBottomSheet(
     entry: OrderEntry,
@@ -125,16 +126,16 @@ private fun ModifyOrderEntryBottomSheet(
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
-        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 24.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 24.dp)) {
             Surface(
                 shape = CircleShape,
                 color = Color.Black.copy(alpha = 0.12f),
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .size(24.dp)
-                    .clickable(
-                        indication = rememberRipple(radius = 12.dp),
-                        onClick = onDismiss,
-                    ),
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
@@ -358,6 +359,7 @@ private fun DocumentUploadBottomSheet(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PreviewItemBottomSheet(
     entityInfo: EntityInfo,
@@ -366,16 +368,16 @@ private fun PreviewItemBottomSheet(
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
-        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 24.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 24.dp)) {
             Surface(
                 shape = CircleShape,
                 color = Color.Black.copy(alpha = 0.12f),
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .size(24.dp)
-                    .clickable(
-                        indication = rememberRipple(radius = 12.dp),
-                        onClick = onDismiss,
-                    ),
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Close,
@@ -463,7 +465,9 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         )
         Space(24.dp)
         Column(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 123.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 123.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             GeoLocation(entityInfo.geoData.fullAddress(), isBold = true)
@@ -565,7 +569,8 @@ private fun SectionsBottomSheet(
     BaseBottomSheet(onDismiss) {
         Column {
             Row(
-                modifier = Modifier.height(52.dp)
+                modifier = Modifier
+                    .height(52.dp)
                     .padding(start = 18.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -577,7 +582,8 @@ private fun SectionsBottomSheet(
             }
             cells.forEach {
                 Row(
-                    modifier = Modifier.height(48.dp)
+                    modifier = Modifier
+                        .height(48.dp)
                         .fillMaxWidth()
                         .clickable { onCellClick(it) },
                     verticalAlignment = Alignment.CenterVertically,
@@ -603,14 +609,17 @@ private fun BaseBottomSheet(
     body: @Composable () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(color = Color.Black.copy(alpha = 0.5f))
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .clickable(indication = NoOpIndication) { onDismiss() })
         Surface(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .clickable(indication = null) { /* intercept touches */ }
                 .align(Alignment.BottomCenter),
             color = Color.White,

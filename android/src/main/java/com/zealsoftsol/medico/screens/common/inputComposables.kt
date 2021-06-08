@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -67,7 +66,8 @@ fun PasswordFormatInputField(
             imageVector = Icons.Default.RemoveRedEye,
             contentDescription = null,
             tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
-            modifier = Modifier.size(42.dp)
+            modifier = Modifier
+                .size(42.dp)
                 .clickable(indication = rememberRipple(radius = 15.dp)) {
                     isPasswordHidden.value = !isPasswordHidden.value
                 }
@@ -165,7 +165,7 @@ fun Modifier.scrollOnFocus(
     return composed {
         onGloballyPositioned { rectHolder.rect = it.boundsInParent() }
             .onFocusEvent {
-                if (it == FocusState.Active) {
+                if (it.isFocused) {
                     rectHolder.rect.takeIf { !scrollState.isScrollInProgress }
                         ?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
                 }
@@ -179,7 +179,7 @@ fun Modifier.scrollOnFocus(
     coroutineScope: CoroutineScope,
 ): Modifier = composed {
     onFocusEvent {
-        if (it == FocusState.Active) {
+        if (it.isFocused) {
             rectHolder.rect?.takeIf { !scrollState.isScrollInProgress }
                 ?.let { coroutineScope.launch { scrollState.animateScrollTo(it.top.toInt()) } }
         }

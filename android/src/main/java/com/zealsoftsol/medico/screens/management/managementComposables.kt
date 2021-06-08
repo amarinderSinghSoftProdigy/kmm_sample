@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -70,7 +71,9 @@ fun ManagementScreen(scope: ManagementScope.User) {
                 backgroundColor = ConstColors.yellow,
                 contentColor = MaterialTheme.colors.background,
                 content = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(32.dp),
             )
         }
     }
@@ -136,17 +139,22 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
     if (scope.tabs.isNotEmpty()) {
         Space(16.dp)
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(41.dp)
                 .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
         ) {
             scope.tabs.forEach {
-                var boxMod = Modifier.weight(1f).fillMaxHeight()
+                var boxMod = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
                 boxMod = if (scope.tabs.size == 1) {
                     boxMod
                 } else {
-                    boxMod.padding(5.dp).clickable { scope.selectTab(it) }
+                    boxMod
+                        .padding(5.dp)
+                        .clickable { scope.selectTab(it) }
                 }
                 val isActive = activeTab.value == it
                 boxMod = if (isActive) {
@@ -182,7 +190,9 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
     LazyColumn(
         state = rememberLazyListState(),
         contentPadding = PaddingValues(top = 16.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
         val isSeasonBoy = scope is ManagementScope.User.SeasonBoy
         itemsIndexed(
@@ -240,7 +250,9 @@ private fun NonSeasonBoyItem(
             GeoLocation(entityInfo.geoData.fullAddress())
         }
         Column(
-            modifier = Modifier.matchParentSize().padding(start = maxWidth * 0.65f),
+            modifier = Modifier
+                .matchParentSize()
+                .padding(start = maxWidth * 0.65f),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -270,7 +282,9 @@ private fun NonSeasonBoyItem(
 private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.width(maxWidth * 0.6f).align(Alignment.CenterStart),
+            modifier = Modifier
+                .width(maxWidth * 0.6f)
+                .align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Text(
@@ -284,7 +298,9 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
         }
         entityInfo.subscriptionData?.let {
             Column(
-                modifier = Modifier.width(maxWidth * 0.4f).align(Alignment.CenterEnd),
+                modifier = Modifier
+                    .width(maxWidth * 0.4f)
+                    .align(Alignment.CenterEnd),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
@@ -311,20 +327,24 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BaseManagementItem(
     onClick: () -> Unit,
     body: @Composable BoxWithConstraintsScope.() -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
         BoxWithConstraints(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
         ) {
             body()
         }

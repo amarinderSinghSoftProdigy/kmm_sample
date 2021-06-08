@@ -2,13 +2,12 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
-    const val kotlin = "1.4.32"
-    const val ktor = "1.5.1"
-    const val coroutines = "1.4.2-native-mt"
-    const val kserialize = "1.1.0-RC"
-    const val kodeinDi = "7.3.1"
-    const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-beta07"
+    const val kotlin = "1.5.10"
+    const val ktor = "1.5.4"
+    const val coroutines = "1.5.0-native-mt"
+    const val kserialize = "1.2.1"
+    const val kodeinDi = "7.5.0"
+    const val compose = "1.0.0-beta08"
 }
 
 object Deps {
@@ -59,7 +58,7 @@ object Deps {
                 "androidx.compose.material:material-icons-core:${Versions.compose}"
             const val iconsExtended =
                 "androidx.compose.material:material-icons-extended:${Versions.compose}"
-            const val activity = "androidx.activity:activity-compose:1.3.0-alpha08"
+            const val activity = "androidx.activity:activity-compose:1.3.0-beta01"
             const val constraint =
                 "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07"
 
@@ -75,17 +74,13 @@ object Deps {
             )
         }
 
-        const val coil = "com.google.accompanist:accompanist-coil:0.10.0"
+        const val coil = "com.google.accompanist:accompanist-coil:0.11.0"
     }
 
     object Kodein {
         object DI {
             const val core = "org.kodein.di:kodein-di:${Versions.kodeinDi}"
             const val android = "org.kodein.di:kodein-di-framework-android-x:${Versions.kodeinDi}"
-        }
-        object DB {
-            const val core = "org.kodein.db:kodein-db:${Versions.kodeinDb}"
-            const val serializer = "org.kodein.db:kodein-db-serializer-kotlinx:${Versions.kodeinDb}"
         }
     }
 

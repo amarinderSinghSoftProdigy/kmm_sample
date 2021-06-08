@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.dashboard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -32,7 +32,11 @@ import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
 fun DashboardScreen(scope: DashboardScope) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Row {
             val unreadNotifications = scope.unreadNotifications.flow.collectAsState()
             BigButton(
@@ -52,6 +56,7 @@ fun DashboardScreen(scope: DashboardScope) {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun RowScope.BigButton(
     icon: Int,
@@ -60,7 +65,8 @@ private fun RowScope.BigButton(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.weight(1f).clickable(onClick = onClick),
+        onClick = onClick,
+        modifier = Modifier.weight(1f),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
@@ -73,7 +79,9 @@ private fun RowScope.BigButton(
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp).align(Alignment.Center),
+                    modifier = Modifier
+                        .size(40.dp)
+                        .align(Alignment.Center),
                 )
                 if (counter > 0) {
                     RedCounter(
@@ -98,7 +106,9 @@ private fun RedCounter(
     count: Int,
 ) {
     Box(
-        modifier = modifier.background(Color.Red, CircleShape).size(30.dp),
+        modifier = modifier
+            .background(Color.Red, CircleShape)
+            .size(30.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
