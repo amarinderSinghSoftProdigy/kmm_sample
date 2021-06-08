@@ -23,7 +23,7 @@ enum class UserType(
     HOSPITAL("HOSPITAL", "hospital");
 
     val stringId: String
-        get() = serverValue.toLowerCase()
+        get() = serverValue.lowercase()
 
     companion object {
         fun parse(value: String): UserType? = when (value) {

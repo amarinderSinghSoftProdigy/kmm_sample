@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,9 @@ fun WelcomeScreen(
     option: WelcomeOption,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -94,7 +97,7 @@ private fun UploadDocuments(option: WelcomeOption.Upload) {
         )
         option.dataComponent.isVerified.flow.collectAsState()
     } else {
-        mutableStateOf(true)
+        remember { mutableStateOf(true) }
     }
     Space(50.dp)
     MedicoButton(

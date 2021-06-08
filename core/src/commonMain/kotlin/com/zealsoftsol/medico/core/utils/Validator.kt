@@ -57,7 +57,7 @@ object Validator {
             // Check if aadhaar no consists only of digits
             // Check if aadhaar no first digit is not 0 or 1
             if (clearedAadhaarNo.length != 12 || clearedAadhaarNo.first()
-                    .toInt() in 0..1
+                    .code in 0..1
             ) return false
             // Check using verhoeff algorithm
             var c = 0

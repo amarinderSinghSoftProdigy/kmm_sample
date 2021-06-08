@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.interop
 
 import java.net.NetworkInterface
+import java.util.Locale
 
 actual class IpAddressFetcher {
 
@@ -14,10 +15,10 @@ actual class IpAddressFetcher {
                         sAddr
                     } else {
                         val delim = sAddr.indexOf('%') // drop ip6 zone suffix
-                        if (delim < 0) sAddr.toUpperCase() else sAddr.substring(
+                        if (delim < 0) sAddr.uppercase(Locale.getDefault()) else sAddr.substring(
                             0,
                             delim
-                        ).toUpperCase()
+                        ).uppercase(Locale.getDefault())
                     }
                 }
             }

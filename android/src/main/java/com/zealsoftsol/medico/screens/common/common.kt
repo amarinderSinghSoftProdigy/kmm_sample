@@ -63,6 +63,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.screens.Notification
 import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
+import java.util.Locale
 
 @Composable
 fun TabBar(
@@ -70,7 +71,10 @@ fun TabBar(
     content: @Composable () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().height(56.dp).background(color),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .background(color),
         contentAlignment = Alignment.CenterStart,
     ) {
         content()
@@ -98,7 +102,9 @@ fun MedicoButton(
         enabled = isEnabled,
         shape = MaterialTheme.shapes.medium,
         elevation = ButtonDefaults.elevation(),
-        modifier = modifier.fillMaxWidth().height(48.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp),
     ) {
         Text(
             text = text,
@@ -195,7 +201,7 @@ fun AlertButton(
         enabled = isEnabled,
     ) {
         Text(
-            text = text.toUpperCase(),
+            text = text.uppercase(Locale.getDefault()),
             style = MaterialTheme.typography.subtitle2,
         )
     }
@@ -277,7 +283,8 @@ fun NavigationCell(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable(
                 indication = clickIndication,
                 onClick = onClick,
@@ -289,7 +296,9 @@ fun NavigationCell(
             painter = icon,
             tint = color,
             contentDescription = null,
-            modifier = Modifier.padding(start = 18.dp).size(22.dp),
+            modifier = Modifier
+                .padding(start = 18.dp)
+                .size(22.dp),
         )
         Text(
             text = text,
@@ -309,7 +318,8 @@ fun Space(dp: Dp) {
 @Composable
 fun Separator(modifier: Modifier = Modifier, padding: Dp = 16.dp) {
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .height(1.dp)
             .padding(horizontal = padding)
             .background(ConstColors.gray)
@@ -334,11 +344,14 @@ fun BasicScreen(
     footer: (@Composable BoxScope.() -> Unit)? = null
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colors.primary)
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center).padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (!subtitle.isNullOrEmpty()) {
