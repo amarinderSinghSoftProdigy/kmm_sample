@@ -39,7 +39,7 @@ class InvoicesScope : Scope.Child.TabBar(), Loadable<Invoice> {
     }
 
     fun selectItem(item: Invoice) =
-        EventCollector.sendEvent(Event.Action.Invoices.Select(item))
+        EventCollector.sendEvent(Event.Action.Invoices.Select(item.info.id))
 
     fun setFrom(fromMs: Long) {
         this.dateRange.value = dateRange.value?.copy(fromMs = fromMs) ?: DateRange(fromMs = fromMs)

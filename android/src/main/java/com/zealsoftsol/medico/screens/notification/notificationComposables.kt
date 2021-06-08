@@ -208,15 +208,15 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
                 enabledColor = if (item.selectedAction != null)
                     Color.Transparent
                 else when (item.type) {
-                    NotificationType.SUBSCRIBE_REQUEST, NotificationType.ORDER_REQUEST -> ConstColors.yellow
-                    NotificationType.SUBSCRIBE_DECISION -> ConstColors.lightBlue
+                    NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION -> ConstColors.yellow
+                    NotificationType.ORDER_REQUEST, NotificationType.INVOICE_REQUEST -> ConstColors.lightBlue
                 },
                 contentColor = when (item.selectedAction) {
                     NotificationAction.ACCEPT -> ConstColors.green
                     NotificationAction.DECLINE -> ConstColors.red
                     else -> when (item.type) {
-                        NotificationType.SUBSCRIBE_REQUEST, NotificationType.ORDER_REQUEST -> MaterialTheme.colors.onPrimary
-                        NotificationType.SUBSCRIBE_DECISION -> Color.White
+                        NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION -> MaterialTheme.colors.onPrimary
+                        NotificationType.ORDER_REQUEST, NotificationType.INVOICE_REQUEST -> Color.White
                     }
                 },
                 modifier = Modifier.align(Alignment.BottomEnd),

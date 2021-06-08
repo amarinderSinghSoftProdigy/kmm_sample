@@ -58,7 +58,7 @@ fun OrdersScreen(scope: OrdersScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
-            searchBarEnd = if (scope.type != OrderType.RECEIVED) SearchBarEnd.Filter { scope.toggleFilter() } else null,
+            searchBarEnd = if (scope.type != OrderType.PURCHASE_ORDER) SearchBarEnd.Filter { scope.toggleFilter() } else null,
             icon = Icons.Default.Search,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
@@ -80,8 +80,8 @@ fun OrdersScreen(scope: OrdersScope) {
                 Text(
                     text = stringResource(
                         id = when (scope.type) {
-                            OrderType.RECEIVED -> R.string.new_orders
-                            OrderType.SENT -> R.string.orders
+                            OrderType.PURCHASE_ORDER -> R.string.new_orders
+                            OrderType.ORDERS -> R.string.orders
                             OrderType.HISTORY -> 0
                         }
                     ),

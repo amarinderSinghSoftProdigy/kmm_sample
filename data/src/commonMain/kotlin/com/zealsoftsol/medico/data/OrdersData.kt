@@ -4,16 +4,16 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class OrderType(val path: String) {
-    RECEIVED("/po/"), SENT("/"), HISTORY("/history/");
+    PURCHASE_ORDER("/po/"), ORDERS("/"), HISTORY("/history/");
 }
 
 @Serializable
 data class Order(
-    @SerialName("sbRetailerTradeName")
-    val seasonBoyRetailerName: String? = null,
-    val tradeName: String,
     @SerialName("orderInfo")
     val info: OrderInfo,
+    val tradeName: String,
+    @SerialName("sbRetailerTradeName")
+    val seasonBoyRetailerName: String? = null,
 )
 
 @Serializable
@@ -41,8 +41,7 @@ data class OrderEntry(
 data class OrderResponse(
     @SerialName("orderEntries")
     val entries: List<OrderEntry>,
-    @SerialName("orderInfo")
-    val info: OrderInfo,
+    val order: Order,
     @SerialName("unitInfoData")
     val unitData: UnitData,
 )
@@ -110,16 +109,15 @@ data class InvoiceInfo(
     val date: String,
     @SerialName("invoiceTime")
     val time: String,
-    @SerialName("orderStatus")
-    val total: Total,
     val paymentMethod: PaymentMethod,
+    val total: Total,
 )
 
 @Serializable
 data class InvoiceResponse(
-    @SerialName("b2BUnitData")
+    @SerialName("b2bUnitData")
     val data: B2BData,
-    val invoiceInfo: InvoiceInfo,
+    val invoice: Invoice,
     val invoiceEntries: List<InvoiceEntry>,
 )
 

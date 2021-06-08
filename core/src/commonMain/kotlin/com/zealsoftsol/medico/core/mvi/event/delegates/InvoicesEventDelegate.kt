@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -24,7 +25,7 @@ internal class InvoicesEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Invoices) = when (event) {
         is Event.Action.Invoices.Load -> loadInvoices(event.isFirstLoad)
         is Event.Action.Invoices.Search -> searchInvoices(event.value)
-        is Event.Action.Invoices.Select -> selectInvoice(event.item)
+        is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId)
         is Event.Action.Invoices.Download -> download()
     }
 
@@ -56,15 +57,15 @@ internal class InvoicesEventDelegate(
         }
     }
 
-    private suspend fun selectInvoice(item: Invoice) {
-        navigator.withScope<InvoicesScope> {
+    private suspend fun selectInvoice(invoiceId: String) {
+        navigator.withScope<Scopable> {
             val (result, isSuccess) = withProgress {
-                networkOrdersScope.getInvoice(userRepo.requireUser().unitCode, item.info.id)
+                networkOrdersScope.getInvoice(userRepo.requireUser().unitCode, invoiceId)
             }
             if (isSuccess && result != null) {
                 setScope(
                     ViewInvoiceScope(
-                        DataSource(item),
+                        DataSource(result.invoice),
                         DataSource(result.data),
                         DataSource(result.invoiceEntries),
                     )

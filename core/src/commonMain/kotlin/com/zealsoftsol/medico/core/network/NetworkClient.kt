@@ -445,7 +445,7 @@ class NetworkClient(
 
     override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
         ktorDispatcher {
-            client.get<SimpleResponse<NotificationDetails>>("${baseUrl.url}/b2bapp/notification/$id/detail") {
+            client.get<SimpleResponse<NotificationDetails>>("${baseUrl.url}/notifications/$id/detail") {
                 withMainToken()
             }.getWrappedBody()
         }

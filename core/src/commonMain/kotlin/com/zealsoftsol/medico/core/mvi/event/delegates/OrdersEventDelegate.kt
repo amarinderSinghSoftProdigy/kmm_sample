@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
@@ -32,7 +33,7 @@ internal class OrdersEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Orders) = when (event) {
         is Event.Action.Orders.Load -> loadOrders(event.isFirstLoad)
         is Event.Action.Orders.Search -> searchOrders(event.value)
-        is Event.Action.Orders.Select -> selectOrder(event.item)
+        is Event.Action.Orders.Select -> selectOrder(event.orderId, event.type)
         is Event.Action.Orders.ViewOrderAction -> viewOrderAction(
             event.action,
             event.fromNotification,
@@ -73,16 +74,16 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private suspend fun selectOrder(item: Order) {
-        navigator.withScope<OrdersScope> {
+    private suspend fun selectOrder(orderId: String, type: OrderType) {
+        navigator.withScope<Scopable> {
             val (result, isSuccess) = withProgress {
-                networkOrdersScope.getOrder(it.type, userRepo.requireUser().unitCode, item.info.id)
+                networkOrdersScope.getOrder(type, userRepo.requireUser().unitCode, orderId)
             }
             if (isSuccess && result != null) {
                 setScope(
                     ViewOrderScope(
-                        canEdit = it.type == OrderType.RECEIVED,
-                        DataSource(item),
+                        canEdit = type == OrderType.PURCHASE_ORDER,
+                        DataSource(result.order),
                         DataSource(result.unitData.data),
                         DataSource(result.entries)
                     )
@@ -195,7 +196,7 @@ internal class OrdersEventDelegate(
 
             if (result != null && isSuccess) {
                 scope.value.dismissBottomSheet()
-                it.order.value = it.order.value.copy(info = result.info)
+                it.order.value = result.order
                 it.checkedEntries.value = emptyList()
                 it.actions.value = ViewOrderScope.Action.onlyAccept
                 it.entries.value = result.entries
