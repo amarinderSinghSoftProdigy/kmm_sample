@@ -20,7 +20,7 @@ struct NotificationDetailsScreen: View {
                             fontSize: 20,
                             multilineTextAlignment: .leading)
             
-            VStack(alignment: .leading, spacing: 45) {
+            VStack(alignment: .leading, spacing: 32) {
                 switch self.scope {
                 case is NotificationScopePreviewSubscriptionRequest:
                     SubscriptionDetails(details: scope.details) {
@@ -30,19 +30,22 @@ struct NotificationDetailsScreen: View {
                     EmptyView()
                 }
                 
-                HStack {
-                    ForEach(scope.notification.actions, id: \.self) { action in
-                        MedicoButton(localizedStringKey: action.actionStringId,
-                                     height: 35,
-                                     fontSize: 12,
-                                     fontWeight: .bold,
-                                     buttonColor: action.isHighlighted ? .yellow : .navigationBar) {
-                            scope.selectAction(action: action)
+                if scope.notification.actions.count > 0 {
+                    HStack {
+                        ForEach(scope.notification.actions, id: \.self) { action in
+                            MedicoButton(localizedStringKey: action.actionStringId,
+                                         height: 35,
+                                         fontSize: 12,
+                                         fontWeight: .bold,
+                                         buttonColor: action.isHighlighted ? .yellow : .navigationBar) {
+                                scope.selectAction(action: action)
+                            }
                         }
                     }
                 }
             }
             .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(AppColor.white.color.cornerRadius(5))
             .scrollView()
             .textFieldsModifiers()
@@ -75,13 +78,13 @@ struct NotificationDetailsScreen: View {
             guard let details = self.details.value else { return AnyView(EmptyView()) }
             
             return AnyView(
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 24) {
                     HStack(alignment: .top, spacing: 35) {
                         UserNameImage(username: details.customerData.tradeName)
                             .frame(width: 96, height: 96)
                         
                         VStack(alignment: .leading, spacing: 5) {
-                            SmallAddressView(location: details.customerData.customerAddressData.location)
+                            SmallAddressView(location: details.customerData.addressData.location)
                             
                             Text("25 km from you")
                                 .medicoText(color: .lightBlue,
@@ -94,7 +97,7 @@ struct NotificationDetailsScreen: View {
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 5) {
+                    VStack(alignment: .leading, spacing: 12) {
                         let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(details.customerData.phoneNumber)
                         UserInfoItemDetailsPanel(titleKey: "phone", valueKey: formattedPhone)
                         
@@ -105,51 +108,66 @@ struct NotificationDetailsScreen: View {
                         HStack(alignment: .top) {
                             LocalizedText(localizationKey: "payment_method",
                                           multilineTextAlignment: .leading)
-                                .padding(.top, 6)
+                                .padding(.top, details.isReadOnly ? 0 : 6)
                             
-                            Spacer()
-                            
-                            PickerSelector(placeholder: "",
-                                           chosenElement: details.option.paymentMethod.serverValue,
-                                           data: self.getPaymentMethodOptions(),
-                                           height: 30,
-                                           chosenOptionTextWeight: .semiBold) {
-                                let paymentMethod: DataPaymentMethod = $0 == DataPaymentMethod.credit.serverValue ?
-                                    .credit : .cash
-                                
-                                handleOptionChange(withPaymentMethod: paymentMethod,
-                                                   withDiscountRate: details.option.discountRate,
-                                                   withCreditDays: details.option.creditDays)
+                            if details.isReadOnly {
+                                LocalizedText(localizationKey: details.option.paymentMethod.serverValue,
+                                              textWeight: .medium,
+                                              multilineTextAlignment: .leading)
                             }
-                            .background(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(AppColor.navigationBar.color)
-                            )
-                            .frame(width: 136)
-                            .allowsHitTesting(!details.isReadOnly)
+                            else {
+                                Spacer()
+                                
+                                PickerSelector(placeholder: "",
+                                               chosenElement: details.option.paymentMethod.serverValue,
+                                               data: self.getPaymentMethodOptions(),
+                                               height: 30,
+                                               chosenOptionTextWeight: .semiBold) {
+                                    let paymentMethod: DataPaymentMethod = $0 == DataPaymentMethod.credit.serverValue ?
+                                        .credit : .cash
+                                    
+                                    handleOptionChange(withPaymentMethod: paymentMethod,
+                                                       withDiscountRate: details.option.discountRate,
+                                                       withCreditDays: details.option.creditDays)
+                                }
+                                .background(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .stroke(AppColor.navigationBar.color)
+                                )
+                                .frame(width: 136)
+                            }
                         }
                         
-                        let text = Binding(get: { details.option.discountRate },
-                                           set: {
-                                            handleOptionChange(withPaymentMethod: details.option.paymentMethod,
-                                                               withDiscountRate: $0,
-                                                               withCreditDays: details.option.creditDays)
-                                           })
-                        NumberTextFieldPanel(titleLocalizedKey: "discount_rate",
-                                             text: text)
-                            .allowsHitTesting(!details.isReadOnly)
-                        
-                        if details.option.paymentMethod == .credit {
-                            let text = Binding(get: { details.option.creditDays },
+                        if details.isReadOnly {
+                            UserInfoItemDetailsPanel(titleKey: "discount_rate:", valueKey: details.option.discountRate)
+                        }
+                        else {
+                            let text = Binding(get: { details.option.discountRate },
                                                set: {
                                                 handleOptionChange(withPaymentMethod: details.option.paymentMethod,
-                                                                    withDiscountRate: details.option.discountRate,
-                                                                    withCreditDays: $0)
+                                                                   withDiscountRate: $0,
+                                                                   withCreditDays: details.option.creditDays)
                                                })
                             
-                            NumberTextFieldPanel(titleLocalizedKey: "credit_days",
+                            NumberTextFieldPanel(titleLocalizedKey: "discount_rate:",
                                                  text: text)
-                                .allowsHitTesting(!details.isReadOnly)
+                        }
+                        
+                        if details.option.paymentMethod == .credit {
+                            if details.isReadOnly {
+                                UserInfoItemDetailsPanel(titleKey: "credit_days:", valueKey: details.option.creditDays)
+                            }
+                            else {
+                                let text = Binding(get: { details.option.creditDays },
+                                                   set: {
+                                                    handleOptionChange(withPaymentMethod: details.option.paymentMethod,
+                                                                        withDiscountRate: details.option.discountRate,
+                                                                        withCreditDays: $0)
+                                                   })
+                                
+                                NumberTextFieldPanel(titleLocalizedKey: "credit_days:",
+                                                     text: text)
+                            }
                         }
                     }
                 }
@@ -161,7 +179,7 @@ struct NotificationDetailsScreen: View {
                 UserInfoItemDetailsPanel(titleKey: "email_address:",
                                          valueKey: details.value?.customerData.email ?? "")
                 UserInfoItemDetailsPanel(titleKey: "address:",
-                                         valueKey: details.value?.customerData.customerAddressData.address ?? "")
+                                         valueKey: details.value?.customerData.addressData.address ?? "")
                 
                 let formattedPhone = PhoneNumberUtil.shared.getFormattedPhoneNumber(details.value?.customerData.phoneNumber ?? "")
                 UserInfoItemDetailsPanel(titleKey: "phone",

@@ -25,12 +25,12 @@ struct MedicoText: ViewModifier {
     
     init(textWeight: TextWeight = .regular,
          fontSize: CGFloat = 14,
-         color: Color = AppColor.darkBlue.color,
+         color: AppColor = .darkBlue,
          multilineTextAlignment: TextAlignment = .center) {
         self.textWeight = textWeight
         self.fontSize = fontSize
         
-        self.color = color
+        self.color = color.color
         
         self.multilineTextAlignment = multilineTextAlignment
     }

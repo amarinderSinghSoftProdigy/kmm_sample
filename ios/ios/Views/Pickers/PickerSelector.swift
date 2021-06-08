@@ -21,6 +21,9 @@ struct PickerSelector: View {
     
     let onChange: (String) -> Void
     
+    let backgroundColor: AppColor
+    let chevronColor: AppColor
+    
     @State private var expanded: Bool = false
     
     var body: some View {
@@ -46,7 +49,7 @@ struct PickerSelector: View {
                         Spacer()
                         
                         Image(systemName: "chevron.right")
-                            .foregroundColor(appColor: .lightGrey)
+                            .foregroundColor(appColor: chevronColor)
                             .rotationEffect(.degrees(expanded ? 90 : 0))
                             .animation(.linear(duration: 0.2))
                     }
@@ -54,8 +57,6 @@ struct PickerSelector: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: height)
-                .background(RoundedRectangle(cornerRadius: 8)
-                                .fill(appColor: .white))
                 
                 if self.expanded {
                     getOptionsViews()
@@ -63,6 +64,8 @@ struct PickerSelector: View {
                                         .combined(with: AnyTransition.offset(y: -height)))
                 }
             }
+            .background(RoundedRectangle(cornerRadius: 8)
+                            .fill(appColor: backgroundColor))
             .animation(.linear(duration: 0.2))
         }
     }
@@ -73,6 +76,8 @@ struct PickerSelector: View {
          height: CGFloat = 50,
          optionsHeight: CGFloat? = nil,
          chosenOptionTextWeight: TextWeight = .regular,
+         backgroundColor: AppColor = .white,
+         chevronColor: AppColor = .lightGrey,
          onChange: @escaping (String) -> Void) {
         self.placeholder = placeholder
         self.chosenElement = chosenElement
@@ -81,6 +86,9 @@ struct PickerSelector: View {
         self.height = height
         self.optionsHeight = optionsHeight ?? height
         self.chosenOptionTextWeight = chosenOptionTextWeight
+        
+        self.backgroundColor = backgroundColor
+        self.chevronColor = chevronColor
         
         self.onChange = onChange
     }

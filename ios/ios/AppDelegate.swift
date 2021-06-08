@@ -102,7 +102,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         
         notificationsManager.handleNotificationTap(withUserInfo: userInfo)
-        notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+
+        if userInfo[NotificationsManager.isLocalNotificationKey] as? Bool != true {
+            notificationsManager.handleNotificationReceive(withUserInfo: userInfo)
+        }
 
         completionHandler()
     }

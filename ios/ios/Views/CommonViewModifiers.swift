@@ -133,3 +133,59 @@ struct CustomPlaceholderTextField<Content: View>: View {
         self.placeholder = placeholder()
     }
 }
+
+struct ExpandableViewViewModifier<Header: View>: ViewModifier {
+    private let cornerRadius: CGFloat = 4
+    
+    let header: Header
+    @Binding var expanded: Bool
+    
+    func body(content: Content) -> some View {
+        VStack {
+            HStack(spacing: 16) {
+                header
+                
+                Button(action: { expanded.toggle() }) {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(appColor: .darkBlue)
+                        .opacity(0.54)
+                        .rotationEffect(.degrees(expanded ? -90 : 90))
+                        .animation(.linear(duration: 0.2))
+                        .padding(.trailing, 18)
+                }
+            }
+            .strokeBorder(.darkBlue,
+                          borderOpacity: 0.12,
+                          fill: .darkBlue,
+                          fillOpacity: 0.04,
+                          cornerRadius: cornerRadius,
+                          corners: expanded ? [.topLeft, .topRight] : .allCorners)
+            
+            if expanded {
+                content
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+            }
+        }
+        .strokeBorder(.darkBlue,
+                      borderOpacity: 0.12,
+                      fill: .white,
+                      cornerRadius: cornerRadius)
+    }
+}
+
+struct NoHitTesting: ViewModifier {
+    func body(content: Content) -> some View {
+        SwiftUIWrapper { content }.allowsHitTesting(false)
+    }
+    
+    private struct SwiftUIWrapper<T: View>: UIViewControllerRepresentable {
+        let content: () -> T
+        
+        func makeUIViewController(context: Context) -> UIHostingController<T> {
+            UIHostingController(rootView: content())
+        }
+      
+        func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) { }
+    }
+}

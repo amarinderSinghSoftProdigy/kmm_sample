@@ -70,13 +70,13 @@ struct EntityInfoBottomSheet: ViewModifier {
                         self.gstinAndPanFields
                         
                         UserInfoItemDetailsPanel(titleKey: "payment_method", valueKey: subscriptionData.paymentMethod.serverValue)
-                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: String(subscriptionData.orders))
+                        UserInfoItemDetailsPanel(titleKey: "orders:", valueKey: String(subscriptionData.orders))
                     }
                     
                     else if let seasonBoyRetailerData = entityInfo.seasonBoyRetailerData {
                         self.gstinAndPanFields
                         
-                        UserInfoItemDetailsPanel(titleKey: "orders",
+                        UserInfoItemDetailsPanel(titleKey: "orders:",
                                                  valueKey: String(seasonBoyRetailerData.orders))
                     }
                     
@@ -149,7 +149,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                     UserInfoItemDetailsPanel(titleKey: "address:", valueKey: seasonBoy.geoData.fullAddress())
                     
                     if let orders = seasonBoy.subscriptionData?.orders {
-                        UserInfoItemDetailsPanel(titleKey: "orders", valueKey: String(orders))
+                        UserInfoItemDetailsPanel(titleKey: "orders:", valueKey: String(orders))
                     }
                     
                     if let retailers = seasonBoy.seasonBoyData?.retailers {

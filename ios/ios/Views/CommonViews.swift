@@ -309,3 +309,67 @@ struct CheckBoxView: View {
         }
     }
 }
+
+struct TabOptionView: View {
+    let localizationKey: String
+    
+    let isSelected: Bool
+    let selectedColor: AppColor
+    
+    let itemsNumber: Int
+    
+    var body: some View {
+        let tabBackgroundColor: AppColor = isSelected ? selectedColor : .clear
+        
+        HStack(spacing: 7) {
+            LocalizedText(localizationKey: localizationKey,
+                          textWeight: isSelected ? .semiBold : .medium,
+                          color: isSelected ? .white : .darkBlue)
+
+            if isSelected && itemsNumber > 0 {
+                Text(String(itemsNumber))
+                    .medicoText(textWeight: .bold,
+                                color: AppColor.yellow)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 7)
+        .background(tabBackgroundColor.color.cornerRadius(7))
+    }
+    
+    init(localizationKey: String,
+         isSelected: Bool,
+         selectedColor: AppColor = .lightBlue,
+         itemsNumber: Int) {
+        self.localizationKey = localizationKey
+        
+        self.isSelected = isSelected
+        self.selectedColor = selectedColor
+        
+        self.itemsNumber = itemsNumber
+    }
+}
+
+struct CheckBox: View {
+    var selected: Binding<Bool>
+    
+    var body: some View {
+        Group {
+            if selected.wrappedValue {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(appColor: .lightBlue)
+                    
+            }
+            else {
+                Circle()
+                    .stroke(lineWidth: 2)
+                    .foregroundColor(appColor: .darkBlue)
+            }
+        }
+        .onTapGesture {
+            selected.wrappedValue.toggle()
+        }
+    }
+}

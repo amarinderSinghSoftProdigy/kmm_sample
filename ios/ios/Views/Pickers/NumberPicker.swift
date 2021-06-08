@@ -9,36 +9,79 @@
 import SwiftUI
 
 struct NumberPicker: View {
-    let quantity: Int
+    @State private var longPressTimer: Timer?
     
-    let onQuantityIncrease: () -> ()
-    let onQuantityDecrease: () -> ()
+    let quantity: Int
+    let maxQuantity: Int
+    
+    let onQuantityIncrease: (_ isLongPress: Bool) -> ()
+    let onQuantityDecrease: (_ isLongPress: Bool) -> ()
+    
+    let longPressEnabled: Bool
     
     var body: some View {
-        HStack(spacing: 20) {
-            Button(action: { onQuantityDecrease() }) {
-                Group {
-                    Image(systemName: "minus")
-                        .resizable()
-                        .foregroundColor(appColor: quantity > 0 ? .lightBlue : .grey3)
-                        .font(Font.title.weight(.semibold))
-                        .frame(width: 14, height: 2)
-                }
-                .frame(width: 14, height: 14)
-            }
-            .disabled(quantity <= 0)
+        HStack(spacing: 15) {
+            self.getActionButton(withImageName: "minus",
+                                 disabled: quantity <= 0,
+                                 for: self.onQuantityDecrease)
             
             Text(String(quantity))
                 .medicoText(textWeight: .bold,
                             fontSize: 22)
+                .frame(width: 40)
             
-            Button(action: { onQuantityIncrease() }) {
-                Image(systemName: "plus")
-                    .resizable()
-                    .foregroundColor(appColor: .lightBlue)
-                    .font(Font.title.weight(.semibold))
-                    .frame(width: 14, height: 14)
-            }
+            self.getActionButton(withImageName: "plus",
+                                 disabled: quantity > maxQuantity,
+                                 for: self.onQuantityIncrease)
+        }
+    }
+    
+    init(quantity: Int,
+         maxQuantity: Int = .max,
+         onQuantityIncrease: @escaping (_ isLongPress: Bool) -> (),
+         onQuantityDecrease: @escaping (_ isLongPress: Bool) -> (),
+         longPressEnabled: Bool = false
+    ) {
+        self.quantity = quantity
+        self.maxQuantity = maxQuantity
+        
+        self.onQuantityIncrease = onQuantityIncrease
+        self.onQuantityDecrease = onQuantityDecrease
+        
+        self.longPressEnabled = longPressEnabled
+    }
+    
+    private func getActionButton(withImageName imageName: String,
+                                 disabled: Bool = false,
+                                 for action: @escaping (_ isLongPress: Bool) -> ()) -> some View {
+        Button(action: { }) {
+            Image(systemName: imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundColor(appColor: !disabled ? .lightBlue : .grey3)
+                .font(Font.title.weight(.bold))
+                .frame(width: 14, height: 14)
+                .background(appColor: .white)
+                .onTapGesture {
+                    action(false)
+                }
+                .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
+                    if inProgress && longPressEnabled {
+                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(true) })
+                    }
+                    else {
+                        self.longPressTimer?.invalidate()
+                    }
+                }) {
+                    self.longPressTimer?.invalidate()
+                }
+        }
+        .disabled(disabled)
+    }
+    
+    private func getLongPressTimer(handleTimeElapse: @escaping () -> ()) -> Timer {
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
+            handleTimeElapse()
         }
     }
 }

@@ -58,6 +58,7 @@ struct SearchBar: View {
                                       fontSize: style.fontSize,
                                       color: style.fontColor,
                                       multilineTextAlignment: .leading)
+                            .opacity(style.placeholderOpacity)
                     }
                     .disableAutocorrection(true)
                     .disabled(isDisabled)
@@ -137,6 +138,13 @@ struct SearchBar: View {
         case small
         case standart
         
+        case custom(spacing: CGFloat = 15,
+                    height: CGFloat = 48,
+                    fontColor: AppColor = .darkBlue,
+                    fontSize: CGFloat = 15,
+                    fontWeight: TextWeight = .bold,
+                    placeholderOpacity: Double = 1)
+        
         var spacing: CGFloat {
             switch self {
             case .small:
@@ -144,6 +152,9 @@ struct SearchBar: View {
                 
             case .standart:
                 return 15
+                
+            case .custom(let spacing, _, _, _, _, _):
+                return spacing
             }
         }
         
@@ -154,6 +165,9 @@ struct SearchBar: View {
                 
             case .standart:
                 return 48
+                
+            case .custom(_, let height, _, _, _, _):
+                return height
             }
         }
         
@@ -164,6 +178,9 @@ struct SearchBar: View {
                 
             case .standart:
                 return .darkBlue
+                
+            case .custom(_, _, let fontColor, _, _, _):
+                return fontColor
             }
         }
         
@@ -174,6 +191,9 @@ struct SearchBar: View {
                 
             case .standart:
                 return 15
+                
+            case .custom(_, _, _, let fontSize, _, _):
+                return fontSize
             }
         }
         
@@ -184,6 +204,20 @@ struct SearchBar: View {
                 
             case .standart:
                 return .bold
+                
+            case .custom(_, _, _, _, let fontWeight, _):
+                return fontWeight
+            }
+        }
+        
+        var placeholderOpacity: Double {
+            switch self {
+            case .small,
+                 .standart:
+                return 1
+                
+            case .custom(_, _, _, _, _, let placeholderOpacity):
+                return placeholderOpacity
             }
         }
     }

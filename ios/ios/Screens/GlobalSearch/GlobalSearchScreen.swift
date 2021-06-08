@@ -19,7 +19,6 @@ struct GlobalSearchScreen: View {
     
     @ObservedObject var autoComplete: SwiftDataSource<NSArray>
 
-    @ObservedObject var products: SwiftDataSource<NSArray>
     @ObservedObject var productSearch: SwiftDataSource<NSString>
     
     var body: some View {
@@ -43,7 +42,9 @@ struct GlobalSearchScreen: View {
             screenName = "autoComplete"
         }
         else {
-            view = AnyView(self.productsView)
+            view = AnyView(
+                ProductsView(scope: self.scope)
+            )
             screenName = "ProductsView"
         }
 
@@ -61,15 +62,18 @@ struct GlobalSearchScreen: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         
         self.autoComplete = SwiftDataSource(dataSource: scope.autoComplete)
-
-        self.products = SwiftDataSource(dataSource: scope.products)
+        
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
     }
     
-    private var productsView: some View {
-        let productsCount = self.products.value?.count ?? 0
-
-        return AnyView (
+    private struct ProductsView: View {
+        let scope: BaseSearchScope
+        
+        @ObservedObject var products: SwiftDataSource<NSArray>
+        
+        var body: some View {
+            let productsCount = self.products.value?.count ?? 0
+            
             TransparentList(data: self.products,
                             dataType: DataProductSearch.self,
                             listName: .globalSearchProducts,
@@ -86,7 +90,13 @@ struct GlobalSearchScreen: View {
                 )
             }
             .padding(.horizontal, 16)
-        )
+        }
+        
+        init(scope: BaseSearchScope) {
+            self.scope = scope
+            
+            self.products = .init(dataSource: scope.products)
+        }
     }
     
     private struct AutoCompleteView: View {
@@ -382,6 +392,11 @@ struct FiltersSection: View {
                     }
             }
             
+            SortSection(selectedSortOption: .init(dataSource: scope.selectedSortOption),
+                        sortOptions: .init(dataSource: scope.sortOptions)) {
+                scope.selectSortOption(option: $0)
+            }
+            
             if let filters = self.filters.value as? [DataFilter] {
                 ForEach(filters, id: \.self.name) { filter in
                     if let filtersSearches = self.filterSearches.value as? [String: String] {
@@ -407,5 +422,48 @@ struct FiltersSection: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
+    }
+    
+    private struct SortSection: View {
+        @ObservedObject var selectedSortOption: SwiftDataSource<DataSortOption>
+        @ObservedObject var sortOptions: SwiftDataSource<NSArray>
+        
+        let onOptionSelect: (DataSortOption?) -> ()
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 15) {
+                AppColor.lightGrey.color
+                    .frame(height: 1)
+                
+                HStack {
+                    LocalizedText(localizationKey: "sort_by",
+                                  textWeight: .semiBold,
+                                  fontSize: 16)
+                    
+                    Spacer()
+                    
+                    LocalizedText(localizationKey: "clear",
+                                  textWeight: .medium,
+                                  fontSize: 16,
+                                  color: .grey3)
+                        .onTapGesture {
+                            onOptionSelect(nil)
+                        }
+                }
+                
+                if let sortOptions = self.sortOptions.value as? [DataSortOption] {
+                    FlexibleView(data: sortOptions,
+                                 spacing: 8,
+                                 alignment: .leading) { option in
+                        FilterOption(option: .StringValue(value: option.name,
+                                                          isSelected: option == selectedSortOption.value,
+                                                          isVisible: true))
+                            .onTapGesture {
+                                self.onOptionSelect(option)
+                            }
+                    }
+                }
+            }
+        }
     }
 }

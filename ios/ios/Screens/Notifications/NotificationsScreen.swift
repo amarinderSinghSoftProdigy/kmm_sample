@@ -12,11 +12,13 @@ import SwiftUI
 struct NotificationsScreen: View {
     let scope: NotificationScope.All
     
+    @ObservedObject var currentFilter: SwiftDataSource<DataNotificationFilter>
+    
     @ObservedObject var notifications: SwiftDataSource<NSArray>
     @ObservedObject var notificationsSearch: SwiftDataSource<NSString>
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             SearchBar(placeholderLocalizationKey: "notifications",
                       searchText: notificationsSearch.value,
                       leadingButton: .init(emptyTextButton: .custom(AnyView(self.searchBarLeadingButton)),
@@ -25,6 +27,8 @@ struct NotificationsScreen: View {
                                             enteredTextButton: .clear)) { value, _ in
                 scope.search(value: value)
             }
+            
+            self.filterView
             
             TransparentList(data: notifications,
                             dataType: DataNotificationData.self,
@@ -59,11 +63,42 @@ struct NotificationsScreen: View {
         }
     }
     
+    private var filterView: some View {
+        HStack {
+            ForEach(scope.allFilters, id: \.self) { filter in
+                FilterView(filter: filter,
+                           isSelected: filter == self.currentFilter.value)
+                    .onTapGesture {
+                        scope.selectFilter(filter: filter)
+                    }
+            }
+        }
+    }
+    
     init(scope: NotificationScope.All) {
         self.scope = scope
         
+        self.currentFilter = SwiftDataSource(dataSource: scope.filter)
+        
         self.notifications = SwiftDataSource(dataSource: scope.items)
         self.notificationsSearch = SwiftDataSource(dataSource: scope.searchText)
+    }
+    
+    private struct FilterView: View {
+        let filter: DataNotificationFilter
+        let isSelected: Bool
+        
+        var body: some View {
+            LocalizedText(localizationKey: filter.stringId,
+                          textWeight: .bold,
+                          fontSize: 12,
+                          color: isSelected ? .white : .lightBlue)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 8)
+                .strokeBorder(.lightBlue,
+                              fill: isSelected ? .lightBlue : .primary,
+                              cornerRadius: 100)
+        }
     }
     
     private struct NotificationView: View {

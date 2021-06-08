@@ -183,7 +183,7 @@ class ConfirmOrderScope(
     }
 }
 
-internal interface SelectableOrderEntry : Scopable {
+interface SelectableOrderEntry : Scopable {
     val order: DataSource<Order>
     val checkedEntries: DataSource<List<OrderEntry>>
     val canEdit: Boolean
