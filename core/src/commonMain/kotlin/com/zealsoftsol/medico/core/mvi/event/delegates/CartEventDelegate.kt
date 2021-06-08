@@ -166,7 +166,7 @@ internal class CartEventDelegate(
                 it.dismissNotification()
                 val response = withProgress { cartRepo.submitCart(userRepo.requireUser().unitCode) }
                 if (response != null) {
-                    setScope(CartOrderCompletedScope(response, it.items.flow.value, response.total))
+                    setScope(CartOrderCompletedScope(response, response.total))
                 } else {
                     setHostError(ErrorCode())
                 }

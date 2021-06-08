@@ -85,7 +85,6 @@ class CartPreviewScope(
 
 class CartOrderCompletedScope(
     val order: CartSubmitResponse,
-    val items: List<SellerCart>,
     val total: Total,
 ) : Scope.Child.TabBar() {
 
