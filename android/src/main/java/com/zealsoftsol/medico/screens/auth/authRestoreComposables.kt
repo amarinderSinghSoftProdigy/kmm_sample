@@ -36,7 +36,7 @@ fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
                 hint = stringResource(id = R.string.phone_number),
                 text = phoneState.value,
                 onValueChange = { scope.changePhoneNumber(it) },
-            ) && phoneState.value.isNotEmpty()
+            ) || phoneState.value.isEmpty()
         },
         buttonText = stringResource(id = R.string.get_code),
         onButtonClick = { scope.sendOtp(phoneState.value.filter { it.isDigit() }) },

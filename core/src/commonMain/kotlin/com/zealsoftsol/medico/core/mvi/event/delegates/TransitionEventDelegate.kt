@@ -4,11 +4,12 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
@@ -22,6 +23,8 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.utils.TapModeHelper
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -32,6 +35,7 @@ internal class TransitionEventDelegate(
     private val userRepo: UserRepo,
     private val notificationRepo: NotificationRepo,
     private val cartRepo: CartRepo,
+    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Transition>(navigator) {
 
     override suspend fun handleEvent(event: Event.Transition) {
@@ -116,11 +120,6 @@ internal class TransitionEventDelegate(
 //                        )
 //                    )
 //                }
-                is Event.Transition.CloseNotification -> withScope<CommonScope.WithNotifications>(
-                    forceSafe = true
-                ) {
-                    it.notifications.value = null
-                }
                 is Event.Transition.Notifications -> setScope(
                     NotificationScope.All()
                 )
@@ -131,7 +130,20 @@ internal class TransitionEventDelegate(
                     CartScope(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
+                        tapModeHelper = tapModeHelper,
                     )
+                )
+                is Event.Transition.Orders -> setScope(
+                    OrdersScope(OrderType.ORDERS)
+                )
+                is Event.Transition.NewOrders -> setScope(
+                    OrdersScope(OrderType.PURCHASE_ORDER)
+                )
+                is Event.Transition.OrdersHistory -> setScope(
+                    OrdersScope(OrderType.HISTORY)
+                )
+                is Event.Transition.Invoices -> setScope(
+                    InvoicesScope()
                 )
             }
         }

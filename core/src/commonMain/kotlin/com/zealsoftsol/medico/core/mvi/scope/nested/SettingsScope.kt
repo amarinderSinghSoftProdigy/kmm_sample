@@ -6,7 +6,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
-import com.zealsoftsol.medico.data.CustomerAddressData
+import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(),
@@ -51,7 +51,7 @@ sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class Profile(val user: User) : SettingsScope("personal_profile")
 
-    class Address(val addressData: CustomerAddressData) : SettingsScope("address") {
+    class Address(val addressData: AddressData) : SettingsScope("address") {
 
         fun openMap(): Boolean = TODO("open map")
     }

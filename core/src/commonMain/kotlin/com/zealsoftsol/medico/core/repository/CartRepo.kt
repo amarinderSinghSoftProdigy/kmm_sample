@@ -5,7 +5,9 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SellerCart
@@ -30,10 +32,10 @@ class CartRepo(
 
     suspend fun addCartItem(
         unitCode: String,
-        sellerUnitCode: String,
+        sellerUnitCode: String?,
         productCode: String,
         buyingOption: BuyingOption,
-        id: CartIdentifier,
+        id: CartIdentifier?,
         quantity: Int,
     ) = cartStoresScope.addCartEntry(
         CartRequest(
@@ -93,11 +95,30 @@ class CartRepo(
         unitCode: String,
     ) = cartStoresScope.deleteCart(unitCode, cartId).also {
         if (it.isSuccess) {
-            cartId = ""
-            entries.value = emptyList()
-            total.value = null
+            clearCartLocally()
         }
     }.entity
+
+    suspend fun confirmCart(unitCode: String): List<SellerCart>? {
+        val response = cartStoresScope.confirmCart(CartOrderRequest(cartId, unitCode)).entity
+        val error =
+            Response.Wrapped(response?.cartData, response?.cartData != null).handleResponse()
+        return if (error == null) emptyList() else null
+    }
+
+    suspend fun submitCart(unitCode: String): CartSubmitResponse? {
+        val response = cartStoresScope.submitCart(CartOrderRequest(cartId, unitCode)).entity
+        if (response != null) {
+            clearCartLocally()
+        }
+        return response
+    }
+
+    private fun clearCartLocally() {
+        cartId = ""
+        entries.value = emptyList()
+        total.value = null
+    }
 
     private inline fun Response.Wrapped<CartData>.handleResponse(): ErrorCode? {
         return if (isSuccess && entity != null) {

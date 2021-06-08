@@ -3,19 +3,30 @@ package com.zealsoftsol.medico.core.network
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
+import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -84,12 +95,15 @@ interface NetworkScope {
         suspend fun buyProductSelectSeasonBoyRetailer(
             productCode: String,
             unitCode: String,
-            sellerUnitCode: String
+            sellerUnitCode: String?,
         ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse>
+
+        suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse>
     }
 
     interface Search : NetworkScope {
         suspend fun search(
+            sort: String?,
             query: List<Pair<String, String>>,
             unitCode: String?,
             latitude: Double,
@@ -117,7 +131,8 @@ interface NetworkScope {
         suspend fun sendFirebaseToken(token: String): Boolean
         suspend fun getNotifications(
             search: String,
-            pagination: Pagination
+            filter: NotificationFilter,
+            pagination: Pagination,
         ): Response.Wrapped<PaginatedData<NotificationData>>
 
         suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
@@ -151,6 +166,43 @@ interface NetworkScope {
             cartId: String,
             sellerUnitCode: String
         ): Response.Wrapped<CartData>
+
+        suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData>
+        suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse>
+    }
+
+    interface Orders : NetworkScope {
+
+        suspend fun getOrders(
+            type: OrderType,
+            unitCode: String,
+            search: String,
+            from: Long?,
+            to: Long?,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Order>>
+
+        suspend fun getOrder(
+            type: OrderType,
+            unitCode: String,
+            orderId: String
+        ): Response.Wrapped<OrderResponse>
+
+        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse>
+        suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode>
+
+        suspend fun getInvoices(
+            unitCode: String,
+            search: String,
+            from: Long?,
+            to: Long?,
+            pagination: Pagination,
+        ): Response.Wrapped<PaginatedData<Invoice>>
+
+        suspend fun getInvoice(
+            unitCode: String,
+            invoiceId: String
+        ): Response.Wrapped<InvoiceResponse>
     }
 
     interface Help : NetworkScope {

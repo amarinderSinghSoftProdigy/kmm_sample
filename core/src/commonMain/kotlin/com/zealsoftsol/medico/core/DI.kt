@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
 import com.zealsoftsol.medico.core.network.mock.MockHelpScope
 import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockNotificationScope
+import com.zealsoftsol.medico.core.network.mock.MockOrderScope
 import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
 import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
@@ -22,6 +23,9 @@ import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
+import com.zealsoftsol.medico.core.utils.TapModeHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
 import org.kodein.di.bind
@@ -124,6 +128,13 @@ fun startKodein(
             MockHelpScope()
         }
     }
+    bind<NetworkScope.Orders>() with singleton {
+        if (!useMocks) {
+            instance<NetworkClient>()
+        } else {
+            MockOrderScope()
+        }
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -152,6 +163,8 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
+            instance(),
         )
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }
@@ -159,9 +172,10 @@ fun startKodein(
     bind<FirebaseMessagingCenter>() with singleton {
         FirebaseMessagingCenter(
             instance(),
-            instance()
+            instance(),
         )
     }
+    bind<TapModeHelper>() with singleton { TapModeHelper(CoroutineScope(SupervisorJob() + compatDispatcher)) }
 }.also {
     directDI = it.direct
 }

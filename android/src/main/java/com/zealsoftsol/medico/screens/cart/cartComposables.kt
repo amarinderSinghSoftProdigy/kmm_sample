@@ -36,8 +36,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,6 +57,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.TapMode
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -110,18 +110,18 @@ fun CartScreen(scope: CartScope) {
                         sellerCart = value,
                         expand = index == 0,
                         onRemoveSeller = { scope.removeSellerItems(value) },
-                        onIncItem = {
+                        onIncItem = { _, item ->
                             scope.updateItemCount(
                                 value,
-                                it,
-                                it.quantity.value.toInt() + 1
+                                item,
+                                item.quantity.value.toInt() + 1
                             )
                         },
-                        onDecItem = {
+                        onDecItem = { _, item ->
                             scope.updateItemCount(
                                 value,
-                                it,
-                                it.quantity.value.toInt() - 1
+                                item,
+                                item.quantity.value.toInt() - 1
                             )
                         },
                         onRemoveItem = { scope.removeItem(value, it) },
@@ -169,101 +169,83 @@ private fun SellerCartItem(
     sellerCart: SellerCart,
     expand: Boolean,
     onRemoveSeller: () -> Unit,
-    onIncItem: (CartItem) -> Unit,
-    onDecItem: (CartItem) -> Unit,
+    onIncItem: (TapMode, CartItem) -> Unit,
+    onDecItem: (TapMode, CartItem) -> Unit,
     onRemoveItem: (CartItem) -> Unit,
 ) {
-    val isExpanded = remember { mutableStateOf(expand) }
-    Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.background(Color.LightGray.copy(alpha = 0.2f))
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .clickable { isExpanded.value = !isExpanded.value }
+    FoldableItem(
+        expanded = expand,
+        header = { isExpanded ->
+            Box(
+                modifier = Modifier.background(ConstColors.red).size(50.dp)
+                    .clickable(onClick = onRemoveSeller),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(
-                    modifier = Modifier.background(ConstColors.red).size(50.dp)
-                        .clickable(onClick = onRemoveSeller),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        tint = Color.White,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-                Space(12.dp)
-                BoxWithConstraints {
-                    Column(
-                        modifier = Modifier.width(maxWidth - 50.dp),
-                    ) {
-                        Text(
-                            text = sellerCart.sellerName,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W600,
-                            fontSize = 14.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Space(2.dp)
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.payment_method))
-                                append(": ")
-                                val startIndex = length
-                                append(sellerCart.paymentMethod.serverValue)
-                                addStyle(
-                                    SpanStyle(color = ConstColors.lightBlue),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 12.sp,
-                        )
-                    }
-                }
-                Space(12.dp)
                 Icon(
-                    imageVector = if (isExpanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                    tint = ConstColors.gray,
+                    imageVector = Icons.Default.Delete,
+                    tint = Color.White,
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(18.dp)
                 )
-                Space(12.dp)
             }
-
-            if (isExpanded.value && sellerCart.items.isNotEmpty()) Column(
-                modifier = Modifier.background(Color.White).padding(horizontal = 8.dp)
-            ) {
-                Space(12.dp)
-                sellerCart.items.forEach {
-                    CartItem(
-                        cartItem = it,
-                        onInc = { onIncItem(it) },
-                        onDec = { onDecItem(it) },
-                        onRemove = { onRemoveItem(it) },
+            Space(12.dp)
+            BoxWithConstraints {
+                Column(
+                    modifier = Modifier.width(maxWidth - 50.dp),
+                ) {
+                    Text(
+                        text = sellerCart.sellerName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                    Space(12.dp)
+                    Space(2.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.payment_method))
+                            append(": ")
+                            val startIndex = length
+                            append(sellerCart.paymentMethod.serverValue)
+                            addStyle(
+                                SpanStyle(color = ConstColors.lightBlue),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                    )
                 }
             }
+            Space(12.dp)
+            Icon(
+                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                tint = ConstColors.gray,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+            Space(12.dp)
+        },
+        childItems = sellerCart.items,
+        item = {
+            CartItem(
+                cartItem = it,
+                onInc = { mode -> onIncItem(mode, it) },
+                onDec = { mode -> onDecItem(mode, it) },
+                onRemove = { onRemoveItem(it) },
+            )
         }
-    }
+    )
 }
 
 @Composable
 private fun CartItem(
     cartItem: CartItem,
-    onInc: () -> Unit,
-    onDec: () -> Unit,
+    onInc: (TapMode) -> Unit,
+    onDec: (TapMode) -> Unit,
     onRemove: () -> Unit,
 ) {
     Surface(
@@ -371,6 +353,7 @@ private fun CartItem(
             PlusMinusQuantity(
                 quantity = cartItem.quantity.value.toInt(),
                 max = cartItem.stockInfo?.availableQty ?: Int.MAX_VALUE,
+                isEnabled = true,
                 onInc = onInc,
                 onDec = onDec,
                 modifier = Modifier.align(Alignment.BottomEnd)

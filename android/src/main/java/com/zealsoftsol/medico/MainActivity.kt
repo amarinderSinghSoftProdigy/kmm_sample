@@ -162,7 +162,7 @@ class MainActivity : ComponentActivity(), DIAware {
 
     private fun handleIntent(intent: Intent) {
         intent.extras?.getString(NotificationCenter.DISMISS_NOTIFICATION_ID)?.let {
-            messaging.dismissMessage(it)
+            messaging.messageClicked(it)
         }
     }
 

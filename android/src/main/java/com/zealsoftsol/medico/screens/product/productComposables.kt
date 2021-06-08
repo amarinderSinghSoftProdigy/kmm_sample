@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -40,11 +39,11 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
 fun ProductScreen(scope: ProductInfoScope) {
@@ -57,11 +56,10 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(28.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
-                modifier = Modifier.size(123.dp),
-                contentDescription = null,
-                data = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
-                error = { ItemPlaceholder() },
-                loading = { ItemPlaceholder() },
+                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                size = 123.dp,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
             )
             Space(10.dp)
             Column {
@@ -124,9 +122,9 @@ fun ProductScreen(scope: ProductInfoScope) {
             }
         }
         Space(12.dp)
+        val context = LocalContext.current
         when (scope.product.buyingOption) {
             BuyingOption.BUY -> {
-                val context = LocalContext.current
                 MedicoButton(text = stringResource(id = R.string.add_to_cart), isEnabled = true) {
                     if (!scope.buy()) {
                         context.toast(R.string.something_went_wrong)
@@ -135,7 +133,11 @@ fun ProductScreen(scope: ProductInfoScope) {
             }
             BuyingOption.QUOTE -> {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (!scope.buy()) {
+                            context.toast(R.string.something_went_wrong)
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Transparent,
                         disabledBackgroundColor = Color.Transparent,

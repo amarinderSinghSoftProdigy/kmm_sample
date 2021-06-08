@@ -12,20 +12,31 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
+import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
+import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordResetRequest
@@ -89,7 +100,8 @@ class NetworkClient(
     NetworkScope.Notification,
     NetworkScope.Stores,
     NetworkScope.Cart,
-    NetworkScope.Help {
+    NetworkScope.Help,
+    NetworkScope.Orders {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -271,6 +283,7 @@ class NetworkClient(
     }
 
     override suspend fun search(
+        sort: String?,
         query: List<Pair<String, String>>,
         unitCode: String?,
         latitude: Double,
@@ -284,6 +297,7 @@ class NetworkClient(
                     query.forEach { (name, value) ->
                         set(name, value)
                     }
+                    sort?.let { append("sort", it) }
                     unitCode?.let { append("unitCode", it) }
                     append("latitude", latitude.toString())
                     append("longitude", longitude.toString())
@@ -323,16 +337,25 @@ class NetworkClient(
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
-        sellerUnitCode: String
+        sellerUnitCode: String?
     ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = ktorDispatcher {
         client.get<SimpleResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
             withMainToken()
             url {
                 parameters.append("buyerUnitCode", unitCode)
-                parameters.append("sellerUnitCode", sellerUnitCode)
+                if (sellerUnitCode != null) {
+                    parameters.append("sellerUnitCode", sellerUnitCode)
+                }
             }
         }.getWrappedBody()
     }
+
+    override suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse> =
+        ktorDispatcher {
+            client.get<SimpleResponse<ProductBuyResponse>>("${baseUrl.url}/search/quote/${productCode}") {
+                withMainToken()
+            }.getWrappedBody()
+        }
 
     override suspend fun getManagementInfo(
         unitCode: String,
@@ -376,7 +399,8 @@ class NetworkClient(
 
     override suspend fun getNotifications(
         search: String,
-        pagination: Pagination
+        filter: NotificationFilter,
+        pagination: Pagination,
     ): Response.Wrapped<PaginatedData<NotificationData>> = ktorDispatcher {
         client.get<SimpleResponse<PaginatedData<NotificationData>>>("${baseUrl.url}/notifications/all") {
             withMainToken()
@@ -385,7 +409,7 @@ class NetworkClient(
                     if (search.isNotEmpty()) append("search", search)
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
-                    append("notificationType", "")
+                    append("notificationType", filter.serverValue)
                 }
             }
         }.getWrappedBody().also {
@@ -421,7 +445,7 @@ class NetworkClient(
 
     override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
         ktorDispatcher {
-            client.get<SimpleResponse<NotificationDetails>>("${baseUrl.url}/b2bapp/notification/$id/detail") {
+            client.get<SimpleResponse<NotificationDetails>>("${baseUrl.url}/notifications/$id/detail") {
                 withMainToken()
             }.getWrappedBody()
         }
@@ -503,9 +527,119 @@ class NetworkClient(
         }.getWrappedBody()
     }
 
+    override suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartConfirmData>>("${baseUrl.url}/cart/confirm") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse> =
+        ktorDispatcher {
+            client.post<SimpleResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
     override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
         client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {
             withMainToken()
+        }.getWrappedBody()
+    }
+
+    override suspend fun getOrders(
+        type: OrderType,
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination,
+    ): Response.Wrapped<PaginatedData<Order>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Order>>>("${baseUrl.url}/orders${type.path}") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    from?.let { append("fromDate", it.toString()) }
+                    to?.let { append("toDate", it.toString()) }
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun getOrder(
+        type: OrderType,
+        unitCode: String,
+        orderId: String
+    ): Response.Wrapped<OrderResponse> = ktorDispatcher {
+        client.get<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("b2bUnitCode", unitCode)
+                }
+            }
+        }.getWrappedBody()
+    }
+
+    override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
+        ktorDispatcher {
+            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/accept") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedError()
+        }
+
+    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse> =
+        ktorDispatcher {
+            client.post<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders/po/entries/save") {
+                withMainToken()
+                jsonBody(request)
+            }.getWrappedBody()
+        }
+
+    override suspend fun getInvoices(
+        unitCode: String,
+        search: String,
+        from: Long?,
+        to: Long?,
+        pagination: Pagination
+    ): Response.Wrapped<PaginatedData<Invoice>> = ktorDispatcher {
+        client.get<SimpleResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    from?.let { append("fromDate", it.toString()) }
+                    to?.let { append("toDate", it.toString()) }
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.getWrappedBody().also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun getInvoice(
+        unitCode: String,
+        invoiceId: String
+    ): Response.Wrapped<InvoiceResponse> = ktorDispatcher {
+        client.get<SimpleResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("b2bUnitCode", unitCode)
+                }
+            }
         }.getWrappedBody()
     }
 

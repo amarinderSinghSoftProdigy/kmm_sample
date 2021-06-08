@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
@@ -10,10 +11,14 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
@@ -89,6 +94,7 @@ sealed class Event {
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
+            data class SelectSortOption(val option: SortOption?) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -99,11 +105,13 @@ sealed class Event {
 
             data class SelectFromSearch(val productCode: String) : Product()
             data class SelectAlternative(val data: AlternateProductData) : Product()
-            data class BuyProduct(val productCode: String) : Product()
+            data class BuyProduct(val productCode: String, val buyingOption: BuyingOption) :
+                Product()
+
             data class FilterBuyProduct(val filter: String) : Product()
             data class SelectSeasonBoyRetailer(
                 val productCode: String,
-                val sellerInfo: SellerInfo
+                val sellerInfo: SellerInfo?,
             ) : Product()
         }
 
@@ -127,6 +135,7 @@ sealed class Event {
             data class Select(val notification: NotificationData) : Notification()
             data class SelectAction(val action: NotificationAction) : Notification()
             data class ChangeOptions(val option: NotificationOption) : Notification()
+            data class SelectFilter(val filter: NotificationFilter) : Notification()
 //            object UpdateUnreadMessages: Notification()
         }
 
@@ -142,10 +151,10 @@ sealed class Event {
             override val typeClazz: KClass<*> = Cart::class
 
             data class AddItem(
-                val sellerUnitCode: String,
+                val sellerUnitCode: String?,
                 val productCode: String,
                 val buyingOption: BuyingOption,
-                val id: CartIdentifier,
+                val id: CartIdentifier?,
                 val quantity: Int,
             ) : Cart()
 
@@ -167,12 +176,42 @@ sealed class Event {
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object ClearCart : Cart()
+            object PreviewCart : Cart()
+            object ConfirmCartOrder : Cart()
+            data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
         }
 
         sealed class Help : Action() {
             override val typeClazz: KClass<*> = Help::class
 
             object GetHelp : Help()
+        }
+
+        sealed class Orders : Action() {
+            override val typeClazz: KClass<*> = Orders::class
+
+            data class Search(val value: String) : Orders()
+            data class Load(val isFirstLoad: Boolean) : Orders()
+            data class Select(val orderId: String, val type: OrderType) : Orders()
+
+            data class ViewOrderAction(
+                val action: ViewOrderScope.Action,
+                val fromNotification: Boolean
+            ) : Orders()
+
+            data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
+            object Confirm : Orders()
+        }
+
+        sealed class Invoices : Action() {
+            override val typeClazz: KClass<*> = Invoices::class
+
+            data class Search(val value: String) : Invoices()
+            data class Load(val isFirstLoad: Boolean) : Invoices()
+            data class Select(val invoiceId: String) : Invoices()
+            object Download : Invoices()
         }
     }
 
@@ -198,10 +237,12 @@ sealed class Event {
 //            val registration3: UserRegistration3,
 //        ) : Transition()
 
-        object CloseNotification : Transition()
-
         object Notifications : Transition()
         object Stores : Transition()
         object Cart : Transition()
+        object Orders : Transition()
+        object NewOrders : Transition()
+        object OrdersHistory : Transition()
+        object Invoices : Transition()
     }
 }

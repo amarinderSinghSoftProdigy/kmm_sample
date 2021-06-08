@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 
 sealed class NotificationScope : Scope.Child.TabBar() {
@@ -17,13 +18,19 @@ sealed class NotificationScope : Scope.Child.TabBar() {
         override val items: DataSource<List<NotificationData>> = DataSource(emptyList()),
         override val totalItems: DataSource<Int> = DataSource(0),
         override val searchText: DataSource<String> = DataSource(""),
+        val filter: DataSource<NotificationFilter> = DataSource(NotificationFilter.ALL),
     ) : NotificationScope(), Loadable<NotificationData> {
+
+        val allFilters: List<NotificationFilter> = NotificationFilter.values().toList()
 
         init {
             EventCollector.sendEvent(Event.Action.Notification.Load(isFirstLoad = true))
         }
 
         override val pagination: Pagination = Pagination()
+
+        fun selectFilter(filter: NotificationFilter) =
+            EventCollector.sendEvent(Event.Action.Notification.SelectFilter(filter))
 
         fun selectItem(item: NotificationData): Boolean {
             if (item.selectedAction != null) return false

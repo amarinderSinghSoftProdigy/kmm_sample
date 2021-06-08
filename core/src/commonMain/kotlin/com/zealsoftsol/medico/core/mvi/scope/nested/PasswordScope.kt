@@ -49,7 +49,7 @@ sealed class PasswordScope(
             override val dismissEvent: Event = Event.Action.ResetPassword.Finish
             override val isSimple: Boolean = true
             override val isDismissible: Boolean = true
-            override val title: String = "success"
+            override val title: String? = "success"
             override val body: String = "password_change_success"
         }
     }

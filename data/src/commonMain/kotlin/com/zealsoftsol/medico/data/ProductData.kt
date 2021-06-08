@@ -32,7 +32,7 @@ data class ProductBuyResponse(
 data class ProductSeasonBoyRetailerSelectResponse(
     @SerialName("productData")
     val product: ProductSearch,
-    val sellerInfo: SellerInfo,
+    val sellerInfo: SellerInfo? = null,
     @SerialName("sbRetailers")
     val retailers: List<SeasonBoyRetailer>,
 )
@@ -46,6 +46,7 @@ data class SeasonBoyRetailer(
     val city: String,
     val location: String,
     val pincode: String,
+    val cartInfo: CartInfo? = null,
 ) : WithTradeName {
     fun fullAddress() = "$city $pincode"
 }

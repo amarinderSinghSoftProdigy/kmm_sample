@@ -1,7 +1,9 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.GenericNotificationScopePreview
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -12,6 +14,7 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
+import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.NotificationType
 
@@ -27,6 +30,7 @@ internal class NotificationEventDelegate(
         is Event.Action.Notification.Select -> select(event.notification)
         is Event.Action.Notification.SelectAction -> selectAction(event.action)
         is Event.Action.Notification.ChangeOptions -> changeOption(event.option)
+        is Event.Action.Notification.SelectFilter -> selectFilter(event.filter)
 //        is Event.Action.Notification.UpdateUnreadMessages -> updateUnreadMessages()
     }
 
@@ -35,6 +39,7 @@ internal class NotificationEventDelegate(
             val (result, isSuccess) = notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
+                filter = filter.value,
             )
             if (isSuccess) result else null
         }
@@ -45,6 +50,7 @@ internal class NotificationEventDelegate(
             val (result, isSuccess) = notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
+                filter = filter.value,
             )
             if (isSuccess) result else null
         }
@@ -52,34 +58,67 @@ internal class NotificationEventDelegate(
 
     private suspend fun select(data: NotificationData) {
         navigator.withScope<NotificationScope.All> {
-            val nextScope = when (data.type) {
-                NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION ->
-                    NotificationScope.Preview.SubscriptionRequest(data)
-                NotificationType.ORDER_REQUEST -> TODO("not implemented")
-            } as GenericNotificationScopePreview
-            setScope(nextScope)
-            val (result, isSuccess) = withProgress {
-                notificationRepo.getNotificationDetails(data.id)
+            when (data.type.log("type")) {
+                NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION -> openableNotification(
+                    data
+                )
+                NotificationType.ORDER_REQUEST, NotificationType.INVOICE_REQUEST -> routedNotification(
+                    data
+                )
             }
-            if (isSuccess && result != null) {
-                notificationRepo.decreaseReadMessages()
-                when {
-                    result.customerData != null && result.subscriptionOption != null -> {
-                        nextScope.details.value = NotificationDetails.TypeSafe.Subscription(
-                            isReadOnly = data.type == NotificationType.SUBSCRIBE_DECISION,
-                            customerData = result.customerData!!,
-                            option = result.subscriptionOption!!,
-                        )
-                    }
-                    else -> {
-                        dropScope()
-                        setHostError(ErrorCode())
-                    }
+        }
+    }
+
+    private suspend fun Navigator.openableNotification(data: NotificationData) {
+        val nextScope = NotificationScope.Preview.SubscriptionRequest(data)
+        setScope(nextScope)
+        val (result, isSuccess) = withProgress {
+            notificationRepo.getNotificationDetails(data.id)
+        }
+        if (isSuccess && result != null) {
+            notificationRepo.decreaseReadMessages()
+            when {
+                result.customerData != null && result.subscriptionOption != null -> {
+                    nextScope.details.value = NotificationDetails.TypeSafe.Subscription(
+                        isReadOnly = data.type == NotificationType.SUBSCRIBE_DECISION,
+                        customerData = result.customerData!!,
+                        option = result.subscriptionOption!!,
+                    )
                 }
-            } else {
-                dropScope()
-                setHostError(ErrorCode())
+                else -> {
+                    dropScope()
+                    setHostError(ErrorCode())
+                }
             }
+        } else {
+            dropScope()
+            setHostError(ErrorCode())
+        }
+    }
+
+    private suspend fun Navigator.routedNotification(data: NotificationData) {
+        val (result, isSuccess) = withProgress {
+            notificationRepo.getNotificationDetails(data.id)
+        }
+        result.log("result")
+
+        if (isSuccess && result != null) {
+            when {
+                result.orderOption != null -> EventCollector.sendEvent(
+                    Event.Action.Orders.Select(
+                        orderId = result.orderOption!!.orderId,
+                        type = result.orderOption!!.type,
+                    )
+                )
+                result.invoiceOption != null -> EventCollector.sendEvent(
+                    Event.Action.Invoices.Select(invoiceId = result.invoiceOption!!.invoiceId)
+                )
+                else -> {
+                    setHostError(ErrorCode())
+                }
+            }
+        } else {
+            setHostError(ErrorCode())
         }
     }
 
@@ -106,6 +145,13 @@ internal class NotificationEventDelegate(
     private fun changeOption(option: NotificationOption) {
         navigator.withScope<GenericNotificationScopePreview> {
             it.details.value = it.details.value?.withNewOption(option)
+        }
+    }
+
+    private suspend fun selectFilter(filter: NotificationFilter) {
+        navigator.withScope<NotificationScope.All> {
+            it.filter.value = filter
+            load(isFirstLoad = true)
         }
     }
 

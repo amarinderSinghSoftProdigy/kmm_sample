@@ -2,13 +2,13 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
-    const val kotlin = "1.4.30"
+    const val kotlin = "1.4.32"
     const val ktor = "1.5.1"
     const val coroutines = "1.4.2-native-mt"
     const val kserialize = "1.1.0-RC"
     const val kodeinDi = "7.3.1"
     const val kodeinDb = "0.4.0-beta"
-    const val compose = "1.0.0-beta01"
+    const val compose = "1.0.0-beta07"
 }
 
 object Deps {
@@ -59,9 +59,9 @@ object Deps {
                 "androidx.compose.material:material-icons-core:${Versions.compose}"
             const val iconsExtended =
                 "androidx.compose.material:material-icons-extended:${Versions.compose}"
-            const val activity = "androidx.activity:activity-compose:1.3.0-alpha03"
+            const val activity = "androidx.activity:activity-compose:1.3.0-alpha08"
             const val constraint =
-                "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha03"
+                "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07"
 
             val all = listOf(
                 ui,
@@ -75,7 +75,7 @@ object Deps {
             )
         }
 
-        const val accompanist = "dev.chrisbanes.accompanist:accompanist-coil:0.6.1"
+        const val coil = "com.google.accompanist:accompanist-coil:0.10.0"
     }
 
     object Kodein {

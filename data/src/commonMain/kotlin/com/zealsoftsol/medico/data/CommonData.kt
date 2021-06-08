@@ -37,6 +37,25 @@ data class GeoData(
 }
 
 @Serializable
+data class AddressData(
+    @SerialName("addressLine1")
+    val address: String,
+    val landmark: String,
+    @SerialName("cityTown")
+    val city: String,
+    val district: String,
+    @SerialName("latitidue")
+    val latitude: Double = 0.0,
+    val location: String,
+    val longitude: Double = 0.0,
+    val pincode: Int,
+    val placeId: String? = null,
+    val state: String,
+) {
+    fun fullAddress() = "$city $pincode"
+}
+
+@Serializable
 data class FormattedData<T>(
     @SerialName("formattedValue")
     val formatted: String,

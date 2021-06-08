@@ -71,3 +71,13 @@ enum class ManagementCriteria(val serverValue: String) {
     ALL("ALL"),
     PERSONAL("YOUR");
 }
+
+data class DateRange(val fromMs: Long? = null, val toMs: Long? = null)
+
+enum class TapMode {
+    CLICK, LONG_PRESS, RELEASE;
+}
+
+enum class NotificationFilter(val serverValue: String, val stringId: String) {
+    ALL("", "all"), READ("READ", "read"), UNREAD("UNREAD", "unread");
+}

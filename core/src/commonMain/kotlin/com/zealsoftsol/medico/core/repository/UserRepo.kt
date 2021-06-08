@@ -73,7 +73,7 @@ class UserRepo(
                 "unknown user type".warnIt()
                 return@let null
             }
-            if (it.unitCode == null || it.customerMetaData == null) {
+            if (it.unitCode == null || it.metaData == null) {
                 "can not create user without unitCode or customerMetaData".errorIt()
                 return false
             }
@@ -94,9 +94,9 @@ class UserRepo(
                         it.drugLicenseUrl
                     )
                 },
-                it.customerMetaData!!.activated,
+                it.metaData!!.activated,
                 it.isDocumentUploaded,
-                it.customerAddressData,
+                it.addressData,
             )
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)

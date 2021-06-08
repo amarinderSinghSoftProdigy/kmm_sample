@@ -1,9 +1,12 @@
 package com.zealsoftsol.medico.core.mvi.scope.extra
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.TapMode
 
 sealed class BottomSheet {
 
@@ -51,5 +54,33 @@ sealed class BottomSheet {
 
         fun subscribe() =
             EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
+    }
+
+    class ModifyOrderEntry(
+        val orderEntry: OrderEntry,
+        val canEdit: Boolean,
+        val isChecked: DataSource<Boolean>,
+    ) : BottomSheet() {
+
+        val quantity = DataSource(orderEntry.servedQty.value.toInt())
+
+        fun inc(tapMode: TapMode) {
+            if (tapMode != TapMode.CLICK) return
+            quantity.value = quantity.value + 1
+        }
+
+        fun dec(tapMode: TapMode) {
+            if (tapMode != TapMode.CLICK) return
+            quantity.value = (quantity.value - 1).coerceAtLeast(0)
+        }
+
+        fun toggleCheck() {
+            if (EventCollector.sendEvent(Event.Action.Orders.ToggleCheckEntry(orderEntry))) {
+                isChecked.value = !isChecked.value
+            }
+        }
+
+        fun save() =
+            EventCollector.sendEvent(Event.Action.Orders.SaveEntryQty(orderEntry, quantity.value))
     }
 }
