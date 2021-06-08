@@ -87,7 +87,7 @@ struct CompletedCartOrderScreen: View {
     
     private var sellersView: some View {
         VStack(spacing: 8) {
-            ForEach(self.scope.items, id: \.self) {
+            ForEach(self.scope.order.sellersOrder, id: \.self) {
                 SellerView(seller: $0)
             }
         }
@@ -110,12 +110,12 @@ struct CompletedCartOrderScreen: View {
     }
     
     private struct SellerView: View {
-        let seller: DataSellerCart
+        let seller: DataSellerOrder
         
         var body: some View {
             VStack(spacing: 4) {
                 HStack(alignment: .top) {
-                    Text(seller.sellerName)
+                    Text(seller.tradeName)
                         .medicoText(textWeight: .semiBold,
                                     fontSize: 16)
                         .lineLimit(1)
@@ -136,27 +136,36 @@ struct CompletedCartOrderScreen: View {
                 }
                 
                 HStack(alignment: .bottom) {
-                    HStack(spacing: 8) {
-                        HStack(spacing: 2) {
-                            LocalizedText(localizationKey: "type:",
-                                          textWeight: .medium,
-                                          fontSize: 12,
-                                          color: .grey3)
+                    VStack(spacing: 5) {
+                        if let seasonBoyRetailerName = seller.seasonBoyRetailerName {
+                            Text(seasonBoyRetailerName)
+                                .medicoText(textWeight: .medium,
+                                            fontSize: 11,
+                                            color: .grey3)
+                        }
+                        
+                        HStack(spacing: 8) {
+                            HStack(spacing: 2) {
+                                LocalizedText(localizationKey: "type:",
+                                              textWeight: .medium,
+                                              fontSize: 12,
+                                              color: .grey3)
+                                
+                                Text(seller.paymentMethod.serverValue)
+                                    .medicoText(textWeight: .medium,
+                                                fontSize: 12,
+                                                color: .lightBlue)
+                            }
                             
-                            Text(seller.paymentMethod.serverValue)
+                            AppColor.darkBlue.color
+                                .opacity(0.4)
+                                .frame(width: 1, height: 10)
+                            
+                            Text(seller.orderId)
                                 .medicoText(textWeight: .medium,
                                             fontSize: 12,
                                             color: .lightBlue)
                         }
-                        
-                        AppColor.darkBlue.color
-                            .opacity(0.4)
-                            .frame(width: 1, height: 10)
-                        
-                        Text(seller.sellerCode)
-                            .medicoText(textWeight: .medium,
-                                        fontSize: 12,
-                                        color: .lightBlue)
                     }
                     
                     Spacer()
