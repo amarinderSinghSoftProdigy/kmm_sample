@@ -192,7 +192,7 @@ extension DataNotificationAction {
 extension DataNotificationType {
     var statusButtonColor: AppColor {
         switch self {
-        case .orderRequest, .subscribeRequest:
+        case .subscribeDecision, .subscribeRequest:
             return .yellow
             
         default:
@@ -202,7 +202,7 @@ extension DataNotificationType {
     
     var statusButtonTextColor: AppColor {
         switch self {
-        case .orderRequest, .subscribeRequest:
+        case .subscribeDecision, .subscribeRequest:
             return .darkBlue
             
         default:

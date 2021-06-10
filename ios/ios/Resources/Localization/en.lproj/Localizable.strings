@@ -213,6 +213,7 @@
 "subscribe_request_button" = "Action Required";
 "subscribe_decision_button" = "Information";
 "order_request_button" = "View Order";
+"invoice_request_button" = "View Invoice";
 "accepted_req" = "Accepted Request";
 "declined_req" = "Declined Request";
 "minutes %lld" = "%lldm";
