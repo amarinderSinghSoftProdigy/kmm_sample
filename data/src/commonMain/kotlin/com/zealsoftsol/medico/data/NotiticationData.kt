@@ -79,7 +79,7 @@ enum class NotificationType(val buttonStringId: String) {
     SUBSCRIBE_REQUEST("subscribe_request_button"),
     SUBSCRIBE_DECISION("subscribe_decision_button"),
     ORDER_REQUEST("order_request_button"),
-    INVOICE_REQUEST("order_request_button"),
+    INVOICE_REQUEST("invoice_request_button"),
 }
 
 enum class NotificationAction(
