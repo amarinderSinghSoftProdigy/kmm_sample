@@ -2,7 +2,7 @@ name: ios-development
 
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, dev/ios-compact ]
     types: [ closed ]
 
   workflow_dispatch:
