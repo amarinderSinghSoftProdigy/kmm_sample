@@ -92,8 +92,8 @@ class ViewOrderScope(
         val bgColorHex: String,
         val textColorHex: String = "#003657"
     ) {
-        REJECT_ALL("reject_all", 0.35f, "#ed5152", "#FFFFFF"),
-        ACCEPT_ALL("accept_all", 0.65f, "#FFD600"),
+        REJECT_ALL("reject_all", 0.5f, "#ed5152", "#FFFFFF"),
+        ACCEPT_ALL("accept_all", 0.5f, "#FFD600"),
         ACCEPT("accept", 1f, "#FFD600");
 
         internal companion object {

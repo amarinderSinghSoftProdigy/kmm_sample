@@ -188,11 +188,11 @@ private fun CartNotificationButtons(onCancel: () -> Unit, onContinue: () -> Unit
     ) {
         AlertButton(
             onClick = onCancel,
-            text = stringResource(id = R.string.cancel)
+            text = stringResource(id = R.string.no)
         )
         AlertButton(
             onClick = onContinue,
-            text = stringResource(id = R.string.continue_)
+            text = stringResource(id = R.string.yes)
         )
     }
 }

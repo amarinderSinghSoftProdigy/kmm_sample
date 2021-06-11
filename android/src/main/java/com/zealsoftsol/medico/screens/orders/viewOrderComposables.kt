@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,12 +51,14 @@ import com.zealsoftsol.medico.screens.management.GeoLocation
 fun ViewOrderScreen(scope: ViewOrderScope) {
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(modifier = Modifier.padding(bottom = 150.dp)) {
+        Column {
             Space(10.dp)
             FoldableItem(
                 expanded = false,
@@ -198,7 +199,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
             Divider()
             val entries = scope.entries.flow.collectAsState()
             val checkedEntries = scope.checkedEntries.flow.collectAsState()
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column {
                 Space(8.dp)
                 entries.value.forEach {
                     OrderEntryItem(
@@ -212,7 +213,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 Space(8.dp)
             }
         }
-        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+        Column {
             OrderTotal(order.value.info.total.formattedPrice)
             Space(16.dp)
             if (scope.canEdit) {

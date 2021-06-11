@@ -44,9 +44,11 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
 fun InvoicesScreen(scope: InvoicesScope) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+    ) {
         val search = scope.searchText.flow.collectAsState()
         val isFilterOpened = scope.isFilterOpened.flow.collectAsState()
         Space(16.dp)

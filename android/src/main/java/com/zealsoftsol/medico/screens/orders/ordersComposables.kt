@@ -219,6 +219,7 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     .background(ConstColors.gray.copy(0.05f))
                     .padding(vertical = 6.dp, horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -242,7 +243,7 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 Text(
                     text = order.info.id,
                     color = ConstColors.gray,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.W500,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

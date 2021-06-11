@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -39,16 +39,20 @@ fun <T> FoldableItem(
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.background(Color.LightGray.copy(alpha = 0.2f))
+                modifier = Modifier
+                    .background(Color.LightGray.copy(alpha = 0.2f))
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .heightIn(min = 50.dp)
+//                    .padding(vertical = 8.dp)
                     .clickable { isExpanded.value = !isExpanded.value }
             ) {
                 header(isExpanded.value)
             }
             AnimatedVisibility(isExpanded.value) {
                 Column(
-                    modifier = Modifier.background(Color.White).padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(horizontal = 8.dp)
                 ) {
                     Space(12.dp)
                     childItems.forEach {

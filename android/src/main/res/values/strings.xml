@@ -149,6 +149,7 @@
     <string name="subscribe_request_button">Action Required</string>
     <string name="subscribe_decision_button">Information</string>
     <string name="order_request_button">View Order</string>
+    <string name="invoice_request_button">View Invoice</string>
     <string name="credit_days">Credit days</string>
     <string name="no_of_credit_days">No. of Credit Days</string>
     <string name="discount_rate">Discount Rate</string>
@@ -218,4 +219,6 @@
     <string name="mb_1">1 MB</string>
     <string name="invoices">Invoices</string>
     <string name="download">Download</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

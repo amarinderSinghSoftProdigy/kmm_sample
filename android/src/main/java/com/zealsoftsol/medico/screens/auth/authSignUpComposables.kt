@@ -482,10 +482,12 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     FlowRow(horizontalGap = 12.dp) {
                         listOf("PDF", "PNG", "JPEG/PEG", "ZIP").forEach {
                             Text(
-                                modifier = Modifier.background(
-                                    color = ConstColors.gray.copy(alpha = .25f),
-                                    shape = MaterialTheme.shapes.small
-                                ).padding(4.dp),
+                                modifier = Modifier
+                                    .background(
+                                        color = ConstColors.gray.copy(alpha = .25f),
+                                        shape = MaterialTheme.shapes.small
+                                    )
+                                    .padding(4.dp),
                                 text = it,
                                 color = MaterialTheme.colors.background,
                                 fontSize = 14.sp,
@@ -567,11 +569,16 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
                 } else {
                     this
                 }
-            }.clickable(onClick = onClick),
+            }
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(painter = painterResource(id = iconRes), contentDescription = null)
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(48.dp)
+        )
         Text(text = stringResource(id = textRes), modifier = Modifier.padding(4.dp))
     }
 }
@@ -590,7 +597,9 @@ private fun BasicAuthSignUpScreenWithButton(
     onButtonClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.primary)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.primary)
     ) {
         Box(
             modifier = Modifier
@@ -600,7 +609,8 @@ private fun BasicAuthSignUpScreenWithButton(
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
         Column(
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier
+                .padding(top = 4.dp)
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(
@@ -630,7 +640,8 @@ private fun BasicAuthSignUpScreenWithButton(
                     text = stringResource(id = R.string.skip_for_now),
                     fontSize = MaterialTheme.typography.body2.fontSize,
                     color = ConstColors.lightBlue,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
                         .padding(bottom = padding)
                         .clickable(onClick = it)
                 )

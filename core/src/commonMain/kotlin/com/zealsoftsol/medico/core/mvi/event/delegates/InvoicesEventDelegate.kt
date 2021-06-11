@@ -67,7 +67,7 @@ internal class InvoicesEventDelegate(
                     ViewInvoiceScope(
                         DataSource(result.invoice),
                         DataSource(result.data),
-                        DataSource(result.invoiceEntries),
+                        DataSource(result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries),
                     )
                 )
             } else {
