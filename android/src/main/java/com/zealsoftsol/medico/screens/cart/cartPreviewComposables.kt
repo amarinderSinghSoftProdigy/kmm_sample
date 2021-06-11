@@ -59,7 +59,9 @@ fun CartPreviewScreen(scope: CartPreviewScope) {
     val total = scope.total.flow.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -97,7 +99,10 @@ private fun SellerItem(seller: SellerCart) {
         expanded = true,
         header = { isExpanded ->
             Column(
-                modifier = Modifier.weight(.5f).fillMaxHeight().padding(start = 20.dp),
+                modifier = Modifier
+                    .weight(.5f)
+                    .fillMaxHeight()
+                    .padding(start = 20.dp),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -111,7 +116,7 @@ private fun SellerItem(seller: SellerCart) {
                 Space(2.dp)
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.payment_method))
+                        append(stringResource(id = R.string.type))
                         append(": ")
                         val startIndex = length
                         append(seller.paymentMethod.serverValue)
@@ -127,7 +132,10 @@ private fun SellerItem(seller: SellerCart) {
                 )
             }
             Row(
-                modifier = Modifier.weight(.5f).fillMaxHeight().padding(end = 20.dp),
+                modifier = Modifier
+                    .weight(.5f)
+                    .fillMaxHeight()
+                    .padding(end = 20.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -226,7 +234,9 @@ private fun CartItem(cartItem: CartItem) {
                             imageVector = Icons.Default.Info,
                             tint = ConstColors.lightBlue,
                             contentDescription = null,
-                            modifier = Modifier.size(14.dp).align(Alignment.CenterVertically),
+                            modifier = Modifier
+                                .size(14.dp)
+                                .align(Alignment.CenterVertically),
                         )
                         Space(6.dp)
                         BoxWithConstraints {
@@ -317,7 +327,8 @@ private fun CartItem(cartItem: CartItem) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(vertical = 4.dp, horizontal = 8.dp),
                     ) {
                         BoxWithConstraints {
@@ -344,7 +355,10 @@ private fun CartItem(cartItem: CartItem) {
             val maxWidth =
                 LocalContext.current.let { it.screenWidth / it.density }.dp - 37.dp - 5.dp
             Box(
-                modifier = Modifier.matchParentSize().padding(end = maxWidth).background(labelColor)
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(end = maxWidth)
+                    .background(labelColor)
             )
         }
     }

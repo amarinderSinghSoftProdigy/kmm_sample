@@ -3,7 +3,6 @@ package com.zealsoftsol.medico.screens.orders
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -39,10 +38,16 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
     val activeTab = scope.activeTab.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
-    Box(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(
+                rememberScrollState()
+            ),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Column(modifier = Modifier.padding(bottom = 150.dp)) {
+        Column {
             Space(20.dp)
             Text(
                 text = stringResource(id = R.string.action_confirmation),
@@ -52,16 +57,21 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
             )
             Space(15.dp)
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .height(41.dp)
                     .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
             ) {
                 scope.tabs.forEach {
-                    var boxMod = Modifier.weight(1f).fillMaxHeight()
+                    var boxMod = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
                     boxMod = if (scope.tabs.size == 1) {
                         boxMod
                     } else {
-                        boxMod.padding(5.dp).clickable { scope.selectTab(it) }
+                        boxMod
+                            .padding(5.dp)
+                            .clickable { scope.selectTab(it) }
                     }
                     val isActive = activeTab.value == it
                     boxMod = if (isActive) {
@@ -95,7 +105,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                     }
                 }
             }
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column {
                 Space(8.dp)
                 entries.value.forEach {
                     OrderEntryItem(
@@ -109,7 +119,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                 Space(8.dp)
             }
         }
-        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+        Column {
             OrderTotal(order.value.info.total.formattedPrice)
             Space(16.dp)
             val actions = scope.actions.flow.collectAsState()

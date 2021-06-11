@@ -34,8 +34,31 @@ object DebugScopeCreator {
     private inline val nav: Navigator
         get() = directDI.instance()
 
-    fun selectUserType() {
+    fun signUpSelectUserType() {
         nav.setScope(SignUpScope.SelectUserType.get())
+    }
+
+    fun signUpAddressData(
+        userType: UserType,
+        email: String,
+        phone: String,
+    ) {
+        nav.setScope(SignUpScope.SelectUserType.get())
+        nav.setScope(
+            SignUpScope.AddressData(
+                UserRegistration1(
+                    userType.serverValue,
+                    "Test",
+                    "User",
+                    email,
+                    phone,
+                    "Qwerty12345",
+                    "Qwerty12345",
+                ),
+                DataSource(null),
+                DataSource(UserRegistration2()),
+            )
+        )
     }
 
     fun signUpDetailsNonSeasonBoy(
@@ -97,7 +120,7 @@ object DebugScopeCreator {
         )
     }
 
-    fun uploadDrugLicense(
+    fun signUpUploadDrugLicense(
         userType: UserType,
         email: String,
         phone: String,
@@ -135,7 +158,7 @@ object DebugScopeCreator {
         )
     }
 
-    fun uploadAadhaar(email: String, phone: String) {
+    fun signUpUploadAadhaar(email: String, phone: String) {
         signUpDetailsSeasonBoy(email, phone)
         nav.setScope(
             SignUpScope.LegalDocuments.Aadhaar(
@@ -164,7 +187,7 @@ object DebugScopeCreator {
         )
     }
 
-    fun welcomeScreen() {
+    fun signUpWelcomeScreen() {
         nav.setScope(WelcomeScope(testUser.fullName()))
     }
 

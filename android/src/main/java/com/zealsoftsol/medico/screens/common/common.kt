@@ -448,7 +448,7 @@ fun Dropdown(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = value ?: hint,
+                text = value?.takeIf { it.isNotEmpty() } ?: hint,
                 color = Color.Black,
                 fontSize = 14.sp,
             )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -226,7 +227,9 @@ fun ReadOnlyField(text: String, labelId: Int) {
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.White,
             cursorColor = ConstColors.lightBlue,
-            disabledLabelColor = ConstColors.lightBlue,
+            disabledLabelColor = if (text.isNotEmpty()) ConstColors.lightBlue else MaterialTheme.colors.onSurface.copy(
+                ContentAlpha.medium
+            ),
             disabledTextColor = ConstColors.gray,
         ),
         enabled = false,

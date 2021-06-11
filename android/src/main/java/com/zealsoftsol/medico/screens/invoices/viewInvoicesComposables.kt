@@ -44,7 +44,10 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
     val invoice = scope.invoice.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
@@ -73,7 +76,9 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                         )
                     }
                     Row(
-                        modifier = Modifier.weight(.2f).padding(end = 12.dp),
+                        modifier = Modifier
+                            .weight(.2f)
+                            .padding(end = 12.dp),
                         horizontalArrangement = Arrangement.End,
                     ) {
                         Icon(
@@ -185,7 +190,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
             Space(8.dp)
             Divider()
             val entries = scope.entries.flow.collectAsState()
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column {
                 Space(8.dp)
                 entries.value.forEach {
                     InvoiceEntryItem(it)
@@ -211,12 +216,16 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
 @Composable
 fun InvoiceEntryItem(entry: InvoiceEntry) {
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(.6f)) {
