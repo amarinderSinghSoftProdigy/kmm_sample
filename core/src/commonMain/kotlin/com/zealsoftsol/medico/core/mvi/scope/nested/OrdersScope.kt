@@ -86,6 +86,10 @@ class ViewOrderScope(
     fun acceptAction(action: Action) =
         EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(action, false))
 
+    internal fun calculateActions() {
+        actions.value = if (checkedEntries.value.isEmpty()) Action.all else Action.onlyAccept
+    }
+
     enum class Action(
         val stringId: String,
         val weight: Float,

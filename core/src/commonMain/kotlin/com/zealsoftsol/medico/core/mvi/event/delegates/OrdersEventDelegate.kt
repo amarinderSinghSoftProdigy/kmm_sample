@@ -163,6 +163,7 @@ internal class OrdersEventDelegate(
             }
             when (it) {
                 is ViewOrderScope -> {
+                    it.calculateActions()
                     it.actions.value =
                         if (it.checkedEntries.value.isEmpty()) ViewOrderScope.Action.all else ViewOrderScope.Action.onlyAccept
                 }
@@ -197,9 +198,9 @@ internal class OrdersEventDelegate(
             if (result != null && isSuccess) {
                 scope.value.dismissBottomSheet()
                 it.order.value = result.order
-                it.checkedEntries.value = emptyList()
-                it.actions.value = ViewOrderScope.Action.onlyAccept
+//                it.checkedEntries.value = emptyList()
                 it.entries.value = result.entries
+                it.calculateActions()
             } else {
                 setHostError(ErrorCode())
             }
