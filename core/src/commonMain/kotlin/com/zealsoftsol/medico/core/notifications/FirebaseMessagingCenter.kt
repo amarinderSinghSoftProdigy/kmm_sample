@@ -39,8 +39,8 @@ internal class FirebaseMessagingCenter(
     override fun messageClicked(id: String) {
         if (notificationMessage.value?.id == id) {
             notificationMessage.value = null
-            EventCollector.sendEvent(Event.Transition.Notifications)
         }
+        EventCollector.sendEvent(Event.Transition.Notifications)
     }
 }
 
