@@ -24,6 +24,7 @@ enum AppColor {
     case blue
     case lightBlue
     case darkBlue
+    case blueWhite
     
     case grey1
     case grey2

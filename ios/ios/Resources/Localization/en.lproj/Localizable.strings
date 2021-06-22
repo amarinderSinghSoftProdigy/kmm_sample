@@ -18,11 +18,12 @@
 // MARK: Authentication Log In Screen
 "app_name" = "Medico dev";
 "log_in" = "Log in";
-"phone_number_or_email" = "Phone Number or Email";
+"phone_number_or_email" = "Email / Phone No.";
 "password" = "Password";
-"forgot_password" = "Forgot password?";
-"register" = "Register";
-"copyright" = "© Copyright mediostores.com 2021";
+"forgot_password" = "Forgot Password";
+"new_to_medico" = "New to Medicostores?";
+"create_account" = "Create Account";
+"copyright" = "© Medicostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";
