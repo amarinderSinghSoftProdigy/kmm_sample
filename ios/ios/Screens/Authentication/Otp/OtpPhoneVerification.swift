@@ -90,8 +90,8 @@ fileprivate struct OtpDetailsView: View {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
                                              text: code,
                                              onTextChange: { newValue in code = newValue},
-                                             keyboardType: .numberPad)
-                    .textContentType(.oneTimeCode)
+                                             keyboardType: .numberPad,
+                                             textContentType: .oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
                              isEnabled: !code.isEmpty && attemptsLeft > 0) {

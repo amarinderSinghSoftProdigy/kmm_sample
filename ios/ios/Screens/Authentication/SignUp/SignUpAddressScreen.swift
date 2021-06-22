@@ -44,8 +44,8 @@ struct SignUpAddressScreen: View {
                                          },
                                          keyboardType: .numberPad,
                                          isValid: pincodeError == nil,
-                                         errorMessageKey: pincodeError)
-                .textContentType(.postalCode)
+                                         errorMessageKey: pincodeError,
+                                         textContentType: .postalCode)
             
             let addressLineErrorMessageKey = self.userValidation.value?.addressLine1
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
@@ -54,20 +54,20 @@ struct SignUpAddressScreen: View {
                                             scope.changeAddressLine(address: newValue)
                                          },
                                          isValid: addressLineErrorMessageKey == nil,
-                                         errorMessageKey: addressLineErrorMessageKey)
-                .disableAutocorrection(true)
-                .textContentType(.fullStreetAddress)
-                .autocapitalization(.words)
+                                         errorMessageKey: addressLineErrorMessageKey,
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .fullStreetAddress)
             
             let landmarkErrorMessageKey = self.userValidation.value?.landmark
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "landmark",
                                          text: self.registration.value?.landmark,
                                          onTextChange: { scope.changeLandmark(landmark: $0) },
                                          isValid: landmarkErrorMessageKey == nil,
-                                         errorMessageKey: landmarkErrorMessageKey)
-                .disableAutocorrection(true)
-                .textContentType(.sublocality)
-                .autocapitalization(.words)
+                                         errorMessageKey: landmarkErrorMessageKey,
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .sublocality)
             
             let locations = locationData.value?.locations ?? [String]()
             PickerSelector(placeholder: "location",

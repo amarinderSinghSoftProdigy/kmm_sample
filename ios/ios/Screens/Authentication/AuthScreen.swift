@@ -89,9 +89,9 @@ struct AuthScreen: View {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
                                              text: credentials.phoneNumberOrEmail,
                                              onTextChange: updateLogin,
-                                             keyboardType: .emailAddress)
-                    .autocapitalization(UITextAutocapitalizationType.none)
-                    .disableAutocorrection(true)
+                                             keyboardType: .emailAddress,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
                     .strokeBorder(.blueWhite,
                                   fill: .white,
                                   lineWidth: 2)

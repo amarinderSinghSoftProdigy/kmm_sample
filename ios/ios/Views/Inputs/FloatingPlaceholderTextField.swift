@@ -10,12 +10,12 @@ import SwiftUI
 import Combine
 
 struct FloatingPlaceholderTextField: View {
-    @ObservedObject private var textBindingManager: TextBindingManager
-    
     let placeholderLocalizedStringKey: String
     let keyboardType: UIKeyboardType
     
     let constText: String?
+    
+    let text: Binding<String>
     
     let height: CGFloat
     
@@ -23,6 +23,12 @@ struct FloatingPlaceholderTextField: View {
     let errorMessageKey: String?
     
     @State var fieldSelected = false
+    
+    @State private var cursorPosition: Int?
+    
+    private let disableAutocorrection: Bool
+    private let autocapitalization: UITextAutocapitalizationType
+    private let textContentType: UITextContentType?
     
     var body: some View {
         HStack {
@@ -33,15 +39,18 @@ struct FloatingPlaceholderTextField: View {
                               multilineTextAlignment: .leading)
             }
             
-            TextField("", text: $textBindingManager.text, onEditingChanged: { (changed) in
-                self.fieldSelected = changed
-            }, onCommit: {
-                self.fieldSelected = false
-            })
-            .keyboardType(keyboardType)
+            TextFieldContainer("",
+                               text: text,
+                               cursorPosition: $cursorPosition,
+                               fieldSelected: $fieldSelected,
+                               keyboardType: keyboardType,
+                               disableAutocorrection: disableAutocorrection,
+                               autocapitalization: autocapitalization,
+                               textContentType: textContentType)
+                .frame(maxHeight: height)
         }
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                              text: textBindingManager.text,
+                                              text: text.wrappedValue,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
@@ -56,12 +65,14 @@ struct FloatingPlaceholderTextField: View {
          height: CGFloat = 50,
          keyboardType: UIKeyboardType = .default,
          isValid: Bool = true,
-         errorMessageKey: String? = nil) {
+         errorMessageKey: String? = nil,
+         disableAutocorrection: Bool = false,
+         autocapitalization: UITextAutocapitalizationType = .words,
+         textContentType: UITextContentType? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
-        
-        self.textBindingManager = TextBindingManager(initialText: text) {
-            onTextChange($0)
-        }
+    
+        self.text = Binding(get: { text ?? "" },
+                            set: { onTextChange($0) })
         
         self.constText = constText
         
@@ -70,14 +81,17 @@ struct FloatingPlaceholderTextField: View {
         
         self.isValid = isValid
         self.errorMessageKey = errorMessageKey
+        
+        self.disableAutocorrection = disableAutocorrection
+        self.autocapitalization = autocapitalization
+        self.textContentType = textContentType
     }
 }
 
 struct FloatingPlaceholderSecureField: View {
-    @ObservedObject private var textBindingManager: TextBindingManager
-    
     let placeholderLocalizedStringKey: String
     
+    let text: Binding<String>
     let height: CGFloat
     
     let showPlaceholderWithText: Bool
@@ -88,19 +102,23 @@ struct FloatingPlaceholderSecureField: View {
     @State var showsPassword = false
     @State var fieldSelected = false
     
+    @State private var cursorPosition: Int?
+    
     var body: some View {
         HStack {
             if showsPassword {
-                TextField("", text: $textBindingManager.text)
-                    .disableAutocorrection(true)
-                    
-                    .autocapitalization(.none)
+                TextFieldContainer("",
+                                   text: text,
+                                   cursorPosition: $cursorPosition,
+                                   keyboardType: .default,
+                                   disableAutocorrection: true,
+                                   autocapitalization: .none)
             }
             else {
-                SecureField("", text: $textBindingManager.text)
+                SecureField("", text: text)
             }
             
-            if !textBindingManager.text.isEmpty {
+            if !text.wrappedValue.isEmpty {
                 Button(action: { self.showsPassword.toggle() }) {
                     Image(systemName: self.showsPassword ? "eye" : "eye.slash")
                         .foregroundColor(appColor: .darkBlue)
@@ -108,7 +126,7 @@ struct FloatingPlaceholderSecureField: View {
             }
         }
         .modifier(FloatingPlaceholderModifier(placeholderLocalizedStringKey: placeholderLocalizedStringKey,
-                                              text: textBindingManager.text,
+                                              text: text.wrappedValue,
                                               height: height,
                                               fieldSelected: fieldSelected,
                                               isValid: isValid,
@@ -135,9 +153,8 @@ struct FloatingPlaceholderSecureField: View {
          errorMessageKey: String? = nil) {
         self.placeholderLocalizedStringKey = placeholderLocalizedStringKey
         
-        self.textBindingManager = TextBindingManager(initialText: text) {
-            onTextChange($0)
-        }
+        self.text = Binding(get: { text ?? "" },
+                            set: { onTextChange($0) })
         
         self.height = height
         self.showPlaceholderWithText = showPlaceholderWithText
@@ -194,14 +211,12 @@ struct FloatingPlaceholderModifier: ViewModifier {
                     .isHidden(!placeholderMoved && !text.isEmpty)
                     .animation(.easeOut)
                 
-                let textFieldHeight = height + (placeholderMoved ? textOffset + 4 : 0)
-                let textFieldAlignment: Alignment = placeholderMoved ? .bottomLeading : .leading
                 content
                     .medicoText(fontSize: 15,
                                 multilineTextAlignment: .leading,
                                 testingIdentifier: "\(placeholderLocalizedStringKey)_input")
-                    .frame(height: textFieldHeight, alignment: textFieldAlignment)
                     .padding([.leading, .trailing], padding)
+                    .padding(.top, placeholderMoved ? 15 : 0)
             }
             
             VStack(alignment: .leading) {
@@ -244,25 +259,100 @@ struct FloatingPlaceholderModifier: ViewModifier {
     }
 }
 
-private class TextBindingManager: ObservableObject {
-    private var previousText: String
+private struct TextFieldContainer: UIViewRepresentable {
+    private let placeholder: String
+    private let text: Binding<String>
     
-    @Published var text = "" {
-        didSet {
-            if self.text != self.previousText {
-                onTextChange(text)
-                
-                self.text = self.previousText
-            }
+    private let cursorPosition: Binding<Int>
+    private let fieldSelected: Binding<Bool>?
+    
+    private let keyboardType: UIKeyboardType
+    private let disableAutocorrection: Bool
+    private let autocapitalization: UITextAutocapitalizationType
+    private let textContentType: UITextContentType?
+    
+    init(_ placeholder: String,
+         text: Binding<String>,
+         cursorPosition: Binding<Int?>,
+         fieldSelected: Binding<Bool>? = nil,
+         keyboardType: UIKeyboardType,
+         disableAutocorrection: Bool,
+         autocapitalization: UITextAutocapitalizationType,
+         textContentType: UITextContentType? = nil) {
+        self.placeholder = placeholder
+        self.text = text
+        
+        self.cursorPosition = Binding(get: { cursorPosition.wrappedValue ?? text.wrappedValue.count },
+                                      set: { cursorPosition.wrappedValue = $0 })
+        self.fieldSelected = fieldSelected
+        
+        self.keyboardType = keyboardType
+        self.disableAutocorrection = disableAutocorrection
+        self.autocapitalization = autocapitalization
+        self.textContentType = textContentType
+    }
+
+    func makeCoordinator() -> TextFieldContainer.Coordinator {
+        Coordinator(self)
+    }
+
+    func makeUIView(context: UIViewRepresentableContext<TextFieldContainer>) -> UITextField {
+        let textField = UITextField(frame: .zero)
+        textField.placeholder = placeholder
+        textField.text = text.wrappedValue
+        textField.delegate = context.coordinator
+        
+        textField.font = UIFont(name: "Barlow-Regular", size: 15)
+        textField.textColor = UIColor(named: "DarkBlue")
+        
+        textField.keyboardType = keyboardType
+        textField.autocorrectionType = disableAutocorrection ? .no : .yes
+        textField.autocapitalizationType = autocapitalization
+        
+        if let textContentType = self.textContentType {
+            textField.textContentType = textContentType
+        }
+
+        context.coordinator.setup(textField)
+
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<TextFieldContainer>) {
+        uiView.text = self.text.wrappedValue
+        
+        if let newPosition = uiView.position(from: uiView.beginningOfDocument, offset: cursorPosition.wrappedValue) {
+            uiView.selectedTextRange = uiView.textRange(from: newPosition, to: newPosition)
         }
     }
-    private let onTextChange: (String) -> ()
 
-    init(initialText: String?,
-         onTextChange: @escaping (String) -> ()) {
-        self.previousText = initialText ?? ""
-        self.text = initialText ?? ""
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: TextFieldContainer
+
+        private var selectedTextRange: UITextRange?
         
-        self.onTextChange = onTextChange
+        init(_ textFieldContainer: TextFieldContainer) {
+            self.parent = textFieldContainer
+        }
+
+        func setup(_ textField: UITextField) {
+            textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        }
+
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            parent.fieldSelected?.wrappedValue = true
+        }
+        
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            parent.fieldSelected?.wrappedValue = false
+        }
+        
+        @objc func textFieldDidChange(_ textField: UITextField) {
+            if let selectedRange = textField.selectedTextRange {
+                parent.cursorPosition.wrappedValue = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
+            }
+            
+            parent.text.wrappedValue = textField.text ?? ""
+        }
     }
 }

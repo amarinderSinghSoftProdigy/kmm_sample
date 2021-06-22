@@ -42,10 +42,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
                                          isValid: self.validation.value == nil ||
                                             firstName?.isEmpty == false,
-                                         errorMessageKey: "required_field")
-                .disableAutocorrection(true)
-                .textContentType(.givenName)
-                .autocapitalization(.words)
+                                         errorMessageKey: "required_field",
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .givenName)
             
             let lastName = self.registration.value?.lastName
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
@@ -53,10 +53,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
                                          isValid: self.validation.value == nil ||
                                             lastName?.isEmpty == false,
-                                         errorMessageKey: "required_field")
-                .disableAutocorrection(true)
-                .textContentType(.familyName)
-                .autocapitalization(.words)
+                                         errorMessageKey: "required_field",
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .familyName)
 
             let emailErrorMessageKey = self.validation.value?.email
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
@@ -64,9 +64,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeEmail(email: newValue) },
                                          keyboardType: .emailAddress,
                                          isValid: emailErrorMessageKey == nil,
-                                         errorMessageKey: emailErrorMessageKey)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
+                                         errorMessageKey: emailErrorMessageKey,
+                                         disableAutocorrection: true,
+                                         autocapitalization: .none,
+                                         textContentType: .emailAddress)
             
             let canSubmitPhone = Binding(get: { isPhoneValid },
                                          set: {
