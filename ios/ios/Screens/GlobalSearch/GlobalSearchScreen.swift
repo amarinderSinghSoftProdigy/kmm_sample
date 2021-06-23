@@ -324,14 +324,12 @@ struct ProductSearchView: View {
                         VStack(alignment: alignment, spacing: 3) {
                             HStack(spacing: 20) {
                                 LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(product.formattedMrp)"),
-                                              testingIdentifier: "mrp",
                                               fontSize: 12,
                                               color: .grey3,
                                               multilineTextAlignment: textAlignment)
                                 
                                 if let margin = product.marginPercent {
                                     LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
-                                                  testingIdentifier: "margin",
                                                   fontSize: 12,
                                                   color: .grey3,
                                                   multilineTextAlignment: .leading)
@@ -339,7 +337,6 @@ struct ProductSearchView: View {
                             }
                             
                             LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.code)"),
-                                          testingIdentifier: "code",
                                           fontSize: 12,
                                           color: .grey3,
                                           multilineTextAlignment: textAlignment)

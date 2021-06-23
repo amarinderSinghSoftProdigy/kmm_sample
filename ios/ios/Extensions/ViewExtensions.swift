@@ -208,6 +208,12 @@ extension View {
     func userInteractionDisabled() -> some View {
         self.modifier(NoHitTesting())
     }
+    
+    func safariViewModifier(link: Binding<String?>) -> some View {
+        self.modifier(
+            SafariViewModifier(link: link)
+        )
+    }
 }
 
 struct RoundedCorner: Shape {

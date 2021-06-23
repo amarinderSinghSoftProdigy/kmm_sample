@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func setUpAppNavigator() {
         #if DEBUG
-        let useMocks = false
+        let useMocks = true//false
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
         #else

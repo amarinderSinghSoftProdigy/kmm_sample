@@ -10,7 +10,7 @@
 "back" = "Back";
 
 // MARK: Roles
-"stockist" = "Stockist";
+"stockist" = "Stockist/Sub-Stockist";
 "retailer" = "Retailer";
 "season_boy" = "Season Boy";
 "hospital" = "Hospital";
@@ -28,7 +28,7 @@
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
-"phone_number" = "Phone Number";
+"phone_number" = "Mobile Number";
 "get_code" = "Get Code";
 
 // MARK: OTP Await Verification
@@ -57,14 +57,14 @@
 "who_are_you" = "Who are you?";
 
 // MARK: Authentication Sign Up Personal Data
-"personal_data" = "Personal Data";
+"personal_data" = "Contact Information";
 "first_name" = "First Name";
 "last_name" = "Last Name";
 "email_address" = "Email Address";
 "password" = "Password";
-"repeat_password" = "Repeat Password";
-"continueing_i_accept" = "Continueing, I accept the";
-"terms_of_conditions_and_privacy_policy" = "Terms of Conditions and Privacy Policy";
+"repeat_password" = "Verify Password";
+"continueing_i_accept" = "I accept the";
+"terms_of_conditions_and_privacy_policy" = "Terms & Conditions";
 
 // MARK: Authentication Sign Up Address
 "address" = "Address";
@@ -77,7 +77,7 @@
 "state" = "State";
 
 // MARK: Authentication Sign Up Trader Details
-"trader_details" = "Trader Details";
+"trader_details" = "Trade Information";
 "aadhaar_details" = "Aadhaar Card Details";
 "trade_name" = "Trade Name";
 "pan_number" = "PAN Number";
@@ -94,7 +94,8 @@
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
 "drug_license_request" = "Please provide a drug license to\nactivate the account";
-"aadhaar_card_request" = "Please upload Aadhaar card";
+"aadhaar_card_request" = "Please upload Aadhaar e-KYC";
+"download_note" = "NOTE: Please download using";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
@@ -171,8 +172,8 @@
 "your_stockists" = "Your Stockists";
 "all_stockists" = "All Stockists";
 "pending" = "Pending";
-"subscribed" = "Subscribed";
-"choose_payment_method_description" = "Before you subscribe to Pharmacy Doctors, please choose the payment method ";
+"subscribed" = "Connected";
+"choose_payment_method_description %@" = "Please choose Payment Method to connect with %@";
 "credit" = "Credit";
 "cash_on_delivery" = "Cash on delivery";
 "save" = "Save";
@@ -192,13 +193,13 @@
 "your_season_boys" = "Your Season Boys";
 
 // MARK: Bottom Sheet User Details
-"subscribe" = "Subscribe";
+"subscribe" = "Connect";
 "see_on_the_map" = "See on the map";
 "verified" = "Verified";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
 "pan_number:" = "PAN Number:";
-"payment_method" = "Payment Method:";
+"payment_method" = "Type:";
 "orders:" = "Orders:";
 "retailers:" = "Retailers:";
 
@@ -225,7 +226,7 @@
 "years %lld" = "%lldy";
 
 // MARK: Notification Details
-"new_request_to_subscribe_from" = "New request to subscribe from";
+"new_request_to_subscribe_from" = "New request to connect from";
 "phone" = "Phone:";
 "edit_credit" = "Edit Credit";
 "discount_rate:" = "Discount rate:";
@@ -239,7 +240,7 @@
 "add_retailer_address" = "Add Retailer’s Address";
 "confirm_the_information" = "Confirm if the information above is correct";
 "congratulations" = "Congratulations";
-"retailer_added_template %@" = "You have added %@ to your list of Retailes successfully";
+"retailer_added_template %@" = "You have added %@ to your list of Retailes successfully\nDetails will be verified before they appear in your list.";
 "retailers_list" = "Retailers List";
 
 // MARK: Store

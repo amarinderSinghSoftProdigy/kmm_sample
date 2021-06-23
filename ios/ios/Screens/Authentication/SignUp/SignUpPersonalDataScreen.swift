@@ -18,6 +18,9 @@ struct SignUpPersonalDataScreen: View {
     @ObservedObject var validation: SwiftDataSource<DataUserValidation1>
     
     @State var isPhoneValid: Bool = true
+    @State var acceptedTermsAndConditions: Bool = false
+    
+    @State private var safariLink: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -27,11 +30,12 @@ struct SignUpPersonalDataScreen: View {
             
             Spacer()
         }
-        .modifier(SignUpButton(isEnabled: canGoNext.value != false,
+        .modifier(SignUpButton(isEnabled: canGoNext.value != false && acceptedTermsAndConditions,
                                action: goToAddress))
         .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpPersonalDataScreen",
                       withScreenClass: SignUpPersonalDataScreen.self)
+        .safariViewModifier(link: $safariLink)
     }
     
     var personalDataFields: some View {
@@ -100,19 +104,24 @@ struct SignUpPersonalDataScreen: View {
     }
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            LocalizedText(localizationKey: "continueing_i_accept",
-                          fontSize: 12,
-                          color: .textGrey)
+        HStack {
+            CheckBox(selected: $acceptedTermsAndConditions)
+                .frame(width: 22, height: 22)
             
-            LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
-                          textWeight: .semiBold,
-                          fontSize: 12,
-                          color: .lightBlue,
-                          underlined: true)
-                .onTapGesture {
-                    showTermsOfConditionsAndPrivacyPolicy()
-                }
+            HStack(spacing: 3) {
+                LocalizedText(localizationKey: "continueing_i_accept",
+                              fontSize: 12,
+                              color: .textGrey)
+                
+                LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
+                              textWeight: .semiBold,
+                              fontSize: 12,
+                              color: .lightBlue,
+                              underlined: true)
+                    .onTapGesture {
+                        showTermsOfConditionsAndPrivacyPolicy()
+                    }
+            }
         }
     }
     
@@ -134,9 +143,6 @@ struct SignUpPersonalDataScreen: View {
     }
     
     private func showTermsOfConditionsAndPrivacyPolicy() {
-        if let link = Bundle.main.object(forInfoDictionaryKey: "AppTermsOfConditionsAndPrivacyPolicyLink") as? String,
-            let url = URL(string: link) {
-            UIApplication.shared.open(url)
-        }
+        self.safariLink = Bundle.main.object(forInfoDictionaryKey: "AppTermsOfConditionsAndPrivacyPolicyLink") as? String
     }
 }

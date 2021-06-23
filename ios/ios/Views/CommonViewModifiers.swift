@@ -189,3 +189,24 @@ struct NoHitTesting: ViewModifier {
         func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) { }
     }
 }
+
+struct SafariViewModifier: ViewModifier {
+    let link: Binding<String?>
+    
+    func body(content: Content) -> some View {
+        if let link = self.link.wrappedValue,
+           let url = URL(string: link) {
+            let isPresented = Binding(get: { true },
+                                      set: { if !$0 { self.link.wrappedValue = nil }})
+            
+            content
+                .sheet(isPresented: isPresented) {
+                    SafariView(url: url)
+                }
+        }
+        else {
+            content
+        }
+        
+    }
+}

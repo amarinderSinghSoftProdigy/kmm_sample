@@ -20,13 +20,10 @@ struct ComplexNotificationAlert: View {
         let button: CustomAlert<AnyView>.AlertButton
         var cancelButton: CustomAlert<AnyView>.AlertButton? = nil
         let body: AnyView
-        var outsideTapAction = { self.dismissAction(true) }
 
         switch self.notification {
 
         case let notification as ManagementScope.ChoosePaymentMethod:
-            titleKey = "choose_payment_method_description"
-            
             button = .init(text: "save",
                            isEnabled: isSendEnabled,
                            action: { notification.sendRequest() })
@@ -37,7 +34,14 @@ struct ComplexNotificationAlert: View {
                                  isEnabled: true,
                                  action: { self.dismissAction(false) })
             
-            outsideTapAction = { self.hideKeyboard() }
+            return AnyView(
+                CustomAlert(localizedStringKey: LocalizedStringKey("choose_payment_method_description \(notification.creditDays)"),
+                            button: button,
+                            cancelButton: cancelButton,
+                            outsideTapAction: { self.hideKeyboard() }) {
+                    body
+                }
+            )
             
         case let notification as ManagementScope.AddRetailerAddress.Congratulations:
             titleKey = "congratulations"
@@ -46,7 +50,6 @@ struct ComplexNotificationAlert: View {
                            action: { self.dismissAction(false) })
             body = AnyView(
                 LocalizedText(localizedStringKey: LocalizedStringKey("retailer_added_template \(notification.tradeName)"),
-                              testingIdentifier: "alert_text",
                               fontSize: 13,
                               color: .black)
                     .padding(.bottom, 20)
@@ -110,7 +113,7 @@ struct ComplexNotificationAlert: View {
             CustomAlert(titleKey: titleKey,
                         button: button,
                         cancelButton: cancelButton,
-                        outsideTapAction: outsideTapAction) {
+                        outsideTapAction: { self.dismissAction(true) }) {
                 body
             }
         )
