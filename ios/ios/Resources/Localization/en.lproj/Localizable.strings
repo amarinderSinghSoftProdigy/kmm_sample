@@ -306,21 +306,21 @@
 "to:" = "To:";
 "order_no:" = "Order No:";
 "accept_all" = "Accept All";
-"reject_all" = "Reject All";
+"reject_all" = "Decline All";
 "quote" = "Quote";
 "batch_no %@" = "Batch No: %@";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
 "served_qty:" = "Served QTY:";
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
-"reject_all_products_notification" = "Are you sure you want to Reject all products?";
+"reject_all_products_notification" = "Are you sure you want to Decline all products?";
 
 // MARK: Confirm Order
 "action_confirmation" = "Action Confirmation";
 "accepted" = "Accepted";
-"rejected" = "Rejected";
+"rejected" = "Declined";
 "accept_selected" = "Accept Selected";
-"reject_selected" = "Reject Selected";
+"reject_selected" = "Decline Selected";
 
 // MARK: Invoices
 "invoices" = "Invoices";
