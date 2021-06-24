@@ -28,8 +28,8 @@ class MockCustomerScope : NetworkScope.Customer {
                 "Delhi",
                 "Vijayawada",
                 0.0,
-                "Some location",
                 0.0,
+                "Some location",
                 520001,
                 "",
                 ""

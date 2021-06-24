@@ -44,6 +44,7 @@ internal class ProductEventDelegate(
         if (isSuccess && response?.product != null) {
             val sellerUnitCode =
                 navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.sellerUnitCode
+                    ?.takeIf { userRepo.requireUser().type != UserType.SEASON_BOY }
             navigator.setScope(
                 ProductInfoScope(
                     sellerUnitCode = sellerUnitCode,

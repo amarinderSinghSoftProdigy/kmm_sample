@@ -287,5 +287,5 @@ private inline val testUser
         User.Details.DrugLicense("", "", "", "", "url"),
         true,
         true,
-        AddressData("", "", "", "", 0.0, "", 0.0, 0, "", "")
+        AddressData("", "", "", "", 0.0, 0.0, "", 0, "", "")
     )

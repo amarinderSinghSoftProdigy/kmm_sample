@@ -342,7 +342,7 @@ private fun CartItem(cartItem: CartItem) {
                                 modifier = Modifier.sizeIn(maxWidth = maxWidth * 2 / 3)
                             )
                         }
-                        GeoLocation(it.city, textSize = 12.sp, tint = ConstColors.lightBlue)
+                        GeoLocation(it.geoData.city, textSize = 12.sp, tint = ConstColors.lightBlue)
                     }
                 }
             }

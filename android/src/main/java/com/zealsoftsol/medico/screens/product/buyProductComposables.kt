@@ -75,10 +75,15 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().background(Color.White).padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
@@ -143,7 +148,8 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
         (scope as? BuyProductScope.ChooseRetailer)?.sellerInfo?.let {
             Divider()
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .background(Color.White)
                     .padding(vertical = 12.dp, horizontal = 20.dp),
             ) {
@@ -341,13 +347,17 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
                     cursorBrush = SolidColor(ConstColors.lightBlue),
                     onValueChange = { scope.filterItems(it) },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(end = 32.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 32.dp),
                 )
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colors.background,
-                    modifier = Modifier.size(24.dp).align(Alignment.CenterEnd),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.CenterEnd),
                 )
             }
             Space(12.dp)
@@ -392,7 +402,9 @@ private fun QuotedItem(
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -643,7 +655,7 @@ private fun SeasonBoyReatilerInfoItem(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 GeoLocation(
-                    seasonBoyRetailer.fullAddress(),
+                    seasonBoyRetailer.geoData.fullAddress(),
                     isBold = true,
                     textSize = 12.sp,
                     tint = MaterialTheme.colors.background,
@@ -699,7 +711,9 @@ private fun BaseSellerItem(
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
     ) {
         Box {
             val labelColor = when (stockStatus) {
@@ -710,7 +724,8 @@ private fun BaseSellerItem(
             }
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 18.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -727,7 +742,9 @@ private fun BaseSellerItem(
                 }
                 if (onTopOfDivider != null) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -737,7 +754,9 @@ private fun BaseSellerItem(
                 Space(10.dp)
                 Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.05f))
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -748,7 +767,9 @@ private fun BaseSellerItem(
                 val maxWidth =
                     LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp - 5.dp
                 Box(
-                    modifier = Modifier.matchParentSize().padding(end = maxWidth)
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(end = maxWidth)
                         .background(labelColor)
                 )
             }

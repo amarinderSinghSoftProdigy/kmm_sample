@@ -23,7 +23,7 @@ data class GeoData(
     val location: String,
     val pincode: String,
     val landmark: String,
-    @SerialName("townOrCity")
+    @SerialName("cityOrTown")
     val city: String,
     val distance: Double,
     val formattedDistance: String,
@@ -41,13 +41,12 @@ data class AddressData(
     @SerialName("addressLine1")
     val address: String,
     val landmark: String,
-    @SerialName("cityTown")
+    @SerialName("cityOrTown")
     val city: String,
     val district: String,
-    @SerialName("latitidue")
     val latitude: Double = 0.0,
-    val location: String,
     val longitude: Double = 0.0,
+    val location: String,
     val pincode: Int,
     val placeId: String? = null,
     val state: String,

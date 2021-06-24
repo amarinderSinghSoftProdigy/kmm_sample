@@ -42,11 +42,6 @@ data class SeasonBoyRetailer(
     @SerialName("seasonBoyRetailerId")
     val id: String? = null,
     override val tradeName: String,
-    @SerialName("cityOrTown")
-    val city: String,
-    val location: String,
-    val pincode: String,
+    val geoData: GeoData,
     val cartInfo: CartInfo? = null,
-) : WithTradeName {
-    fun fullAddress() = "$city $pincode"
-}
+) : WithTradeName
