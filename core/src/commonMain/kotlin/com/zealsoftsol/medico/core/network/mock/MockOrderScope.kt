@@ -74,8 +74,8 @@ class MockOrderScope : NetworkScope.Orders {
                         "Delhi",
                         "Vijayawada",
                         0.0,
-                        "Some location",
                         0.0,
+                        "Some location",
                         520001,
                         "",
                         ""

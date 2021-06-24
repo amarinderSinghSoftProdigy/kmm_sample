@@ -4,7 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class OrderType(val path: String) {
-    PURCHASE_ORDER("/po/"), ORDERS("/"), HISTORY("/history/");
+    PURCHASE_ORDER("/po/"),
+    ORDER("/"),
+    HISTORY("/history/");
 }
 
 @Serializable

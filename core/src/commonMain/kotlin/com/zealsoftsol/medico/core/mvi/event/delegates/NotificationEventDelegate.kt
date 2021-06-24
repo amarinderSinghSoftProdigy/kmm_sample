@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -58,7 +57,7 @@ internal class NotificationEventDelegate(
 
     private suspend fun select(data: NotificationData) {
         navigator.withScope<NotificationScope.All> {
-            when (data.type.log("type")) {
+            when (data.type) {
                 NotificationType.SUBSCRIBE_REQUEST, NotificationType.SUBSCRIBE_DECISION -> openableNotification(
                     data
                 )
@@ -100,7 +99,6 @@ internal class NotificationEventDelegate(
         val (result, isSuccess) = withProgress {
             notificationRepo.getNotificationDetails(data.id)
         }
-        result.log("result")
 
         if (isSuccess && result != null) {
             when {

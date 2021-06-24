@@ -134,7 +134,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Orders -> setScope(
-                    OrdersScope(OrderType.ORDERS)
+                    OrdersScope(OrderType.ORDER)
                 )
                 is Event.Transition.NewOrders -> setScope(
                     OrdersScope(OrderType.PURCHASE_ORDER)

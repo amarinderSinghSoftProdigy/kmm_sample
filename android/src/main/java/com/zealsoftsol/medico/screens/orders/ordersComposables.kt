@@ -83,7 +83,7 @@ fun OrdersScreen(scope: OrdersScope) {
                     text = stringResource(
                         id = when (scope.type) {
                             OrderType.PURCHASE_ORDER -> R.string.new_orders
-                            OrderType.ORDERS -> R.string.orders
+                            OrderType.ORDER -> R.string.orders
                             OrderType.HISTORY -> 0
                         }
                     ),
