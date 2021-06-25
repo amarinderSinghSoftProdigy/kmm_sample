@@ -64,8 +64,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                         
                         if bottomSheet.canEdit {
                             NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
-                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0 ? .longPress : .click) },
-                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0 ? .longPress : .click) },
+                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0) },
+                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0) },
                                          longPressEnabled: true)
                         }
                         else {

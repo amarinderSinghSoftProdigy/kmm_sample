@@ -364,7 +364,7 @@ struct CartItemView: View {
                             
                             Spacer()
                             
-                            SmallAddressView(location: seasonBoyRetailerInfo.city)
+                            SmallAddressView(location: seasonBoyRetailerInfo.geoData.city)
                         }
                         .frame(height: 20)
                     }
