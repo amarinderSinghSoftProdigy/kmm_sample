@@ -213,10 +213,10 @@ fun Scope.Host.showErrorAlert() {
     errorCode.value?.let {
         val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.E0000
         val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.something_went_wrong
         SimpleDialog(
             title = stringResource(id = titleResourceId),
             text = stringResource(id = bodyResourceId),

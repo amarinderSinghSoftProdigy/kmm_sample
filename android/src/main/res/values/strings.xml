@@ -221,4 +221,45 @@
     <string name="download">Download</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+
+
+    <!--error codes-->
+
+    <string name="E0000">Error</string>
+    <string name="E0001">Customer Type is required</string>
+    <string name="E0002">First name is required</string>
+    <string name="E0003">Last name is required</string>
+    <string name="E0004">Email is required</string>
+    <string name="E0005">Please enter a valid email</string>
+    <string name="E0006">MobileNumber is required</string>
+    <string name="E0007">Password is required</string>
+    <string name="E0008">Password must be at least 8 characters long. It must have at least 1 number and 1 upper case character.</string>
+    <string name="E0009">Password does not match with given password</string>
+    <string name="E0010">Aadhaar Card Number is required</string>
+    <string name="E0011">Please enter a valid aadhaar card number</string>
+    <string name="E0012">Please accept terms &amp; conditions</string>
+    <string name="E0013">Please accept consent</string>
+    <string name="E0014">Pincode is required</string>
+    <string name="E0015">Address Line1 is required</string>
+    <string name="E0016">Location is required</string>
+    <string name="E0017">Landmark is required</string>
+    <string name="E0018">City/Town is required</string>
+    <string name="E0019">District is required</string>
+    <string name="E0020">State is required</string>
+    <string name="E0021">Specify Trade name as mentioned in the GST certificate</string>
+    <string name="E0022">Drug License No1 is required</string>
+    <string name="E0023">Drug License No2 is required</string>
+    <string name="E0024">SB UnitCode is required</string>
+    <string name="E0025">Please enter a valid GSTIN Number</string>
+    <string name="E0026">Please enter a valid Pan Number</string>
+    <string name="E0027">Please enter either GSTIN or PAN number to proceed.</string>
+    <string name="E0028">Retailer already registered with medicostores.com. Please sign up using new details.</string>
+    <string name="E0029">Email/mobile number already registered. Please try again.</string>
+    <string name="E0030">Seasonboy doesn\'t exists, please check it again</string>
+    <string name="E0031">Season Boy with retailer, can\'t be created. Please try after sometime…</string>
+    <string name="E0032">Registered user, can\'t be created. Please try after sometime…</string>
+    <string name="E0033">Uploaded document doesn\'t match with registered user</string>
+    <string name="E0034">Auth0 gRPC server down, check whether its running</string>
+    <string name="E0035">Unable to get geolocation data, check the geolocation server is running</string>
+
 </resources>
