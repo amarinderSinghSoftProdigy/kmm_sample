@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,8 +47,9 @@ fun AuthPhoneNumberInputScreen(scope: OtpScope.PhoneNumberInput) {
 @Composable
 fun AuthAwaitVerificationScreen(
     scope: OtpScope.AwaitVerification,
-    dateFormat: SimpleDateFormat = remember { SimpleDateFormat("mm:ss") },
 ) {
+    val context = LocalContext.current
+    val dateFormat = remember { SimpleDateFormat("mm:ss", context.resources.configuration.locale) }
     val code = remember { mutableStateOf("") }
     val attempts = scope.attemptsLeft.flow.collectAsState()
     BasicScreen(
