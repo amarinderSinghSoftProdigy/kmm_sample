@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -93,13 +94,13 @@ internal class SearchEventDelegate(
                     is SearchScope -> null
                     else -> throw UnsupportedOperationException("unknown search scope")
                 }
-                val (result, isSuccess) = networkSearchScope.autocomplete(value, unitCodeForStores)
-                if (isSuccess && result != null) {
-                    it.autoComplete.value = result
-                    if (value.isNotEmpty() && result.isEmpty() && it.products.value.isNotEmpty()) {
-                        it.products.value = emptyList()
-                    }
-                }
+                networkSearchScope.autocomplete(value, unitCodeForStores)
+                    .onSuccess { body ->
+                        it.autoComplete.value = body
+                        if (value.isNotEmpty() && body.isEmpty() && it.products.value.isNotEmpty()) {
+                            it.products.value = emptyList()
+                        }
+                    }.onError(navigator)
             }
         }
     }
@@ -247,23 +248,22 @@ internal class SearchEventDelegate(
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val address = userRepo.requireUser().addressData
-            val (result, isSuccess) = networkSearchScope.search(
+            networkSearchScope.search(
                 selectedSortOption.value?.code,
                 (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
                 unitCode.takeIf { this is StoresScope.StorePreview },
                 address.latitude,
                 address.longitude,
                 pagination,
-            )
-            if (isSuccess && result != null) {
-                pagination.setTotal(result.totalResults)
-                filters.value = result.facets.toFilter()
-                products.value = if (!addPage) result.products else products.value + result.products
-                sortOptions.value = result.sortOptions
+            ).onSuccess { body ->
+                pagination.setTotal(body.totalResults)
+                filters.value = body.facets.toFilter()
+                products.value = if (!addPage) body.products else products.value + body.products
+                sortOptions.value = body.sortOptions
                 if (selectedSortOption.value == null) {
                     selectedSortOption.value = sortOptions.value.firstOrNull()
                 }
-            }
+            }.onError(navigator)
             onEnd()
         }
     }

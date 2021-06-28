@@ -5,7 +5,6 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerMetaData
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.UserType
 
 class MockCustomerScope : NetworkScope.Customer {
@@ -14,8 +13,8 @@ class MockCustomerScope : NetworkScope.Customer {
         "USING MOCK CUSTOMER SCOPE".logIt()
     }
 
-    override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = mockResponse {
-        Response.Wrapped(getMockCustomerData(), true)
+    override suspend fun getCustomerData() = mockResponse<CustomerData> {
+        getMockCustomerData()
     }
 
     companion object {

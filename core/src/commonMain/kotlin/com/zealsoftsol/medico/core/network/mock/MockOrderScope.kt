@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceEntry
@@ -20,7 +19,6 @@ import com.zealsoftsol.medico.data.OrderResponse
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PaymentMethod
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.Total
 import kotlin.random.Random
 
@@ -39,79 +37,76 @@ class MockOrderScope : NetworkScope.Orders {
         from: Long?,
         to: Long?,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<Order>> = mockResponse {
-        Response.Wrapped(longPaginatedOrderData(20, rnd), true)
+    ) = mockResponse {
+        longPaginatedOrderData(20, rnd)
     }
 
     override suspend fun getOrder(
         type: OrderType,
         unitCode: String,
         orderId: String
-    ): Response.Wrapped<OrderResponse> = mockResponse {
-        Response.Wrapped(null, false)
+    ) = mockResponse<OrderResponse> {
+        null
     }
 
-    override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
+    override suspend fun confirmOrder(request: ConfirmOrderRequest) =
         mockResponse {
-            Response.Wrapped(null, true)
+            mockEmptyMapBody()
         }
 
-    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse> =
-        mockResponse {
-            Response.Wrapped(null, true)
+    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest) =
+        mockResponse<OrderResponse> {
+            null
         }
 
     override suspend fun getInvoice(
         unitCode: String,
         invoiceId: String
-    ): Response.Wrapped<InvoiceResponse> = mockResponse {
-        Response.Wrapped(
-            InvoiceResponse(
-                data = B2BData(
-                    addressData = AddressData(
-                        "India",
-                        "landmark",
-                        "Delhi",
-                        "Vijayawada",
-                        0.0,
-                        0.0,
-                        "Some location",
-                        520001,
-                        "",
-                        ""
-                    ),
-                    drugLicenseNo1 = "drug1",
-                    drugLicenseNo2 = "drug2",
-                    gstin = "12345",
-                    phoneNumber = "+1111111",
-                    panNumber = "55532",
-                    tradeName = "Test Trader",
+    ) = mockResponse {
+        InvoiceResponse(
+            data = B2BData(
+                addressData = AddressData(
+                    "India",
+                    "landmark",
+                    "Delhi",
+                    "Vijayawada",
+                    0.0,
+                    0.0,
+                    "Some location",
+                    520001,
+                    "",
+                    ""
                 ),
-                invoice = Invoice(
-                    info = InvoiceInfo(
-                        id = Time.now.toString(),
-                        date = "${rnd.nextInt(31)}/05/2021",
-                        time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
-                        total = Total(
-                            formattedPrice = "₹${rnd.nextInt(10_000)}",
-                            price = 0.0,
-                            itemCount = 0,
-                        ),
-                        paymentMethod = PaymentMethod.CASH,
-                    ),
-                    tradeName = "Trader 1",
-                ),
-                invoiceEntries = listOf(
-                    InvoiceEntry(
-                        productName = "Some product",
-                        manufacturerName = "Some manufacturer",
-                        price = FormattedData("₹ 1,110.09", 0.0),
-                        totalAmount = FormattedData("₹ 110.09", 0.0),
-                        quantity = FormattedData("2", 2.0),
-                    )
-                )
+                drugLicenseNo1 = "drug1",
+                drugLicenseNo2 = "drug2",
+                gstin = "12345",
+                phoneNumber = "+1111111",
+                panNumber = "55532",
+                tradeName = "Test Trader",
             ),
-            true
+            invoice = Invoice(
+                info = InvoiceInfo(
+                    id = Time.now.toString(),
+                    date = "${rnd.nextInt(31)}/05/2021",
+                    time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
+                    total = Total(
+                        formattedPrice = "₹${rnd.nextInt(10_000)}",
+                        price = 0.0,
+                        itemCount = 0,
+                    ),
+                    paymentMethod = PaymentMethod.CASH,
+                ),
+                tradeName = "Trader 1",
+            ),
+            invoiceEntries = listOf(
+                InvoiceEntry(
+                    productName = "Some product",
+                    manufacturerName = "Some manufacturer",
+                    price = FormattedData("₹ 1,110.09", 0.0),
+                    totalAmount = FormattedData("₹ 110.09", 0.0),
+                    quantity = FormattedData("2", 2.0),
+                )
+            )
         )
     }
 
@@ -121,8 +116,8 @@ class MockOrderScope : NetworkScope.Orders {
         from: Long?,
         to: Long?,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<Invoice>> = mockResponse {
-        Response.Wrapped(longPaginatedInvoiceData(20, rnd), true)
+    ) = mockResponse {
+        longPaginatedInvoiceData(20, rnd)
     }
 }
 

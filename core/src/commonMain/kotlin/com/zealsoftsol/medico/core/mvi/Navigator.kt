@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.StartScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.Response
 import kotlin.reflect.KClass
 
 class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
@@ -177,4 +178,8 @@ internal inline fun <T> Navigator.withProgress(block: () -> T): T {
     return block().also {
         setHostProgress(false)
     }
+}
+
+internal inline fun Response<*, *>.onError(navigator: Navigator) = apply {
+    onError { navigator.setHostError(it) }
 }

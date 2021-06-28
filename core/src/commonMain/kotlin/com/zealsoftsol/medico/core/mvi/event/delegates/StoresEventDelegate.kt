@@ -25,24 +25,22 @@ internal class StoresEventDelegate(
     private suspend fun loadStores(isFirstLoad: Boolean) {
         loadHelper.load<StoresScope.All, Store>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkStoresScope.getStores(
+            networkStoresScope.getStores(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun searchStores(search: String) {
         loadHelper.search<StoresScope.All, Store>(searchValue = search) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkStoresScope.getStores(
+            networkStoresScope.getStores(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 

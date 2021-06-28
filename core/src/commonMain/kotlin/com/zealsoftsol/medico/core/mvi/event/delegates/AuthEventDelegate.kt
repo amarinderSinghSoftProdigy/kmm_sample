@@ -1,9 +1,9 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.extensions.ifTrue
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
@@ -15,7 +15,6 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.data.ErrorCode
 
 internal class AuthEventDelegate(
     navigator: Navigator,
@@ -35,47 +34,44 @@ internal class AuthEventDelegate(
 
     private suspend fun authTryLogin() {
         navigator.withScope<LogInScope> {
-            val (error, isSuccess) = withProgress {
+            withProgress {
                 userRepo.login(
                     it.credentials.value.phoneNumberOrEmail,
                     it.credentials.value.password,
                 )
-            }
-            if (isSuccess) {
-                if (withProgress { userRepo.loadUserFromServer() }) {
-                    withProgress {
-                        userRepo.sendFirebaseToken()
-                        notificationRepo.loadUnreadMessagesFromServer()
-                        cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
-                    }
-                    dropScope(Navigator.DropStrategy.All, updateDataSource = false)
-                    val user = userRepo.requireUser()
-                    setScope(
-                        if (user.isActivated)
-                            DashboardScope.get(
-                                user = user,
-                                userDataSource = userRepo.getUserDataSource(),
-                                unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
-                                cartItemsCount = cartRepo.getEntriesCountDataSource(),
-                            )
-                        else
-                            LimitedAccessScope.get(user, userRepo.getUserDataSource())
-                    )
-                } else {
-                    setHostError(ErrorCode())
-                }
-            } else {
-                setHostError(error ?: ErrorCode())
-            }
+            }.onSuccess { _ ->
+                withProgress { userRepo.loadUserFromServer() }
+                    .onSuccess {
+                        withProgress {
+                            userRepo.sendFirebaseToken()
+                            notificationRepo.loadUnreadMessagesFromServer()
+                            cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
+                        }
+                        dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                        val user = userRepo.requireUser()
+                        setScope(
+                            if (user.isActivated)
+                                DashboardScope.get(
+                                    user = user,
+                                    userDataSource = userRepo.getUserDataSource(),
+                                    unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                                    cartItemsCount = cartRepo.getEntriesCountDataSource(),
+                                )
+                            else
+                                LimitedAccessScope.get(user, userRepo.getUserDataSource())
+                        )
+                    }.onError(navigator)
+            }.onError(navigator)
         }
     }
 
     private suspend fun authTryLogOut(notifyServer: Boolean) {
-        navigator.withProgress {
-            if (notifyServer) userRepo.logout() else true
-        }.ifTrue {
-            navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
-            navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+        if (notifyServer) {
+            userRepo.logout()
+                .onSuccess {
+                    navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                    navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+                }.onError(navigator)
         }
     }
 

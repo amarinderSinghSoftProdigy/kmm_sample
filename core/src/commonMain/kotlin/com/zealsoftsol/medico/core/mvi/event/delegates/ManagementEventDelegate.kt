@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -11,7 +12,6 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
@@ -40,30 +40,28 @@ internal class ManagementEventDelegate(
     private suspend fun loadUserManagement(isFirstLoad: Boolean) {
         loadHelper.load<ManagementScope.User, EntityInfo>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkManagementScope.getManagementInfo(
+            networkManagementScope.getManagementInfo(
                 unitCode = user.unitCode,
                 isSeasonBoy = user.type == UserType.SEASON_BOY,
                 forUserType = forType,
                 criteria = activeTab.value.criteria,
                 search = searchText.value,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun searchUserManagement(search: String) {
         loadHelper.search<ManagementScope.User, EntityInfo>(searchValue = search) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkManagementScope.getManagementInfo(
+            networkManagementScope.getManagementInfo(
                 unitCode = user.unitCode,
                 isSeasonBoy = user.type == UserType.SEASON_BOY,
                 forUserType = forType,
                 criteria = activeTab.value.criteria,
                 search = searchText.value,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
@@ -108,30 +106,27 @@ internal class ManagementEventDelegate(
     private suspend fun subscribe() {
         navigator.withScope<ManagementScope.User> {
             withProgress {
-                val (error, isSuccess) = networkManagementScope.subscribeRequest(
+                val result = networkManagementScope.subscribeRequest(
                     requireNotNull(subscribeRequest)
-                )
-                if (isSuccess) {
+                ).onSuccess { _ ->
                     // lazy hack, it is better to ask the server for updated values
                     it.items.value = it.items.value
                         .filter { requireNotNull(subscribeRequest).sellerUnitCode != it.unitCode }
                     subscribeRequest = null
-                } else {
-                    setHostError(error ?: ErrorCode())
-                }
+                }.onError(navigator)
             }
         }
     }
 
     private suspend fun verifyRetailerTraderDetails() {
         navigator.withScope<ManagementScope.AddRetailer.TraderDetails> {
-            val (validation, isSuccess) = withProgress {
+            val result = withProgress {
                 userRepo.verifyRetailer(it.registration.value)
             }
-            it.validation.value = validation
-            if (isSuccess) {
+            it.validation.value = result.validations
+            result.onSuccess {
                 EventCollector.sendEvent(Event.Transition.AddRetailerAddress)
-            }
+            }.onError(navigator)
         }
     }
 }

@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
@@ -12,7 +13,6 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Invoice
 
 internal class InvoicesEventDelegate(
@@ -32,47 +32,42 @@ internal class InvoicesEventDelegate(
     private suspend fun loadInvoices(isFirstLoad: Boolean) {
         loadHelper.load<InvoicesScope, Invoice>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkOrdersScope.getInvoices(
+            networkOrdersScope.getInvoices(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
                 to = dateRange.value?.toMs,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun searchInvoices(search: String) {
         loadHelper.search<InvoicesScope, Invoice>(searchValue = search) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkOrdersScope.getInvoices(
+            networkOrdersScope.getInvoices(
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
                 to = dateRange.value?.toMs,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun selectInvoice(invoiceId: String) {
         navigator.withScope<Scopable> {
-            val (result, isSuccess) = withProgress {
+            withProgress {
                 networkOrdersScope.getInvoice(userRepo.requireUser().unitCode, invoiceId)
-            }
-            if (isSuccess && result != null) {
+            }.onSuccess { body ->
                 setScope(
                     ViewInvoiceScope(
-                        DataSource(result.invoice),
-                        DataSource(result.data),
-                        DataSource(result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries + result.invoiceEntries),
+                        DataSource(body.invoice),
+                        DataSource(body.data),
+                        DataSource(body.invoiceEntries),
                     )
                 )
-            } else {
-                setHostError(ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 

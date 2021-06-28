@@ -2,6 +2,9 @@ package com.zealsoftsol.medico.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 @Serializable
 data class GeoPoints(
@@ -80,16 +83,6 @@ enum class SubscriptionStatus(val serverValue: String) {
     REJECTED("Rejected"),
 }
 
-@Deprecated("out of scope usage")
-interface PreviewItem {
-    val phoneNumber: String
-    val tradeName: String
-    val gstin: String?
-    val panNumber: String?
-    val geoData: GeoData
-    val isVerified: Boolean?
-}
-
 interface WithTradeName {
     val tradeName: String
 }
@@ -97,43 +90,54 @@ interface WithTradeName {
 // BASE
 
 @Serializable
-sealed class Response {
-    abstract val type: String
-
+@OptIn(ExperimentalContracts::class)
+data class Response<T, V>(
+    private val body: T? = null,
+    private val error: ErrorCode? = null,
+    val validations: V? = null,
+    val type: String,
+) {
     val isSuccess: Boolean
         get() = type == "success"
 
-    @Serializable
-    class Status(override val type: String) : Response()
+    fun getBodyOrNull(): T? = body.takeIf { isSuccess }
 
-    @Serializable
-    data class Body<T, V>(
-        private val body: T? = null,
-        val error: ErrorCode? = null,
-        val validations: V? = null,
-        override val type: String,
-    ) : Response() {
+    fun provideError() = error ?: ErrorCode.generic
 
-        fun getBodyOrNull(): T? = body.takeIf { isSuccess }
-
-        fun getWrappedBody(): Wrapped<T> = Wrapped(body, isSuccess)
-
-        fun getWrappedValidation(): Wrapped<V> = Wrapped(validations, isSuccess)
-
-        fun getWrappedError(): Wrapped<ErrorCode> = Wrapped(error, isSuccess)
+    inline fun onSuccess(action: (value: T) -> Unit): Response<T, V> {
+        contract {
+            callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+        }
+        val body = getBodyOrNull()
+        if (body != null) action(body)
+        return this
     }
 
-    data class Wrapped<V>(val entity: V?, val isSuccess: Boolean)
+    inline fun onError(action: (error: ErrorCode) -> Unit): Response<T, V> {
+        contract {
+            callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+        }
+        val body = getBodyOrNull()
+        if (body == null) action(provideError())
+        return this
+    }
 }
 
-typealias SimpleResponse<T> = Response.Body<T, MapBody>
+typealias BodyResponse<T> = Response<T, MapBody>
+typealias AnyResponse = Response<MapBody, MapBody>
+typealias ValidationResponse<V> = Response<MapBody, V>
 
 typealias MapBody = Map<String, String>
 
 @Serializable
-data class ErrorCode(val title: String = "error", val body: String = "something_went_wrong") {
+class ErrorCode private constructor(
+    val title: String = "error",
+    val body: String = "something_went_wrong"
+) {
 
     companion object {
+        internal val generic = ErrorCode()
         val uploadFileTooBig = ErrorCode("error", "upload_file_too_big")
+        val somethingWentWrong = generic
     }
 }

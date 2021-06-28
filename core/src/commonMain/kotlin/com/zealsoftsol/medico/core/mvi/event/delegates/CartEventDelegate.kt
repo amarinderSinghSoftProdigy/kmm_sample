@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
@@ -14,7 +15,6 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
-import com.zealsoftsol.medico.data.ErrorCode
 
 internal class CartEventDelegate(
     navigator: Navigator,
@@ -64,7 +64,7 @@ internal class CartEventDelegate(
         id: CartIdentifier?,
         quantity: Int,
     ) = async {
-        val error = navigator.withProgress {
+        navigator.withProgress {
             cartRepo.addCartItem(
                 userRepo.requireUser().unitCode,
                 sellerUnitCode,
@@ -73,8 +73,7 @@ internal class CartEventDelegate(
                 id,
                 quantity,
             )
-        }
-        if (error == null) {
+        }.onSuccess {
             navigator.setScope(
                 CartScope(
                     items = ReadOnlyDataSource(cartRepo.entries),
@@ -82,9 +81,7 @@ internal class CartEventDelegate(
                     tapModeHelper = tapModeHelper,
                 )
             )
-        } else {
-            navigator.setHostError(error)
-        }
+        }.onError(navigator)
     }
 
     private suspend fun updateItem(
@@ -102,7 +99,7 @@ internal class CartEventDelegate(
                 buyingOption,
                 id,
                 quantity
-            )?.let { setHostError(it) }
+            ).onError(navigator)
         }
     }
 
@@ -119,20 +116,21 @@ internal class CartEventDelegate(
                 productCode,
                 buyingOption,
                 id,
-            )?.let { setHostError(it) }
+            ).onError(navigator)
         }
     }
 
     private suspend fun removeSellerItems(sellerUnitCode: String) = async {
         navigator.withScope<CartScope> {
             cartRepo.removeSellerItems(userRepo.requireUser().unitCode, sellerUnitCode)
-                ?.let { setHostError(it) }
+                .onError(navigator)
         }
     }
 
     private suspend fun clearCart() = async {
         navigator.withScope<CartScope> {
-            cartRepo.clearCart(userRepo.requireUser().unitCode)?.let { setHostError(it) }
+            cartRepo.clearCart(userRepo.requireUser().unitCode)
+                .onError(navigator)
         }
     }
 
@@ -144,17 +142,14 @@ internal class CartEventDelegate(
 
     private suspend fun confirmCartOrder() {
         navigator.withScope<CartPreviewScope> {
-            val modifiedEntries =
-                withProgress { cartRepo.confirmCart(userRepo.requireUser().unitCode) }
-            if (modifiedEntries != null) {
-                if (modifiedEntries.isEmpty()) {
+            withProgress { cartRepo.confirmCart(userRepo.requireUser().unitCode) }
+                .onSuccess {
+//                    if (it.modifiedEntries.isEmpty()) {
                     placeCartOrder(checkQuoted = true)
-                } else {
-                    it.notifications.value = CartPreviewScope.OrderModified(modifiedEntries)
-                }
-            } else {
-                setHostError(ErrorCode())
-            }
+//                    } else {
+//                        it.notifications.value = CartPreviewScope.OrderModified(modifiedEntries)
+//                    }
+                }.onError(navigator)
         }
     }
 
@@ -164,12 +159,10 @@ internal class CartEventDelegate(
                 it.notifications.value = CartPreviewScope.OrderWithQuotedItems
             } else {
                 it.dismissNotification()
-                val response = withProgress { cartRepo.submitCart(userRepo.requireUser().unitCode) }
-                if (response != null) {
-                    setScope(CartOrderCompletedScope(response, response.total))
-                } else {
-                    setHostError(ErrorCode())
-                }
+                withProgress { cartRepo.submitCart(userRepo.requireUser().unitCode) }
+                    .onSuccess { body ->
+                        setScope(CartOrderCompletedScope(body, body.total))
+                    }.onError(navigator)
             }
         }
     }

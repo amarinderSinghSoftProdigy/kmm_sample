@@ -10,7 +10,7 @@ sealed class UserValidation
 
 @Serializable
 data class PincodeValidation(
-    val pincode: String,
+    val pincode: String = "",
 )
 
 @Serializable

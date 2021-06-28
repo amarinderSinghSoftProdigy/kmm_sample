@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.repository
 
 import com.russhwolf.settings.Settings
-import com.zealsoftsol.medico.core.extensions.errorIt
 import com.zealsoftsol.medico.core.extensions.warnIt
 import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
@@ -10,16 +9,19 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AuthCredentials
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CreateRetailer
+import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -29,6 +31,7 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -62,20 +65,20 @@ class UserRepo(
         } ?: UserAccess.NO_ACCESS
     }
 
-    suspend fun login(login: String, password: String): Response.Wrapped<ErrorCode> {
+    suspend fun login(login: String, password: String): BodyResponse<TokenInfo> {
         settings.putString(AUTH_LOGIN_KEY, login)
         return networkAuthScope.login(UserRequest(login, password))
     }
 
-    suspend fun loadUserFromServer(): Boolean {
-        userFlow.value = networkCustomerScope.getCustomerData().entity?.let {
+    suspend fun loadUserFromServer(): BodyResponse<CustomerData> {
+        val result = networkCustomerScope.getCustomerData()
+        userFlow.value = result.getBodyOrNull()?.let {
             val parsedType = UserType.parse(it.customerType) ?: run {
                 "unknown user type".warnIt()
                 return@let null
             }
             if (it.unitCode == null || it.metaData == null) {
-                "can not create user without unitCode or customerMetaData".errorIt()
-                return false
+                throw UnsupportedOperationException("can not create user without unitCode or customerMetaData")
             }
             val user = User(
                 it.firstName,
@@ -102,12 +105,12 @@ class UserRepo(
             settings.putString(AUTH_USER_KEY, json)
             user
         }
-        return userFlow.value != null
+        return result
     }
 
-    suspend fun logout(): Boolean {
-        return networkAuthScope.logout().also { isSuccess ->
-            if (isSuccess) {
+    suspend fun logout(): AnyResponse {
+        return networkAuthScope.logout().also {
+            if (it.isSuccess) {
                 clearUserData()
                 userFlow.value = null
             }
@@ -135,47 +138,47 @@ class UserRepo(
         )
     }
 
-    suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> {
+    suspend fun checkCanResetPassword(phoneNumber: String): AnyResponse {
         return networkAuthScope.checkCanResetPassword(phoneNumber)
     }
 
-    suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
+    suspend fun sendOtp(phoneNumber: String): AnyResponse {
         return networkAuthScope.sendOtp(phoneNumber)
     }
 
-    suspend fun submitOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> {
+    suspend fun submitOtp(phoneNumber: String, otp: String): BodyResponse<TokenInfo> {
         return networkAuthScope.verifyOtp(phoneNumber, otp)
     }
 
-    suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation> {
+    suspend fun verifyPassword(password: String): ValidationResponse<PasswordValidation> {
         return networkPasswordScope.verifyPassword(password)
     }
 
     suspend fun changePassword(
         phoneNumber: String?,
         newPassword: String,
-    ): Response.Wrapped<PasswordValidation> {
+    ): ValidationResponse<PasswordValidation> {
         return networkPasswordScope.changePassword(phoneNumber, newPassword)
     }
 
-    suspend fun resendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> {
+    suspend fun resendOtp(phoneNumber: String): AnyResponse {
         return networkAuthScope.retryOtp(phoneNumber)
     }
 
-    suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> {
+    suspend fun signUpValidation1(userRegistration1: UserRegistration1): ValidationResponse<UserValidation1> {
         return networkSignUpScope.signUpValidation1(userRegistration1)
     }
 
-    suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> {
+    suspend fun signUpValidation2(userRegistration2: UserRegistration2): ValidationResponse<UserValidation2> {
         return networkSignUpScope.signUpValidation2(userRegistration2)
     }
 
-    suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> {
+    suspend fun signUpValidation3(userRegistration3: UserRegistration3): ValidationResponse<UserValidation3> {
         return networkSignUpScope.signUpValidation3(userRegistration3)
     }
 
     @Deprecated("move to separate network scope")
-    suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> {
+    suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation> {
         return networkSignUpScope.getLocationData(pincode)
     }
 
@@ -184,7 +187,7 @@ class UserRepo(
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
         storageKey: String?,
-    ): Response.Wrapped<ErrorCode> {
+    ): AnyResponse {
         return networkSignUpScope.signUp(
             SubmitRegistration.nonSeasonBoy(
                 userRegistration1,
@@ -201,7 +204,7 @@ class UserRepo(
         userRegistration2: UserRegistration2,
         aadhaarData: AadhaarData,
         aadhaar: String?,
-    ): Response.Wrapped<ErrorCode> {
+    ): AnyResponse {
         return networkSignUpScope.signUp(
             SubmitRegistration.seasonBoy(
                 userRegistration1,
@@ -218,7 +221,7 @@ class UserRepo(
         fileString: String,
         email: String,
         phoneNumber: String
-    ): Boolean {
+    ): AnyResponse {
         return networkSignUpScope.uploadAadhaar(
             AadhaarUpload(
                 cardNumber = aadhaar.cardNumber,
@@ -235,7 +238,7 @@ class UserRepo(
         mimeType: String,
         phoneNumber: String,
         email: String,
-    ): Response.Wrapped<StorageKeyResponse> {
+    ): BodyResponse<StorageKeyResponse> {
         return networkSignUpScope.uploadDrugLicense(
             DrugLicenseUpload(
                 phoneNumber = phoneNumber,
@@ -246,14 +249,14 @@ class UserRepo(
         )
     }
 
-    suspend fun verifyRetailer(registration3: UserRegistration3): Response.Wrapped<UserValidation3> {
+    suspend fun verifyRetailer(registration3: UserRegistration3): ValidationResponse<UserValidation3> {
         return networkSignUpScope.verifyRetailerTraderDetails(registration3)
     }
 
     suspend fun createRetailer(
         registration2: UserRegistration2,
         registration3: UserRegistration3,
-    ): Response.Wrapped<ErrorCode> {
+    ): AnyResponse {
         val user = requireUser()
         require(user.type == UserType.SEASON_BOY) { "can only create from season boys" }
         return networkSignUpScope.createdRetailerWithSeasonBoy(

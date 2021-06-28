@@ -11,7 +11,9 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -49,7 +51,6 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
-import com.zealsoftsol.medico.data.SimpleResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -64,6 +65,7 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -82,6 +84,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
 
@@ -89,6 +92,7 @@ class NetworkClient(
     engine: HttpClientEngineFactory<*>,
     private val tokenStorage: TokenStorage,
     useNetworkInterceptor: Boolean,
+    private val failOnServerError: Boolean,
     private val baseUrl: BaseUrl,
 ) : NetworkScope.Auth,
     NetworkScope.SignUp,
@@ -126,48 +130,47 @@ class NetworkClient(
         }
     }
 
-    override suspend fun login(request: UserRequest): Response.Wrapped<ErrorCode> = ktorDispatcher {
-        client.post<SimpleResponse<TokenInfo>>("${baseUrl.url}/medico/login") {
+    override suspend fun login(request: UserRequest) = simpleRequest {
+        client.post<BodyResponse<TokenInfo>>("${baseUrl.url}/medico/login") {
             jsonBody(request)
         }.also {
             it.getBodyOrNull()?.let(tokenStorage::saveMainToken)
-        }.getWrappedError()
+        }
     }
 
-    override suspend fun logout(): Boolean = ktorDispatcher {
-        client.post<Response.Status>("${baseUrl.url}/medico/logout") {
+    override suspend fun logout() = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/medico/logout") {
             withMainToken()
-        }.isSuccess
+        }
     }
 
-    override suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/medico/forgetpwd") {
+    override suspend fun checkCanResetPassword(phoneNumber: String) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/medico/forgetpwd") {
+            withTempToken(TempToken.REGISTRATION)
+            jsonBody(OtpRequest(phoneNumber))
+        }
+    }
+
+    override suspend fun sendOtp(phoneNumber: String) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/notifications/sendOTP") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/notifications/sendOTP") {
+    override suspend fun retryOtp(phoneNumber: String) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/notifications/retryOTP") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(OtpRequest(phoneNumber))
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/notifications/retryOTP") {
-                withTempToken(TempToken.REGISTRATION)
-                jsonBody(OtpRequest(phoneNumber))
-            }.getWrappedError()
-        }
-
-    override suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
+    override suspend fun verifyOtp(phoneNumber: String, otp: String) =
+        simpleRequest {
             val body =
-                client.post<SimpleResponse<TokenInfo>>("${baseUrl.url}/notifications/verifyOTP") {
+                client.post<BodyResponse<TokenInfo>>("${baseUrl.url}/notifications/verifyOTP") {
                     withTempToken(TempToken.REGISTRATION)
                     jsonBody(VerifyOtpRequest(phoneNumber, otp))
                 }
@@ -175,111 +178,110 @@ class NetworkClient(
                 body.getBodyOrNull()
                     ?.let { tokenStorage.saveTempToken(TempToken.UPDATE_PASSWORD.serverValue, it) }
             }
-            body.getWrappedError()
+            body
         }
 
-    override suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation> =
-        ktorDispatcher {
-            client.post<Response.Body<String, PasswordValidation>>("${baseUrl.url}/myaccount/currentPwd") {
+    override suspend fun verifyPassword(password: String) =
+        fullRequest {
+            client.post<ValidationResponse<PasswordValidation>>("${baseUrl.url}/myaccount/currentPwd") {
                 withMainToken()
                 jsonBody(mapOf("currentPassword" to password))
-            }.getWrappedValidation()
+            }
         }
 
     override suspend fun changePassword(
         phoneNumber: String?,
         password: String
-    ): Response.Wrapped<PasswordValidation> =
-        ktorDispatcher {
-            val url = if (phoneNumber != null)
-                "${baseUrl.url}/medico/forgetpwd/update"
-            else
-                "${baseUrl.url}/myaccount/changePwd"
-            client.post<Response.Body<MapBody, PasswordValidation>>(url) {
-                if (phoneNumber != null) {
-                    withTempToken(TempToken.UPDATE_PASSWORD)
-                    jsonBody(PasswordResetRequest(phoneNumber, password, password))
-                } else {
-                    withMainToken()
-                    jsonBody(PasswordResetRequest2(password, password))
-                }
-            }.getWrappedValidation()
+    ) = fullRequest {
+        val url = if (phoneNumber != null)
+            "${baseUrl.url}/medico/forgetpwd/update"
+        else
+            "${baseUrl.url}/myaccount/changePwd"
+        client.post<ValidationResponse<PasswordValidation>>(url) {
+            if (phoneNumber != null) {
+                withTempToken(TempToken.UPDATE_PASSWORD)
+                jsonBody(PasswordResetRequest(phoneNumber, password, password))
+            } else {
+                withMainToken()
+                jsonBody(PasswordResetRequest2(password, password))
+            }
         }
+    }
 
-    override suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1> =
-        ktorDispatcher {
-            client.post<Response.Body<MapBody, UserValidation1>>("${baseUrl.url}/registration/step1") {
+    override suspend fun signUpValidation1(userRegistration1: UserRegistration1) =
+        fullRequest<MapBody, UserValidation1> {
+            client.post<ValidationResponse<UserValidation1>>("${baseUrl.url}/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration1)
-            }.getWrappedValidation()
+            }
         }
 
-    override suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2> =
-        ktorDispatcher {
-            client.post<Response.Body<MapBody, UserValidation2>>("${baseUrl.url}/registration/step2") {
+    override suspend fun signUpValidation2(userRegistration2: UserRegistration2) =
+        fullRequest<MapBody, UserValidation2> {
+            client.post<ValidationResponse<UserValidation2>>("${baseUrl.url}/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration2)
-            }.getWrappedValidation()
+            }
         }
 
-    override suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
-        ktorDispatcher {
-            client.post<Response.Body<MapBody, UserValidation3>>("${baseUrl.url}/registration/step3") {
+    override suspend fun signUpValidation3(userRegistration3: UserRegistration3) =
+        fullRequest {
+            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/registration/step3") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration3)
-            }.getWrappedValidation()
+            }
         }
 
-    override suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation> =
-        ktorDispatcher {
-            client.get<Response.Body<LocationData, PincodeValidation>>("${baseUrl.url}/geo/pincode/$pincode") {
+    override suspend fun getLocationData(pincode: String) =
+        fullRequest {
+            client.get<Response<LocationData, PincodeValidation>>("${baseUrl.url}/geo/pincode/$pincode") {
                 withTempToken(TempToken.REGISTRATION)
             }
         }
 
-    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean = ktorDispatcher {
-        client.post<Response.Status>("${baseUrl.url}/upload/aadhaar") {
+    override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/upload/aadhaar") {
             withTempToken(TempToken.REGISTRATION)
             jsonBody(aadhaarData)
-        }.isSuccess
+        }
     }
 
-    override suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse> =
-        ktorDispatcher {
-            client.post<SimpleResponse<StorageKeyResponse>>("${baseUrl.url}/upload/druglicense") {
+    override suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload) =
+        simpleRequest {
+            client.post<BodyResponse<StorageKeyResponse>>("${baseUrl.url}/upload/druglicense") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(licenseData)
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
+    override suspend fun signUp(submitRegistration: SubmitRegistration) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(submitRegistration)
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3> =
-        ktorDispatcher {
-            client.post<Response.Body<MapBody, UserValidation3>>("${baseUrl.url}/sbret/verify") {
+    override suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3) =
+        fullRequest {
+            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/sbret/verify") {
                 withMainToken()
                 jsonBody(userRegistration3)
-            }.getWrappedValidation()
+            }
         }
 
-    override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/sbret/add") {
+    override suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/sbret/add") {
                 withMainToken()
                 jsonBody(data)
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun getCustomerData(): Response.Wrapped<CustomerData> = ktorDispatcher {
-        client.get<SimpleResponse<CustomerData>>("${baseUrl.url}/medico/customer/details") {
+    override suspend fun getCustomerData() = simpleRequest {
+        client.get<BodyResponse<CustomerData>>("${baseUrl.url}/medico/customer/details") {
             withMainToken()
-        }.getWrappedBody()
+        }
     }
 
     override suspend fun search(
@@ -289,8 +291,8 @@ class NetworkClient(
         latitude: Double,
         longitude: Double,
         pagination: Pagination,
-    ): Response.Wrapped<SearchResponse> = ktorDispatcher {
-        client.get<SimpleResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
+    ) = simpleRequest {
+        client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -305,7 +307,7 @@ class NetworkClient(
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
@@ -313,39 +315,38 @@ class NetworkClient(
     override suspend fun autocomplete(
         input: String,
         unitCodeForStores: String?
-    ): Response.Wrapped<List<AutoComplete>> =
-        ktorDispatcher {
-            val path =
-                if (unitCodeForStores == null) "/search/suggest" else "/search/stores/suggest-vvb"
-            client.get<SimpleResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
+    ) = simpleRequest {
+        val path =
+            if (unitCodeForStores == null) "/search/suggest" else "/search/stores/suggest-vvb"
+        client.get<BodyResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("suggest", input)
+                unitCodeForStores?.let { parameters.append("b2bUnitCode", it) }
+            }
+        }
+    }
+
+    override suspend fun getProductData(productCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<ProductResponse>>("${baseUrl.url}/search/product/$productCode") {
                 withMainToken()
-                url {
-                    parameters.append("suggest", input)
-                    unitCodeForStores?.let { parameters.append("b2bUnitCode", it) }
-                }
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
-        ktorDispatcher {
-            client.get<SimpleResponse<ProductResponse>>("${baseUrl.url}/search/product/$productCode") {
+    override suspend fun buyProductInfo(productCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<ProductBuyResponse>>("${baseUrl.url}/search/buy/${productCode}") {
                 withMainToken()
-            }.getWrappedBody()
-        }
-
-    override suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse> =
-        ktorDispatcher {
-            client.get<SimpleResponse<ProductBuyResponse>>("${baseUrl.url}/search/buy/${productCode}") {
-                withMainToken()
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
         sellerUnitCode: String?
-    ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = ktorDispatcher {
-        client.get<SimpleResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
+    ) = simpleRequest {
+        client.get<BodyResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
             withMainToken()
             url {
                 parameters.append("buyerUnitCode", unitCode)
@@ -353,14 +354,14 @@ class NetworkClient(
                     parameters.append("sellerUnitCode", sellerUnitCode)
                 }
             }
-        }.getWrappedBody()
+        }
     }
 
-    override suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse> =
-        ktorDispatcher {
-            client.get<SimpleResponse<ProductBuyResponse>>("${baseUrl.url}/search/quote/${productCode}") {
+    override suspend fun getQuotedProductData(productCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<ProductBuyResponse>>("${baseUrl.url}/search/quote/${productCode}") {
                 withMainToken()
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun getManagementInfo(
@@ -370,8 +371,8 @@ class NetworkClient(
         criteria: ManagementCriteria,
         search: String,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<EntityInfo>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<EntityInfo>>>(
+    ) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<EntityInfo>>>(
             "${baseUrl.url}/b2bapp/${forUserType.serverValueSimple}/${if (isSeasonBoy && forUserType == UserType.RETAILER) "sb/" else ""}$unitCode"
         ) {
             withMainToken()
@@ -383,32 +384,32 @@ class NetworkClient(
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
 
-    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/b2bapp/subscriptions/subscribe") {
+    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/b2bapp/subscriptions/subscribe") {
                 withMainToken()
                 jsonBody(subscribeRequest)
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun sendFirebaseToken(token: String): Boolean = ktorDispatcher {
-        client.post<Response.Status>("${baseUrl.url}/firebase/add/token") {
+    override suspend fun sendFirebaseToken(token: String) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/firebase/add/token") {
             withMainToken()
             jsonBody(mapOf("token" to token, "channel" to "MOBILE"))
-        }.isSuccess
+        }
     }
 
     override suspend fun getNotifications(
         search: String,
         filter: NotificationFilter,
         pagination: Pagination,
-    ): Response.Wrapped<PaginatedData<NotificationData>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<NotificationData>>>("${baseUrl.url}/notifications/all") {
+    ) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<NotificationData>>>("${baseUrl.url}/notifications/all") {
             withMainToken()
             url {
                 parameters.apply {
@@ -418,23 +419,23 @@ class NetworkClient(
                     append("notificationType", filter.serverValue)
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
 
-    override suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications> =
-        ktorDispatcher {
-            client.get<SimpleResponse<UnreadNotifications>>("${baseUrl.url}/notifications/unread") {
+    override suspend fun getUnreadNotifications() =
+        simpleRequest {
+            client.get<BodyResponse<UnreadNotifications>>("${baseUrl.url}/notifications/unread") {
                 withMainToken()
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun selectNotificationAction(
         id: String,
-        actionRequest: NotificationActionRequest
-    ): Response.Wrapped<ErrorCode> = ktorDispatcher {
-        client.post<SimpleResponse<MapBody>>("${baseUrl.url}/b2bapp/subscriptions/submit") {
+        actionRequest: NotificationActionRequest,
+    ) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/b2bapp/subscriptions/submit") {
             withMainToken()
             requireNotNull(actionRequest.subscriptionOption) { "only subscription option is supported" }
             jsonBody(
@@ -446,22 +447,22 @@ class NetworkClient(
                     "sellersDiscount" to actionRequest.subscriptionOption!!.discountRate,
                 )
             )
-        }.getWrappedError()
+        }
     }
 
-    override suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails> =
-        ktorDispatcher {
-            client.get<SimpleResponse<NotificationDetails>>("${baseUrl.url}/notifications/$id/detail") {
+    override suspend fun getNotificationDetails(id: String) =
+        simpleRequest {
+            client.get<BodyResponse<NotificationDetails>>("${baseUrl.url}/notifications/$id/detail") {
                 withMainToken()
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun getStores(
         unitCode: String,
         search: String,
         pagination: Pagination,
-    ): Response.Wrapped<PaginatedData<Store>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<Store>>>("${baseUrl.url}/b2bapp/stores/${unitCode}") {
+    ) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<Store>>>("${baseUrl.url}/b2bapp/stores/${unitCode}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -470,58 +471,58 @@ class NetworkClient(
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
 
-    override suspend fun getCart(unitCode: String): Response.Wrapped<CartData> = ktorDispatcher {
-        client.get<SimpleResponse<CartData>>("${baseUrl.url}/cart") {
+    override suspend fun getCart(unitCode: String) = simpleRequest {
+        client.get<BodyResponse<CartData>>("${baseUrl.url}/cart") {
             withMainToken()
             url {
                 parameters.append("buyerUnitCode", unitCode)
             }
-        }.getWrappedBody()
+        }
     }
 
-    override suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData> =
-        ktorDispatcher {
-            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/addEntry") {
+    override suspend fun addCartEntry(request: CartRequest) =
+        simpleRequest {
+            client.post<BodyResponse<CartData>>("${baseUrl.url}/cart/addEntry") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/cart/deleteCart") {
+    override suspend fun deleteCart(unitCode: String, cartId: String) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/cart/deleteCart") {
                 withMainToken()
                 jsonBody(mapOf("cartId" to cartId, "buyerUnitCode" to unitCode))
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData> =
-        ktorDispatcher {
-            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/updateEntry") {
+    override suspend fun updateCartEntry(request: CartRequest) =
+        simpleRequest {
+            client.post<BodyResponse<CartData>>("${baseUrl.url}/cart/updateEntry") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData> =
-        ktorDispatcher {
-            client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteEntry") {
+    override suspend fun deleteCartEntry(request: CartRequest) =
+        simpleRequest {
+            client.post<BodyResponse<CartData>>("${baseUrl.url}/cart/deleteEntry") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun deleteSellerCart(
         unitCode: String,
         cartId: String,
         sellerUnitCode: String
-    ): Response.Wrapped<CartData> = ktorDispatcher {
-        client.post<SimpleResponse<CartData>>("${baseUrl.url}/cart/deleteSellerCart") {
+    ) = simpleRequest {
+        client.post<BodyResponse<CartData>>("${baseUrl.url}/cart/deleteSellerCart") {
             withMainToken()
             jsonBody(
                 mapOf(
@@ -530,29 +531,29 @@ class NetworkClient(
                     "sellerUnitCode" to sellerUnitCode
                 )
             )
-        }.getWrappedBody()
+        }
     }
 
-    override suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData> =
-        ktorDispatcher {
-            client.post<SimpleResponse<CartConfirmData>>("${baseUrl.url}/cart/confirm") {
+    override suspend fun confirmCart(request: CartOrderRequest) =
+        simpleRequest {
+            client.post<BodyResponse<CartConfirmData>>("${baseUrl.url}/cart/confirm") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse> =
-        ktorDispatcher {
-            client.post<SimpleResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
+    override suspend fun submitCart(request: CartOrderRequest) =
+        simpleRequest {
+            client.post<BodyResponse<CartSubmitResponse>>("${baseUrl.url}/cart/submit") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
-    override suspend fun getHelp(): Response.Wrapped<HelpData> = ktorDispatcher {
-        client.get<SimpleResponse<HelpData>>("${baseUrl.url}/medico/help") {
+    override suspend fun getHelp() = simpleRequest {
+        client.get<BodyResponse<HelpData>>("${baseUrl.url}/medico/help") {
             withMainToken()
-        }.getWrappedBody()
+        }
     }
 
     override suspend fun getOrders(
@@ -562,8 +563,8 @@ class NetworkClient(
         from: Long?,
         to: Long?,
         pagination: Pagination,
-    ): Response.Wrapped<PaginatedData<Order>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<Order>>>("${baseUrl.url}/orders${type.path}") {
+    ) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<Order>>>("${baseUrl.url}/orders${type.path}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -575,7 +576,7 @@ class NetworkClient(
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
@@ -584,31 +585,31 @@ class NetworkClient(
         type: OrderType,
         unitCode: String,
         orderId: String
-    ): Response.Wrapped<OrderResponse> = ktorDispatcher {
-        client.get<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
+    ) = simpleRequest {
+        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
             withMainToken()
             url {
                 parameters.apply {
                     append("b2bUnitCode", unitCode)
                 }
             }
-        }.getWrappedBody()
+        }
     }
 
-    override suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode> =
-        ktorDispatcher {
-            client.post<SimpleResponse<MapBody>>("${baseUrl.url}/orders/po/entries/accept") {
+    override suspend fun confirmOrder(request: ConfirmOrderRequest) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/orders/po/entries/accept") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedError()
+            }
         }
 
-    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse> =
-        ktorDispatcher {
-            client.post<SimpleResponse<OrderResponse>>("${baseUrl.url}/orders/po/entries/save") {
+    override suspend fun saveNewOrderQty(request: OrderNewQtyRequest) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/po/entries/save") {
                 withMainToken()
                 jsonBody(request)
-            }.getWrappedBody()
+            }
         }
 
     override suspend fun getInvoices(
@@ -617,8 +618,8 @@ class NetworkClient(
         from: Long?,
         to: Long?,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<Invoice>> = ktorDispatcher {
-        client.get<SimpleResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+    ) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
             withMainToken()
             url {
                 parameters.apply {
@@ -630,7 +631,7 @@ class NetworkClient(
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
-        }.getWrappedBody().also {
+        }.also {
             if (it.isSuccess) pagination.pageLoaded()
         }
     }
@@ -638,15 +639,15 @@ class NetworkClient(
     override suspend fun getInvoice(
         unitCode: String,
         invoiceId: String
-    ): Response.Wrapped<InvoiceResponse> = ktorDispatcher {
-        client.get<SimpleResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+    ) = simpleRequest {
+        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
             withMainToken()
             url {
                 parameters.apply {
                     append("b2bUnitCode", unitCode)
                 }
             }
-        }.getWrappedBody()
+        }
     }
 
     // Utils
@@ -677,7 +678,6 @@ class NetworkClient(
                 tokenStorage.getTempTokenOnce(tokenType.serverValue)?.takeIf { !it.isExpired }
             if (tokenInfo == null || tokenInfo.id != tokenType.serverValue) {
                 when (tokenType) {
-                    TempToken.OTP -> fetchOtpToken()
                     TempToken.REGISTRATION -> fetchRegistrationToken()
                     TempToken.UPDATE_PASSWORD -> tokenInfo
                 }?.also {
@@ -696,20 +696,14 @@ class NetworkClient(
     }
 
     private suspend fun fetchMainToken(currentToken: TokenInfo): TokenInfo? {
-        return client.post<SimpleResponse<TokenInfo>>("${baseUrl.url}/medico/refresh-token") {
+        return client.post<BodyResponse<TokenInfo>>("${baseUrl.url}/medico/refresh-token") {
             applyHeader(currentToken)
             jsonBody(RefreshTokenRequest(currentToken.refreshToken))
         }.getBodyOrNull()
     }
 
     private suspend inline fun fetchRegistrationToken(): TokenInfo? {
-        return client.get<SimpleResponse<TokenInfo>>("${baseUrl.url}/registration")
-            .getBodyOrNull()
-    }
-
-    private suspend inline fun fetchOtpToken(): TokenInfo? {
-        TODO("no url for this type of token")
-        return client.get<SimpleResponse<TokenInfo>>("new url")
+        return client.get<BodyResponse<TokenInfo>>("${baseUrl.url}/registration")
             .getBodyOrNull()
     }
 
@@ -722,21 +716,27 @@ class NetworkClient(
         this.body = body
     }
 
-//    private suspend inline fun <T> request(
-//        dispatcher: CoroutineDispatcher = ktorDispatcher,
-//        crossinline call: HttpClient.() -> T
-//    ) = dispatcher {
-//        val result = runCatching { client.call() }
-//        if (result.isSuccess) {
-//            result.getOrThrow()
-//        } else {
-//            if (result.exceptionOrNull() is )
-//            null
-//        }
-//    }
+    private suspend inline fun <T, V> fullRequest(
+        dispatcher: CoroutineDispatcher = ktorDispatcher,
+        crossinline call: suspend HttpClient.() -> Response<T, V>,
+    ): Response<T, V> = dispatcher {
+        val result = runCatching { client.call() }
+        if (result.isSuccess || failOnServerError) {
+            result.getOrThrow()
+        } else {
+            Response(
+                error = ErrorCode.somethingWentWrong,
+                type = "error",
+            )
+        }
+    }
+
+    private suspend inline fun <T> simpleRequest(
+        dispatcher: CoroutineDispatcher = ktorDispatcher,
+        crossinline call: suspend HttpClient.() -> Response<T, MapBody>,
+    ): Response<T, MapBody> = fullRequest<T, MapBody>(dispatcher, call)
 
     enum class TempToken(val serverValue: String) {
-        OTP("otp"),
         UPDATE_PASSWORD("updatepwd"),
         REGISTRATION("registration");
     }

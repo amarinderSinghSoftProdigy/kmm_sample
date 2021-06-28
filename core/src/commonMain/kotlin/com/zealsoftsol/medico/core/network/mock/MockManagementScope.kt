@@ -4,12 +4,10 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.PaginatedData
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
 
@@ -26,18 +24,13 @@ class MockManagementScope : NetworkScope.Management {
         criteria: ManagementCriteria,
         search: String,
         pagination: Pagination
-    ): Response.Wrapped<PaginatedData<EntityInfo>> {
-        return mockResponse {
-            Response.Wrapped(
-                longPaginatedData(20),
-                true,
-            )
-        }
+    ) = mockResponse {
+        longPaginatedData(20)
     }
 
-    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode> =
+    override suspend fun subscribeRequest(subscribeRequest: SubscribeRequest) =
         mockResponse {
-            Response.Wrapped(null, true)
+            mockEmptyMapBody()
         }
 }
 
