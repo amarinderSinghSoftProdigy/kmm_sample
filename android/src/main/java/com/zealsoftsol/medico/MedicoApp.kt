@@ -20,7 +20,7 @@ class MedicoApp : Application(), DIAware {
             useMocks = false,
             useNavigatorSafeCasts = !BuildConfig.DEBUG,
             useNetworkInterceptor = BuildConfig.FLAVOR == "dev",
-            failOnServerError = BuildConfig.FLAVOR == "dev",
+            crashOnServerError = BuildConfig.FLAVOR == "dev",
             loggerLevel = if (BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
             networkUrl = NetworkClient.BaseUrl.DEV,
         )

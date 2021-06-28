@@ -21,7 +21,7 @@ object UiLink {
      * [useMocks] - if true configures the app to use mocked backend instead of a server
      * [useNavigatorSafeCasts] - the app will crash if navigator tries to reference the wrong scope
      * [useNetworkInterceptor] - prints detailed info about requests and responses with the server
-     * [failOnServerError] - crash application if server responds with error
+     * [crashOnServerError] - crash application if server responds with error
      * [loggerLevel] - configures log level
      * [networkUrl] - configure which base url will be used for network requests
      */
@@ -30,7 +30,7 @@ object UiLink {
         useMocks: Boolean,
         useNavigatorSafeCasts: Boolean,
         useNetworkInterceptor: Boolean,
-        failOnServerError: Boolean,
+        crashOnServerError: Boolean,
         loggerLevel: Logger.Level,
         networkUrl: NetworkClient.BaseUrl,
     ): AppStartResult {
@@ -42,7 +42,7 @@ object UiLink {
                 useMocks,
                 useNavigatorSafeCasts,
                 useNetworkInterceptor,
-                failOnServerError,
+                crashOnServerError,
                 networkUrl
             )
         val navigator = directDI.instance<Navigator>()

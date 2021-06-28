@@ -92,7 +92,7 @@ class NetworkClient(
     engine: HttpClientEngineFactory<*>,
     private val tokenStorage: TokenStorage,
     useNetworkInterceptor: Boolean,
-    private val failOnServerError: Boolean,
+    private val crashOnServerError: Boolean,
     private val baseUrl: BaseUrl,
 ) : NetworkScope.Auth,
     NetworkScope.SignUp,
@@ -721,7 +721,7 @@ class NetworkClient(
         crossinline call: suspend HttpClient.() -> Response<T, V>,
     ): Response<T, V> = dispatcher {
         val result = runCatching { client.call() }
-        if (result.isSuccess || failOnServerError) {
+        if (result.isSuccess || crashOnServerError) {
             result.getOrThrow()
         } else {
             Response(

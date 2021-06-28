@@ -40,7 +40,7 @@ fun startKodein(
     useMocks: Boolean,
     useNavigatorSafeCasts: Boolean,
     useNetworkInterceptor: Boolean,
-    failOnServerError: Boolean,
+    crashOnServerError: Boolean,
     baseUrl: NetworkClient.BaseUrl,
 ) = DI {
     platformDependencies(context, useMocks)
@@ -49,7 +49,7 @@ fun startKodein(
             instance(),
             instance(),
             useNetworkInterceptor = useNetworkInterceptor,
-            failOnServerError = failOnServerError,
+            crashOnServerError = crashOnServerError,
             baseUrl = baseUrl,
         )
     }
