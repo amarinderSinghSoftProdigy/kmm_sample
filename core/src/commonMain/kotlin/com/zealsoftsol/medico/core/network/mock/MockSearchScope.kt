@@ -24,7 +24,10 @@ class MockSearchScope : NetworkScope.Search {
         Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0, emptyList()), true)
     }
 
-    override suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>> =
+    override suspend fun autocomplete(
+        input: String,
+        unitCodeForStores: String?
+    ): Response.Wrapped<List<AutoComplete>> =
         mockResponse {
             Response.Wrapped(emptyList(), true)
         }

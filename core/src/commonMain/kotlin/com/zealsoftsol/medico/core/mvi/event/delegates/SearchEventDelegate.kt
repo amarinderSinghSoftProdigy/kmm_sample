@@ -4,6 +4,8 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -86,7 +88,12 @@ internal class SearchEventDelegate(
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = value
             searchAsync(withDelay = true, withProgress = false) {
-                val (result, isSuccess) = networkSearchScope.autocomplete(value)
+                val unitCodeForStores = when (it) {
+                    is StoresScope.StorePreview -> userRepo.requireUser().unitCode
+                    is SearchScope -> null
+                    else -> throw UnsupportedOperationException("unknown search scope")
+                }
+                val (result, isSuccess) = networkSearchScope.autocomplete(value, unitCodeForStores)
                 if (isSuccess && result != null) {
                     it.autoComplete.value = result
                     if (value.isNotEmpty() && result.isEmpty() && it.products.value.isNotEmpty()) {
@@ -243,7 +250,7 @@ internal class SearchEventDelegate(
             val (result, isSuccess) = networkSearchScope.search(
                 selectedSortOption.value?.code,
                 (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
-                unitCode,
+                unitCode.takeIf { this is StoresScope.StorePreview },
                 address.latitude,
                 address.longitude,
                 pagination,

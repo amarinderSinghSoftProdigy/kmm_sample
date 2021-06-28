@@ -290,7 +290,7 @@ class NetworkClient(
         longitude: Double,
         pagination: Pagination,
     ): Response.Wrapped<SearchResponse> = ktorDispatcher {
-        client.get<SimpleResponse<SearchResponse>>("${baseUrl.url}/search/global") {
+        client.get<SimpleResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
             url {
                 parameters.apply {
@@ -310,12 +310,18 @@ class NetworkClient(
         }
     }
 
-    override suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>> =
+    override suspend fun autocomplete(
+        input: String,
+        unitCodeForStores: String?
+    ): Response.Wrapped<List<AutoComplete>> =
         ktorDispatcher {
-            client.get<SimpleResponse<List<AutoComplete>>>("${baseUrl.url}/search/suggest") {
+            val path =
+                if (unitCodeForStores == null) "/search/suggest" else "/search/stores/suggest-vvb"
+            client.get<SimpleResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
                 withMainToken()
                 url {
                     parameters.append("suggest", input)
+                    unitCodeForStores?.let { parameters.append("b2bUnitCode", it) }
                 }
             }.getWrappedBody()
         }

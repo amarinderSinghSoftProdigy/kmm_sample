@@ -111,7 +111,10 @@ interface NetworkScope {
             pagination: Pagination,
         ): Response.Wrapped<SearchResponse>
 
-        suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>>
+        suspend fun autocomplete(
+            input: String,
+            unitCodeForStores: String?,
+        ): Response.Wrapped<List<AutoComplete>>
     }
 
     interface Management : NetworkScope {
