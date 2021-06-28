@@ -21,8 +21,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
@@ -38,6 +42,7 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 @Composable
 fun NavigationColumn(
     fullName: String,
+    trialString: String?,
     userType: UserType,
     navigationSection: NavigationSection,
     onSectionSelected: () -> Unit,
@@ -64,17 +69,43 @@ fun NavigationColumn(
                     text = fullName,
                     fontWeight = FontWeight.W700,
                     color = Color.White,
+                    fontSize = 14.sp,
                 )
                 Space(4.dp)
                 Text(
                     text = stringResourceByName(userType.stringId),
                     color = Color.White,
+                    fontSize = 14.sp,
                 )
+                if (trialString != null) {
+                    Space(4.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append("(")
+                            append(stringResource(id = R.string.trial_ends))
+                            append(" ")
+                            val startIndex = length
+                            append(trialString)
+                            addStyle(
+                                SpanStyle(
+                                    fontWeight = FontWeight.W700
+                                ),
+                                startIndex,
+                                length,
+                            )
+                            append(")")
+                        },
+                        color = Color.White,
+                        fontSize = 12.sp,
+                    )
+                }
             }
         }
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 navigationSection.main.forEach {

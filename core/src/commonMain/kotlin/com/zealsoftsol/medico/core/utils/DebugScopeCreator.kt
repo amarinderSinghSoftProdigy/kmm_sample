@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.utils
 import com.zealsoftsol.medico.core.directDI
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
+import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
@@ -19,6 +20,7 @@ import com.zealsoftsol.medico.data.Expiry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.Subscription
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -287,5 +289,6 @@ private inline val testUser
         User.Details.DrugLicense("", "", "", "", "url"),
         true,
         true,
-        AddressData("", "", "", "", 0.0, 0.0, "", 0, "", "")
+        AddressData("", "", "", "", 0.0, 0.0, "", 0, "", ""),
+        Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),
     )

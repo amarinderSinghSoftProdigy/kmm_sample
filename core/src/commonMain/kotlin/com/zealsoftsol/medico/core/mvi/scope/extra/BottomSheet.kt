@@ -42,7 +42,7 @@ sealed class BottomSheet {
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
 
         companion object {
-            private const val MAX_FILE_SIZE = 1_000_000
+            private const val MAX_FILE_SIZE = 10_000_000
         }
     }
 

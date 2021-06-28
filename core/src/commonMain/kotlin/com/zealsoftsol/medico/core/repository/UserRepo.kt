@@ -100,6 +100,7 @@ class UserRepo(
                 it.metaData!!.activated,
                 it.isDocumentUploaded,
                 it.addressData,
+                it.subscription,
             )
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)

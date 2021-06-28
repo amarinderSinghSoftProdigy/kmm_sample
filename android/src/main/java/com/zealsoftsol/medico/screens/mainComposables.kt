@@ -120,6 +120,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                 NavigationColumn(
                     fullName = user.value.fullName(),
                     userType = user.value.type,
+                    trialString = user.value.subscription?.validUntil,
                     navigationSection = it,
                     onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }
                 )

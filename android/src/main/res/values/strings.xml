@@ -221,6 +221,7 @@
     <string name="download">Download</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="trial_ends">Trial Ends on</string>
 
 
     <!--error codes-->
