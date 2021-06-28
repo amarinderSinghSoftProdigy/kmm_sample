@@ -24,9 +24,11 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -102,6 +104,7 @@ import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val scaffoldState = rememberScaffoldState()
@@ -200,6 +203,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun RowScope.SimpleTabBar(
     scope: TabBarScope,
@@ -208,10 +212,12 @@ private fun RowScope.SimpleTabBar(
     coroutineScope: CoroutineScope,
 ) {
     if (info.icon != ScopeIcon.NO_ICON) {
+        val keyboard = LocalSoftwareKeyboardController.current
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
                 .fillMaxHeight()
                 .padding(16.dp)
                 .clickable(
@@ -219,7 +225,10 @@ private fun RowScope.SimpleTabBar(
                     onClick = {
                         when (info.icon) {
                             ScopeIcon.BACK -> scope.goBack()
-                            ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
+                            ScopeIcon.HAMBURGER -> {
+                                keyboard?.hide()
+                                coroutineScope.launch { scaffoldState.drawerState.open() }
+                            }
                         }
                     },
                 )
@@ -229,18 +238,21 @@ private fun RowScope.SimpleTabBar(
         is StringResource.Static -> Text(
             text = stringResourceByName(res.id),
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
                 .padding(start = 16.dp),
         )
         is StringResource.Raw -> Text(
             text = res.string,
             style = MaterialTheme.typography.h6,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
                 .padding(start = 16.dp),
         )
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun RowScope.SearchTabBar(
     scope: TabBarScope,
@@ -248,6 +260,8 @@ private fun RowScope.SearchTabBar(
     scaffoldState: ScaffoldState,
     coroutineScope: CoroutineScope,
 ) {
+    val keyboard = LocalSoftwareKeyboardController.current
+
     Icon(
         imageVector = info.icon.toLocalIcon(),
         contentDescription = null,
@@ -256,7 +270,10 @@ private fun RowScope.SearchTabBar(
             .clickable(indication = null) {
                 when (info.icon) {
                     ScopeIcon.BACK -> scope.goBack()
-                    ScopeIcon.HAMBURGER -> coroutineScope.launch { scaffoldState.drawerState.open() }
+                    ScopeIcon.HAMBURGER -> {
+                        keyboard?.hide()
+                        coroutineScope.launch { scaffoldState.drawerState.open() }
+                    }
                 }
             }
             .padding(16.dp)
@@ -284,14 +301,17 @@ private fun RowScope.SearchTabBar(
         )
     }
     Box(
-        modifier = Modifier.weight(0.15f)
+        modifier = Modifier
+            .weight(0.15f)
             .clickable(indication = null) { info.goToCart() }
             .padding(10.dp),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_cart),
             contentDescription = null,
-            modifier = Modifier.padding(6.dp).align(Alignment.Center)
+            modifier = Modifier
+                .padding(6.dp)
+                .align(Alignment.Center)
         )
         val cartItems = info.cartItemsCount.flow.collectAsState()
         Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
