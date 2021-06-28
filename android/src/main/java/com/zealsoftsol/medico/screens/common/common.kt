@@ -246,6 +246,7 @@ fun <T : WithNotifications> T.showNotificationAlert() {
         } else {
             Notification(
                 title = if (titleResourceId != 0) stringResource(id = titleResourceId) else null,
+                titleRes = titleResourceId,
                 onDismiss = { dismissNotification() },
                 notification = it,
             )

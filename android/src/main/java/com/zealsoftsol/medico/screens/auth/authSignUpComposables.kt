@@ -25,6 +25,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -95,7 +97,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
             Row {
                 UserType(
                     iconRes = R.drawable.ic_stockist,
-                    textRes = R.string.stockist,
+                    textRes = R.string.stockist_sub,
                     isSelected = selectedType.value == DataUserType.STOCKIST,
                     onClick = { scope.chooseUserType(DataUserType.STOCKIST) },
                 )
@@ -110,17 +112,17 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
             Spacer(modifier = Modifier.size(18.dp))
             Row {
                 UserType(
-                    iconRes = R.drawable.ic_season_boy,
-                    textRes = R.string.season_boy,
-                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
-                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
-                )
-                Spacer(modifier = Modifier.size(18.dp))
-                UserType(
                     iconRes = R.drawable.ic_hospital,
                     textRes = R.string.hospital,
                     isSelected = selectedType.value == DataUserType.HOSPITAL,
                     onClick = { scope.chooseUserType(DataUserType.HOSPITAL) },
+                )
+                Spacer(modifier = Modifier.size(18.dp))
+                UserType(
+                    iconRes = R.drawable.ic_season_boy,
+                    textRes = R.string.season_boy,
+                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
+                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
                 )
             }
         }
@@ -223,34 +225,41 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 )
             }
             Space(dp = 12.dp)
-            Text(
-                text = stringResource(id = R.string.tos_line_1),
-                color = ConstColors.gray,
-                style = MaterialTheme.typography.caption,
-            )
             val context = LocalContext.current
-            Text(
-                text = stringResource(id = R.string.tos_line_2),
-                color = ConstColors.lightBlue,
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.W600,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.clickable(onClick = {
-                    val tabs = CustomTabsIntent.Builder().build()
-                    val uri = context.getString(R.string.tos_url).toUri()
-                    runCatching {
-                        tabs.launchUrl(context, uri)
-                    }.getOrNull() ?: runCatching {
-                        startActivity(
-                            context,
-                            Intent(Intent.ACTION_VIEW).also {
-                                it.data = uri
-                            },
-                            null
-                        )
-                    }.getOrNull() ?: context.toast(R.string.something_went_wrong)
-                })
-            )
+            val isTermsAccepted = scope.isTermsAccepted.flow.collectAsState()
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = isTermsAccepted.value,
+                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                    onCheckedChange = { scope.changeTerms(it) },
+                )
+                Space(dp = 8.dp)
+                Text(
+                    text = stringResource(id = R.string.tos_line_2),
+                    color = ConstColors.lightBlue,
+                    textDecoration = TextDecoration.Underline,
+                    fontWeight = FontWeight.W600,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.clickable(onClick = {
+                        val tabs = CustomTabsIntent.Builder().build()
+                        val uri = context.getString(R.string.tos_url).toUri()
+                        runCatching {
+                            tabs.launchUrl(context, uri)
+                        }.getOrNull() ?: runCatching {
+                            startActivity(
+                                context,
+                                Intent(Intent.ACTION_VIEW).also {
+                                    it.data = uri
+                                },
+                                null
+                            )
+                        }.getOrNull() ?: context.toast(R.string.something_went_wrong)
+                    })
+                )
+            }
         },
     )
 }
@@ -280,21 +289,21 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 )
             }
             Space(dp = 12.dp)
-            InputWithError(errorText = userValidation.value?.landmark) {
-                InputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                    hint = stringResource(id = R.string.landmark),
-                    text = registration.value.landmark,
-                    onValueChange = { scope.changeLandmark(it) }
-                )
-            }
-            Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.addressLine1) {
                 InputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.address_line),
                     text = registration.value.addressLine1,
                     onValueChange = { scope.changeAddressLine(it) }
+                )
+            }
+            Space(dp = 12.dp)
+            InputWithError(errorText = userValidation.value?.landmark) {
+                InputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.landmark),
+                    text = registration.value.landmark,
+                    onValueChange = { scope.changeLandmark(it) }
                 )
             }
             Space(dp = 12.dp)
@@ -480,7 +489,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     )
                     Space(10.dp)
                     FlowRow(horizontalGap = 12.dp) {
-                        listOf("PDF", "PNG", "JPEG/PEG", "ZIP").forEach {
+                        scope.supportedFileTypes.map { it.name }.forEach {
                             Text(
                                 modifier = Modifier
                                     .background(
@@ -501,7 +510,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                             append(stringResource(id = R.string.max_file_size))
                             val startIndex = length
                             append(" ")
-                            append(stringResource(id = R.string.mb_1))
+                            append(stringResource(id = R.string.mb_10))
                             addStyle(
                                 SpanStyle(
                                     color = MaterialTheme.colors.background,
@@ -579,7 +588,11 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
             contentDescription = null,
             modifier = Modifier.size(48.dp)
         )
-        Text(text = stringResource(id = textRes), modifier = Modifier.padding(4.dp))
+        Text(
+            text = stringResource(id = textRes),
+            modifier = Modifier.padding(4.dp),
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

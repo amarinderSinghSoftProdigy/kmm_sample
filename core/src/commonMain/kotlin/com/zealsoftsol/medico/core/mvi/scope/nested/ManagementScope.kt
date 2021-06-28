@@ -136,6 +136,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
     // Notifications
 
     class ChoosePaymentMethod(
+        val tradeName: String,
         val paymentMethod: DataSource<PaymentMethod> = DataSource(PaymentMethod.CREDIT),
         val creditDays: DataSource<String> = DataSource(""),
         val isSendEnabled: DataSource<Boolean> = DataSource(false),

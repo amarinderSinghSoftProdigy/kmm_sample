@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">medicostores</string>
     <string name="log_in">Log in</string>
-    <string name="phone_number_or_email">Phone Number or Email</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="phone_number_or_email">Mobile Number or Email</string>
+    <string name="phone_number">Mobile Number</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="sign_up_to_medico">Sign up to Medico Stores</string>
@@ -11,10 +11,10 @@
     <string name="register">Register</string>
     <string name="log_out">Log out</string>
     <string name="password_reset">Password Reset</string>
-    <string name="reset_password_hint">To reset your password please enter verified phone number:</string>
+    <string name="reset_password_hint">To reset your password please enter verified mobile number:</string>
     <string name="get_code">Get Code</string>
     <string name="phone_verification">Phone Verification</string>
-    <string name="verification_code_sent_hint">We sent you a verification code to your phone number</string>
+    <string name="verification_code_sent_hint">We sent you a verification code to your mobile number</string>
     <string name="verification_code">Verification Code</string>
     <string name="submit">Submit</string>
     <string name="didnt_get_code">Didn’t get a code?</string>
@@ -34,8 +34,9 @@
     <string name="okay">Okay</string>
     <string name="who_are_you">Who are you?</string>
     <string name="user_type">User Type</string>
-    <string name="personal_data">Personal Data</string>
+    <string name="personal_data">Contact Information</string>
     <string name="stockist">Stockist</string>
+    <string name="stockist_sub">Stockist/Sub-Stockist</string>
     <string name="retailer">Retailer</string>
     <string name="season_boy">Season Boy</string>
     <string name="hospital">Hospital</string>
@@ -50,7 +51,7 @@
     <string name="last_name">Last Name</string>
     <string name="email">Email Address</string>
     <string name="email_short">Email</string>
-    <string name="repeat_password">Repeat Password</string>
+    <string name="repeat_password">Verify Password</string>
     <string name="tos_line_1">Continuing, I accept the</string>
     <string name="tos_line_2">Terms of Conditions and Privacy Policy</string>
     <string name="address">Address</string>
@@ -62,7 +63,7 @@
     <string name="city">City</string>
     <string name="district">District</string>
     <string name="state">State</string>
-    <string name="trader_details">Trader Details</string>
+    <string name="trader_details">Trade Information</string>
     <string name="trade_name">Trade Name</string>
     <string name="pan_number">PAN Number</string>
     <string name="gstin">GSTIN</string>
@@ -73,7 +74,7 @@
     <string name="aadhaar_card_invalid">Invalid Aadhaar Card</string>
     <string name="share_code">Share Code</string>
     <string name="provide_drug_license_hint">Please provide drug license to activate the account</string>
-    <string name="provide_aadhaar_hint">Please upload Aadhaar card</string>
+    <string name="provide_aadhaar_hint">Please upload Aadhaar e-KYC</string>
     <string name="upload_new_document">Upload new document</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="actions">Actions</string>
@@ -112,11 +113,11 @@
     <string name="your_hospitals">Your Hospitals</string>
     <string name="your_season_boys">Your Season Boys</string>
     <string name="all_stockists">All Stockists</string>
-    <string name="subscribe">Subscribe</string>
+    <string name="subscribe">Connect</string>
     <string name="see_on_the_map">See on the map</string>
     <string name="status">Status</string>
     <string name="gstin_num">GSTIN Number</string>
-    <string name="payment_method">Payment method</string>
+    <string name="payment_method">Type</string>
     <string name="orders">Orders</string>
     <string name="new_orders">New orders</string>
     <string name="purchase_orders">Purchase orders</string>
@@ -128,16 +129,16 @@
     <string name="continue_">Continue</string>
     <string name="credit">Credit</string>
     <string name="cash">Cash on delivery</string>
-    <string name="choose_payment_method">Before you subscribe to Pharmacy Doctors please choose the payment method</string>
+    <string name="choose_payment_method">Before you connect to %1$s please choose the payment method</string>
     <string name="enter_number_of_days">Enter number of days</string>
     <string name="thank_you_for_request">Thank you for your request!</string>
     <string name="congratulations">Congratulations</string>
-    <string name="retailer_added_template">You have added %s to your list of Retailers successfully</string>
+    <string name="retailer_added_template">You have added %1$s to your list of Retailers successfully</string>
     <string name="retailers_list">Retailers List</string>
     <string name="confirm_info">Confirm if the information above is correct</string>
     <string name="add_retailer">Add Retailer</string>
     <string name="add_retailer_address">Add Retailer\'s Address</string>
-    <string name="consent_terms">I consent for Terms and Conditions</string>
+    <string name="consent_terms">I accept Terms &amp; Conditions</string>
     <string name="notifications">Notifications</string>
     <string name="active_orders">Active orders</string>
     <string name="read">Read</string>
@@ -169,7 +170,7 @@
     <string name="limited">Limited</string>
     <string name="quoted">Quoted</string>
     <string name="empty_cart">Empty Cart</string>
-    <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 1MB.</string>
+    <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 10MB.</string>
     <string name="connect_with_us">Instantly Connect with us</string>
     <string name="contact_info">Contact Information</string>
     <string name="sales">Sales</string>
@@ -216,7 +217,7 @@
     <string name="sort_by">Sort By</string>
     <string name="available_formats">Available File Formats</string>
     <string name="max_file_size">Maximum file size:</string>
-    <string name="mb_1">1 MB</string>
+    <string name="mb_10">10 MB</string>
     <string name="invoices">Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>

@@ -87,7 +87,7 @@ internal class ManagementEventDelegate(
                 customerType = user.type.serverValue,
             )
             scope.value.dismissBottomSheet()
-            it.notifications.value = ManagementScope.ChoosePaymentMethod()
+            it.notifications.value = ManagementScope.ChoosePaymentMethod(entityInfo.tradeName)
         }
     }
 
