@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 enum class OrderType(val path: String) {
     PURCHASE_ORDER("/po/"),
     ORDER("/"),
-    HISTORY("/history/");
+    HISTORY("/po/history/");
 }
 
 @Serializable
@@ -22,6 +22,8 @@ data class Order(
 data class OrderEntry(
     @SerialName("orderEntryId")
     val id: String,
+    @SerialName("entryStatus")
+    val status: Status,
     @SerialName("orderEntryNumber")
     val number: Int,
     val batchNo: String,
@@ -37,7 +39,12 @@ data class OrderEntry(
     val spid: String,
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
-)
+) {
+
+    enum class Status {
+        ACCEPTED, REJECTED;
+    }
+}
 
 @Serializable
 data class OrderResponse(

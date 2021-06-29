@@ -84,7 +84,7 @@ fun OrdersScreen(scope: OrdersScope) {
                         id = when (scope.type) {
                             OrderType.PURCHASE_ORDER -> R.string.new_orders
                             OrderType.ORDER -> R.string.orders
-                            OrderType.HISTORY -> 0
+                            OrderType.HISTORY -> R.string.orders_history
                         }
                     ),
                     fontSize = 14.sp,
