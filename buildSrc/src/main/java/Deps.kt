@@ -2,8 +2,9 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
+    const val agp = "7.0.0-beta03"
     const val kotlin = "1.5.10"
-    const val ktor = "1.5.4"
+    const val ktor = "1.6.0"
     const val coroutines = "1.5.0-native-mt"
     const val kserialize = "1.2.1"
     const val kodeinDi = "7.5.0"
@@ -123,15 +124,18 @@ object Config {
         internal var isDevBuild: Boolean = false
 
         fun parseConfig() {
-            val map = JsonSlurper().parse(File("config.json")) as Map<String, Map<String, Any>>
-            val version = map["version"]!!
-            val major = version["major"].toString().toInt()
-            val minor = version["minor"].toString().toInt()
-            val patch = version["patch"].toString().toInt()
-            isDevBuild = version["build"].toString().toBoolean()
-            code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
-            name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
-            println("APP VERSION $name")
+            val file = File("config.json")
+            if (file.exists()) {
+                val map = JsonSlurper().parse(file) as Map<String, Map<String, Any>>
+                val version = map["version"]!!
+                val major = version["major"].toString().toInt()
+                val minor = version["minor"].toString().toInt()
+                val patch = version["patch"].toString().toInt()
+                isDevBuild = version["build"].toString().toBoolean()
+                code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
+                name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
+                println("APP VERSION $name")
+            }
         }
     }
 
