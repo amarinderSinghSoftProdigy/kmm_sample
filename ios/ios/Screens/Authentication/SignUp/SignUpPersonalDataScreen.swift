@@ -12,13 +12,14 @@ import core
 struct SignUpPersonalDataScreen: View {
     let scope: SignUpScope.PersonalData
     
+    @ObservedObject var acceptedTermsAndConditions: SwiftDataSource<KotlinBoolean>
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
     @ObservedObject var registration: SwiftDataSource<DataUserRegistration1>
     @ObservedObject var validation: SwiftDataSource<DataUserValidation1>
     
+    
     @State var isPhoneValid: Bool = true
-    @State var acceptedTermsAndConditions: Bool = false
     
     @State private var safariLink: String?
     
@@ -30,7 +31,7 @@ struct SignUpPersonalDataScreen: View {
             
             Spacer()
         }
-        .modifier(SignUpButton(isEnabled: canGoNext.value != false && acceptedTermsAndConditions,
+        .modifier(SignUpButton(isEnabled: canGoNext.value != false,
                                action: goToAddress))
         .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpPersonalDataScreen",
@@ -105,7 +106,10 @@ struct SignUpPersonalDataScreen: View {
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
         HStack {
-            CheckBox(selected: $acceptedTermsAndConditions)
+            let acceptedTermsAndConditions = Binding(get: { self.acceptedTermsAndConditions.value == true },
+                                                     set: { scope.changeTerms(isAccepted: $0) })
+            
+            CheckBox(selected: acceptedTermsAndConditions)
                 .frame(width: 22, height: 22)
             
             HStack(spacing: 3) {
@@ -128,6 +132,7 @@ struct SignUpPersonalDataScreen: View {
     init(scope: SignUpScope.PersonalData) {
         self.scope = scope
         
+        self.acceptedTermsAndConditions = SwiftDataSource(dataSource: scope.isTermsAccepted)
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
         self.registration = SwiftDataSource(dataSource: scope.registration)
