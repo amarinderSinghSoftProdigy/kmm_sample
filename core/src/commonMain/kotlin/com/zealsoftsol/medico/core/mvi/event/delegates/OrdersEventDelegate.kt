@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
@@ -41,7 +42,7 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(event.entry, event.quantity)
-        is Event.Action.Orders.Confirm -> confirmOrder()
+        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {
@@ -198,20 +199,26 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private suspend fun confirmOrder() {
+    private suspend fun confirmOrder(fromNotification: Boolean) {
         navigator.withScope<ConfirmOrderScope> {
-            withProgress {
-                networkOrdersScope.confirmOrder(
-                    ConfirmOrderRequest(
-                        orderId = it.order.value.info.id,
-                        sellerUnitCode = userRepo.requireUser().unitCode,
-                        acceptedEntries = it.acceptedEntries.map { it.id },
+            if (!fromNotification) {
+                it.notifications.value = ConfirmOrderScope.AreYouSure
+            } else {
+                it.notifications.value = null
+                withProgress {
+                    networkOrdersScope.confirmOrder(
+                        ConfirmOrderRequest(
+                            orderId = it.order.value.info.id,
+                            sellerUnitCode = userRepo.requireUser().unitCode,
+                            acceptedEntries = it.acceptedEntries.map { it.id },
+                        )
                     )
-                )
-            }.onSuccess {
-                dropScope(updateDataSource = false)
-                dropScope()
-            }.onError(navigator)
+                }.onSuccess { _ ->
+                    dropScope(updateDataSource = false)
+                    dropScope(updateDataSource = false)
+                    setScope(OrderPlacedScope(it.order.value))
+                }.onError(navigator)
+            }
         }
     }
 }

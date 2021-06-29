@@ -202,7 +202,7 @@ sealed class Event {
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(val entry: OrderEntry) : Orders()
             data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
-            object Confirm : Orders()
+            data class Confirm(val fromNotification: Boolean) : Orders()
         }
 
         sealed class Invoices : Action() {

@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.PaymentMethod
@@ -86,6 +87,10 @@ fun Notification(
                     text = stringResource(id = R.string.sure_reject_all),
                     style = MaterialTheme.typography.subtitle1,
                 )
+                is ConfirmOrderScope.AreYouSure -> Text(
+                    text = stringResource(id = R.string.sure_confirm_order),
+                    style = MaterialTheme.typography.subtitle1,
+                )
             }
         },
         buttons = {
@@ -123,6 +128,9 @@ fun Notification(
                     onDismiss,
                     onContinue = { notification.`continue`() }
                 )
+                is ConfirmOrderScope.AreYouSure -> CartNotificationButtons(onDismiss) {
+                    notification.confirm()
+                }
             }
         },
         properties = DialogProperties(

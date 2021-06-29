@@ -209,6 +209,7 @@
     <string name="served_qty">Served QTY:</string>
     <string name="serve_quoted">Are you sure you want to serve quote product?</string>
     <string name="sure_reject_all">Are you sure you want to Reject all products?</string>
+    <string name="sure_confirm_order">Are you sure you want to confirm the order?</string>
     <string name="action_confirmation">Action Confirmation</string>
     <string name="accepted">Accepted</string>
     <string name="rejected">Rejected</string>
@@ -223,6 +224,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="trial_ends">Trial Ends on</string>
+    <string name="home">Home</string>
 
 
     <!--error codes-->
