@@ -21,9 +21,9 @@
 "phone_number_or_email" = "Email / Phone No.";
 "password" = "Password";
 "forgot_password" = "Forgot Password";
-"new_to_medico" = "New to Medicostores?";
+"new_to_medico" = "New to medicostores.com?";
 "create_account" = "Create Account";
-"copyright" = "© Medicostores.com 2021";
+"copyright" = "© medicostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";

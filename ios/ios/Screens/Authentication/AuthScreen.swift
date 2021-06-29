@@ -24,26 +24,33 @@ struct AuthScreen: View {
                 Group {
                     Spacer()
                     
-                    Image("medico_logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 150)
-                    
-                    Spacer()
+                    VStack(spacing: 50) {
+                        Image("medico_logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 216, height: 54)
 
-                    if let credentialsValue = self.credentials.value {
-                        AuthTab(
-                            scope: scope,
-                            credentials: credentialsValue
-                        )
+                        if let credentialsValue = self.credentials.value {
+                            AuthTab(
+                                scope: scope,
+                                credentials: credentialsValue
+                            )
+                        }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 45)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(appColor: .white)
+                    )
                     
                     Spacer()
                     
                     self.createAccountView
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(appColor: .white)
+                .padding(.horizontal, 20)
+                .background(appColor: .lightBlue)
                 
                 LocalizedText(localizationKey: "copyright",
                               textWeight: .medium,
@@ -57,27 +64,22 @@ struct AuthScreen: View {
     }
     
     private var createAccountView: some View {
-        ZStack(alignment: .top) {
-            AppColor.darkBlue.color
-                .opacity(0.2)
-                .frame(height: 1)
+        VStack(spacing: 13) {
+            LocalizedText(localizationKey: "new_to_medico",
+                          textWeight: .medium,
+                          color: .white)
             
-            VStack(spacing: 13) {
-                LocalizedText(localizationKey: "new_to_medico",
-                              textWeight: .medium)
-                
-                MedicoButton(localizedStringKey: "create_account",
-                             isEnabled: true,
-                             width: 287,
-                             height: 42,
-                             fontColor: .lightBlue,
-                             buttonColor: .white) {
-                    scope.goToSignUp()
-                }
-                .strokeBorder(.lightBlue, fill: .white, lineWidth: 2)
+            MedicoButton(localizedStringKey: "create_account",
+                         isEnabled: true,
+                         width: 287,
+                         height: 42,
+                         fontColor: .white,
+                         buttonColor: .clear) {
+                scope.goToSignUp()
             }
-            .padding(.vertical, 50)
+            .strokeBorder(.white, fill: .clear, lineWidth: 2)
         }
+        .padding(.bottom, 65)
     }
 
     private struct AuthTab: View {
@@ -119,7 +121,6 @@ struct AuthScreen: View {
                 }
                 .padding(.top, 20)
             }
-            .padding(.horizontal, 16)
             .frame(maxWidth: 500)
         }
         
