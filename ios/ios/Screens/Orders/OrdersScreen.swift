@@ -176,13 +176,10 @@ struct OrdersScreen: View {
 extension DataOrderType {
     var localizationKey: String {
         switch self {
-        case .history:
-            return ""
-            
         case .purchaseOrder:
             return "new_orders"
             
-        case .order:
+        case .order, .history:
             return "orders"
             
         default:

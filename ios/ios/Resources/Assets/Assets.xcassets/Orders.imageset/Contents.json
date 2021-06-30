@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Cart.Fill.png",
+      "filename" : "Orders.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Cart.Fill@2x.png",
+      "filename" : "Orders@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Cart.Fill@3x.png",
+      "filename" : "Orders@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

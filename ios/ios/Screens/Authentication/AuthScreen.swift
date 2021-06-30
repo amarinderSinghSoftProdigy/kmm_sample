@@ -72,12 +72,9 @@ struct AuthScreen: View {
             MedicoButton(localizedStringKey: "create_account",
                          isEnabled: true,
                          width: 287,
-                         height: 42,
-                         fontColor: .white,
-                         buttonColor: .clear) {
+                         height: 42) {
                 scope.goToSignUp()
             }
-            .strokeBorder(.white, fill: .clear, lineWidth: 2)
         }
         .padding(.bottom, 65)
     }

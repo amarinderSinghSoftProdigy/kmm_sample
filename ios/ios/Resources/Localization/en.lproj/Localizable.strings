@@ -117,6 +117,7 @@
 "dashboard" = "Dashboard";
 "stores" = "Stores";
 "trial_ends" = "Trial Ends on ";
+"orders_history" = "Orders History";
 
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";

@@ -252,13 +252,16 @@ extension NavigationOption {
             return "Help"
             
         case .NewOrders():
-            return "Cart.Fill"
+            return "NewOrders"
             
         case .Orders():
-            return "Cart.Arrow"
+            return "Orders"
             
         case .Invoices():
             return "Invoice"
+            
+        case .OrdersHistory():
+            return "OrdersHistory"
             
         default:
             return nil
@@ -302,6 +305,9 @@ extension NavigationOption {
             
         case .Invoices():
             return "invoices"
+            
+        case .OrdersHistory():
+            return "orders_history"
             
         default:
             return nil

@@ -35,7 +35,7 @@ struct ComplexNotificationAlert: View {
                                  action: { self.dismissAction(false) })
             
             return AnyView(
-                CustomAlert(localizedStringKey: LocalizedStringKey("choose_payment_method_description \(notification.creditDays)"),
+                CustomAlert(localizedStringKey: LocalizedStringKey("choose_payment_method_description \(notification.tradeName)"),
                             button: button,
                             cancelButton: cancelButton,
                             outsideTapAction: { self.hideKeyboard() }) {
