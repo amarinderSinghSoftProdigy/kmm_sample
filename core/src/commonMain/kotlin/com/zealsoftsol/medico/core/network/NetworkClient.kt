@@ -144,7 +144,7 @@ class NetworkClient(
         }
     }
 
-    override suspend fun checkCanResetPassword(phoneNumber: String) = simpleRequest {
+    override suspend fun checkCanResetPassword(phoneNumber: String) = fullRequest {
         client.post<AnyResponse>("${baseUrl.url}/medico/forgetpwd") {
             withTempToken(TempToken.REGISTRATION)
             jsonBody(OtpRequest(phoneNumber))
@@ -753,5 +753,7 @@ internal fun createJson() = Json {
     isLenient = true
     ignoreUnknownKeys = true
     allowStructuredMapKeys = true
+    // TODO remove after kserilize lib updated from 1.2.1
+    useAlternativeNames = false
 }
 
