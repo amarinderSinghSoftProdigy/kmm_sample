@@ -81,6 +81,7 @@
 		33DE40C32664CB83001EB277 /* ConfirmOrderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */; };
 		33E299DE268CA6C7004183A2 /* Barlow-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E299DC268CA6C7004183A2 /* Barlow-BoldItalic.ttf */; };
 		33E299DF268CA6C7004183A2 /* Barlow-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E299DD268CA6C7004183A2 /* Barlow-MediumItalic.ttf */; };
+		33E299E1268CB4B9004183A2 /* OrderPlacedScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33E299E0268CB4B9004183A2 /* OrderPlacedScreen.swift */; };
 		33E76830256D5F9900B35FDF /* Barlow-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */; };
 		33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */; };
 		33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */; };
@@ -200,6 +201,7 @@
 		33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderScreen.swift; sourceTree = "<group>"; };
 		33E299DC268CA6C7004183A2 /* Barlow-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-BoldItalic.ttf"; sourceTree = "<group>"; };
 		33E299DD268CA6C7004183A2 /* Barlow-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-MediumItalic.ttf"; sourceTree = "<group>"; };
+		33E299E0268CB4B9004183A2 /* OrderPlacedScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderPlacedScreen.swift; sourceTree = "<group>"; };
 		33E7682E256D5F9800B35FDF /* Barlow-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Medium.ttf"; sourceTree = "<group>"; };
 		33E7682F256D5F9900B35FDF /* Barlow-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Regular.ttf"; sourceTree = "<group>"; };
 		33E76836256D621B00B35FDF /* Barlow-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-SemiBold.ttf"; sourceTree = "<group>"; };
@@ -662,6 +664,7 @@
 			isa = PBXGroup;
 			children = (
 				33DE40C22664CB83001EB277 /* ConfirmOrderScreen.swift */,
+				33E299E0268CB4B9004183A2 /* OrderPlacedScreen.swift */,
 				33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */,
 				33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */,
 			);
@@ -930,6 +933,7 @@
 				3354F9702657D4CA00A4D252 /* CompletedCartOrderScreen.swift in Sources */,
 				330D8C53266A0FFF005D46DB /* InvoiceDetailsScreen.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
+				33E299E1268CB4B9004183A2 /* OrderPlacedScreen.swift in Sources */,
 				3356497425AC453300F2D3CE /* NavigationBar.swift in Sources */,
 				33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */,
 				332EB65325F2253C009BC392 /* PopSheet.swift in Sources */,

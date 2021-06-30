@@ -35,6 +35,8 @@ struct CompletedCartOrderScreen: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 15) {
                 Image("OrderSuccess")
+                    .resizable()
+                    .frame(width: 42, height: 42)
                 
                 VStack(alignment: .leading, spacing: 5) {
                     LocalizedText(localizationKey: "order_success",

@@ -103,6 +103,19 @@ struct ComplexNotificationAlert: View {
             
             body = AnyView(EmptyView())
             
+        case let notification as ConfirmOrderScope.AreYouSure:
+            titleKey = "confirm_order_notification"
+            button = .init(text: "yes",
+                           isEnabled: true,
+                           action: { notification.confirm() })
+            
+            cancelButton = .init(text: "no",
+                                 isEnabled: true,
+                                 action: { self.dismissAction(false) })
+            
+            body = AnyView(EmptyView())
+            
+            
         default:
             return AnyView(
                 SimpleNotificationAlert(notification: notification,

@@ -316,6 +316,7 @@
 "served_qty:" = "Served QTY:";
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
 "reject_all_products_notification" = "Are you sure you want to Decline all products?";
+"confirm_order_notification" = "Are you sure you want to confirm the order?";
 
 // MARK: Confirm Order
 "action_confirmation" = "Action Confirmation";
