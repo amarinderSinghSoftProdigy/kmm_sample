@@ -34,7 +34,9 @@
 		<string>Barlow-Regular.ttf</string>
 		<string>Barlow-SemiBold.ttf</string>
 		<string>Barlow-Bold.ttf</string>
+		<string>Barlow-BoldItalic.ttf</string>
 		<string>Barlow-Black.ttf</string>
+		<string>Barlow-MediumItalic.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

@@ -39,10 +39,9 @@ struct SlidingNavigationPanelView: ViewModifier {
                            maxHeight: geometry.size.height,
                            alignment: .topLeading)
                     .zIndex(1)
-            
+                
                 _SlidingPanelView(navigationSection: navigationSection,
-                                  userName: user.value?.fullName(),
-                                  userType: user.value?.type,
+                                  user: user.value,
                                   geometry: geometry,
                                   isShown: showsSlidingPanel,
                                   closeSlidingPanel: closeSlidingPanel)
@@ -75,8 +74,7 @@ private struct _SlidingPanelView: View {
     let geometry: GeometryProxy
     let isShown: Bool
     
-    let userName: String?
-    let userType: DataUserType?
+    let user: DataUser?
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -99,15 +97,13 @@ private struct _SlidingPanelView: View {
     }
     
     init(navigationSection: NavigationSection,
-         userName: String?,
-         userType: DataUserType?,
+         user: DataUser?,
          geometry: GeometryProxy,
          isShown: Bool,
          closeSlidingPanel: @escaping (Bool) -> ()) {
         self.navigationSection = navigationSection
         
-        self.userName = userName
-        self.userType = userType
+        self.user = user
         
         self.geometry = geometry
         self.isShown = isShown
@@ -133,12 +129,29 @@ private struct _SlidingPanelView: View {
                 Image("DefaultUserPhoto")
                     .testingIdentifier("user_photo")
 
-                Text(userName ?? "")
+                Text(user?.fullName() ?? "")
                     .medicoText(textWeight: .bold,
                                 testingIdentifier: "user_name")
 
-                LocalizedText(localizationKey: userType?.localizedName ?? "",
+                LocalizedText(localizationKey: user?.type.localizedName ?? "",
                               textWeight: .medium)
+                
+                HStack(spacing: 0) {
+                    Text("(")
+                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
+                    
+                    LocalizedText(localizationKey: "trial_ends",
+                                  textWeight: .mediumItalic,
+                                  fontSize: 12)
+                    
+                    Text(user?.subscription?.validUntil ?? "")
+                        .medicoText(textWeight: .boldItalic,
+                                    fontSize: 12)
+                    
+                    Text(")")
+                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
+                }
+                
             }
             .padding()
         }
