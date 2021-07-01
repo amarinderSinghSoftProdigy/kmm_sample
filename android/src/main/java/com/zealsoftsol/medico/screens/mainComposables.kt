@@ -332,16 +332,22 @@ private fun RowScope.SearchTabBar(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ActiveSearchTabBar(
     scope: TabBarScope,
     info: TabBarInfo.ActiveSearch,
 ) {
     val search = info.search.flow.collectAsState()
+    val activeFilterIds = info.activeFilterIds.flow.collectAsState()
+    val keyboard = LocalSoftwareKeyboardController.current
     BasicSearchBar(
         input = search.value,
         icon = Icons.Default.ArrowBack,
-        searchBarEnd = SearchBarEnd.Filter { info.toggleFilter() },
+        searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
+            keyboard?.hide()
+            info.toggleFilter()
+        },
         onIconClick = { scope.goBack() },
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, isFromKeyboard ->

@@ -151,6 +151,7 @@ internal class SearchEventDelegate(
                                         } else {
                                             activeFilters.remove(f.queryId)
                                         }
+                                        it.calculateActiveFilterNames()
                                         newOption
                                     }
                                     op is Option.StringValue && op.isSelected -> op.copy(isSelected = false)
@@ -184,6 +185,7 @@ internal class SearchEventDelegate(
                             options = f.options.map { op ->
                                 if (op is Option.StringValue && op.isSelected) {
                                     activeFilters.remove(f.queryId)
+                                    it.calculateActiveFilterNames()
                                     op.copy(isSelected = false)
                                 } else {
                                     op
@@ -196,6 +198,7 @@ internal class SearchEventDelegate(
             }
             if (filter == null) {
                 activeFilters.clear()
+                it.calculateActiveFilterNames()
                 it.selectedSortOption.value = it.sortOptions.value.firstOrNull()
                 it.productSearch.value = ""
                 it.filterSearches.value = emptyMap()
@@ -237,6 +240,11 @@ internal class SearchEventDelegate(
     private fun reset() {
         searchJob?.cancel()
         activeFilters.clear()
+//        it.calculateActiveFilterNames()
+    }
+
+    private fun BaseSearchScope.calculateActiveFilterNames() {
+        activeFilterIds.value = activeFilters.map { it.key }
     }
 
     private suspend inline fun BaseSearchScope.search(

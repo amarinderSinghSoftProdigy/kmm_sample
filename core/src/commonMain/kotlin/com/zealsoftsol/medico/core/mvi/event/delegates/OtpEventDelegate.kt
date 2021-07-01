@@ -35,16 +35,19 @@ internal class OtpEventDelegate(
             if (it is OtpScope.PhoneNumberInput && it.isForRegisteredUsersOnly) {
                 withProgress {
                     userRepo.checkCanResetPassword(phoneNumber)
-                }.onSuccess {
-                    withProgress {
-                        userRepo.sendOtp(phoneNumber = phoneNumber)
-                    }.onSuccess {
-                        val nextScope = OtpScope.AwaitVerification(phoneNumber = phoneNumber)
-                        startResetPasswordTimer(nextScope)
-                        setScope(nextScope)
-                    }.onError(navigator)
-                }.onError(navigator)
+                }.onError { e ->
+                    setHostError(e)
+                    return
+                }
             }
+
+            withProgress {
+                userRepo.sendOtp(phoneNumber = phoneNumber)
+            }.onSuccess {
+                val nextScope = OtpScope.AwaitVerification(phoneNumber = phoneNumber)
+                startResetPasswordTimer(nextScope)
+                setScope(nextScope)
+            }.onError(navigator)
         }
     }
 

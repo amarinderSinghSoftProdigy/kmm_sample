@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.search
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.background
@@ -52,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -65,6 +67,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,6 +83,7 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -95,42 +99,95 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
         val showFilter = scope.isFilterOpened.flow.collectAsState()
         val sortOptions = scope.sortOptions.flow.collectAsState()
         val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+        val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+
         if (showFilter.value) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-            ) {
-                Space(16.dp)
-                Text(
-                    text = stringResource(id = R.string.clear_all),
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(horizontal = 16.dp)
-                        .clickable(indication = null) {
-                            scope.clearFilter(null)
-                        },
-                )
-                SortSection(
-                    options = sortOptions.value,
-                    selectedOption = selectedSortOption.value,
-                    onClick = { scope.selectSortOption(it) },
-                )
-                filters.value.forEach { filter ->
-                    FilterSection(
-                        name = filter.name,
-                        options = filter.options,
-                        searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                            scope.searchFilter(
-                                filter,
-                                it
-                            )
-                        },
-                        onOptionClick = { scope.selectFilter(filter, it) },
-                        onFilterClear = { scope.clearFilter(filter) },
+                        .fillMaxSize()
+                        .padding(bottom = 24.dp * 2 + 48.dp)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    Space(16.dp)
+                    Text(
+                        text = stringResource(id = R.string.filters),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W600,
+                        color = MaterialTheme.colors.background,
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
+                    if (activeFilterIds.value.isNotEmpty()) {
+                        Space(16.dp)
+                        Separator(padding = 16.dp)
+                        Space(12.dp)
+                        FlowRow(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            activeFilterIds.value.forEach { q ->
+                                val filter = scope.getFilterNameById(q)
+                                FilterChip(name = filter.name) {
+                                    scope.clearFilter(filter)
+                                }
+                            }
+                        }
+                    }
+                    SortSection(
+                        options = sortOptions.value,
+                        selectedOption = selectedSortOption.value,
+                        onClick = { scope.selectSortOption(it) },
+                    )
+                    filters.value.forEach { filter ->
+                        FilterSection(
+                            name = filter.name,
+                            options = filter.options,
+                            searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                scope.searchFilter(
+                                    filter,
+                                    it
+                                )
+                            },
+                            onOptionClick = { scope.selectFilter(filter, it) },
+                            onFilterClear = { scope.clearFilter(filter) },
+                        )
+                    }
+                    Space(16.dp)
                 }
-                Space(16.dp)
+                Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                    Canvas(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)) {
+                        drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White)))
+                    }
+                    Separator(padding = 0.dp)
+                    Row(modifier = Modifier.background(Color.White)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                        ) {
+                            MedicoButton(
+                                modifier = Modifier.weight(.5f),
+                                text = stringResource(R.string.clear),
+                                isEnabled = true,
+                                color = Color.Transparent,
+                                contentColor = ConstColors.lightBlue,
+                                border = BorderStroke(2.dp, ConstColors.lightBlue),
+                                elevation = null,
+                                onClick = { scope.clearFilter(null) },
+                            )
+                            Space(16.dp)
+                            MedicoButton(
+                                modifier = Modifier.weight(.5f),
+                                text = stringResource(R.string.apply),
+                                isEnabled = true,
+                                color = ConstColors.yellow,
+                                contentColor = MaterialTheme.colors.background,
+                                elevation = null,
+                                onClick = { scope.toggleFilter() },
+                            )
+                        }
+                    }
+                }
             }
         } else {
             if (autoComplete.value.isEmpty()) {
@@ -327,10 +384,12 @@ fun SortSection(
     selectedOption: SortOption?,
     onClick: (SortOption?) -> Unit,
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
-        Separator(padding = 2.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+    ) {
+        Separator(padding = 0.dp)
         Space(12.dp)
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -372,10 +431,12 @@ fun FilterSection(
     onOptionClick: (Option) -> Unit,
     onFilterClear: () -> Unit,
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
-        Separator(padding = 2.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+    ) {
+        Separator(padding = 0.dp)
         Space(12.dp)
         Box(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -441,6 +502,8 @@ private fun Chip(option: Option, onClick: () -> Unit) {
                         color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
                         fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
                         fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(
                             start = if (option.isSelected) 6.dp else 12.dp,
                             end = 12.dp,
@@ -467,6 +530,40 @@ private fun Chip(option: Option, onClick: () -> Unit) {
                     horizontal = 12.dp,
                     vertical = 7.dp, // compensate for 2.sp smaller text
                 ),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun FilterChip(name: String, onRemove: () -> Unit) {
+    Surface(
+        color = ConstColors.lightBlue,
+        shape = RoundedCornerShape(percent = 50),
+        modifier = Modifier.padding(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = name,
+                color = Color.White,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(
+                    start = 12.dp,
+                    end = 6.dp,
+                    top = 6.dp,
+                    bottom = 6.dp,
+                ),
+            )
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(20.dp)
+                    .clickable(indication = null, onClick = onRemove),
             )
         }
     }
@@ -520,9 +617,6 @@ fun BasicSearchBar(
                     .fillMaxWidth()
                     .padding(end = 32.dp),
             )
-            val modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.CenterEnd)
             when (searchBarEnd) {
                 is SearchBarEnd.Eraser -> {
                     if (input.isNotEmpty()) {
@@ -530,19 +624,44 @@ fun BasicSearchBar(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             tint = ConstColors.gray,
-                            modifier = modifier.clickable(
-                                indication = null,
-                                onClick = { onSearch("", false) })
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.CenterEnd)
+                                .clickable(
+                                    indication = null,
+                                    onClick = { onSearch("", false) }
+                                )
                         )
                     }
                 }
                 is SearchBarEnd.Filter -> {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_filter),
-                        contentDescription = null,
-                        tint = ConstColors.gray,
-                        modifier = modifier.clickable(indication = null, onClick = { searchBarEnd.onClick() })
-                    )
+                    val boxMod = if (searchBarEnd.isHighlighted) {
+                        Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
+                    } else {
+                        Modifier
+                    }
+                    Box(
+                        modifier = boxMod
+                            .align(Alignment.CenterEnd)
+                            .clickable(indication = null, onClick = searchBarEnd.onClick)
+                            .padding(2.dp)
+                    ) {
+                        if (searchBarEnd.isHighlighted) {
+                            Canvas(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(6.dp)
+                            ) {
+                                drawCircle(Color.Red)
+                            }
+                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_filter),
+                            contentDescription = null,
+                            tint = if (searchBarEnd.isHighlighted) MaterialTheme.colors.background else ConstColors.gray,
+                            modifier = Modifier.padding(3.dp)
+                        )
+                    }
                 }
             }
         }
@@ -551,7 +670,7 @@ fun BasicSearchBar(
 
 sealed class SearchBarEnd {
     object Eraser : SearchBarEnd()
-    data class Filter(val onClick: () -> Unit) : SearchBarEnd()
+    data class Filter(val isHighlighted: Boolean, val onClick: () -> Unit) : SearchBarEnd()
 }
 
 @Composable

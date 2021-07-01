@@ -63,7 +63,9 @@ fun StoresScreen(scope: StoresScope) {
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
     Space(16.dp)
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)) {
         Text(
             text = scope.store.tradeName,
             color = MaterialTheme.colors.background,
@@ -83,11 +85,12 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val showFilter = scope.isFilterOpened.flow.collectAsState()
     val sortOptions = scope.sortOptions.flow.collectAsState()
     val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+    val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
     BasicSearchBar(
         input = search.value,
         icon = null,
         horizontalPadding = 16.dp,
-        searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
+        searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
         onIconClick = null,
         isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, _ -> scope.searchProduct(value, withAutoComplete = false) },
@@ -95,12 +98,16 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     scope.storage.save("focus", false)
     if (showFilter.value) {
         Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         ) {
             Space(16.dp)
             Text(
                 text = stringResource(id = R.string.clear_all),
-                modifier = Modifier.align(Alignment.End).padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(horizontal = 16.dp)
                     .clickable(indication = null) {
                         scope.clearFilter(null)
                     },
@@ -193,7 +200,9 @@ private fun AllStores(scope: StoresScope.All) {
     LazyColumn(
         state = rememberLazyListState(),
         contentPadding = PaddingValues(top = 16.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
         itemsIndexed(
             items = items.value,
@@ -214,7 +223,9 @@ private fun StoreItem(
 ) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.width(maxWidth * 0.65f).align(Alignment.CenterStart),
+            modifier = Modifier
+                .width(maxWidth * 0.65f)
+                .align(Alignment.CenterStart),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -229,7 +240,9 @@ private fun StoreItem(
             GeoLocation(store.fullAddress())
         }
         Column(
-            modifier = Modifier.width(maxWidth * 0.35f).align(Alignment.CenterEnd),
+            modifier = Modifier
+                .width(maxWidth * 0.35f)
+                .align(Alignment.CenterEnd),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {

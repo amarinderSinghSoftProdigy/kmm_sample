@@ -59,7 +59,9 @@ fun OrdersScreen(scope: OrdersScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
-            searchBarEnd = if (scope.type != OrderType.PURCHASE_ORDER) SearchBarEnd.Filter { scope.toggleFilter() } else null,
+            searchBarEnd = if (scope.type != OrderType.PURCHASE_ORDER) SearchBarEnd.Filter(
+                isHighlighted = false
+            ) { scope.toggleFilter() } else null,
             icon = Icons.Default.Search,
             elevation = 0.dp,
             horizontalPadding = 16.dp,

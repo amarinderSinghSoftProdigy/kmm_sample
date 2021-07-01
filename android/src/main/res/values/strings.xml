@@ -94,6 +94,7 @@
     <string name="search">Search</string>
     <string name="clear_all">Clear All</string>
     <string name="clear">Clear</string>
+    <string name="apply">Apply</string>
     <string name="relevance">Relevance</string>
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
@@ -225,6 +226,7 @@
     <string name="yes">Yes</string>
     <string name="trial_ends">Trial Ends on</string>
     <string name="home">Home</string>
+    <string name="filters">Filters</string>
 
 
     <!--error codes-->
