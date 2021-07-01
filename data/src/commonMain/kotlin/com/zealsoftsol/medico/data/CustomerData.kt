@@ -39,9 +39,7 @@ data class Subscription(
     val validUntilMs: Long,
 ) {
 
-    @Serializable
     enum class Type {
-        @SerialName("TRAIL")
         TRIAL,
         ULTIMATE;
     }
