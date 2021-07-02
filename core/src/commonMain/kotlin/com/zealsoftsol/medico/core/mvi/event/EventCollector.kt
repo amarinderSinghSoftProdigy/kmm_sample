@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
@@ -132,6 +133,7 @@ internal class EventCollector(
             UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
                 user = userRepo.requireUser(),
                 userDataSource = userRepo.getUserDataSource(),
+                dashboardData = userRepo.getDashboardDataSource(),
                 unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                 cartItemsCount = cartRepo.getEntriesCountDataSource(),
             )
@@ -148,6 +150,9 @@ internal class EventCollector(
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadUserFromServer()
             }
+//            GlobalScope.launch(compatDispatcher) {
+//                userRepo.loadDashboard()
+//            }
             GlobalScope.launch(compatDispatcher) {
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
             }

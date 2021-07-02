@@ -98,7 +98,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     }
                 },
                 childItems = listOf(order.value.info),
-                item = {
+                item = { value, _ ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,

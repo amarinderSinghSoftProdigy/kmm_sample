@@ -41,6 +41,8 @@
     <string name="season_boy">Season Boy</string>
     <string name="hospital">Hospital</string>
     <string name="stockists">Stockists</string>
+    <string name="add_stockist">Add Stockist</string>
+    <string name="connect_stockist">Connect Stockist</string>
     <string name="retailers">Retailers</string>
     <string name="season_boys">Season Boys</string>
     <string name="hospitals">Hospitals</string>
@@ -200,20 +202,20 @@
     <string name="to">To:</string>
     <string name="order_no">Order No:</string>
     <string name="invoice_no">Invoice No:</string>
-    <string name="reject_all">Reject All</string>
+    <string name="reject_all">Decline All</string>
     <string name="accept_all">Accept All</string>
-    <string name="reject_selected">Reject Selected</string>
+    <string name="reject_selected">Decline Selected</string>
     <string name="accept_selected">Accept Selected</string>
     <string name="batch_no">Batch No:</string>
     <string name="expiry">Expiry:</string>
     <string name="requested_qty">Requested QTY:</string>
     <string name="served_qty">Served QTY:</string>
     <string name="serve_quoted">Are you sure you want to serve quote product?</string>
-    <string name="sure_reject_all">Are you sure you want to Reject all products?</string>
+    <string name="sure_reject_all">Are you sure you want to Decline all products?</string>
     <string name="sure_confirm_order">Are you sure you want to confirm the order?</string>
     <string name="action_confirmation">Action Confirmation</string>
     <string name="accepted">Accepted</string>
-    <string name="rejected">Rejected</string>
+    <string name="rejected">Declined</string>
     <string name="mrp">MRP</string>
     <string name="all">All</string>
     <string name="sort_by">Sort By</string>
@@ -227,6 +229,10 @@
     <string name="trial_ends">Trial Ends on</string>
     <string name="home">Home</string>
     <string name="filters">Filters</string>
+    <string name="today_sold">Today’s Sold Products</string>
+    <string name="most_searched">Most Searched Products in MarketToday</string>
+    <string name="in_stock">In Stock</string>
+    <string name="out_stock">Out of Stock</string>
 
 
     <!--error codes-->

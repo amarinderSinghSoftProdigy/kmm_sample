@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HelpData
@@ -89,6 +90,7 @@ interface NetworkScope {
     }
 
     interface Customer : NetworkScope {
+        suspend fun getDashboard(): BodyResponse<DashboardData>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
     }
 

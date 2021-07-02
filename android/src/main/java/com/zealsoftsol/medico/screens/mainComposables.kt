@@ -126,6 +126,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     navigationSection = it,
                     onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }
                 )
+            } ?: run {
+                if (scaffoldState.drawerState.isOpen) {
+                    coroutineScope.launch { scaffoldState.drawerState.close() }
+                }
             }
         },
         drawerGesturesEnabled = navigation.value != null,

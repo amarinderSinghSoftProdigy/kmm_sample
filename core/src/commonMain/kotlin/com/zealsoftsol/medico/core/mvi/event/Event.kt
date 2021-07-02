@@ -36,6 +36,7 @@ sealed class Event {
             data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
+            object UpdateDashboard : Auth()
         }
 
         sealed class Otp : Action() {

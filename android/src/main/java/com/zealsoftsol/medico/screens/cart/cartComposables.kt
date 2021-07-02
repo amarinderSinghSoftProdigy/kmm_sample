@@ -237,12 +237,12 @@ private fun SellerCartItem(
             Space(12.dp)
         },
         childItems = sellerCart.items,
-        item = {
+        item = { value, _ ->
             CartItem(
-                cartItem = it,
-                onInc = { mode -> onIncItem(mode, it) },
-                onDec = { mode -> onDecItem(mode, it) },
-                onRemove = { onRemoveItem(it) },
+                cartItem = value,
+                onInc = { mode -> onIncItem(mode, value) },
+                onDec = { mode -> onDecItem(mode, value) },
+                onRemove = { onRemoveItem(value) },
             )
         }
     )

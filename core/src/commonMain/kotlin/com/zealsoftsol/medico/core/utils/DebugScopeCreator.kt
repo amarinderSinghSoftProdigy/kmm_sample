@@ -220,6 +220,7 @@ object DebugScopeCreator {
             DashboardScope.get(
                 testUser,
                 ReadOnlyDataSource(MutableStateFlow(testUser)),
+                ReadOnlyDataSource(MutableStateFlow(null)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
             )

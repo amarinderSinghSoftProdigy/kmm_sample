@@ -22,6 +22,7 @@ import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
@@ -280,6 +281,12 @@ class NetworkClient(
 
     override suspend fun getCustomerData() = simpleRequest {
         client.get<BodyResponse<CustomerData>>("${baseUrl.url}/medico/customer/details") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getDashboard() = simpleRequest {
+        client.get<BodyResponse<DashboardData>>("${baseUrl.url}/dashboard") {
             withMainToken()
         }
     }

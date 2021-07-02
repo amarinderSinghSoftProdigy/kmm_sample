@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
@@ -30,6 +31,7 @@ internal class AuthEventDelegate(
             event.emailOrPhone,
             event.password
         )
+        is Event.Action.Auth.UpdateDashboard -> updateDashboard()
     }
 
     private suspend fun authTryLogin() {
@@ -54,12 +56,14 @@ internal class AuthEventDelegate(
                                 DashboardScope.get(
                                     user = user,
                                     userDataSource = userRepo.getUserDataSource(),
+                                    dashboardData = userRepo.getDashboardDataSource(),
                                     unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                                     cartItemsCount = cartRepo.getEntriesCountDataSource(),
                                 )
                             else
                                 LimitedAccessScope.get(user, userRepo.getUserDataSource())
                         )
+//                        userRepo.loadDashboard()
                     }.onError(navigator)
             }.onError(navigator)
         }
@@ -67,7 +71,7 @@ internal class AuthEventDelegate(
 
     private suspend fun authTryLogOut(notifyServer: Boolean) {
         if (notifyServer) {
-            userRepo.logout()
+            navigator.withProgress { userRepo.logout() }
                 .onSuccess {
                     navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
@@ -80,5 +84,9 @@ internal class AuthEventDelegate(
             it.credentials.value =
                 userRepo.updateAuthCredentials(it.credentials.value, emailOrPhone, password)
         }
+    }
+
+    private suspend fun updateDashboard() {
+        userRepo.loadDashboard()
     }
 }

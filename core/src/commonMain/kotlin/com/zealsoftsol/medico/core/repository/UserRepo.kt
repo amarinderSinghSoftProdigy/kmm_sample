@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -58,6 +59,7 @@ class UserRepo(
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
     )
+    val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
         return userFlow.value?.let {
@@ -109,11 +111,18 @@ class UserRepo(
         return result
     }
 
+    suspend fun loadDashboard() {
+        networkCustomerScope.getDashboard().onSuccess {
+            dashboardFlow.value = it
+        }
+    }
+
     suspend fun logout(): AnyResponse {
         return networkAuthScope.logout().also {
             if (it.isSuccess) {
                 clearUserData()
                 userFlow.value = null
+                dashboardFlow.value = null
             }
         }
     }
@@ -300,3 +309,8 @@ internal inline fun UserRepo.requireUser(): User =
 internal inline fun UserRepo.getUserDataSource(): ReadOnlyDataSource<User> = ReadOnlyDataSource(
     userFlow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
 )
+
+internal inline fun UserRepo.getDashboardDataSource(): ReadOnlyDataSource<DashboardData?> =
+    ReadOnlyDataSource(
+        dashboardFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
+    )
