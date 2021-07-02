@@ -117,6 +117,16 @@ private struct StorePreviewScreen: View {
     @ObservedObject var productSearch: SwiftDataSource<NSString>
     @ObservedObject var products: SwiftDataSource<NSArray>
     
+    @ObservedObject var activeFilterIds: SwiftDataSource<NSArray>
+    
+    private var isFilterApplied: Bool {
+        if let appliedFiltersNumber = activeFilterIds.value?.count {
+            return appliedFiltersNumber > 0
+        }
+        
+        return false
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             StoreInfo(store: scope.store)
@@ -124,7 +134,8 @@ private struct StorePreviewScreen: View {
             SearchBar(placeholderLocalizationKey: "search",
                       searchText: productSearch.value,
                       style: .small,
-                      trailingButton: SearchBar.SearchBarButton(button: .filter({ scope.toggleFilter() })),
+                      trailingButton: SearchBar.SearchBarButton(button: .filter(isHighlighted: isFilterApplied,
+                                                                                { scope.toggleFilter() })),
                       onTextChange: { newValue, _ in scope.searchProduct(input: newValue,
                                                                          withAutoComplete: false) })
             
@@ -141,6 +152,8 @@ private struct StorePreviewScreen: View {
         
         self.productSearch = SwiftDataSource(dataSource: scope.productSearch)
         self.products = SwiftDataSource(dataSource: scope.products)
+        
+        self.activeFilterIds = SwiftDataSource(dataSource: scope.activeFilterIds)
     }
     
     private var productsSearchView: some View {

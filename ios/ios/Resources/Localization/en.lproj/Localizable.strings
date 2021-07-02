@@ -131,6 +131,8 @@
 "clear" = "Clear";
 "view_more" = "View More";
 "sort_by" = "Sort By";
+"filters" = "Filters";
+"apply" = "Apply";
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";

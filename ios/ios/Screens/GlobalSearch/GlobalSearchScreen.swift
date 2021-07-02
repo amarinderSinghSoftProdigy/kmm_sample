@@ -189,7 +189,7 @@ private struct FilterView: View {
             FlexibleView(data: visibleFilterOptions,
                          spacing: 8,
                          alignment: .leading) { option in
-                FilterOption(option: option)
+                Chip(option: option)
                     .onTapGesture {
                         self.onSelectFilterOption(option)
                     }
@@ -198,7 +198,32 @@ private struct FilterView: View {
     }
 }
 
-private struct FilterOption: View {
+private struct FilterChip: View {
+    let localizationKey: String
+    let onRemove: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 7) {
+            LocalizedText(localizationKey: localizationKey,
+                          textWeight: .medium,
+                          fontSize: 12,
+                          color: .white)
+            
+            Image(systemName: "xmark")
+                .foregroundColor(appColor: .white)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 100)
+                .fill(appColor: .lightBlue)
+        )
+        .onTapGesture {
+            onRemove()
+        }
+    }
+}
+
+private struct Chip: View {
     private let height: CGFloat = 32
     
     let option: DataOption
@@ -373,44 +398,85 @@ struct FiltersSection: View {
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var filters: SwiftDataSource<NSArray>
     @ObservedObject var filterSearches: SwiftDataSource<NSDictionary>
+    @ObservedObject var activeFiltersIds: SwiftDataSource<NSArray>
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Spacer()
+        VStack(spacing: 25) {
+            VStack(spacing: 12) {
+                HStack {
+                    LocalizedText(localizationKey: "filters",
+                                  textWeight: .semiBold,
+                                  fontSize: 20)
+                    Spacer()
+                    
+                    LocalizedText(localizationKey: "clear_all",
+                                  textWeight: .medium,
+                                  fontSize: 16,
+                                  color: .textGrey,
+                                  multilineTextAlignment: .trailing)
+                        .onTapGesture {
+                            scope.clearFilter(filter: nil)
+                        }
+                }
                 
-                LocalizedText(localizationKey: "clear_all",
-                              textWeight: .medium,
-                              fontSize: 16,
-                              color: .textGrey,
-                              multilineTextAlignment: .trailing)
-                    .onTapGesture {
-                        scope.clearFilter(filter: nil)
+                if let activeFiltersIds = self.activeFiltersIds.value as? [String],
+                   !activeFiltersIds.isEmpty {
+                    AppColor.lightGrey.color
+                        .frame(height: 1)
+                
+                    FlexibleView(data: activeFiltersIds,
+                                 spacing: 8,
+                                 alignment: .leading) { filterId in
+                        FilterChip(localizationKey: filterId) {
+                            let filter = scope.getFilterNameById(id: filterId)
+                            scope.clearFilter(filter: filter)
+                        }
                     }
-            }
-            
-            SortSection(selectedSortOption: .init(dataSource: scope.selectedSortOption),
-                        sortOptions: .init(dataSource: scope.sortOptions)) {
-                scope.selectSortOption(option: $0)
-            }
-            
-            if let filters = self.filters.value as? [DataFilter] {
-                ForEach(filters, id: \.self.name) { filter in
-                    if let filtersSearches = self.filterSearches.value as? [String: String] {
+                }
+                
+                SortSection(selectedSortOption: .init(dataSource: scope.selectedSortOption),
+                            sortOptions: .init(dataSource: scope.sortOptions)) {
+                    scope.selectSortOption(option: $0)
+                }
+                
+                if let filters = self.filters.value as? [DataFilter] {
+                    ForEach(filters, id: \.self.name) { filter in
+                        if let filtersSearches = self.filterSearches.value as? [String: String] {
 
-                        let searchOption = SearchOption(text: filtersSearches[filter.queryId],
-                                                        onSearch: { scope.searchFilter(filter: filter, input: $0) })
-                        
-                        FilterView(filter: filter,
-                                   searchOption: searchOption,
-                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                        option: option) },
-                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                            let searchOption = SearchOption(text: filtersSearches[filter.queryId],
+                                                            onSearch: { scope.searchFilter(filter: filter, input: $0) })
+                            
+                            FilterView(filter: filter,
+                                       searchOption: searchOption,
+                                       onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                            option: option) },
+                                       onClearFilter: { scope.clearFilter(filter: filter) })
+                        }
                     }
                 }
             }
+            .scrollView()
+            
+            AppColor.darkBlue.color
+                .opacity(0.2)
+                .frame(height: 1)
+            
+            HStack(spacing: 25) {
+                MedicoButton(localizedStringKey: "clear",
+                             isEnabled: true,
+                             fontColor: .lightBlue,
+                             buttonColor: .clear) {
+                    scope.clearFilter(filter: nil)
+                }
+                .strokeBorder(.lightBlue,
+                              fill: .clear)
+                
+                MedicoButton(localizedStringKey: "apply",
+                             isEnabled: true) {
+                    scope.toggleFilter()
+                }
+            }
         }
-        .scrollView()
     }
     
     init(scope: BaseSearchScope) {
@@ -419,6 +485,7 @@ struct FiltersSection: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
+        self.activeFiltersIds = SwiftDataSource(dataSource: scope.activeFilterIds)
     }
     
     private struct SortSection: View {
@@ -452,9 +519,9 @@ struct FiltersSection: View {
                     FlexibleView(data: sortOptions,
                                  spacing: 8,
                                  alignment: .leading) { option in
-                        FilterOption(option: .StringValue(value: option.name,
-                                                          isSelected: option == selectedSortOption.value,
-                                                          isVisible: true))
+                        Chip(option: .StringValue(value: option.name,
+                                                  isSelected: option == selectedSortOption.value,
+                                                  isVisible: true))
                             .onTapGesture {
                                 self.onOptionSelect(option)
                             }
