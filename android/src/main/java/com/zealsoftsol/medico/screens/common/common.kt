@@ -115,6 +115,7 @@ fun MedicoButton(
         Text(
             text = text,
             fontSize = textSize,
+            fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),
         )
     }

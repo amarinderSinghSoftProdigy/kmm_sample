@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">medicostores</string>
-    <string name="log_in">Log in</string>
-    <string name="phone_number_or_email">Mobile Number or Email</string>
+    <string name="log_in">Login</string>
+    <string name="phone_number_or_email">Email / Phone No.</string>
     <string name="phone_number">Mobile Number</string>
     <string name="password">Password</string>
-    <string name="forgot_password">Forgot password?</string>
+    <string name="forgot_password">Forgot password</string>
     <string name="sign_up_to_medico">Sign up to Medico Stores</string>
     <string name="sign_up">Sign up</string>
     <string name="register">Register</string>
@@ -234,6 +234,9 @@
     <string name="in_stock">In Stock</string>
     <string name="out_stock">Out of Stock</string>
     <string name="buy">Buy</string>
+    <string name="new_to_medico">New to medicostores.com ?</string>
+    <string name="create_account">Create Account</string>
+    <string name="copyright">© medicastores.com 2021</string>
 
 
     <!--error codes-->
