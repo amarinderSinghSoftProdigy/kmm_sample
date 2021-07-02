@@ -93,6 +93,7 @@ fun MedicoButton(
     border: BorderStroke? = null,
     elevation: ButtonElevation? = ButtonDefaults.elevation(),
     textSize: TextUnit = 15.sp,
+    height: Dp = 48.dp,
     onClick: () -> Unit,
 ) {
     Button(
@@ -109,7 +110,7 @@ fun MedicoButton(
         elevation = elevation,
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(height),
     ) {
         Text(
             text = text,

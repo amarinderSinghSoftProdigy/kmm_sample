@@ -32,7 +32,7 @@ data class Value(
 
 @Serializable
 data class ProductSearch(
-    val buyingOption: BuyingOption,
+    val buyingOption: BuyingOption? = null,
     val compositions: List<String>,
     val formattedMrp: String,
     val formattedPrice: String? = null,

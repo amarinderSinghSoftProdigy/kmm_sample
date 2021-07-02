@@ -136,7 +136,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 items = products.value,
                 key = { _, item -> item.id },
                 itemContent = { index, item ->
-                    ProductItem(item) { scope.selectProduct(item) }
+                    ProductItem(
+                        item,
+                        onClick = { scope.selectProduct(item) },
+                        onBuy = { scope.buy(item) },
+                    )
                     if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                         scope.loadMoreProducts()
                     }

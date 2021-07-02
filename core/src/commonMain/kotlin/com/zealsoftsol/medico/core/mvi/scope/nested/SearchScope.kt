@@ -72,6 +72,15 @@ interface BaseSearchScope : Scopable {
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+
+    fun buy(product: ProductSearch) = product.buyingOption?.let {
+        EventCollector.sendEvent(
+            Event.Action.Product.BuyProduct(
+                product.code,
+                it,
+            )
+        )
+    } ?: false
 }
 
 class SearchScope(

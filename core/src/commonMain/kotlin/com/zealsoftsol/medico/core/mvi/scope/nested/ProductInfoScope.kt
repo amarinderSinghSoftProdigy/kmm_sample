@@ -26,7 +26,7 @@ class ProductInfoScope(
                     Event.Action.Cart.AddItem(
                         unitCode,
                         product.code,
-                        product.buyingOption,
+                        product.buyingOption!!,
                         CartIdentifier(spid),
                         1,
                     )
@@ -35,7 +35,7 @@ class ProductInfoScope(
         } ?: EventCollector.sendEvent(
             Event.Action.Product.BuyProduct(
                 product.code,
-                product.buyingOption
+                product.buyingOption!!
             )
         )
     }

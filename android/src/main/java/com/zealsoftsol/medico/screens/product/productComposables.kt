@@ -50,7 +50,9 @@ fun ProductScreen(scope: ProductInfoScope) {
     val isDetailsOpened = scope.isDetailsOpened.flow.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Space(28.dp)
@@ -131,6 +133,12 @@ fun ProductScreen(scope: ProductInfoScope) {
                     }
                 }
             }
+            null -> {
+                MedicoButton(
+                    text = stringResource(id = R.string.add_to_cart),
+                    isEnabled = false,
+                    onClick = {})
+            }
             BuyingOption.QUOTE -> {
                 Button(
                     onClick = {
@@ -148,7 +156,9 @@ fun ProductScreen(scope: ProductInfoScope) {
                     enabled = true,
                     border = BorderStroke(2.dp, ConstColors.yellow),
                     shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
                 ) {
                     Text(
                         text = stringResource(id = R.string.get_quote),
@@ -160,7 +170,8 @@ fun ProductScreen(scope: ProductInfoScope) {
         }
         Space(32.dp)
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .clickable(indication = null) { scope.toggleDetails() }
         ) {
             Text(
@@ -235,7 +246,8 @@ private fun ProductDetail(title: String, description: String) {
 @Composable
 private fun ProductAlternative(product: AlternateProductData, onClick: () -> Unit) {
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(color = Color.White, shape = MaterialTheme.shapes.medium)
             .clickable(onClick = onClick)
             .padding(12.dp)

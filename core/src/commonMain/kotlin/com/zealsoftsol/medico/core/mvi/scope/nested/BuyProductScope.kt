@@ -86,7 +86,7 @@ sealed class BuyProductScope<T : WithTradeName>(
                 Event.Action.Cart.AddItem(
                     item.unitCode,
                     product.code,
-                    product.buyingOption,
+                    product.buyingOption!!,
                     CartIdentifier(item.spid),
                     quantities.value[item]!!
                 )
@@ -104,7 +104,7 @@ sealed class BuyProductScope<T : WithTradeName>(
                 Event.Action.Cart.AddItem(
                     sellerUnitCode = null,
                     product.code,
-                    product.buyingOption,
+                    product.buyingOption!!,
                     id = null,
                     quantities.value[SellerInfo.anyone]!!,
                 )
@@ -146,7 +146,7 @@ sealed class BuyProductScope<T : WithTradeName>(
                 Event.Action.Cart.AddItem(
                     item.unitCode,
                     product.code,
-                    product.buyingOption,
+                    product.buyingOption!!,
                     CartIdentifier(item.spid),
                     quantities.value[item]!!
                 )
@@ -176,7 +176,7 @@ sealed class BuyProductScope<T : WithTradeName>(
             Event.Action.Cart.AddItem(
                 sellerInfo?.unitCode,
                 product.code,
-                product.buyingOption,
+                product.buyingOption!!,
                 CartIdentifier(spid = sellerInfo?.spid, seasonBoyRetailerId = item.id),
                 quantities.value[item]!!
             )
