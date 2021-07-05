@@ -119,6 +119,16 @@
 "trial_ends" = "Trial Ends on ";
 "orders_history" = "Orders History";
 
+// MARK: Dashboard
+"purchase_orders" = "Purchase Orders";
+"connect_stockist" = "Connect Stockist";
+"season_boys" = "Season Boys";
+"add_stockist" = "Add Stockist";
+"in_stock" = "In Stock";
+"out_of_stock" = "Out of Stock";
+"today_sold_products" = "Today’s Sold Products";
+"most_searched_products" = "Most Searched Products in Market Today";
+
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
 "thank_you_for_registration" = "Thank you for registration!";

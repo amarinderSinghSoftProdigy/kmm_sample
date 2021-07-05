@@ -218,3 +218,21 @@ extension KotlinLong {
         return Date(milliseconds: ms)
     }
 }
+
+extension Array {
+    func sections(number: Int) -> [[Element]] {
+        let fullSectionsNumber = self.count / number
+        let leftElementsNumber = self.count % number
+        
+        let sectionsNumber = leftElementsNumber > 0 ? fullSectionsNumber + 1 : fullSectionsNumber
+        
+        let sections = (0..<sectionsNumber).map { _ in [Element]() }
+        
+        return self.enumerated().reduce(sections) { sections, element in
+            var newSections = sections
+            newSections[element.offset / number].append(element.element)
+            
+            return newSections
+        }
+    }
+}
