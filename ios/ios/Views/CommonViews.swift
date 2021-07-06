@@ -22,6 +22,7 @@ struct MedicoButton: View {
     let fontColor: AppColor
     
     let buttonColor: AppColor
+    let buttonColorOpacity: Double
     
     var body: some View {
         let width = self.width ?? .infinity
@@ -38,7 +39,9 @@ struct MedicoButton: View {
         .frame(maxWidth: width, maxHeight: height)
         .disabled(!isEnabled)
         .background(RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(appColor: isEnabled ? buttonColor : AppColor.grey1))
+                        .fill(appColor: isEnabled ? buttonColor : .grey1)
+                        .opacity(buttonColorOpacity)
+        )
     }
     
     init(localizedStringKey: String,
@@ -50,6 +53,7 @@ struct MedicoButton: View {
          fontWeight: TextWeight = .semiBold,
          fontColor: AppColor = .darkBlue,
          buttonColor: AppColor = .yellow,
+         buttonColorOpacity: Double = 1,
          action: @escaping () -> ()) {
         self.action = action
         self.localizedStringKey = localizedStringKey
@@ -65,6 +69,7 @@ struct MedicoButton: View {
         self.fontColor = fontColor
         
         self.buttonColor = buttonColor
+        self.buttonColorOpacity = buttonColorOpacity
     }
 }
 

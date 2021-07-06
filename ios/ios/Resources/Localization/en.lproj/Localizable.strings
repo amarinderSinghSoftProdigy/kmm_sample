@@ -143,6 +143,7 @@
 "sort_by" = "Sort By";
 "filters" = "Filters";
 "apply" = "Apply";
+"buy" = "Buy";
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";

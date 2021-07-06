@@ -190,8 +190,10 @@ private struct StorePreviewScreen: View {
                 let bottomPadding: CGFloat = index == productsCount - 1 ? 16 : 0
                 
                 return AnyView(
-                    ProductSearchView(product: element)
-                        .padding(.bottom, bottomPadding)
+                    ProductSearchView(product: element) {
+                        scope.buy(product: element)
+                    }
+                    .padding(.bottom, bottomPadding)
                 )
             }
         )
