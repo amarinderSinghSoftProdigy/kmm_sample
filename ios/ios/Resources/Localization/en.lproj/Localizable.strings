@@ -378,3 +378,12 @@
 "E0033" = "Uploaded document doesn't match with registered user";
 "E0034" = "Auth0 gRPC server down, check whether its running";
 "E0035" = "Unable to get geolocation data, check the geolocation server is running";
+"E0036" = "You have entered an invalid email/mobile or password";
+"E0037" = "Mobile number provided is not registered, please provide registered contact number";
+"E0038" = "Failed to update password, try after some time.";
+"E0039" = "Logout token, please login again";
+"E0040" = "Access Denied";
+"E0041" = "Something went wrong, Please try after sometime";
+"E0042" = "Order has not been submitted, please try after sometime.";
+"E0043" = "Cart already submitted, please check";
+"E0044" = "Cart not found, please check";

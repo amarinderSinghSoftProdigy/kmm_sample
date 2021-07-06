@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AppTermsOfConditionsAndPrivacyPolicyLink</key>
-	<string>https://medico.com/tos.html</string>
+	<string>https://medicostores.com/terms-and-conditions/</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
