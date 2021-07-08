@@ -20,6 +20,9 @@ jobs:
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
 
+      - name: Clean the derived data
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData/
+
       - name: Set environment variables from project settings
         run: |
           exec .github/scripts/set-env-from-xcodeproj.sh
