@@ -25,10 +25,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let useMocks = false
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
+        let crashOnServerError = true
         #else
         let useMocks = false
         let useNavigatorSafeCasts = true
         let useNetworkInterceptor = false
+        let crashOnServerError = false
         #endif
         
         let link = UiLink()
@@ -36,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   useMocks: useMocks,
                                   useNavigatorSafeCasts: useNavigatorSafeCasts,
                                   useNetworkInterceptor: useNetworkInterceptor,
+                                  crashOnServerError: crashOnServerError,
                                   loggerLevel: Logger.Level.log,
                                   networkUrl: .dev)
         navigator = start.navigator

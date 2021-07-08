@@ -355,8 +355,8 @@ struct BuyProductScreen: View {
                                 HStack {
                                     NumberPicker(quantity: quantity,
                                                  maxQuantity: Int(info.stockInfo?.availableQty ?? .max),
-                                                 onQuantityIncrease: { onQuantityIncrease($0 ? .longPress : .click, self.info) },
-                                                 onQuantityDecrease: { onQuantityDecrease($0 ? .longPress : .click, self.info) },
+                                                 onQuantityIncrease: { onQuantityIncrease($0, self.info) },
+                                                 onQuantityDecrease: { onQuantityDecrease($0, self.info) },
                                                  longPressEnabled: true)
                                     
                                     Spacer()
@@ -410,7 +410,7 @@ struct BuyProductScreen: View {
                                             multilineTextAlignment: .leading)
                             
                             
-                            SmallAddressView(location: info.fullAddress())
+                            SmallAddressView(location: info.geoData.fullAddress())
                         }
                     }
                     .fixedSize(horizontal: false, vertical: true)
@@ -423,8 +423,8 @@ struct BuyProductScreen: View {
                     HStack {
                         NumberPicker(quantity: quantity,
                                      maxQuantity: Int(stockInfo.availableQty),
-                                     onQuantityIncrease: { onQuantityIncrease($0 ? .longPress : .click, self.info) },
-                                     onQuantityDecrease: { onQuantityDecrease($0 ? .longPress : .click, self.info) },
+                                     onQuantityIncrease: { onQuantityIncrease($0, self.info) },
+                                     onQuantityDecrease: { onQuantityDecrease($0, self.info) },
                                      longPressEnabled: true)
                         
                         Spacer()
@@ -500,13 +500,13 @@ struct BuyProductScreen: View {
                                    needsSelectedStockist: true,
                                    onQuantityIncrease: {
                                       if let selectedStockist = self.selectedStockist.value {
-                                          scope.inc(mode: $0 ? .longPress : .click,
+                                          scope.inc(mode: $0,
                                                     item: selectedStockist)
                                       }
                                    },
                                    onQuantityDecrease: {
                                       if let selectedStockist = self.selectedStockist.value {
-                                          scope.dec(mode: $0 ? .longPress : .click,
+                                          scope.dec(mode: $0,
                                                     item: selectedStockist)
                                       }
                                    },
@@ -523,9 +523,9 @@ struct BuyProductScreen: View {
                                    quantity: quantities?[DataSellerInfo.Anyone().anyone] ?? 0,
                                    maxQuantity: .max,
                                    needsSelectedStockist: false,
-                                   onQuantityIncrease: { scope.inc(mode: $0 ? .longPress : .click,
+                                   onQuantityIncrease: { scope.inc(mode: $0,
                                                                    item: DataSellerInfo.Anyone().anyone) },
-                                   onQuantityDecrease: { scope.dec(mode: $0 ? .longPress : .click,
+                                   onQuantityDecrease: { scope.dec(mode: $0,
                                                                    item: DataSellerInfo.Anyone().anyone) },
                                    onButtonTap: { _ = scope.selectAnyone() }) {
                     scope.toggleOption(option: .anyone)
@@ -551,8 +551,8 @@ struct BuyProductScreen: View {
                                         quantity: Int,
                                         maxQuantity: Int,
                                         needsSelectedStockist: Bool,
-                                        onQuantityIncrease: @escaping (_ isLongPress: Bool) -> (),
-                                        onQuantityDecrease: @escaping (_ isLongPress: Bool) -> (),
+                                        onQuantityIncrease: @escaping (_ tapMode: DataTapMode) -> (),
+                                        onQuantityDecrease: @escaping (_ tapMode: DataTapMode) -> (),
                                         onButtonTap: @escaping () -> (),
                                         onToggle: @escaping () -> ()) -> some View {
             let horizontalPadding: CGFloat = 20

@@ -2,14 +2,14 @@ package com.zealsoftsol.medico.core.repository
 
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
-import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.Total
 import kotlinx.coroutines.GlobalScope
@@ -97,21 +97,20 @@ class CartRepo(
         if (it.isSuccess) {
             clearCartLocally()
         }
-    }.entity
-
-    suspend fun confirmCart(unitCode: String): List<SellerCart>? {
-        val response = cartStoresScope.confirmCart(CartOrderRequest(cartId, unitCode)).entity
-        val error =
-            Response.Wrapped(response?.cartData, response?.cartData != null).handleResponse()
-        return if (error == null) emptyList() else null
     }
 
-    suspend fun submitCart(unitCode: String): CartSubmitResponse? {
-        val response = cartStoresScope.submitCart(CartOrderRequest(cartId, unitCode)).entity
-        if (response != null) {
+    suspend fun confirmCart(unitCode: String): BodyResponse<CartConfirmData> {
+        val result = cartStoresScope.confirmCart(CartOrderRequest(cartId, unitCode))
+        BodyResponse(body = result.getBodyOrNull()?.cartData, type = "").handleResponse()
+        return result
+    }
+
+    suspend fun submitCart(unitCode: String): BodyResponse<CartSubmitResponse> {
+        val result = cartStoresScope.submitCart(CartOrderRequest(cartId, unitCode))
+        if (result.getBodyOrNull() != null) {
             clearCartLocally()
         }
-        return response
+        return result
     }
 
     private fun clearCartLocally() {
@@ -120,16 +119,14 @@ class CartRepo(
         total.value = null
     }
 
-    private inline fun Response.Wrapped<CartData>.handleResponse(): ErrorCode? {
-        return if (isSuccess && entity != null) {
-            val cartData = entity!!
-            cartId = cartData.cartId
-            entries.value = cartData.sellerCarts
-            total.value = cartData.total
-            null
-        } else {
-            ErrorCode()
+    private inline fun BodyResponse<CartData>.handleResponse(): BodyResponse<CartData> {
+        val body = getBodyOrNull()
+        if (body != null) {
+            cartId = body.cartId
+            entries.value = body.sellerCarts
+            total.value = body.total
         }
+        return this
     }
 }
 

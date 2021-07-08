@@ -37,6 +37,7 @@ struct ConfirmOrderScreen: View {
             
             if scope.canEdit {
                 self.actionsView
+                    .notificationAlertSender(withHandler: scope)
             }
         }
         .padding(.horizontal, 16)

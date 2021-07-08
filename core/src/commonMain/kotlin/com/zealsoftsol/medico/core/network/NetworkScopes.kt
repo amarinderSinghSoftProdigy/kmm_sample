@@ -2,7 +2,9 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -11,9 +13,9 @@ import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
@@ -39,6 +41,7 @@ import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
+import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -48,57 +51,59 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.ValidationResponse
 
 interface NetworkScope {
 
     @Deprecated("break down")
     interface Auth : NetworkScope {
-        suspend fun login(request: UserRequest): Response.Wrapped<ErrorCode>
-        suspend fun logout(): Boolean
+        suspend fun login(request: UserRequest): BodyResponse<TokenInfo>
+        suspend fun logout(): AnyResponse
 
-        suspend fun checkCanResetPassword(phoneNumber: String): Response.Wrapped<ErrorCode>
-        suspend fun sendOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
-        suspend fun retryOtp(phoneNumber: String): Response.Wrapped<ErrorCode>
-        suspend fun verifyOtp(phoneNumber: String, otp: String): Response.Wrapped<ErrorCode>
+        suspend fun checkCanResetPassword(phoneNumber: String): AnyResponse
+        suspend fun sendOtp(phoneNumber: String): AnyResponse
+        suspend fun retryOtp(phoneNumber: String): AnyResponse
+        suspend fun verifyOtp(phoneNumber: String, otp: String): BodyResponse<TokenInfo>
     }
 
     interface SignUp : NetworkScope {
-        suspend fun signUpValidation1(userRegistration1: UserRegistration1): Response.Wrapped<UserValidation1>
-        suspend fun signUpValidation2(userRegistration2: UserRegistration2): Response.Wrapped<UserValidation2>
-        suspend fun signUpValidation3(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
+        suspend fun signUpValidation1(userRegistration1: UserRegistration1): ValidationResponse<UserValidation1>
+        suspend fun signUpValidation2(userRegistration2: UserRegistration2): ValidationResponse<UserValidation2>
+        suspend fun signUpValidation3(userRegistration3: UserRegistration3): ValidationResponse<UserValidation3>
 
         @Deprecated("move to geo network scope")
-        suspend fun getLocationData(pincode: String): Response.Body<LocationData, PincodeValidation>
-        suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): Boolean
-        suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): Response.Wrapped<StorageKeyResponse>
-        suspend fun signUp(submitRegistration: SubmitRegistration): Response.Wrapped<ErrorCode>
+        suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation>
+        suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): AnyResponse
+        suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): BodyResponse<StorageKeyResponse>
+        suspend fun signUp(submitRegistration: SubmitRegistration): AnyResponse
 
-        suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): Response.Wrapped<UserValidation3>
-        suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): Response.Wrapped<ErrorCode>
+        suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): ValidationResponse<UserValidation3>
+        suspend fun createdRetailerWithSeasonBoy(data: CreateRetailer): AnyResponse
     }
 
     interface Password {
-        suspend fun verifyPassword(password: String): Response.Wrapped<PasswordValidation>
+        suspend fun verifyPassword(password: String): ValidationResponse<PasswordValidation>
         suspend fun changePassword(
             phoneNumber: String?,
             password: String
-        ): Response.Wrapped<PasswordValidation>
+        ): ValidationResponse<PasswordValidation>
     }
 
     interface Customer : NetworkScope {
-        suspend fun getCustomerData(): Response.Wrapped<CustomerData>
+        suspend fun getDashboard(): BodyResponse<DashboardData>
+        suspend fun getCustomerData(): BodyResponse<CustomerData>
     }
 
     interface Product : NetworkScope {
-        suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse>
-        suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse>
+        suspend fun getProductData(productCode: String): BodyResponse<ProductResponse>
+        suspend fun buyProductInfo(productCode: String): BodyResponse<ProductBuyResponse>
         suspend fun buyProductSelectSeasonBoyRetailer(
             productCode: String,
             unitCode: String,
             sellerUnitCode: String?,
-        ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse>
+        ): BodyResponse<ProductSeasonBoyRetailerSelectResponse>
 
-        suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse>
+        suspend fun getQuotedProductData(productCode: String): BodyResponse<ProductBuyResponse>
     }
 
     interface Search : NetworkScope {
@@ -109,9 +114,12 @@ interface NetworkScope {
             latitude: Double,
             longitude: Double,
             pagination: Pagination,
-        ): Response.Wrapped<SearchResponse>
+        ): BodyResponse<SearchResponse>
 
-        suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>>
+        suspend fun autocomplete(
+            input: String,
+            unitCodeForStores: String?,
+        ): BodyResponse<List<AutoComplete>>
     }
 
     interface Management : NetworkScope {
@@ -122,27 +130,27 @@ interface NetworkScope {
             criteria: ManagementCriteria,
             search: String,
             pagination: Pagination,
-        ): Response.Wrapped<PaginatedData<EntityInfo>>
+        ): BodyResponse<PaginatedData<EntityInfo>>
 
-        suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): Response.Wrapped<ErrorCode>
+        suspend fun subscribeRequest(subscribeRequest: SubscribeRequest): AnyResponse
     }
 
     interface Notification : NetworkScope {
-        suspend fun sendFirebaseToken(token: String): Boolean
+        suspend fun sendFirebaseToken(token: String): AnyResponse
         suspend fun getNotifications(
             search: String,
             filter: NotificationFilter,
             pagination: Pagination,
-        ): Response.Wrapped<PaginatedData<NotificationData>>
+        ): BodyResponse<PaginatedData<NotificationData>>
 
-        suspend fun getUnreadNotifications(): Response.Wrapped<UnreadNotifications>
+        suspend fun getUnreadNotifications(): BodyResponse<UnreadNotifications>
 
         suspend fun selectNotificationAction(
             id: String,
             actionRequest: NotificationActionRequest
-        ): Response.Wrapped<ErrorCode>
+        ): AnyResponse
 
-        suspend fun getNotificationDetails(id: String): Response.Wrapped<NotificationDetails>
+        suspend fun getNotificationDetails(id: String): BodyResponse<NotificationDetails>
     }
 
     interface Stores : NetworkScope {
@@ -150,25 +158,25 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             pagination: Pagination,
-        ): Response.Wrapped<PaginatedData<Store>>
+        ): BodyResponse<PaginatedData<Store>>
     }
 
     interface Cart : NetworkScope {
-        suspend fun getCart(unitCode: String): Response.Wrapped<CartData>
-        suspend fun deleteCart(unitCode: String, cartId: String): Response.Wrapped<ErrorCode>
+        suspend fun getCart(unitCode: String): BodyResponse<CartData>
+        suspend fun deleteCart(unitCode: String, cartId: String): AnyResponse
 
-        suspend fun addCartEntry(request: CartRequest): Response.Wrapped<CartData>
-        suspend fun updateCartEntry(request: CartRequest): Response.Wrapped<CartData>
-        suspend fun deleteCartEntry(request: CartRequest): Response.Wrapped<CartData>
+        suspend fun addCartEntry(request: CartRequest): BodyResponse<CartData>
+        suspend fun updateCartEntry(request: CartRequest): BodyResponse<CartData>
+        suspend fun deleteCartEntry(request: CartRequest): BodyResponse<CartData>
 
         suspend fun deleteSellerCart(
             unitCode: String,
             cartId: String,
             sellerUnitCode: String
-        ): Response.Wrapped<CartData>
+        ): BodyResponse<CartData>
 
-        suspend fun confirmCart(request: CartOrderRequest): Response.Wrapped<CartConfirmData>
-        suspend fun submitCart(request: CartOrderRequest): Response.Wrapped<CartSubmitResponse>
+        suspend fun confirmCart(request: CartOrderRequest): BodyResponse<CartConfirmData>
+        suspend fun submitCart(request: CartOrderRequest): BodyResponse<CartSubmitResponse>
     }
 
     interface Orders : NetworkScope {
@@ -180,16 +188,16 @@ interface NetworkScope {
             from: Long?,
             to: Long?,
             pagination: Pagination,
-        ): Response.Wrapped<PaginatedData<Order>>
+        ): BodyResponse<PaginatedData<Order>>
 
         suspend fun getOrder(
             type: OrderType,
             unitCode: String,
             orderId: String
-        ): Response.Wrapped<OrderResponse>
+        ): BodyResponse<OrderResponse>
 
-        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): Response.Wrapped<OrderResponse>
-        suspend fun confirmOrder(request: ConfirmOrderRequest): Response.Wrapped<ErrorCode>
+        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
+        suspend fun confirmOrder(request: ConfirmOrderRequest): AnyResponse
 
         suspend fun getInvoices(
             unitCode: String,
@@ -197,15 +205,15 @@ interface NetworkScope {
             from: Long?,
             to: Long?,
             pagination: Pagination,
-        ): Response.Wrapped<PaginatedData<Invoice>>
+        ): BodyResponse<PaginatedData<Invoice>>
 
         suspend fun getInvoice(
             unitCode: String,
             invoiceId: String
-        ): Response.Wrapped<InvoiceResponse>
+        ): BodyResponse<InvoiceResponse>
     }
 
     interface Help : NetworkScope {
-        suspend fun getHelp(): Response.Wrapped<HelpData>
+        suspend fun getHelp(): BodyResponse<HelpData>
     }
 }

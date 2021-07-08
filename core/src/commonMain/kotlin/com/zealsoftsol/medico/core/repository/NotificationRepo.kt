@@ -17,7 +17,8 @@ class NotificationRepo(
         MutableStateFlow(settings.getInt(UNREAD_MESSAGES, 0))
 
     suspend fun loadUnreadMessagesFromServer() {
-        getUnreadNotifications().entity?.unreadNotifications?.let(::updateUnreadMessages)
+        kotlin.runCatching { }.onSuccess { }
+        getUnreadNotifications().getBodyOrNull()?.unreadNotifications?.let(::updateUnreadMessages)
     }
 
     fun updateUnreadMessages(value: Int) {

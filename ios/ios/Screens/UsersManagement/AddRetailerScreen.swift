@@ -99,9 +99,9 @@ struct AddRetailerScreen: View {
                                                  text: registration.value?.tradeName,
                                                  onTextChange: { scope.changeTradeName(tradeName: $0) },
                                                  isValid: tradeNameErrorMessageKey == nil,
-                                                 errorMessageKey: tradeNameErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.words)
+                                                 errorMessageKey: tradeNameErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .words)
                     
                     GstinOrPanRequiredWarningView()
                     
@@ -111,18 +111,18 @@ struct AddRetailerScreen: View {
                                                  text: self.registration.value?.gstin,
                                                  onTextChange: { scope.changeGstin(gstin: $0) },
                                                  isValid: gstinErrorMessageKey == nil && isGstinValid,
-                                                 errorMessageKey: gstinErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
+                                                 errorMessageKey: gstinErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .none)
                     
                     let panErrorMessageKey = self.validation.value?.panNumber
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pan_number",
                                                  text: self.registration.value?.panNumber,
                                                  onTextChange: { scope.changePan(panNumber: $0) },
                                                  isValid: panErrorMessageKey == nil,
-                                                 errorMessageKey: panErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
+                                                 errorMessageKey: panErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .none)
                     
                     let drugLicenseNo1ErrorMessageKey = self.validation.value?.drugLicenseNo1
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
@@ -130,9 +130,9 @@ struct AddRetailerScreen: View {
                                                  onTextChange: { scope.changeDrugLicense1(drugLicenseNo: $0) },
                                                  constText: "20B",
                                                  isValid: drugLicenseNo1ErrorMessageKey == nil,
-                                                 errorMessageKey: drugLicenseNo1ErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
+                                                 errorMessageKey: drugLicenseNo1ErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .none)
                     
                     let drugLicenseNo2ErrorMessageKey = self.validation.value?.drugLicenseNo2
                     FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No2",
@@ -140,9 +140,9 @@ struct AddRetailerScreen: View {
                                                  onTextChange: { scope.changeDrugLicense2(drugLicenseNo: $0) },
                                                  constText: "21B",
                                                  isValid: drugLicenseNo2ErrorMessageKey == nil,
-                                                 errorMessageKey: drugLicenseNo2ErrorMessageKey)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
+                                                 errorMessageKey: drugLicenseNo2ErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .none)
                 }
                 
                 HStack {
@@ -184,22 +184,22 @@ struct AddRetailerScreen: View {
                                              onTextChange: { scope.changePincode(pincode: $0) },
                                              keyboardType: .numberPad,
                                              isValid: pincodeError == nil,
-                                             errorMessageKey: pincodeError)
-                    .textContentType(.postalCode)
+                                             errorMessageKey: pincodeError,
+                                             textContentType: .postalCode)
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "address_line",
                                              text: self.registration.value?.addressLine1,
-                                             onTextChange: { scope.changeAddressLine(address: $0) })
-                    .disableAutocorrection(true)
-                    .textContentType(.fullStreetAddress)
-                    .autocapitalization(.words)
+                                             onTextChange: { scope.changeAddressLine(address: $0) },
+                                             disableAutocorrection: true,
+                                             autocapitalization: .words,
+                                             textContentType: .fullStreetAddress)
                 
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "landmark",
                                              text: self.registration.value?.landmark,
-                                             onTextChange: { scope.changeLandmark(landmark: $0) })
-                    .disableAutocorrection(true)
-                    .textContentType(.sublocality)
-                    .autocapitalization(.words)
+                                             onTextChange: { scope.changeLandmark(landmark: $0) },
+                                             disableAutocorrection: true,
+                                             autocapitalization: .words,
+                                             textContentType: .sublocality)
                 
                 let locations = locationData.value?.locations ?? [String]()
                 PickerSelector(placeholder: "location",

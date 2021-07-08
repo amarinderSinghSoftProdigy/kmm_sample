@@ -10,7 +10,7 @@
 "back" = "Back";
 
 // MARK: Roles
-"stockist" = "Stockist";
+"stockist" = "Stockist/Sub-Stockist";
 "retailer" = "Retailer";
 "season_boy" = "Season Boy";
 "hospital" = "Hospital";
@@ -18,16 +18,17 @@
 // MARK: Authentication Log In Screen
 "app_name" = "Medico dev";
 "log_in" = "Log in";
-"phone_number_or_email" = "Phone Number or Email";
+"phone_number_or_email" = "Email / Phone No.";
 "password" = "Password";
-"forgot_password" = "Forgot password?";
-"register" = "Register";
-"copyright" = "© Copyright mediostores.com 2021";
+"forgot_password" = "Forgot Password";
+"new_to_medico" = "New to medicostores.com?";
+"create_account" = "Create Account";
+"copyright" = "© medicostores.com 2021";
 
 // MARK: Authentication Password Restore Screen
 "password_reset" = "Password Reset";
 "reset_password_hint" = "To reset your password please enter verified phone number:";
-"phone_number" = "Phone Number";
+"phone_number" = "Mobile Number";
 "get_code" = "Get Code";
 
 // MARK: OTP Await Verification
@@ -56,14 +57,14 @@
 "who_are_you" = "Who are you?";
 
 // MARK: Authentication Sign Up Personal Data
-"personal_data" = "Personal Data";
+"personal_data" = "Contact Information";
 "first_name" = "First Name";
 "last_name" = "Last Name";
 "email_address" = "Email Address";
 "password" = "Password";
-"repeat_password" = "Repeat Password";
-"continueing_i_accept" = "Continueing, I accept the";
-"terms_of_conditions_and_privacy_policy" = "Terms of Conditions and Privacy Policy";
+"repeat_password" = "Verify Password";
+"continueing_i_accept" = "I accept the";
+"terms_of_conditions_and_privacy_policy" = "Terms & Conditions";
 
 // MARK: Authentication Sign Up Address
 "address" = "Address";
@@ -76,7 +77,7 @@
 "state" = "State";
 
 // MARK: Authentication Sign Up Trader Details
-"trader_details" = "Trader Details";
+"trader_details" = "Trade Information";
 "aadhaar_details" = "Aadhaar Card Details";
 "trade_name" = "Trade Name";
 "pan_number" = "PAN Number";
@@ -93,7 +94,8 @@
 // MARK: Authentication Sign Up Drug License
 "legal_documents" = "Legal Documents";
 "drug_license_request" = "Please provide a drug license to\nactivate the account";
-"aadhaar_card_request" = "Please upload Aadhaar card";
+"aadhaar_card_request" = "Please upload Aadhaar e-KYC";
+"download_note" = "NOTE: Please download using";
 "upload_new_document" = "Upload new document";
 "image_source" = "Select the image source";
 "take_photo" = "Take Photo";
@@ -114,6 +116,18 @@
 "settings" = "Settings";
 "dashboard" = "Dashboard";
 "stores" = "Stores";
+"trial_ends" = "Trial Ends on ";
+"orders_history" = "Orders History";
+
+// MARK: Dashboard
+"purchase_orders" = "Purchase Orders";
+"connect_stockist" = "Connect Stockist";
+"season_boys" = "Season Boys";
+"add_stockist" = "Add Stockist";
+"in_stock" = "In Stock";
+"out_of_stock" = "Out of Stock";
+"today_sold_products" = "Today’s Sold Products";
+"most_searched_products" = "Most Searched Products in Market Today";
 
 // MARK: Limited App Access
 "welcome %@" = "Welcome, %@!";
@@ -127,6 +141,9 @@
 "clear" = "Clear";
 "view_more" = "View More";
 "sort_by" = "Sort By";
+"filters" = "Filters";
+"apply" = "Apply";
+"buy" = "Buy";
 
 // MARK: Product Details
 "mrp %@" = "MRP: %@";
@@ -170,8 +187,8 @@
 "your_stockists" = "Your Stockists";
 "all_stockists" = "All Stockists";
 "pending" = "Pending";
-"subscribed" = "Subscribed";
-"choose_payment_method_description" = "Before you subscribe to Pharmacy Doctors, please choose the payment method ";
+"subscribed" = "Connected";
+"choose_payment_method_description %@" = "Please choose Payment Method to connect with %@";
 "credit" = "Credit";
 "cash_on_delivery" = "Cash on delivery";
 "save" = "Save";
@@ -191,13 +208,13 @@
 "your_season_boys" = "Your Season Boys";
 
 // MARK: Bottom Sheet User Details
-"subscribe" = "Subscribe";
+"subscribe" = "Connect";
 "see_on_the_map" = "See on the map";
 "verified" = "Verified";
 "status" = "Status:";
 "gstin_number" = "GSTIN Number:";
 "pan_number:" = "PAN Number:";
-"payment_method" = "Payment Method:";
+"payment_method" = "Type:";
 "orders:" = "Orders:";
 "retailers:" = "Retailers:";
 
@@ -213,6 +230,7 @@
 "subscribe_request_button" = "Action Required";
 "subscribe_decision_button" = "Information";
 "order_request_button" = "View Order";
+"invoice_request_button" = "View Invoice";
 "accepted_req" = "Accepted Request";
 "declined_req" = "Declined Request";
 "minutes %lld" = "%lldm";
@@ -223,7 +241,7 @@
 "years %lld" = "%lldy";
 
 // MARK: Notification Details
-"new_request_to_subscribe_from" = "New request to subscribe from";
+"new_request_to_subscribe_from" = "New request to connect from";
 "phone" = "Phone:";
 "edit_credit" = "Edit Credit";
 "discount_rate:" = "Discount rate:";
@@ -237,7 +255,7 @@
 "add_retailer_address" = "Add Retailer’s Address";
 "confirm_the_information" = "Confirm if the information above is correct";
 "congratulations" = "Congratulations";
-"retailer_added_template %@" = "You have added %@ to your list of Retailes successfully";
+"retailer_added_template %@" = "You have added %@ to your list of Retailes successfully\nDetails will be verified before they appear in your list.";
 "retailers_list" = "Retailers List";
 
 // MARK: Store
@@ -303,23 +321,70 @@
 "to:" = "To:";
 "order_no:" = "Order No:";
 "accept_all" = "Accept All";
-"reject_all" = "Reject All";
+"reject_all" = "Decline All";
 "quote" = "Quote";
 "batch_no %@" = "Batch No: %@";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
 "served_qty:" = "Served QTY:";
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
-"reject_all_products_notification" = "Are you sure you want to Reject all products?";
+"reject_all_products_notification" = "Are you sure you want to Decline all products?";
+"confirm_order_notification" = "Are you sure you want to confirm the order?";
 
 // MARK: Confirm Order
 "action_confirmation" = "Action Confirmation";
 "accepted" = "Accepted";
-"rejected" = "Rejected";
+"rejected" = "Declined";
 "accept_selected" = "Accept Selected";
-"reject_selected" = "Reject Selected";
+"reject_selected" = "Decline Selected";
 
 // MARK: Invoices
 "invoices" = "Invoices";
 "inv_total:" = "INV Total:";
 "invoice_no:" = "Invoice No:";
+
+// MARK: Error Codes
+"E0001" = "Customer Type is required";
+"E0002" = "First name is required";
+"E0003" = "Last name is required";
+"E0004" = "Email is required";
+"E0005" = "Please enter a valid email";
+"E0006" = "MobileNumber is required";
+"E0007" = "Password is required";
+"E0008" = "Password must be at least 8 characters long. It must have at least 1 number and 1 upper case character.";
+"E0009" = "Password does not match with given password";
+"E0010" = "Aadhaar Card Number is required";
+"E0011" = "Please enter a valid aadhaar card number";
+"E0012" = "Please accept terms & conditions";
+"E0013" = "Please accept consent";
+"E0014" = "Pincode is required";
+"E0015" = "Address Line1 is required";
+"E0016" = "Location is required";
+"E0017" = "Landmark is required";
+"E0018" = "City/Town is required";
+"E0019" = "District is required";
+"E0020" = "State is required";
+"E0021" = "Specify Trade name as mentioned in the GST certificate";
+"E0022" = "Drug License No1 is required";
+"E0023" = "Drug License No2 is required";
+"E0024" = "SB UnitCode is required";
+"E0025" = "Please enter a valid GSTIN Number";
+"E0026" = "Please enter a valid Pan Number";
+"E0027" = "Please enter either GSTIN or PAN number to proceed.";
+"E0028" = "Retailer already registered with medicostores.com. Please sign up using new details.";
+"E0029" = "Email/mobile number already registered. Please try again.";
+"E0030" = "Seasonboy doesn't exists, please check it again";
+"E0031" = "Season Boy with retailer, can't be created. Please try after sometime...";
+"E0032" = "Registered user, can't be created. Please try after sometime...";
+"E0033" = "Uploaded document doesn't match with registered user";
+"E0034" = "Auth0 gRPC server down, check whether its running";
+"E0035" = "Unable to get geolocation data, check the geolocation server is running";
+"E0036" = "You have entered an invalid email/mobile or password";
+"E0037" = "Mobile number provided is not registered, please provide registered contact number";
+"E0038" = "Failed to update password, try after some time.";
+"E0039" = "Logout token, please login again";
+"E0040" = "Access Denied";
+"E0041" = "Something went wrong, Please try after sometime";
+"E0042" = "Order has not been submitted, please try after sometime.";
+"E0043" = "Cart already submitted, please check";
+"E0044" = "Cart not found, please check";

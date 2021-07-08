@@ -40,6 +40,7 @@ fun startKodein(
     useMocks: Boolean,
     useNavigatorSafeCasts: Boolean,
     useNetworkInterceptor: Boolean,
+    crashOnServerError: Boolean,
     baseUrl: NetworkClient.BaseUrl,
 ) = DI {
     platformDependencies(context, useMocks)
@@ -47,8 +48,9 @@ fun startKodein(
         NetworkClient(
             instance(),
             instance(),
-            useNetworkInterceptor,
-            baseUrl,
+            useNetworkInterceptor = useNetworkInterceptor,
+            crashOnServerError = crashOnServerError,
+            baseUrl = baseUrl,
         )
     }
     bind<NetworkScope.Auth>() with singleton {

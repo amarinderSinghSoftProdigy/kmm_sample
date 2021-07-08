@@ -16,7 +16,7 @@ struct SelectUserTypeScreen: View {
     
     private let userTypesOrder = [
         [DataUserType.stockist, DataUserType.retailer],
-        [DataUserType.seasonBoy, DataUserType.hospital]
+        [DataUserType.hospital, DataUserType.seasonBoy]
     ]
     
     var body: some View {

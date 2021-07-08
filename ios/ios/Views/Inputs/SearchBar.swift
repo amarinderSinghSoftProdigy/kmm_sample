@@ -92,7 +92,7 @@ struct SearchBar: View {
         let action: () -> ()
         
         switch button {
-        case let .filter(filterAction):
+        case let .filter(_, filterAction):
             action = filterAction
             
         case .clear:
@@ -243,7 +243,7 @@ struct SearchBar: View {
         
         case custom(AnyView)
         
-        case filter(() -> ())
+        case filter(isHighlighted: Bool = false, () -> ())
         
         case smallMagnifyingGlass
         case magnifyingGlass
@@ -258,8 +258,30 @@ struct SearchBar: View {
             case .clear:
                 imageName = "Clear"
                 
-            case .filter:
-                imageName = "Filter"
+            case .filter(let isHighlighted, _):
+                return AnyView(
+                    ZStack(alignment: .topTrailing) {
+                        Image("Filter")
+                            .padding(2)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(appColor: isHighlighted ? .yellow : .clear)
+                            )
+                            .padding(-2)
+                        
+                        if isHighlighted {
+                            Circle()
+                                .fill(appColor: .red)
+                                .frame(width: 6, height: 6)
+                                .padding(2)
+                                .background(
+                                    Circle()
+                                        .fill(appColor: .white)
+                                )
+                                .offset(x: 6, y: -6)
+                        }
+                    }
+                )
                 
             case .smallMagnifyingGlass:
                 return AnyView(

@@ -131,7 +131,8 @@ class ConfirmOrderScope(
     override val order: DataSource<Order>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
-) : Scope.Child.TabBar(), SelectableOrderEntry {
+    override val notifications: DataSource<ScopeNotification?> = DataSource(null),
+) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)
@@ -152,7 +153,7 @@ class ConfirmOrderScope(
                 rejectedEntries = rejectedEntries - checkedEntries.value
                 refreshEntries()
             }
-            Action.CONFIRM -> EventCollector.sendEvent(Event.Action.Orders.Confirm)
+            Action.CONFIRM -> EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
         }
     }
 
@@ -185,6 +186,21 @@ class ConfirmOrderScope(
         REJECTED("rejected", "#ED5152"),
         ACCEPTED("accepted", "#0084D4");
     }
+
+    object AreYouSure : ScopeNotification {
+        override val isSimple: Boolean = false
+        override val isDismissible: Boolean = false
+        override val title: String? = null
+        override val body: String? = "sure_confirm_order"
+
+        fun confirm() =
+            EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true))
+    }
+}
+
+class OrderPlacedScope(val order: Order) : Scope.Child.TabBar() {
+
+    fun goHome() = EventCollector.sendEvent(Event.Transition.Back)
 }
 
 interface SelectableOrderEntry : Scopable {

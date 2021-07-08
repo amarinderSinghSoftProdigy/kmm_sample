@@ -84,9 +84,11 @@ struct GlobalSearchScreen: View {
                 let bottomPadding: CGFloat = index == productsCount - 1 ? 16 : 0
 
                 return AnyView(
-                    ProductSearchView(product: product)
-                        .padding(.top, topPadding)
-                        .padding(.bottom, bottomPadding)
+                    ProductSearchView(product: product) {
+                        scope.buy(product: product)
+                    }
+                    .padding(.top, topPadding)
+                    .padding(.bottom, bottomPadding)
                 )
             }
             .padding(.horizontal, 16)
@@ -189,7 +191,7 @@ private struct FilterView: View {
             FlexibleView(data: visibleFilterOptions,
                          spacing: 8,
                          alignment: .leading) { option in
-                FilterOption(option: option)
+                Chip(option: option)
                     .onTapGesture {
                         self.onSelectFilterOption(option)
                     }
@@ -198,7 +200,32 @@ private struct FilterView: View {
     }
 }
 
-private struct FilterOption: View {
+private struct FilterChip: View {
+    let localizationKey: String
+    let onRemove: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 7) {
+            LocalizedText(localizationKey: localizationKey,
+                          textWeight: .medium,
+                          fontSize: 12,
+                          color: .white)
+            
+            Image(systemName: "xmark")
+                .foregroundColor(appColor: .white)
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 100)
+                .fill(appColor: .lightBlue)
+        )
+        .onTapGesture {
+            onRemove()
+        }
+    }
+}
+
+private struct Chip: View {
     private let height: CGFloat = 32
     
     let option: DataOption
@@ -281,6 +308,7 @@ struct ProductSearchView: View {
     private let textAlignment: TextAlignment = .leading
     
     let product: DataProductSearch
+    let handleProductPurchase: () -> Void
     
     var body: some View {
         ZStack(alignment: Alignment(horizontal: alignment, vertical: .center)) {
@@ -302,20 +330,17 @@ struct ProductSearchView: View {
                                  size: .px123)
                         .frame(width: 81, height: 81)
                     
-                    let labelColor: AppColor = product.stockInfo != nil ? .darkBlue : noStockInfoColor
-                    VStack(alignment: alignment, spacing: 10) {
+                    VStack(alignment: alignment, spacing: 6) {
                         VStack(alignment: alignment, spacing: 5) {
                             Text(product.name)
                                 .medicoText(textWeight: .semiBold,
                                             fontSize: 16,
-                                            color: labelColor,
                                             multilineTextAlignment: textAlignment)
                             
                             if let price = product.formattedPrice {
                                 Text(price)
                                     .medicoText(textWeight: .black,
                                                 fontSize: 16,
-                                                color: labelColor,
                                                 multilineTextAlignment: textAlignment)
                             }
                         }
@@ -323,50 +348,126 @@ struct ProductSearchView: View {
                         
                         VStack(alignment: alignment, spacing: 3) {
                             HStack(spacing: 20) {
-                                LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(product.formattedMrp)"),
-                                              testingIdentifier: "mrp",
-                                              fontSize: 12,
-                                              color: .grey3,
-                                              multilineTextAlignment: textAlignment)
+                                Text(product.code)
+                                    .medicoText(fontSize: 12,
+                                                color: .grey3,
+                                                multilineTextAlignment: textAlignment)
                                 
-                                if let margin = product.marginPercent {
-                                    LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
-                                                  testingIdentifier: "margin",
-                                                  fontSize: 12,
-                                                  color: .grey3,
-                                                  multilineTextAlignment: .leading)
-                                }
+                                Spacer()
+                                
+                                DetailView(titleLocalizationKey: "mrp:", bodyText: product.formattedMrp)
                             }
                             
-                            LocalizedText(localizedStringKey: LocalizedStringKey("code \(product.code)"),
-                                          testingIdentifier: "code",
-                                          fontSize: 12,
-                                          color: .grey3,
-                                          multilineTextAlignment: textAlignment)
+                            HStack(spacing: 20) {
+                                if let productStatus = product.stockInfo {
+                                    Text(productStatus.formattedStatus)
+                                        .medicoText(textWeight: .bold,
+                                                    fontSize: 12,
+                                                    color: productStatus.statusColor,
+                                                    multilineTextAlignment: textAlignment)
+                                }
+                                
+                                Spacer()
+                                
+                                if let margin = product.marginPercent {
+                                    DetailView(titleLocalizationKey: "margin:", bodyText: margin)
+                                }
+                            }
                         }
                     }
                 }
                 
-                HStack(alignment: .top, spacing: 10) {
-                    Text(product.uomName)
-                        .medicoText(color: product.stockInfo != nil ? .lightBlue : noStockInfoColor,
-                                    multilineTextAlignment: textAlignment)
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading) {
+                        AppColor.darkBlue.color
+                            .opacity(0.12)
+                            .frame(width: 155, height: 1)
+                        
+                        Text(product.uomName)
+                            .medicoText(color: .lightBlue,
+                                        multilineTextAlignment: textAlignment)
+                    }
                     
                     Spacer()
                     
-                    if let stockInfo = product.stockInfo {
-                        LocalizedText(localizationKey: stockInfo.formattedStatus,
-                                      textWeight: .bold,
-                                      fontSize: 12,
-                                      color: stockInfo.statusColor,
-                                      multilineTextAlignment: .leading)
-                            .padding(.top, 2)
-                    }
+                    itemButton
                 }
             }
             .padding(11)
         }
-        .opacity(product.stockInfo != nil ? 1 : 0.6)
+    }
+    
+    private var itemButton: some View {
+        let localizedStringKey: String
+        let isEnabled: Bool
+        let backgroundOpacity: Double
+        let action: () -> Void
+            
+        switch product.buyingOption {
+        case .some(.buy):
+            localizedStringKey = "buy"
+            isEnabled = true
+            backgroundOpacity = 1
+            action = { handleProductPurchase() }
+            
+        case .some(.quote):
+            localizedStringKey = "get_quote"
+            isEnabled = true
+            backgroundOpacity = 0.12
+            action = { handleProductPurchase() }
+        
+        default:
+            localizedStringKey = "buy"
+            isEnabled = false
+            backgroundOpacity = 1
+            action = { }
+        }
+        
+        return MedicoButton(localizedStringKey: localizedStringKey,
+                            isEnabled: isEnabled,
+                            width: 97,
+                            height: 38,
+                            cornerRadius: 2,
+                            fontSize: 14,
+                            buttonColorOpacity: backgroundOpacity,
+                            action: action)
+            .buttonStyle(BorderlessButtonStyle())
+            .strokeBorder(isEnabled ? .yellow : .grey1,
+                          fill: .yellow,
+                          fillOpacity: backgroundOpacity,
+                          lineWidth: 2,
+                          cornerRadius: 2)
+    }
+    
+    private struct DetailView: View {
+        let titleLocalizationKey: String
+        let bodyText: String
+        
+        let bodyColor: AppColor
+        
+        var body: some View {
+            HStack(spacing: 4) {
+                LocalizedText(localizationKey: titleLocalizationKey,
+                              fontSize: 12,
+                              color: .grey3,
+                              multilineTextAlignment: .leading)
+                
+                Text(bodyText)
+                    .medicoText(textWeight: .bold,
+                                fontSize: 12,
+                                color: bodyColor,
+                                multilineTextAlignment: .leading)
+            }
+        }
+        
+        init(titleLocalizationKey: String,
+             bodyText: String,
+             bodyColor: AppColor = .lightBlue) {
+            self.titleLocalizationKey = titleLocalizationKey
+            self.bodyText = bodyText
+            
+            self.bodyColor = bodyColor
+        }
     }
 }
 
@@ -376,44 +477,85 @@ struct FiltersSection: View {
     @ObservedObject var isFilterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var filters: SwiftDataSource<NSArray>
     @ObservedObject var filterSearches: SwiftDataSource<NSDictionary>
+    @ObservedObject var activeFiltersIds: SwiftDataSource<NSArray>
     
     var body: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Spacer()
+        VStack(spacing: 25) {
+            VStack(spacing: 12) {
+                HStack {
+                    LocalizedText(localizationKey: "filters",
+                                  textWeight: .semiBold,
+                                  fontSize: 20)
+                    Spacer()
+                    
+                    LocalizedText(localizationKey: "clear_all",
+                                  textWeight: .medium,
+                                  fontSize: 16,
+                                  color: .textGrey,
+                                  multilineTextAlignment: .trailing)
+                        .onTapGesture {
+                            scope.clearFilter(filter: nil)
+                        }
+                }
                 
-                LocalizedText(localizationKey: "clear_all",
-                              textWeight: .medium,
-                              fontSize: 16,
-                              color: .textGrey,
-                              multilineTextAlignment: .trailing)
-                    .onTapGesture {
-                        scope.clearFilter(filter: nil)
+                if let activeFiltersIds = self.activeFiltersIds.value as? [String],
+                   !activeFiltersIds.isEmpty {
+                    AppColor.lightGrey.color
+                        .frame(height: 1)
+                
+                    FlexibleView(data: activeFiltersIds,
+                                 spacing: 8,
+                                 alignment: .leading) { filterId in
+                        FilterChip(localizationKey: filterId) {
+                            let filter = scope.getFilterNameById(id: filterId)
+                            scope.clearFilter(filter: filter)
+                        }
                     }
-            }
-            
-            SortSection(selectedSortOption: .init(dataSource: scope.selectedSortOption),
-                        sortOptions: .init(dataSource: scope.sortOptions)) {
-                scope.selectSortOption(option: $0)
-            }
-            
-            if let filters = self.filters.value as? [DataFilter] {
-                ForEach(filters, id: \.self.name) { filter in
-                    if let filtersSearches = self.filterSearches.value as? [String: String] {
+                }
+                
+                SortSection(selectedSortOption: .init(dataSource: scope.selectedSortOption),
+                            sortOptions: .init(dataSource: scope.sortOptions)) {
+                    scope.selectSortOption(option: $0)
+                }
+                
+                if let filters = self.filters.value as? [DataFilter] {
+                    ForEach(filters, id: \.self.name) { filter in
+                        if let filtersSearches = self.filterSearches.value as? [String: String] {
 
-                        let searchOption = SearchOption(text: filtersSearches[filter.queryId],
-                                                        onSearch: { scope.searchFilter(filter: filter, input: $0) })
-                        
-                        FilterView(filter: filter,
-                                   searchOption: searchOption,
-                                   onSelectFilterOption: { option in scope.selectFilter(filter: filter,
-                                                                                        option: option) },
-                                   onClearFilter: { scope.clearFilter(filter: filter) })
+                            let searchOption = SearchOption(text: filtersSearches[filter.queryId],
+                                                            onSearch: { scope.searchFilter(filter: filter, input: $0) })
+                            
+                            FilterView(filter: filter,
+                                       searchOption: searchOption,
+                                       onSelectFilterOption: { option in scope.selectFilter(filter: filter,
+                                                                                            option: option) },
+                                       onClearFilter: { scope.clearFilter(filter: filter) })
+                        }
                     }
                 }
             }
+            .scrollView()
+            
+            AppColor.darkBlue.color
+                .opacity(0.2)
+                .frame(height: 1)
+            
+            HStack(spacing: 25) {
+                MedicoButton(localizedStringKey: "clear",
+                             isEnabled: true,
+                             fontColor: .lightBlue,
+                             buttonColor: .clear) {
+                    scope.clearFilter(filter: nil)
+                }
+                .strokeBorder(.lightBlue,
+                              fill: .clear)
+                
+                MedicoButton(localizedStringKey: "apply",
+                             isEnabled: true) {
+                    scope.toggleFilter()
+                }
+            }
         }
-        .scrollView()
     }
     
     init(scope: BaseSearchScope) {
@@ -422,6 +564,7 @@ struct FiltersSection: View {
         self.isFilterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.filters = SwiftDataSource(dataSource: scope.filters)
         self.filterSearches = SwiftDataSource(dataSource: scope.filterSearches)
+        self.activeFiltersIds = SwiftDataSource(dataSource: scope.activeFilterIds)
     }
     
     private struct SortSection: View {
@@ -455,9 +598,9 @@ struct FiltersSection: View {
                     FlexibleView(data: sortOptions,
                                  spacing: 8,
                                  alignment: .leading) { option in
-                        FilterOption(option: .StringValue(value: option.name,
-                                                          isSelected: option == selectedSortOption.value,
-                                                          isVisible: true))
+                        Chip(option: .StringValue(value: option.name,
+                                                  isSelected: option == selectedSortOption.value,
+                                                  isVisible: true))
                             .onTapGesture {
                                 self.onOptionSelect(option)
                             }

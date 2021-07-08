@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.common
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -88,7 +90,10 @@ fun MedicoButton(
     isEnabled: Boolean,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
+    border: BorderStroke? = null,
+    elevation: ButtonElevation? = ButtonDefaults.elevation(),
     textSize: TextUnit = 15.sp,
+    height: Dp = 48.dp,
     onClick: () -> Unit,
 ) {
     Button(
@@ -99,16 +104,18 @@ fun MedicoButton(
             contentColor = contentColor,
             disabledContentColor = contentColor,
         ),
+        border = border,
         enabled = isEnabled,
         shape = MaterialTheme.shapes.medium,
-        elevation = ButtonDefaults.elevation(),
+        elevation = elevation,
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(height),
     ) {
         Text(
             text = text,
             fontSize = textSize,
+            fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),
         )
     }
@@ -213,10 +220,10 @@ fun Scope.Host.showErrorAlert() {
     errorCode.value?.let {
         val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.E0000
         val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.something_went_wrong
         SimpleDialog(
             title = stringResource(id = titleResourceId),
             text = stringResource(id = bodyResourceId),
@@ -246,6 +253,7 @@ fun <T : WithNotifications> T.showNotificationAlert() {
         } else {
             Notification(
                 title = if (titleResourceId != 0) stringResource(id = titleResourceId) else null,
+                titleRes = titleResourceId,
                 onDismiss = { dismissNotification() },
                 notification = it,
             )
@@ -322,7 +330,7 @@ fun Separator(modifier: Modifier = Modifier, padding: Dp = 16.dp) {
             .fillMaxWidth()
             .height(1.dp)
             .padding(horizontal = padding)
-            .background(ConstColors.gray)
+            .background(ConstColors.gray.copy(alpha = .5f))
     )
 }
 

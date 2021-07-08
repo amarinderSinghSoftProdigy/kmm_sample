@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.GenericNotificationScopePreview
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -35,23 +36,21 @@ internal class NotificationEventDelegate(
 
     private suspend fun load(isFirstLoad: Boolean) {
         loadHelper.load<NotificationScope.All, NotificationData>(isFirstLoad = isFirstLoad) {
-            val (result, isSuccess) = notificationRepo.getNotifications(
+            notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
                 filter = filter.value,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun search(value: String) {
         loadHelper.search<NotificationScope.All, NotificationData>(searchValue = value) {
-            val (result, isSuccess) = notificationRepo.getNotifications(
+            notificationRepo.getNotifications(
                 search = searchText.value,
                 pagination = pagination,
                 filter = filter.value,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
@@ -71,58 +70,53 @@ internal class NotificationEventDelegate(
     private suspend fun Navigator.openableNotification(data: NotificationData) {
         val nextScope = NotificationScope.Preview.SubscriptionRequest(data)
         setScope(nextScope)
-        val (result, isSuccess) = withProgress {
+        withProgress {
             notificationRepo.getNotificationDetails(data.id)
-        }
-        if (isSuccess && result != null) {
+        }.onSuccess { body ->
             notificationRepo.decreaseReadMessages()
             when {
-                result.customerData != null && result.subscriptionOption != null -> {
+                body.customerData != null && body.subscriptionOption != null -> {
                     nextScope.details.value = NotificationDetails.TypeSafe.Subscription(
                         isReadOnly = data.type == NotificationType.SUBSCRIBE_DECISION,
-                        customerData = result.customerData!!,
-                        option = result.subscriptionOption!!,
+                        customerData = body.customerData!!,
+                        option = body.subscriptionOption!!,
                     )
                 }
                 else -> {
                     dropScope()
-                    setHostError(ErrorCode())
+                    setHostError(ErrorCode.somethingWentWrong)
                 }
             }
-        } else {
+        }.onError {
             dropScope()
-            setHostError(ErrorCode())
+            setHostError(it)
         }
     }
 
     private suspend fun Navigator.routedNotification(data: NotificationData) {
-        val (result, isSuccess) = withProgress {
+        withProgress {
             notificationRepo.getNotificationDetails(data.id)
-        }
-
-        if (isSuccess && result != null) {
+        }.onSuccess { body ->
             when {
-                result.orderOption != null -> EventCollector.sendEvent(
+                body.orderOption != null -> EventCollector.sendEvent(
                     Event.Action.Orders.Select(
-                        orderId = result.orderOption!!.orderId,
-                        type = result.orderOption!!.type,
+                        orderId = body.orderOption!!.orderId,
+                        type = body.orderOption!!.type,
                     )
                 )
-                result.invoiceOption != null -> EventCollector.sendEvent(
-                    Event.Action.Invoices.Select(invoiceId = result.invoiceOption!!.invoiceId)
+                body.invoiceOption != null -> EventCollector.sendEvent(
+                    Event.Action.Invoices.Select(invoiceId = body.invoiceOption!!.invoiceId)
                 )
                 else -> {
-                    setHostError(ErrorCode())
+                    setHostError(ErrorCode.somethingWentWrong)
                 }
             }
-        } else {
-            setHostError(ErrorCode())
-        }
+        }.onError(navigator)
     }
 
     private suspend fun selectAction(action: NotificationAction) {
         navigator.withScope<GenericNotificationScopePreview> {
-            val (error, isSuccess) = withProgress {
+            withProgress {
                 notificationRepo.selectNotificationAction(
                     id = it.notification.id,
                     actionRequest = NotificationActionRequest(
@@ -130,13 +124,10 @@ internal class NotificationEventDelegate(
                         it.details.value?.option as? NotificationOption.Subscription,
                     ),
                 )
-            }
-            if (isSuccess) {
+            }.onSuccess {
                 dropScope()
                 load(isFirstLoad = true)
-            } else {
-                setHostError(error ?: ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 

@@ -16,127 +16,127 @@ struct AuthScreen: View {
     }
     
     var body: some View {
-        ZStack (alignment: .bottom) {
-            self.background
-
-            if let credentialsValue = self.credentials.value {
-                AuthTab(
-                    scope: scope,
-                    credentials: credentialsValue
-                )
-                .frame(maxWidth: .infinity)
-                .background(appColor: .primary)
-                .padding()
-                .padding(.top, blackRectangleHeight)
-                .frame(maxHeight: .infinity)
-            }
+        ZStack(alignment: .bottom) {
+            AppColor.navigationBar.color
+                .edgesIgnoringSafeArea(.all)
             
-            LocalizedText(localizationKey: "copyright",
-                          textWeight: .semiBold,
-                          fontSize: 16,
-                          color: .white)
-                .opacity(0.8)
-                .padding(.bottom, 30)
+            VStack {
+                Group {
+                    Spacer()
+                    
+                    VStack(spacing: 50) {
+                        Image("medico_logo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 216, height: 54)
+
+                        if let credentialsValue = self.credentials.value {
+                            AuthTab(
+                                scope: scope,
+                                credentials: credentialsValue
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 45)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(appColor: .white)
+                    )
+                    
+                    Spacer()
+                    
+                    self.createAccountView
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 20)
+                .background(appColor: .lightBlue)
+                
+                LocalizedText(localizationKey: "copyright",
+                              textWeight: .medium,
+                              fontSize: 12)
+                    .padding(.vertical, 14)
+            }
         }
         .textFieldsModifiers()
         .screenLogger(withScreenName: "AuthScreen",
                       withScreenClass: AuthScreen.self)
     }
     
-    var background: some View {
-        ZStack(alignment: .top) {
-            AppColor.darkBlue.color.edgesIgnoringSafeArea(.all)
+    private var createAccountView: some View {
+        VStack(spacing: 13) {
+            LocalizedText(localizationKey: "new_to_medico",
+                          textWeight: .medium,
+                          color: .white)
             
-            Image("auth_logo")
-                .resizable()
-                .scaledToFit()
-            
-            let darkBlue = AppColor.darkBlue.color
-            Rectangle()
-                .fill(LinearGradient(gradient: Gradient(colors: [darkBlue.opacity(0.0), darkBlue.opacity(1.0)]), startPoint: .top, endPoint: .bottom))
-                .aspectRatio(1.03878, contentMode: .fit)
-            
-            AppColor.lightBlue.color.opacity(0.7).edgesIgnoringSafeArea(.all)
-            
-            Rectangle()
-                .fill(Color.black)
-                .opacity(0.2)
-                .frame(idealWidth: .infinity, maxHeight: blackRectangleHeight, alignment: Alignment.top)
-        }
-        .edgesIgnoringSafeArea(.top)
-    }
-}
-
-struct AuthTab: View {
-    let scope: LogInScope
-    let credentials: DataAuthCredentials
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                LocalizedText(localizationKey: "log_in",
-                              textWeight: .bold,
-                              fontSize: 24)
-                
-                Spacer()
-                
-                Image("medico_logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 135, alignment: Alignment.trailing)
-            }.frame(maxWidth: .infinity).padding([.bottom])
-            
-            FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
-                                         text: credentials.phoneNumberOrEmail,
-                                         onTextChange: updateLogin,
-                                         keyboardType: .emailAddress)
-                .autocapitalization(UITextAutocapitalizationType.none)
-                .disableAutocorrection(true)
-            
-            FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
-                                           text: credentials.password,
-                                           onTextChange: updatePassword)
-                .textContentType(.password)
-            
-            LocalizedText(localizationKey: "forgot_password",
-                          color: .lightBlue)
-                .padding(.top, 4)
-                .onTapGesture {
-                    scope.goToForgetPassword()
-                }
-            
-            MedicoButton(localizedStringKey: "log_in",
-                         isEnabled: !credentials.phoneNumberOrEmail.isEmpty && !credentials.password.isEmpty) {
-                scope.tryLogIn()
-            }
-            .padding(.top)
-            
-            MedicoButton(localizedStringKey: "register",
-                         fontColor: .white,
-                         buttonColor: .lightBlue) {
+            MedicoButton(localizedStringKey: "create_account",
+                         isEnabled: true,
+                         width: 287,
+                         height: 42) {
                 scope.goToSignUp()
             }
-            .padding(.top, 4)
-            .padding(.bottom)
         }
-        .padding(20)
+        .padding(.bottom, 65)
     }
-    
-    init(scope: LogInScope,
-         credentials: DataAuthCredentials) {
-        self.scope = scope
-        self.credentials = credentials
-    }
-    
-    private func updateLogin(withNewValue newValue: String) {
-        let password = self.credentials.password
-            
-        scope.updateAuthCredentials(emailOrPhone: newValue, password: password)
-    }
-    
-    private func updatePassword(withNewValue newValue: String) {
-        let login = self.credentials.phoneNumberOrEmail
-            
-        scope.updateAuthCredentials(emailOrPhone: login, password: newValue)
+
+    private struct AuthTab: View {
+        let scope: LogInScope
+        let credentials: DataAuthCredentials
+        
+        var body: some View {
+            VStack(alignment: .trailing, spacing: 24) {
+                FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
+                                             text: credentials.phoneNumberOrEmail,
+                                             onTextChange: updateLogin,
+                                             keyboardType: .emailAddress,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
+                    .strokeBorder(.blueWhite,
+                                  fill: .white,
+                                  lineWidth: 2)
+                
+                FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
+                                               text: credentials.password,
+                                               onTextChange: updatePassword)
+                    .textContentType(.password)
+                    .strokeBorder(.blueWhite,
+                                  fill: .white,
+                                  lineWidth: 2)
+                
+                LocalizedText(localizationKey: "forgot_password",
+                              textWeight: .bold,
+                              color: .lightBlue)
+                    .onTapGesture {
+                        scope.goToForgetPassword()
+                    }
+                
+                MedicoButton(localizedStringKey: "log_in",
+                             isEnabled: !credentials.phoneNumberOrEmail.isEmpty && !credentials.password.isEmpty,
+                             fontColor: .white,
+                             buttonColor: .lightBlue) {
+                    scope.tryLogIn()
+                }
+                .padding(.top, 20)
+            }
+            .frame(maxWidth: 500)
+        }
+        
+        init(scope: LogInScope,
+             credentials: DataAuthCredentials) {
+            self.scope = scope
+            self.credentials = credentials
+        }
+        
+        private func updateLogin(withNewValue newValue: String) {
+            let password = self.credentials.password
+                
+            scope.updateAuthCredentials(emailOrPhone: newValue, password: password)
+        }
+        
+        private func updatePassword(withNewValue newValue: String) {
+            let login = self.credentials.phoneNumberOrEmail
+                
+            scope.updateAuthCredentials(emailOrPhone: login, password: newValue)
+        }
     }
 }

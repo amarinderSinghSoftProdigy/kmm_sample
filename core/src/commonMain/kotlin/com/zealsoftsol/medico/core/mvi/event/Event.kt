@@ -36,6 +36,7 @@ sealed class Event {
             data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
+            object UpdateDashboard : Auth()
         }
 
         sealed class Otp : Action() {
@@ -202,7 +203,7 @@ sealed class Event {
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(val entry: OrderEntry) : Orders()
             data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
-            object Confirm : Orders()
+            data class Confirm(val fromNotification: Boolean) : Orders()
         }
 
         sealed class Invoices : Action() {

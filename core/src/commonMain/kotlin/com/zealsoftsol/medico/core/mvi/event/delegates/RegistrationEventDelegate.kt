@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
@@ -17,7 +18,6 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -63,11 +63,11 @@ internal class RegistrationEventDelegate(
     private suspend fun validate(userRegistration: UserRegistration) {
         when (userRegistration) {
             is UserRegistration1 -> navigator.withScope<SignUpScope.PersonalData> {
-                val validation = withProgress {
+                val result = withProgress {
                     userRepo.signUpValidation1(userRegistration)
                 }
-                it.validation.value = validation.entity
-                if (validation.isSuccess) {
+                it.validation.value = result.validations
+                result.onSuccess { _ ->
                     setScope(
                         SignUpScope.AddressData(
                             registrationStep1 = it.registration.value,
@@ -75,14 +75,14 @@ internal class RegistrationEventDelegate(
                             registration = DataSource(UserRegistration2()),
                         )
                     )
-                }
+                }.onError(navigator)
             }
             is UserRegistration2 -> navigator.withScope<SignUpScope.AddressData> {
-                val validation = withProgress {
+                val result = withProgress {
                     userRepo.signUpValidation2(userRegistration)
                 }
-                it.userValidation.value = validation.entity
-                if (validation.isSuccess) {
+                it.userValidation.value = result.validations
+                result.onSuccess { _ ->
                     val nextScope =
                         if (it.registrationStep1.userType == UserType.SEASON_BOY.serverValue) {
                             SignUpScope.Details.Aadhaar(
@@ -96,14 +96,14 @@ internal class RegistrationEventDelegate(
                             )
                         }
                     setScope(nextScope)
-                }
+                }.onError(navigator)
             }
             is UserRegistration3 -> navigator.withScope<SignUpScope.Details.TraderData> {
-                val validation = withProgress {
+                val result = withProgress {
                     userRepo.signUpValidation3(userRegistration)
                 }
-                it.validation.value = validation.entity
-                if (validation.isSuccess) {
+                it.validation.value = result.validations
+                result.onSuccess { _ ->
                     setScope(
                         SignUpScope.LegalDocuments.DrugLicense(
                             registrationStep1 = it.registrationStep1,
@@ -111,7 +111,7 @@ internal class RegistrationEventDelegate(
                             registrationStep3 = it.registration.value,
                         )
                     )
-                }
+                }.onError(navigator)
             }
         }
     }
@@ -143,15 +143,16 @@ internal class RegistrationEventDelegate(
                     is Event.Action.Registration.UploadDrugLicense -> {
                         val userReg =
                             (it as? SignUpScope.LegalDocuments.DrugLicense)?.registrationStep1
-                        val response = userRepo.uploadDrugLicense(
+                        userRepo.uploadDrugLicense(
                             fileString = event.licenseAsBase64,
                             phoneNumber = userReg?.phoneNumber
                                 ?: userRepo.requireUser().phoneNumber,
                             email = userReg?.email ?: userRepo.requireUser().email,
                             mimeType = event.fileType.mimeType,
-                        )
-                        storageKey = response.entity?.key
-                        response.isSuccess
+                        ).onSuccess { body ->
+                            storageKey = body.key
+                        }.onError(navigator)
+                            .isSuccess
                     }
                     is Event.Action.Registration.UploadAadhaar -> {
                         val userReg = (it as? SignUpScope.LegalDocuments.Aadhaar)?.registrationStep1
@@ -161,7 +162,8 @@ internal class RegistrationEventDelegate(
                             phoneNumber = userReg?.phoneNumber
                                 ?: userRepo.requireUser().phoneNumber,
                             email = userReg?.email ?: userRepo.requireUser().email,
-                        )
+                        ).onError(navigator)
+                            .isSuccess
                     }
                     else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
                 }
@@ -182,21 +184,17 @@ internal class RegistrationEventDelegate(
                         startOtp(it.registrationStep1.phoneNumber)
                     }
                     is LimitedAccessScope -> {
-                        if (!userRepo.loadUserFromServer()) {
-                            setHostError(ErrorCode())
-                        }
+                        userRepo.loadUserFromServer().onError(navigator)
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }
-            } else {
-                setHostError(ErrorCode())
             }
         }
     }
 
     private suspend fun signUp() {
         val documents = navigator.searchQueuesFor<SignUpScope.LegalDocuments>()
-        val (error, isSuccess) = navigator.withProgress {
+        navigator.withProgress {
             when (documents) {
                 is SignUpScope.LegalDocuments.DrugLicense -> userRepo.signUpNonSeasonBoy(
                     documents.registrationStep1,
@@ -210,34 +208,28 @@ internal class RegistrationEventDelegate(
                     documents.aadhaarData,
                     documents.aadhaarFile,
                 )
-                else -> Response.Wrapped(ErrorCode(), false)
+                null -> return
             }
-        }
-        if (isSuccess) {
+        }.onSuccess {
             userRepo.sendFirebaseToken()
             navigator.dropScope(Navigator.DropStrategy.ToRoot, updateDataSource = false)
             navigator.setScope(
                 WelcomeScope(documents!!.registrationStep1.run { "$firstName $lastName" })
             )
-        } else {
-            dropToLogin(error)
-        }
+        }.onError { dropToLogin(it) }
     }
 
     private suspend fun confirmCreateRetailer() {
         navigator.withScope<ManagementScope.AddRetailer.Address> {
-            val (error, isSuccess) = withProgress {
+            withProgress {
                 userRepo.createRetailer(it.registration.value, it.registration3)
-            }
-            if (isSuccess) {
+            }.onSuccess { _ ->
                 dropScope(
                     Navigator.DropStrategy.To(ManagementScope.User.Retailer::class),
                     updateDataSource = false,
                 )
                 it.notifications.value = ManagementScope.Congratulations(it.registration3.tradeName)
-            } else {
-                setHostError(error ?: ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 
@@ -270,18 +262,15 @@ internal class RegistrationEventDelegate(
         navigator.withScope<AddressComponent> {
             it.registration.value = it.registration.value.copy(pincode = pincode)
             if (pincode.length == 6) {
-                val locationResponse = withProgress { userRepo.getLocationData(pincode) }
-                it.pincodeValidation.value = locationResponse.validations
-                val (location, isSuccess) = locationResponse.getWrappedBody()
-                if (isSuccess) {
-                    it.locationData.value = location
-                    if (location != null) {
-                        it.registration.value = it.registration.value.copy(
-                            district = location.district,
-                            state = location.state,
-                        )
-                    }
-                }
+                val result = withProgress { userRepo.getLocationData(pincode) }
+                it.pincodeValidation.value = result.validations
+                result.onSuccess { body ->
+                    it.locationData.value = body
+                    it.registration.value = it.registration.value.copy(
+                        district = body.district,
+                        state = body.state,
+                    )
+                }.onError(navigator)
             }
         }
     }

@@ -48,7 +48,6 @@ struct ProductDetails: View {
                                     multilineTextAlignment: .leading)
                     
                     LocalizedText(localizedStringKey: LocalizedStringKey("code \(scope.product.code)"),
-                                  testingIdentifier: "code",
                                   color: .grey3,
                                   multilineTextAlignment: .leading)
                     
@@ -64,20 +63,17 @@ struct ProductDetails: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 LocalizedText(localizedStringKey: LocalizedStringKey("mrp \(scope.product.formattedMrp)"),
-                              testingIdentifier: "mrp",
                               color: .grey3,
                               multilineTextAlignment: .leading)
                 
                 if let margin = scope.product.marginPercent {
                     LocalizedText(localizedStringKey: LocalizedStringKey("margin \(margin)"),
-                                  testingIdentifier: "margin",
                                   color: .grey3,
                                   multilineTextAlignment: .leading)
                 }
                 
                 HStack(alignment: .top, spacing: 10) {
                     LocalizedText(localizedStringKey: LocalizedStringKey("description \(scope.product.uomName)"),
-                                  testingIdentifier: "description",
                                   fontSize: 16,
                                   color: .lightBlue,
                                   multilineTextAlignment: .leading)

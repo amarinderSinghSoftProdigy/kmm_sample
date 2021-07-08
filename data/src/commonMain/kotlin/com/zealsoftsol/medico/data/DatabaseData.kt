@@ -14,6 +14,7 @@ data class User(
     val isActivated: Boolean,
     val isDocumentUploaded: Boolean,
     val addressData: AddressData,
+    val subscription: Subscription?,
 ) {
     fun fullName() = "$firstName $lastName"
 

@@ -59,9 +59,9 @@ struct SignUpTraderDetails: View {
                                                  text: self.registration.value?.tradeName,
                                                  onTextChange: { newValue in scope.changeTradeName(tradeName: newValue) },
                                                  isValid: tradeNameErrorMessageKey == nil,
-                                                 errorMessageKey: tradeNameErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.words)
+                                                 errorMessageKey: tradeNameErrorMessageKey,
+                                                 disableAutocorrection: true,
+                                                 autocapitalization: .words)
                     
                     GstinOrPanRequiredWarningView()
                 })
@@ -73,9 +73,10 @@ struct SignUpTraderDetails: View {
                                              text: self.registration.value?.panNumber,
                                              onTextChange: { newValue in scope.changePan(panNumber: newValue) },
                                              isValid: panNumberErrorMessageKey == nil,
-                                             errorMessageKey: panNumberErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
+                                             errorMessageKey: panNumberErrorMessageKey,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
+            )
             
         case SignUpScope.Details.DetailsFields.gstin:
             let gstinErrorMessageKey = self.validation.value?.gstin
@@ -84,9 +85,10 @@ struct SignUpTraderDetails: View {
                                              text: self.registration.value?.gstin,
                                              onTextChange: { newValue in scope.changeGstin(gstin: newValue) },
                                              isValid: gstinErrorMessageKey == nil,
-                                             errorMessageKey: gstinErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
+                                             errorMessageKey: gstinErrorMessageKey,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
+            )
             
         case SignUpScope.Details.DetailsFields.license1:
             let drugLicenseNo1ErrorMessageKey = self.validation.value?.drugLicenseNo1
@@ -96,9 +98,10 @@ struct SignUpTraderDetails: View {
                                              onTextChange: { newValue in scope.changeDrugLicense1(drugLicenseNo: newValue) },
                                              constText: "20B",
                                              isValid: drugLicenseNo1ErrorMessageKey == nil,
-                                             errorMessageKey: drugLicenseNo1ErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
+                                             errorMessageKey: drugLicenseNo1ErrorMessageKey,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
+            )
             
         case SignUpScope.Details.DetailsFields.license2:
             let drugLicenseNo2ErrorMessageKey = self.validation.value?.drugLicenseNo2
@@ -108,9 +111,10 @@ struct SignUpTraderDetails: View {
                                              onTextChange: { newValue in scope.changeDrugLicense2(drugLicenseNo: newValue) },
                                              constText: "21B",
                                              isValid: drugLicenseNo2ErrorMessageKey == nil,
-                                             errorMessageKey: drugLicenseNo2ErrorMessageKey)
-                    .disableAutocorrection(true)
-                    .autocapitalization(.none))
+                                             errorMessageKey: drugLicenseNo2ErrorMessageKey,
+                                             disableAutocorrection: true,
+                                             autocapitalization: .none)
+            )
             
         default:
             return AnyView(EmptyView())

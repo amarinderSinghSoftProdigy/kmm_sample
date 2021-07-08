@@ -22,6 +22,7 @@ struct MedicoButton: View {
     let fontColor: AppColor
     
     let buttonColor: AppColor
+    let buttonColorOpacity: Double
     
     var body: some View {
         let width = self.width ?? .infinity
@@ -38,7 +39,9 @@ struct MedicoButton: View {
         .frame(maxWidth: width, maxHeight: height)
         .disabled(!isEnabled)
         .background(RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(appColor: isEnabled ? buttonColor : AppColor.grey1))
+                        .fill(appColor: isEnabled ? buttonColor : .grey1)
+                        .opacity(buttonColorOpacity)
+        )
     }
     
     init(localizedStringKey: String,
@@ -50,6 +53,7 @@ struct MedicoButton: View {
          fontWeight: TextWeight = .semiBold,
          fontColor: AppColor = .darkBlue,
          buttonColor: AppColor = .yellow,
+         buttonColorOpacity: Double = 1,
          action: @escaping () -> ()) {
         self.action = action
         self.localizedStringKey = localizedStringKey
@@ -65,6 +69,7 @@ struct MedicoButton: View {
         self.fontColor = fontColor
         
         self.buttonColor = buttonColor
+        self.buttonColorOpacity = buttonColorOpacity
     }
 }
 
@@ -126,7 +131,7 @@ struct ReadOnlyTextField: View {
 }
 
 struct LocalizedText: View {
-    let localizationKey: String
+    let localizedStringKey: LocalizedStringKey
     
     let textWeight: TextWeight
     let fontSize: CGFloat
@@ -137,10 +142,8 @@ struct LocalizedText: View {
     
     let underlined: Bool
     
-    let localizedStringKey: LocalizedStringKey?
-    
     var initialText: some View {
-        let text = Text(localizedStringKey ?? LocalizedStringKey(localizationKey))
+        let text = Text(localizedStringKey)
         
         return underlined ? text.underline() : text
     }
@@ -150,8 +153,7 @@ struct LocalizedText: View {
             .medicoText(textWeight: textWeight,
                         fontSize: fontSize,
                         color: color,
-                        multilineTextAlignment: multilineTextAlignment,
-                        testingIdentifier: localizationKey)
+                        multilineTextAlignment: multilineTextAlignment)
     }
     
     init(localizationKey: String,
@@ -160,52 +162,30 @@ struct LocalizedText: View {
          color: AppColor? = nil,
          multilineTextAlignment: TextAlignment? = nil,
          underlined: Bool? = nil) {
-        
-        self.init(localizationKey: localizationKey,
+        self.init(localizedStringKey: LocalizedStringKey(localizationKey),
                   textWeight: textWeight,
                   fontSize: fontSize,
                   color: color,
                   multilineTextAlignment: multilineTextAlignment,
-                  underlined: underlined,
-                  localizedStringKey: nil)
+                  underlined: underlined)
     }
     
     init(localizedStringKey: LocalizedStringKey,
-         testingIdentifier: String,
          textWeight: TextWeight? = nil,
          fontSize: CGFloat? = nil,
          color: AppColor? = nil,
          multilineTextAlignment: TextAlignment? = nil,
          underlined: Bool? = nil) {
-        
-        self.init(localizationKey: testingIdentifier,
-                  textWeight: textWeight,
-                  fontSize: fontSize,
-                  color: color,
-                  multilineTextAlignment: multilineTextAlignment,
-                  underlined: underlined,
-                  localizedStringKey: localizedStringKey)
-    }
-    
-    private init(localizationKey: String,
-                 textWeight: TextWeight?,
-                 fontSize: CGFloat?,
-                 color: AppColor?,
-                 multilineTextAlignment: TextAlignment?,
-                 underlined: Bool?,
-                 localizedStringKey: LocalizedStringKey?) {
-        self.localizationKey = localizationKey
-        
+        self.localizedStringKey = localizedStringKey
+
         self.textWeight = textWeight ?? .regular
         self.fontSize = fontSize ?? 14
-        
+
         self.color = color ?? .darkBlue
-        
+
         self.multilineTextAlignment = multilineTextAlignment ?? .center
-        
+
         self.underlined = underlined ?? false
-        
-        self.localizedStringKey = localizedStringKey
     }
 }
 
@@ -353,6 +333,8 @@ struct TabOptionView: View {
 struct CheckBox: View {
     var selected: Binding<Bool>
     
+    let backgroundColor: AppColor
+    
     var body: some View {
         Group {
             if selected.wrappedValue {
@@ -364,12 +346,22 @@ struct CheckBox: View {
             }
             else {
                 Circle()
-                    .stroke(lineWidth: 2)
-                    .foregroundColor(appColor: .darkBlue)
+                    .fill(appColor: backgroundColor)
+                    .background(
+                        Circle()
+                            .stroke(lineWidth: 2)
+                            .foregroundColor(appColor: .darkBlue)
+                    )
             }
         }
         .onTapGesture {
             selected.wrappedValue.toggle()
         }
+    }
+    
+    init(selected: Binding<Bool>, backgroundColor: AppColor = .primary) {
+        self.selected = selected
+        
+        self.backgroundColor = backgroundColor
     }
 }

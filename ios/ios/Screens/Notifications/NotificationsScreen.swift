@@ -117,7 +117,6 @@ struct NotificationsScreen: View {
                         Spacer()
                         
                         LocalizedText(localizedStringKey: getFormattedTimeLocalizedStringKey(forSentAt: data.sentAt),
-                                      testingIdentifier: "hours",
                                       color: .grey3,
                                       multilineTextAlignment: .leading)
                     }

@@ -54,7 +54,7 @@ fun InvoicesScreen(scope: InvoicesScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
-            searchBarEnd = SearchBarEnd.Filter { scope.toggleFilter() },
+            searchBarEnd = SearchBarEnd.Filter(isHighlighted = false) { scope.toggleFilter() },
             icon = Icons.Default.Search,
             elevation = 0.dp,
             horizontalPadding = 0.dp,

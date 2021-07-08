@@ -3,11 +3,11 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.data.ErrorCode
 
 internal class PasswordEventDelegate(
     navigator: Navigator,
@@ -22,25 +22,29 @@ internal class PasswordEventDelegate(
 
     private suspend fun verifyPassword(password: String) {
         navigator.withScope<PasswordScope.VerifyCurrent> {
-            val (validation, isSuccess) = withProgress {
+            val result = withProgress {
                 userRepo.verifyPassword(password)
             }
-            if (isSuccess) {
+
+            result.onSuccess {
                 setScope(PasswordScope.EnterNew(phoneNumber = null))
-            }
-            it.passwordValidation.value = validation
+            }.onError(navigator)
+
+            it.passwordValidation.value = result.validations
         }
     }
 
     private suspend fun changePassword(password: String) {
         navigator.withScope<PasswordScope.EnterNew> {
-            val (validation, isSuccess) = withProgress {
+            val result = withProgress {
                 userRepo.changePassword(it.phoneNumber, password)
             }
-            if (isSuccess) {
+
+            result.onSuccess { _ ->
                 it.notifications.value = PasswordScope.EnterNew.PasswordChangedSuccessfully
-            }
-            it.passwordValidation.value = validation
+            }.onError(navigator)
+
+            it.passwordValidation.value = result.validations
         }
     }
 
@@ -48,12 +52,12 @@ internal class PasswordEventDelegate(
         navigator.withScope<PasswordScope.EnterNew> {
             it.dismissNotification()
             withProgress {
-                if (userRepo.getUserAccess() == UserRepo.UserAccess.NO_ACCESS || userRepo.logout()) {
-                    dropScope(Navigator.DropStrategy.All, updateDataSource = false)
-                    setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
-                } else {
-                    setHostError(ErrorCode())
-                }
+                userRepo.logout().onSuccess { _ ->
+                    if (userRepo.getUserAccess() == UserRepo.UserAccess.NO_ACCESS) {
+                        dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                        setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+                    }
+                }.onError(navigator)
             }
         }
     }

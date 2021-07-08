@@ -281,13 +281,23 @@ private struct _CustomizedNavigationBar: View {
         let onCancelTap: () -> ()
         
         @ObservedObject var search: SwiftDataSource<NSString>
+        @ObservedObject var activeFilterIds: SwiftDataSource<NSArray>
+        
+        private var isFilterApplied: Bool {
+            if let appliedFiltersNumber = activeFilterIds.value?.count {
+                return appliedFiltersNumber > 0
+            }
+            
+            return false
+        }
         
         var body: some View {
             HStack {
                 SearchBar(searchText: search.value,
                           style: .small,
                           showsCancelButton: false,
-                          trailingButton: SearchBar.SearchBarButton(button: .filter({ searchBarInfo.toggleFilter() })),
+                          trailingButton: SearchBar.SearchBarButton(button: .filter(isHighlighted: isFilterApplied,
+                                                                                    { searchBarInfo.toggleFilter() })),
                           onTextChange: { value, isFromKeyboard in searchBarInfo.searchProduct(input: value,
                                                                                                withAutoComplete: !isFromKeyboard) })
                 
@@ -308,6 +318,7 @@ private struct _CustomizedNavigationBar: View {
             self.onCancelTap = onCancelTap
             
             self.search = SwiftDataSource(dataSource: searchBarInfo.search)
+            self.activeFilterIds = SwiftDataSource(dataSource: searchBarInfo.activeFilterIds)
         }
     }
 }

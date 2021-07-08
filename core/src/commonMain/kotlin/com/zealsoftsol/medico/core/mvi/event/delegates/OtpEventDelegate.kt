@@ -5,13 +5,13 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.environment
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.data.ErrorCode
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,33 +33,29 @@ internal class OtpEventDelegate(
     private suspend fun sendOtp(phoneNumber: String) {
         navigator.withScope<CommonScope.PhoneVerificationEntryPoint> {
             if (it is OtpScope.PhoneNumberInput && it.isForRegisteredUsersOnly) {
-                val (errorCode, isSuccess) = withProgress {
+                withProgress {
                     userRepo.checkCanResetPassword(phoneNumber)
-                }
-                if (!isSuccess) {
-                    setHostError(errorCode ?: ErrorCode())
+                }.onError { e ->
+                    setHostError(e)
                     return
                 }
             }
-            val (errorCode, isSuccess) = withProgress {
+
+            withProgress {
                 userRepo.sendOtp(phoneNumber = phoneNumber)
-            }
-            if (isSuccess) {
+            }.onSuccess {
                 val nextScope = OtpScope.AwaitVerification(phoneNumber = phoneNumber)
                 startResetPasswordTimer(nextScope)
                 setScope(nextScope)
-            } else {
-                setHostError(errorCode ?: ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 
     private suspend fun submitOtp(otp: String) {
         navigator.withScope<OtpScope.AwaitVerification> {
-            val (errorCode, isSuccess) = withProgress {
+            withProgress {
                 userRepo.submitOtp(it.phoneNumber, otp)
-            }
-            if (isSuccess) {
+            }.onSuccess { _ ->
                 stopResetPasswordTimer()
                 dropScope(updateDataSource = false)
                 when (searchQueuesFor<CommonScope.PhoneVerificationEntryPoint>()) {
@@ -71,22 +67,20 @@ internal class OtpEventDelegate(
                     }
                     else -> throw UnsupportedOperationException("unknown subtype of PhoneVerificationEntryPoint")
                 }
-            } else {
-                setHostError(errorCode ?: ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 
     private suspend fun resendOtp() {
         navigator.withScope<OtpScope.AwaitVerification> {
             it.resendActive.value = false
-            val (errorCode, isSuccess) = userRepo.resendOtp(it.phoneNumber)
-            if (isSuccess) {
-                startResetPasswordTimer(it)
-            } else {
-                it.resendActive.value = true
-                setHostError(errorCode ?: ErrorCode())
-            }
+            userRepo.resendOtp(it.phoneNumber)
+                .onSuccess { _ ->
+                    startResetPasswordTimer(it)
+                }.onError { error ->
+                    it.resendActive.value = true
+                    setHostError(error)
+                }
         }
     }
 

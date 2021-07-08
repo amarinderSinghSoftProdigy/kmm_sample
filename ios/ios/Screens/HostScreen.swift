@@ -182,6 +182,9 @@ struct TabBarScreen: View {
             case let scope as ViewInvoiceScope:
                 InvoiceDetailsScreen(scope: scope)
                 
+            case let scope as OrderPlacedScope:
+                OrderPlacedScreen(scope: scope)
+                
             default:
                 EmptyView()
             }

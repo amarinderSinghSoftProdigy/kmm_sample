@@ -3,10 +3,12 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
@@ -17,7 +19,6 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
-import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
@@ -41,56 +42,51 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(event.entry, event.quantity)
-        is Event.Action.Orders.Confirm -> confirmOrder()
+        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {
         loadHelper.load<OrdersScope, Order>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkOrdersScope.getOrders(
+            networkOrdersScope.getOrders(
                 type = type,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
                 to = dateRange.value?.toMs,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun searchOrders(search: String) {
         loadHelper.search<OrdersScope, Order>(searchValue = search) {
             val user = userRepo.requireUser()
-            val (result, isSuccess) = networkOrdersScope.getOrders(
+            networkOrdersScope.getOrders(
                 type = type,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
                 to = dateRange.value?.toMs,
                 pagination = pagination,
-            )
-            if (isSuccess) result else null
+            ).getBodyOrNull()
         }
     }
 
     private suspend fun selectOrder(orderId: String, type: OrderType) {
         navigator.withScope<Scopable> {
-            val (result, isSuccess) = withProgress {
+            withProgress {
                 networkOrdersScope.getOrder(type, userRepo.requireUser().unitCode, orderId)
-            }
-            if (isSuccess && result != null) {
+            }.onSuccess { body ->
                 setScope(
                     ViewOrderScope(
                         canEdit = type == OrderType.PURCHASE_ORDER,
-                        DataSource(result.order),
-                        DataSource(result.unitData.data),
-                        DataSource(result.entries)
+                        DataSource(body.order),
+                        DataSource(body.unitData.data),
+                        DataSource(body.entries)
                     )
                 )
-            } else {
-                setHostError(ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 
@@ -184,7 +180,7 @@ internal class OrdersEventDelegate(
 
     private suspend fun saveEntryQty(orderEntry: OrderEntry, qty: Int) {
         navigator.withScope<ViewOrderScope> {
-            val (result, isSuccess) = withProgress {
+            withProgress {
                 networkOrdersScope.saveNewOrderQty(
                     OrderNewQtyRequest(
                         orderId = it.order.value.info.id,
@@ -193,37 +189,35 @@ internal class OrdersEventDelegate(
                         servedQty = qty,
                     )
                 )
-            }
-
-            if (result != null && isSuccess) {
+            }.onSuccess { body ->
                 scope.value.dismissBottomSheet()
-                it.order.value = result.order
+                it.order.value = body.order
 //                it.checkedEntries.value = emptyList()
-                it.entries.value = result.entries
+                it.entries.value = body.entries
                 it.calculateActions()
-            } else {
-                setHostError(ErrorCode())
-            }
+            }.onError(navigator)
         }
     }
 
-    private suspend fun confirmOrder() {
+    private suspend fun confirmOrder(fromNotification: Boolean) {
         navigator.withScope<ConfirmOrderScope> {
-            val (error, isSuccess) = withProgress {
-                networkOrdersScope.confirmOrder(
-                    ConfirmOrderRequest(
-                        orderId = it.order.value.info.id,
-                        sellerUnitCode = userRepo.requireUser().unitCode,
-                        acceptedEntries = it.acceptedEntries.map { it.id },
-                    )
-                )
-            }
-
-            if (isSuccess) {
-                dropScope(updateDataSource = false)
-                dropScope()
+            if (!fromNotification) {
+                it.notifications.value = ConfirmOrderScope.AreYouSure
             } else {
-                setHostError(error ?: ErrorCode())
+                it.notifications.value = null
+                withProgress {
+                    networkOrdersScope.confirmOrder(
+                        ConfirmOrderRequest(
+                            orderId = it.order.value.info.id,
+                            sellerUnitCode = userRepo.requireUser().unitCode,
+                            acceptedEntries = it.acceptedEntries.map { it.id },
+                        )
+                    )
+                }.onSuccess { _ ->
+                    dropScope(updateDataSource = false)
+                    dropScope(updateDataSource = false)
+                    setScope(OrderPlacedScope(it.order.value))
+                }.onError(navigator)
             }
         }
     }

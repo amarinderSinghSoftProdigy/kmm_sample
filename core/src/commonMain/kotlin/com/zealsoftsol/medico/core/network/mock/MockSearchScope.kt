@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 
 class MockSearchScope : NetworkScope.Search {
@@ -20,12 +19,15 @@ class MockSearchScope : NetworkScope.Search {
         latitude: Double,
         longitude: Double,
         pagination: Pagination
-    ): Response.Wrapped<SearchResponse> = mockResponse {
-        Response.Wrapped(SearchResponse(emptyList(), emptyList(), 0, emptyList()), true)
+    ) = mockResponse {
+        SearchResponse(emptyList(), emptyList(), 0, emptyList())
     }
 
-    override suspend fun autocomplete(input: String): Response.Wrapped<List<AutoComplete>> =
+    override suspend fun autocomplete(
+        input: String,
+        unitCodeForStores: String?
+    ) =
         mockResponse {
-            Response.Wrapped(emptyList(), true)
+            emptyList<AutoComplete>()
         }
 }

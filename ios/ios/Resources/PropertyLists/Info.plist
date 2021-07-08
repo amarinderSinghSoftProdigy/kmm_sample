@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AppTermsOfConditionsAndPrivacyPolicyLink</key>
-	<string>https://medico.com/tos.html</string>
+	<string>https://medicostores.com/terms-and-conditions/</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>36</string>
+	<string>38</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
@@ -34,7 +34,9 @@
 		<string>Barlow-Regular.ttf</string>
 		<string>Barlow-SemiBold.ttf</string>
 		<string>Barlow-Bold.ttf</string>
+		<string>Barlow-BoldItalic.ttf</string>
 		<string>Barlow-Black.ttf</string>
+		<string>Barlow-MediumItalic.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

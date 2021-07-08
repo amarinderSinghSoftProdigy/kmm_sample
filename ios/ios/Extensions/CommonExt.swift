@@ -192,7 +192,7 @@ extension DataNotificationAction {
 extension DataNotificationType {
     var statusButtonColor: AppColor {
         switch self {
-        case .orderRequest, .subscribeRequest:
+        case .subscribeDecision, .subscribeRequest:
             return .yellow
             
         default:
@@ -202,7 +202,7 @@ extension DataNotificationType {
     
     var statusButtonTextColor: AppColor {
         switch self {
-        case .orderRequest, .subscribeRequest:
+        case .subscribeDecision, .subscribeRequest:
             return .darkBlue
             
         default:
@@ -216,5 +216,23 @@ extension KotlinLong {
         guard let ms = ms as? Int64 else { return nil }
         
         return Date(milliseconds: ms)
+    }
+}
+
+extension Array {
+    func sections(number: Int) -> [[Element]] {
+        let fullSectionsNumber = self.count / number
+        let leftElementsNumber = self.count % number
+        
+        let sectionsNumber = leftElementsNumber > 0 ? fullSectionsNumber + 1 : fullSectionsNumber
+        
+        let sections = (0..<sectionsNumber).map { _ in [Element]() }
+        
+        return self.enumerated().reduce(sections) { sections, element in
+            var newSections = sections
+            newSections[element.offset / number].append(element.element)
+            
+            return newSections
+        }
     }
 }

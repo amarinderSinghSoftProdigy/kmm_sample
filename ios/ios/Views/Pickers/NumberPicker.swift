@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import core
 
 struct NumberPicker: View {
     @State private var longPressTimer: Timer?
@@ -14,8 +15,8 @@ struct NumberPicker: View {
     let quantity: Int
     let maxQuantity: Int
     
-    let onQuantityIncrease: (_ isLongPress: Bool) -> ()
-    let onQuantityDecrease: (_ isLongPress: Bool) -> ()
+    let onQuantityIncrease: (_ tapMode: DataTapMode) -> ()
+    let onQuantityDecrease: (_ tapMode: DataTapMode) -> ()
     
     let longPressEnabled: Bool
     
@@ -38,8 +39,8 @@ struct NumberPicker: View {
     
     init(quantity: Int,
          maxQuantity: Int = .max,
-         onQuantityIncrease: @escaping (_ isLongPress: Bool) -> (),
-         onQuantityDecrease: @escaping (_ isLongPress: Bool) -> (),
+         onQuantityIncrease: @escaping (_ tapMode: DataTapMode) -> (),
+         onQuantityDecrease: @escaping (_ tapMode: DataTapMode) -> (),
          longPressEnabled: Bool = false
     ) {
         self.quantity = quantity
@@ -53,7 +54,7 @@ struct NumberPicker: View {
     
     private func getActionButton(withImageName imageName: String,
                                  disabled: Bool = false,
-                                 for action: @escaping (_ isLongPress: Bool) -> ()) -> some View {
+                                 for action: @escaping (_ tapMode: DataTapMode) -> ()) -> some View {
         Button(action: { }) {
             Image(systemName: imageName)
                 .resizable()
@@ -63,17 +64,20 @@ struct NumberPicker: View {
                 .frame(width: 14, height: 14)
                 .background(appColor: .white)
                 .onTapGesture {
-                    action(false)
+                    action(.click)
                 }
                 .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
                     if inProgress && longPressEnabled {
-                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(true) })
+                        action(.longPress)
+//                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(false) })
                     }
                     else {
-                        self.longPressTimer?.invalidate()
+                        action(.release_)
+//                        self.longPressTimer?.invalidate()
                     }
                 }) {
-                    self.longPressTimer?.invalidate()
+                    action(.release_)
+//                    self.longPressTimer?.invalidate()
                 }
         }
         .disabled(disabled)

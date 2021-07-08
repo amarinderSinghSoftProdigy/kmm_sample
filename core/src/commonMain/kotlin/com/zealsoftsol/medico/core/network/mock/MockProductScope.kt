@@ -5,7 +5,6 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
-import com.zealsoftsol.medico.data.Response
 
 class MockProductScope : NetworkScope.Product {
 
@@ -13,26 +12,26 @@ class MockProductScope : NetworkScope.Product {
         "USING MOCK PRODUCT SCOPE".logIt()
     }
 
-    override suspend fun getProductData(productCode: String): Response.Wrapped<ProductResponse> =
-        mockResponse {
-            Response.Wrapped(null, false)
+    override suspend fun getProductData(productCode: String) =
+        mockResponse<ProductResponse> {
+            null
         }
 
-    override suspend fun buyProductInfo(productCode: String): Response.Wrapped<ProductBuyResponse> =
-        mockResponse {
-            Response.Wrapped(null, false)
+    override suspend fun buyProductInfo(productCode: String) =
+        mockResponse<ProductBuyResponse> {
+            null
         }
 
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
         sellerUnitCode: String?
-    ): Response.Wrapped<ProductSeasonBoyRetailerSelectResponse> = mockResponse {
-        Response.Wrapped(null, false)
+    ) = mockResponse<ProductSeasonBoyRetailerSelectResponse> {
+        null
     }
 
-    override suspend fun getQuotedProductData(productCode: String): Response.Wrapped<ProductBuyResponse> =
-        mockResponse {
-            Response.Wrapped(null, false)
+    override suspend fun getQuotedProductData(productCode: String) =
+        mockResponse<ProductBuyResponse> {
+            null
         }
 }

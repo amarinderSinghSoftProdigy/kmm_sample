@@ -145,14 +145,12 @@ struct ExpandableViewViewModifier<Header: View>: ViewModifier {
             HStack(spacing: 16) {
                 header
                 
-                Button(action: { expanded.toggle() }) {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(appColor: .darkBlue)
-                        .opacity(0.54)
-                        .rotationEffect(.degrees(expanded ? -90 : 90))
-                        .animation(.linear(duration: 0.2))
-                        .padding(.trailing, 18)
-                }
+                Image(systemName: "chevron.right")
+                    .foregroundColor(appColor: .darkBlue)
+                    .opacity(0.54)
+                    .rotationEffect(.degrees(expanded ? -90 : 90))
+                    .animation(.linear(duration: 0.2))
+                    .padding(.trailing, 18)
             }
             .strokeBorder(.darkBlue,
                           borderOpacity: 0.12,
@@ -160,6 +158,9 @@ struct ExpandableViewViewModifier<Header: View>: ViewModifier {
                           fillOpacity: 0.04,
                           cornerRadius: cornerRadius,
                           corners: expanded ? [.topLeft, .topRight] : .allCorners)
+            .onTapGesture {
+                expanded.toggle()
+            }
             
             if expanded {
                 content
@@ -187,5 +188,27 @@ struct NoHitTesting: ViewModifier {
         }
       
         func updateUIViewController(_ uiViewController: UIHostingController<T>, context: Context) { }
+    }
+}
+
+struct SafariViewModifier: ViewModifier {
+    let link: Binding<String?>
+    
+    func body(content: Content) -> some View {
+        Group {
+            if let link = self.link.wrappedValue,
+               let url = URL(string: link) {
+                let isPresented = Binding(get: { true },
+                                          set: { if !$0 { self.link.wrappedValue = nil }})
+                
+                content
+                    .sheet(isPresented: isPresented) {
+                        SafariView(url: url)
+                    }
+            }
+            else {
+                content
+            }
+        }
     }
 }

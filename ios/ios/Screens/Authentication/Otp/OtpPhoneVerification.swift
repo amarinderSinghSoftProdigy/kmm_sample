@@ -66,7 +66,6 @@ fileprivate struct OtpDetailsView: View {
     var body: some View {
         VStack(spacing: 23) {
             LocalizedText(localizedStringKey: LocalizedStringKey("verification_code_sent_hint \(phoneNumber)"),
-                          testingIdentifier: "verification_code_sent_hint",
                           textWeight: .medium,
                           color: .textGrey)
                 .padding(.horizontal, geometry.size.width * 0.15)
@@ -81,7 +80,6 @@ fileprivate struct OtpDetailsView: View {
                 }
                 else {
                     LocalizedText(localizedStringKey: LocalizedStringKey("attempts_left \(attemptsLeft)"),
-                                  testingIdentifier: "attempts_left",
                                   textWeight: .bold,
                                   fontSize: 15,
                                   color: .lightBlue)
@@ -90,8 +88,8 @@ fileprivate struct OtpDetailsView: View {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "verification_code",
                                              text: code,
                                              onTextChange: { newValue in code = newValue},
-                                             keyboardType: .numberPad)
-                    .textContentType(.oneTimeCode)
+                                             keyboardType: .numberPad,
+                                             textContentType: .oneTimeCode)
                 
                 MedicoButton(localizedStringKey: "submit",
                              isEnabled: !code.isEmpty && attemptsLeft > 0) {

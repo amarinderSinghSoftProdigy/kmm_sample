@@ -21,8 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.PaymentMethod
@@ -31,15 +33,27 @@ import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
-fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotification) {
+fun Notification(
+    title: String?,
+    titleRes: Int,
+    onDismiss: () -> Unit,
+    notification: ScopeNotification,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
         title =
         if (title != null) {
             {
+                val string = when (notification) {
+                    is ManagementScope.ChoosePaymentMethod -> stringResource(
+                        id = titleRes,
+                        notification.tradeName
+                    )
+                    else -> title
+                }
                 Text(
-                    text = title,
+                    text = string,
                     color = MaterialTheme.colors.onPrimary,
                     style = MaterialTheme.typography.h6,
                 )
@@ -51,8 +65,8 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
             when (notification) {
                 is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(notification)
                 is ManagementScope.Congratulations -> Text(
-                    text = String.format(
-                        stringResource(id = R.string.retailer_added_template),
+                    text = stringResource(
+                        id = R.string.retailer_added_template,
                         notification.tradeName
                     ),
                     style = MaterialTheme.typography.subtitle1,
@@ -71,6 +85,10 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
                 )
                 is ViewOrderScope.RejectAll -> Text(
                     text = stringResource(id = R.string.sure_reject_all),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                is ConfirmOrderScope.AreYouSure -> Text(
+                    text = stringResource(id = R.string.sure_confirm_order),
                     style = MaterialTheme.typography.subtitle1,
                 )
             }
@@ -110,6 +128,9 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
                     onDismiss,
                     onContinue = { notification.`continue`() }
                 )
+                is ConfirmOrderScope.AreYouSure -> CartNotificationButtons(onDismiss) {
+                    notification.confirm()
+                }
             }
         },
         properties = DialogProperties(
@@ -123,6 +144,7 @@ fun Notification(title: String?, onDismiss: () -> Unit, notification: ScopeNotif
 private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePaymentMethod) {
     val paymentMethod = notification.paymentMethod.flow.collectAsState()
     val creditDays = notification.creditDays.flow.collectAsState()
+    notification.log("nptification")
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             RadioButton(

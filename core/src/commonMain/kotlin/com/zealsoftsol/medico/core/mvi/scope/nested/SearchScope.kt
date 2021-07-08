@@ -23,6 +23,7 @@ interface BaseSearchScope : Scopable {
     val products: DataSource<List<ProductSearch>>
     val sortOptions: DataSource<List<SortOption>>
     val selectedSortOption: DataSource<SortOption?>
+    val activeFilterIds: DataSource<List<String>>
 
     // store search if present
     val unitCode: String?
@@ -43,6 +44,8 @@ interface BaseSearchScope : Scopable {
 
     fun clearFilter(filter: Filter?) =
         EventCollector.sendEvent(Event.Action.Search.ClearFilter(filter))
+
+    fun getFilterNameById(id: String) = filters.value.first { it.queryId == id }
 
     fun selectSortOption(option: SortOption?) =
         EventCollector.sendEvent(Event.Action.Search.SelectSortOption(option))
@@ -69,6 +72,15 @@ interface BaseSearchScope : Scopable {
 
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
+
+    fun buy(product: ProductSearch) = product.buyingOption?.let {
+        EventCollector.sendEvent(
+            Event.Action.Product.BuyProduct(
+                product.code,
+                it,
+            )
+        )
+    } ?: false
 }
 
 class SearchScope(
@@ -80,6 +92,7 @@ class SearchScope(
     override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
     override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
     override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
+    override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null
@@ -91,6 +104,6 @@ class SearchScope(
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-        return TabBarInfo.ActiveSearch(productSearch)
+        return TabBarInfo.ActiveSearch(productSearch, activeFilterIds)
     }
 }

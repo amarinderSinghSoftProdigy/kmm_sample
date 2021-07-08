@@ -20,10 +20,13 @@ enum AppColor {
     case orange
     
     case lightPink
+    case lightGreen
+    case lightRed
     
     case blue
     case lightBlue
     case darkBlue
+    case blueWhite
     
     case grey1
     case grey2

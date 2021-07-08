@@ -12,12 +12,16 @@ import core
 struct SignUpPersonalDataScreen: View {
     let scope: SignUpScope.PersonalData
     
+    @ObservedObject var acceptedTermsAndConditions: SwiftDataSource<KotlinBoolean>
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
     @ObservedObject var registration: SwiftDataSource<DataUserRegistration1>
     @ObservedObject var validation: SwiftDataSource<DataUserValidation1>
     
+    
     @State var isPhoneValid: Bool = true
+    
+    @State private var safariLink: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
@@ -32,6 +36,7 @@ struct SignUpPersonalDataScreen: View {
         .textFieldsModifiers()
         .screenLogger(withScreenName: "SignUpPersonalDataScreen",
                       withScreenClass: SignUpPersonalDataScreen.self)
+        .safariViewModifier(link: $safariLink)
     }
     
     var personalDataFields: some View {
@@ -42,10 +47,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeFirstName(firstName: newValue) },
                                          isValid: self.validation.value == nil ||
                                             firstName?.isEmpty == false,
-                                         errorMessageKey: "required_field")
-                .disableAutocorrection(true)
-                .textContentType(.givenName)
-                .autocapitalization(.words)
+                                         errorMessageKey: "required_field",
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .givenName)
             
             let lastName = self.registration.value?.lastName
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "last_name",
@@ -53,10 +58,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeLastName(lastName: newValue) },
                                          isValid: self.validation.value == nil ||
                                             lastName?.isEmpty == false,
-                                         errorMessageKey: "required_field")
-                .disableAutocorrection(true)
-                .textContentType(.familyName)
-                .autocapitalization(.words)
+                                         errorMessageKey: "required_field",
+                                         disableAutocorrection: true,
+                                         autocapitalization: .words,
+                                         textContentType: .familyName)
 
             let emailErrorMessageKey = self.validation.value?.email
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "email_address",
@@ -64,9 +69,10 @@ struct SignUpPersonalDataScreen: View {
                                          onTextChange: { newValue in scope.changeEmail(email: newValue) },
                                          keyboardType: .emailAddress,
                                          isValid: emailErrorMessageKey == nil,
-                                         errorMessageKey: emailErrorMessageKey)
-                .textContentType(.emailAddress)
-                .autocapitalization(.none)
+                                         errorMessageKey: emailErrorMessageKey,
+                                         disableAutocorrection: true,
+                                         autocapitalization: .none,
+                                         textContentType: .emailAddress)
             
             let canSubmitPhone = Binding(get: { isPhoneValid },
                                          set: {
@@ -99,25 +105,34 @@ struct SignUpPersonalDataScreen: View {
     }
     
     var termsOfConditionsAndPrivacyPolicyLink: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            LocalizedText(localizationKey: "continueing_i_accept",
-                          fontSize: 12,
-                          color: .textGrey)
+        HStack {
+            let acceptedTermsAndConditions = Binding(get: { self.acceptedTermsAndConditions.value == true },
+                                                     set: { scope.changeTerms(isAccepted: $0) })
             
-            LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
-                          textWeight: .semiBold,
-                          fontSize: 12,
-                          color: .lightBlue,
-                          underlined: true)
-                .onTapGesture {
-                    showTermsOfConditionsAndPrivacyPolicy()
-                }
+            CheckBox(selected: acceptedTermsAndConditions)
+                .frame(width: 22, height: 22)
+            
+            HStack(spacing: 3) {
+                LocalizedText(localizationKey: "continueing_i_accept",
+                              fontSize: 12,
+                              color: .textGrey)
+                
+                LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
+                              textWeight: .semiBold,
+                              fontSize: 12,
+                              color: .lightBlue,
+                              underlined: true)
+                    .onTapGesture {
+                        showTermsOfConditionsAndPrivacyPolicy()
+                    }
+            }
         }
     }
     
     init(scope: SignUpScope.PersonalData) {
         self.scope = scope
         
+        self.acceptedTermsAndConditions = SwiftDataSource(dataSource: scope.isTermsAccepted)
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
         
         self.registration = SwiftDataSource(dataSource: scope.registration)
@@ -133,9 +148,6 @@ struct SignUpPersonalDataScreen: View {
     }
     
     private func showTermsOfConditionsAndPrivacyPolicy() {
-        if let link = Bundle.main.object(forInfoDictionaryKey: "AppTermsOfConditionsAndPrivacyPolicyLink") as? String,
-            let url = URL(string: link) {
-            UIApplication.shared.open(url)
-        }
+        self.safariLink = Bundle.main.object(forInfoDictionaryKey: "AppTermsOfConditionsAndPrivacyPolicyLink") as? String
     }
 }

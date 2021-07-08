@@ -90,7 +90,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                     }
                 },
                 childItems = listOf(invoice.value.info),
-                item = {
+                item = { value, _ ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,

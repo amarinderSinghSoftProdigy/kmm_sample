@@ -23,7 +23,6 @@ struct WelcomeScreen: View {
                     
                     VStack(spacing: 50) {
                         LocalizedText(localizedStringKey: LocalizedStringKey("welcome \(userName)"),
-                                      testingIdentifier: "welcome",
                                       textWeight: .medium,
                                       fontSize: 20)
                         

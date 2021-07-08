@@ -113,7 +113,7 @@ struct SimpleNotificationAlert: View {
 
 // MARK: Custom Alert
 struct CustomAlert<Content: View>: View {
-    let titleKey: String
+    let localizedStringKey: LocalizedStringKey
     let descriptionKey: String?
     
     let primaryButton: AlertButton
@@ -132,7 +132,7 @@ struct CustomAlert<Content: View>: View {
             
             VStack(spacing: 0) {
                 VStack(spacing: 6) {
-                    LocalizedText(localizationKey: titleKey,
+                    LocalizedText(localizedStringKey: localizedStringKey,
                                   textWeight: .semiBold,
                                   fontSize: 17,
                                   color: .black)
@@ -172,31 +172,30 @@ struct CustomAlert<Content: View>: View {
          descriptionKey: String? = nil,
          button: AlertButton,
          cancelButton: AlertButton? = nil,
-         outsideTapAction: (() -> ())? = nil) {
-        self.titleKey = titleKey
-        self.descriptionKey = descriptionKey
-        
-        self.primaryButton = button
-        self.cancelButton = cancelButton
-        self.outsideTapAction = outsideTapAction
-        
-        self.customBody = nil
+         outsideTapAction: (() -> ())? = nil,
+         content: (() -> Content)? = nil) {
+       self.init(localizedStringKey: LocalizedStringKey(titleKey),
+                 descriptionKey: descriptionKey,
+                 button: button,
+                 cancelButton: cancelButton,
+                 outsideTapAction: outsideTapAction,
+                 content: content)
     }
     
-    init(titleKey: String,
+    init(localizedStringKey: LocalizedStringKey,
          descriptionKey: String? = nil,
          button: AlertButton,
          cancelButton: AlertButton? = nil,
          outsideTapAction: (() -> ())? = nil,
-         @ViewBuilder content: () -> Content) {
-        self.titleKey = titleKey
-        self.descriptionKey = descriptionKey
-        
-        self.customBody = content()
-        
-        self.primaryButton = button
-        self.cancelButton = cancelButton
-        self.outsideTapAction = outsideTapAction
+         content: (() -> Content)? = nil) {
+       self.localizedStringKey = localizedStringKey
+       self.descriptionKey = descriptionKey
+       
+       self.primaryButton = button
+       self.cancelButton = cancelButton
+       self.outsideTapAction = outsideTapAction
+       
+       self.customBody = content?()
     }
     
     struct Separator: View {

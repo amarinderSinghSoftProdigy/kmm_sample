@@ -40,7 +40,6 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                             
                             if !bottomSheet.orderEntry.batchNo.isEmpty {
                                 LocalizedText(localizedStringKey: LocalizedStringKey("batch_no \(bottomSheet.orderEntry.batchNo)"),
-                                              testingIdentifier: "batch_no",
                                               textWeight: .medium)
                             }
                         }
@@ -65,8 +64,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                         
                         if bottomSheet.canEdit {
                             NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
-                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0 ? .longPress : .click) },
-                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0 ? .longPress : .click) },
+                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0) },
+                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0) },
                                          longPressEnabled: true)
                         }
                         else {
@@ -92,7 +91,6 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                     
                     HStack {
                         LocalizedText(localizedStringKey: LocalizedStringKey("subtotal \(bottomSheet.orderEntry.totalAmount.formatted)"),
-                                      testingIdentifier: "subtotal",
                                       textWeight: .semiBold,
                                       fontSize: 20)
                         

@@ -16,6 +16,8 @@ struct SignUpLegalDocumentsScreen: View {
     
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
     
+    @State private var safariLink: String?
+    
     var body: some View {
         self.getView()
             .screenLogger(withScreenName: "SignUpLegalDocumentsScreen",
@@ -35,20 +37,24 @@ struct SignUpLegalDocumentsScreen: View {
     private func getView() -> some View {
         let documentRequestTextKey: String
         let buttonTextKey: String
+        let showsDownloadNote: Bool
         
         switch scope {
 
         case is SignUpScope.LegalDocuments.LegalDocumentsAadhaar:
             documentRequestTextKey = "aadhaar_card_request"
             buttonTextKey = "upload_aadhaar_card"
+            showsDownloadNote = true
 
         case is SignUpScope.LegalDocuments.LegalDocumentsDrugLicense:
             documentRequestTextKey = "drug_license_request"
             buttonTextKey = "upload_new_document"
+            showsDownloadNote = false
             
         default:
             documentRequestTextKey = ""
             buttonTextKey = ""
+            showsDownloadNote = false
         }
         
         return AnyView(
@@ -59,8 +65,26 @@ struct SignUpLegalDocumentsScreen: View {
                     Image("UploadDocuments")
                     
                     LocalizedText(localizationKey: documentRequestTextKey,
+                                  textWeight: .medium,
                                   fontSize: 16,
                                   color: .grey1)
+                    
+                    if showsDownloadNote {
+                        VStack(spacing: 6) {
+                            LocalizedText(localizationKey: "download_note",
+                                          fontSize: 16,
+                                          color: .grey1)
+                            
+                            let link = "https://resident.uidai.gov.in/offline-kyc"
+                            Text(link)
+                                .underline()
+                                .medicoText(fontSize: 16,
+                                            color: .lightBlue)
+                                .onTapGesture {
+                                    self.safariLink = link
+                                }
+                        }
+                    }
                 }
                 
                 VStack {
@@ -86,7 +110,7 @@ struct SignUpLegalDocumentsScreen: View {
                                       fontSize: 16,
                                       color: .grey2)
                         
-                        Text("1 MB")
+                        Text("10 MB")
                             .medicoText(textWeight: .semiBold,
                                         fontSize: 16)
                     }
@@ -104,6 +128,7 @@ struct SignUpLegalDocumentsScreen: View {
                                    buttonTextKey: buttonTextKey,
                                    skipButtonAction: { scope.skip() },
                                    action: { scope.showBottomSheet() }))
+            .safariViewModifier(link: $safariLink)
         )
     }
     

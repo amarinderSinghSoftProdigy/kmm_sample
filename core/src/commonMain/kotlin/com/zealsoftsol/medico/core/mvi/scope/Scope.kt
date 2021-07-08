@@ -76,6 +76,7 @@ sealed class TabBarInfo {
 
     data class ActiveSearch(
         val search: DataSource<String>,
+        val activeFilterIds: DataSource<List<String>>
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
 

@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
@@ -57,6 +58,7 @@ internal class TransitionEventDelegate(
                         DashboardScope.get(
                             userRepo.requireUser(),
                             userRepo.getUserDataSource(),
+                            dashboardData = userRepo.getDashboardDataSource(),
                             notificationRepo.getUnreadMessagesDataSource(),
                             cartRepo.getEntriesCountDataSource(),
                         )

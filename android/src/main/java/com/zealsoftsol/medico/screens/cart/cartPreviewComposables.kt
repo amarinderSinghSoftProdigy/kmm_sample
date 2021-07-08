@@ -175,7 +175,7 @@ private fun SellerItem(seller: SellerCart) {
             }
         },
         childItems = seller.items,
-        item = { CartItem(it) },
+        item = { value, _ -> CartItem(value) },
     )
 }
 

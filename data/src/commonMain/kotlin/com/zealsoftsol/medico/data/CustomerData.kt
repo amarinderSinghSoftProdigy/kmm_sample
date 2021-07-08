@@ -22,6 +22,7 @@ data class CustomerData(
     val panNumber: String?,
     val tradeName: String,
     val unitCode: String?,
+    val subscription: Subscription? = null,
 )
 
 @Serializable
@@ -30,3 +31,17 @@ data class CustomerMetaData(
     val pageType: String,
     val userRole: String,
 )
+
+@Serializable
+data class Subscription(
+    val type: Type,
+    val validUntil: String,
+    val validUntilMs: Long,
+) {
+
+    enum class Type {
+        TRIAL,
+        ULTIMATE;
+    }
+}
+

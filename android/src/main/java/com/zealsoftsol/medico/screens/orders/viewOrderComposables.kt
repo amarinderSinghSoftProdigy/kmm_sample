@@ -98,7 +98,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     }
                 },
                 childItems = listOf(order.value.info),
-                item = {
+                item = { value, _ ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -255,10 +255,17 @@ fun OrderEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = if (entry.buyingOption == BuyingOption.QUOTE) BorderStroke(
-            2.dp,
-            ConstColors.gray.copy(alpha = 0.5f)
-        ) else null,
+        border = when {
+            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
+                2.dp,
+                ConstColors.gray.copy(alpha = 0.5f),
+            )
+            entry.status == OrderEntry.Status.REJECTED -> BorderStroke(
+                2.dp,
+                ConstColors.red,
+            )
+            else -> null
+        },
     ) {
         Row(
             modifier = Modifier.padding(8.dp),

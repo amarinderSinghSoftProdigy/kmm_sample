@@ -41,8 +41,8 @@ struct PhoneTextField: View {
                                      },
                                      keyboardType: .phonePad,
                                      isValid: canSubmitPhone.wrappedValue,
-                                     errorMessageKey: errorMessageKey)
-            .textContentType(.telephoneNumber)
+                                     errorMessageKey: errorMessageKey,
+                                     textContentType: .telephoneNumber)
     }
     
     init(phone: String?,

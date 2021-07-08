@@ -227,7 +227,7 @@ struct SellerNamePaymentMethodView: View {
                 .lineLimit(1)
             
             HStack(spacing: 4) {
-                LocalizedText(localizationKey: "payment_method",
+                LocalizedText(localizationKey: "type:",
                               textWeight: .medium,
                               fontSize: 12,
                               color: .grey3,
@@ -364,7 +364,7 @@ struct CartItemView: View {
                             
                             Spacer()
                             
-                            SmallAddressView(location: seasonBoyRetailerInfo.city)
+                            SmallAddressView(location: seasonBoyRetailerInfo.geoData.city)
                         }
                         .frame(height: 20)
                     }

@@ -20,15 +20,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun <T> FoldableItem(
     expanded: Boolean,
+    headerBackground: Color = Color.LightGray.copy(alpha = 0.2f),
+    headerMinHeight: Dp = 50.dp,
     header: @Composable RowScope.(Boolean) -> Unit,
     childItems: List<T>,
-    item: @Composable ColumnScope.(T) -> Unit,
+    itemHorizontalPadding: Dp = 8.dp,
+    itemSpacing: Dp = 12.dp,
+    item: @Composable ColumnScope.(T, Int) -> Unit,
 ) {
     val isExpanded = remember { mutableStateOf(expanded) }
     Surface(
@@ -40,9 +45,9 @@ fun <T> FoldableItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .background(Color.LightGray.copy(alpha = 0.2f))
+                    .background(headerBackground)
                     .fillMaxWidth()
-                    .heightIn(min = 50.dp)
+                    .heightIn(min = headerMinHeight)
 //                    .padding(vertical = 8.dp)
                     .clickable { isExpanded.value = !isExpanded.value }
             ) {
@@ -52,12 +57,12 @@ fun <T> FoldableItem(
                 Column(
                     modifier = Modifier
                         .background(Color.White)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = itemHorizontalPadding)
                 ) {
-                    Space(12.dp)
-                    childItems.forEach {
-                        item(it)
-                        Space(12.dp)
+                    Space(itemSpacing)
+                    childItems.forEachIndexed { index, value ->
+                        item(value, index)
+                        Space(itemSpacing)
                     }
                 }
             }

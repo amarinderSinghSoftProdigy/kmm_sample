@@ -42,15 +42,31 @@ extension View {
                       cornerRadius: CGFloat = 8,
                       corners: UIRectCorner = .allCorners) -> some View {
         self.background(
-            RoundedCorner(radius: cornerRadius, corners: corners)
-                .stroke(lineWidth: lineWidth)
-                .foregroundColor(appColor: borderColor)
-                .opacity(borderOpacity)
-                .background(
-                    fill.color
-                        .opacity(fillOpacity)
-                        .cornerRadius(cornerRadius, corners: corners)
-                )
+            Group {
+                if corners == .allCorners {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(lineWidth: lineWidth)
+                }
+                else {
+                    RoundedCorner(radius: cornerRadius, corners: corners)
+                        .stroke(lineWidth: lineWidth)
+                }
+            }
+            .foregroundColor(appColor: borderColor)
+            .opacity(borderOpacity)
+            .background(
+                Group {
+                    if corners == .allCorners {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(appColor: fill)
+                    }
+                    else {
+                        fill.color
+                            .cornerRadius(cornerRadius, corners: corners)
+                    }
+                }
+                .opacity(fillOpacity)
+            )
         )
     }
     
@@ -191,6 +207,12 @@ extension View {
     
     func userInteractionDisabled() -> some View {
         self.modifier(NoHitTesting())
+    }
+    
+    func safariViewModifier(link: Binding<String?>) -> some View {
+        self.modifier(
+            SafariViewModifier(link: link)
+        )
     }
 }
 
