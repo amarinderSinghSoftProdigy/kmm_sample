@@ -89,7 +89,7 @@
     <string name="legal_documents">Legal Documents</string>
     <string name="upload_new">Upload new</string>
     <string name="error">Error</string>
-    <string name="tos_url">https://medico.com/tos.html</string>
+    <string name="tos_url">https://medicostores.com/terms-and-conditions/</string>
     <string name="password_change_success">Password changed successfully</string>
     <string name="success">Success</string>
     <string name="settings">Settings</string>
@@ -238,7 +238,6 @@
     <string name="create_account">Create Account</string>
     <string name="copyright">© medicastores.com 2021</string>
 
-
     <!--error codes-->
 
     <string name="E0000">Error</string>
@@ -277,5 +276,13 @@
     <string name="E0033">Uploaded document doesn\'t match with registered user</string>
     <string name="E0034">Auth0 gRPC server down, check whether its running</string>
     <string name="E0035">Unable to get geolocation data, check the geolocation server is running</string>
-
+    <string name="E0036">You have entered an invalid email/mobile or password</string>
+    <string name="E0037">Mobile number provided is not registered, please provide registered contact number</string>
+    <string name="E0038">Failed to update password, try after some time.</string>
+    <string name="E0039">Logout token, please login again</string>
+    <string name="E0040">Access Denied</string>
+    <string name="E0041">Something went wrong, Please try after sometime</string>
+    <string name="E0042">Order has not been submitted, please try after sometime.</string>
+    <string name="E0043">Cart already submitted, please check</string>
+    <string name="E0044">Cart not found, please check</string>
 </resources>
