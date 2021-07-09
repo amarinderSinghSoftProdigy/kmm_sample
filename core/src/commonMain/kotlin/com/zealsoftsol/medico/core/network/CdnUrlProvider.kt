@@ -1,7 +1,7 @@
 package com.zealsoftsol.medico.core.network
 
 object CdnUrlProvider {
-    private const val BASE_URL = "https://dev-cdn.medicostores.com"
+    private const val BASE_URL = "https://images.medicostores.com"
 
     enum class Size(val dimension: String) {
         Px123("123")

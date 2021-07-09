@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.auth
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,13 +10,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -32,9 +40,10 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.screens.common.MedicoButton
-import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
-import com.zealsoftsol.medico.screens.common.PhoneOrEmailFormatInputField
+import com.zealsoftsol.medico.screens.common.OutlinedInputField
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 
 @Composable
@@ -68,9 +77,8 @@ fun AuthScreen(scope: LogInScope) {
                 isEnabled = true,
                 elevation = null,
                 onClick = { scope.goToSignUp() },
-                color = Color.Transparent,
-                contentColor = Color.White,
-                border = BorderStroke(2.dp, Color.White),
+                color = ConstColors.yellow,
+                contentColor = MaterialTheme.colors.background,
             )
         }
 
@@ -80,12 +88,12 @@ fun AuthScreen(scope: LogInScope) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(46.dp)
-                .background(Color.White),
+                .background(Color(0xFFF2F7FA)),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = stringResource(id = R.string.copyright),
-                color = ConstColors.lightBlue,
+                color = MaterialTheme.colors.background,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W600,
             )
@@ -117,23 +125,56 @@ private fun AuthTab(scope: LogInScope) {
                     .padding(horizontal = 20.dp),
             )
             Space(24.dp)
-            PhoneOrEmailFormatInputField(
+            val formatter = rememberPhoneNumberFormatter()
+            val isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE
+            val formatted =
+                if (isPhoneNumber) formatter.verifyNumber(credentialsState.value.phoneNumberOrEmail) else null
+            OutlinedInputField(
+                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.phone_number_or_email),
-                text = credentialsState.value.phoneNumberOrEmail,
-                isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE,
-                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-            ) {
-                scope.updateAuthCredentials(it, credentialsState.value.password)
-            }
-            Space(12.dp)
-            PasswordFormatInputField(
-                hint = stringResource(id = R.string.password),
-                text = credentialsState.value.password,
+                text = formatted ?: credentialsState.value.phoneNumberOrEmail,
+                isValid = if (isPhoneNumber) formatted != null || credentialsState.value.phoneNumberOrEmail.isEmpty() else true,
+                maxLines = 1,
                 onValueChange = {
-                    scope.updateAuthCredentials(credentialsState.value.phoneNumberOrEmail, it)
+                    scope.updateAuthCredentials(
+                        it,
+                        credentialsState.value.password
+                    )
                 },
-                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
             )
+            formatted?.let { scope.updateAuthCredentials(it, credentialsState.value.password) }
+            Space(12.dp)
+            Box(
+                contentAlignment = Alignment.CenterEnd,
+            ) {
+                val isPasswordHidden = remember { mutableStateOf(true) }
+                OutlinedInputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.password),
+                    text = credentialsState.value.password,
+                    isValid = true,
+                    visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
+                    maxLines = 1,
+                    onValueChange = {
+                        scope.updateAuthCredentials(
+                            credentialsState.value.phoneNumberOrEmail,
+                            it
+                        )
+                    },
+                )
+                Icon(
+                    imageVector = Icons.Default.RemoveRedEye,
+                    contentDescription = null,
+                    tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .size(42.dp)
+                        .clickable(indication = rememberRipple(radius = 15.dp)) {
+                            isPasswordHidden.value = !isPasswordHidden.value
+                        }
+                        .padding(12.dp),
+                )
+            }
             Space(8.dp)
             Text(
                 text = stringResource(id = R.string.forgot_password),

@@ -50,4 +50,11 @@ data class RecentProductInfo(
 data class ProductSold(
     val count: Int,
     val productName: String
-)
+) {
+    val isSkeletonItem: Boolean
+        get() = productName == "__skeleton__"
+
+    companion object {
+        val skeleton = ProductSold(-1, "__skeleton__")
+    }
+}

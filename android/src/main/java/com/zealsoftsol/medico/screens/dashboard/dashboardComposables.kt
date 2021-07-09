@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,8 +44,10 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 
@@ -75,7 +78,7 @@ fun DashboardScreen(scope: DashboardScope) {
             )
         }
 
-        dashboard.value?.let { dash ->
+        dashboard.value.let { dash ->
             scope.sections.windowed(2, 2).forEach { (first, second) ->
                 Space(16.dp)
                 Row {
@@ -83,7 +86,8 @@ fun DashboardScreen(scope: DashboardScope) {
                         icon = first.getIcon(),
                         text = stringResourceByName(first.stringId),
                         isClickable = first.isClickable,
-                        counter = first.getCount(dashboard = dash),
+                        counter = dash?.let { first.getCount(dashboard = dash) },
+                        counterSupported = first.countSupported(),
                         onClick = { scope.selectSection(first) },
                     )
                     Space(16.dp)
@@ -91,7 +95,8 @@ fun DashboardScreen(scope: DashboardScope) {
                         icon = second.getIcon(),
                         text = stringResourceByName(second.stringId),
                         isClickable = second.isClickable,
-                        counter = second.getCount(dashboard = dash),
+                        counter = dash?.let { second.getCount(dashboard = dash) },
+                        counterSupported = first.countSupported(),
                         onClick = { scope.selectSection(second) },
                     )
                 }
@@ -119,12 +124,14 @@ fun DashboardScreen(scope: DashboardScope) {
                             fontSize = 12.sp,
                             fontWeight = FontWeight.W600,
                         )
-                        Text(
-                            text = (dash.stockStatusData?.inStock ?: 0).toString(),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W700,
-                        )
+                        dash?.stockStatusData?.inStock?.let {
+                            Text(
+                                text = it.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                     }
                     val shape2 = MaterialTheme.shapes.large.copy(
                         topStart = CornerSize(0.dp),
@@ -145,12 +152,14 @@ fun DashboardScreen(scope: DashboardScope) {
                             fontSize = 12.sp,
                             fontWeight = FontWeight.W600,
                         )
-                        Text(
-                            text = (dash.stockStatusData?.outOfStock ?: 0).toString(),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W700,
-                        )
+                        dash?.stockStatusData?.outOfStock?.let {
+                            Text(
+                                text = it.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
                     }
                 }
                 Space(16.dp)
@@ -181,14 +190,14 @@ fun DashboardScreen(scope: DashboardScope) {
                             )
                         }
                     },
-                    childItems = dash.productInfo?.mostSold.orEmpty(),
+                    childItems = dash?.productInfo?.mostSold ?: listOf(ProductSold.skeleton),
                     itemHorizontalPadding = 0.dp,
                     itemSpacing = 0.dp,
                     item = { value, index ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(40.dp)
+                                .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
                                 .background(
                                     if (index % 2 != 0) Color.White else ConstColors.gray.copy(
                                         alpha = .05f
@@ -198,27 +207,31 @@ fun DashboardScreen(scope: DashboardScope) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(
-                                text = value.productName,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
-                            Text(
-                                text = value.count.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                modifier = Modifier
-                                    .background(
-                                        ConstColors.gray.copy(.15f),
-                                        MaterialTheme.shapes.medium
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 6.dp),
-                            )
+                            if (!value.isSkeletonItem) {
+                                Text(
+                                    text = value.productName,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(end = 8.dp),
+                                )
+                                Text(
+                                    text = value.count.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    modifier = Modifier
+                                        .background(
+                                            ConstColors.gray.copy(.15f),
+                                            MaterialTheme.shapes.medium
+                                        )
+                                        .padding(vertical = 4.dp, horizontal = 6.dp),
+                                )
+                            } else {
+                                ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
+                            }
                         }
                     },
                 )
@@ -251,14 +264,14 @@ fun DashboardScreen(scope: DashboardScope) {
                             )
                         }
                     },
-                    childItems = dash.productInfo?.mostSearched.orEmpty(),
+                    childItems = dash?.productInfo?.mostSearched ?: listOf(ProductSold.skeleton),
                     itemHorizontalPadding = 0.dp,
                     itemSpacing = 0.dp,
                     item = { value, index ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(40.dp)
+                                .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
                                 .background(
                                     if (index % 2 != 0) Color.White else ConstColors.gray.copy(
                                         alpha = .05f
@@ -268,27 +281,31 @@ fun DashboardScreen(scope: DashboardScope) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Text(
-                                text = value.productName,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
-                            Text(
-                                text = value.count.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                modifier = Modifier
-                                    .background(
-                                        ConstColors.gray.copy(.15f),
-                                        MaterialTheme.shapes.medium
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 6.dp),
-                            )
+                            if (!value.isSkeletonItem) {
+                                Text(
+                                    text = value.productName,
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.padding(end = 8.dp),
+                                )
+                                Text(
+                                    text = value.count.toString(),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W500,
+                                    modifier = Modifier
+                                        .background(
+                                            ConstColors.gray.copy(.15f),
+                                            MaterialTheme.shapes.medium
+                                        )
+                                        .padding(vertical = 4.dp, horizontal = 6.dp),
+                                )
+                            } else {
+                                ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
+                            }
                         }
                     },
                 )
@@ -357,6 +374,7 @@ private fun RowScope.SectionButton(
     text: String,
     isClickable: Boolean,
     counter: Int?,
+    counterSupported: Boolean,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -373,7 +391,43 @@ private fun RowScope.SectionButton(
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.TopEnd),
             )
-            if (counter == null) {
+            if (counterSupported) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 14.dp)
+                        .padding(end = 12.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(start = 6.dp),
+                    ) {
+                        Text(
+                            text = text,
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                        if (counter != null) {
+                            Text(
+                                text = counter.toString(),
+                                color = ConstColors.lightBlue,
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } else {
+                            ShimmerItem(padding = PaddingValues(end = 48.dp, top = 8.dp))
+                        }
+                    }
+                    Icon(
+                        painter = icon,
+                        tint = ConstColors.gray.copy(alpha = .5f),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .align(Alignment.BottomEnd),
+                    )
+                }
+            } else {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
@@ -393,38 +447,6 @@ private fun RowScope.SectionButton(
                         color = ConstColors.gray,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W600,
-                    )
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 14.dp)
-                        .padding(end = 12.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(start = 6.dp),
-                    ) {
-                        Text(
-                            text = text,
-                            color = ConstColors.gray,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                        Text(
-                            text = counter.toString(),
-                            color = ConstColors.lightBlue,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.W700,
-                        )
-                    }
-                    Icon(
-                        painter = icon,
-                        tint = ConstColors.gray.copy(alpha = .5f),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(36.dp)
-                            .align(Alignment.BottomEnd),
                     )
                 }
             }
@@ -472,4 +494,14 @@ private inline fun DashboardScope.Section.getCount(dashboard: DashboardData): In
     DashboardScope.Section.RETAILER_ADD -> null
     DashboardScope.Section.HOSPITAL_COUNT -> dashboard.userData.hospital?.connected
     DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.connected
+}
+
+private inline fun DashboardScope.Section.countSupported(): Boolean = when (this) {
+    DashboardScope.Section.STOCKIST_COUNT -> true
+    DashboardScope.Section.STOCKIST_ADD -> false
+    DashboardScope.Section.STOCKIST_CONNECT -> false
+    DashboardScope.Section.RETAILER_COUNT -> true
+    DashboardScope.Section.RETAILER_ADD -> false
+    DashboardScope.Section.HOSPITAL_COUNT -> true
+    DashboardScope.Section.SEASON_BOY_COUNT -> true
 }
