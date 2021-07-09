@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -133,6 +134,41 @@ fun InputField(
     onValueChange: (String) -> Unit,
 ) {
     TextField(
+        value = text,//TextFieldValue(text, TextRange(text.length)),
+        label = {
+            Text(
+                text = hint,
+                style = TextStyle.Default,
+            )
+        },
+        isError = !isValid,
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White,
+            cursorColor = ConstColors.lightBlue,
+            focusedLabelColor = ConstColors.lightBlue,
+            focusedIndicatorColor = ConstColors.lightBlue,
+        ),
+        onValueChange = onValueChange,
+        visualTransformation = visualTransformation,
+        keyboardOptions = keyboardOptions,
+        singleLine = maxLines == 1,
+        maxLines = maxLines,
+        modifier = modifier.fillMaxWidth(),
+    )
+}
+
+@Composable
+fun OutlinedInputField(
+    modifier: Modifier = Modifier,
+    hint: String,
+    text: String,
+    isValid: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = 1,
+    onValueChange: (String) -> Unit,
+) {
+    OutlinedTextField(
         value = text,//TextFieldValue(text, TextRange(text.length)),
         label = {
             Text(

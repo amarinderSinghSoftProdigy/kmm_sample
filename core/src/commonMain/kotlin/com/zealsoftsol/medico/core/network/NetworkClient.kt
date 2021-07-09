@@ -285,9 +285,12 @@ class NetworkClient(
         }
     }
 
-    override suspend fun getDashboard() = simpleRequest {
+    override suspend fun getDashboard(unitCode: String) = simpleRequest {
         client.get<BodyResponse<DashboardData>>("${baseUrl.url}/dashboard") {
             withMainToken()
+            url {
+                parameters.append("b2bUnitCode", unitCode)
+            }
         }
     }
 

@@ -90,7 +90,7 @@ interface NetworkScope {
     }
 
     interface Customer : NetworkScope {
-        suspend fun getDashboard(): BodyResponse<DashboardData>
+        suspend fun getDashboard(unitCode: String): BodyResponse<DashboardData>
         suspend fun getCustomerData(): BodyResponse<CustomerData>
     }
 

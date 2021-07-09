@@ -1,5 +1,11 @@
 package com.zealsoftsol.medico.screens.common
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
@@ -39,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -81,6 +88,26 @@ fun TabBar(
     ) {
         content()
     }
+}
+
+@Composable
+fun ShimmerItem(padding: PaddingValues = PaddingValues(0.dp)) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val color by infiniteTransition.animateColor(
+        initialValue = ConstColors.gray.copy(alpha = 0.1f),
+        targetValue = ConstColors.gray.copy(alpha = 0.4f),
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    Box(
+        modifier = Modifier
+            .padding(padding)
+            .background(color, RoundedCornerShape(50))
+            .fillMaxWidth()
+            .height(24.dp)
+    )
 }
 
 @Composable

@@ -112,7 +112,7 @@ class UserRepo(
     }
 
     suspend fun loadDashboard() {
-        networkCustomerScope.getDashboard().onSuccess {
+        networkCustomerScope.getDashboard(requireUser().unitCode).onSuccess {
             dashboardFlow.value = it
         }
     }

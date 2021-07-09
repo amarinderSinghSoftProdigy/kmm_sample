@@ -4,9 +4,14 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ConnectedUserData
+import com.zealsoftsol.medico.data.CountData
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerMetaData
 import com.zealsoftsol.medico.data.DashboardData
+import com.zealsoftsol.medico.data.ProductSold
+import com.zealsoftsol.medico.data.RecentProductInfo
+import com.zealsoftsol.medico.data.StockStatusData
 import com.zealsoftsol.medico.data.UserType
 
 class MockCustomerScope : NetworkScope.Customer {
@@ -19,9 +24,21 @@ class MockCustomerScope : NetworkScope.Customer {
         getMockCustomerData()
     }
 
-    override suspend fun getDashboard(): BodyResponse<DashboardData> = mockResponse {
-        null
-    }
+    override suspend fun getDashboard(unitCode: String): BodyResponse<DashboardData> =
+        mockResponse {
+            DashboardData(
+                ConnectedUserData(
+                    CountData(1, 1),
+                    CountData(1, 1),
+                    CountData(1, 1),
+                    CountData(1, 1)
+                ), 10, 10, RecentProductInfo(
+                    listOf(ProductSold(100, "product")),
+                    listOf(ProductSold(100, "product")),
+                    listOf(ProductSold(100, "product"))
+                ), StockStatusData(10, 10, 10)
+            )
+        }
 
     companion object {
 
