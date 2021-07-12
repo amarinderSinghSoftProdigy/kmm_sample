@@ -96,7 +96,7 @@ fun DashboardScreen(scope: DashboardScope) {
                         text = stringResourceByName(second.stringId),
                         isClickable = second.isClickable,
                         counter = dash?.let { second.getCount(dashboard = dash) },
-                        counterSupported = first.countSupported(),
+                        counterSupported = second.countSupported(),
                         onClick = { scope.selectSection(second) },
                     )
                 }
