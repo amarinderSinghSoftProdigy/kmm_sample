@@ -50,7 +50,6 @@ struct SettingsScreen: View {
                 ForEach(scope.sections, id: \.self) { section in
                     TableViewCell(textLocalizationKey: section.getTextLocalizationKey(),
                                   imageName: section.getImageName(),
-                                  imageColor: .darkBlue,
                                   imageSize: 20,
                                   style: .navigation,
                                   onTapAction: { section.select() })

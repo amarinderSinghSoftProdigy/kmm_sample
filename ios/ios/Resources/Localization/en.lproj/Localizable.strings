@@ -118,6 +118,7 @@
 "stores" = "Stores";
 "trial_ends" = "Trial Ends on ";
 "orders_history" = "Orders History";
+"version %@" = "v %@";
 
 // MARK: Dashboard
 "purchase_orders" = "Purchase Orders";
@@ -312,6 +313,7 @@
 
 // MARK: New Orders
 "new_orders" = "New Orders";
+"new" = "NEW";
 
 // MARK: Orders
 "orders" = "Orders";
@@ -344,6 +346,7 @@
 "invoice_no:" = "Invoice No:";
 
 // MARK: Error Codes
+"E0000" = "Error";
 "E0001" = "Customer Type is required";
 "E0002" = "First name is required";
 "E0003" = "Last name is required";
