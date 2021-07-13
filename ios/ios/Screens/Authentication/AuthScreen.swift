@@ -7,14 +7,6 @@ struct AuthScreen: View {
     
     let scope: LogInScope
     
-    @ObservedObject var credentials: SwiftDataSource<DataAuthCredentials>
-    
-    init(scope: LogInScope) {
-        self.scope = scope
-        
-        credentials = SwiftDataSource(dataSource: scope.credentials)
-    }
-    
     var body: some View {
         ZStack(alignment: .bottom) {
             AppColor.navigationBar.color
@@ -30,12 +22,8 @@ struct AuthScreen: View {
                             .scaledToFit()
                             .frame(width: 216, height: 54)
 
-                        if let credentialsValue = self.credentials.value {
-                            AuthTab(
-                                scope: scope,
-                                credentials: credentialsValue
-                            )
-                        }
+                        AuthTab(scope: scope,
+                                credentials: .init(dataSource: scope.credentials))
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 45)
@@ -81,12 +69,13 @@ struct AuthScreen: View {
 
     private struct AuthTab: View {
         let scope: LogInScope
-        let credentials: DataAuthCredentials
+        
+        @ObservedObject var credentials: SwiftDataSource<DataAuthCredentials>
         
         var body: some View {
             VStack(alignment: .trailing, spacing: 24) {
                 FloatingPlaceholderTextField(placeholderLocalizedStringKey: "phone_number_or_email",
-                                             text: credentials.phoneNumberOrEmail,
+                                             text: credentials.value?.phoneNumberOrEmail ?? "",
                                              onTextChange: updateLogin,
                                              keyboardType: .emailAddress,
                                              disableAutocorrection: true,
@@ -96,7 +85,7 @@ struct AuthScreen: View {
                                   lineWidth: 2)
                 
                 FloatingPlaceholderSecureField(placeholderLocalizedStringKey: "password",
-                                               text: credentials.password,
+                                               text: credentials.value?.password ?? "",
                                                onTextChange: updatePassword)
                     .textContentType(.password)
                     .strokeBorder(.blueWhite,
@@ -111,7 +100,7 @@ struct AuthScreen: View {
                     }
                 
                 MedicoButton(localizedStringKey: "log_in",
-                             isEnabled: !credentials.phoneNumberOrEmail.isEmpty && !credentials.password.isEmpty,
+                             isEnabled: credentials.value?.phoneNumberOrEmail.isEmpty == false && credentials.value?.password.isEmpty  == false,
                              fontColor: .white,
                              buttonColor: .lightBlue) {
                     scope.tryLogIn()
@@ -121,20 +110,14 @@ struct AuthScreen: View {
             .frame(maxWidth: 500)
         }
         
-        init(scope: LogInScope,
-             credentials: DataAuthCredentials) {
-            self.scope = scope
-            self.credentials = credentials
-        }
-        
         private func updateLogin(withNewValue newValue: String) {
-            let password = self.credentials.password
+            let password = self.credentials.value?.password ?? ""
                 
             scope.updateAuthCredentials(emailOrPhone: newValue, password: password)
         }
         
         private func updatePassword(withNewValue newValue: String) {
-            let login = self.credentials.phoneNumberOrEmail
+            let login = self.credentials.value?.phoneNumberOrEmail ?? ""
                 
             scope.updateAuthCredentials(emailOrPhone: login, password: newValue)
         }
