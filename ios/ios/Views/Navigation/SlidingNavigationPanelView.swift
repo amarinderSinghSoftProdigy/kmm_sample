@@ -136,22 +136,9 @@ private struct _SlidingPanelView: View {
                 LocalizedText(localizationKey: user?.type.localizedName ?? "",
                               textWeight: .medium)
                 
-                HStack(spacing: 0) {
-                    Text("(")
-                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
-                    
-                    LocalizedText(localizationKey: "trial_ends",
-                                  textWeight: .mediumItalic,
-                                  fontSize: 12)
-                    
-                    Text(user?.subscription?.validUntil ?? "")
-                        .medicoText(textWeight: .boldItalic,
-                                    fontSize: 12)
-                    
-                    Text(")")
-                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
-                }
-                
+                Text(user?.subscription?.validUntil ?? "")
+                    .medicoText(textWeight: .mediumItalic,
+                                fontSize: 12)
             }
             .padding()
         }
