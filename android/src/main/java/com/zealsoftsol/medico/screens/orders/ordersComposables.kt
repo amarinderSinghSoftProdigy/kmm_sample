@@ -192,7 +192,9 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Row(modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)) {
+            Row(modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 6.dp)) {
                 Text(
                     text = order.tradeName,
                     color = MaterialTheme.colors.background,
@@ -200,20 +202,33 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     fontWeight = FontWeight.W600,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(0.6f),
                 )
-
-                Box(modifier = Modifier.weight(0.4f)) {
-                    Text(
-                        text = "${order.info.date} ${order.info.time}",
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                    )
-                }
+            }
+            Space(4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = order.info.id,
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${order.info.date} ${order.info.time}",
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             Row(
                 modifier = Modifier
@@ -241,14 +256,6 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
-                )
-                Text(
-                    text = order.info.id,
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = buildAnnotatedString {
