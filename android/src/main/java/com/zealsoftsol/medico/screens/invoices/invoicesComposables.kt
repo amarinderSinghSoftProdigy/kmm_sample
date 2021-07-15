@@ -37,6 +37,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.orders.DateRangeSelection
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -80,20 +81,28 @@ fun InvoicesScreen(scope: InvoicesScope) {
                 )
             }
             val items = scope.items.flow.collectAsState()
-            LazyColumn(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 16.dp),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                itemsIndexed(
-                    items = items.value,
-                    itemContent = { index, item ->
-                        InvoiceItem(item) { scope.selectItem(item) }
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }
-                    },
+            if (items.value.isEmpty() && scope.items.updateCount > 0) {
+                NoRecords(
+                    icon = R.drawable.ic_missing_invoices,
+                    text = R.string.missing_invoices,
+                    onHome = { scope.goHome() },
                 )
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 16.dp),
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    itemsIndexed(
+                        items = items.value,
+                        itemContent = { index, item ->
+                            InvoiceItem(item) { scope.selectItem(item) }
+                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadItems()
+                            }
+                        },
+                    )
+                }
             }
         } else {
             val dateRange = scope.dateRange.flow.collectAsState()

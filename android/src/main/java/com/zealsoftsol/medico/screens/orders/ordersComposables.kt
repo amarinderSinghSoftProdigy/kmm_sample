@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
@@ -104,22 +105,35 @@ fun OrdersScreen(scope: OrdersScope) {
                 }
             }
             val items = scope.items.flow.collectAsState()
-            LazyColumn(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 16.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-            ) {
-                itemsIndexed(
-                    items = items.value,
-                    itemContent = { index, item ->
-                        OrderItem(item) { scope.selectItem(item) }
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }
-                    },
+            if (items.value.isEmpty() && scope.items.updateCount > 0) {
+                val (icon, text) = when (scope.type) {
+                    OrderType.ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
+                    OrderType.PURCHASE_ORDER -> R.drawable.ic_missing_orders to R.string.missing_po_orders
+                    OrderType.HISTORY -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders
+                }
+                NoRecords(
+                    icon = icon,
+                    text = text,
+                    onHome = { scope.goHome() },
                 )
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    itemsIndexed(
+                        items = items.value,
+                        itemContent = { index, item ->
+                            OrderItem(item) { scope.selectItem(item) }
+                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadItems()
+                            }
+                        },
+                    )
+                }
             }
         } else {
             val dateRange = scope.dateRange.flow.collectAsState()

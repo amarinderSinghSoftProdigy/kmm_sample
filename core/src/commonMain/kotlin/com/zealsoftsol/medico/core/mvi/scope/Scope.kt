@@ -24,6 +24,8 @@ sealed class Scope : Scopable {
             override val parentScopeId: KClass<*> = Host::class
 
             open fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? = null
+
+            open fun goHome() = EventCollector.sendEvent(Event.Transition.Dashboard)
         }
     }
 

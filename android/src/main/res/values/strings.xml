@@ -237,6 +237,17 @@
     <string name="new_to_medico">New to medicostores.com ?</string>
     <string name="create_account">Create Account</string>
     <string name="copyright">© medicostores.com 2021</string>
+    <string name="missing_notifications">No Notification Found!</string>
+    <string name="missing_orders">No orders placed to any Stockist or Sub-Stockist</string>
+    <string name="missing_history_orders">No Purchase Orders  accepted to view history</string>
+    <string name="missing_po_orders">No Purchase Orders from any of your connected Users</string>
+    <string name="missing_invoices">No Invoices found.</string>
+    <string name="missing_stockists">Not Connected to any Stockist</string>
+    <string name="missing_hospitals">No Hospitals connected yet</string>
+    <string name="missing_retailers">No Retailers connected yet.</string>
+    <string name="missing_sb">No SeasonBoy connected yet</string>
+    <string name="missing_stores">No stores to view</string>
+    <string name="please_connect_stockists">Please connect to any Stockist</string>
 
     <!--error codes-->
 

@@ -51,6 +51,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
@@ -187,27 +188,42 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
         }
     }
     val items = scope.items.flow.collectAsState()
-    LazyColumn(
-        state = rememberLazyListState(),
-        contentPadding = PaddingValues(top = 16.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-    ) {
-        val isSeasonBoy = scope is ManagementScope.User.SeasonBoy
-        itemsIndexed(
-            items = items.value,
-            itemContent = { index, item ->
-                if (isSeasonBoy) {
-                    SeasonBoyItem(item) { scope.selectItem(item) }
-                } else {
-                    NonSeasonBoyItem(item) { scope.selectItem(item) }
-                }
-                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                    scope.loadItems()
-                }
-            },
+    if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        val (icon, text) = when (scope) {
+            is ManagementScope.User.Stockist -> R.drawable.ic_missing_stockists to R.string.missing_stockists
+            is ManagementScope.User.Retailer -> R.drawable.ic_missing_retailers to R.string.missing_retailers
+            is ManagementScope.User.Hospital -> R.drawable.ic_missing_hospitals to R.string.missing_hospitals
+            is ManagementScope.User.SeasonBoy -> R.drawable.ic_missing_sb to R.string.missing_sb
+        }
+        NoRecords(
+            icon = icon,
+            text = text,
+            subtitle = if (scope is ManagementScope.User.Stockist) R.string.please_connect_stockists else null,
+            onHome = { scope.goHome() },
         )
+    } else {
+        LazyColumn(
+            state = rememberLazyListState(),
+            contentPadding = PaddingValues(top = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+        ) {
+            val isSeasonBoy = scope is ManagementScope.User.SeasonBoy
+            itemsIndexed(
+                items = items.value,
+                itemContent = { index, item ->
+                    if (isSeasonBoy) {
+                        SeasonBoyItem(item) { scope.selectItem(item) }
+                    } else {
+                        NonSeasonBoyItem(item) { scope.selectItem(item) }
+                    }
+                    if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                        scope.loadItems()
+                    }
+                },
+            )
+        }
     }
 }
 
