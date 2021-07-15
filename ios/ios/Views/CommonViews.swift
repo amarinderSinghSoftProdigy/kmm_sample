@@ -383,3 +383,52 @@ struct CheckBox: View {
         self.backgroundColor = backgroundColor
     }
 }
+
+struct EmptyListView: View {
+    let imageName: String
+    
+    let titleLocalizationKey: String
+    let subtitleLocalizationKey: String?
+    
+    let handleHomeTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 15) {
+                Image(imageName)
+                
+                VStack(spacing: 4) {
+                    LocalizedText(localizationKey: titleLocalizationKey,
+                                  textWeight: .bold,
+                                  fontSize: 15)
+                    
+                    if let subtitleLocalizationKey = self.subtitleLocalizationKey {
+                        LocalizedText(localizationKey: subtitleLocalizationKey,
+                                      fontSize: 12)
+                            .opacity(0.6)
+                    }
+                }
+            }
+            
+            MedicoButton(localizedStringKey: "home",
+                         isEnabled: true,
+                         width: 105,
+                         height: 43,
+                         action: handleHomeTap)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(50)
+    }
+    
+    init(imageName: String,
+         titleLocalizationKey: String,
+         subtitleLocalizationKey: String? = nil,
+         handleHomeTap: @escaping () -> Void) {
+        self.imageName = imageName
+        
+        self.titleLocalizationKey = titleLocalizationKey
+        self.subtitleLocalizationKey = subtitleLocalizationKey
+        
+        self.handleHomeTap = handleHomeTap
+    }
+}

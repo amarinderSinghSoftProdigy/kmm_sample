@@ -83,14 +83,22 @@ struct InvoicesScreen: View {
                               fontSize: 20)
             }
             
-            TransparentList(data: self.invoices,
-                            dataType: DataInvoice.self,
-                            listName: .invoices,
-                            pagination: scope.pagination,
-                            elementsSpacing: 8,
-                            onTapGesture: { scope.selectItem(item: $0) },
-                            loadItems: { scope.loadItems() }) { _, invoice in
-                InvoiceView(invoice: invoice)
+            if let invoices = self.invoices.value,
+               invoices.count > 0 {
+                TransparentList(data: self.invoices,
+                                dataType: DataInvoice.self,
+                                listName: .invoices,
+                                pagination: scope.pagination,
+                                elementsSpacing: 8,
+                                onTapGesture: { scope.selectItem(item: $0) },
+                                loadItems: { scope.loadItems() }) { _, invoice in
+                    InvoiceView(invoice: invoice)
+                }
+            }
+            else {
+                EmptyListView(imageName: "EmptyInvoices",
+                              titleLocalizationKey: "empty_invoices",
+                              handleHomeTap: { })
             }
         }
     }

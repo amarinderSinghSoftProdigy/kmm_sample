@@ -22,6 +22,9 @@ struct UserManagementScreen: View {
         let imageName: String
         let searchBarPlaceholderKey: String
         let screenName: String
+        let emptyListView: EmptyListView
+        
+        let handleHomeTap: () -> Void = { }
         
         switch self.scope {
         
@@ -29,21 +32,34 @@ struct UserManagementScreen: View {
             imageName = "Stockist"
             searchBarPlaceholderKey = "stockists"
             screenName = "Stockist"
+            emptyListView = EmptyListView(imageName: "EmptyStockists",
+                                          titleLocalizationKey: "empty_stockists",
+                                          subtitleLocalizationKey: "empty_stockists_subtitle",
+                                          handleHomeTap: handleHomeTap)
         
         case is ManagementScope.UserRetailer:
             imageName = "Retailer"
             searchBarPlaceholderKey = "retailers"
             screenName = "Retailer"
+            emptyListView = EmptyListView(imageName: "EmptyRetailers",
+                                          titleLocalizationKey: "empty_retailers",
+                                          handleHomeTap: handleHomeTap)
             
         case is ManagementScope.UserHospital:
             imageName = "Hospital"
             searchBarPlaceholderKey = "hospitals"
             screenName = "Hospital"
+            emptyListView = EmptyListView(imageName: "EmptyHospitals",
+                                          titleLocalizationKey: "empty_hospitals",
+                                          handleHomeTap: handleHomeTap)
             
         case is ManagementScope.UserSeasonBoy:
             imageName = "SeasonBoy"
             searchBarPlaceholderKey = "seasonBoys"
             screenName = "SeasonBoy"
+            emptyListView = EmptyListView(imageName: "EmptySeasonBoys",
+                                          titleLocalizationKey: "empty_seasons_boys",
+                                          handleHomeTap: handleHomeTap)
             
         default:
             return AnyView(EmptyView())
@@ -51,7 +67,8 @@ struct UserManagementScreen: View {
         
         let view = AnyView(
             getGeneralScreen(withSearchImageName: imageName,
-                             withSearchBarPlaceholderKey: searchBarPlaceholderKey)
+                             withSearchBarPlaceholderKey: searchBarPlaceholderKey,
+                             emptyListView: emptyListView)
                 .screenLogger(withScreenName: "ManagementScopeUser.\(screenName)",
                               withScreenClass: UserManagementScreen.self)
         )
@@ -77,7 +94,8 @@ struct UserManagementScreen: View {
     }
     
     private func getGeneralScreen(withSearchImageName imageName: String,
-                                  withSearchBarPlaceholderKey searchBarPlaceholderKey: String) -> some View {
+                                  withSearchBarPlaceholderKey searchBarPlaceholderKey: String,
+                                  emptyListView: EmptyListView) -> some View {
         let selectedOption = Binding(get: {
             guard let activeTab = self.activeTab.value else { return 0 }
 
@@ -107,22 +125,28 @@ struct UserManagementScreen: View {
                         self.getOptionsPicker(withSelectedOption: selectedOption)
                     }
                     
-                    TransparentList(data: users,
-                                    dataType: DataEntityInfo.self,
-                                    listName: self.activeTab.value?.listName,
-                                    pagination: scope.pagination,
-                                    onTapGesture: { scope.selectItem(item: $0) },
-                                    loadItems: { scope.loadItems() }) { _, element in
-                        Group {
-                            if isSeasonBoy {
-                                SeasonBoyView(seasonBoy: element)
-                            }
-                            else {
-                                NonSeasonBoyView(user: element)
+                    if let users = self.users.value,
+                       users.count > 0 {
+                        TransparentList(data: self.users,
+                                        dataType: DataEntityInfo.self,
+                                        listName: self.activeTab.value?.listName,
+                                        pagination: scope.pagination,
+                                        onTapGesture: { scope.selectItem(item: $0) },
+                                        loadItems: { scope.loadItems() }) { _, element in
+                            Group {
+                                if isSeasonBoy {
+                                    SeasonBoyView(seasonBoy: element)
+                                }
+                                else {
+                                    NonSeasonBoyView(user: element)
+                                }
                             }
                         }
+                        .hideKeyboardOnTap()
                     }
-                    .hideKeyboardOnTap()
+                    else {
+                        emptyListView
+                    }
                 }
                 .keyboardResponder()
                 .padding(.horizontal, 16)
