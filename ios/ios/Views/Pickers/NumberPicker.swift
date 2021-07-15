@@ -32,7 +32,7 @@ struct NumberPicker: View {
                 .frame(width: 40)
             
             self.getActionButton(withImageName: "plus",
-                                 disabled: quantity > maxQuantity,
+                                 disabled: quantity >= maxQuantity,
                                  for: self.onQuantityIncrease)
         }
     }
@@ -69,15 +69,12 @@ struct NumberPicker: View {
                 .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
                     if inProgress && longPressEnabled {
                         action(.longPress)
-//                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(false) })
                     }
                     else {
                         action(.release_)
-//                        self.longPressTimer?.invalidate()
                     }
                 }) {
                     action(.release_)
-//                    self.longPressTimer?.invalidate()
                 }
         }
         .disabled(disabled)
