@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -54,6 +56,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.StockStatus
@@ -68,6 +71,7 @@ import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
 fun CartScreen(scope: CartScope) {
     val items = scope.items.flow.collectAsState()
     val total = scope.total.flow.collectAsState()
+    val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
 
     if (items.value.isEmpty()) {
         EmptyCart { scope.goBack() }
@@ -134,9 +138,38 @@ fun CartScreen(scope: CartScope) {
             }
 
             total.value?.let {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    if (!isContinueEnabled.value) {
+                        Space(16.dp)
+                        Row(
+                            modifier = Modifier
+                                .background(
+                                    Color.Red.copy(alpha = .1f),
+                                    RoundedCornerShape(percent = 50)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                                .align(Alignment.CenterHorizontally),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Error,
+                                tint = Color.Red,
+                                contentDescription = null,
+                            )
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.delete_products),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                            )
+                        }
+                        Space(16.dp)
+                    }
                     Divider()
                     Space(16.dp)
                     Row(
@@ -158,7 +191,7 @@ fun CartScreen(scope: CartScope) {
                         Space(32.dp)
                         MedicoButton(
                             text = stringResource(id = R.string.continue_text),
-                            isEnabled = true,
+                            isEnabled = isContinueEnabled.value,
                             onClick = { scope.continueWithCart() },
                         )
                     }
@@ -259,7 +292,16 @@ private fun CartItem(
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+        border = when (cartItem.buyingOption) {
+            BuyingOption.BUY -> BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+            BuyingOption.QUOTE -> BorderStroke(
+                1.dp, when (cartItem.quotedData?.isAvailable) {
+                    true -> ConstColors.green
+                    false -> ConstColors.red
+                    null -> Color.LightGray.copy(alpha = 0.5f)
+                }
+            )
+        },
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -324,7 +366,25 @@ private fun CartItem(
                     fontSize = 15.sp
                 )
                 Space(12.dp)
-                cartItem.seasonBoyRetailer?.let {
+                cartItem.quotedData?.let {
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .padding(end = 8.dp),
+                    ) {
+                        GeoLocation(it.message, textSize = 12.sp, tint = ConstColors.lightBlue)
+                        Text(
+                            text = stringResource(id = if (it.isAvailable) R.string.available else R.string.not_available),
+                            color = if (it.isAvailable) ConstColors.green else ConstColors.red,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 12.sp,
+                        )
+                    }
+                } ?: cartItem.seasonBoyRetailer?.let {
                     Divider(color = Color.LightGray.copy(alpha = 0.5f))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -373,7 +433,8 @@ private fun CartItem(
                 onDec = onDec,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(if (cartItem.seasonBoyRetailer == null) 12.dp else 28.dp)
+                    .padding(12.dp)
+                    .padding(bottom = if (cartItem.seasonBoyRetailer != null || cartItem.quotedData != null) 16.dp else 0.dp)
             )
             val labelColor = when (cartItem.stockInfo?.status) {
                 StockStatus.IN_STOCK -> ConstColors.green

@@ -132,6 +132,7 @@ internal class TransitionEventDelegate(
                     CartScope(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
+                        isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
                         tapModeHelper = tapModeHelper,
                     )
                 )

@@ -23,6 +23,7 @@ class CartRepo(
 ) {
     val entries: MutableStateFlow<List<SellerCart>> = MutableStateFlow(emptyList())
     val total: MutableStateFlow<Total?> = MutableStateFlow(null)
+    val isContinueEnabled = MutableStateFlow(false)
 
     private var cartId = ""
 
@@ -125,6 +126,8 @@ class CartRepo(
             cartId = body.cartId
             entries.value = body.sellerCarts
             total.value = body.total
+            isContinueEnabled.value =
+                body.sellerCarts.flatMap { it.items }.none { it.quotedData?.isAvailable == false }
         }
         return this
     }
