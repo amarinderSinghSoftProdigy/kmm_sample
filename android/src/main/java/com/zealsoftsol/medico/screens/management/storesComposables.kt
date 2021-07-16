@@ -39,6 +39,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.DataWithLabel
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
@@ -201,22 +202,30 @@ private fun AllStores(scope: StoresScope.All) {
         )
     }
     val items = scope.items.flow.collectAsState()
-    LazyColumn(
-        state = rememberLazyListState(),
-        contentPadding = PaddingValues(top = 16.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-    ) {
-        itemsIndexed(
-            items = items.value,
-            itemContent = { index, item ->
-                StoreItem(item) { scope.selectItem(item) }
-                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                    scope.loadItems()
-                }
-            },
+    if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        NoRecords(
+            icon = R.drawable.ic_missing_stores,
+            text = R.string.missing_stores,
+            onHome = { scope.goHome() },
         )
+    } else {
+        LazyColumn(
+            state = rememberLazyListState(),
+            contentPadding = PaddingValues(top = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+        ) {
+            itemsIndexed(
+                items = items.value,
+                itemContent = { index, item ->
+                    StoreItem(item) { scope.selectItem(item) }
+                    if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                        scope.loadItems()
+                    }
+                },
+            )
+        }
     }
 }
 

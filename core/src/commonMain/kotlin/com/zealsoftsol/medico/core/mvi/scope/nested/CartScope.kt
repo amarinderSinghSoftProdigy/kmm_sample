@@ -16,7 +16,8 @@ import com.zealsoftsol.medico.data.Total
 class CartScope(
     val items: ReadOnlyDataSource<List<SellerCart>>,
     val total: ReadOnlyDataSource<Total?>,
-    val tapModeHelper: TapModeHelper,
+    val isContinueEnabled: ReadOnlyDataSource<Boolean>,
+    internal val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     fun updateItemCount(sellerCart: SellerCart, item: CartItem, quantity: Int): Boolean {

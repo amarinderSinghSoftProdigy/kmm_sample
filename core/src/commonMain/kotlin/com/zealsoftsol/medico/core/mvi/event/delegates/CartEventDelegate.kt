@@ -78,6 +78,7 @@ internal class CartEventDelegate(
                 CartScope(
                     items = ReadOnlyDataSource(cartRepo.entries),
                     total = ReadOnlyDataSource(cartRepo.total),
+                    isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
                     tapModeHelper = tapModeHelper,
                 )
             )

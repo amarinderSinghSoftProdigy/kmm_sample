@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -21,12 +23,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.NavigationOption
@@ -80,21 +80,7 @@ fun NavigationColumn(
                 if (trialString != null) {
                     Space(4.dp)
                     Text(
-                        text = buildAnnotatedString {
-                            append("(")
-                            append(stringResource(id = R.string.trial_ends))
-                            append(" ")
-                            val startIndex = length
-                            append(trialString)
-                            addStyle(
-                                SpanStyle(
-                                    fontWeight = FontWeight.W700
-                                ),
-                                startIndex,
-                                length,
-                            )
-                            append(")")
-                        },
+                        text = trialString,
                         color = Color.White,
                         fontSize = 12.sp,
                     )
@@ -113,6 +99,20 @@ fun NavigationColumn(
                     NavigationCell(
                         icon = icon,
                         text = text,
+                        label = if (it == NavigationOption.NewOrders) {
+                            {
+                                Space(12.dp)
+                                Text(
+                                    text = "NEW",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W600,
+                                    modifier = Modifier
+                                        .background(Color.Red, RoundedCornerShape(percent = 50))
+                                        .padding(vertical = 4.dp, horizontal = 8.dp),
+                                )
+                            }
+                        } else null,
                         onClick = {
                             onSectionSelected()
                             it.select()
@@ -128,6 +128,21 @@ fun NavigationColumn(
                         icon = icon,
                         text = text,
                         color = ConstColors.gray,
+                        label = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 18.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Text(
+                                    text = BuildConfig.VERSION_NAME,
+                                    color = ConstColors.gray,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.W600,
+                                )
+                            }
+                        },
                         onClick = { it.select() }
                     )
                 }

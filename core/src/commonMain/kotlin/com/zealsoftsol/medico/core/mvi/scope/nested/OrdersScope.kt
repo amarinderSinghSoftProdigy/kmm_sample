@@ -200,7 +200,7 @@ class ConfirmOrderScope(
 
 class OrderPlacedScope(val order: Order) : Scope.Child.TabBar() {
 
-    fun goHome() = EventCollector.sendEvent(Event.Transition.Back)
+    override fun goHome() = EventCollector.sendEvent(Event.Transition.Back)
 }
 
 interface SelectableOrderEntry : Scopable {
