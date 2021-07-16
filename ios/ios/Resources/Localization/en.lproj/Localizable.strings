@@ -285,10 +285,12 @@
 "empty_cart_description" = "Please, try to add something on cart then try again.";
 "empty_cart" = "Empty Cart";
 "available" = "Available";
+"not_available" = "Not Available";
 "limited" = "Limited";
 "quoted" = "Quoted";
 "continue" = "Continue";
 "total:" = "Total:";
+"delete_products" = "Delete all Not Available Quote products";
 
 // MARK: Get Quote
 "select_stockists" = "Select Stockists";

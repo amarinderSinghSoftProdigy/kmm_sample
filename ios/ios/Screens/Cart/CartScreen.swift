@@ -17,6 +17,8 @@ struct CartScreen: View {
     @ObservedObject var items: SwiftDataSource<NSArray>
     @ObservedObject var total: SwiftDataSource<DataTotal>
     
+    @ObservedObject var isContinueEnabled: SwiftDataSource<KotlinBoolean>
+    
     var body: some View {
         if let items = self.items.value as? [DataSellerCart],
            items.count > 0 {
@@ -32,6 +34,8 @@ struct CartScreen: View {
         
         self.items = SwiftDataSource(dataSource: scope.items)
         self.total = SwiftDataSource(dataSource: scope.total)
+        
+        self.isContinueEnabled = SwiftDataSource(dataSource: scope.isContinueEnabled)
     }
     
     private var emptyCartView: some View {
@@ -104,30 +108,51 @@ struct CartScreen: View {
             if let price = total.value?.formattedPrice {
                 Spacer()
                 
-                VStack(spacing: 35) {
-                    AppColor.black.color
-                        .opacity(0.27)
-                        .frame(height: 1)
-                    
-                    HStack {
-                        HStack(spacing: 4) {
-                            LocalizedText(localizationKey: "total:",
-                                          textWeight: .medium,
-                                          fontSize: 20)
+                VStack(spacing: 20) {
+                    if isContinueEnabled.value != true {
+                        HStack {
+                            Image("DeleteWarning")
                             
-                            Text(price)
-                                .medicoText(textWeight: .bold,
-                                            fontSize: 20)
+                            LocalizedText(localizationKey: "delete_products",
+                                          textWeight: .medium,
+                                          fontSize: 12)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
                         }
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 100)
+                                .fill(appColor: .red)
+                                .opacity(0.08)
+                        )
+                    }
                     
-                        Spacer()
+                    VStack(spacing: 35) {
+                        AppColor.black.color
+                            .opacity(0.27)
+                            .frame(height: 1)
                         
-                        MedicoButton(localizedStringKey: "continue",
-                                     width: 170,
-                                     height: 50,
-                                     fontSize: 15,
-                                     fontWeight: .bold) {
-                            scope.continueWithCart()
+                        HStack(spacing: 6) {
+                            HStack(spacing: 4) {
+                                LocalizedText(localizationKey: "total:",
+                                              textWeight: .medium,
+                                              fontSize: 20)
+                                
+                                Text(price)
+                                    .medicoText(textWeight: .bold,
+                                                fontSize: 20)
+                            }
+                        
+                            Spacer()
+                            
+                            MedicoButton(localizedStringKey: "continue",
+                                         isEnabled: isContinueEnabled.value == true,
+                                         width: 170,
+                                         height: 50,
+                                         fontSize: 15,
+                                         fontWeight: .bold) {
+                                scope.continueWithCart()
+                            }
                         }
                     }
                 }
@@ -347,7 +372,7 @@ struct CartItemView: View {
                     }
                 }
                 
-                if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
+                if let quotedData = item.quotedData {
                     VStack(spacing: 4) {
                         AppColor.darkBlue.color
                             .opacity(0.33)
@@ -356,14 +381,40 @@ struct CartItemView: View {
                             .padding(.trailing, -8)
                         
                         HStack {
+                            if !quotedData.message.isEmpty {
+                                SmallAddressView(location: quotedData.message,
+                                                 fontWeight: .medium,
+                                                 fontSize: 12,
+                                                 color: .lightBlue)
+                            }
+                            
+                            Spacer()
+                            
+                            LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
+                                          textWeight: .medium,
+                                          fontSize: 12,
+                                          color: item.itemViewBorderColor)
+                        }
+                        .frame(height: 20)
+                    }
+                }
+                else if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
+                    VStack(spacing: 4) {
+                        AppColor.darkBlue.color
+                            .opacity(0.33)
+                            .frame(height: 1)
+                            .padding(.leading, -12)
+                            .padding(.trailing, -8)
+
+                        HStack {
                             Text(seasonBoyRetailerInfo.tradeName)
                                 .medicoText(textWeight: .medium,
                                             fontSize: 12,
                                             color: AppColor.grey3,
                                             multilineTextAlignment: .leading)
-                            
+
                             Spacer()
-                            
+
                             SmallAddressView(location: seasonBoyRetailerInfo.geoData.city)
                         }
                         .frame(height: 20)
@@ -379,8 +430,8 @@ struct CartItemView: View {
                 .cornerRadius(5, corners: [.topLeft, .bottomLeft])
                 .frame(width: 5)
         }
-        .strokeBorder(.darkBlue,
-                      borderOpacity: 0.12,
+        .strokeBorder(item.itemViewBorderColor,
+                      borderOpacity: item.itemViewBorderOpacity,
                       fill: .white,
                       cornerRadius: 5)
     }
@@ -425,5 +476,24 @@ struct PriceWithFootnoteView: View {
                             fontSize: fontSize,
                             color: AppColor.lightBlue)
         }
+    }
+}
+
+extension DataCartItem {
+    var itemViewBorderColor: AppColor {
+        switch self.quotedData?.isAvailable {
+        case .some(true):
+            return .green
+            
+        case .some(false):
+            return .red
+            
+        default:
+            return .darkBlue
+        }
+    }
+    
+    var itemViewBorderOpacity: Double {
+        self.quotedData != nil ? 1 : 0.12
     }
 }
