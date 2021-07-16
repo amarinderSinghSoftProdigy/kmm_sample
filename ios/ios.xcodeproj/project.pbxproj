@@ -897,7 +897,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n\nSCHEME_NAME=`cat ${SCHEME_FILE}`\nif [ $SCHEME_NAME = 'MedicoSimulator' ]; then\n    FOR_SIMULATOR=true ./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\nelse \n    ./gradlew :core:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\nfi\n";
+			shellScript = "cd \"$SRCROOT/..\"\n\nSCHEME_NAME=`cat ${SCHEME_FILE}`\nif [ $SCHEME_NAME = 'MedicoSimulator' ]; then\n    FOR_SIMULATOR=true CONFIGURATION=${CONFIGURATION} ./gradlew :core:packForXCode\nelse \n    CONFIGURATION=${CONFIGURATION} ./gradlew :core:packForXCode\nfi\n";
 		};
 		D56BEB1B90779AF1E4EB6534 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
