@@ -20,6 +20,8 @@ struct NumberPicker: View {
     
     let longPressEnabled: Bool
     
+    @State var longPressPerformed = false
+    
     var body: some View {
         HStack(spacing: 15) {
             self.getActionButton(withImageName: "minus",
@@ -63,19 +65,24 @@ struct NumberPicker: View {
                 .font(Font.title.weight(.bold))
                 .frame(width: 14, height: 14)
                 .background(appColor: .white)
-                .onTapGesture {
-                    action(.click)
-                }
-                .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
-                    if inProgress && longPressEnabled {
-                        action(.longPress)
-                    }
-                    else {
-                        action(.release_)
-                    }
-                }) {
-                    action(.release_)
-                }
+                .gesture(
+                    TapGesture(count: 1)
+                        .onEnded {
+                            action(.click)
+                        }
+                        .exclusively(before: DragGesture(minimumDistance: 0)
+                                        .onChanged { _ in
+                                            if !longPressPerformed && longPressEnabled {
+                                                action(.longPress)
+                                                longPressPerformed = true
+                                            }
+                                        }
+                                        .onEnded { _ in
+                                            action(.release_)
+                                            longPressPerformed = false
+                                        }
+                        )
+                )
         }
         .disabled(disabled)
     }
