@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -61,9 +62,9 @@ import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 
 @Composable
-fun ManagementScreen(scope: ManagementScope.User) {
+fun ManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boolean>) {
     Column(modifier = Modifier.fillMaxSize()) {
-        EntityManagementScreen(scope)
+        EntityManagementScreen(scope, isInProgress)
     }
     if (scope is ManagementScope.User.Retailer && scope.canAdd) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -81,7 +82,7 @@ fun ManagementScreen(scope: ManagementScope.User) {
 }
 
 @Composable
-private fun EntityManagementScreen(scope: ManagementScope.User) {
+private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: DataSource<Boolean>) {
     val search = scope.searchText.flow.collectAsState()
     val showSearchOverlay = remember { mutableStateOf(true) }
     Space(16.dp)
@@ -188,7 +189,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User) {
         }
     }
     val items = scope.items.flow.collectAsState()
-    if (items.value.isEmpty() && scope.items.updateCount > 0) {
+    if (items.value.isEmpty() && !isInProgress.flow.value) {
         val (icon, text) = when (scope) {
             is ManagementScope.User.Stockist -> R.drawable.ic_missing_stockists to R.string.missing_stockists
             is ManagementScope.User.Retailer -> R.drawable.ic_missing_retailers to R.string.missing_retailers

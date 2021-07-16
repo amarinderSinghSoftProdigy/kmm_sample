@@ -189,7 +189,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is ProductInfoScope -> ProductScreen(it)
                     is BuyProductScope<*> -> BuyProductScreen(it as BuyProductScope<WithTradeName>)
                     is SettingsScope -> SettingsScreen(it)
-                    is ManagementScope.User -> ManagementScreen(it)
+                    is ManagementScope.User -> ManagementScreen(it, scope.isInProgress)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
                     is StoresScope -> StoresScreen(it)
