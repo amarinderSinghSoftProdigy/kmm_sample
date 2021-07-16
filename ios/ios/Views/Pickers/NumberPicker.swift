@@ -20,6 +20,8 @@ struct NumberPicker: View {
     
     let longPressEnabled: Bool
     
+    @State var longPressPerformed = false
+    
     var body: some View {
         HStack(spacing: 15) {
             self.getActionButton(withImageName: "minus",
@@ -32,7 +34,7 @@ struct NumberPicker: View {
                 .frame(width: 40)
             
             self.getActionButton(withImageName: "plus",
-                                 disabled: quantity > maxQuantity,
+                                 disabled: quantity >= maxQuantity,
                                  for: self.onQuantityIncrease)
         }
     }
@@ -63,22 +65,24 @@ struct NumberPicker: View {
                 .font(Font.title.weight(.bold))
                 .frame(width: 14, height: 14)
                 .background(appColor: .white)
-                .onTapGesture {
-                    action(.click)
-                }
-                .onLongPressGesture(minimumDuration: 30, pressing: { inProgress in
-                    if inProgress && longPressEnabled {
-                        action(.longPress)
-//                        self.longPressTimer = getLongPressTimer(handleTimeElapse: { action(false) })
-                    }
-                    else {
-                        action(.release_)
-//                        self.longPressTimer?.invalidate()
-                    }
-                }) {
-                    action(.release_)
-//                    self.longPressTimer?.invalidate()
-                }
+                .gesture(
+                    TapGesture(count: 1)
+                        .onEnded {
+                            action(.click)
+                        }
+                        .exclusively(before: DragGesture(minimumDistance: 0)
+                                        .onChanged { _ in
+                                            if !longPressPerformed && longPressEnabled {
+                                                action(.longPress)
+                                                longPressPerformed = true
+                                            }
+                                        }
+                                        .onEnded { _ in
+                                            action(.release_)
+                                            longPressPerformed = false
+                                        }
+                        )
+                )
         }
         .disabled(disabled)
     }

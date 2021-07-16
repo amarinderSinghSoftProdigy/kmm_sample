@@ -30,15 +30,23 @@ struct NotificationsScreen: View {
             
             self.filterView
             
-            TransparentList(data: notifications,
-                            dataType: DataNotificationData.self,
-                            listName: .notifications,
-                            pagination: scope.pagination,
-                            onTapGesture: { _ in },
-                            loadItems: { scope.loadItems() } ) { _, element in
-                NotificationView(data: element) {
-                    scope.selectItem(item: element)
+            if let notifications = notifications.value,
+               notifications.count > 0 {
+                TransparentList(data: self.notifications,
+                                dataType: DataNotificationData.self,
+                                listName: .notifications,
+                                pagination: scope.pagination,
+                                onTapGesture: { _ in },
+                                loadItems: { scope.loadItems() } ) { _, element in
+                    NotificationView(data: element) {
+                        scope.selectItem(item: element)
+                    }
                 }
+            }
+            else {
+                EmptyListView(imageName: "EmptyNotifications",
+                              titleLocalizationKey: "empty_notifications",
+                              handleHomeTap: { scope.goHome() })
             }
         }
         .hideKeyboardOnTap()

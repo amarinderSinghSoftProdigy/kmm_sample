@@ -83,16 +83,48 @@ struct OrdersScreen: View {
                           isSelected: true,
                           itemsNumber: (self.ordersNumber.value as? Int) ?? 0)
             
-            TransparentList(data: self.orders,
-                            dataType: DataOrder.self,
-                            listName: .orders,
-                            pagination: scope.pagination,
-                            elementsSpacing: 8,
-                            onTapGesture: { scope.selectItem(item: $0) },
-                            loadItems: { scope.loadItems() }) { _, order in
-                OrderView(order: order)
+            if let orders = self.orders.value,
+               orders.count > 0 {
+                TransparentList(data: self.orders,
+                                dataType: DataOrder.self,
+                                listName: .orders,
+                                pagination: scope.pagination,
+                                elementsSpacing: 8,
+                                onTapGesture: { scope.selectItem(item: $0) },
+                                loadItems: { scope.loadItems() }) { _, order in
+                    OrderView(order: order)
+                }
+            }
+            else {
+                emptyListView
             }
         }
+    }
+    
+    private var emptyListView: some View {
+        let imageName: String
+        let titleLocalizationKey: String
+        
+        switch scope.type {
+        case .purchaseOrder:
+            imageName = "EmptyOrders"
+            titleLocalizationKey = "empty_new_orders"
+            
+        case .order:
+            imageName = "EmptyOrders"
+            titleLocalizationKey = "empty_orders"
+            
+        case .history:
+            imageName = "EmptyOrdersHistory"
+            titleLocalizationKey = "empty_orders_history"
+            
+        default:
+            return AnyView(EmptyView())
+        }
+        
+        return AnyView(EmptyListView(imageName: imageName,
+                                     titleLocalizationKey: titleLocalizationKey,
+                                     handleHomeTap: { scope.goHome() }))
     }
     
     private var filterView: some View {

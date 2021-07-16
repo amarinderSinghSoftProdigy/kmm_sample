@@ -143,6 +143,8 @@ struct DashboardScreen: View {
                               textWeight: .semiBold,
                               fontSize: 12,
                               color: .lightGrey)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
             }
             .modifier(DashboardItemModifier(isClickable: true))
         }
@@ -173,6 +175,8 @@ struct DashboardScreen: View {
                             LocalizedText(localizationKey: sectionNameLocalizationKey,
                                           textWeight: .semiBold,
                                           fontSize: 12)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
                             
                             Text("\(count)")
                                 .medicoText(textWeight: .bold,

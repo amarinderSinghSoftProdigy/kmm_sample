@@ -118,6 +118,7 @@
 "stores" = "Stores";
 "trial_ends" = "Trial Ends on ";
 "orders_history" = "Orders History";
+"version %@" = "v %@";
 
 // MARK: Dashboard
 "purchase_orders" = "Purchase Orders";
@@ -194,18 +195,23 @@
 "save" = "Save";
 "no_of_credit_days" = "No. of Credit Days";
 "thank_you_for_request" = "Thank you for your request!";
+"empty_stockists" = "Not Connected to any Stockists";
+"empty_stockists_subtitle" = "Please connect to any Stockist";
 
 // MARK: Hospitals Management
 "hospitals" = "Hospitals";
 "your_hospitals" = "Your Hospitals";
+"empty_hospitals" = "No Hospitals connected yet";
 
 // MARK: Retailers Management
 "retailers" = "Retailers";
 "your_retailers" = "Your Retailers";
+"empty_retailers" = "No Retailers connected yet";
 
 // MARK: Season Boys Management
 "seasonBoys" = "Season Boys";
 "your_season_boys" = "Your Season Boys";
+"empty_seasons_boys" = "No Season Boys connected yet";
 
 // MARK: Bottom Sheet User Details
 "subscribe" = "Connect";
@@ -224,6 +230,7 @@
 
 // MARK: Notifications List
 "notifications" = "Notifications";
+"empty_notifications" = "No Notifications Found!";
 "unread" = "Unread";
 "read" = "Read";
 "all" = "All";
@@ -260,6 +267,7 @@
 
 // MARK: Store
 "store" = "Store";
+"empty_stores" = "No stores to view";
 
 // MARK: Help
 "help" = "Help";
@@ -277,10 +285,12 @@
 "empty_cart_description" = "Please, try to add something on cart then try again.";
 "empty_cart" = "Empty Cart";
 "available" = "Available";
+"not_available" = "Not Available";
 "limited" = "Limited";
 "quoted" = "Quoted";
 "continue" = "Continue";
 "total:" = "Total:";
+"delete_products" = "Delete all Not Available Quote products";
 
 // MARK: Get Quote
 "select_stockists" = "Select Stockists";
@@ -312,6 +322,8 @@
 
 // MARK: New Orders
 "new_orders" = "New Orders";
+"new" = "NEW";
+"empty_new_orders" = "No Purchase Orders from any of your connected Users";
 
 // MARK: Orders
 "orders" = "Orders";
@@ -330,6 +342,8 @@
 "accept_quoted_product_notification" = "Are you sure you want to serve a quoted product?";
 "reject_all_products_notification" = "Are you sure you want to Decline all products?";
 "confirm_order_notification" = "Are you sure you want to confirm the order?";
+"empty_orders" = "No orders placed to any Stockist or Sub-Stockist";
+"empty_orders_history" = "No accepted Purchase Orders to view history";
 
 // MARK: Confirm Order
 "action_confirmation" = "Action Confirmation";
@@ -342,8 +356,10 @@
 "invoices" = "Invoices";
 "inv_total:" = "INV Total:";
 "invoice_no:" = "Invoice No:";
+"empty_invoices" = "No Invoices were found";
 
 // MARK: Error Codes
+"E0000" = "Error";
 "E0001" = "Customer Type is required";
 "E0002" = "First name is required";
 "E0003" = "Last name is required";

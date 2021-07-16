@@ -193,10 +193,11 @@ struct TableViewCell: View {
     let textLocalizationKey: String?
     
     let imageName: String?
-    let imageColor: AppColor?
     let imageSize: CGFloat
     
     let style: Style
+    
+    let extraChipTextLocalizationKey: String?
     
     let onTapAction: () -> ()
     
@@ -207,20 +208,35 @@ struct TableViewCell: View {
         
         return AnyView(
             Button(action: { self.onTapAction() }) {
-                HStack(spacing: 24) {
+                HStack(spacing: 20) {
                     if let imageName = self.imageName {
                         Image(imageName)
-                            .renderingMode(imageColor == nil ? .original : .template)
+                            .renderingMode(.template)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: imageSize, height: imageSize)
-                            .foregroundColor(appColor: imageColor ?? .white)
+                            .foregroundColor(appColor: style.foregroundColor)
                     }
                     
-                    LocalizedText(localizationKey: localizationKey,
-                                  textWeight: style.textWeight,
-                                  fontSize: 15,
-                                  color: style.foregroundColor)
+                    HStack(spacing: 12) {
+                        LocalizedText(localizationKey: localizationKey,
+                                      textWeight: style.textWeight,
+                                      fontSize: 15,
+                                      color: style.foregroundColor)
+                            .lineLimit(1)
+                    
+                        if let extraChipTextLocalizationKey = self.extraChipTextLocalizationKey {
+                            LocalizedText(localizationKey: extraChipTextLocalizationKey,
+                                          textWeight: .bold,
+                                          fontSize: 10,
+                                          color: .white)
+                                .frame(width: 40, height: 20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 100)
+                                        .fill(appColor: .red)
+                                )
+                        }
+                    }
                     
                     if style.hasNavigationArrow {
                         Spacer()
@@ -236,17 +252,19 @@ struct TableViewCell: View {
     
     init(textLocalizationKey: String?,
          imageName: String?,
-         imageColor: AppColor? = nil,
          imageSize: CGFloat = 18,
          style: Style,
+         extraChipTextLocalizationKey: String? = nil,
          onTapAction: @escaping () -> ()) {
         self.textLocalizationKey = textLocalizationKey
         
         self.imageName = imageName
-        self.imageColor = imageColor
         self.imageSize = imageSize
        
         self.style = style
+        
+        self.extraChipTextLocalizationKey = extraChipTextLocalizationKey
+        
         self.onTapAction = onTapAction
     }
     
@@ -363,5 +381,54 @@ struct CheckBox: View {
         self.selected = selected
         
         self.backgroundColor = backgroundColor
+    }
+}
+
+struct EmptyListView: View {
+    let imageName: String
+    
+    let titleLocalizationKey: String
+    let subtitleLocalizationKey: String?
+    
+    let handleHomeTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 15) {
+                Image(imageName)
+                
+                VStack(spacing: 4) {
+                    LocalizedText(localizationKey: titleLocalizationKey,
+                                  textWeight: .bold,
+                                  fontSize: 15)
+                    
+                    if let subtitleLocalizationKey = self.subtitleLocalizationKey {
+                        LocalizedText(localizationKey: subtitleLocalizationKey,
+                                      fontSize: 12)
+                            .opacity(0.6)
+                    }
+                }
+            }
+            
+            MedicoButton(localizedStringKey: "home",
+                         isEnabled: true,
+                         width: 105,
+                         height: 43,
+                         action: handleHomeTap)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(50)
+    }
+    
+    init(imageName: String,
+         titleLocalizationKey: String,
+         subtitleLocalizationKey: String? = nil,
+         handleHomeTap: @escaping () -> Void) {
+        self.imageName = imageName
+        
+        self.titleLocalizationKey = titleLocalizationKey
+        self.subtitleLocalizationKey = subtitleLocalizationKey
+        
+        self.handleHomeTap = handleHomeTap
     }
 }

@@ -44,15 +44,24 @@ private struct StoresListScreen: View {
                                                                 enteredTextButton: .clear),
                       onTextChange: { newValue, _ in scope.search(value: newValue) })
             
-            TransparentList(data: stores,
-                            dataType: DataStore.self,
-                            listName: .stores,
-                            pagination: scope.pagination,
-                            onTapGesture: { scope.selectItem(item: $0) },
-                            loadItems: { scope.loadItems() }) { _, element in
-                StoreItemView(store: element)
+            
+            if let stores = self.stores.value,
+               stores.count > 0 {
+                TransparentList(data: self.stores,
+                                dataType: DataStore.self,
+                                listName: .stores,
+                                pagination: scope.pagination,
+                                onTapGesture: { scope.selectItem(item: $0) },
+                                loadItems: { scope.loadItems() }) { _, element in
+                    StoreItemView(store: element)
+                }
+                .hideKeyboardOnTap()
             }
-            .hideKeyboardOnTap()
+            else {
+                EmptyListView(imageName: "EmptyStores",
+                              titleLocalizationKey: "empty_stores",
+                              handleHomeTap: { scope.goHome() })
+            }
         }
         .keyboardResponder()
         .padding(.horizontal, 16)

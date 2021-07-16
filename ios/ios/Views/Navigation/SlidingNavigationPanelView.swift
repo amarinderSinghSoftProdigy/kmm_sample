@@ -136,22 +136,9 @@ private struct _SlidingPanelView: View {
                 LocalizedText(localizationKey: user?.type.localizedName ?? "",
                               textWeight: .medium)
                 
-                HStack(spacing: 0) {
-                    Text("(")
-                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
-                    
-                    LocalizedText(localizationKey: "trial_ends",
-                                  textWeight: .mediumItalic,
-                                  fontSize: 12)
-                    
-                    Text(user?.subscription?.validUntil ?? "")
-                        .medicoText(textWeight: .boldItalic,
-                                    fontSize: 12)
-                    
-                    Text(")")
-                        .medicoText(textWeight: .mediumItalic, fontSize: 12)
-                }
-                
+                Text(user?.subscription?.validUntil ?? "")
+                    .medicoText(textWeight: .mediumItalic,
+                                fontSize: 12)
             }
             .padding()
         }
@@ -159,34 +146,44 @@ private struct _SlidingPanelView: View {
     }
     
     private var optionsPanel: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack(alignment: .bottomTrailing) {
             AppColor.primary.color
                 .testingIdentifier("sliding_panel")
                 .edgesIgnoringSafeArea(.all)
             
-            VStack(alignment: .leading, spacing: 20) {
-                VStack(spacing: 20) {
-                    ForEach(navigationSection.main, id: \.self) { option in
-                        NavigationCell(navigationOption: option, style: .navigation) {
-                            self.closeSlidingPanel(true)
+            Group {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 20) {
+                        ForEach(navigationSection.main, id: \.self) { option in
+                            NavigationCell(navigationOption: option, style: .navigation) {
+                                self.closeSlidingPanel(true)
+                            }
+                        }
+                    }
+                    .scrollView()
+                    
+                    Spacer()
+                    
+                    AppColor.grey1.color
+                        .frame(height: 1)
+                    
+                    VStack(spacing: 20) {
+                        ForEach(navigationSection.footer, id: \.self) { option in
+                            NavigationCell(navigationOption: option, style: .plain)
                         }
                     }
                 }
-                .scrollView()
                 
-                Spacer()
-                
-                AppColor.grey1.color
-                    .frame(height: 1)
-                
-                VStack(spacing: 20) {
-                    ForEach(navigationSection.footer, id: \.self) { option in
-                        NavigationCell(navigationOption: option, style: .plain)
-                    }
+                if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                    LocalizedText(localizedStringKey: LocalizedStringKey("version \(version)"),
+                                  textWeight: .semiBold,
+                                  fontSize: 15,
+                                  color: .grey1)
                 }
             }
             .padding()
             .padding(.bottom, 20)
+            
         }
     }
     
@@ -200,8 +197,8 @@ private struct _SlidingPanelView: View {
         var body: some View {
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
-                          imageColor: .darkBlue,
                           style: style,
+                          extraChipTextLocalizationKey: navigationOption == .NewOrders() ? "new" : nil,
                           onTapAction: {
                             _ = navigationOption.select()
                             
@@ -298,7 +295,7 @@ extension NavigationOption {
             return "help"
             
         case .NewOrders():
-            return "new_orders"
+            return "purchase_orders"
             
         case .Orders():
             return "orders"
