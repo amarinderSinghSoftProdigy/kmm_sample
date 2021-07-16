@@ -124,7 +124,7 @@ struct OrdersScreen: View {
         
         return AnyView(EmptyListView(imageName: imageName,
                                      titleLocalizationKey: titleLocalizationKey,
-                                     handleHomeTap: { }))
+                                     handleHomeTap: { scope.goHome() }))
     }
     
     private var filterView: some View {

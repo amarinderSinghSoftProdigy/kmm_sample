@@ -46,7 +46,7 @@ struct NotificationsScreen: View {
             else {
                 EmptyListView(imageName: "EmptyNotifications",
                               titleLocalizationKey: "empty_notifications",
-                              handleHomeTap: { })
+                              handleHomeTap: { scope.goHome() })
             }
         }
         .hideKeyboardOnTap()

@@ -98,7 +98,7 @@ struct InvoicesScreen: View {
             else {
                 EmptyListView(imageName: "EmptyInvoices",
                               titleLocalizationKey: "empty_invoices",
-                              handleHomeTap: { })
+                              handleHomeTap: { scope.goHome() })
             }
         }
     }

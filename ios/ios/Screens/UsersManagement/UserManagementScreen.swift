@@ -24,7 +24,7 @@ struct UserManagementScreen: View {
         let screenName: String
         let emptyListView: EmptyListView
         
-        let handleHomeTap: () -> Void = { }
+        let handleHomeTap: () -> Void = { scope.goHome() }
         
         switch self.scope {
         

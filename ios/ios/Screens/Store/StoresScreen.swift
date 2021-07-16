@@ -60,7 +60,7 @@ private struct StoresListScreen: View {
             else {
                 EmptyListView(imageName: "EmptyStores",
                               titleLocalizationKey: "empty_stores",
-                              handleHomeTap: { })
+                              handleHomeTap: { scope.goHome() })
             }
         }
         .keyboardResponder()
