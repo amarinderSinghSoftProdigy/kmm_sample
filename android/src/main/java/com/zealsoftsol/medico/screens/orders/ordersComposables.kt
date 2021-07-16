@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
@@ -104,22 +105,35 @@ fun OrdersScreen(scope: OrdersScope) {
                 }
             }
             val items = scope.items.flow.collectAsState()
-            LazyColumn(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 16.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-            ) {
-                itemsIndexed(
-                    items = items.value,
-                    itemContent = { index, item ->
-                        OrderItem(item) { scope.selectItem(item) }
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }
-                    },
+            if (items.value.isEmpty() && scope.items.updateCount > 0) {
+                val (icon, text) = when (scope.type) {
+                    OrderType.ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
+                    OrderType.PURCHASE_ORDER -> R.drawable.ic_missing_orders to R.string.missing_po_orders
+                    OrderType.HISTORY -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders
+                }
+                NoRecords(
+                    icon = icon,
+                    text = text,
+                    onHome = { scope.goHome() },
                 )
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    itemsIndexed(
+                        items = items.value,
+                        itemContent = { index, item ->
+                            OrderItem(item) { scope.selectItem(item) }
+                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadItems()
+                            }
+                        },
+                    )
+                }
             }
         } else {
             val dateRange = scope.dateRange.flow.collectAsState()
@@ -192,7 +206,9 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Row(modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp)) {
+            Row(modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 6.dp)) {
                 Text(
                     text = order.tradeName,
                     color = MaterialTheme.colors.background,
@@ -200,20 +216,33 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     fontWeight = FontWeight.W600,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(0.6f),
                 )
-
-                Box(modifier = Modifier.weight(0.4f)) {
-                    Text(
-                        text = "${order.info.date} ${order.info.time}",
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.align(Alignment.CenterEnd),
-                    )
-                }
+            }
+            Space(4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = order.info.id,
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${order.info.date} ${order.info.time}",
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             Row(
                 modifier = Modifier
@@ -241,14 +270,6 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
-                )
-                Text(
-                    text = order.info.id,
-                    color = ConstColors.gray,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = buildAnnotatedString {

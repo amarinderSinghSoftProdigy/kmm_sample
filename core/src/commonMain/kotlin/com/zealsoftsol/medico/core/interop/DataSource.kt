@@ -23,11 +23,15 @@ sealed class BaseDataSource<T> {
 
 class DataSource<T>(private val stateFlow: MutableStateFlow<T>) : BaseDataSource<T>() {
 
+    var updateCount = 0
+        private set
+
     constructor(initialValue: T) : this(MutableStateFlow(initialValue))
 
     internal var value: T
         get() = stateFlow.value
         internal set(value) {
+            updateCount++
             stateFlow.value = value
         }
     override val flow: StateFlow<T>

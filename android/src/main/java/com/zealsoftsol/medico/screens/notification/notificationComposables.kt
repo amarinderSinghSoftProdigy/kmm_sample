@@ -61,6 +61,7 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
@@ -77,7 +78,9 @@ import org.joda.time.format.PeriodFormatterBuilder
 
 @Composable
 fun NotificationScreen(scope: NotificationScope, listState: LazyListState) {
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 16.dp)) {
         Space(16.dp)
         when (scope) {
             is NotificationScope.All -> AllNotifications(scope, listState)
@@ -147,19 +150,27 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     }
     Space(12.dp)
     val items = scope.items.flow.collectAsState()
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        itemsIndexed(
-            items = items.value,
-            itemContent = { index, item ->
-                NotificationItem(item) { scope.selectItem(item) }
-                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                    scope.loadItems()
-                }
-            },
+    if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        NoRecords(
+            icon = R.drawable.ic_missing_notification,
+            text = R.string.missing_notifications,
+            onHome = { scope.goHome() },
         )
+    } else {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            itemsIndexed(
+                items = items.value,
+                itemContent = { index, item ->
+                    NotificationItem(item) { scope.selectItem(item) }
+                    if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                        scope.loadItems()
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -168,9 +179,15 @@ private fun NotificationItem(item: NotificationData, onClick: () -> Unit) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
             BoxWithConstraints {
                 Column(modifier = Modifier.width(maxWidth * 3 / 4)) {
                     Text(
@@ -255,7 +272,11 @@ private fun PreviewNotifications(scope: NotificationScope.Preview<*, *>) {
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
             when (scope) {
                 is NotificationScope.Preview.SubscriptionRequest -> {
                     val details = scope.details.flow.collectAsState()
@@ -290,7 +311,11 @@ private fun SubscriptionDeatails(
     val isSeasonBoy = details.customerData.customerType == UserType.SEASON_BOY.serverValue
 
     if (!isSeasonBoy) {
-        Row(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+        ) {
             CoilImage(
                 src = "",
                 size = 100.dp,

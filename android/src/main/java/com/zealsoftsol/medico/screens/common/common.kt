@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -315,7 +316,8 @@ fun NavigationCell(
     text: String,
     color: Color = MaterialTheme.colors.onPrimary,
     clickIndication: Indication? = LocalIndication.current,
-    onClick: () -> Unit
+    label: @Composable (RowScope.() -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -340,8 +342,9 @@ fun NavigationCell(
             fontSize = 15.sp,
             fontWeight = FontWeight.W600,
             color = color,
-            modifier = Modifier.padding(start = 32.dp),
+            modifier = Modifier.padding(start = 24.dp),
         )
+        label?.invoke(this)
     }
 }
 

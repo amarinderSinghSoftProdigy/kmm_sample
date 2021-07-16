@@ -79,6 +79,8 @@ data class CartItem(
     val type: String,
     @SerialName("sbRetailer")
     val seasonBoyRetailer: SeasonBoyRetailer? = null,
+    @SerialName("quoteMessage")
+    val quotedData: QuotedData? = null,
 )
 
 @Serializable
@@ -113,4 +115,10 @@ data class SellerOrder(
     @SerialName("type")
     val paymentMethod: PaymentMethod,
     val total: Total,
+)
+
+@Serializable
+data class QuotedData(
+    val message: String,
+    val isAvailable: Boolean,
 )
