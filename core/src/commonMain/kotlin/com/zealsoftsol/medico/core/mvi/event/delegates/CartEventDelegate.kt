@@ -51,6 +51,7 @@ internal class CartEventDelegate(
             )
         }
         is Event.Action.Cart.RemoveSellerItems -> event.run { removeSellerItems(sellerUnitCode) }
+        is Event.Action.Cart.LoadCart -> loadCart()
         is Event.Action.Cart.ClearCart -> clearCart()
         is Event.Action.Cart.PreviewCart -> previewCart()
         is Event.Action.Cart.ConfirmCartOrder -> confirmCartOrder()
@@ -166,6 +167,10 @@ internal class CartEventDelegate(
                     }.onError(navigator)
             }
         }
+    }
+
+    private suspend fun loadCart() {
+        cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
     }
 
     private suspend inline fun async(crossinline block: suspend () -> Unit) {

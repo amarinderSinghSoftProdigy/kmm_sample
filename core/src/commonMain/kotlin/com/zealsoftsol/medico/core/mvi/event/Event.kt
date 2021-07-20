@@ -176,6 +176,7 @@ sealed class Event {
 
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
+            object LoadCart : Cart()
             object ClearCart : Cart()
             object PreviewCart : Cart()
             object ConfirmCartOrder : Cart()
