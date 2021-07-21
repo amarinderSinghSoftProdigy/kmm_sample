@@ -63,19 +63,24 @@ internal class AuthEventDelegate(
                             else
                                 LimitedAccessScope.get(user, userRepo.getUserDataSource())
                         )
-//                        userRepo.loadDashboard()
                     }.onError(navigator)
             }.onError(navigator)
         }
     }
 
     private suspend fun authTryLogOut(notifyServer: Boolean) {
-        if (notifyServer) {
-            navigator.withProgress { userRepo.logout() }
-                .onSuccess {
-                    navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
-                    navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
-                }.onError(navigator)
+        if (userRepo.userFlow.value != null) {
+            if (notifyServer) {
+                navigator.withProgress { userRepo.logout() }
+                    .onSuccess {
+                        navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                        navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+                    }.onError(navigator)
+            } else {
+                userRepo.clear()
+                navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+                navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
+            }
         }
     }
 

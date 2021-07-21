@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
@@ -36,9 +37,11 @@ import com.zealsoftsol.medico.core.utils.TapModeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
@@ -123,9 +126,20 @@ internal class EventCollector(
     )
 
     init {
+        var lastActionTime = Time.now
+        val scope = CoroutineScope(compatDispatcher)
         events.onEach {
+            lastActionTime = Time.now
             delegateMap[it.typeClazz]!!.genericHandle(it)
-        }.launchIn(CoroutineScope(compatDispatcher))
+        }.launchIn(scope)
+        scope.launch {
+            while (isActive) {
+                delay(60_000)
+                if (Time.now - lastActionTime > INACTIVITY_THRESHOLD_MS) {
+                    sendEvent(Event.Action.Auth.LogOut(notifyServer = true))
+                }
+            }
+        }
     }
 
     fun getStartingScope(): Scope {
@@ -150,9 +164,6 @@ internal class EventCollector(
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadUserFromServer()
             }
-//            GlobalScope.launch(compatDispatcher) {
-//                userRepo.loadDashboard()
-//            }
             GlobalScope.launch(compatDispatcher) {
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
             }
@@ -163,6 +174,8 @@ internal class EventCollector(
     }
 
     companion object {
+        private const val INACTIVITY_THRESHOLD_MS = 1000 * 60 * 30
+
         private val events = MutableSharedFlow<Event>(1, 0, BufferOverflow.DROP_OLDEST)
 
         fun sendEvent(event: Event) = events.tryEmit(event)
