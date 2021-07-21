@@ -20,6 +20,10 @@ class CartScope(
     internal val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
+    init {
+        EventCollector.sendEvent(Event.Action.Cart.LoadCart)
+    }
+
     fun updateItemCount(sellerCart: SellerCart, item: CartItem, quantity: Int): Boolean {
         if (quantity < 0) return false
         return if (quantity == 0) {

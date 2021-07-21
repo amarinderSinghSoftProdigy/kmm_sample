@@ -119,12 +119,14 @@ class UserRepo(
 
     suspend fun logout(): AnyResponse {
         return networkAuthScope.logout().also {
-            if (it.isSuccess) {
-                clearUserData()
-                userFlow.value = null
-                dashboardFlow.value = null
-            }
+            if (it.isSuccess) clear()
         }
+    }
+
+    fun clear() {
+        clearUserData()
+        userFlow.value = null
+        dashboardFlow.value = null
     }
 
     fun getAuthCredentials(): AuthCredentials {
