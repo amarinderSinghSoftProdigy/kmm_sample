@@ -20,7 +20,7 @@ jobs:
       - name: Select Xcode version
         run: |
           ls /Applications
-          xcode-select -s /Applications/Xcode12.5.app
+          xcode-select -s /Applications/Xcode.app
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
