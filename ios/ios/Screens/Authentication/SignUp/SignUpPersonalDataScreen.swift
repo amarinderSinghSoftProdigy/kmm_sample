@@ -116,6 +116,9 @@ struct SignUpPersonalDataScreen: View {
                 LocalizedText(localizationKey: "continueing_i_accept",
                               fontSize: 12,
                               color: .textGrey)
+                    .onTapGesture {
+                        acceptedTermsAndConditions.wrappedValue.toggle()
+                    }
                 
                 LocalizedText(localizationKey: "terms_of_conditions_and_privacy_policy",
                               textWeight: .semiBold,
