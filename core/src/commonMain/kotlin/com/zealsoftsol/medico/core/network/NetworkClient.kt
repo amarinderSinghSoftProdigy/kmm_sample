@@ -753,7 +753,8 @@ class NetworkClient(
 
     enum class BaseUrl(val url: String) {
         DEV("https://develop-api-gateway.medicostores.com"),
-//        PROD("no production url yet"),
+        STAG("https://staging-api-gateway.medicostores.com"),
+        PROD("https://partner-api-gateway.medicostores.com");
     }
 }
 

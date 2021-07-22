@@ -18,11 +18,16 @@ class MedicoApp : Application(), DIAware {
         val (di, _, notifications) = UiLink.appStart(
             context = this,
             useMocks = false,
-            useNavigatorSafeCasts = !BuildConfig.DEBUG,
-            useNetworkInterceptor = BuildConfig.FLAVOR == "dev",
-            crashOnServerError = BuildConfig.FLAVOR == "dev",
-            loggerLevel = if (BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
-            networkUrl = NetworkClient.BaseUrl.DEV,
+            useNavigatorSafeCasts = !BuildConfig.DEBUG, // all release builds
+            useNetworkInterceptor = BuildConfig.FLAVOR == "dev", // all dev builds
+            crashOnServerError = BuildConfig.FLAVOR == "dev", // all dev builds
+            loggerLevel = if (!BuildConfig.DEBUG) Logger.Level.NONE else Logger.Level.LOG,
+            networkUrl = when (BuildConfig.FLAVOR) {
+                "dev" -> NetworkClient.BaseUrl.DEV
+                "stag" -> NetworkClient.BaseUrl.STAG
+                "prod" -> NetworkClient.BaseUrl.PROD
+                else -> throw UnsupportedOperationException("unknown flavor")
+            },
         )
         this.messaging = notifications
         this.di = di
