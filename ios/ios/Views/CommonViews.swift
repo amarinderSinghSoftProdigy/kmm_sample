@@ -360,7 +360,6 @@ struct CheckBox: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .foregroundColor(appColor: .lightBlue)
-                    
             }
             else {
                 Circle()
