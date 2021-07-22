@@ -15,19 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "623474355051-uuagnpi3kna344536hk11oeu65ickqbb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.zealsoftsol.medico",
-            "certificate_hash": "3e5bdcf6d9690d9f6ed0eb499f94023da4e8e8f0"
-          }
-        },
-        {
           "client_id": "623474355051-jpagrl8ja58i4n6v0oui3cvu9dinjnde.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.zealsoftsol.medico",
             "certificate_hash": "02cb3dec4fda897c73f11167002eba3e6a251ef5"
+          }
+        },
+        {
+          "client_id": "623474355051-uuagnpi3kna344536hk11oeu65ickqbb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zealsoftsol.medico",
+            "certificate_hash": "3e5bdcf6d9690d9f6ed0eb499f94023da4e8e8f0"
           }
         },
         {
@@ -46,6 +46,14 @@
             {
               "client_id": "623474355051-s9tmd3n8bt0strrv08g8icg1urq9l214.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "623474355051-oclgbcef3ov6c6k3egkb5ln73on9bq9c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zealsoftsol.medico",
+                "app_store_id": "1542012484"
+              }
             }
           ]
         }
@@ -60,6 +68,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "623474355051-khf30kmaoit4f0l3u7fpfdj8cm7ofmqt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zealsoftsol.medico.dev",
+            "certificate_hash": "02cb3dec4fda897c73f11167002eba3e6a251ef5"
+          }
+        },
+        {
           "client_id": "623474355051-v939kodtv3sfs6uj11grh20og0b4eqmg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -68,10 +84,55 @@
           }
         },
         {
-          "client_id": "623474355051-khf30kmaoit4f0l3u7fpfdj8cm7ofmqt.apps.googleusercontent.com",
+          "client_id": "623474355051-s9tmd3n8bt0strrv08g8icg1urq9l214.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ2mAI4bJZtsLIWnEaRw8lgCOcQl1R_WY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "623474355051-s9tmd3n8bt0strrv08g8icg1urq9l214.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "623474355051-oclgbcef3ov6c6k3egkb5ln73on9bq9c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zealsoftsol.medico",
+                "app_store_id": "1542012484"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623474355051:android:e53bb8ef13bc045d893a2e",
+        "android_client_info": {
+          "package_name": "com.zealsoftsol.medico.stag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "623474355051-lgk8vmpq0t5r7t3rqoj2vjeg3utb4fb7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.zealsoftsol.medico.dev",
+            "package_name": "com.zealsoftsol.medico.stag",
+            "certificate_hash": "3e5bdcf6d9690d9f6ed0eb499f94023da4e8e8f0"
+          }
+        },
+        {
+          "client_id": "623474355051-vto4108tuvsee63er3rpcv4p73r9cga6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zealsoftsol.medico.stag",
             "certificate_hash": "02cb3dec4fda897c73f11167002eba3e6a251ef5"
           }
         },
@@ -91,6 +152,14 @@
             {
               "client_id": "623474355051-s9tmd3n8bt0strrv08g8icg1urq9l214.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "623474355051-oclgbcef3ov6c6k3egkb5ln73on9bq9c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zealsoftsol.medico",
+                "app_store_id": "1542012484"
+              }
             }
           ]
         }

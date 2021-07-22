@@ -121,7 +121,6 @@ object Config {
     object Version {
         var code: Int = -1
         var name: String = "na"
-        internal var isDevBuild: Boolean = false
 
         fun parseConfig() {
             val file = File("config.json")
@@ -131,9 +130,8 @@ object Config {
                 val major = version["major"].toString().toInt()
                 val minor = version["minor"].toString().toInt()
                 val patch = version["patch"].toString().toInt()
-                isDevBuild = version["build"].toString().toBoolean()
-                code = major * 10000 + minor * 1000 + patch * 10 + (if (isDevBuild) 1 else 0)
-                name = "${major}.${minor}.${patch}${if (isDevBuild) "[dev]" else ""}"
+                code = major * 10000 + minor * 1000 + patch * 10 + 0
+                name = "${major}.${minor}.${patch}"
                 println("APP VERSION $name")
             }
         }
