@@ -17,16 +17,8 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      - name: Select Xcode version
-        run: |
-          ls /Applications
-          sudo xcode-select -s /Applications/Xcode_12.5.app
-
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
-
-      - name: Clean the derived data
-        run: rm -rf ~/Library/Developer/Xcode/DerivedData/
 
       - name: Set environment variables from project settings
         run: |
@@ -56,6 +48,7 @@ jobs:
         env:
           CONFIGURATION: Release
         run: |
+          JAVA_HOME=$(/usr/libexec/java_home -v 11)
           cd ios
           fastlane run build_app scheme:"Medico"
 
