@@ -55,6 +55,7 @@ fun InvoicesScreen(scope: InvoicesScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
+            hint = R.string.search_tradename,
             searchBarEnd = SearchBarEnd.Filter(isHighlighted = false) { scope.toggleFilter() },
             icon = Icons.Default.Search,
             elevation = 0.dp,

@@ -60,6 +60,7 @@ fun OrdersScreen(scope: OrdersScope) {
         Space(16.dp)
         BasicSearchBar(
             input = search.value,
+            hint = R.string.search_tradename,
             searchBarEnd = if (scope.type != OrderType.PURCHASE_ORDER) SearchBarEnd.Filter(
                 isHighlighted = false
             ) { scope.toggleFilter() } else null,

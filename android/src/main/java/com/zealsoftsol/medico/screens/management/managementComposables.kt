@@ -95,10 +95,10 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
             horizontalPadding = 16.dp,
         ) {
             val (icon, text) = when (scope) {
-                is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists
-                is ManagementScope.User.Retailer -> R.drawable.ic_retailer to R.string.retailers
-                is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys
-                is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals
+                is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists_search
+                is ManagementScope.User.Retailer -> R.drawable.ic_retailer to R.string.retailers_search
+                is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys_search
+                is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals_search
             }
             Icon(
                 painter = painterResource(id = icon),
@@ -124,6 +124,12 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
     } else {
         BasicSearchBar(
             input = search.value,
+            hint = when (scope) {
+                is ManagementScope.User.Stockist -> R.string.stockists_search
+                is ManagementScope.User.Retailer -> R.string.retailers_search
+                is ManagementScope.User.SeasonBoy -> R.string.season_boys_search
+                is ManagementScope.User.Hospital -> R.string.hospitals_search
+            },
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,

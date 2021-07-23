@@ -649,6 +649,7 @@ private fun FilterChip(name: String, onRemove: () -> Unit) {
 @Composable
 fun BasicSearchBar(
     input: String,
+    hint: Int = R.string.search,
     searchBarEnd: SearchBarEnd? = SearchBarEnd.Eraser,
     icon: ImageVector? = Icons.Default.Search,
     onIconClick: (() -> Unit)? = null,
@@ -675,7 +676,7 @@ fun BasicSearchBar(
         ) {
             if (input.isEmpty()) {
                 Text(
-                    text = stringResource(id = R.string.search),
+                    text = stringResource(id = hint),
                     color = ConstColors.gray.copy(alpha = 0.5f),
                     modifier = Modifier.padding(start = 2.dp),
                 )

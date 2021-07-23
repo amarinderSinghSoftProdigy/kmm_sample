@@ -79,7 +79,7 @@ enum class PaymentMethod(val serverValue: String) {
 
 enum class SubscriptionStatus(val serverValue: String) {
     PENDING("Pending"),
-    SUBSCRIBED("Subscribed"),
+    SUBSCRIBED("Connected"),
     REJECTED("Rejected"),
 }
 

@@ -303,7 +303,7 @@ private fun RowScope.SearchTabBar(
             modifier = Modifier.size(24.dp),
         )
         Text(
-            text = stringResource(id = R.string.search),
+            text = stringResource(id = R.string.search_products),
             color = ConstColors.gray.copy(alpha = 0.5f),
             modifier = Modifier.padding(start = 24.dp),
         )
@@ -347,6 +347,7 @@ private fun ActiveSearchTabBar(
     val keyboard = LocalSoftwareKeyboardController.current
     BasicSearchBar(
         input = search.value,
+        hint = R.string.search_products,
         icon = Icons.Default.ArrowBack,
         searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) {
             keyboard?.hide()

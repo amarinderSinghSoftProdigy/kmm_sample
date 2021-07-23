@@ -110,7 +110,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
             )
             Space(16.dp)
             Text(
-                text = stringResource(id = R.string.notifications),
+                text = stringResource(id = R.string.search_notifications),
                 fontWeight = FontWeight.W700,
                 color = MaterialTheme.colors.background,
             )
@@ -126,6 +126,7 @@ private fun AllNotifications(scope: NotificationScope.All, listState: LazyListSt
     } else {
         BasicSearchBar(
             input = search.value,
+            hint = R.string.search_notifications,
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,

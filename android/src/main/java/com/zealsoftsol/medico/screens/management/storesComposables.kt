@@ -89,6 +89,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
     BasicSearchBar(
         input = search.value,
+        hint = R.string.search_products,
         icon = null,
         horizontalPadding = 16.dp,
         searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
@@ -164,7 +165,7 @@ private fun AllStores(scope: StoresScope.All) {
             elevation = 0.dp,
             horizontalPadding = 16.dp,
         ) {
-            val (icon, text) = R.drawable.ic_stores to R.string.stores
+            val (icon, text) = R.drawable.ic_stores to R.string.stores_search
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
@@ -189,6 +190,7 @@ private fun AllStores(scope: StoresScope.All) {
     } else {
         BasicSearchBar(
             input = search.value,
+            hint = R.string.stores_search,
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,
