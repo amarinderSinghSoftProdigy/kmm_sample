@@ -306,4 +306,7 @@
     <string name="E0042">Order has not been submitted, please try after sometime.</string>
     <string name="E0043">Cart already submitted, please check</string>
     <string name="E0044">Cart not found, please check</string>
+    <string name="E0045">Gstin/Pan number already registered, Please try again</string>
+    <string name="E0046">Invalid current password, please enter valid password again!!</string>
+    <string name="E0047">Something went wrong!! Please try, change password again after sometime</string>
 </resources>
