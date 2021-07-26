@@ -129,6 +129,14 @@ jobs:
           name: build.log
           path: ~/Library/Logs/gym/*.log
 
+      - name: Upload app to App Store Connect
+        env:
+          APP_STORE_CONNECT_USERNAME: ${{ secrets.IOS_APP_STORE_CONNECT_USERNAME }}
+          APP_STORE_CONNECT_PASSWORD: ${{ secrets.IOS_APP_STORE_CONNECT_PASSWORD }}
+        run: |
+          cd ios
+          xcrun altool --upload-app -t ios -f "$PRODUCT_NAME.ipa" -u "$APP_STORE_CONNECT_USERNAME" -p "$APP_STORE_CONNECT_PASSWORD"
+
       - name: Slack Notification for the App Store Connect upload
         uses: 8398a7/action-slack@v3
         with:
