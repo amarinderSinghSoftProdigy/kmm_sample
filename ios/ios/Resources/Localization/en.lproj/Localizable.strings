@@ -137,6 +137,7 @@
 
 // MARK: Global Search
 "search" = "Search";
+"search_products" = "Search Products";
 "cancel" = "Cancel";
 "clear_all" = "Clear All";
 "clear" = "Clear";
@@ -185,13 +186,14 @@
 
 // MARK: Stockist Management
 "stockists" = "Stockists";
+"stockists_search" = "Stockists Search";
 "your_stockists" = "Your Stockists";
 "all_stockists" = "All Stockists";
 "pending" = "Pending";
 "subscribed" = "Connected";
 "choose_payment_method_description %@" = "Please choose Payment Method to connect with %@";
 "credit" = "Credit";
-"cash_on_delivery" = "Cash on delivery";
+"cash" = "Cash";
 "save" = "Save";
 "no_of_credit_days" = "No. of Credit Days";
 "thank_you_for_request" = "Thank you for your request!";
@@ -200,16 +202,19 @@
 
 // MARK: Hospitals Management
 "hospitals" = "Hospitals";
+"hospitals_search" = "Hospitals Search";
 "your_hospitals" = "Your Hospitals";
 "empty_hospitals" = "No Hospitals connected yet";
 
 // MARK: Retailers Management
 "retailers" = "Retailers";
+"retailers_search" = "Retailers Search";
 "your_retailers" = "Your Retailers";
 "empty_retailers" = "No Retailers connected yet";
 
 // MARK: Season Boys Management
 "seasonBoys" = "Season Boys";
+"season_boys_search" = "Season Boys Search";
 "your_season_boys" = "Your Season Boys";
 "empty_seasons_boys" = "No Season Boys connected yet";
 
@@ -268,6 +273,7 @@
 // MARK: Store
 "store" = "Store";
 "empty_stores" = "No stores to view";
+"stores_search" = "Stores Search";
 
 // MARK: Help
 "help" = "Help";
@@ -321,12 +327,13 @@
 "type:" = "Type:";
 
 // MARK: New Orders
-"new_orders" = "New Orders";
+"new_orders" = "Purchase Orders";
 "new" = "NEW";
 "empty_new_orders" = "No Purchase Orders from any of your connected Users";
 
 // MARK: Orders
 "orders" = "Orders";
+"search_tradename" = "Search Tradename";
 "search_orders" = "Search in Orders";
 "date" = "Date";
 "from:" = "From:";

@@ -42,7 +42,8 @@ struct OrdersScreen: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            SearchBar(searchText: ordersSearch.value,
+            SearchBar(placeholderLocalizationKey: "search_tradename",
+                      searchText: ordersSearch.value,
                       style: .custom(fontWeight: .medium, placeholderOpacity: 0.5),
                       leadingButton: .init(button: .custom(
                                             AnyView(

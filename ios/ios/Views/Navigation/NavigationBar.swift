@@ -232,7 +232,8 @@ private struct _CustomizedNavigationBar: View {
                 getScopeButton(searchBarInfo.icon)
                 
                 HStack(spacing: spacing - 4) {
-                    SearchBar(style: .small)
+                    SearchBar(placeholderLocalizationKey: "search_products",
+                              style: .small)
                         .onTapGesture {
                             searchBarInfo.goToSearch()
                         }
@@ -293,7 +294,8 @@ private struct _CustomizedNavigationBar: View {
         
         var body: some View {
             HStack {
-                SearchBar(searchText: search.value,
+                SearchBar(placeholderLocalizationKey: "search_products",
+                          searchText: search.value,
                           style: .small,
                           showsCancelButton: false,
                           trailingButton: SearchBar.SearchBarButton(button: .filter(isHighlighted: isFilterApplied,
