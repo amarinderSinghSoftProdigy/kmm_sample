@@ -2,13 +2,13 @@ name: ios-development
 
 on:
   pull_request:
-    branches: [ develop, dev/ios-compact ]
+    branches: [ develop ]
     types: [ closed ]
 
   workflow_dispatch:
 
 jobs:
-  deploy-ios:
+  deploy-development-ios:
     runs-on: macos-latest
 
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && startsWith(github.head_ref, 'ios/'))
@@ -31,9 +31,9 @@ jobs:
         run: |
           exec .github/scripts/import-certificate.sh
 
-      - name: Import provisioning profile
+      - name: Import development provisioning profile
         env:
-          PROVISIONING_PROFILE_DATA: ${{ secrets.IOS_PROVISIONING_PROFILE_DATA }}
+          PROVISIONING_PROFILE_DATA: ${{ secrets.IOS_DEVELOPMENT_PROVISIONING_PROFILE_DATA }}
         run: |
           exec .github/scripts/import-profile.sh
 
@@ -44,13 +44,13 @@ jobs:
           xcrun agvtool next-version -all
           xcrun agvtool what-version
 
-      - name: Build app
+      - name: Build development server app
         env:
           CONFIGURATION: Release
         run: |
           JAVA_HOME=$(/usr/libexec/java_home -v 11)
           cd ios
-          fastlane run build_app scheme:"Medico"
+          fastlane run build_app scheme:"MedicoDev"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
@@ -65,7 +65,7 @@ jobs:
         run: |
           cd ios
           xcrun altool --upload-app -t ios -f "$PRODUCT_NAME.ipa" -u "$APP_STORE_CONNECT_USERNAME" -p "$APP_STORE_CONNECT_PASSWORD"
-      
+
       - name: Get the build version
         if: always()
         run: |
@@ -80,7 +80,7 @@ jobs:
           status: ${{ job.status }}
           author_name: ${{ secrets.REPO_NAME }}
           fields: all
-          text: iOS Build ${{ env.PROJECT_VERSION }} upload to Test Flight's been ${{ job.status == 'success' && 'Succeeded' || job.status == 'failure' && 'Failed' || 'Canceled' }}
+          text: iOS Development Build ${{ env.PROJECT_VERSION }} upload to Test Flight's been ${{ job.status == 'success' && 'Succeeded' || job.status == 'failure' && 'Failed' || 'Canceled' }}
           channel: mobile-release-pipeline
           icon_emoji: ${{ job.status == 'success' && ':white_check_mark:' || job.status == 'failure' && ':x:' || ':warning:' }}
         env:
@@ -108,3 +108,36 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_MOBILE_RELEASE_WEBHOOK }}
         if: steps.github_build_version_update.outcome != 'skipped'
+
+      - name: Import staging provisioning profile
+        env:
+          PROVISIONING_PROFILE_DATA: ${{ secrets.IOS_STAGING_PROVISIONING_PROFILE_DATA }}
+        run: |
+          exec .github/scripts/import-profile.sh
+
+      - name: Build staging server app
+        env:
+          CONFIGURATION: Release
+        run: |
+          JAVA_HOME=$(/usr/libexec/java_home -v 11)
+          cd ios
+          fastlane run build_app scheme:"MedicoStaging"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build.log
+          path: ~/Library/Logs/gym/*.log
+
+      - name: Slack Notification for the App Store Connect upload
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: ${{ secrets.REPO_NAME }}
+          fields: all
+          text: iOS Staging Build ${{ env.PROJECT_VERSION }} upload to Test Flight's been ${{ job.status == 'success' && 'Succeeded' || job.status == 'failure' && 'Failed' || 'Canceled' }}
+          channel: mobile-release-pipeline
+          icon_emoji: ${{ job.status == 'success' && ':white_check_mark:' || job.status == 'failure' && ':x:' || ':warning:' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_MOBILE_RELEASE_WEBHOOK }}
+        if: always()
