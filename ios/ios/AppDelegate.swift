@@ -21,16 +21,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func setUpAppNavigator() {
-        #if DEBUG
         let useMocks = false
+        
+        #if DEV
         let useNavigatorSafeCasts = false
         let useNetworkInterceptor = true
         let crashOnServerError = true
         #else
-        let useMocks = false
         let useNavigatorSafeCasts = true
         let useNetworkInterceptor = false
         let crashOnServerError = false
+        #endif
+        
+        #if DEV
+        let networkUrl: NetworkClient.BaseUrl = .dev
+        #elseif STAG
+        let networkUrl: NetworkClient.BaseUrl = .stag
+        #else
+        let networkUrl: NetworkClient.BaseUrl = .prod
         #endif
         
         let link = UiLink()
@@ -40,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   useNetworkInterceptor: useNetworkInterceptor,
                                   crashOnServerError: crashOnServerError,
                                   loggerLevel: Logger.Level.log,
-                                  networkUrl: .dev)
+                                  networkUrl: networkUrl)
         navigator = start.navigator
         notificationsManager = NotificationsManager(firebaseMessaging: start.firebaseMessaging)
         
