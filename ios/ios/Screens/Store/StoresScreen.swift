@@ -36,7 +36,7 @@ private struct StoresListScreen: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            SearchBar(placeholderLocalizationKey: "store",
+            SearchBar(placeholderLocalizationKey: "stores_search",
                       searchText: searchText.value,
                       leadingButton: SearchBar.SearchBarButton(emptyTextButton: .custom(AnyView(Image("Store"))),
                                                                enteredTextButton: .smallMagnifyingGlass),

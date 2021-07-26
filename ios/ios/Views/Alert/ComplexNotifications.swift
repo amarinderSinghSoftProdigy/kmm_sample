@@ -195,7 +195,7 @@ struct ComplexNotificationAlert: View {
         private func getLocalizationKey(for option: DataPaymentMethod) -> String {
             switch option {
             case .cash:
-                return "cash_on_delivery"
+                return "cash"
                 
             case .credit:
                 return "credit"

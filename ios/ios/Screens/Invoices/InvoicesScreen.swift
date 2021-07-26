@@ -40,7 +40,8 @@ struct InvoicesScreen: View {
     
     var body: some View {
         VStack(spacing: 32) {
-            SearchBar(searchText: invoicesSearch.value,
+            SearchBar(placeholderLocalizationKey: "search_tradename",
+                      searchText: invoicesSearch.value,
                       style: .custom(fontWeight: .medium, placeholderOpacity: 0.5),
                       leadingButton: .init(button: .custom(
                                             AnyView(

@@ -30,7 +30,7 @@ struct UserManagementScreen: View {
         
         case is ManagementScope.UserStockist:
             imageName = "Stockist"
-            searchBarPlaceholderKey = "stockists"
+            searchBarPlaceholderKey = "stockists_search"
             screenName = "Stockist"
             emptyListView = EmptyListView(imageName: "EmptyStockists",
                                           titleLocalizationKey: "empty_stockists",
@@ -39,7 +39,7 @@ struct UserManagementScreen: View {
         
         case is ManagementScope.UserRetailer:
             imageName = "Retailer"
-            searchBarPlaceholderKey = "retailers"
+            searchBarPlaceholderKey = "retailers_search"
             screenName = "Retailer"
             emptyListView = EmptyListView(imageName: "EmptyRetailers",
                                           titleLocalizationKey: "empty_retailers",
@@ -47,7 +47,7 @@ struct UserManagementScreen: View {
             
         case is ManagementScope.UserHospital:
             imageName = "Hospital"
-            searchBarPlaceholderKey = "hospitals"
+            searchBarPlaceholderKey = "hospitals_search"
             screenName = "Hospital"
             emptyListView = EmptyListView(imageName: "EmptyHospitals",
                                           titleLocalizationKey: "empty_hospitals",
@@ -55,7 +55,7 @@ struct UserManagementScreen: View {
             
         case is ManagementScope.UserSeasonBoy:
             imageName = "SeasonBoy"
-            searchBarPlaceholderKey = "seasonBoys"
+            searchBarPlaceholderKey = "season_boys_search"
             screenName = "SeasonBoy"
             emptyListView = EmptyListView(imageName: "EmptySeasonBoys",
                                           titleLocalizationKey: "empty_seasons_boys",
