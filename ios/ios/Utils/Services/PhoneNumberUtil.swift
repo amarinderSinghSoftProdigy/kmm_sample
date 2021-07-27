@@ -19,11 +19,11 @@ class PhoneNumberUtil {
     static let shared = PhoneNumberUtil()
     
     private init() {
-//        #if DEBUG
+        #if PROD
+        region = "IN"
+        #else
         region = Locale.current.regionCode ?? "IN"
-//        #else
-//        region = "IN"
-//        #endif
+        #endif
     }
     
     func isValidNumber(_ phoneNumberString: String) -> (isValid: Bool, formattedNumber: String) {
@@ -31,11 +31,8 @@ class PhoneNumberUtil {
               let formattedNumber = try? phoneUtil.format(phoneNumber, numberFormat: numberFormat) else {
             return (false, phoneNumberString)
         }
-//        #if DEBUG
-        let isValid = phoneUtil.isValidNumber(phoneNumber)
-//        #else
-//        let isValid = phoneUtil.isValidNumber(forRegion: phoneNumber, regionCode: region)
-//        #endif
+        
+        let isValid = phoneUtil.isValidNumber(forRegion: phoneNumber, regionCode: region)
         
         return (isValid, isValid ? formattedNumber : phoneNumberString)
     }

@@ -222,7 +222,7 @@
 		33FF54E2257FBCD40018DE59 /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		5D3B9C379AD2162E729C5D31 /* Pods_ios_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D65B56B42EA12578B135D16 /* Pods-Medico.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.release.xcconfig"; sourceTree = "<group>"; };
-		7555FF7B242A565900829871 /* Medico Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Medico Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7555FF7B242A565900829871 /* Dev medicostores.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dev medicostores.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF80242A565900829871 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7555FF84242A565B00829871 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -706,7 +706,7 @@
 		7555FF7C242A565900829871 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7555FF7B242A565900829871 /* Medico Dev.app */,
+				7555FF7B242A565900829871 /* Dev medicostores.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -789,7 +789,7 @@
 				333F45D025A49AC8008DE1D2 /* Introspect */,
 			);
 			productName = ios;
-			productReference = 7555FF7B242A565900829871 /* Medico Dev.app */;
+			productReference = 7555FF7B242A565900829871 /* Dev medicostores.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1127,7 +1127,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.staging;
-				PRODUCT_NAME = "Medico Staging";
+				PRODUCT_NAME = "Stag medicostores";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAG;
@@ -1222,7 +1222,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod;
-				PRODUCT_NAME = Medico;
+				PRODUCT_NAME = medicostores;
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
@@ -1311,7 +1311,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.staging;
-				PRODUCT_NAME = "Medico Staging";
+				PRODUCT_NAME = "Stag medicostores";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAG;
@@ -1400,7 +1400,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod;
-				PRODUCT_NAME = Medico;
+				PRODUCT_NAME = medicostores;
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
@@ -1549,7 +1549,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
-				PRODUCT_NAME = "Medico Dev";
+				PRODUCT_NAME = "Dev medicostores";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
@@ -1584,7 +1584,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
-				PRODUCT_NAME = "Medico Dev";
+				PRODUCT_NAME = "Dev medicostores";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
