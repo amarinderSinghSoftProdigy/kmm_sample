@@ -1,13 +1,69 @@
 package com.zealsoftsol.medico.core
 
+import com.zealsoftsol.medico.core.extensions.Logger
+import com.zealsoftsol.medico.core.extensions.logger
+import com.zealsoftsol.medico.core.mvi.Environment
+import com.zealsoftsol.medico.core.mvi.Navigator
+import com.zealsoftsol.medico.core.mvi.UiNavigator
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.network.NetworkClient
+import com.zealsoftsol.medico.core.notifications.FirebaseMessaging
+import com.zealsoftsol.medico.core.notifications.FirebaseMessagingCenter
 import org.kodein.di.DI
+import org.kodein.di.instance
 
 object UiLink {
 
-    fun appStart(context: Any): AppStartResult {
-        return AppStartResult(startKodein(context))
+    /**
+     * This should be called when the app's process starts.
+     *
+     * [context] - for Android client only, for iOS pass any object
+     * [useMocks] - if true configures the app to use mocked backend instead of a server
+     * [useNavigatorSafeCasts] - the app will crash if navigator tries to reference the wrong scope
+     * [useNetworkInterceptor] - prints detailed info about requests and responses with the server
+     * [crashOnServerError] - crash application if server responds with error
+     * [loggerLevel] - configures log level
+     * [networkUrl] - configure which base url will be used for network requests
+     */
+    fun appStart(
+        context: Any,
+        useMocks: Boolean,
+        useNavigatorSafeCasts: Boolean,
+        useNetworkInterceptor: Boolean,
+        crashOnServerError: Boolean,
+        loggerLevel: Logger.Level,
+        networkUrl: NetworkClient.BaseUrl,
+    ): AppStartResult {
+        logger = logger.copy(level = loggerLevel)
+        if (useMocks) Environment.Override.mocks(Environment.Mocks())
+        val di =
+            startKodein(
+                context,
+                useMocks,
+                useNavigatorSafeCasts,
+                useNetworkInterceptor,
+                crashOnServerError,
+                networkUrl
+            )
+        val navigator = directDI.instance<Navigator>()
+        val eventCollector = directDI.instance<EventCollector>()
+        eventCollector.updateData()
+        return AppStartResult(di, navigator, directDI.instance<FirebaseMessagingCenter>())
     }
 
-    data class AppStartResult(val di: DI)
+    /**
+     * This should be called whenever the app is being restored from the background with empty navigation stack
+     */
+    fun setStartingScope() {
+        val navigator = directDI.instance<Navigator>()
+        val eventCollector = directDI.instance<EventCollector>()
+        navigator.setScope(eventCollector.getStartingScope())
+    }
+
+    data class AppStartResult(
+        val di: DI,
+        val navigator: UiNavigator,
+        val firebaseMessaging: FirebaseMessaging
+    )
 }
 

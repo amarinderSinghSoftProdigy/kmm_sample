@@ -8,3 +8,20 @@
 .externalNativeBuild
 .cxx
 local.properties
+android_dev
+
+# XCode
+xcuserdata/
+*.hmap
+.build/
+
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM

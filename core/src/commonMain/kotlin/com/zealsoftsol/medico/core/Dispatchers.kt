@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 expect val ktorDispatcher: CoroutineDispatcher
+expect val ioDispatcher: CoroutineDispatcher
+expect val compatDispatcher: CoroutineDispatcher

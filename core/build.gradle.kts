@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.konan.target.Architecture
+
+val iosArchitecture = if (Config.Ios.isForSimulator) Architecture.X64 else Architecture.ARM64
 
 plugins {
     id("com.android.library")
@@ -8,13 +11,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Config.Android.targetSdk)
-    buildToolsVersion(Config.Android.buildTools)
+    compileSdk = Config.Android.targetSdk
+    buildToolsVersion = Config.Android.buildTools
     defaultConfig {
-        minSdkVersion(Config.Android.minSdk)
-        targetSdkVersion(Config.Android.minSdk)
-        versionCode = Config.Version.code
-        versionName = Config.Version.name
+        minSdk = Config.Android.minSdk
+        targetSdk = Config.Android.minSdk
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
@@ -40,18 +41,23 @@ kotlin {
             dependencies {
                 api(project(":data"))
                 api(Deps.Kotlin.Coroutines.core)
+                api(Deps.Kodein.DI.core)
                 implementation(Deps.Ktor.Client.core)
                 implementation(Deps.Ktor.auth)
                 implementation(Deps.Ktor.json)
                 implementation(Deps.Ktor.serial)
-                api(Deps.Kodein.DI.core)
+                implementation(Deps.Ktor.log)
+                implementation(Deps.multiplatformSettings)
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(Deps.Ktor.Client.jvm)
-                api(Deps.Kodein.DI.android)
+                api(Deps.Kodein.DI.android) {
+                    exclude(group = "androidx.appcompat", module = "appcompat")
+                }
                 api(Deps.Android.Ktx.core)
+                implementation(Deps.okhttpinterceptor)
             }
         }
         val iosMain by getting {
@@ -65,13 +71,18 @@ kotlin {
 val packForXcode by tasks.creating(Sync::class) {
     group = "build"
     val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val sdkName = System.getenv("SDK_NAME") ?: "iphonesimulator"
-    val targetName = "ios" + if (sdkName.startsWith("iphoneos")) "Arm64" else "X64"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>(targetName).binaries.getFramework(mode)
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
+    kotlin.targets
+        .filterIsInstance<KotlinNativeTarget>()
+        .filter { it.konanTarget.architecture == iosArchitecture }
+        .map { it.binaries.getFramework(mode) }
+        .first()
+        .let { framework ->
+            println("Building $iosArchitecture framework for $mode")
+            inputs.property("mode", mode)
+            dependsOn(framework.linkTask)
+            val targetDir = File(buildDir, "xcode-frameworks")
+            from({ framework.outputDirectory })
+            into(targetDir)
+        }
 }
 tasks.getByName("build").dependsOn(packForXcode)

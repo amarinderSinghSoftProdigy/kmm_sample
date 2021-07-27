@@ -1,0 +1,79 @@
+name: android-development
+
+on:
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]
+
+  workflow_dispatch:
+
+jobs:
+  deploy-android:
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && startsWith(github.head_ref, 'android/'))
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      - name: Set CI gradle.properties
+        run: cp gradle.properties.ci gradle.properties
+
+      - name: Build Android dev apk
+        env:
+          CI_BUILD: ${{ secrets.CI_BUILD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: ./gradlew :android:assembleDev
+
+      - name: Build Android staging apk
+        env:
+          CI_BUILD: ${{ secrets.CI_BUILD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+        run: ./gradlew :android:assembleStag
+
+      - name: Upload dev artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: android/build/outputs/apk/dev/release/android-dev-release.apk
+
+      - name: Upload staging artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app
+          path: android/build/outputs/apk/stag/release/android-stag-release.apk
+
+      - name: Upload dev artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID_DEV }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: main
+          file: android/build/outputs/apk/dev/release/android-dev-release.apk
+
+      - name: Upload staging artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.3.2
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID_STAG }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: main
+          file: android/build/outputs/apk/stag/release/android-stag-release.apk
+
+      - name: Slack Notification for the Firebase App Distribution
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: ${{ secrets.REPO_NAME }}
+          fields: all
+          text: Android build upload to Firebase App Distribution has been ${{ job.status == 'success' && 'Successfull' || job.status == 'failure' && 'Failed' || 'Canceled' }}
+          channel: mobile-release-pipeline
+          icon_emoji: ${{ job.status == 'success' && ':white_check_mark:' || job.status == 'failure' && ':x:' || ':warning:' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_MOBILE_RELEASE_WEBHOOK }}
+        #          VERSION: grep
+        if: always()
