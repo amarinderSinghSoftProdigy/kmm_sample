@@ -1222,7 +1222,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod;
-				PRODUCT_NAME = "Medico Staging";
+				PRODUCT_NAME = Medico;
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
@@ -1311,7 +1311,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.staging;
-				PRODUCT_NAME = Medico;
+				PRODUCT_NAME = "Medico Staging";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAG;
@@ -1584,7 +1584,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
-				PRODUCT_NAME = Medico;
+				PRODUCT_NAME = "Medico Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
