@@ -15,7 +15,7 @@ android {
     buildToolsVersion = Config.Android.buildTools
     defaultConfig {
         minSdk = Config.Android.minSdk
-        targetSdk = Config.Android.minSdk
+        targetSdk = Config.Android.targetSdk
     }
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
