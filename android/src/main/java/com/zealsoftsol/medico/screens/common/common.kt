@@ -267,10 +267,10 @@ fun <T : WithNotifications> T.showNotificationAlert() {
     notification.value?.let {
         val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.error
         val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
-        }.getOrNull() ?: 0
+        }.getOrNull() ?: R.string.something_went_wrong
         if (it.isSimple) {
             SimpleDialog(
                 title = stringResource(id = titleResourceId),
@@ -291,9 +291,9 @@ fun <T : WithNotifications> T.showNotificationAlert() {
 
 @Composable
 fun stringResourceByName(name: String): String {
-    return stringResource(id = LocalContext.current.runCatching {
+    return LocalContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
-    }.getOrNull() ?: 0)
+    }.getOrNull()?.let { stringResource(id = it) } ?: name
 }
 
 @Composable

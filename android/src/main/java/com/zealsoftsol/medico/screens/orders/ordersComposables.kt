@@ -61,9 +61,7 @@ fun OrdersScreen(scope: OrdersScope) {
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_tradename,
-            searchBarEnd = if (scope.type != OrderType.PURCHASE_ORDER) SearchBarEnd.Filter(
-                isHighlighted = false
-            ) { scope.toggleFilter() } else null,
+            searchBarEnd = SearchBarEnd.Filter(isHighlighted = false) { scope.toggleFilter() },
             icon = Icons.Default.Search,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
@@ -310,12 +308,13 @@ private fun DatePicker(pickedTimeMs: Long?, hint: String, onPicked: (Long) -> Un
                                 DateTime
                                     .now()
                                     .withYear(year)
-                                    .withMonthOfYear(month)
-                                    .withDayOfMonth(day).millis
+                                    .withMonthOfYear(month + 1)
+                                    .withDayOfMonth(day)
+                                    .millis
                             )
                         },
                         now.year,
-                        now.monthOfYear,
+                        now.monthOfYear - 1,
                         now.dayOfMonth,
                     )
                     dialog.show()

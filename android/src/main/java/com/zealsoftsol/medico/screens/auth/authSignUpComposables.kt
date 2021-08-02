@@ -238,7 +238,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 )
                 Space(dp = 8.dp)
                 Text(
-                    text = stringResource(id = R.string.tos_line_2),
+                    text = stringResource(id = R.string.consent_terms),
                     color = ConstColors.lightBlue,
                     textDecoration = TextDecoration.Underline,
                     fontWeight = FontWeight.W600,

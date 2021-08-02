@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -16,6 +17,9 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 internal class AuthEventDelegate(
     navigator: Navigator,
@@ -23,6 +27,8 @@ internal class AuthEventDelegate(
     private val notificationRepo: NotificationRepo,
     private val cartRepo: CartRepo,
 ) : EventDelegate<Event.Action.Auth>(navigator) {
+
+    private var dashboardJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Auth) = when (event) {
         is Event.Action.Auth.LogIn -> authTryLogin()
@@ -92,6 +98,7 @@ internal class AuthEventDelegate(
     }
 
     private suspend fun updateDashboard() {
-        userRepo.loadDashboard()
+        dashboardJob?.cancel()
+        dashboardJob = coroutineContext.toScope().launch { userRepo.loadDashboard() }
     }
 }
