@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -225,6 +226,7 @@ private fun RowScope.SimpleTabBar(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
+                .weight(0.15f)
                 .align(Alignment.CenterVertically)
                 .fillMaxHeight()
                 .padding(16.dp)
@@ -245,18 +247,53 @@ private fun RowScope.SimpleTabBar(
     when (val res = info.title) {
         is StringResource.Static -> Text(
             text = stringResourceByName(res.id),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.h6,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
+                .weight(0.7f)
                 .padding(start = 16.dp),
         )
         is StringResource.Raw -> Text(
             text = res.string,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.h6,
             modifier = Modifier
+                .weight(0.7f)
                 .align(Alignment.CenterVertically)
                 .padding(start = 16.dp),
         )
+    }
+
+    info.cartItemsCount?.let {
+        Box(
+            modifier = Modifier
+                .weight(0.15f)
+                .clickable(indication = null) { info.goToCart() }
+                .padding(10.dp),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_cart),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .align(Alignment.Center)
+            )
+            val cartItems = it.flow.collectAsState()
+            Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
+                Canvas(modifier = Modifier.size(15.dp)) {
+                    drawCircle(Color.White)
+                }
+                Text(
+                    text = cartItems.value.toString(),
+                    color = ConstColors.red,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 10.sp,
+                )
+            }
+        }
     }
 }
 

@@ -235,7 +235,6 @@ object DebugScopeCreator {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             ProductInfoScope(
-                sellerUnitCode = null,
                 product = ProductSearch(
                     code = "VD000307",
                     formattedPrice = "₹114.78",
