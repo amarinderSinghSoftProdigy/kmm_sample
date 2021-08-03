@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -42,6 +43,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
     class StorePreview(
         val store: Store,
+        private val cartItemsCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
@@ -64,7 +66,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.Simple(
                 icon = ScopeIcon.BACK,
-                title = StringResource.Raw(store.tradeName)
+                title = StringResource.Raw(store.tradeName),
+                cartItemsCount = cartItemsCount,
             )
         }
     }
