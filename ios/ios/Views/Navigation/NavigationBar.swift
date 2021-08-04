@@ -139,34 +139,8 @@ private struct _CustomizedNavigationBar: View {
             Group {
                 switch info {
                 case let simpleBarInfo as TabBarInfo.Simple:
-                    ZStack {
-                        HStack {
-                            self.getScopeButton(for: simpleBarInfo.icon)
-                            
-                            Spacer()
-                        }
-                        
-                        Group {
-                            if let title = simpleBarInfo.title {
-                                switch title {
-                                case let staticTitle as StringResource.Static:
-                                    LocalizedText(localizationKey: staticTitle.id,
-                                                  textWeight: .semiBold,
-                                                  fontSize: 17)
-                                    
-                                case let rawTitle as StringResource.Raw:
-                                    Text(rawTitle.string)
-                                        .medicoText(textWeight: .semiBold,
-                                                    fontSize: 17)
-                                    
-                                default:
-                                    EmptyView()
-                                }
-                            }
-                        }
-                        .padding(.vertical, 3)
-                        .frame(maxWidth: 240)
-                    }
+                    SimpleTabBar(simpleBarInfo: simpleBarInfo,
+                                 getScopeButton: getScopeButton)
                     
                 case let searchBarInfo as TabBarInfo.Search:
                     SearchTabBar(searchBarInfo: searchBarInfo,
@@ -216,6 +190,90 @@ private struct _CustomizedNavigationBar: View {
             closeSlidingPanel(false)
         default:
             return
+        }
+    }
+    
+    private struct SimpleTabBar<Content: View>: View {
+        let simpleBarInfo: TabBarInfo.Simple
+        
+        let getScopeButton: (ScopeIcon) -> Content
+        
+        @ObservedObject private var cartData: CartData
+        
+        var body: some View {
+            let cartObjectsNumberPadding: CGFloat = 6
+            
+            ZStack {
+                HStack {
+                    getScopeButton(simpleBarInfo.icon)
+                    
+                    Spacer()
+                    
+                    if let cartItemsCount = cartData.cartItemsCount as? Int {
+                        Button(action: { simpleBarInfo.goToCart() }) {
+
+                            ZStack(alignment: .topTrailing) {
+                                Image("Cart")
+                                    .padding(cartObjectsNumberPadding)
+
+                                if cartItemsCount > 0 {
+                                    ZStack {
+                                        AppColor.white.color
+                                            .cornerRadius(7)
+
+                                        Text(String(cartItemsCount))
+                                            .medicoText(textWeight: .bold,
+                                                        fontSize: 12,
+                                                        color: .red)
+                                    }
+                                    .frame(width: 14, height: 14)
+                                }
+                            }
+                        }
+                        .padding(-cartObjectsNumberPadding)
+                    }
+                }
+                .padding([.leading, .trailing], 6)
+                
+                Group {
+                    if let title = simpleBarInfo.title {
+                        switch title {
+                        case let staticTitle as StringResource.Static:
+                            LocalizedText(localizationKey: staticTitle.id,
+                                          textWeight: .semiBold,
+                                          fontSize: 17)
+                            
+                        case let rawTitle as StringResource.Raw:
+                            Text(rawTitle.string)
+                                .medicoText(textWeight: .semiBold,
+                                            fontSize: 17)
+                            
+                        default:
+                            EmptyView()
+                        }
+                    }
+                }
+                .padding(.vertical, 3)
+                .frame(maxWidth: 220)
+            }
+        }
+        
+        init(simpleBarInfo: TabBarInfo.Simple,
+             getScopeButton: @escaping (ScopeIcon) -> Content) {
+            self.simpleBarInfo = simpleBarInfo
+            self.getScopeButton = getScopeButton
+            
+            let cartData = CartData()
+            if let cartItemsCount = simpleBarInfo.cartItemsCount {
+                SwiftDataSource(dataSource: cartItemsCount).onValueDidSet = {
+                    cartData.cartItemsCount = $0
+                }
+            }
+            self.cartData = cartData
+        }
+        
+        private class CartData: ObservableObject {
+            @Published var cartItemsCount: KotlinInt?
         }
     }
     

@@ -24,20 +24,20 @@ struct PlaceOrderScreen: View {
                           fontSize: 20,
                           multilineTextAlignment: .leading)
             
-            Text("11-32-12, Challamraju Vari Streen, One Town, Vijaywada, Krishna, 520000")
-                .medicoText(multilineTextAlignment: .leading)
-                .padding(.horizontal, 5)
-                .padding(.bottom, 13)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .expandableView(expanded: .init(get: { expandedItems["shipping_address"] == true },
-                                                set: { expandedItems["shipping_address"] = $0 })) {
-                    LocalizedText(localizationKey: "shipping_address",
-                                  textWeight: .bold,
-                                  multilineTextAlignment: .leading)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 12)
-                        .padding(.vertical, 10)
-                }
+//            Text("11-32-12, Challamraju Vari Streen, One Town, Vijaywada, Krishna, 520000")
+//                .medicoText(multilineTextAlignment: .leading)
+//                .padding(.horizontal, 5)
+//                .padding(.bottom, 13)
+//                .frame(maxWidth: .infinity, alignment: .leading)
+//                .expandableView(expanded: .init(get: { expandedItems["shipping_address"] == true },
+//                                                set: { expandedItems["shipping_address"] = $0 })) {
+//                    LocalizedText(localizationKey: "shipping_address",
+//                                  textWeight: .bold,
+//                                  multilineTextAlignment: .leading)
+//                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding(.leading, 12)
+//                        .padding(.vertical, 10)
+//                }
             
             if let sellerCarts = self.sellerCarts.value as? [DataSellerCart] {
                 VStack(spacing: 8) {
