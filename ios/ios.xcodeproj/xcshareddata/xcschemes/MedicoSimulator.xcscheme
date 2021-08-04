@@ -15,7 +15,7 @@
                   <BuildableReference
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "7555FF7A242A565900829871"
-                     BuildableName = "Medico.app"
+                     BuildableName = "Dev medicostores.app"
                      BlueprintName = "Medico"
                      ReferencedContainer = "container:ios.xcodeproj">
                   </BuildableReference>
@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7555FF7A242A565900829871"
-               BuildableName = "Medico.app"
+               BuildableName = "Dev medicostores.app"
                BlueprintName = "Medico"
                ReferencedContainer = "container:ios.xcodeproj">
             </BuildableReference>
@@ -63,7 +63,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7555FF7A242A565900829871"
-            BuildableName = "Medico.app"
+            BuildableName = "Dev medicostores.app"
             BlueprintName = "Medico"
             ReferencedContainer = "container:ios.xcodeproj">
          </BuildableReference>
@@ -87,7 +87,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7555FF7A242A565900829871"
-            BuildableName = "Medico.app"
+            BuildableName = "Dev medicostores.app"
             BlueprintName = "Medico"
             ReferencedContainer = "container:ios.xcodeproj">
          </BuildableReference>

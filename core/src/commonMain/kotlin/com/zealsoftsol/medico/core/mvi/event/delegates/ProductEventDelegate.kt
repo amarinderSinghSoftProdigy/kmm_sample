@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -15,6 +16,8 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName
@@ -29,7 +32,7 @@ internal class ProductEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Product) = when (event) {
         is Event.Action.Product.SelectFromSearch -> selectProduct(event.productCode)
         is Event.Action.Product.SelectAlternative -> selectAlternative(event.data)
-        is Event.Action.Product.BuyProduct -> buyProduct(event.productCode, event.buyingOption)
+        is Event.Action.Product.BuyProduct -> buyProduct(event.product, event.buyingOption)
         is Event.Action.Product.FilterBuyProduct -> filterProduct(event.filter)
         is Event.Action.Product.SelectSeasonBoyRetailer -> selectSeasonBoyRetailer(
             event.productCode,
@@ -41,12 +44,8 @@ internal class ProductEventDelegate(
         navigator.withProgress {
             networkProductScope.getProductData(productCode)
         }.onSuccess { body ->
-            val sellerUnitCode =
-                navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.sellerUnitCode
-                    ?.takeIf { userRepo.requireUser().type != UserType.SEASON_BOY }
             navigator.setScope(
                 ProductInfoScope(
-                    sellerUnitCode = sellerUnitCode,
                     product = body.product!!,
                     alternativeBrands = body.alternateProducts,
                 )
@@ -65,11 +64,30 @@ internal class ProductEventDelegate(
         )
     }
 
-    private suspend fun buyProduct(productCode: String, buyingOption: BuyingOption) {
+    private suspend fun buyProduct(product: ProductSearch, buyingOption: BuyingOption) {
+        navigator.searchQueuesFor<StoresScope.StorePreview>()?.store?.let {
+            if (userRepo.requireUser().type != UserType.SEASON_BOY) {
+                product.sellerInfo?.spid?.let { spid ->
+                    EventCollector.sendEvent(
+                        Event.Action.Cart.AddItem(
+                            it.sellerUnitCode,
+                            product.code,
+                            product.buyingOption!!,
+                            CartIdentifier(spid),
+                            1,
+                        )
+                    )
+                    return
+                }
+            } else {
+                selectSeasonBoyRetailer(product.code, product.sellerInfo!!)
+                return
+            }
+        }
         navigator.withProgress {
             when (buyingOption) {
-                BuyingOption.BUY -> networkProductScope.buyProductInfo(productCode)
-                BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(productCode)
+                BuyingOption.BUY -> networkProductScope.buyProductInfo(product.code)
+                BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(product.code)
             }
         }.onSuccess { body ->
             val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
@@ -105,7 +123,7 @@ internal class ProductEventDelegate(
     }
 
     private suspend fun selectSeasonBoyRetailer(productCode: String, sellerInfo: SellerInfo?) {
-        navigator.withScope<BuyProductScope<WithTradeName>> {
+        navigator.withScope<Scopable> {
             withProgress {
                 networkProductScope.buyProductSelectSeasonBoyRetailer(
                     productCode,

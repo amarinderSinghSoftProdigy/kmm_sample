@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.zealsoftsol.medico"
         minSdk = Config.Android.minSdk
-        targetSdk = Config.Android.minSdk
+        targetSdk = Config.Android.targetSdk
         versionCode = Config.Version.code
         versionName = Config.Version.name
         vectorDrawables.useSupportLibrary = true

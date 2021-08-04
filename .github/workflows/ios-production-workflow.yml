@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-development-ios:
+  deploy-production-ios:
     runs-on: macos-latest
 
     steps:

@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
-import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
@@ -75,14 +74,14 @@ internal class CartEventDelegate(
                 quantity,
             )
         }.onSuccess {
-            navigator.setScope(
-                CartScope(
-                    items = ReadOnlyDataSource(cartRepo.entries),
-                    total = ReadOnlyDataSource(cartRepo.total),
-                    isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
-                    tapModeHelper = tapModeHelper,
-                )
-            )
+//            navigator.setScope(
+//                CartScope(
+//                    items = ReadOnlyDataSource(cartRepo.entries),
+//                    total = ReadOnlyDataSource(cartRepo.total),
+//                    isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
+//                    tapModeHelper = tapModeHelper,
+//                )
+//            )
         }.onError(navigator)
     }
 
@@ -94,14 +93,16 @@ internal class CartEventDelegate(
         quantity: Int,
     ) = async {
         navigator.withScope<CartScope> {
-            cartRepo.updateCartItem(
-                userRepo.requireUser().unitCode,
-                sellerUnitCode,
-                productCode,
-                buyingOption,
-                id,
-                quantity
-            ).onError(navigator)
+            withProgress {
+                cartRepo.updateCartItem(
+                    userRepo.requireUser().unitCode,
+                    sellerUnitCode,
+                    productCode,
+                    buyingOption,
+                    id,
+                    quantity
+                )
+            }.onError(navigator)
         }
     }
 
@@ -112,27 +113,31 @@ internal class CartEventDelegate(
         id: CartIdentifier,
     ) = async {
         navigator.withScope<CartScope> {
-            cartRepo.removeCartItem(
-                userRepo.requireUser().unitCode,
-                sellerUnitCode,
-                productCode,
-                buyingOption,
-                id,
-            ).onError(navigator)
+            withProgress {
+                cartRepo.removeCartItem(
+                    userRepo.requireUser().unitCode,
+                    sellerUnitCode,
+                    productCode,
+                    buyingOption,
+                    id,
+                )
+            }.onError(navigator)
         }
     }
 
     private suspend fun removeSellerItems(sellerUnitCode: String) = async {
         navigator.withScope<CartScope> {
-            cartRepo.removeSellerItems(userRepo.requireUser().unitCode, sellerUnitCode)
-                .onError(navigator)
+            withProgress {
+                cartRepo.removeSellerItems(userRepo.requireUser().unitCode, sellerUnitCode)
+            }.onError(navigator)
         }
     }
 
     private suspend fun clearCart() = async {
         navigator.withScope<CartScope> {
-            cartRepo.clearCart(userRepo.requireUser().unitCode)
-                .onError(navigator)
+            withProgress {
+                cartRepo.clearCart(userRepo.requireUser().unitCode)
+            }.onError(navigator)
         }
     }
 

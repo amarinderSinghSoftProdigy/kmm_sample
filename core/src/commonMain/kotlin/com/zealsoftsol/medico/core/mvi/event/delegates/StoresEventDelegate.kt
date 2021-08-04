@@ -4,7 +4,9 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
+import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.Store
@@ -12,6 +14,7 @@ import com.zealsoftsol.medico.data.Store
 internal class StoresEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
+    private val cartRepo: CartRepo,
     private val networkStoresScope: NetworkScope.Stores,
     private val loadHelper: LoadHelper,
 ) : EventDelegate<Event.Action.Stores>(navigator) {
@@ -46,7 +49,7 @@ internal class StoresEventDelegate(
 
     private fun select(item: Store) {
         navigator.withScope<StoresScope.All> {
-            setScope(StoresScope.StorePreview(item))
+            setScope(StoresScope.StorePreview(item, cartRepo.getEntriesCountDataSource()))
         }
     }
 }

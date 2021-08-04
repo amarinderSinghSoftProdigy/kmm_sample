@@ -6,11 +6,9 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.AlternateProductData
-import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 
 class ProductInfoScope(
-    private val sellerUnitCode: String?,
     val product: ProductSearch,
     val alternativeBrands: List<AlternateProductData>,
     val isDetailsOpened: DataSource<Boolean> = DataSource(false),
@@ -19,26 +17,12 @@ class ProductInfoScope(
     val compositionsString: String
         get() = product.compositions.reduce { acc, s -> "$acc\n$s" }
 
-    fun buy(): Boolean {
-        return sellerUnitCode?.let { unitCode ->
-            product.sellerInfo?.spid?.let { spid ->
-                EventCollector.sendEvent(
-                    Event.Action.Cart.AddItem(
-                        unitCode,
-                        product.code,
-                        product.buyingOption!!,
-                        CartIdentifier(spid),
-                        1,
-                    )
-                )
-            } ?: false
-        } ?: EventCollector.sendEvent(
-            Event.Action.Product.BuyProduct(
-                product.code,
-                product.buyingOption!!
-            )
+    fun buy() = EventCollector.sendEvent(
+        Event.Action.Product.BuyProduct(
+            product,
+            product.buyingOption!!
         )
-    }
+    )
 
     fun toggleDetails() {
         isDetailsOpened.value = !isDetailsOpened.value

@@ -98,6 +98,7 @@ internal class EventCollector(
         Event.Action.Stores::class to StoresEventDelegate(
             navigator,
             userRepo,
+            cartRepo,
             storesNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),

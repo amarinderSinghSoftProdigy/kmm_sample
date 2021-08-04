@@ -59,9 +59,13 @@ sealed class TabBarInfo {
 
     data class Simple(
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
-        val title: StringResource?
+        val title: StringResource?,
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null,
     ) : TabBarInfo() {
+
         override fun withBackIcon() = copy(icon = ScopeIcon.BACK)
+
+        fun goToCart() = EventCollector.sendEvent(Event.Transition.Cart)
     }
 
     data class Search(

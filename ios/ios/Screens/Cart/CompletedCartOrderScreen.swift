@@ -124,17 +124,6 @@ struct CompletedCartOrderScreen: View {
                         .padding(.top, 3)
                     
                     Spacer()
-                    
-                    Text("99")
-                        .medicoText(textWeight: .semiBold,
-                                    fontSize: 12)
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .background(
-                            Circle()
-                                .foregroundColor(appColor: .darkBlue)
-                                .opacity(0.08)
-                        )
                 }
                 
                 HStack(alignment: .bottom) {
