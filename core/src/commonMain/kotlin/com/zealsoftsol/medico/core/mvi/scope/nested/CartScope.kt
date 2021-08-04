@@ -41,6 +41,30 @@ class CartScope(
         }
     }
 
+    fun updateItemCountAndroid(
+        sellerCart: SellerCart,
+        item: CartItem,
+        index: Int,
+        dir: Int
+    ): Boolean {
+        val quantity = sellerCart.items.getOrNull(index)?.quantity?.value?.toInt()?.let { it + dir }
+            ?: return false
+        if (quantity < 0) return false
+        return if (quantity == 0) {
+            removeItem(sellerCart, item)
+        } else {
+            EventCollector.sendEvent(
+                Event.Action.Cart.UpdateItem(
+                    sellerCart.sellerCode,
+                    item.productCode,
+                    item.buyingOption,
+                    item.id,
+                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
+                )
+            )
+        }
+    }
+
     fun removeItem(sellerCart: SellerCart, item: CartItem) =
         EventCollector.sendEvent(
             Event.Action.Cart.RemoveItem(

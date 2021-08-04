@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,12 +31,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -60,12 +63,11 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.StockStatus
-import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
-import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun CartScreen(scope: CartScope) {
@@ -117,18 +119,20 @@ fun CartScreen(scope: CartScope) {
                         sellerCart = value,
                         expand = index == 0,
                         onRemoveSeller = { scope.removeSellerItems(value) },
-                        onIncItem = { _, item ->
-                            scope.updateItemCount(
+                        onIncItem = { indexI, item ->
+                            scope.updateItemCountAndroid(
                                 value,
                                 item,
-                                item.quantity.value.toInt() + 1
+                                indexI,
+                                +1,
                             )
                         },
-                        onDecItem = { _, item ->
-                            scope.updateItemCount(
+                        onDecItem = { indexI, item ->
+                            scope.updateItemCountAndroid(
                                 value,
                                 item,
-                                item.quantity.value.toInt() - 1
+                                indexI,
+                                -1,
                             )
                         },
                         onRemoveItem = { scope.removeItem(value, it) },
@@ -207,8 +211,8 @@ private fun SellerCartItem(
     sellerCart: SellerCart,
     expand: Boolean,
     onRemoveSeller: () -> Unit,
-    onIncItem: (TapMode, CartItem) -> Unit,
-    onDecItem: (TapMode, CartItem) -> Unit,
+    onIncItem: (Int, CartItem) -> Unit,
+    onDecItem: (Int, CartItem) -> Unit,
     onRemoveItem: (CartItem) -> Unit,
 ) {
     FoldableItem(
@@ -270,11 +274,11 @@ private fun SellerCartItem(
             Space(12.dp)
         },
         childItems = sellerCart.items,
-        item = { value, _ ->
+        item = { value, index ->
             CartItem(
                 cartItem = value,
-                onInc = { mode -> onIncItem(mode, value) },
-                onDec = { mode -> onDecItem(mode, value) },
+                onInc = { onIncItem(index, value) },
+                onDec = { onDecItem(index, value) },
                 onRemove = { onRemoveItem(value) },
             )
         }
@@ -285,8 +289,8 @@ private fun SellerCartItem(
 @Composable
 private fun CartItem(
     cartItem: CartItem,
-    onInc: (TapMode) -> Unit,
-    onDec: (TapMode) -> Unit,
+    onInc: () -> Unit,
+    onDec: () -> Unit,
     onRemove: () -> Unit,
 ) {
     Surface(
@@ -425,8 +429,9 @@ private fun CartItem(
                     modifier = Modifier.padding(2.dp),
                 )
             }
-            PlusMinusQuantity(
+            PlusMinusQuantityLocal(
                 quantity = cartItem.quantity.value.toInt(),
+                cartItem = cartItem,
                 max = cartItem.stockInfo?.availableQty ?: Int.MAX_VALUE,
                 isEnabled = true,
                 onInc = onInc,
@@ -451,6 +456,49 @@ private fun CartItem(
                     .background(labelColor)
             )
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun PlusMinusQuantityLocal(
+    modifier: Modifier = Modifier,
+    cartItem: CartItem,
+    quantity: Int,
+    isEnabled: Boolean,
+    max: Int = Int.MAX_VALUE,
+    onInc: () -> Unit,
+    onDec: () -> Unit,
+) {
+    Row(
+        modifier = modifier.defaultMinSize(minWidth = 100.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Remove,
+            tint = if (isEnabled && quantity > 0) ConstColors.lightBlue else ConstColors.gray.copy(
+                alpha = 0.5f
+            ),
+            contentDescription = null,
+            modifier = if (isEnabled && quantity > 0) Modifier.clickable(onClick = onDec) else Modifier,
+        )
+        Space(12.dp)
+        Text(
+            text = quantity.toString(),
+            color = MaterialTheme.colors.background.copy(if (isEnabled) 1f else 0.5f),
+            fontWeight = FontWeight.W700,
+            fontSize = 22.sp,
+        )
+        Space(12.dp)
+        Icon(
+            imageVector = Icons.Default.Add,
+            tint = if (isEnabled && quantity < max) ConstColors.lightBlue else ConstColors.gray.copy(
+                alpha = 0.5f
+            ),
+            contentDescription = null,
+            modifier = if (isEnabled && quantity < max) Modifier.clickable(onClick = onInc) else Modifier,
+        )
     }
 }
 
