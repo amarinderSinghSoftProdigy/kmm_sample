@@ -118,7 +118,7 @@ data class Response<T, V>(
             callsInPlace(action, InvocationKind.AT_MOST_ONCE)
         }
         val body = getBodyOrNull()
-        if (body == null) action(provideError())
+        if (body == null && type == "error") action(provideError())
         return this
     }
 }
