@@ -267,10 +267,10 @@ fun <T : WithNotifications> T.showNotificationAlert() {
     notification.value?.let {
         val titleResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.title, "string", packageName)
-        }.getOrNull() ?: R.string.error
+        }.getOrNull() ?: 0
         val bodyResourceId = LocalContext.current.runCatching {
             resources.getIdentifier(it.body, "string", packageName)
-        }.getOrNull() ?: R.string.something_went_wrong
+        }.getOrNull() ?: 0
         if (it.isSimple) {
             SimpleDialog(
                 title = stringResource(id = titleResourceId),
