@@ -266,7 +266,8 @@ internal class RegistrationEventDelegate(
                 it.pincodeValidation.value = result.validations
                 result.onSuccess { body ->
                     it.locationData.value = body
-                    it.registration.value = it.registration.value.copy(
+                    it.registration.value = UserRegistration2(
+                        pincode = pincode,
                         district = body.district,
                         state = body.state,
                     )

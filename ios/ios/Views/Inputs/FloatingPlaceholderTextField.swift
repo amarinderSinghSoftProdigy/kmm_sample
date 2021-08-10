@@ -113,6 +113,7 @@ struct FloatingPlaceholderSecureField: View {
                                    keyboardType: .default,
                                    disableAutocorrection: true,
                                    autocapitalization: .none)
+                    .frame(maxHeight: height)
             }
             else {
                 SecureField("", text: text)
