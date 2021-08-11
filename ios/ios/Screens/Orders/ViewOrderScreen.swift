@@ -17,7 +17,6 @@ struct ViewOrderScreen: View {
     
     @ObservedObject var order: SwiftDataSource<DataOrder>
     
-    @ObservedObject var checkedEntries: SwiftDataSource<NSArray>
     @ObservedObject var entries: SwiftDataSource<NSArray>
     
     @State private var expandedCustomerView = false
@@ -54,7 +53,6 @@ struct ViewOrderScreen: View {
         self.b2bData = .init(dataSource: scope.b2bData)
         self.order = .init(dataSource: scope.order)
         
-        self.checkedEntries = .init(dataSource: scope.checkedEntries)
         self.entries = .init(dataSource: scope.entries)
     }
     
@@ -232,7 +230,7 @@ struct OrderEntriesView: View {
                     .padding(2)
                     .background(
                         RoundedRectangle(cornerRadius: 5)
-                            .foregroundColor(appColor: entry.buyingOption.borderColor)
+                            .foregroundColor(appColor: entry.status == .rejected ? .red : entry.buyingOption.borderColor)
                     )
             )
         }

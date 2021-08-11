@@ -11,7 +11,9 @@
 		330D8C51266A0F85005D46DB /* InvoicesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330D8C50266A0F85005D46DB /* InvoicesScreen.swift */; };
 		330D8C53266A0FFF005D46DB /* InvoiceDetailsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330D8C52266A0FFF005D46DB /* InvoiceDetailsScreen.swift */; };
 		3317B5D425A59C7C008681ED /* ProductDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3317B5D325A59C7C008681ED /* ProductDetails.swift */; };
-		331BED592593614600757694 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331BED582593614600757694 /* GoogleService-Info.plist */; };
+		331B194E26C3D50A00F0E806 /* GoogleService-Info-stag.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331B194C26C3D50A00F0E806 /* GoogleService-Info-stag.plist */; };
+		331B194F26C3D50A00F0E806 /* GoogleService-Info-prod.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331B194D26C3D50A00F0E806 /* GoogleService-Info-prod.plist */; };
+		331BED592593614600757694 /* GoogleService-Info-dev.plist in Resources */ = {isa = PBXBuildFile; fileRef = 331BED582593614600757694 /* GoogleService-Info-dev.plist */; };
 		331FC3A825D3D1410072D3B3 /* AddRetailerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */; };
 		331FC3AC25D3F6C00072D3B3 /* ComplexNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331FC3AB25D3F6C00072D3B3 /* ComplexNotifications.swift */; };
 		33289420256537A50003E092 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 33289422256537A50003E092 /* Localizable.strings */; };
@@ -131,7 +133,11 @@
 		330D8C50266A0F85005D46DB /* InvoicesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoicesScreen.swift; sourceTree = "<group>"; };
 		330D8C52266A0FFF005D46DB /* InvoiceDetailsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceDetailsScreen.swift; sourceTree = "<group>"; };
 		3317B5D325A59C7C008681ED /* ProductDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetails.swift; sourceTree = "<group>"; };
-		331BED582593614600757694 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		331B194A26C3D3DD00F0E806 /* Staging.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Staging.xcconfig; sourceTree = "<group>"; };
+		331B194B26C3D40800F0E806 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
+		331B194C26C3D50A00F0E806 /* GoogleService-Info-stag.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-stag.plist"; sourceTree = "<group>"; };
+		331B194D26C3D50A00F0E806 /* GoogleService-Info-prod.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-prod.plist"; sourceTree = "<group>"; };
+		331BED582593614600757694 /* GoogleService-Info-dev.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-dev.plist"; sourceTree = "<group>"; };
 		331FC3A725D3D1410072D3B3 /* AddRetailerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRetailerScreen.swift; sourceTree = "<group>"; };
 		331FC3AB25D3F6C00072D3B3 /* ComplexNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexNotifications.swift; sourceTree = "<group>"; };
 		33289421256537A50003E092 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -179,6 +185,7 @@
 		3391B0BF25B871000025B945 /* AlertViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModifiers.swift; sourceTree = "<group>"; };
 		3395030E25824ABB0080CC88 /* SlidingNavigationPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingNavigationPanelView.swift; sourceTree = "<group>"; };
 		3395031225824C060080CC88 /* BlurEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurEffectView.swift; sourceTree = "<group>"; };
+		3398A33426C3CF2D003F692D /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
 		339C503C257A2D9B00AAB45F /* SignUpAddressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpAddressScreen.swift; sourceTree = "<group>"; };
 		339C5040257A2E7600AAB45F /* CommonViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViewModifiers.swift; sourceTree = "<group>"; };
 		339C5044257A548F00AAB45F /* PickerSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerSelector.swift; sourceTree = "<group>"; };
@@ -277,6 +284,16 @@
 				3317B5D325A59C7C008681ED /* ProductDetails.swift */,
 			);
 			path = Product;
+			sourceTree = "<group>";
+		};
+		331B195026C3D51800F0E806 /* GoogleService */ = {
+			isa = PBXGroup;
+			children = (
+				331BED582593614600757694 /* GoogleService-Info-dev.plist */,
+				331B194D26C3D50A00F0E806 /* GoogleService-Info-prod.plist */,
+				331B194C26C3D50A00F0E806 /* GoogleService-Info-stag.plist */,
+			);
+			path = GoogleService;
 			sourceTree = "<group>";
 		};
 		332CFD4225AF330C00341A7E /* Navigation */ = {
@@ -486,6 +503,7 @@
 		337C0A36256D426900C3F0A5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3398A33326C3CF09003F692D /* Configs */,
 				3391B0BA25B820360025B945 /* Assets */,
 				33E7682D256D5F6D00B35FDF /* Fonts */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
@@ -540,7 +558,7 @@
 		3391B0BB25B8204F0025B945 /* PropertyLists */ = {
 			isa = PBXGroup;
 			children = (
-				331BED582593614600757694 /* GoogleService-Info.plist */,
+				331B195026C3D51800F0E806 /* GoogleService */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 			);
 			path = PropertyLists;
@@ -570,6 +588,16 @@
 				33F151F0256FE7F000C4C656 /* OtpPhoneVerification.swift */,
 			);
 			path = Otp;
+			sourceTree = "<group>";
+		};
+		3398A33326C3CF09003F692D /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				3398A33426C3CF2D003F692D /* Development.xcconfig */,
+				331B194A26C3D3DD00F0E806 /* Staging.xcconfig */,
+				331B194B26C3D40800F0E806 /* Production.xcconfig */,
+			);
+			path = Configs;
 			sourceTree = "<group>";
 		};
 		339D372025B05C6E00C57B2D /* Settings */ = {
@@ -777,6 +805,7 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
+				331B195126C3D53200F0E806 /* ShellScript */,
 				D56BEB1B90779AF1E4EB6534 /* [CP] Embed Pods Frameworks */,
 				331BECFF25934DC300757694 /* ShellScript */,
 			);
@@ -838,14 +867,16 @@
 				7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */,
 				7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */,
 				33E76831256D5F9900B35FDF /* Barlow-Regular.ttf in Resources */,
+				331B194F26C3D50A00F0E806 /* GoogleService-Info-prod.plist in Resources */,
 				33E299DF268CA6C7004183A2 /* Barlow-MediumItalic.ttf in Resources */,
 				33F1520A256FF5D200C4C656 /* Colors.xcassets in Resources */,
 				33E76837256D621B00B35FDF /* Barlow-SemiBold.ttf in Resources */,
-				331BED592593614600757694 /* GoogleService-Info.plist in Resources */,
+				331BED592593614600757694 /* GoogleService-Info-dev.plist in Resources */,
 				33E299DE268CA6C7004183A2 /* Barlow-BoldItalic.ttf in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
 				33B4A30F25A34E6900B04AF3 /* Barlow-Black.ttf in Resources */,
 				33F8DFE325764253009E98EE /* Barlow-Bold.ttf in Resources */,
+				331B194E26C3D50A00F0E806 /* GoogleService-Info-stag.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -873,6 +904,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		331B195126C3D53200F0E806 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}/ios/Resources/PropertyLists/GoogleService\"\n\ncase \"${CONFIGURATION}\" in\n\n   \"DEV-Debug\" | \"DEV-Release\" )\n        cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-dev.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n    \"STAG-Debug\" | \"STAG-Release\" )\n        cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-stag.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n        \n    \"PROD-Debug\" | \"PROD-Release\" )\n        cp -r \"$PATH_TO_GOOGLE_PLISTS/GoogleService-Info-prod.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" ;;\n\n    *)\n        ;;\nesac\n";
 		};
 		331BECFF25934DC300757694 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1043,6 +1091,7 @@
 /* Begin XCBuildConfiguration section */
 		33045D0C26AEB8F60077C8BB /* STAG-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331B194A26C3D3DD00F0E806 /* Staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1110,7 +1159,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1126,11 +1175,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.staging;
-				PRODUCT_NAME = "Stag medicostores";
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAG;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1138,6 +1187,7 @@
 		};
 		33045D0E26AEC6930077C8BB /* PROD-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331B194B26C3D40800F0E806 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1205,7 +1255,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1221,11 +1271,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod;
-				PRODUCT_NAME = medicostores;
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1233,6 +1283,7 @@
 		};
 		33045D1026AEC6AA0077C8BB /* STAG-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331B194A26C3D3DD00F0E806 /* Staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1294,7 +1345,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1310,11 +1361,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.staging;
-				PRODUCT_NAME = "Stag medicostores";
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = STAG;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1322,6 +1373,7 @@
 		};
 		33045D1226AEC6B30077C8BB /* PROD-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 331B194B26C3D40800F0E806 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1383,7 +1435,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1399,11 +1451,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod;
-				PRODUCT_NAME = medicostores;
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = PROD;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1411,6 +1463,7 @@
 		};
 		7555FFA3242A565B00829871 /* DEV-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3398A33426C3CF2D003F692D /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1471,6 +1524,7 @@
 		};
 		7555FFA4242A565B00829871 /* DEV-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3398A33426C3CF2D003F692D /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1532,7 +1586,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1548,11 +1602,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
-				PRODUCT_NAME = "Dev medicostores";
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1567,7 +1621,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 48;
+				CURRENT_PROJECT_VERSION = 49;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1583,11 +1637,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zealsoftsol.medico;
-				PRODUCT_NAME = "Dev medicostores";
+				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
+				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEV;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
