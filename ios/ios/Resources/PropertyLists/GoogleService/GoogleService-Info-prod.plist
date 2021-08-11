@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>623474355051-5536qkejsej70v8r0famkkjad77e7u7e.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.623474355051-5536qkejsej70v8r0famkkjad77e7u7e</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>623474355051-jpagrl8ja58i4n6v0oui3cvu9dinjnde.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA3X7OunyJeLygTOYMQv0HaYP6vQUiZDes</string>
+	<key>GCM_SENDER_ID</key>
+	<string>623474355051</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.zealsoftsol.medico.prod</string>
+	<key>PROJECT_ID</key>
+	<string>medicostores-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>medicostores-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:623474355051:ios:0b904a0b937e61a0893a2e</string>
+	<key>DATABASE_URL</key>
+	<string>https://medicostores-dev.firebaseio.com</string>
+</dict>
+</plist>

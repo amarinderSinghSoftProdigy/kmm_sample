@@ -1,0 +1,15 @@
+//
+//  Production.xcconfig
+//  ios
+//
+//  Created by Dasha Gurinovich on 11.08.21.
+//  Copyright © 2021 Zeal Software Solutions. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+MEDICO_BUNDLE_IDENTIFIER = com.zealsoftsol.medico.prod
+MEDICO_BUNDLE_NAME = medicostores
+
+MEDICO_COMPILATION_CONDITION = PROD
