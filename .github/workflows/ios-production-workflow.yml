@@ -1,4 +1,4 @@
-name: ios-development
+name: ios-production
 
 on:
   pull_request:
