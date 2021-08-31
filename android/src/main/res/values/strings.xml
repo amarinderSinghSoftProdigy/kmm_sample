@@ -202,7 +202,7 @@
     <string name="tax_exclusive">*Exclusive of all taxes</string>
     <string name="order_with_quote_body">Are you sure you want to place order with a quoted item?</string>
     <string name="order_modified_body">It looks like one item quantity is missing, Are you sure you want to continue?</string>
-    <string name="order_success">Order placed successfully!</string>
+    <string name="order_success">%1$s will be notified, thank you for your fulfillment.</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
     <string name="type">Type</string>

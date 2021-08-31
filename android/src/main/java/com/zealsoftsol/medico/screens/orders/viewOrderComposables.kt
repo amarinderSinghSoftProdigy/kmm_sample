@@ -1,13 +1,16 @@
 package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
@@ -54,91 +57,107 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column {
-            Space(10.dp)
-            FoldableItem(
-                expanded = false,
-                header = { isExpanded ->
-                    Space(12.dp)
-                    Row(
-                        modifier = Modifier.weight(.8f),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_retailer),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue,
-                        )
-                        Space(8.dp)
-                        Text(
-                            text = order.value.tradeName,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W700,
-                            fontSize = 15.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .weight(.2f)
-                            .padding(end = 12.dp),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                            tint = ConstColors.gray,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                },
-                childItems = listOf(order.value.info),
-                item = { value, _ ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Column {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .background(Color.White)
+                    .padding(horizontal = 16.dp),
+            ) {
+                Space(10.dp)
+                FoldableItem(
+                    expanded = false,
+                    header = { isExpanded ->
+                        Space(12.dp)
+                        Row(
+                            modifier = Modifier.weight(.8f),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_retailer),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue,
+                            )
+                            Space(8.dp)
                             Text(
                                 text = order.value.tradeName,
                                 color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 12.sp,
-                            )
-                            Space(8.dp)
-                            GeoLocation(
-                                location = b2bData.value.addressData.fullAddress(),
-                                textSize = 12.sp,
-                                tint = MaterialTheme.colors.background
+                                fontWeight = FontWeight.W700,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
-                        Space(4.dp)
-                        Column {
-                            Text(
-                                text = b2bData.value.gstin,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 12.sp,
+                        Row(
+                            modifier = Modifier
+                                .weight(.2f)
+                                .padding(end = 12.dp),
+                            horizontalArrangement = Arrangement.End,
+                        ) {
+                            Icon(
+                                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                tint = ConstColors.gray,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
                             )
-                            Space(8.dp)
-                            Text(
-                                text = b2bData.value.panNumber,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 12.sp,
-                            )
+                        }
+                    },
+                    childItems = listOf(order.value.info),
+                    item = { value, _ ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column {
+                                BoxWithConstraints {
+                                    Text(
+                                        text = b2bData.value.addressData.address,
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W500,
+                                        fontSize = 12.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.widthIn(max = maxWidth / 2),
+                                    )
+                                }
+                                Space(8.dp)
+                                GeoLocation(
+                                    location = b2bData.value.addressData.fullAddress(),
+                                    textSize = 12.sp,
+                                    tint = MaterialTheme.colors.background
+                                )
+                            }
+                            Space(4.dp)
+                            Column {
+                                Text(
+                                    text = b2bData.value.gstin,
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 12.sp,
+                                )
+                                Space(8.dp)
+                                Text(
+                                    text = b2bData.value.panNumber,
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 12.sp,
+                                )
+                            }
                         }
                     }
-                }
-            )
-            Space(16.dp)
+                )
+                Space(8.dp)
+                OrdersStatus(order.value.info.status)
+                Space(8.dp)
+            }
+            Space(8.dp)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
@@ -196,10 +215,12 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 }
             }
             Space(8.dp)
-            Divider()
+            Divider(Modifier.padding(horizontal = 16.dp))
             val entries = scope.entries.flow.collectAsState()
             val checkedEntries = scope.checkedEntries.flow.collectAsState()
-            Column {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
                 Space(8.dp)
                 entries.value.forEach {
                     OrderEntryItem(
@@ -213,7 +234,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 Space(8.dp)
             }
         }
-        Column {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             OrderTotal(order.value.info.total.formattedPrice)
             Space(16.dp)
             if (scope.canEdit) {
