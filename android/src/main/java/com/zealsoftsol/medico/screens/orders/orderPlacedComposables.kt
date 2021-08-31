@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -50,14 +51,15 @@ fun OrderPlacedScreen(scope: OrderPlacedScope) {
                     contentDescription = null,
                     modifier = Modifier.size(80.dp),
                 )
-                Space(12.dp)
+                Space(16.dp)
                 Text(
-                    text = stringResource(id = R.string.order_success),
+                    text = stringResource(id = R.string.order_success, scope.order.tradeName),
                     color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W600,
                     fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
                 )
-                Space(4.dp)
+                Space(22.dp)
                 Row {
                     Text(
                         text = buildAnnotatedString {

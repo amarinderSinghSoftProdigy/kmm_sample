@@ -27,9 +27,7 @@ class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
     val isFilterOpened: DataSource<Boolean> = DataSource(false)
     val dateRange: DataSource<DateRange?> = DataSource(null)
 
-    init {
-        EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = true))
-    }
+    fun firstLoad() = EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = true))
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = false))

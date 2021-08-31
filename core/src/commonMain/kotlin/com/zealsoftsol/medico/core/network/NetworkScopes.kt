@@ -96,7 +96,12 @@ interface NetworkScope {
 
     interface Product : NetworkScope {
         suspend fun getProductData(productCode: String): BodyResponse<ProductResponse>
-        suspend fun buyProductInfo(productCode: String): BodyResponse<ProductBuyResponse>
+        suspend fun buyProductInfo(
+            productCode: String,
+            latitude: Double,
+            longitude: Double
+        ): BodyResponse<ProductBuyResponse>
+
         suspend fun buyProductSelectSeasonBoyRetailer(
             productCode: String,
             unitCode: String,

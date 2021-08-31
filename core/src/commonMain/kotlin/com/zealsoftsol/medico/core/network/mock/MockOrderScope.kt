@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderInfo
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderStatus
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PaymentMethod
@@ -132,7 +133,7 @@ private fun longPaginatedOrderData(size: Int, rnd: Random) =
                         id = Time.now.toString(),
                         date = "${rnd.nextInt(31)}/05/2021",
                         time = "${rnd.nextInt(12)}:${rnd.nextInt(59)}",
-                        status = "status",
+                        status = OrderStatus.COMPLETED,
                         paymentMethod = if (rnd.nextBoolean()) PaymentMethod.CASH else PaymentMethod.CREDIT,
                         total = Total(
                             formattedPrice = "₹${rnd.nextInt(10_000)}",

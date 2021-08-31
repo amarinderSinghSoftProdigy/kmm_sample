@@ -344,10 +344,18 @@ class NetworkClient(
             }
         }
 
-    override suspend fun buyProductInfo(productCode: String) =
+    override suspend fun buyProductInfo(
+        productCode: String,
+        latitude: Double,
+        longitude: Double,
+    ) =
         simpleRequest {
             client.get<BodyResponse<ProductBuyResponse>>("${baseUrl.url}/search/buy/${productCode}") {
                 withMainToken()
+                url {
+                    parameters.append("latitude", latitude.toString())
+                    parameters.append("longitude", longitude.toString())
+                }
             }
         }
 

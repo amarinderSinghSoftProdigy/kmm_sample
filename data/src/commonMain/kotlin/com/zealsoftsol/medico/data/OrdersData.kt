@@ -82,10 +82,16 @@ data class OrderInfo(
     @SerialName("orderTime")
     val time: String,
     @SerialName("orderStatus")
-    val status: String,
+    val status: OrderStatus,
     val paymentMethod: PaymentMethod,
     val total: Total,
 )
+
+enum class OrderStatus(val stringValue: String) {
+    CANCELLED("Cancelled"), COMPLETED("Completed"), NEW("New"), PENDING_PAYMENT("Pending Payment"), PENDING_DELIVERY(
+        "Pending Delivery"
+    );
+}
 
 @Serializable
 data class OrderNewQtyRequest(
