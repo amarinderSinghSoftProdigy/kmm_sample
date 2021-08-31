@@ -321,6 +321,7 @@
 // MARK: Completed Cart Order
 "home" = "Home";
 "order_success" = "Order placed successfully!";
+"thank_you_for_fulfilment %@" = "%@ will be notified, thank you for fulfilment.";
 "date:" = "Date:";
 "time:" = "Time:";
 "sent_confirmation" = "A confirmation of your order has been sent to";
