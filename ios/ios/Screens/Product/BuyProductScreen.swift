@@ -233,8 +233,7 @@ struct BuyProductScreen: View {
                         }
                     }
                     else if let retailerInfo = self.items.value as? [DataSeasonBoyRetailer],
-                            let quantities = self.quantities.value as? [DataSeasonBoyRetailer: Int],
-                            let stockInfo = self.stockInfo {
+                            let quantities = self.quantities.value as? [DataSeasonBoyRetailer: Int] {
                         ForEach(retailerInfo, id: \.self) {
                             RetailerView(info: $0,
                                          stockInfo: stockInfo,
@@ -387,7 +386,7 @@ struct BuyProductScreen: View {
     
     private struct RetailerView: View {
         let info: DataSeasonBoyRetailer
-        let stockInfo: DataStockInfo
+        let stockInfo: DataStockInfo?
         
         let quantity: Int
         
@@ -422,7 +421,7 @@ struct BuyProductScreen: View {
                     
                     HStack {
                         NumberPicker(quantity: quantity,
-                                     maxQuantity: Int(stockInfo.availableQty),
+                                     maxQuantity: Int(stockInfo?.availableQty ?? .max),
                                      onQuantityIncrease: { onQuantityIncrease($0, self.info) },
                                      onQuantityDecrease: { onQuantityDecrease($0, self.info) },
                                      longPressEnabled: true)
@@ -442,9 +441,11 @@ struct BuyProductScreen: View {
                 }
                 .padding(.vertical, 8)
                 
-                stockInfo.statusColor.color
-                    .cornerRadius(5, corners: [.topLeft, .bottomLeft])
-                    .frame(width: 5)
+                if let stockInfo = self.stockInfo {
+                    stockInfo.statusColor.color
+                        .cornerRadius(5, corners: [.topLeft, .bottomLeft])
+                        .frame(width: 5)
+                }
             }
             .background(AppColor.white.color.cornerRadius(5))
         }
