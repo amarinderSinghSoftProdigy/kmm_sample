@@ -163,22 +163,23 @@ struct OrdersScreen: View {
                         .lineLimit(1)
                     
                     HStack(spacing: 2) {
-                        Text(order.info.date)
-                            .medicoText(textWeight: .medium)
+                        OrderStatusView(status: order.info.status)
                         
-                        Text(order.info.time)
-                            .medicoText(textWeight: .semiBold)
+                        Spacer()
+                        
+                        Group {
+                            Text(order.info.date)
+                                .medicoText(textWeight: .medium)
+                            
+                            Text(order.info.time)
+                                .medicoText(textWeight: .semiBold)
+                        }
+                        .opacity(0.6)
                     }
-                    .opacity(0.6)
                 }
                 .padding(8)
                 
                 HStack(spacing: 10) {
-                    OrderDetailsView(titleLocalizationKey: "type:",
-                                     bodyText: order.info.paymentMethod.serverValue)
-                    
-                    Spacer()
-                    
                     Text(order.info.id)
                         .medicoText(textWeight: .medium,
                                     color: .grey3)
@@ -203,6 +204,29 @@ struct OrdersScreen: View {
                           fill: .white,
                           cornerRadius: 5)
         }
+    }
+}
+
+struct OrderStatusView: View {
+    var status: String
+    
+    var body: some View {
+        let statusColor: AppColor =
+            status == "COMPLETED" ? .green :
+            status == "" || status == "" ? .red :
+            .orange
+        
+        return AnyView(
+            HStack(spacing: 4) {
+                statusColor.color
+                    .cornerRadius(3)
+                    .frame(width: 10, height: 10)
+                
+                Text(status)
+                    .medicoText(textWeight: .medium)
+                    .opacity(0.7)
+            }
+        )
     }
 }
 
