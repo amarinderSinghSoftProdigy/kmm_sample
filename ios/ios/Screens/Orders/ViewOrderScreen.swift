@@ -27,7 +27,7 @@ struct ViewOrderScreen: View {
                 CustomerView(b2bData: b2bData.value,
                              seasonBoyRetailerName: self.order.value?.seasonBoyRetailerName)
                 
-                if let orderStatus = self.order.value?.info.status {
+                if let orderStatus = self.order.value?.info.status.stringValue {
                     OrderStatusView(status: orderStatus)
                 }
             }

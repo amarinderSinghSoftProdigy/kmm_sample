@@ -331,6 +331,11 @@
 "new_orders" = "Purchase Orders";
 "new" = "NEW";
 "empty_new_orders" = "No Purchase Orders from any of your connected Users";
+"QTY" = "QTY";
+"PTR" = "PTR";
+"EXP" = "EXP (MM/YY)";
+"FREE" = "FREE";
+"BATCH" = "BATCH";
 
 // MARK: Orders
 "orders" = "Orders";

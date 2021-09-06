@@ -23,7 +23,7 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened,
-                                maxHeight: 370) {
+                                maxHeight: bottomSheet.canEdit ? 425 : 370) {
                 VStack(spacing: 30) {
                     HStack(alignment: .top, spacing: 20) {
                         if bottomSheet.canEdit {
@@ -47,31 +47,12 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    HStack {
-                        VStack(alignment: .leading, spacing: 8) {
-                            getDetailsView(titleLocalizationKey: "price:",
-                                           bodyText: bottomSheet.orderEntry.price.formatted)
-                            
-                            getDetailsView(titleLocalizationKey: "mrp:",
-                                           bodyText: bottomSheet.orderEntry.mrp.formatted)
-                            
-                            getDetailsView(titleLocalizationKey: "requested_qty:",
-                                           bodyText: bottomSheet.orderEntry.requestedQty.formatted,
-                                           bodyColor: .lightBlue)
-                        }
-                        
-                        Spacer()
-                        
+                    Group {
                         if bottomSheet.canEdit {
-                            NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
-                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0) },
-                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0) },
-                                         longPressEnabled: true)
+                            editableOrderFieldsView
                         }
                         else {
-                            getDetailsView(titleLocalizationKey: "served_qty:",
-                                           bodyText: bottomSheet.orderEntry.servedQty.formatted,
-                                           bodyColor: .lightBlue)
+                            noneditableOrderFieldsView
                         }
                     }
                     .padding(.vertical, 20)
@@ -112,7 +93,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                 }
                 .padding(25)
             }
-            .edgesIgnoringSafeArea(.all)
+            .textFieldsModifiers()
+            .edgesIgnoringSafeArea(.bottom)
         )
     }
     
@@ -123,6 +105,70 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         
         self.checked = .init(dataSource: bottomSheet.isChecked)
         self.quantity = .init(dataSource: bottomSheet.quantity)
+    }
+    
+    private var editableOrderFieldsView: some View {
+        VStack(spacing: 28) {
+            let columnsSpacing: CGFloat = 20
+            let leftColumnWidth: CGFloat = 120
+            
+            HStack(spacing: columnsSpacing) {
+                EditableInput(titleLocalizationKey: "QTY",
+                              text: "\(quantity.value ?? 0)",
+                              onTextChange: { _ in bottomSheet.inc(tapMode: .click) })
+                    .frame(width: leftColumnWidth)
+                
+                Spacer()
+                
+                EditableInput(titleLocalizationKey: "FREE",
+                              text: nil,
+                              onTextChange: { _ in })
+            }
+            
+            HStack(spacing: columnsSpacing) {
+                EditableInput(titleLocalizationKey: "PTR",
+                              text: bottomSheet.orderEntry.price.formatted,
+                              onTextChange: { _ in })
+                    .frame(width: leftColumnWidth)
+                
+                Spacer()
+                
+                EditableInput(titleLocalizationKey: "BATCH",
+                              text: bottomSheet.orderEntry.batchNo,
+                              onTextChange: { _ in })
+            }
+            
+            HStack(spacing: columnsSpacing) {
+                EditableInput(titleLocalizationKey: "EXP",
+                              text: bottomSheet.orderEntry.price.formatted,
+                              onTextChange: { _ in })
+                    .frame(width: leftColumnWidth)
+                
+                Spacer()
+            }
+        }
+    }
+    
+    private var noneditableOrderFieldsView: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                getDetailsView(titleLocalizationKey: "price:",
+                               bodyText: bottomSheet.orderEntry.price.formatted)
+                
+                getDetailsView(titleLocalizationKey: "mrp:",
+                               bodyText: bottomSheet.orderEntry.mrp.formatted)
+                
+                getDetailsView(titleLocalizationKey: "requested_qty:",
+                               bodyText: bottomSheet.orderEntry.requestedQty.formatted,
+                               bodyColor: .lightBlue)
+            }
+            
+            Spacer()
+            
+            getDetailsView(titleLocalizationKey: "served_qty:",
+                           bodyText: bottomSheet.orderEntry.servedQty.formatted,
+                           bodyColor: .lightBlue)
+        }
     }
     
     private func getDetailsView(titleLocalizationKey: String,
