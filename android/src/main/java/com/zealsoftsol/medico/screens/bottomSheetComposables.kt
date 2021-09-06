@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -51,6 +55,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
@@ -106,6 +111,210 @@ fun Scope.Host.showBottomSheet(
                     onDec = { bs.dec(it) },
                     onSave = { bs.save() },
                     onDismiss = { dismissBottomSheet() },
+                )
+            }
+            is BottomSheet.PreviewStockist -> PreviewStockistBottomSheet(
+                sellerInfo = bs.sellerInfo,
+                onDismiss = { dismissBottomSheet() },
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreviewStockistBottomSheet(
+    sellerInfo: SellerInfo,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(22.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                CoilImage(
+                    src = "",
+                    size = 77.dp,
+                    onError = { UserLogoPlaceholder(sellerInfo.tradeName) },
+                    onLoading = { UserLogoPlaceholder(sellerInfo.tradeName) },
+                )
+                Space(16.dp)
+                Column {
+                    Text(
+                        text = sellerInfo.tradeName,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = sellerInfo.geoData.full(),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                }
+            }
+            Space(16.dp)
+            Column(
+                modifier = Modifier
+                    .border(1.dp, ConstColors.gray.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                    .padding(16.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = sellerInfo.priceInfo?.price?.formattedPrice.orEmpty(),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Stock:",
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W400,
+                        )
+                        Space(4.dp)
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colors.primary,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(4.dp)
+                        ) {
+                            Text(
+                                text = sellerInfo.stockInfo?.availableQty?.toString() ?: "",
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        }
+                    }
+                }
+                Space(12.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val color = sellerInfo.stockInfo?.expiry?.color?.toColorInt()?.let { Color(it) }
+                        ?: MaterialTheme.colors.background
+                    Box(
+                        modifier = Modifier.background(
+                            color = color.copy(alpha = 0.1f),
+                            shape = MaterialTheme.shapes.small
+                        )
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Expiry: ")
+                                val startIndex = length
+                                append(sellerInfo.stockInfo?.expiry?.formattedDate.orEmpty())
+                                addStyle(
+                                    SpanStyle(
+                                        color = color,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(4.dp),
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.primary,
+                                shape = MaterialTheme.shapes.small
+                            )
+                            .padding(4.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue,
+                            modifier = Modifier.size(10.dp),
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = "${sellerInfo.geoData.distance} km",
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
+                }
+                Space(12.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("MRP: ")
+                            val startIndex = length
+                            append(sellerInfo.priceInfo?.mrp?.formattedPrice.orEmpty())
+                            addStyle(
+                                SpanStyle(
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Margin: ")
+                            val startIndex = length
+                            append(sellerInfo.priceInfo?.marginPercent.orEmpty())
+                            addStyle(
+                                SpanStyle(
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                }
+                Space(12.dp)
+                Text(
+                    text = buildAnnotatedString {
+                        append("Batch No: ")
+                        val startIndex = length
+                        append("N/A")
+                        addStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontSize = 12.sp,
                 )
             }
         }

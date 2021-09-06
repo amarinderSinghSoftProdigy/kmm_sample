@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -30,6 +31,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -57,7 +60,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -135,6 +140,44 @@ fun MedicoButton(
         border = border,
         enabled = isEnabled,
         shape = MaterialTheme.shapes.medium,
+        elevation = elevation,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height),
+    ) {
+        Text(
+            text = text,
+            fontSize = textSize,
+            fontWeight = FontWeight.W700,
+            modifier = Modifier.align(Alignment.CenterVertically),
+        )
+    }
+}
+
+@Composable
+fun MedicoRoundButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isEnabled: Boolean = true,
+    color: Color = ConstColors.yellow,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
+    border: BorderStroke? = null,
+    elevation: ButtonElevation? = null,
+    textSize: TextUnit = 15.sp,
+    height: Dp = 38.dp,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = color,
+            disabledBackgroundColor = Color.LightGray,
+            contentColor = contentColor,
+            disabledContentColor = contentColor,
+        ),
+        border = border,
+        enabled = isEnabled,
+        shape = RoundedCornerShape(50),
         elevation = elevation,
         modifier = modifier
             .fillMaxWidth()
@@ -515,6 +558,71 @@ fun Dropdown(
                     }
                 },
             )
+        }
+    }
+}
+
+@Composable
+fun EditField(
+    label: String,
+    qty: String,
+    onChange: (String) -> Unit,
+    isEnabled: Boolean = true,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = label.uppercase(),
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+            )
+            Space(16.dp)
+            BasicTextField(
+                value = qty,
+                onValueChange = {
+                    if (it.contains(".")) {
+                        val (beforeDot, afterDot) = it.split(".")
+                        var modBefore = beforeDot.toIntOrNull() ?: 0
+                        val newAfter = if (afterDot.length > 1) {
+                            afterDot.take(1)
+                        } else {
+                            afterDot
+                        }
+                        val modAfter = when (newAfter.toIntOrNull() ?: 0) {
+                            0 -> "0"
+                            in 1..4 -> "0"
+                            5 -> "5"
+                            in 6..9 -> {
+                                modBefore++
+                                "0"
+                            }
+                            else -> throw UnsupportedOperationException("cant be that")
+                        }
+                        onChange("$modBefore.$modAfter")
+                    }
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                maxLines = 1,
+                singleLine = true,
+                readOnly = !isEnabled,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colors.background,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W700
+                )
+            )
+        }
+        Space(4.dp)
+        Canvas(
+            modifier = Modifier
+                .height(1.5.dp)
+                .fillMaxWidth()
+        ) {
+            drawRect(if (isEnabled) ConstColors.lightBlue else ConstColors.gray)
         }
     }
 }

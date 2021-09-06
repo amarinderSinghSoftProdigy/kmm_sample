@@ -44,7 +44,9 @@ import com.zealsoftsol.medico.screens.common.Space
 @Composable
 fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -90,7 +92,7 @@ private fun OrderPlacedTile(
                 Space(22.dp)
                 Column {
                     Text(
-                        text = stringResource(id = R.string.order_success),
+                        text = stringResource(id = R.string.order_success_old),
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W600,
                         fontSize = 16.sp,
@@ -135,7 +137,9 @@ private fun OrderPlacedTile(
             }
             Divider(color = ConstColors.green)
             Row(
-                modifier = Modifier.fillMaxWidth().background(Color.White)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -175,7 +179,9 @@ private fun OrderItem(seller: SellerOrder) {
         border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 18.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(.7f)) {
@@ -277,7 +283,10 @@ fun OrderTotal(price: String) {
     Column {
         Divider()
         Row(
-            modifier = Modifier.fillMaxWidth().height(66.dp).padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(66.dp)
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

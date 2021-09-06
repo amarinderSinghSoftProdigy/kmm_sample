@@ -37,7 +37,8 @@ class CartRepo(
         productCode: String,
         buyingOption: BuyingOption,
         id: CartIdentifier?,
-        quantity: Int,
+        quantity: Double,
+        freeQuantity: Double,
     ) = cartStoresScope.addCartEntry(
         CartRequest(
             unitCode,
@@ -45,7 +46,8 @@ class CartRepo(
             productCode,
             buyingOption,
             id,
-            quantity
+            quantity,
+            freeQuantity,
         )
     )
         .handleResponse()
@@ -56,7 +58,8 @@ class CartRepo(
         productCode: String,
         buyingOption: BuyingOption,
         id: CartIdentifier,
-        quantity: Int,
+        quantity: Double,
+        freeQuantity: Double,
     ) = cartStoresScope.updateCartEntry(
         CartRequest(
             unitCode,
@@ -64,7 +67,8 @@ class CartRepo(
             productCode,
             buyingOption,
             id,
-            quantity
+            quantity,
+            freeQuantity,
         )
     )
         .handleResponse()

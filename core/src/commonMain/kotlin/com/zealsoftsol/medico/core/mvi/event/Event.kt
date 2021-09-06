@@ -115,6 +115,8 @@ sealed class Event {
                 val productCode: String,
                 val sellerInfo: SellerInfo?,
             ) : Product()
+
+            data class PreviewStockistBottomSheet(val sellerInfo: SellerInfo) : Product()
         }
 
         sealed class Management : Action() {
@@ -157,7 +159,8 @@ sealed class Event {
                 val productCode: String,
                 val buyingOption: BuyingOption,
                 val id: CartIdentifier?,
-                val quantity: Int,
+                val quantity: Double,
+                val freeQuantity: Double,
             ) : Cart()
 
             data class UpdateItem(
@@ -165,7 +168,8 @@ sealed class Event {
                 val productCode: String,
                 val buyingOption: BuyingOption,
                 val id: CartIdentifier,
-                val quantity: Int,
+                val quantity: Double,
+                val freeQuantity: Double,
             ) : Cart()
 
             data class RemoveItem(
