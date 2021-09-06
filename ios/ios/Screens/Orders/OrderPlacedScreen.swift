@@ -30,6 +30,7 @@ struct OrderPlacedScreen: View {
                                            withBody: scope.order.info.time)
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
             
             MedicoButton(localizedStringKey: "new_orders",
                          isEnabled: true,
