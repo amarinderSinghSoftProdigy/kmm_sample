@@ -218,6 +218,7 @@ struct BuyProductScreen: View {
                                   onTextChange: { value, _ in onSellerFilter(value) })
                     }
                 }
+                .padding(.horizontal, 16)
                 
                 VStack(spacing: 12)  {
                     if let sellersInfo = self.items.value as? [DataSellerInfo],
@@ -247,7 +248,6 @@ struct BuyProductScreen: View {
                 }
                 .scrollView()
             }
-            .padding(.horizontal, 16)
         }
         
         private struct SellerView: View {
@@ -264,77 +264,73 @@ struct BuyProductScreen: View {
             
             var body: some View {
                 ZStack(alignment: .leading) {
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 10) {
                         Group {
-                            HStack(spacing: 17) {
-                                UserNameImage(username: info.tradeName)
-                                    .frame(width: 65, height: 65)
+                            HStack(spacing: 6) {
+                                info.stockInfo?.statusColor.color
+                                    .cornerRadius(4)
+                                    .frame(width: 10, height: 10)
                                 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(info.tradeName)
-                                        .medicoText(textWeight: .semiBold,
-                                                    fontSize: 16,
-                                                    multilineTextAlignment: .leading)
-                                    
+                                Text(info.tradeName)
+                                    .medicoText(textWeight: .semiBold,
+                                                fontSize: 15,
+                                                multilineTextAlignment: .leading)
+                            }
+                            
+                            VStack(spacing: 8) {
+                                HStack {
                                     if let priceInfo = info.priceInfo {
-                                        HStack {
-                                            Text(priceInfo.price.formattedPrice)
-                                                .medicoText(textWeight: .bold,
-                                                            fontSize: 18,
-                                                            multilineTextAlignment: .leading)
-                                            
-                                            Spacer()
-                                            
-                                            DetailView(titleLocalizationKey: "mrp:",
-                                                       bodyText: priceInfo.mrp.formattedPrice)
-                                        }
-                                        
-                                        HStack {
-                                            Text(product.code)
-                                                .medicoText(color: .grey3,
-                                                            multilineTextAlignment: .leading)
-                                            
-                                            Spacer()
-                                            
-                                            DetailView(titleLocalizationKey: "margin:",
-                                                       bodyText: priceInfo.marginPercent)
-                                        }
+                                        DetailView(titleLocalizationKey: "ptr:",
+                                                   bodyText: priceInfo.price.formattedPrice)
                                     }
+                                    
+                                    Spacer()
                                     
                                     if let stockInfo = info.stockInfo {
-                                        HStack {
-                                            let expiryColor = AppColor.hex(stockInfo.expiry.color)
-                                            
-                                            DetailView(titleLocalizationKey: "expiry:",
-                                                       bodyText: stockInfo.expiry.formattedDate,
-                                                       bodyColor: expiryColor)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(
-                                                    expiryColor.color
-                                                        .opacity(0.12)
-                                                        .cornerRadius(4)
-                                                )
-                                            
-                                            Spacer()
-                                            
-                                            DetailView(titleLocalizationKey: "stocks:",
-                                                       bodyText: String(stockInfo.availableQty))
-                                        }
+                                        DetailView(titleLocalizationKey: "stocks:",
+                                                   bodyText: String(stockInfo.availableQty))
                                     }
                                 }
-                            }
-                            .fixedSize(horizontal: false, vertical: true)
-                            
-                            HStack {
-                                SmallAddressView(location: info.geoData.fullAddress())
                                 
-                                Spacer()
-                                
-                                Text(info.geoData.formattedDistance)
-                                    .medicoText(textWeight: .semiBold,
-                                                color: .lightBlue,
-                                                multilineTextAlignment: .trailing)
+                                HStack {
+                                    if let stockInfo = info.stockInfo {
+                                        let expiryColor = AppColor.hex(stockInfo.expiry.color)
+                                        
+                                        DetailView(titleLocalizationKey: "expiry:",
+                                                   bodyText: stockInfo.expiry.formattedDate,
+                                                   bodyColor: expiryColor)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(
+                                                expiryColor.color
+                                                    .opacity(0.12)
+                                                    .cornerRadius(4)
+                                            )
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    HStack(spacing: 2) {
+                                        Image("MapPin")
+                                            .resizable()
+                                            .renderingMode(.template)
+                                            .aspectRatio(contentMode: .fit)
+                                            .foregroundColor(appColor: .lightBlue)
+                                            .frame(width: 11, height: 11)
+                                        
+                                        Text(info.geoData.formattedDistance)
+                                            .medicoText(textWeight: .semiBold,
+                                                        color: .lightBlue,
+                                                        multilineTextAlignment: .trailing)
+                                    }
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        AppColor.greyBlue.color
+                                            .opacity(0.12)
+                                            .cornerRadius(4)
+                                    )
+                                }
                             }
                         }
                         .padding(.horizontal, 20)
@@ -343,43 +339,18 @@ struct BuyProductScreen: View {
                             .opacity(0.12)
                             .frame(height: 1)
                         
-                        Group {
-                            if isSelectable {
-                                MedicoButton(localizedStringKey: "select",
-                                             height: 32) {
-                                    onInfoSelect(self.info)
-                                }
-                            }
-                            else {
-                                HStack {
-                                    NumberPicker(quantity: quantity,
-                                                 maxQuantity: Int(info.stockInfo?.availableQty ?? .max),
-                                                 onQuantityIncrease: { onQuantityIncrease($0, self.info) },
-                                                 onQuantityDecrease: { onQuantityDecrease($0, self.info) },
-                                                 longPressEnabled: true)
-                                    
-                                    Spacer()
-                                    
-                                    MedicoButton(localizedStringKey: "add_to_cart",
-                                                 isEnabled: quantity > 0,
-                                                 width: 120,
-                                                 height: 32,
-                                                 fontSize: 14,
-                                                 fontWeight: .bold) {
-                                        onInfoSelect(self.info)
-                                    }
-                                }
-                            }
+                        MedicoButton(localizedStringKey: isSelectable ? "select" : "add_to_cart",
+                                     height: 32,
+                                     cornerRadius: 16,
+                                     fontSize: 14,
+                                     fontWeight: .bold) {
+                            onInfoSelect(self.info)
                         }
                         .padding(.horizontal, 20)
                     }
                     .padding(.vertical, 8)
-                    
-                    info.stockInfo?.statusColor.color
-                        .cornerRadius(5, corners: [.topLeft, .bottomLeft])
-                        .frame(width: 5)
                 }
-                .background(AppColor.white.color.cornerRadius(5))
+                .background(appColor: .white)
             }
         }
     }

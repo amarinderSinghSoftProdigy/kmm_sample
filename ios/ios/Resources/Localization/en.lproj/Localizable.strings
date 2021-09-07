@@ -170,6 +170,7 @@
 "margin:" = "Margin:";
 "stocks:" = "Stocks:";
 "expiry:" = "Expiry:";
+"ptr:" = "PTR:";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
