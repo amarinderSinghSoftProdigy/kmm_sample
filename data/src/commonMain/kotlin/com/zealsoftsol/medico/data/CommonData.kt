@@ -37,6 +37,7 @@ data class GeoData(
 ) {
     fun fullAddress() = "$city $pincode"
     fun fullLandmark() = "$landmark, $city"
+    fun full() = "$location, $landmark, $city, $pincode "
 }
 
 @Serializable

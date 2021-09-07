@@ -10,49 +10,32 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
-import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.data.WithTradeName
 
 sealed class BuyProductScope<T : WithTradeName>(
     val product: ProductSearch,
     val items: DataSource<List<T>>,
     val itemsFilter: DataSource<String> = DataSource(""),
-    val quantities: DataSource<Map<T, Int>> = DataSource(mapOf()),
+    val quantities: DataSource<Map<T, Pair<Double, Double>>> = DataSource(mapOf()),
     private val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     internal val allItems = items.value
 
+    fun saveQuantities(item: T, qty: Double, freeQty: Double) {
+        quantities.value = quantities.value.toMutableMap().also {
+            it[item] = qty to freeQty
+        }
+        select(item)
+    }
+
+    fun saveQuantitiesAndSelect(item: T, qty: Double, freeQty: Double) {
+        saveQuantities(item, qty, freeQty)
+        select(item)
+    }
+
     abstract fun select(item: T): Boolean
     abstract fun ensureMaxQuantity(item: T, count: Int): Boolean
-
-    fun inc(mode: TapMode, item: T) {
-        var count = quantities.value[item] ?: 0
-        if (!ensureMaxQuantity(item, count)) return
-        tapModeHelper.action(mode) {
-            count = quantities.value[item] ?: count
-            quantities.value = quantities.value.toMutableMap().also {
-                it[item] = count + 1
-            }
-            ensureMaxQuantity(item, count + 1)
-        }
-    }
-
-    fun dec(mode: TapMode, item: T) {
-        tapModeHelper.action(mode) {
-            var changedCount = 0
-            quantities.value = quantities.value
-                .mapValues { (info, count) ->
-                    if (item == info) {
-                        changedCount = (count - 1).coerceAtLeast(0)
-                        changedCount
-                    } else {
-                        count
-                    }
-                }
-            changedCount > 0
-        }
-    }
 
     fun filterItems(filter: String) =
         EventCollector.sendEvent(Event.Action.Product.FilterBuyProduct(filter))
@@ -88,7 +71,8 @@ sealed class BuyProductScope<T : WithTradeName>(
                     product.code,
                     product.buyingOption!!,
                     CartIdentifier(item.spid),
-                    quantities.value[item]!!
+                    quantities.value[item]!!.first,
+                    quantities.value[item]!!.second,
                 )
             }
             return EventCollector.sendEvent(event)
@@ -106,7 +90,8 @@ sealed class BuyProductScope<T : WithTradeName>(
                     product.code,
                     product.buyingOption!!,
                     id = null,
-                    quantities.value[SellerInfo.anyone]!!,
+                    quantities.value[SellerInfo.anyone]!!.first,
+                    quantities.value[SellerInfo.anyone]!!.second,
                 )
             }
             return EventCollector.sendEvent(event)
@@ -127,9 +112,13 @@ sealed class BuyProductScope<T : WithTradeName>(
         init {
             if (!isSeasonBoy) {
                 quantities.value = allItems.filter { it.cartInfo != null }
-                    .map { it to it.cartInfo!!.quantity.value.toInt() }.toMap()
+                    .map { it to (it.cartInfo!!.quantity.value to it.cartInfo!!.freeQuantity.value) }
+                    .toMap()
             }
         }
+
+        fun previewStockist(info: SellerInfo) =
+            EventCollector.sendEvent(Event.Action.Product.PreviewStockistBottomSheet(info))
 
         override fun ensureMaxQuantity(item: SellerInfo, count: Int): Boolean =
             item.stockInfo?.let {
@@ -148,7 +137,8 @@ sealed class BuyProductScope<T : WithTradeName>(
                     product.code,
                     product.buyingOption!!,
                     CartIdentifier(item.spid),
-                    quantities.value[item]!!
+                    quantities.value[item]!!.first,
+                    quantities.value[item]!!.second,
                 )
             }
             return EventCollector.sendEvent(event)
@@ -164,7 +154,8 @@ sealed class BuyProductScope<T : WithTradeName>(
 
         init {
             quantities.value = allItems.filter { it.cartInfo != null }
-                .map { it to it.cartInfo!!.quantity.value.toInt() }.toMap()
+                .map { it to (it.cartInfo!!.quantity.value to it.cartInfo!!.freeQuantity.value) }
+                .toMap()
         }
 
         override fun ensureMaxQuantity(item: SeasonBoyRetailer, count: Int): Boolean =
@@ -178,7 +169,8 @@ sealed class BuyProductScope<T : WithTradeName>(
                 product.code,
                 product.buyingOption!!,
                 CartIdentifier(spid = sellerInfo?.spid, seasonBoyRetailerId = item.id),
-                quantities.value[item]!!
+                quantities.value[item]!!.first,
+                quantities.value[item]!!.second,
             )
         )
     }

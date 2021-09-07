@@ -29,7 +29,8 @@ internal class CartEventDelegate(
                 productCode,
                 buyingOption,
                 id,
-                quantity
+                quantity,
+                freeQuantity,
             )
         }
         is Event.Action.Cart.UpdateItem -> event.run {
@@ -38,7 +39,8 @@ internal class CartEventDelegate(
                 productCode,
                 buyingOption,
                 id,
-                quantity
+                quantity,
+                freeQuantity,
             )
         }
         is Event.Action.Cart.RemoveItem -> event.run {
@@ -62,7 +64,8 @@ internal class CartEventDelegate(
         productCode: String,
         buyingOption: BuyingOption,
         id: CartIdentifier?,
-        quantity: Int,
+        quantity: Double,
+        freeQuantity: Double,
     ) = async {
         navigator.withProgress {
             cartRepo.addCartItem(
@@ -72,6 +75,7 @@ internal class CartEventDelegate(
                 buyingOption,
                 id,
                 quantity,
+                freeQuantity,
             )
         }.onSuccess {
 //            navigator.setScope(
@@ -90,7 +94,8 @@ internal class CartEventDelegate(
         productCode: String,
         buyingOption: BuyingOption,
         id: CartIdentifier,
-        quantity: Int,
+        quantity: Double,
+        freeQuantity: Double,
     ) = async {
         navigator.withScope<CartScope> {
             withProgress {
@@ -100,7 +105,8 @@ internal class CartEventDelegate(
                     productCode,
                     buyingOption,
                     id,
-                    quantity
+                    quantity,
+                    freeQuantity,
                 )
             }.onError(navigator)
         }

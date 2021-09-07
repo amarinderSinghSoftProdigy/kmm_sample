@@ -29,15 +29,16 @@ class CartScope(
         return if (quantity == 0) {
             removeItem(sellerCart, item)
         } else {
-            EventCollector.sendEvent(
-                Event.Action.Cart.UpdateItem(
-                    sellerCart.sellerCode,
-                    item.productCode,
-                    item.buyingOption,
-                    item.id,
-                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
-                )
-            )
+            TODO("cart not impl")
+//            EventCollector.sendEvent(
+//                Event.Action.Cart.UpdateItem(
+//                    sellerCart.sellerCode,
+//                    item.productCode,
+//                    item.buyingOption,
+//                    item.id,
+//                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
+//                )
+//            )
         }
     }
 
@@ -53,15 +54,16 @@ class CartScope(
         return if (quantity == 0) {
             removeItem(sellerCart, item)
         } else {
-            EventCollector.sendEvent(
-                Event.Action.Cart.UpdateItem(
-                    sellerCart.sellerCode,
-                    item.productCode,
-                    item.buyingOption,
-                    item.id,
-                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
-                )
-            )
+            TODO("cart not impl")
+//            EventCollector.sendEvent(
+//                Event.Action.Cart.UpdateItem(
+//                    sellerCart.sellerCode,
+//                    item.productCode,
+//                    item.buyingOption,
+//                    item.id,
+//                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
+//                )
+//            )
         }
     }
 
