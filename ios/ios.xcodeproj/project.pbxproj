@@ -73,6 +73,7 @@
 		33B4A30F25A34E6900B04AF3 /* Barlow-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
 		33BAF811265FDFED00559A68 /* ViewOrderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */; };
+		33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */; };
 		33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67C825AEF87600148A27 /* AnalyticsService.swift */; };
 		33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */; };
 		33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67E925AF0EFD00148A27 /* DIContainer.swift */; };
@@ -201,6 +202,7 @@
 		33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Black.ttf"; sourceTree = "<group>"; };
 		33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPersonalDataScreen.swift; sourceTree = "<group>"; };
 		33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOrderScreen.swift; sourceTree = "<group>"; };
+		33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityInput.swift; sourceTree = "<group>"; };
 		33CA67C825AEF87600148A27 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalyticsService.swift; sourceTree = "<group>"; };
 		33CA67E925AF0EFD00148A27 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
@@ -394,6 +396,7 @@
 				332DE72626E6120C0032698A /* EditableInput.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
+				33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */,
 				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = Inputs;
@@ -1033,6 +1036,7 @@
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
+				33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */,
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,

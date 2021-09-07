@@ -9,11 +9,15 @@
 import SwiftUI
 
 struct EditableInput: View {
-    
+    @State private var cursorPosition: Int?
     @State private var fieldSelected = false
     
     let titleLocalizationKey: String
     let text: Binding<String>
+    
+    let keyboardType: UIKeyboardType
+    let disableAutocorrection: Bool
+    let autocapitalization: UITextAutocapitalizationType
     
     var body: some View {
         VStack(spacing: 6) {
@@ -33,7 +37,9 @@ struct EditableInput: View {
                             fontSize: 20,
                             color: fieldSelected ? .darkBlue : .greyBlue,
                             multilineTextAlignment: .trailing)
-                .frame(maxWidth: .infinity)
+                .keyboardType(keyboardType)
+                .disableAutocorrection(disableAutocorrection)
+                .autocapitalization(autocapitalization)
             }
             
             (fieldSelected ? AppColor.lightBlue : AppColor.greyBlue).color
@@ -43,10 +49,17 @@ struct EditableInput: View {
     
     init(titleLocalizationKey: String,
          text: String?,
-         onTextChange: @escaping (String) -> Void) {
+         onTextChange: @escaping (String) -> Void,
+         keyboardType: UIKeyboardType = .default,
+         disableAutocorrection: Bool = true,
+         autocapitalization: UITextAutocapitalizationType = .none) {
         self.titleLocalizationKey = titleLocalizationKey
         
         self.text = Binding(get: { text ?? "" },
                             set: { onTextChange($0) })
+        
+        self.keyboardType = keyboardType
+        self.disableAutocorrection = disableAutocorrection
+        self.autocapitalization = autocapitalization
     }
 }

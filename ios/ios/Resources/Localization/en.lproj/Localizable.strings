@@ -171,6 +171,7 @@
 "stocks:" = "Stocks:";
 "expiry:" = "Expiry:";
 "ptr:" = "PTR:";
+"update" = "Update";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
