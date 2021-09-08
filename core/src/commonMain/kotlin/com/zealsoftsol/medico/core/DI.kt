@@ -22,7 +22,6 @@ import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.storage.TokenStorage
-import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -147,12 +146,10 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
-            instance(),
         )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
     bind<CartRepo>() with singleton { CartRepo(instance()) }
-    bind<PhoneEmailVerifier>() with singleton { PhoneEmailVerifier() }
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(

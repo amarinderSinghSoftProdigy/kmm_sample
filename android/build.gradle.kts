@@ -101,7 +101,6 @@ dependencies {
     implementation(Deps.Firebase.analytics)
     implementation(Deps.Firebase.crashlytics)
     implementation(Deps.Firebase.messaging)
-    implementation(Deps.libphonenumber)
     implementation("io.karn:notify:1.3.0")
     implementation("joda-time:joda-time:2.10.5")
 

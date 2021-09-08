@@ -14,12 +14,14 @@ import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.screens.common.NavigationCell
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
+import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 32.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 16.dp, vertical = 32.dp)) {
         when (scope) {
             is SettingsScope.List -> SettingsList(scope.sections)
             is SettingsScope.Profile -> Profile(scope.user)
@@ -57,9 +59,7 @@ private fun Profile(user: User) {
     Space(12.dp)
     ReadOnlyField(user.email, R.string.email)
     Space(12.dp)
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = formatter.verifyNumber(user.phoneNumber)
-    ReadOnlyField(formatted ?: user.phoneNumber, R.string.phone_number)
+    ReadOnlyField(user.phoneNumber.formatIndia(), R.string.phone_number)
 }
 
 @Composable
