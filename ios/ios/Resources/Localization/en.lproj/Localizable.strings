@@ -351,6 +351,7 @@
 "reject_all" = "Decline All";
 "quote" = "Quote";
 "batch_no %@" = "Batch No: %@";
+"batch_no:" = "Batch No:";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
 "served_qty:" = "Served QTY:";

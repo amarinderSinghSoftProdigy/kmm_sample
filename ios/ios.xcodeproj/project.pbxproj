@@ -66,6 +66,7 @@
 		339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339D372125B05CCF00C57B2D /* SettingsScreen.swift */; };
 		33A0202425B9920000615349 /* TransparentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202325B9920000615349 /* TransparentList.swift */; };
 		33A0202625B99E1100615349 /* BaseBottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202525B99E1100615349 /* BaseBottomSheetView.swift */; };
+		33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
@@ -195,6 +196,7 @@
 		339D372125B05CCF00C57B2D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		33A0202325B9920000615349 /* TransparentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentList.swift; sourceTree = "<group>"; };
 		33A0202525B99E1100615349 /* BaseBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseBottomSheetView.swift; sourceTree = "<group>"; };
+		33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStockistBottomSheet.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
@@ -630,6 +632,7 @@
 				33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */,
 				33ED9E9B2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift */,
 				332EB65225F2253C009BC392 /* PopSheet.swift */,
+				33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1047,6 +1050,7 @@
 				333D3268262EBABF0075E1D3 /* HelpScreen.swift in Sources */,
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
+				33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,

@@ -15,6 +15,7 @@ struct BuyProductScreen: View {
     private var itemsSelectable = false
     private var searchTitleLocalizationKey = ""
     private var scopeSpecificView: AnyView?
+    private var previewStockist: ((DataSellerInfo) -> Void)?
     
     let scope: BuyProductScope<DataWithTradeName>
     
@@ -41,6 +42,7 @@ struct BuyProductScreen: View {
                                      quantities: SwiftDataSource(dataSource: scope.quantities),
                                      onQuantitySelect: selectQuantity,
                                      onInfoSelect: { scope.select(item: $0) },
+                                     onViewTap: previewStockist,
                                      onSellerFilter: { scope.filterItems(filter: $0) })
                 }
             }
@@ -56,6 +58,7 @@ struct BuyProductScreen: View {
         if let scope = (self.scope as? BuyProductScope<DataSellerInfo>) as? BuyProductScopeChooseStockist {
             itemsSelectable = scope.isSeasonBoy
             searchTitleLocalizationKey = "choose_seller"
+            previewStockist = { scope.previewStockist(info: $0) }
         }
         else if let scope = (self.scope as? BuyProductScope<DataSeasonBoyRetailer>) as? BuyProductScopeChooseRetailer {
             searchTitleLocalizationKey = "choose_retailer"
@@ -83,6 +86,10 @@ struct BuyProductScreen: View {
         else {
             scope.select(item: tradeName)
         }
+    }
+    
+    private func previewStockist(_ stockist: DataSellerInfo) {
+        previewStockist?(stockist)
     }
     
     private struct ProductInfo: View {
@@ -196,6 +203,7 @@ struct BuyProductScreen: View {
         let onQuantitySelect: (DataWithTradeName, Double?, Double?) -> Void
         
         let onInfoSelect: (DataWithTradeName) -> ()
+        let onViewTap: (DataSellerInfo) -> Void
         let onSellerFilter: (String) -> ()
         
         var body: some View {
@@ -241,7 +249,8 @@ struct BuyProductScreen: View {
                                        quantity: Double(truncating: quantities[sellerInfo]?.first ?? 0),
                                        freeQuantity: Double(truncating: quantities[sellerInfo]?.second ?? 0),
                                        onQuantitySelect: { onQuantitySelect(sellerInfo, $0, $1) },
-                                       onInfoSelect: onInfoSelect)
+                                       onInfoSelect: onInfoSelect,
+                                       onViewTap: onViewTap)
                         }
                     }
                     else if let retailersInfo = self.items.value as? [DataSeasonBoyRetailer],
@@ -272,6 +281,7 @@ struct BuyProductScreen: View {
             let onQuantitySelect: (Double?, Double?) -> ()
             
             let onInfoSelect: (DataSellerInfo) -> ()
+            let onViewTap: (DataSellerInfo) -> Void
             
             var body: some View {
                 VStack(spacing: 8) {
@@ -291,18 +301,7 @@ struct BuyProductScreen: View {
                     
                     HStack {
                         if let stockInfo = info.stockInfo {
-                            let expiryColor = AppColor.hex(stockInfo.expiry.color)
-                            
-                            DetailView(titleLocalizationKey: "expiry:",
-                                       bodyText: stockInfo.expiry.formattedDate,
-                                       bodyColor: expiryColor)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(
-                                    expiryColor.color
-                                        .opacity(0.12)
-                                        .cornerRadius(4)
-                                )
+                            DateExpiryView(dateExpiry: stockInfo.expiry)
                         }
                         
                         Spacer()
@@ -321,6 +320,9 @@ struct BuyProductScreen: View {
                 )
                 .padding(.vertical, 8)
                 .background(appColor: .white)
+                .onTapGesture {
+                    onViewTap(info)
+                }
             }
             
             private var header: some View {
@@ -789,6 +791,32 @@ private struct BaseSellerView<Header: View>: ViewModifier {
         case addToCart
         case update
         case confirmQuantity
+    }
+}
+
+struct DateExpiryView: View {
+    let dateExpiry: DataExpiry
+    
+    var body: some View {
+        let expiryColor = AppColor.hex(dateExpiry.color)
+        
+        HStack(spacing: 4) {
+            LocalizedText(localizationKey: "expiry:",
+                          color: .grey3,
+                          multilineTextAlignment: .leading)
+            
+            Text(dateExpiry.formattedDate)
+                .medicoText(textWeight: .bold,
+                            color: expiryColor,
+                            multilineTextAlignment: .leading)
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(
+            expiryColor.color
+                .opacity(0.12)
+                .cornerRadius(4)
+        )
     }
 }
 

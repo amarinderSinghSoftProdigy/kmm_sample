@@ -203,17 +203,22 @@ struct BottomSheetView: View {
 
             case let uploadBottomSheet as BottomSheet.UploadDocuments:
                 Color.clear.filePicker(bottomSheet: uploadBottomSheet,
-                                       onBottomSheetDismiss: { dismissBottomSheet() })
+                                       onBottomSheetDismiss: dismissBottomSheet)
 
             case let managementItemSheet as BottomSheet.PreviewManagementItem:
                 Color.clear
                     .modifier(EntityInfoBottomSheet(bottomSheet: managementItemSheet,
-                                                    onBottomSheetDismiss: { dismissBottomSheet() }))
+                                                    onBottomSheetDismiss: dismissBottomSheet))
                 
             case let modifyOrderEntrySheet as BottomSheet.ModifyOrderEntry:
                 Color.clear
                     .modifier(ModifyOrderEntryBottomSheet(bottomSheet: modifyOrderEntrySheet,
-                                                          onBottomSheetDismiss: { dismissBottomSheet() }))
+                                                          onBottomSheetDismiss: dismissBottomSheet))
+                
+            case let previewStockistSheet as BottomSheet.PreviewStockist:
+                Color.clear
+                    .modifier(PreviewStockistBottomSheet(bottomSheet: previewStockistSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
                         
             default:
                 Color.clear
