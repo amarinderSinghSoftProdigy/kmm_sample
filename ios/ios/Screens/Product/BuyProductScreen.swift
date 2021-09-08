@@ -8,6 +8,7 @@
 
 import core
 import SwiftUI
+import Combine
 
 struct BuyProductScreen: View {
     private var stockInfo: DataStockInfo?
@@ -423,30 +424,30 @@ struct BuyProductScreen: View {
         
         var body: some View {
             VStack(spacing: 16) {
-                let quantities = self.quantities.value as? [DataSellerInfo: Int]
-                
-                getQuoteOptionView(localizationKey: "quote_existing_stockist",
-                                   isSelected: self.selectedOption.value == .existingStockist,
-                                   quantity: self.selectedStockist.value == nil ? 0 : (quantities?[self.selectedStockist.value!] ?? 0),
-                                   maxQuantity: .max,
-                                   needsSelectedStockist: true,
-                                   onQuantitySelect: { _ in },
-                                   onButtonTap: {
-                                      if let selectedStockist = self.selectedStockist.value {
-                                          scope.select(item: selectedStockist)
-                                      }
-                                   }) {
-                    scope.toggleOption(option: .existingStockist)
-                }
-                
-                getQuoteOptionView(localizationKey: "quote_any_stockist",
-                                   isSelected: self.selectedOption.value == .anyone,
-                                   quantity: quantities?[DataSellerInfo.Anyone().anyone] ?? 0,
-                                   maxQuantity: .max,
-                                   needsSelectedStockist: false,
-                                   onQuantitySelect: { _ in },
-                                   onButtonTap: { _ = scope.selectAnyone() }) {
-                    scope.toggleOption(option: .anyone)
+                if let quantities = self.quantities.value as? [DataSellerInfo: KotlinPair<KotlinDouble, KotlinDouble>] {
+                    QuoteView(localizationKey: "quote_existing_stockist",
+                              isSelected: self.selectedOption.value == .existingStockist,
+                              needsSelectedStockist: true,
+                              isSeasonBoy: scope.isSeasonBoy,
+                              availableStockists: availableStockists.value as? [DataSellerInfo],
+                              chosenSeller: selectedStockist.value?.tradeName,
+                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
+                              quantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.first ?? 0)),
+                              freeQuantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.second ?? 0)),
+                              onQuantitySelect: handleQuantitySelect,
+                              onToggle: { scope.toggleOption(option: .existingStockist) })
+                    
+                    QuoteView(localizationKey: "quote_any_stockist",
+                              isSelected: selectedOption.value == .anyone,
+                              needsSelectedStockist: false,
+                              isSeasonBoy: scope.isSeasonBoy,
+                              availableStockists: availableStockists.value as? [DataSellerInfo],
+                              chosenSeller: selectedStockist.value?.tradeName,
+                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
+                              quantity: Double(truncating: quantities[DataSellerInfo.Anyone().anyone]?.first ?? 0),
+                              freeQuantity: Double(truncating: quantities[DataSellerInfo.Anyone().anyone]?.second ?? 0),
+                              onQuantitySelect: handleAnyStockistQuantitySelect,
+                              onToggle: { scope.toggleOption(option: .anyone) })
                 }
             }
             .padding(.horizontal, 16)
@@ -464,18 +465,96 @@ struct BuyProductScreen: View {
             self.quantities = SwiftDataSource(dataSource: scope.quantities)
         }
         
-        private func getQuoteOptionView(localizationKey: String,
-                                        isSelected: Bool,
-                                        quantity: Int,
-                                        maxQuantity: Int,
-                                        needsSelectedStockist: Bool,
-                                        onQuantitySelect: @escaping (_ tapMode: DataTapMode) -> (),
-                                        onButtonTap: @escaping () -> (),
-                                        onToggle: @escaping () -> ()) -> some View {
-            let horizontalPadding: CGFloat = 20
+        private func handleQuantitySelect(quantity: Double?, freeQuantity: Double?) {
+            guard let selectedStockist = self.selectedStockist.value else { return }
+            
+            if let quantity = quantity,
+               let freeQuantity = freeQuantity {
+                scope.saveQuantitiesAndSelect(item: selectedStockist, qty: quantity, freeQty: freeQuantity)
+            }
+            else {
+                scope.select(item: selectedStockist)
+            }
+        }
         
-            return AnyView(
-                VStack(alignment: .leading, spacing: 20)  {
+        private func handleAnyStockistQuantitySelect(quantity: Double?, freeQuantity: Double?) {
+            if let quantity = quantity,
+               let freeQuantity = freeQuantity {
+                scope.saveQuantities(item: DataSellerInfo.Anyone().anyone, qty: quantity, freeQty: freeQuantity)
+                scope.selectAnyone()
+            }
+            else {
+                scope.selectAnyone()
+            }
+        }
+        
+        private struct QuoteView: View {
+            private let horizontalPadding: CGFloat = 20
+            
+            let localizationKey: String
+            
+            let isSelected: Bool
+            let needsSelectedStockist: Bool
+            let isSeasonBoy: Bool
+            
+            let availableStockists: [DataSellerInfo]?
+            let chosenSeller: String?
+            let onSellerPickerSelect: (DataSellerInfo) -> Void
+            
+            let quantity: Double
+            let freeQuantity: Double
+            
+            let onQuantitySelect: (Double?, Double?) -> ()
+            let onToggle: () -> Void
+            
+            var body: some View {
+                Group {
+                    if isSelected {
+                        Group {
+                            if needsSelectedStockist,
+                               let availableStockists = self.availableStockists {
+                                PickerSelector(placeholder: "select_stockists",
+                                               chosenElement: chosenSeller,
+                                               data: availableStockists.map { $0.tradeName },
+                                               optionsHeight: 40,
+                                               backgroundColor: .primary,
+                                               chevronColor: .lightBlue) { tradeName in
+                                    if let seller = availableStockists.first(where: { $0.tradeName == tradeName }) {
+                                        onSellerPickerSelect(seller)
+                                    }
+                                }
+                                .padding(.bottom, 20)
+                            }
+                            else {
+                                EmptyView()
+                            }
+                        }
+                        .modifier(BaseSellerView(initialMode: isSeasonBoy ? .select : nil,
+                                                 header: header,
+                                                 horizontalPadding: horizontalPadding,
+                                                 buttonsHeight: 48,
+                                                 showsDivider: false,
+                                                 addActionEnabled: !needsSelectedStockist || chosenSeller != nil,
+                                                 initialQuantity: quantity,
+                                                 initialFreeQuantity: freeQuantity,
+                                                 maxQuantity: .infinity,
+                                                 onQuantitySelect: onQuantitySelect))
+                    }
+                    else {
+                        header
+                            .padding(.horizontal, horizontalPadding)
+                    }
+                }
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundColor(appColor: .white)
+                )
+            }
+            
+            private var header: some View {
+                VStack(alignment: .leading, spacing: 15) {
                     HStack(spacing: 16) {
                         Circle()
                             .foregroundColor(appColor: isSelected ? .lightBlue : .white)
@@ -497,67 +576,20 @@ struct BuyProductScreen: View {
                                       color: .black,
                                       multilineTextAlignment: .leading)
                     }
-                    .padding(.horizontal, horizontalPadding)
+                    .fixedSize(horizontal: false, vertical: true)
                     
                     if isSelected {
-                        AppColor.darkBlue.color
-                            .opacity(0.12)
-                            .frame(height: 1)
-                        
-                        VStack(alignment: .leading, spacing: 30) {
-                            if needsSelectedStockist,
-                               let availableStockists = self.availableStockists.value as? [DataSellerInfo] {
-                                PickerSelector(placeholder: "select_stockists",
-                                               chosenElement: self.selectedStockist.value?.tradeName,
-                                               data: availableStockists.map { $0.tradeName },
-                                               optionsHeight: 40,
-                                               backgroundColor: .primary,
-                                               chevronColor: .lightBlue) { tradeName in
-                                    if let seller = availableStockists.first(where: { $0.tradeName == tradeName }) {
-                                        self.scope.chooseSeller(sellerInfo: seller)
-                                    }
-                                }
-                            }
-                            
-                            HStack {
-                                if !scope.isSeasonBoy {
-//                                    NumberPicker(quantity: quantity,
-//                                                 maxQuantity: maxQuantity,
-//                                                 onQuantityIncrease: onQuantityIncrease,
-//                                                 onQuantityDecrease: onQuantityDecrease,
-//                                                 longPressEnabled: true)
-                                    
-                                    Spacer()
-                                
-                                    MedicoButton(localizedStringKey: "add_to_cart",
-                                                 isEnabled: quantity > 0 && (!needsSelectedStockist || self.selectedStockist.value != nil),
-                                                 width: 120,
-                                                 height: 48,
-                                                 fontSize: 15,
-                                                 fontWeight: .bold) {
-                                        onButtonTap()
-                                    }
-                                }
-                                else {
-                                    MedicoButton(localizedStringKey: "select",
-                                                 isEnabled: !needsSelectedStockist || self.selectedStockist.value != nil,
-                                                 height: 48) {
-                                        onButtonTap()
-                                    }
-                                }
-                            }
+                        VStack(alignment: .leading, spacing: 15) {
+                            AppColor.darkBlue.color
+                                .opacity(0.12)
+                                .frame(height: 1)
+                                .padding(.horizontal, -horizontalPadding)
+                                .padding(.bottom, 15)
                         }
-                        .padding(.top, 10)
-                        .padding(.horizontal, horizontalPadding)
                     }
                 }
-                .padding(.vertical, 20)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .foregroundColor(appColor: .white)
-                )
-            )
+            }
         }
     }
 }
@@ -568,6 +600,8 @@ private struct BaseSellerView<Header: View>: ViewModifier {
     let header: Header
     
     private let horizontalPadding: CGFloat
+    private let standaloneButtonsHeight: CGFloat
+    private let buttonsHeight: CGFloat = 38
     
     private let initialQuantity: Double
     private let initialFreeQuantity: Double
@@ -579,6 +613,7 @@ private struct BaseSellerView<Header: View>: ViewModifier {
     private let onQuantitySelect: (Double?, Double?) -> Void
     
     private let addActionEnabled: Bool
+    private let showsDivider: Bool
     
     func body(content: Content) -> some View {
         VStack {
@@ -597,18 +632,36 @@ private struct BaseSellerView<Header: View>: ViewModifier {
             }
             .padding(.horizontal, horizontalPadding)
             
-            AppColor.darkBlue.color
-                .opacity(0.12)
-                .frame(height: 1)
+            if showsDivider {
+                AppColor.darkBlue.color
+                    .opacity(0.12)
+                    .frame(height: 1)
+            }
             
             bottomPanel
                 .padding(.horizontal, horizontalPadding)
+        }
+        .onReceive(Just(initialQuantity)) {
+            if self.mode != .confirmQuantity {
+                self.quantity = $0
+                
+                updateMode()
+            }
+        }
+        .onReceive(Just(initialFreeQuantity)) {
+            if self.mode != .confirmQuantity {
+                self.freeQuantity = $0
+                
+                updateMode()
+            }
         }
     }
     
     init(initialMode: Mode?,
          header: Header,
          horizontalPadding: CGFloat = 16,
+         buttonsHeight: CGFloat = 38,
+         showsDivider: Bool = true,
          addActionEnabled: Bool = true,
          initialQuantity: Double,
          initialFreeQuantity: Double,
@@ -619,7 +672,9 @@ private struct BaseSellerView<Header: View>: ViewModifier {
         
         self.header = header
         self.horizontalPadding = horizontalPadding
+        self.standaloneButtonsHeight = buttonsHeight
         
+        self.showsDivider = showsDivider
         self.addActionEnabled = addActionEnabled
         
         self.initialQuantity = initialQuantity
@@ -639,8 +694,8 @@ private struct BaseSellerView<Header: View>: ViewModifier {
             case .addToCart, .select:
                 MedicoButton(localizedStringKey: mode == .select ? "select" : "add_to_cart",
                              isEnabled: addActionEnabled,
-                             height: 32,
-                             cornerRadius: 16,
+                             height: standaloneButtonsHeight,
+                             cornerRadius: standaloneButtonsHeight / 2,
                              fontSize: 14,
                              fontWeight: .bold) {
                     if mode == .addToCart {
@@ -679,8 +734,8 @@ private struct BaseSellerView<Header: View>: ViewModifier {
                     
                     MedicoButton(localizedStringKey: "update",
                                  width: 100,
-                                 height: 32,
-                                 cornerRadius: 16,
+                                 height: buttonsHeight,
+                                 cornerRadius: buttonsHeight / 2,
                                  fontSize: 14,
                                  fontWeight: .bold,
                                  fontColor: .white,
@@ -693,8 +748,8 @@ private struct BaseSellerView<Header: View>: ViewModifier {
                 HStack {
                     MedicoButton(localizedStringKey: "cancel",
                                  width: 112,
-                                 height: 32,
-                                 cornerRadius: 16,
+                                 height: buttonsHeight,
+                                 cornerRadius: buttonsHeight / 2,
                                  fontSize: 14,
                                  fontWeight: .bold,
                                  buttonColor: .darkBlue,
@@ -710,8 +765,8 @@ private struct BaseSellerView<Header: View>: ViewModifier {
                     MedicoButton(localizedStringKey: "confirm",
                                  isEnabled: (quantity + freeQuantity).truncatingRemainder(dividingBy: 1) == 0,
                                  width: 112,
-                                 height: 32,
-                                 cornerRadius: 16,
+                                 height: buttonsHeight,
+                                 cornerRadius: buttonsHeight / 2,
                                  fontSize: 14,
                                  fontWeight: .bold) {
                         mode = quantity > 0 || freeQuantity > 0 ? .update : .addToCart
@@ -721,6 +776,12 @@ private struct BaseSellerView<Header: View>: ViewModifier {
                 }
             }
         }
+    }
+    
+    private func updateMode() {
+        guard mode != .select else { return }
+        
+        self.mode = initialQuantity > 0 || initialFreeQuantity > 0 ? .update : .addToCart
     }
     
     enum Mode {
