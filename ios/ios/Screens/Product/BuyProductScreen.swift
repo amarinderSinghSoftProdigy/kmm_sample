@@ -244,11 +244,12 @@ struct BuyProductScreen: View {
                         }
                     }
                     else if let retailersInfo = self.items.value as? [DataSeasonBoyRetailer],
-                            let quantities = self.quantities.value as? [DataSeasonBoyRetailer: KotlinPair<KotlinInt, KotlinInt>] {
+                            let quantities = self.quantities.value as? [DataSeasonBoyRetailer: KotlinPair<KotlinDouble, KotlinDouble>] {
                         ForEach(retailersInfo, id: \.self) { retailerInfo in
                             RetailerView(info: retailerInfo,
                                          stockInfo: stockInfo,
-                                         quantity: Int(truncating: quantities[retailerInfo]?.first ?? 0),
+                                         quantity: Double(truncating: quantities[retailerInfo]?.first ?? 0),
+                                         freeQuantity: Double(truncating: quantities[retailerInfo]?.second ?? 0),
                                          onQuantitySelect: { onQuantitySelect(retailerInfo, $0, $1) },
                                          onInfoSelect: onInfoSelect)
                         }
@@ -305,26 +306,7 @@ struct BuyProductScreen: View {
                         
                         Spacer()
                         
-                        HStack(spacing: 2) {
-                            Image("MapPin")
-                                .resizable()
-                                .renderingMode(.template)
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundColor(appColor: .lightBlue)
-                                .frame(width: 11, height: 11)
-                            
-                            Text(info.geoData.formattedDistance)
-                                .medicoText(textWeight: .semiBold,
-                                            color: .lightBlue,
-                                            multilineTextAlignment: .trailing)
-                        }
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(
-                            AppColor.greyBlue.color
-                                .opacity(0.12)
-                                .cornerRadius(4)
-                        )
+                        DistanceView(distance: info.geoData.formattedDistance)
                     }
                 }
                 .modifier(
@@ -360,65 +342,43 @@ struct BuyProductScreen: View {
         let info: DataSeasonBoyRetailer
         let stockInfo: DataStockInfo?
         
-        let quantity: Int
+        let quantity: Double
+        let freeQuantity: Double
         
         let onQuantitySelect: (Double?, Double?) -> ()
         
         let onInfoSelect: (DataSeasonBoyRetailer) -> ()
         
         var body: some View {
-            ZStack(alignment: .leading) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 17) {
-                        UserNameImage(username: info.tradeName)
-                            .frame(width: 65, height: 65)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(info.tradeName)
-                                .medicoText(textWeight: .semiBold,
-                                            fontSize: 16,
-                                            multilineTextAlignment: .leading)
-                            
-                            
-                            SmallAddressView(location: info.geoData.fullAddress())
-                        }
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 20)
-                    
-                    AppColor.darkBlue.color
-                        .opacity(0.12)
-                        .frame(height: 1)
-                    
-                    HStack {
-//                        NumberPicker(quantity: quantity,
-//                                     maxQuantity: Int(stockInfo?.availableQty ?? .max),
-//                                     onQuantityIncrease: { onQuantityIncrease($0, self.info) },
-//                                     onQuantityDecrease: { onQuantityDecrease($0, self.info) },
-//                                     longPressEnabled: true)
-                        
-                        Spacer()
-                        
-                        MedicoButton(localizedStringKey: "add_to_cart",
-                                     isEnabled: quantity > 0,
-                                     width: 120,
-                                     height: 32,
-                                     fontSize: 14,
-                                     fontWeight: .bold) {
-                            onInfoSelect(self.info)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                }
-                .padding(.vertical, 8)
+            HStack {
+                SmallAddressView(location: info.geoData.fullAddress())
                 
-                if let stockInfo = self.stockInfo {
-                    stockInfo.statusColor.color
-                        .cornerRadius(5, corners: [.topLeft, .bottomLeft])
-                        .frame(width: 5)
-                }
+                Spacer()
+                
+                DistanceView(distance: info.geoData.formattedDistance)
             }
-            .background(AppColor.white.color.cornerRadius(5))
+            .modifier(BaseSellerView(initialMode: nil,
+                                     header: header,
+                                     initialQuantity: quantity,
+                                     initialFreeQuantity: freeQuantity,
+                                     maxQuantity: Double(stockInfo?.availableQty ?? .max),
+                                     onQuantitySelect: onQuantitySelect))
+            .padding(.vertical, 8)
+            .background(appColor: .white)
+        }
+        
+        private var header: some View {
+            HStack(spacing: 6) {
+                stockInfo?.statusColor.color
+                    .cornerRadius(4)
+                    .frame(width: 10, height: 10)
+                
+                Text(info.tradeName)
+                    .medicoText(textWeight: .semiBold,
+                                fontSize: 15,
+                                multilineTextAlignment: .leading)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
     
@@ -768,5 +728,32 @@ private struct BaseSellerView<Header: View>: ViewModifier {
         case addToCart
         case update
         case confirmQuantity
+    }
+}
+
+struct DistanceView: View {
+    let distance: String
+    
+    var body: some View {
+        HStack(spacing: 2) {
+            Image("MapPin")
+                .resizable()
+                .renderingMode(.template)
+                .aspectRatio(contentMode: .fit)
+                .foregroundColor(appColor: .lightBlue)
+                .frame(width: 11, height: 11)
+            
+            Text(distance)
+                .medicoText(textWeight: .semiBold,
+                            color: .lightBlue,
+                            multilineTextAlignment: .trailing)
+        }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 2)
+        .background(
+            AppColor.greyBlue.color
+                .opacity(0.12)
+                .cornerRadius(4)
+        )
     }
 }
