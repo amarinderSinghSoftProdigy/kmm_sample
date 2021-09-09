@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Bin.png",
+      "filename" : "cart-remove.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Bin@2x.png",
+      "filename" : "cart-remove@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Bin@3x.png",
+      "filename" : "cart-remove@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

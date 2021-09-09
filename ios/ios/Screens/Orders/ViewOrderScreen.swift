@@ -313,6 +313,8 @@ struct CustomerView: View {
                         .padding(.horizontal, 4)
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .lineLimit(1)
                 .expandableView(expanded: $expandedCustomerView) {
                     HStack(spacing: 8) {

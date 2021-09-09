@@ -596,7 +596,7 @@ struct BuyProductScreen: View {
     }
 }
 
-private struct BaseSellerView<Header: View>: ViewModifier {
+struct BaseSellerView<Header: View>: ViewModifier {
     @State private var mode: Mode
     
     let header: Header
@@ -616,6 +616,7 @@ private struct BaseSellerView<Header: View>: ViewModifier {
     
     private let addActionEnabled: Bool
     private let showsDivider: Bool
+    private let isReadonly: Bool
     
     func body(content: Content) -> some View {
         VStack {
@@ -665,6 +666,7 @@ private struct BaseSellerView<Header: View>: ViewModifier {
          buttonsHeight: CGFloat = 38,
          showsDivider: Bool = true,
          addActionEnabled: Bool = true,
+         isReadonly: Bool = false,
          initialQuantity: Double,
          initialFreeQuantity: Double,
          maxQuantity: Double,
@@ -678,6 +680,7 @@ private struct BaseSellerView<Header: View>: ViewModifier {
         
         self.showsDivider = showsDivider
         self.addActionEnabled = addActionEnabled
+        self.isReadonly = isReadonly
         
         self.initialQuantity = initialQuantity
         self.initialFreeQuantity = initialFreeQuantity
@@ -707,42 +710,25 @@ private struct BaseSellerView<Header: View>: ViewModifier {
                         onQuantitySelect(nil, nil)
                     }
                 }
+                .disabled(isReadonly)
                 
             case .update:
                 HStack {
-                    HStack(spacing: 6) {
-                        LocalizedText(localizationKey: "QTY",
-                                      textWeight: .semiBold,
-                                      fontSize: 12)
-                            .opacity(0.6)
-                        
-                        Text(String(format: "%.1f", quantity))
-                            .medicoText(textWeight: .bold,
-                                        fontSize: 16)
-                        
-                        Text(String(format: "+%.1f", freeQuantity))
-                            .medicoText(textWeight: .bold,
-                                        fontSize: 12,
-                                        color: .lightBlue)
-                            .padding(.horizontal, 4)
-                            .padding(.vertical, 2)
-                            .strokeBorder(.lightBlue,
-                                          fill: .lightBlue,
-                                          fillOpacity: 0.08,
-                                          cornerRadius: 4)
-                    }
+                    QuantityView(quantity: quantity, freeQuantity: freeQuantity)
                     
                     Spacer()
                     
-                    MedicoButton(localizedStringKey: "update",
-                                 width: 100,
-                                 height: buttonsHeight,
-                                 cornerRadius: buttonsHeight / 2,
-                                 fontSize: 14,
-                                 fontWeight: .bold,
-                                 fontColor: .white,
-                                 buttonColor: .lightBlue) {
-                        mode = .confirmQuantity
+                    if !isReadonly {
+                        MedicoButton(localizedStringKey: "update",
+                                     width: 100,
+                                     height: buttonsHeight,
+                                     cornerRadius: buttonsHeight / 2,
+                                     fontSize: 14,
+                                     fontWeight: .bold,
+                                     fontColor: .white,
+                                     buttonColor: .lightBlue) {
+                            mode = .confirmQuantity
+                        }
                     }
                 }
                 
@@ -844,5 +830,34 @@ struct DistanceView: View {
                 .opacity(0.12)
                 .cornerRadius(4)
         )
+    }
+}
+
+struct QuantityView: View {
+    let quantity: Double
+    let freeQuantity: Double
+    
+    var body: some View {
+        HStack(spacing: 6) {
+            LocalizedText(localizationKey: "QTY",
+                          textWeight: .semiBold,
+                          fontSize: 12)
+                .opacity(0.6)
+            
+            Text(String(format: "%.1f", quantity))
+                .medicoText(textWeight: .bold,
+                            fontSize: 16)
+            
+            Text(String(format: "+%.1f", freeQuantity))
+                .medicoText(textWeight: .bold,
+                            fontSize: 12,
+                            color: .lightBlue)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .strokeBorder(.lightBlue,
+                              fill: .lightBlue,
+                              fillOpacity: 0.08,
+                              cornerRadius: 4)
+        }
     }
 }

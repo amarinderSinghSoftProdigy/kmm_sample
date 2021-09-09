@@ -164,8 +164,6 @@ struct ExpandableViewViewModifier<Header: View>: ViewModifier {
             
             if expanded {
                 content
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
             }
         }
         .strokeBorder(.darkBlue,

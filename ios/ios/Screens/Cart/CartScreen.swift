@@ -69,21 +69,25 @@ struct CartScreen: View {
     
     private func getNonEmptyCartView(withSellersCartData sellersCartData: [DataSellerCart]) -> some View {
         VStack(spacing: 12) {
-            HStack(spacing: 8) {
-                StatusDescriptionView(color: .green, localizationKey: "available")
-                StatusDescriptionView(color: .orange, localizationKey: "limited")
-                StatusDescriptionView(color: .placeholderGrey, localizationKey: "quoted")
-                
-                Spacer()
-                
-                MedicoButton(localizedStringKey: "empty_cart",
-                             width: 105,
-                             height: 40,
-                             fontSize: 16,
-                             fontColor: .red,
-                             buttonColor: .lightPink) {
-                    scope.clearCart()
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    ElementsNumberView(titleLocalizationKey: "items", number: 999)
+                    ElementsNumberView(titleLocalizationKey: "qty", number: 999)
+                    ElementsNumberView(titleLocalizationKey: "free", number: 999)
+                    ElementsNumberView(titleLocalizationKey: "stockists", number: 999)
+                    
+                    
+                    Button(action: { scope.clearCart() }) {
+                        Image("RemoveCart")
+                            .padding(16)
+                            .background(appColor: .red)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
+                .background(appColor: .white)
+                
+                AppColor.lightGrey.color
+                    .frame(height: 1)
             }
             
             VStack(spacing: 8) {
@@ -92,13 +96,8 @@ struct CartScreen: View {
                                            set: { expandedItems[seller.sellerCode] = $0 })
                     
                     SellerCartDataView(seller: seller,
+                                       isReadonly: false,
                                        onRemoveSeller: { scope.removeSellerItems(sellerCart: seller) },
-                                       onIncreaseItem: { updateItemCount($0,
-                                                                         forSeller: seller,
-                                                                         increment: 1)},
-                                       onDecreaseItem: { updateItemCount($0,
-                                                                         forSeller: seller,
-                                                                         increment: -1)},
                                        onRemoveItem: { scope.removeItem(sellerCart: seller,
                                                                         item: $0)},
                                        expanded: expanded)
@@ -127,7 +126,7 @@ struct CartScreen: View {
                         )
                     }
                     
-                    VStack(spacing: 35) {
+                    VStack(spacing: 12) {
                         AppColor.black.color
                             .opacity(0.27)
                             .frame(height: 1)
@@ -148,17 +147,18 @@ struct CartScreen: View {
                             MedicoButton(localizedStringKey: "continue",
                                          isEnabled: isContinueEnabled.value == true,
                                          width: 170,
-                                         height: 50,
+                                         height: 48,
+                                         cornerRadius: 24,
                                          fontSize: 15,
                                          fontWeight: .bold) {
                                 scope.continueWithCart()
                             }
                         }
+                        .padding(.horizontal, 17)
                     }
                 }
             }
         }
-        .padding(.horizontal, 20)
         .padding(.vertical, 25)
     }
     
@@ -171,71 +171,45 @@ struct CartScreen: View {
                               item: item,
                               quantity: quantity + increment)
     }
+}
+
+struct SellerCartDataView: View {
+    private let cornerRadius: CGFloat = 4
     
-    private struct SellerCartDataView: View {
-        private let cornerRadius: CGFloat = 4
-        
-        let seller: DataSellerCart
-        
-        let onRemoveSeller: () -> ()
-        let onIncreaseItem: (DataCartItem) -> ()
-        let onDecreaseItem: (DataCartItem) -> ()
-        let onRemoveItem: (DataCartItem) -> ()
-        
-        @Binding var expanded: Bool
-        
-        var body: some View {
+    let seller: DataSellerCart
+    
+    let isReadonly: Bool
+    
+    let onRemoveSeller: (() -> Void)?
+    let onRemoveItem: ((DataCartItem) -> Void)?
+    
+    @Binding var expanded: Bool
+    
+    var body: some View {
+        ZStack {
+            AppColor.darkBlue.color
+                .opacity(0.04)
+            
             VStack {
                 ForEach(seller.items, id: \.self) { item in
                     CartItemView(item: item,
-                                 onIncreaseItem: onIncreaseItem,
-                                 onDecreaseItem: onDecreaseItem,
+                                 isReadonly: isReadonly,
                                  onRemoveItem: onRemoveItem)
                 }
             }
-            .expandableView(expanded: $expanded) {
-                HStack {
-                    SellerNamePaymentMethodView(seller: seller)
-                    
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-                .padding(.leading, 60)
-                .background(
-                    HStack {
-                        ZStack {
-                            AppColor.red.color
-                                .cornerRadius(cornerRadius,
-                                              corners: expanded ? .topLeft : [.topLeft, .bottomLeft])
-                            
-                            Image("Bin")
-                        }
-                        .frame(width: 45)
-                        .onTapGesture {
-                            onRemoveSeller()
-                        }
-                        
-                        Spacer()
-                    }
-                )
-            }
         }
-    }
-    
-    private struct StatusDescriptionView: View {
-        let color: AppColor
-        let localizationKey: String
-        
-        var body: some View {
-            HStack(spacing: 4) {
-                Circle()
-                    .foregroundColor(appColor: color)
-                    .frame(width: 18, height: 18)
+        .expandableView(expanded: $expanded) {
+            HStack {
+                if !isReadonly {
+                    RemoveButton(onRemove: { onRemoveSeller?() })
+                        .padding(.leading, -4)
+                }
                 
-                LocalizedText(localizationKey: localizationKey,
-                              textWeight: .semiBold,
-                              fontSize: 12)
+                SellerNamePaymentMethodView(seller: seller)
             }
+            .padding(.vertical, 8)
+            .padding(.leading, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -251,18 +225,27 @@ struct SellerNamePaymentMethodView: View {
                             multilineTextAlignment: .leading)
                 .lineLimit(1)
             
-            HStack(spacing: 4) {
-                LocalizedText(localizationKey: "type:",
-                              textWeight: .medium,
-                              fontSize: 12,
-                              color: .grey3,
-                              multilineTextAlignment: .leading)
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    LocalizedText(localizationKey: "type:",
+                                  textWeight: .medium,
+                                  fontSize: 12,
+                                  color: .grey3,
+                                  multilineTextAlignment: .leading)
+                    
+                    Text(seller.paymentMethod.serverValue)
+                        .medicoText(textWeight: .medium,
+                                    fontSize: 12,
+                                    color: .lightBlue,
+                                    multilineTextAlignment: .leading)
+                }
                 
-                Text(seller.paymentMethod.serverValue)
-                    .medicoText(textWeight: .medium,
-                                fontSize: 12,
-                                color: .lightBlue,
-                                multilineTextAlignment: .leading)
+                AppColor.black.color
+                    .opacity(0.27)
+                    .frame(width: 1)
+                
+                Text(seller.total.formattedPrice)
+                    .medicoText(textWeight: .bold)
             }
         }
     }
@@ -271,192 +254,187 @@ struct SellerNamePaymentMethodView: View {
 struct CartItemView: View {
     let item: DataCartItem
     
-    let showPriceCaption: Bool
+    let isReadonly: Bool
     
-    let onIncreaseItem: ((DataCartItem) -> ())?
-    let onDecreaseItem: ((DataCartItem) -> ())?
     let onRemoveItem: ((DataCartItem) -> ())?
     
     var body: some View {
-        ZStack(alignment: .leading) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .top) {
-                    Text(item.productName)
-                        .medicoText(textWeight: .bold,
-                                    fontSize: 16,
-                                    multilineTextAlignment: .leading)
-                        .padding(.top, 5)
-                        .lineLimit(1)
-                    
-                    Spacer()
-                    
-                    if let onRemoveItem = self.onRemoveItem {
-                        Button(action: { onRemoveItem(item) }) {
-                            Image(systemName: "xmark")
-                                .resizable()
-                                .frame(width: 11, height: 11)
-                                .font(Font.system(size: 14, weight: .medium))
-                                .foregroundColor(.red)
-                                .padding(7)
-                                .background(
-                                    Circle()
-                                        .foregroundColor(appColor: .lightPink)
-                                )
-                        }
-                    }
-                    else {
-                        getDetailView(withLocalizationKey: "qty:") {
-                            Text(item.quantity.formatted)
-                                .medicoText(textWeight: .semiBold,
-                                            color: AppColor.lightBlue)
-                        }
-                        .padding(.top, 5)
-                    }
-                }
+        VStack(alignment: .leading, spacing: 8) {
+            if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
+                Text(seasonBoyRetailerInfo.tradeName)
+                    .medicoText(textWeight: .medium,
+                                fontSize: 12,
+                                color: .grey3,
+                                multilineTextAlignment: .leading)
+                    .lineLimit(1)
+            }
+            
+            HStack {
+                getDetailView(titleLocalizationKey: "ptr:", body: item.price.formatted)
                 
-                HStack(alignment: .top, spacing: 8) {
-                    HStack(alignment: .top, spacing: 4) {
-                        Image(systemName: "info.circle.fill")
-                            .foregroundColor(appColor: .lightBlue)
-                        
-                        Text(item.manufacturerName)
-                            .medicoText(textWeight: .medium,
-                                        color: .lightBlue,
-                                        multilineTextAlignment: .leading)
-                            .lineLimit(1)
-                    }
-                    
-                    if !item.standardUnit.isEmpty {
-                        AppColor.darkBlue.color
-                            .opacity(0.33)
-                            .frame(width: 2, height: 13)
-                            .padding(.top, 2)
-                            .cornerRadius(1)
-                        
-                        Text(item.standardUnit)
-                            .medicoText(textWeight: .medium,
-                                        color: .grey3,
-                                        multilineTextAlignment: .leading)
-                    }
-                }
-                .padding(.trailing, 18)
+                Spacer()
                 
-                HStack {
-                    if !showPriceCaption {
-                        Text(item.price.formatted)
-                            .medicoText(textWeight: .semiBold,
-                                        fontSize: 16,
-                                        multilineTextAlignment: .leading)
-                    }
-                    else {
-                        getDetailView(withLocalizationKey: "price:") {
-                            PriceWithFootnoteView(price: item.price.formatted,
-                                                  fontSize: 14)
-                        }
-                    }
+                getDetailView(titleLocalizationKey: "tot:", body: item.subtotalPrice.formatted)
+            }
+            .padding(.top, 2)
+            
+            if let quotedData = item.quotedData {
+                VStack(spacing: 4) {
+                    AppColor.darkBlue.color
+                        .opacity(0.33)
+                        .frame(height: 1)
+                        .padding(.leading, -12)
+                        .padding(.trailing, -8)
                     
-                    Spacer()
-                    
-                    if let onIncreaseItem = self.onIncreaseItem,
-                       let onDecreaseItem = self.onDecreaseItem {
-                        NumberPicker(quantity: item.quantity.value as? Int ?? 0,
-                                     maxQuantity: Int(item.stockInfo?.availableQty ?? .max),
-                                     onQuantityIncrease: { _ in onIncreaseItem(self.item) },
-                                     onQuantityDecrease: { _ in onDecreaseItem(self.item) })
-                    }
-                    else {
-                        getDetailView(withLocalizationKey: "subtotal:") {
-                            Text(item.subtotalPrice.formatted)
-                                .medicoText(textWeight: .semiBold)
+                    HStack {
+                        if !quotedData.message.isEmpty {
+                            SmallAddressView(location: quotedData.message,
+                                             fontWeight: .medium,
+                                             fontSize: 12,
+                                             color: .lightBlue)
                         }
-                    }
-                }
-                
-                if let quotedData = item.quotedData {
-                    VStack(spacing: 4) {
-                        AppColor.darkBlue.color
-                            .opacity(0.33)
-                            .frame(height: 1)
-                            .padding(.leading, -12)
-                            .padding(.trailing, -8)
                         
-                        HStack {
-                            if !quotedData.message.isEmpty {
-                                SmallAddressView(location: quotedData.message,
-                                                 fontWeight: .medium,
-                                                 fontSize: 12,
-                                                 color: .lightBlue)
-                            }
-                            
-                            Spacer()
-                            
-                            LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
-                                          textWeight: .medium,
-                                          fontSize: 12,
-                                          color: item.itemViewBorderColor)
-                        }
-                        .frame(height: 20)
+                        Spacer()
+                        
+                        LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
+                                      textWeight: .medium,
+                                      fontSize: 12,
+                                      color: item.itemViewBorderColor)
                     }
-                }
-                else if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
-                    VStack(spacing: 4) {
-                        AppColor.darkBlue.color
-                            .opacity(0.33)
-                            .frame(height: 1)
-                            .padding(.leading, -12)
-                            .padding(.trailing, -8)
-
-                        HStack {
-                            Text(seasonBoyRetailerInfo.tradeName)
-                                .medicoText(textWeight: .medium,
-                                            fontSize: 12,
-                                            color: AppColor.grey3,
-                                            multilineTextAlignment: .leading)
-
-                            Spacer()
-
-                            SmallAddressView(location: seasonBoyRetailerInfo.geoData.city)
-                        }
-                        .frame(height: 20)
-                    }
+                    .frame(height: 20)
                 }
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .padding([.vertical, .trailing], 8)
-            .padding(.leading, 12)
-            
-            let statusColor = item.stockInfo?.statusColor ?? .placeholderGrey
-            statusColor.color
-                .cornerRadius(5, corners: [.topLeft, .bottomLeft])
-                .frame(width: 5)
         }
-        .strokeBorder(item.itemViewBorderColor,
-                      borderOpacity: item.itemViewBorderOpacity,
-                      fill: .white,
-                      cornerRadius: 5)
+        .fixedSize(horizontal: false, vertical: true)
+        .modifier(BaseSellerView(initialMode: nil,
+                                 header: header,
+                                 isReadonly: isReadonly,
+                                 initialQuantity: 10,
+                                 initialFreeQuantity: 0,
+                                 maxQuantity: .infinity,
+                                 onQuantitySelect: { _, _ in }))
+        .padding(.vertical, 8)
+        .background(appColor: .white)
     }
     
     init(item: DataCartItem,
-         showPriceCaption: Bool = false,
-         onIncreaseItem: ((DataCartItem) -> ())? = nil,
-         onDecreaseItem: ((DataCartItem) -> ())? = nil,
+         isReadonly: Bool = false,
          onRemoveItem: ((DataCartItem) -> ())? = nil) {
         self.item = item
         
-        self.showPriceCaption = showPriceCaption
+        self.isReadonly = isReadonly
         
-        self.onIncreaseItem = onIncreaseItem
-        self.onDecreaseItem = onDecreaseItem
         self.onRemoveItem = onRemoveItem
     }
     
-    private func getDetailView<T: View>(withLocalizationKey localizationKey: String,
-                                        withBody body: () -> T) -> some View {
-        HStack(spacing: 4) {
-            LocalizedText(localizationKey: localizationKey,
-                          textWeight: .medium)
+    private var header: some View {
+        HStack(spacing: 8) {
+            Text(item.productName)
+                .medicoText(textWeight: .bold,
+                            fontSize: 16,
+                            multilineTextAlignment: .leading)
+                .lineLimit(1)
             
-            body()
+            AppColor.darkBlue.color
+                .opacity(0.33)
+                .frame(width: 1)
+                .padding(.vertical, 4)
+            
+            Text("(\(item.manufacturerCode))")
+                .medicoText(textWeight: .semiBold,
+                            fontSize: 16,
+                            multilineTextAlignment: .leading)
+                .opacity(0.8)
+                .lineLimit(1)
+            
+            Spacer()
+            
+            if let onRemoveItem = self.onRemoveItem {
+                RemoveButton(onRemove: { onRemoveItem(item) })
+            }
+        }
+    }
+    
+    private var mainBody: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
+                Text(seasonBoyRetailerInfo.tradeName)
+                    .medicoText(textWeight: .medium,
+                                fontSize: 12,
+                                color: .grey3,
+                                multilineTextAlignment: .leading)
+                    .lineLimit(1)
+            }
+            
+            HStack {
+                getDetailView(titleLocalizationKey: "ptr:", body: item.price.formatted)
+                
+                Spacer()
+                
+                getDetailView(titleLocalizationKey: "tot:", body: item.subtotalPrice.formatted)
+            }
+            .padding(.top, 2)
+            
+            if let quotedData = item.quotedData {
+                VStack(spacing: 4) {
+                    AppColor.darkBlue.color
+                        .opacity(0.33)
+                        .frame(height: 1)
+                        .padding(.leading, -12)
+                        .padding(.trailing, -8)
+                    
+                    HStack {
+                        if !quotedData.message.isEmpty {
+                            SmallAddressView(location: quotedData.message,
+                                             fontWeight: .medium,
+                                             fontSize: 12,
+                                             color: .lightBlue)
+                        }
+                        
+                        Spacer()
+                        
+                        LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
+                                      textWeight: .medium,
+                                      fontSize: 12,
+                                      color: item.itemViewBorderColor)
+                    }
+                    .frame(height: 20)
+                }
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+    
+    private func getDetailView(titleLocalizationKey: String,
+                               body: String) -> some View {
+        HStack(spacing: 4) {
+            LocalizedText(localizationKey: titleLocalizationKey,
+                          textWeight: .bold,
+                          fontSize: 16,
+                          color: .greyBlue)
+            
+            Text(body)
+                .medicoText(textWeight: .semiBold,
+                            fontSize: 16)
+        }
+    }
+}
+
+private struct RemoveButton: View {
+    let onRemove: () -> Void
+    
+    var body: some View {
+        Button(action: { onRemove() }) {
+            Image(systemName: "xmark")
+                .resizable()
+                .frame(width: 11, height: 11)
+                .font(Font.system(size: 14, weight: .medium))
+                .foregroundColor(.red)
+                .padding(7)
+                .background(
+                    Circle()
+                        .foregroundColor(appColor: .lightPink)
+                )
         }
     }
 }
@@ -495,5 +473,24 @@ extension DataCartItem {
     
     var itemViewBorderOpacity: Double {
         self.quotedData != nil ? 1 : 0.12
+    }
+}
+
+struct ElementsNumberView: View {
+    let titleLocalizationKey: String
+    let number: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            LocalizedText(localizationKey: titleLocalizationKey,
+                          fontSize: 12,
+                          multilineTextAlignment: .leading)
+            
+            Text(String(number))
+                .medicoText(textWeight: .semiBold,
+                            fontSize: 12,
+                            multilineTextAlignment: .leading)
+        }
+        .frame(maxWidth: .infinity)
     }
 }

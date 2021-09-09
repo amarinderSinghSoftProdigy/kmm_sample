@@ -319,6 +319,10 @@
 "no" = "No";
 "order_with_quote_body" = "Are you sure you want to place an order with a quoted item?";
 "order_modified_body" = "It looks like one item quantity is missing. Are you sure you want to continue?";
+"items" = "Items";
+"qty" = "Qty";
+"free" = "Free";
+"tot:" = "TOT:";
 
 // MARK: Completed Cart Order
 "home" = "Home";
