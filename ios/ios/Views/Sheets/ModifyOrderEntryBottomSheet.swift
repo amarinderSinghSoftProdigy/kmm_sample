@@ -15,7 +15,12 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
     let onBottomSheetDismiss: () -> ()
     
     @ObservedObject var checked: SwiftDataSource<KotlinBoolean>
-    @ObservedObject var quantity: SwiftDataSource<KotlinInt>
+    
+    @ObservedObject var batch: SwiftDataSource<NSString>
+    @ObservedObject var expiry: SwiftDataSource<NSString>
+    @ObservedObject var ptr: SwiftDataSource<NSString>
+    @ObservedObject var quantity: SwiftDataSource<KotlinDouble>
+    @ObservedObject var freeQuantity: SwiftDataSource<KotlinDouble>
     
     func body(content: Content) -> some View {
         let bottomSheetOpened = Binding(get: { true },
@@ -104,7 +109,12 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         self.onBottomSheetDismiss = onBottomSheetDismiss
         
         self.checked = .init(dataSource: bottomSheet.isChecked)
+        
+        self.batch = .init(dataSource: bottomSheet.batch)
+        self.expiry = .init(dataSource: bottomSheet.expiry)
+        self.ptr = .init(dataSource: bottomSheet.ptr)
         self.quantity = .init(dataSource: bottomSheet.quantity)
+        self.freeQuantity = .init(dataSource: bottomSheet.freeQuantity)
     }
     
     private var editableOrderFieldsView: some View {
@@ -115,33 +125,43 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
             HStack(spacing: columnsSpacing) {
                 EditableInput(titleLocalizationKey: "QTY",
                               text: "\(quantity.value ?? 0)",
-                              onTextChange: { _ in bottomSheet.inc(tapMode: .click) })
+                              onTextChange: {
+                                if let newValue = Double($0) {
+                                    bottomSheet.updateQuantity(value: newValue)
+                                }
+                              },
+                              keyboardType: .decimalPad)
                     .frame(width: leftColumnWidth)
                 
                 Spacer()
                 
                 EditableInput(titleLocalizationKey: "FREE",
-                              text: nil,
-                              onTextChange: { _ in })
+                              text: "\(freeQuantity.value ?? 0)",
+                              onTextChange: {
+                                if let newValue = Double($0) {
+                                    bottomSheet.updateFreeQuantity(value: newValue)
+                                }
+                              },
+                              keyboardType: .decimalPad)
             }
             
             HStack(spacing: columnsSpacing) {
                 EditableInput(titleLocalizationKey: "PTR",
-                              text: bottomSheet.orderEntry.price.formatted,
-                              onTextChange: { _ in })
+                              text: ptr.value as String?,
+                              onTextChange: { bottomSheet.updatePtr(value: $0) })
                     .frame(width: leftColumnWidth)
                 
                 Spacer()
                 
                 EditableInput(titleLocalizationKey: "BATCH",
-                              text: bottomSheet.orderEntry.batchNo,
-                              onTextChange: { _ in })
+                              text: batch.value as String?,
+                              onTextChange: { bottomSheet.updateBatch(value: $0) })
             }
             
             HStack(spacing: columnsSpacing) {
                 EditableInput(titleLocalizationKey: "EXP",
-                              text: bottomSheet.orderEntry.price.formatted,
-                              onTextChange: { _ in })
+                              text: expiry.value as String?,
+                              onTextChange: { bottomSheet.updateExpiry(value: $0) })
                     .frame(width: leftColumnWidth)
                 
                 Spacer()
