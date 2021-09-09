@@ -2,15 +2,10 @@ package com.zealsoftsol.medico.data
 
 data class AuthCredentials(
     val phoneNumberOrEmail: String,
-    val type: Type?,
     val password: String,
 ) {
     inline val isEmpty: Boolean
         get() = phoneNumberOrEmail.isEmpty() && password.isEmpty()
-
-    enum class Type {
-        EMAIL, PHONE;
-    }
 }
 
 enum class UserType(

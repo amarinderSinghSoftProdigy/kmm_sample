@@ -36,6 +36,7 @@ data class OrderEntry(
     val productName: String,
     val requestedQty: FormattedData<Double>,
     val servedQty: FormattedData<Double>,
+    val freeQty: FormattedData<Double>,
     val spid: String,
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
@@ -99,7 +100,11 @@ data class OrderNewQtyRequest(
     val orderEntryId: String,
     @SerialName("sellerUnitCode")
     val unitCode: String,
-    val servedQty: Int,
+    val servedQty: Double,
+    val freeQty: Double,
+    val ptr: Double,
+    val batch: String,
+    val expiry: String,
 )
 
 @Serializable

@@ -208,7 +208,15 @@ sealed class Event {
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(val entry: OrderEntry) : Orders()
-            data class SaveEntryQty(val entry: OrderEntry, val quantity: Int) : Orders()
+            data class SaveEntryQty(
+                val entry: OrderEntry,
+                val quantity: Double,
+                val freeQuantity: Double,
+                val ptr: Double,
+                val batch: String,
+                val expiry: String,
+            ) : Orders()
+
             data class Confirm(val fromNotification: Boolean) : Orders()
         }
 

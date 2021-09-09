@@ -57,7 +57,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -70,13 +69,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.screens.Notification
-import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 import java.util.Locale
 
@@ -340,20 +337,6 @@ fun stringResourceByName(name: String): String {
 }
 
 @Composable
-fun rememberPhoneNumberFormatter() = getCountryCode().let {
-    remember { PhoneNumberFormatter(it) }
-}
-
-@Composable
-private fun getCountryCode(): String {
-    return when {
-        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
-        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> LocalConfiguration.current.locale.country
-    }
-}
-
-@Composable
 fun NavigationCell(
     icon: Painter,
     text: String,
@@ -568,6 +551,8 @@ fun EditField(
     qty: String,
     onChange: (String) -> Unit,
     isEnabled: Boolean = true,
+    formattingRule: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -584,28 +569,32 @@ fun EditField(
             BasicTextField(
                 value = qty,
                 onValueChange = {
-                    if (it.contains(".")) {
-                        val (beforeDot, afterDot) = it.split(".")
-                        var modBefore = beforeDot.toIntOrNull() ?: 0
-                        val newAfter = if (afterDot.length > 1) {
-                            afterDot.take(1)
-                        } else {
-                            afterDot
-                        }
-                        val modAfter = when (newAfter.toIntOrNull() ?: 0) {
-                            0 -> "0"
-                            in 1..4 -> "0"
-                            5 -> "5"
-                            in 6..9 -> {
-                                modBefore++
-                                "0"
+                    if (formattingRule) {
+                        if (it.contains(".")) {
+                            val (beforeDot, afterDot) = it.split(".")
+                            var modBefore = beforeDot.toIntOrNull() ?: 0
+                            val newAfter = if (afterDot.length > 1) {
+                                afterDot.take(1)
+                            } else {
+                                afterDot
                             }
-                            else -> throw UnsupportedOperationException("cant be that")
+                            val modAfter = when (newAfter.toIntOrNull() ?: 0) {
+                                0 -> "0"
+                                in 1..4 -> "0"
+                                5 -> "5"
+                                in 6..9 -> {
+                                    modBefore++
+                                    "0"
+                                }
+                                else -> throw UnsupportedOperationException("cant be that")
+                            }
+                            onChange("$modBefore.$modAfter")
                         }
-                        onChange("$modBefore.$modAfter")
+                    } else {
+                        onChange(it)
                     }
                 },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                keyboardOptions = keyboardOptions,
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,

@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SellerInfo
-import com.zealsoftsol.medico.data.TapMode
 
 sealed class BottomSheet {
 
@@ -63,16 +62,30 @@ sealed class BottomSheet {
         val isChecked: DataSource<Boolean>,
     ) : BottomSheet() {
 
-        val quantity = DataSource(orderEntry.servedQty.value.toInt())
+        val quantity = DataSource(orderEntry.servedQty.value)
+        val freeQuantity = DataSource(0.0)//orderEntry.freeQty.value)
+        val ptr = DataSource(orderEntry.price.value.toString())
+        val batch = DataSource(orderEntry.batchNo)
+        val expiry = DataSource(orderEntry.expiryDate?.formatted ?: "")
 
-        fun inc(tapMode: TapMode) {
-            if (tapMode != TapMode.CLICK) return
-            quantity.value = quantity.value + 1
+        fun updateQuantity(value: Double) {
+            quantity.value = value
         }
 
-        fun dec(tapMode: TapMode) {
-            if (tapMode != TapMode.CLICK) return
-            quantity.value = (quantity.value - 1).coerceAtLeast(0)
+        fun updateFreeQuantity(value: Double) {
+            freeQuantity.value = value
+        }
+
+        fun updatePtr(value: String) {
+            ptr.value = value
+        }
+
+        fun updateBatch(value: String) {
+            batch.value = value
+        }
+
+        fun updateExpiry(value: String) {
+            expiry.value = value
         }
 
         fun toggleCheck() {
@@ -82,7 +95,16 @@ sealed class BottomSheet {
         }
 
         fun save() =
-            EventCollector.sendEvent(Event.Action.Orders.SaveEntryQty(orderEntry, quantity.value))
+            EventCollector.sendEvent(
+                Event.Action.Orders.SaveEntryQty(
+                    orderEntry,
+                    quantity.value,
+                    freeQuantity.value,
+                    ptr.value.toDouble(),
+                    batch.value,
+                    expiry.value
+                )
+            )
     }
 
     data class PreviewStockist(val sellerInfo: SellerInfo) : BottomSheet()
