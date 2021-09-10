@@ -102,9 +102,9 @@ data class OrderNewQtyRequest(
     val unitCode: String,
     val servedQty: Double,
     val freeQty: Double,
-    val ptr: Double,
-    val batch: String,
-    val expiry: String,
+    val price: Double,
+    val batchNo: String,
+    val expiryDate: String,
 )
 
 @Serializable
