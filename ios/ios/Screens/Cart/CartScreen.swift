@@ -71,11 +71,7 @@ struct CartScreen: View {
         VStack(spacing: 12) {
             VStack(spacing: 0) {
                 HStack(spacing: 8) {
-                    ElementsNumberView(titleLocalizationKey: "items", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "qty", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "free", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "stockists", number: 999)
-                    
+                    CartInfoView(sellers: sellersCartData)
                     
                     Button(action: { scope.clearCart() }) {
                         Image("RemoveCart")
@@ -309,8 +305,8 @@ struct CartItemView: View {
         .modifier(BaseSellerView(initialMode: nil,
                                  header: header,
                                  isReadonly: isReadonly,
-                                 initialQuantity: 10,
-                                 initialFreeQuantity: 0,
+                                 initialQuantity: Double(truncating: item.quantity.value ?? 0),
+                                 initialFreeQuantity: Double(truncating: item.freeQuantity.value ?? 0),
                                  maxQuantity: .infinity,
                                  onQuantitySelect: { _, _ in }))
         .padding(.vertical, 8)
@@ -476,21 +472,65 @@ extension DataCartItem {
     }
 }
 
-struct ElementsNumberView: View {
-    let titleLocalizationKey: String
-    let number: Int
+struct CartInfoView: View {
+    let sellers: [DataSellerCart]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            LocalizedText(localizationKey: titleLocalizationKey,
-                          fontSize: 12,
-                          multilineTextAlignment: .leading)
+        Group {
+            let quantity = self.quantity
             
-            Text(String(number))
-                .medicoText(textWeight: .semiBold,
-                            fontSize: 12,
-                            multilineTextAlignment: .leading)
+            ElementsNumberView(titleLocalizationKey: "items", number: items)
+            ElementsNumberView(titleLocalizationKey: "qty", number: quantity.qty)
+            ElementsNumberView(titleLocalizationKey: "free", number: quantity.free)
+            ElementsNumberView(titleLocalizationKey: "stockists", number: sellers.count)
         }
-        .frame(maxWidth: .infinity)
+    }
+    
+    private var items: Int {
+        sellers.reduce(0) { $0 + $1.items.count }
+    }
+    
+    private var quantity: (qty: Double, free: Double) {
+        sellers.reduce((0.0, 0.0)) { result, seller in
+            let quantity = seller.items.reduce((0.0, 0.0)) {
+                ($0.0 + Double(truncating: $1.quantity.value ?? 0),
+                 $0.1 + Double(truncating: $1.freeQuantity.value ?? 0)) }
+            
+            return (result.0 + quantity.0, result.1 + quantity.1)
+        }
+    }
+    
+    private struct ElementsNumberView: View {
+        let titleLocalizationKey: String
+        let number: String
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 6) {
+                LocalizedText(localizationKey: titleLocalizationKey,
+                              fontSize: 12,
+                              multilineTextAlignment: .leading)
+                
+                Text(number)
+                    .medicoText(textWeight: .semiBold,
+                                fontSize: 12,
+                                multilineTextAlignment: .leading)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        
+        private init(titleLocalizationKey: String, number: String) {
+            self.titleLocalizationKey = titleLocalizationKey
+            self.number = number
+        }
+        
+        init(titleLocalizationKey: String, number: Int) {
+            self.init(titleLocalizationKey: titleLocalizationKey,
+                      number: String(number))
+        }
+        
+        init(titleLocalizationKey: String, number: Double) {
+            self.init(titleLocalizationKey: titleLocalizationKey,
+                      number: String(format: "%.1f", number))
+        }
     }
 }

@@ -19,21 +19,18 @@ struct PlaceOrderScreen: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            VStack(spacing: 0) {
-                HStack(spacing: 8) {
-                    ElementsNumberView(titleLocalizationKey: "items", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "qty", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "free", number: 999)
-                    ElementsNumberView(titleLocalizationKey: "stockists", number: 999)
-                }
-                .padding(8)
-                .background(appColor: .white)
-                
-                AppColor.lightGrey.color
-                    .frame(height: 1)
-            }
-            
             if let sellerCarts = self.sellerCarts.value as? [DataSellerCart] {
+                VStack(spacing: 0) {
+                    HStack(spacing: 8) {
+                        CartInfoView(sellers: sellerCarts)
+                    }
+                    .padding(8)
+                    .background(appColor: .white)
+                    
+                    AppColor.lightGrey.color
+                        .frame(height: 1)
+                }
+            
                 VStack(spacing: 8) {
                     ForEach(sellerCarts, id: \.self) { seller in
                         let expanded = Binding(get: { expandedItems[seller.sellerCode] == true },
