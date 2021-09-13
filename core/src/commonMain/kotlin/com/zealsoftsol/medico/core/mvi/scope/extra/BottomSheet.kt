@@ -63,7 +63,7 @@ sealed class BottomSheet {
     ) : BottomSheet() {
 
         val quantity = DataSource(orderEntry.servedQty.value)
-        val freeQuantity = DataSource(0.0)//orderEntry.freeQty.value)
+        val freeQuantity = DataSource(orderEntry.freeQty.value)
         val ptr = DataSource(orderEntry.price.value.toString())
         val batch = DataSource(orderEntry.batchNo)
         val expiry = DataSource(orderEntry.expiryDate?.formatted ?: "")
