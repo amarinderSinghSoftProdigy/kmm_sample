@@ -175,7 +175,7 @@
     <string name="total">Total:</string>
     <string name="invoice_total">Total:</string>
     <string name="continue_text">Continue</string>
-    <string name="empty_cart_hint_1">Looks like you don't have anything!</string>
+    <string name="empty_cart_hint_1">Looks like you don\'t have anything!</string>
     <string name="empty_cart_hint_2">Please try to add something on cart then try again.</string>
     <string name="go_back">Go Back</string>
     <string name="available">Available</string>
