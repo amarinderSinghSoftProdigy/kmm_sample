@@ -54,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
@@ -162,6 +163,7 @@ fun MedicoRoundButton(
     elevation: ButtonElevation? = null,
     textSize: TextUnit = 15.sp,
     height: Dp = 38.dp,
+    wrapTextSize: Boolean = false,
     onClick: () -> Unit,
 ) {
     Button(
@@ -176,8 +178,18 @@ fun MedicoRoundButton(
         enabled = isEnabled,
         shape = RoundedCornerShape(50),
         elevation = elevation,
+        contentPadding = if (wrapTextSize) PaddingValues(
+            vertical = 8.dp,
+            horizontal = 32.dp
+        ) else ButtonDefaults.ContentPadding,
         modifier = modifier
-            .fillMaxWidth()
+            .composed {
+                if (wrapTextSize) {
+                    wrapContentWidth(unbounded = true)
+                } else {
+                    fillMaxWidth()
+                }
+            }
             .height(height),
     ) {
         Text(

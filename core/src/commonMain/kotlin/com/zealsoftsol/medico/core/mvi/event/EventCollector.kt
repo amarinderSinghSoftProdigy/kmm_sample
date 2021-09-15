@@ -66,7 +66,6 @@ internal class EventCollector(
             userRepo,
             notificationRepo,
             cartRepo,
-            tapModeHelper,
         ),
         Event.Action.Auth::class to AuthEventDelegate(
             navigator,
@@ -106,7 +105,6 @@ internal class EventCollector(
             navigator,
             userRepo,
             cartRepo,
-            tapModeHelper,
         ),
         Event.Action.Help::class to HelpEventDelegate(
             navigator,

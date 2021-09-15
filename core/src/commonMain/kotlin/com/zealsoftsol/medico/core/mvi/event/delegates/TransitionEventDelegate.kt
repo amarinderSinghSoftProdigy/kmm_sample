@@ -24,7 +24,6 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -36,7 +35,6 @@ internal class TransitionEventDelegate(
     private val userRepo: UserRepo,
     private val notificationRepo: NotificationRepo,
     private val cartRepo: CartRepo,
-    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Transition>(navigator) {
 
     override suspend fun handleEvent(event: Event.Transition) {
@@ -133,7 +131,6 @@ internal class TransitionEventDelegate(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
                         isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
-                        tapModeHelper = tapModeHelper,
                     )
                 )
                 is Event.Transition.Orders -> setScope(

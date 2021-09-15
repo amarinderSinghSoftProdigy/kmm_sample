@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
-import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.SellerCart
@@ -17,53 +16,32 @@ class CartScope(
     val items: ReadOnlyDataSource<List<SellerCart>>,
     val total: ReadOnlyDataSource<Total?>,
     val isContinueEnabled: ReadOnlyDataSource<Boolean>,
-    internal val tapModeHelper: TapModeHelper,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     init {
         EventCollector.sendEvent(Event.Action.Cart.LoadCart)
     }
 
-    fun updateItemCount(sellerCart: SellerCart, item: CartItem, quantity: Int): Boolean {
-        if (quantity < 0) return false
-        return if (quantity == 0) {
-            removeItem(sellerCart, item)
-        } else {
-            TODO("cart not impl")
-//            EventCollector.sendEvent(
-//                Event.Action.Cart.UpdateItem(
-//                    sellerCart.sellerCode,
-//                    item.productCode,
-//                    item.buyingOption,
-//                    item.id,
-//                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
-//                )
-//            )
-        }
-    }
-
-    fun updateItemCountAndroid(
+    fun updateItemCount(
         sellerCart: SellerCart,
         item: CartItem,
-        index: Int,
-        dir: Int
+        quantity: Double,
+        freeQuantity: Double
     ): Boolean {
-        val quantity = sellerCart.items.getOrNull(index)?.quantity?.value?.toInt()?.let { it + dir }
-            ?: return false
-        if (quantity < 0) return false
-        return if (quantity == 0) {
+        if (quantity < 0 || freeQuantity < 0) return false
+        return if (quantity == 0.0 && freeQuantity == 0.0) {
             removeItem(sellerCart, item)
         } else {
-            TODO("cart not impl")
-//            EventCollector.sendEvent(
-//                Event.Action.Cart.UpdateItem(
-//                    sellerCart.sellerCode,
-//                    item.productCode,
-//                    item.buyingOption,
-//                    item.id,
-//                    quantity.coerceIn(0, item.stockInfo?.availableQty ?: Int.MAX_VALUE),
-//                )
-//            )
+            EventCollector.sendEvent(
+                Event.Action.Cart.UpdateItem(
+                    sellerCart.sellerCode,
+                    item.productCode,
+                    item.buyingOption,
+                    item.id,
+                    quantity,
+                    freeQuantity,
+                )
+            )
         }
     }
 
