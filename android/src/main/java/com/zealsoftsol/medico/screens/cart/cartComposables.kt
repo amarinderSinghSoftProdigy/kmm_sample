@@ -331,46 +331,48 @@ private fun CartItem(
             freeQtyInitial = cartItem.freeQuantity.value,
             onSaveQty = onSaveQty,
             headerContent = {
-                Box(
-                    contentAlignment = Alignment.CenterStart,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = cartItem.productName,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(end = 30.dp)
-                    )
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.Red.copy(alpha = 0.12f),
-                        onClick = onRemove,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.CenterEnd),
+                Column {
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Box(modifier = Modifier.padding(2.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = null,
-                                tint = ConstColors.red,
-                            )
+                        Text(
+                            text = cartItem.productName,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W700,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(end = 30.dp)
+                        )
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.Red.copy(alpha = 0.12f),
+                            onClick = onRemove,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.CenterEnd),
+                        ) {
+                            Box(modifier = Modifier.padding(2.dp)) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                    tint = ConstColors.red,
+                                )
+                            }
                         }
                     }
-                }
-                cartItem.seasonBoyRetailer?.let {
-                    Space(4.dp)
-                    Text(
-                        text = it.tradeName,
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    cartItem.seasonBoyRetailer?.let {
+                        Space(4.dp)
+                        Text(
+                            text = it.tradeName,
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             },
             mainBodyContent = {
@@ -461,6 +463,7 @@ private fun BaseCartItem(
                     ) {
                         EditField(
                             label = stringResource(id = R.string.free),
+                            isEnabled = qty.value > 0.0,
                             qty = freeQty.value.toString(),
                             onChange = { freeQty.value = it.toDouble() },
                         )
@@ -496,6 +499,8 @@ private fun BaseCartItem(
                         onClick = {
                             mode.value =
                                 if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                            qty.value = qtyInitial
+                            freeQty.value = freeQtyInitial
                         },
                         modifier = Modifier.weight(1f),
                     )
@@ -506,7 +511,7 @@ private fun BaseCartItem(
                     )
                     MedicoRoundButton(
                         text = stringResource(id = R.string.confirm),
-                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0,
+                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0,
                         onClick = {
                             mode.value =
                                 if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart

@@ -25,7 +25,9 @@ class MockProductScope : NetworkScope.Product {
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
-        sellerUnitCode: String?
+        sellerUnitCode: String?,
+        latitude: Double,
+        longitude: Double
     ) = mockResponse<ProductSeasonBoyRetailerSelectResponse> {
         null
     }

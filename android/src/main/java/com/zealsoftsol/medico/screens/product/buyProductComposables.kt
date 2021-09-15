@@ -838,7 +838,7 @@ private fun BaseSellerItem(
         )
     }
 
-    NeededSurface(onItemClick) {
+    NeededSurface(if (mode.value == BottomSectionMode.Select || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -864,6 +864,7 @@ private fun BaseSellerItem(
                         ) {
                             EditField(
                                 label = stringResource(id = R.string.free),
+                                isEnabled = qty.value > 0.0,
                                 qty = freeQty.value.toString(),
                                 onChange = { freeQty.value = it.toDouble() },
                             )
@@ -899,6 +900,8 @@ private fun BaseSellerItem(
                             onClick = {
                                 mode.value =
                                     if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                qty.value = qtyInitial
+                                freeQty.value = freeQtyInitial
                             },
                             modifier = Modifier.weight(1f),
                         )
@@ -909,7 +912,7 @@ private fun BaseSellerItem(
                         )
                         MedicoRoundButton(
                             text = stringResource(id = R.string.confirm),
-                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0,
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0,
                             onClick = {
                                 mode.value =
                                     if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart

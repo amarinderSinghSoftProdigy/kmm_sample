@@ -610,8 +610,11 @@ fun EditField(
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,
+                enabled = isEnabled,
                 textStyle = TextStyle(
-                    color = MaterialTheme.colors.background,
+                    color = if (isEnabled) MaterialTheme.colors.background else ConstColors.gray.copy(
+                        alpha = 0.8f
+                    ),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W700
                 )
