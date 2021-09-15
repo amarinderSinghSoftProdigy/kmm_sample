@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -30,6 +31,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -51,13 +54,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -65,13 +70,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.screens.Notification
-import com.zealsoftsol.medico.utils.PhoneNumberFormatter
 import kotlinx.coroutines.Deferred
 import java.util.Locale
 
@@ -138,6 +141,55 @@ fun MedicoButton(
         elevation = elevation,
         modifier = modifier
             .fillMaxWidth()
+            .height(height),
+    ) {
+        Text(
+            text = text,
+            fontSize = textSize,
+            fontWeight = FontWeight.W700,
+            modifier = Modifier.align(Alignment.CenterVertically),
+        )
+    }
+}
+
+@Composable
+fun MedicoRoundButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isEnabled: Boolean = true,
+    color: Color = ConstColors.yellow,
+    contentColor: Color = MaterialTheme.colors.onPrimary,
+    border: BorderStroke? = null,
+    elevation: ButtonElevation? = null,
+    textSize: TextUnit = 15.sp,
+    height: Dp = 38.dp,
+    wrapTextSize: Boolean = false,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = color,
+            disabledBackgroundColor = Color.LightGray,
+            contentColor = contentColor,
+            disabledContentColor = contentColor,
+        ),
+        border = border,
+        enabled = isEnabled,
+        shape = RoundedCornerShape(50),
+        elevation = elevation,
+        contentPadding = if (wrapTextSize) PaddingValues(
+            vertical = 8.dp,
+            horizontal = 32.dp
+        ) else ButtonDefaults.ContentPadding,
+        modifier = modifier
+            .composed {
+                if (wrapTextSize) {
+                    wrapContentWidth(unbounded = true)
+                } else {
+                    fillMaxWidth()
+                }
+            }
             .height(height),
     ) {
         Text(
@@ -294,20 +346,6 @@ fun stringResourceByName(name: String): String {
     return LocalContext.current.runCatching {
         resources.getIdentifier(name, "string", packageName)
     }.getOrNull()?.let { stringResource(id = it) } ?: name
-}
-
-@Composable
-fun rememberPhoneNumberFormatter() = getCountryCode().let {
-    remember { PhoneNumberFormatter(it) }
-}
-
-@Composable
-private fun getCountryCode(): String {
-    return when {
-        BuildConfig.FLAVOR == "dev" && BuildConfig.DEBUG && BuildConfig.ANDROID_DEV -> "RU" // devDebug
-        BuildConfig.FLAVOR == "prod" && !BuildConfig.DEBUG -> "IN" // prodRelease
-        else -> LocalConfiguration.current.locale.country
-    }
 }
 
 @Composable
@@ -515,6 +553,77 @@ fun Dropdown(
                     }
                 },
             )
+        }
+    }
+}
+
+@Composable
+fun EditField(
+    label: String,
+    qty: String,
+    onChange: (String) -> Unit,
+    isEnabled: Boolean = true,
+    formattingRule: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = label.uppercase(),
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+            )
+            Space(16.dp)
+            BasicTextField(
+                value = qty,
+                onValueChange = {
+                    if (formattingRule) {
+                        if (it.contains(".")) {
+                            val (beforeDot, afterDot) = it.split(".")
+                            var modBefore = beforeDot.toIntOrNull() ?: 0
+                            val newAfter = if (afterDot.length > 1) {
+                                afterDot.take(1)
+                            } else {
+                                afterDot
+                            }
+                            val modAfter = when (newAfter.toIntOrNull() ?: 0) {
+                                0 -> "0"
+                                in 1..4 -> "0"
+                                5 -> "5"
+                                in 6..9 -> {
+                                    modBefore++
+                                    "0"
+                                }
+                                else -> throw UnsupportedOperationException("cant be that")
+                            }
+                            onChange("$modBefore.$modAfter")
+                        }
+                    } else {
+                        onChange(it)
+                    }
+                },
+                keyboardOptions = keyboardOptions,
+                maxLines = 1,
+                singleLine = true,
+                readOnly = !isEnabled,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colors.background,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W700
+                )
+            )
+        }
+        Space(4.dp)
+        Canvas(
+            modifier = Modifier
+                .height(1.5.dp)
+                .fillMaxWidth()
+        ) {
+            drawRect(if (isEnabled) ConstColors.lightBlue else ConstColors.gray)
         }
     }
 }

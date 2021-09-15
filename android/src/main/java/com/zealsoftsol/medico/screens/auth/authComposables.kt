@@ -38,12 +38,10 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.LogInScope
-import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.OutlinedInputField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 
 @Composable
@@ -125,15 +123,12 @@ private fun AuthTab(scope: LogInScope) {
                     .padding(horizontal = 20.dp),
             )
             Space(24.dp)
-            val formatter = rememberPhoneNumberFormatter()
-            val isPhoneNumber = credentialsState.value.type == AuthCredentials.Type.PHONE
-            val formatted =
-                if (isPhoneNumber) formatter.verifyNumber(credentialsState.value.phoneNumberOrEmail) else null
+            val formatted = credentialsState.value.phoneNumberOrEmail
             OutlinedInputField(
                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                 hint = stringResource(id = R.string.phone_number_or_email),
-                text = formatted ?: credentialsState.value.phoneNumberOrEmail,
-                isValid = if (isPhoneNumber) formatted != null || credentialsState.value.phoneNumberOrEmail.isEmpty() else true,
+                text = formatted,
+                isValid = true,
                 maxLines = 1,
                 onValueChange = {
                     scope.updateAuthCredentials(
@@ -142,7 +137,6 @@ private fun AuthTab(scope: LogInScope) {
                     )
                 },
             )
-            formatted?.let { scope.updateAuthCredentials(it, credentialsState.value.password) }
             Space(12.dp)
             Box(
                 contentAlignment = Alignment.CenterEnd,

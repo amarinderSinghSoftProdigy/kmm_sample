@@ -25,8 +25,9 @@ data class ConnectedUserData(
 
 @Serializable
 data class CountData(
+    val totalSubscribed: Int,
     val connected: Int,
-    val pending: Int
+    val pending: Int,
 )
 
 @Serializable

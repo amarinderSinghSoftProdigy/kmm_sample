@@ -85,41 +85,19 @@ fun PhoneFormatInputField(
     text: String,
     onValueChange: (String) -> Unit,
 ): Boolean {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = formatter.verifyNumber(text)
-    val isValid = formatted != null
-    InputField(
-        modifier = modifier,
-        hint = hint,
-        text = formatted ?: text,
-        isValid = isValid || text.isEmpty(),
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
-    return isValid
-}
-
-@Composable
-fun PhoneOrEmailFormatInputField(
-    modifier: Modifier = Modifier,
-    hint: String,
-    text: String,
-    isPhoneNumber: Boolean,
-    onValueChange: (String) -> Unit,
-) {
-    val formatter = rememberPhoneNumberFormatter()
-    val formatted = if (isPhoneNumber) formatter.verifyNumber(text) else null
-    InputField(
-        modifier = modifier,
-        hint = hint,
-        text = formatted ?: text,
-        isValid = if (isPhoneNumber) formatted != null || text.isEmpty() else true,
-        maxLines = 1,
-        onValueChange = onValueChange,
-    )
-    formatted?.let(onValueChange)
+    InputWithPrefix("91") {
+        InputField(
+            modifier = modifier,
+            hint = hint,
+            text = text,
+            isValid = text.isNotEmpty(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+            maxLines = 1,
+            onValueChange = onValueChange,
+        )
+    }
+//    text.let(onValueChange)
+    return text.isNotEmpty()
 }
 
 @Composable
@@ -238,12 +216,13 @@ fun InputWithError(errorText: String?, input: @Composable () -> Unit) {
 }
 
 @Composable
-fun InputWithPrefix(prefix: String, input: @Composable () -> Unit) {
+fun InputWithPrefix(prefix: String, modifier: Modifier = Modifier, input: @Composable () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = prefix,
             fontWeight = FontWeight.W600,
             color = MaterialTheme.colors.background,
+            modifier = modifier,
         )
         Space(8.dp)
         input()
@@ -275,3 +254,5 @@ fun ReadOnlyField(text: String, labelId: Int) {
         modifier = Modifier.fillMaxWidth(),
     )
 }
+
+inline fun String.formatIndia() = "91$this"

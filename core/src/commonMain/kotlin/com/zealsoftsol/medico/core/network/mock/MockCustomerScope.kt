@@ -28,10 +28,10 @@ class MockCustomerScope : NetworkScope.Customer {
         mockResponse {
             DashboardData(
                 ConnectedUserData(
-                    CountData(1, 1),
-                    CountData(1, 1),
-                    CountData(1, 1),
-                    CountData(1, 1)
+                    CountData(1, 1, 1),
+                    CountData(1, 1, 1),
+                    CountData(1, 1, 1),
+                    CountData(1, 1, 1)
                 ), 10, 10, RecentProductInfo(
                     listOf(ProductSold(100, "product")),
                     listOf(ProductSold(100, "product")),

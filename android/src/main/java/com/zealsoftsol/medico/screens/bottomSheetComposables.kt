@@ -2,9 +2,11 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -26,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -43,6 +49,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -50,19 +57,18 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.data.TapMode
+import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
+import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
+import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.management.GeoLocation
-import com.zealsoftsol.medico.screens.product.PlusMinusQuantity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -94,18 +100,213 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() },
             )
             is BottomSheet.ModifyOrderEntry -> {
-                val quantity = bs.quantity.flow.collectAsState()
-                val isChecked = bs.isChecked.flow.collectAsState()
                 ModifyOrderEntryBottomSheet(
-                    bs.orderEntry,
-                    quantity.value,
-                    canEdit = bs.canEdit,
-                    isChecked = isChecked.value,
-                    onChecked = { bs.toggleCheck() },
-                    onInc = { bs.inc(it) },
-                    onDec = { bs.dec(it) },
-                    onSave = { bs.save() },
+                    bs,
                     onDismiss = { dismissBottomSheet() },
+                )
+            }
+            is BottomSheet.PreviewStockist -> PreviewStockistBottomSheet(
+                sellerInfo = bs.sellerInfo,
+                onDismiss = { dismissBottomSheet() },
+            )
+        }
+    }
+}
+
+@Composable
+private fun PreviewStockistBottomSheet(
+    sellerInfo: SellerInfo,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(22.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                CoilImage(
+                    src = "",
+                    size = 77.dp,
+                    onError = { UserLogoPlaceholder(sellerInfo.tradeName) },
+                    onLoading = { UserLogoPlaceholder(sellerInfo.tradeName) },
+                )
+                Space(16.dp)
+                Column {
+                    Text(
+                        text = sellerInfo.tradeName,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = sellerInfo.geoData.full(),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                }
+            }
+            Space(16.dp)
+            Column(
+                modifier = Modifier
+                    .border(1.dp, ConstColors.gray.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                    .padding(16.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = sellerInfo.priceInfo?.price?.formattedPrice.orEmpty(),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "Stock:",
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W400,
+                        )
+                        Space(4.dp)
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colors.primary,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(4.dp)
+                        ) {
+                            Text(
+                                text = sellerInfo.stockInfo?.availableQty?.toString() ?: "",
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        }
+                    }
+                }
+                Space(12.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val color = sellerInfo.stockInfo?.expiry?.color?.toColorInt()?.let { Color(it) }
+                        ?: MaterialTheme.colors.background
+                    Box(
+                        modifier = Modifier.background(
+                            color = color.copy(alpha = 0.1f),
+                            shape = MaterialTheme.shapes.small
+                        )
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Expiry: ")
+                                val startIndex = length
+                                append(sellerInfo.stockInfo?.expiry?.formattedDate.orEmpty())
+                                addStyle(
+                                    SpanStyle(
+                                        color = color,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(4.dp),
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.primary,
+                                shape = MaterialTheme.shapes.small
+                            )
+                            .padding(4.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue,
+                            modifier = Modifier.size(10.dp),
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = "${sellerInfo.geoData.distance} km",
+                            color = ConstColors.lightBlue,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                    }
+                }
+                Space(12.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("MRP: ")
+                            val startIndex = length
+                            append(sellerInfo.priceInfo?.mrp?.formattedPrice.orEmpty())
+                            addStyle(
+                                SpanStyle(
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Margin: ")
+                            val startIndex = length
+                            append(sellerInfo.priceInfo?.marginPercent.orEmpty())
+                            addStyle(
+                                SpanStyle(
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 12.sp,
+                    )
+                }
+                Space(12.dp)
+                Text(
+                    text = buildAnnotatedString {
+                        append("Batch No: ")
+                        val startIndex = length
+                        append("N/A")
+                        addStyle(
+                            SpanStyle(
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontSize = 12.sp,
                 )
             }
         }
@@ -115,20 +316,24 @@ fun Scope.Host.showBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ModifyOrderEntryBottomSheet(
-    entry: OrderEntry,
-    quantity: Int,
-    canEdit: Boolean,
-    isChecked: Boolean,
-    onChecked: (Boolean) -> Unit,
-    onInc: (TapMode) -> Unit,
-    onDec: (TapMode) -> Unit,
-    onSave: () -> Unit,
+    entry: BottomSheet.ModifyOrderEntry,
     onDismiss: () -> Unit,
 ) {
+    val qty = entry.quantity.flow.collectAsState()
+    val freeQty = entry.freeQuantity.flow.collectAsState()
+    val ptr = entry.ptr.flow.collectAsState()
+    val batch = entry.batch.flow.collectAsState()
+    val expiry = entry.expiry.flow.collectAsState()
+    val isChecked = entry.isChecked.flow.collectAsState()
+
+    val canEdit = entry.canEdit
+
     BaseBottomSheet(onDismiss) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 24.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
             Surface(
                 shape = CircleShape,
                 color = Color.Black.copy(alpha = 0.12f),
@@ -148,15 +353,15 @@ private fun ModifyOrderEntryBottomSheet(
                 Row(modifier = Modifier.padding(end = 30.dp)) {
                     if (canEdit) {
                         Checkbox(
-                            checked = isChecked,
+                            checked = isChecked.value,
                             colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                            onCheckedChange = onChecked,
+                            onCheckedChange = { entry.toggleCheck() },
                         )
                         Space(18.dp)
                     }
                     Column {
                         Text(
-                            text = entry.productName,
+                            text = entry.orderEntry.productName,
                             color = MaterialTheme.colors.background,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.W600,
@@ -165,7 +370,7 @@ private fun ModifyOrderEntryBottomSheet(
                         )
                         Space(8.dp)
                         Text(
-                            text = "${stringResource(id = R.string.batch_no)} ${entry.batchNo}",
+                            text = "${stringResource(id = R.string.batch_no)} ${batch.value}",
                             color = MaterialTheme.colors.background,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
@@ -174,53 +379,21 @@ private fun ModifyOrderEntryBottomSheet(
                         )
                         Space(8.dp)
                         Text(
-                            text = "${stringResource(id = R.string.expiry)} ${entry.expiryDate?.formatted.orEmpty()}",
+                            text = "${stringResource(id = R.string.expiry)} ${expiry.value}",
                             color = MaterialTheme.colors.background,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
-                    }
-                }
-                Space(20.dp)
-                Divider()
-                Space(20.dp)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = if (canEdit) Alignment.CenterVertically else Alignment.Top,
-                ) {
-                    Column {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.price))
-                                append(": ")
-                                val startIndex = length
-                                append(entry.price.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W600
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
                         Space(8.dp)
-                        if (!canEdit) {
+                        Row {
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.mrp))
+                                    append(stringResource(id = R.string.price))
                                     append(": ")
                                     val startIndex = length
-                                    append(entry.mrp.formatted)
+                                    append(entry.orderEntry.price.formatted)
                                     addStyle(
                                         SpanStyle(
                                             color = MaterialTheme.colors.background,
@@ -237,44 +410,12 @@ private fun ModifyOrderEntryBottomSheet(
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Space(8.dp)
-                        }
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.requested_qty))
-                                append(" ")
-                                val startIndex = length
-                                append(entry.requestedQty.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = ConstColors.lightBlue,
-                                        fontWeight = FontWeight.W600
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                    Column {
-                        if (canEdit) {
-                            PlusMinusQuantity(
-                                quantity = quantity,
-                                onInc = onInc,
-                                onDec = onDec,
-                                isEnabled = true,
-                            )
-                        } else {
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.served_qty))
+                                    append(stringResource(id = R.string.requested_qty))
                                     append(" ")
                                     val startIndex = length
-                                    append(entry.servedQty.formatted)
+                                    append(entry.orderEntry.requestedQty.formatted)
                                     addStyle(
                                         SpanStyle(
                                             color = ConstColors.lightBlue,
@@ -295,6 +436,80 @@ private fun ModifyOrderEntryBottomSheet(
                 }
                 Space(20.dp)
                 Divider()
+                Space(20.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Box {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                                EditField(
+                                    label = stringResource(id = R.string.qty),
+                                    qty = qty.value.toString(),
+                                    onChange = { entry.updateQuantity(it.toDouble()) },
+                                    isEnabled = canEdit,
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2 - 8.dp)
+                                    .align(Alignment.BottomEnd)
+                            ) {
+                                EditField(
+                                    label = stringResource(id = R.string.free),
+                                    qty = freeQty.value.toString(),
+                                    onChange = { entry.updateFreeQuantity(it.toDouble()) },
+                                    isEnabled = canEdit,
+                                )
+                            }
+                        }
+                    }
+                    Space(8.dp)
+                    Box {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                                EditField(
+                                    label = stringResource(id = R.string.ptr),
+                                    qty = ptr.value,
+                                    onChange = { entry.updatePtr(it) },
+                                    isEnabled = canEdit,
+                                    formattingRule = false,
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2 - 8.dp)
+                                    .align(Alignment.BottomEnd)
+                            ) {
+                                EditField(
+                                    label = stringResource(id = R.string.batch),
+                                    qty = batch.value,
+                                    onChange = { entry.updateBatch(it) },
+                                    isEnabled = canEdit,
+                                    formattingRule = false,
+                                    keyboardOptions = KeyboardOptions.Default,
+                                )
+                            }
+                        }
+                    }
+                    Space(8.dp)
+                    Box {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                                EditField(
+                                    label = stringResource(id = R.string.expiry_),
+                                    qty = expiry.value,
+                                    onChange = { entry.updateExpiry(it) },
+                                    isEnabled = canEdit,
+                                    formattingRule = false,
+                                    keyboardOptions = KeyboardOptions.Default,
+                                )
+                            }
+                        }
+                    }
+                }
+                Space(20.dp)
+                Divider()
                 Space(8.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -302,7 +517,7 @@ private fun ModifyOrderEntryBottomSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "${stringResource(id = R.string.subtotal)}: ${entry.totalAmount.formatted}",
+                        text = "${stringResource(id = R.string.subtotal)}: ${entry.orderEntry.totalAmount.formatted}",
                         color = MaterialTheme.colors.background,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W600,
@@ -314,7 +529,7 @@ private fun ModifyOrderEntryBottomSheet(
                             text = stringResource(id = R.string.save),
                             enabledColor = ConstColors.lightBlue,
                             contentColor = Color.White,
-                            onClick = onSave,
+                            onClick = { entry.save() },
                         )
                     }
                 }
@@ -419,8 +634,7 @@ private fun PreviewItemBottomSheet(
 
 @Composable
 private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
-    val formatter = rememberPhoneNumberFormatter()
-    val phoneNumber = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }.orEmpty()
+    val phoneNumber = entityInfo.phoneNumber?.formatIndia().orEmpty()
     val activity = (LocalContext.current as MainActivity)
     Text(
         text = phoneNumber,

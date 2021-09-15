@@ -86,6 +86,7 @@
     <string name="skip_for_now">Skip for now</string>
     <string name="actions">Actions</string>
     <string name="upload">Upload</string>
+    <string name="update">Update</string>
     <string name="upload_aadhaar">Upload Aadhaar</string>
     <string name="use_camera">Use camera</string>
     <string name="thanks_for_registration">Thank you for registration!</string>
@@ -180,6 +181,7 @@
     <string name="available">Available</string>
     <string name="not_available">Not available</string>
     <string name="limited">Limited</string>
+    <string name="items">Items</string>
     <string name="quoted">Quoted</string>
     <string name="empty_cart">Empty Cart</string>
     <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 10MB.</string>
@@ -197,12 +199,15 @@
     <string name="place_order">Place your order</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="ptr">Ptr</string>
+    <string name="free">Free</string>
     <string name="subtotal">Subtotal</string>
     <string name="order_total">Order Total:</string>
     <string name="tax_exclusive">*Exclusive of all taxes</string>
     <string name="order_with_quote_body">Are you sure you want to place order with a quoted item?</string>
     <string name="order_modified_body">It looks like one item quantity is missing, Are you sure you want to continue?</string>
     <string name="order_success">%1$s will be notified, thank you for your fulfillment.</string>
+    <string name="order_success_old">Order placed successfully!</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
     <string name="type">Type</string>
@@ -216,7 +221,9 @@
     <string name="reject_selected">Decline Selected</string>
     <string name="accept_selected">Accept Selected</string>
     <string name="batch_no">Batch No:</string>
+    <string name="batch">Batch</string>
     <string name="expiry">Expiry:</string>
+    <string name="expiry_">Expiry</string>
     <string name="requested_qty">Requested QTY:</string>
     <string name="served_qty">Served QTY:</string>
     <string name="serve_quoted">Are you sure you want to serve quote product?</string>

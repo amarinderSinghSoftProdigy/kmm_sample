@@ -41,7 +41,14 @@ internal class OrdersEventDelegate(
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
-        is Event.Action.Orders.SaveEntryQty -> saveEntryQty(event.entry, event.quantity)
+        is Event.Action.Orders.SaveEntryQty -> saveEntryQty(
+            event.entry,
+            event.quantity,
+            event.freeQuantity,
+            event.ptr,
+            event.batch,
+            event.expiry
+        )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
     }
 
@@ -178,7 +185,14 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private suspend fun saveEntryQty(orderEntry: OrderEntry, qty: Int) {
+    private suspend fun saveEntryQty(
+        orderEntry: OrderEntry,
+        qty: Double,
+        freeQty: Double,
+        ptr: Double,
+        batch: String,
+        expiry: String,
+    ) {
         navigator.withScope<ViewOrderScope> {
             withProgress {
                 networkOrdersScope.saveNewOrderQty(
@@ -187,6 +201,7 @@ internal class OrdersEventDelegate(
                         orderEntryId = orderEntry.id,
                         unitCode = userRepo.requireUser().unitCode,
                         servedQty = qty,
+                        freeQty, ptr, batch, expiry,
                     )
                 )
             }.onSuccess { body ->
