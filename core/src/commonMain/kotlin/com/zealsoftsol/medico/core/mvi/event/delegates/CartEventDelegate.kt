@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
@@ -11,7 +12,6 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.core.utils.TapModeHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
 
@@ -19,19 +19,28 @@ internal class CartEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
-    private val tapModeHelper: TapModeHelper,
 ) : EventDelegate<Event.Action.Cart>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.Cart) = when (event) {
         is Event.Action.Cart.AddItem -> event.run {
-            addItem(
-                sellerUnitCode,
-                productCode,
-                buyingOption,
-                id,
-                quantity,
-                freeQuantity,
-            )
+            if (quantity + freeQuantity > 0.0) {
+                addItem(
+                    sellerUnitCode,
+                    productCode,
+                    buyingOption,
+                    id,
+                    quantity,
+                    freeQuantity,
+                )
+            } else if (id != null && sellerUnitCode != null) {
+                removeItem(
+                    sellerUnitCode,
+                    productCode,
+                    buyingOption,
+                    id,
+                    checkContains = true,
+                )
+            }
         }
         is Event.Action.Cart.UpdateItem -> event.run {
             updateItem(
@@ -117,17 +126,21 @@ internal class CartEventDelegate(
         productCode: String,
         buyingOption: BuyingOption,
         id: CartIdentifier,
+        checkContains: Boolean = false,
     ) = async {
-        navigator.withScope<CartScope> {
-            withProgress {
-                cartRepo.removeCartItem(
-                    userRepo.requireUser().unitCode,
-                    sellerUnitCode,
-                    productCode,
-                    buyingOption,
-                    id,
-                )
-            }.onError(navigator)
+        if (!checkContains || cartRepo.entries.value.flatMap { it.items }
+                .any { it.id.spid == id.spid }) {
+            navigator.withScope<Scopable> {
+                withProgress {
+                    cartRepo.removeCartItem(
+                        userRepo.requireUser().unitCode,
+                        sellerUnitCode,
+                        productCode,
+                        buyingOption,
+                        id,
+                    )
+                }.onError(navigator)
+            }
         }
     }
 

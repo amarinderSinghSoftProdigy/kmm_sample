@@ -964,7 +964,7 @@ private fun BaseSellerItem(
     }
 }
 
-private sealed class BottomSectionMode {
+sealed class BottomSectionMode {
     object Select : BottomSectionMode()
     object AddToCart : BottomSectionMode()
     object ConfirmQty : BottomSectionMode()

@@ -32,6 +32,9 @@ fun <T> FoldableItem(
     header: @Composable RowScope.(Boolean) -> Unit,
     childItems: List<T>,
     itemHorizontalPadding: Dp = 8.dp,
+    hasItemLeadingSpacing: Boolean = true,
+    hasItemTrailingSpacing: Boolean = true,
+    itemsBackground: Color = Color.White,
     itemSpacing: Dp = 12.dp,
     item: @Composable ColumnScope.(T, Int) -> Unit,
 ) {
@@ -56,13 +59,13 @@ fun <T> FoldableItem(
             AnimatedVisibility(isExpanded.value) {
                 Column(
                     modifier = Modifier
-                        .background(Color.White)
+                        .background(itemsBackground)
                         .padding(horizontal = itemHorizontalPadding)
                 ) {
-                    Space(itemSpacing)
+                    if (hasItemLeadingSpacing) Space(itemSpacing)
                     childItems.forEachIndexed { index, value ->
                         item(value, index)
-                        Space(itemSpacing)
+                        if (index < childItems.lastIndex || hasItemLeadingSpacing) Space(itemSpacing)
                     }
                 }
             }
