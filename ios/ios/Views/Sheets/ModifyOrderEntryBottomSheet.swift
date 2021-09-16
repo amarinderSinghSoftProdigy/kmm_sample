@@ -8,6 +8,7 @@
 
 import core
 import SwiftUI
+import Combine
 
 struct ModifyOrderEntryBottomSheet: ViewModifier {
     let bottomSheet: BottomSheet.ModifyOrderEntry
@@ -83,8 +84,12 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                         if bottomSheet.canEdit {
                             Spacer()
                             
+                            let isEnabled =
+                                (Double(truncating:quantity.value ?? 0) + Double(truncating: freeQuantity.value ?? 0))
+                                    .truncatingRemainder(dividingBy: 1) == 0
+                            
                             MedicoButton(localizedStringKey: "save",
-                                         isEnabled: true,
+                                         isEnabled: isEnabled,
                                          width: 88,
                                          height: 40,
                                          cornerRadius: 6,
@@ -100,6 +105,9 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
             }
             .textFieldsModifiers()
             .edgesIgnoringSafeArea(.bottom)
+            .onReceive(Just(quantity.value)) {
+                print($0)
+            }
         )
     }
     
@@ -122,27 +130,16 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
             let columnsSpacing: CGFloat = 20
             let leftColumnWidth: CGFloat = 120
             
-            HStack(spacing: columnsSpacing) {
-                EditableInput(titleLocalizationKey: "QTY",
-                              text: "\(quantity.value ?? 0)",
-                              onTextChange: {
-                                if let newValue = Double($0) {
-                                    bottomSheet.updateQuantity(value: newValue)
-                                }
-                              },
-                              keyboardType: .decimalPad)
-                    .frame(width: leftColumnWidth)
+            if let quantityValue = self.quantity.value,
+               let freeQuantityValue = self.freeQuantity.value {
+                let quantity = Binding<Double>(get: { Double(truncating: quantityValue) },
+                                               set: { bottomSheet.updateQuantity(value: $0) })
+                let freeQuantity = Binding<Double>(get: { Double(truncating: freeQuantityValue) },
+                                                   set: { bottomSheet.updateFreeQuantity(value: $0) })
                 
-                Spacer()
-                
-                EditableInput(titleLocalizationKey: "FREE",
-                              text: "\(freeQuantity.value ?? 0)",
-                              onTextChange: {
-                                if let newValue = Double($0) {
-                                    bottomSheet.updateFreeQuantity(value: newValue)
-                                }
-                              },
-                              keyboardType: .decimalPad)
+                QuantityInput(quantity: quantity,
+                              freeQuantity: freeQuantity,
+                              maxQuantity: .infinity)
             }
             
             HStack(spacing: columnsSpacing) {

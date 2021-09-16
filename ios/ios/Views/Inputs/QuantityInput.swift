@@ -22,7 +22,7 @@ struct QuantityInput: View {
             EditableInput(titleLocalizationKey: "QTY",
                           text: String(format: "%.1f", quantity.wrappedValue),
                           onTextChange: {
-                            if let newValue = Double($0) {
+                            if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
                                 quantity.wrappedValue = newValue
                             }
                           },
@@ -46,7 +46,7 @@ struct QuantityInput: View {
             EditableInput(titleLocalizationKey: "FREE",
                           text: String(format: "%.1f", freeQuantity.wrappedValue),
                           onTextChange: {
-                            if let newValue = Double($0) {
+                            if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
                                 freeQuantity.wrappedValue = newValue
                             }
                           },
