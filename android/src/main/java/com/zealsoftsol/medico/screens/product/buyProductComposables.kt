@@ -838,7 +838,7 @@ private fun BaseSellerItem(
         )
     }
 
-    NeededSurface(if (mode.value == BottomSectionMode.Select || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
+    NeededSurface(if (mode.value == BottomSectionMode.Update || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
