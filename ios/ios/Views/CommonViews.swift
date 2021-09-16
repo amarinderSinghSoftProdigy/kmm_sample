@@ -237,13 +237,6 @@ struct TableViewCell: View {
                                 )
                         }
                     }
-                    
-                    if style.hasNavigationArrow {
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(appColor: style.foregroundColor)
-                    }
                 }
             }
             .testingIdentifier("\(localizationKey)_button")
@@ -271,10 +264,6 @@ struct TableViewCell: View {
     enum Style {
         case navigation
         case plain
-        
-        var hasNavigationArrow: Bool {
-            return self == .navigation
-        }
         
         var textWeight: TextWeight {
             switch self {

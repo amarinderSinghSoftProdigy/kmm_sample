@@ -316,13 +316,9 @@ struct BuyProductScreen: View {
                                    initialQuantity: quantity,
                                    initialFreeQuantity: freeQuantity,
                                    maxQuantity: Double(info.stockInfo?.availableQty ?? .max),
-                                   onQuantitySelect: onQuantitySelect)
+                                   onQuantitySelect: onQuantitySelect,
+                                   onViewTap: { onViewTap(info) })
                 )
-                .padding(.vertical, 8)
-                .background(appColor: .white)
-                .onTapGesture {
-                    onViewTap(info)
-                }
             }
             
             private var header: some View {
@@ -366,8 +362,6 @@ struct BuyProductScreen: View {
                                      initialFreeQuantity: freeQuantity,
                                      maxQuantity: Double(stockInfo?.availableQty ?? .max),
                                      onQuantitySelect: onQuantitySelect))
-            .padding(.vertical, 8)
-            .background(appColor: .white)
         }
         
         private var header: some View {
@@ -547,7 +541,7 @@ struct BuyProductScreen: View {
                             .padding(.horizontal, horizontalPadding)
                     }
                 }
-                .padding(.vertical, 20)
+                .padding(.vertical, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
@@ -613,6 +607,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     @State private var freeQuantity: Double
     
     private let onQuantitySelect: (Double?, Double?) -> Void
+    private let onViewTap: (() -> Void)?
     
     private let addActionEnabled: Bool
     private let showsDivider: Bool
@@ -658,6 +653,16 @@ struct BaseSellerView<Header: View>: ViewModifier {
                 updateMode()
             }
         }
+        .padding(.vertical, 8)
+        .background(appColor: .white)
+        .onTapGesture {
+            if self.mode != .confirmQuantity {
+                onViewTap?()
+            }
+            else {
+                content.hideKeyboard()
+            }
+        }
     }
     
     init(initialMode: Mode?,
@@ -670,7 +675,8 @@ struct BaseSellerView<Header: View>: ViewModifier {
          initialQuantity: Double,
          initialFreeQuantity: Double,
          maxQuantity: Double,
-         onQuantitySelect: @escaping (Double?, Double?) -> Void) {
+         onQuantitySelect: @escaping (Double?, Double?) -> Void,
+         onViewTap: (() -> Void)? = nil) {
         let initialMode = initialMode ?? (initialQuantity > 0 || initialFreeQuantity > 0 ? .update : .addToCart)
         self._mode = State(initialValue: initialMode)
         
@@ -691,6 +697,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
         self._freeQuantity = State(initialValue: initialFreeQuantity)
         
         self.onQuantitySelect = onQuantitySelect
+        self.onViewTap = onViewTap
     }
     
     private var bottomPanel: some View {

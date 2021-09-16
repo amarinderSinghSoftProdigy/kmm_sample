@@ -286,30 +286,22 @@ struct CartItemView: View {
             .padding(.top, 2)
             
             if let quotedData = item.quotedData {
-                VStack(spacing: 4) {
-                    AppColor.darkBlue.color
-                        .opacity(0.33)
-                        .frame(height: 1)
-                        .padding(.leading, -12)
-                        .padding(.trailing, -8)
-                    
-                    HStack {
-                        if !quotedData.message.isEmpty {
-                            SmallAddressView(location: quotedData.message,
-                                             fontWeight: .medium,
-                                             fontSize: 12,
-                                             color: .lightBlue)
-                        }
-                        
-                        Spacer()
-                        
-                        LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
-                                      textWeight: .medium,
-                                      fontSize: 12,
-                                      color: item.itemViewBorderColor)
+                HStack {
+                    if !quotedData.message.isEmpty {
+                        SmallAddressView(location: quotedData.message,
+                                         fontWeight: .medium,
+                                         fontSize: 12,
+                                         color: .lightBlue)
                     }
-                    .frame(height: 20)
+                    
+                    Spacer()
+                    
+                    LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
+                                  textWeight: .medium,
+                                  fontSize: 12,
+                                  color: item.itemViewBorderColor)
                 }
+                .frame(height: 20)
             }
         }
         .fixedSize(horizontal: false, vertical: true)
@@ -320,8 +312,6 @@ struct CartItemView: View {
                                  initialFreeQuantity: Double(truncating: item.freeQuantity.value ?? 0),
                                  maxQuantity: .infinity,
                                  onQuantitySelect: { onQuantitySelect?($0, $1) }))
-        .padding(.vertical, 8)
-        .background(appColor: .white)
     }
     
     init(item: DataCartItem,

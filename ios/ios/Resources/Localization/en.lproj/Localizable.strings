@@ -339,11 +339,12 @@
 "empty_new_orders" = "No Purchase Orders from any of your connected Users";
 "QTY" = "QTY";
 "PTR" = "PTR";
-"EXP" = "EXP (MM/YY)";
+"EXP" = "EXP (MM/YYYY)";
 "FREE" = "FREE";
 "BATCH" = "BATCH";
 
 // MARK: Orders
+"my_orders" = "My Orders";
 "orders" = "Orders";
 "search_tradename" = "Search Tradename";
 "search_orders" = "Search in Orders";

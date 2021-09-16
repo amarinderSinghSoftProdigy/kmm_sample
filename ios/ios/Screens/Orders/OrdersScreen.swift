@@ -239,7 +239,10 @@ extension DataOrderType {
         case .purchaseOrder:
             return "new_orders"
             
-        case .order, .history:
+        case .order:
+            return "my_orders"
+            
+        case .history:
             return "orders"
             
         default:
