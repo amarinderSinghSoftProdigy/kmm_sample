@@ -38,6 +38,7 @@ struct PlaceOrderScreen: View {
                         
                         SellerCartDataView(seller: seller,
                                            isReadonly: true,
+                                           onQuantitySelect: nil,
                                            onRemoveSeller: nil,
                                            onRemoveItem: nil,
                                            expanded: expanded)

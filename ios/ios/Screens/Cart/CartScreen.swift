@@ -93,6 +93,10 @@ struct CartScreen: View {
                     
                     SellerCartDataView(seller: seller,
                                        isReadonly: false,
+                                       onQuantitySelect: { updateItemQuantity($0,
+                                                                              forSeller: seller,
+                                                                              quantity: $1,
+                                                                              freeQuantity: $2) },
                                        onRemoveSeller: { scope.removeSellerItems(sellerCart: seller) },
                                        onRemoveItem: { scope.removeItem(sellerCart: seller,
                                                                         item: $0)},
@@ -158,14 +162,17 @@ struct CartScreen: View {
         .padding(.vertical, 25)
     }
     
-    private func updateItemCount(_ item: DataCartItem,
-                                 forSeller seller: DataSellerCart,
-                                 increment: Int32) {
-        guard let quantity = item.quantity.value as? Int32 else { return }
+    private func updateItemQuantity(_ item: DataCartItem,
+                                    forSeller seller: DataSellerCart,
+                                    quantity: Double?,
+                                    freeQuantity: Double?) {
+        guard let quantity = quantity,
+              let freeQuantity = freeQuantity else { return }
         
         scope.updateItemCount(sellerCart: seller,
                               item: item,
-                              quantity: quantity + increment)
+                              quantity: quantity,
+                              freeQuantity: freeQuantity)
     }
 }
 
@@ -175,6 +182,8 @@ struct SellerCartDataView: View {
     let seller: DataSellerCart
     
     let isReadonly: Bool
+    
+    let onQuantitySelect: ((DataCartItem, Double?, Double?) -> Void)?
     
     let onRemoveSeller: (() -> Void)?
     let onRemoveItem: ((DataCartItem) -> Void)?
@@ -190,6 +199,7 @@ struct SellerCartDataView: View {
                 ForEach(seller.items, id: \.self) { item in
                     CartItemView(item: item,
                                  isReadonly: isReadonly,
+                                 onQuantitySelect: { onQuantitySelect?(item, $0, $1) },
                                  onRemoveItem: onRemoveItem)
                 }
             }
@@ -252,6 +262,7 @@ struct CartItemView: View {
     
     let isReadonly: Bool
     
+    let onQuantitySelect: ((Double?, Double?) -> Void)?
     let onRemoveItem: ((DataCartItem) -> ())?
     
     var body: some View {
@@ -308,18 +319,20 @@ struct CartItemView: View {
                                  initialQuantity: Double(truncating: item.quantity.value ?? 0),
                                  initialFreeQuantity: Double(truncating: item.freeQuantity.value ?? 0),
                                  maxQuantity: .infinity,
-                                 onQuantitySelect: { _, _ in }))
+                                 onQuantitySelect: { onQuantitySelect?($0, $1) }))
         .padding(.vertical, 8)
         .background(appColor: .white)
     }
     
     init(item: DataCartItem,
          isReadonly: Bool = false,
+         onQuantitySelect: ((Double?, Double?) -> Void)? = nil,
          onRemoveItem: ((DataCartItem) -> ())? = nil) {
         self.item = item
         
         self.isReadonly = isReadonly
         
+        self.onQuantitySelect = onQuantitySelect
         self.onRemoveItem = onRemoveItem
     }
     
