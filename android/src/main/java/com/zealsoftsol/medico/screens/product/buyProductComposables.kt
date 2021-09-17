@@ -612,6 +612,7 @@ private fun SellerInfoItem(
         onSaveQty = onSaveQty,
         forceMode = if (isSelectable) BottomSectionMode.Select else null,
         onItemClick = onItemClick,
+        canAddToCart = sellerInfo.stockInfo?.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
             val labelColor = when (sellerInfo.stockInfo?.status) {
                 StockStatus.IN_STOCK -> ConstColors.green
@@ -747,6 +748,7 @@ private fun SeasonBoyReatilerInfoItem(
         freeQtyInitial = quantityFree,
         onSaveQty = onSaveQty,
         onItemClick = null,
+        canAddToCart = true,
         headerContent = {
             Text(
                 text = seasonBoyRetailer.tradeName,
@@ -825,6 +827,7 @@ private fun BaseSellerItem(
     mainBodyContent: @Composable ColumnScope.() -> Unit,
     qtyInitial: Double,
     freeQtyInitial: Double,
+    canAddToCart: Boolean,
     onSaveQty: (Double?, Double?) -> Unit,
     forceMode: BottomSectionMode? = null,
     onItemClick: (() -> Unit)? = null,
@@ -890,7 +893,12 @@ private fun BaseSellerItem(
                     BottomSectionMode.AddToCart -> {
                         MedicoRoundButton(
                             text = stringResource(id = R.string.add_to_cart),
-                            onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                            onClick = {
+                                if (canAddToCart) {
+                                    mode.value = BottomSectionMode.ConfirmQty
+                                }
+                            },
+                            color = if (canAddToCart) ConstColors.yellow else Color.LightGray,
                         )
                     }
                     BottomSectionMode.ConfirmQty -> {

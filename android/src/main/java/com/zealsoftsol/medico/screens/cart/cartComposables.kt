@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.cart
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.screens.common.EditField
@@ -236,6 +239,7 @@ private fun SellerCartItem(
     FoldableItem(
         expanded = expand,
         headerBackground = ConstColors.ltgray,
+        headerMinHeight = 60.dp,
         header = { _ ->
             Space(12.dp)
             Surface(
@@ -305,7 +309,7 @@ private fun SellerCartItem(
         itemSpacing = 8.dp,
         itemHorizontalPadding = 0.dp,
         itemsBackground = ConstColors.ltgray,
-        item = { value, index ->
+        item = { value, _ ->
             CartItem(
                 cartItem = value,
                 onSaveQty = { qty, freeQty -> onSaveQty(value, qty!!, freeQty!!) },
@@ -322,10 +326,21 @@ private fun CartItem(
     onSaveQty: (Double?, Double?) -> Unit,
     onRemove: () -> Unit,
 ) {
+    val labelColor = when (cartItem.buyingOption) {
+        BuyingOption.BUY -> ConstColors.green
+        BuyingOption.QUOTE -> when (cartItem.quotedData?.isAvailable) {
+            true -> ConstColors.green
+            false -> ConstColors.red
+            null -> Color.LightGray
+        }
+    }
     Surface(
         shape = RectangleShape,
         color = Color.White,
     ) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(2.dp)) {
+            drawRect(labelColor)
+        }
         BaseCartItem(
             qtyInitial = cartItem.quantity.value,
             freeQtyInitial = cartItem.freeQuantity.value,
@@ -336,15 +351,21 @@ private fun CartItem(
                         contentAlignment = Alignment.CenterStart,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text(
-                            text = cartItem.productName,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W700,
-                            fontSize = 16.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(end = 30.dp)
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Canvas(modifier = Modifier.size(10.dp)) {
+                                drawRoundRect(labelColor, cornerRadius = CornerRadius(8.dp.value))
+                            }
+                            Space(8.dp)
+                            Text(
+                                text = cartItem.productName,
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W700,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(end = 30.dp)
+                            )
+                        }
                         Surface(
                             shape = CircleShape,
                             color = Color.Red.copy(alpha = 0.12f),
@@ -381,24 +402,33 @@ private fun CartItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append("PTR: ")
-                            val startIndex = length
-                            append(cartItem.price.formatted)
-                            addStyle(
-                                SpanStyle(
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W800
-                                ),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 16.sp,
-                    )
+                    if (cartItem.quotedData?.isAvailable != false) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append("PTR: ")
+                                val startIndex = length
+                                append(cartItem.price.formatted)
+                                addStyle(
+                                    SpanStyle(
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.W700,
+                            fontSize = 16.sp,
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.not_available),
+                            color = ConstColors.red,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 14.sp,
+                        )
+                    }
                     Text(
                         text = buildAnnotatedString {
                             append("TOT: ")
