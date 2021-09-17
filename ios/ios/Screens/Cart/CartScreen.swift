@@ -285,21 +285,14 @@ struct CartItemView: View {
             }
             .padding(.top, 2)
             
-            if let quotedData = item.quotedData {
+            if let quotedData = item.quotedData,
+               !quotedData.isAvailable {
                 HStack {
-                    if !quotedData.message.isEmpty {
-                        SmallAddressView(location: quotedData.message,
-                                         fontWeight: .medium,
-                                         fontSize: 12,
-                                         color: .lightBlue)
-                    }
+                    LocalizedText(localizationKey: "not_available",
+                                  textWeight: .semiBold,
+                                  color: .red)
                     
                     Spacer()
-                    
-                    LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
-                                  textWeight: .medium,
-                                  fontSize: 12,
-                                  color: item.itemViewBorderColor)
                 }
                 .frame(height: 20)
             }
@@ -308,10 +301,21 @@ struct CartItemView: View {
         .modifier(BaseSellerView(initialMode: nil,
                                  header: header,
                                  isReadonly: isReadonly,
+                                 isQuoted: item.buyingOption == .quote,
                                  initialQuantity: Double(truncating: item.quantity.value ?? 0),
                                  initialFreeQuantity: Double(truncating: item.freeQuantity.value ?? 0),
                                  maxQuantity: .infinity,
                                  onQuantitySelect: { onQuantitySelect?($0, $1) }))
+        .overlay(
+            Group {
+                if let quotedData = item.quotedData,
+                   !quotedData.isAvailable {
+                    AppColor.red.color
+                        .frame(height: 2)
+               }
+            }
+            .frame(maxHeight: .infinity, alignment: .top)
+        )
     }
     
     init(item: DataCartItem,
@@ -328,6 +332,11 @@ struct CartItemView: View {
     
     private var header: some View {
         HStack(spacing: 8) {
+            item.stockInfo?.statusColor
+                .color
+                .cornerRadius(4)
+                .frame(width: 12, height: 12)
+            
             Text(item.productName)
                 .medicoText(textWeight: .bold,
                             fontSize: 16,
@@ -352,56 +361,6 @@ struct CartItemView: View {
                 RemoveButton(onRemove: { onRemoveItem(item) })
             }
         }
-    }
-    
-    private var mainBody: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let seasonBoyRetailerInfo = self.item.seasonBoyRetailer {
-                Text(seasonBoyRetailerInfo.tradeName)
-                    .medicoText(textWeight: .medium,
-                                fontSize: 12,
-                                color: .grey3,
-                                multilineTextAlignment: .leading)
-                    .lineLimit(1)
-            }
-            
-            HStack {
-                getDetailView(titleLocalizationKey: "ptr:", body: item.price.formatted)
-                
-                Spacer()
-                
-                getDetailView(titleLocalizationKey: "tot:", body: item.subtotalPrice.formatted)
-            }
-            .padding(.top, 2)
-            
-            if let quotedData = item.quotedData {
-                VStack(spacing: 4) {
-                    AppColor.darkBlue.color
-                        .opacity(0.33)
-                        .frame(height: 1)
-                        .padding(.leading, -12)
-                        .padding(.trailing, -8)
-                    
-                    HStack {
-                        if !quotedData.message.isEmpty {
-                            SmallAddressView(location: quotedData.message,
-                                             fontWeight: .medium,
-                                             fontSize: 12,
-                                             color: .lightBlue)
-                        }
-                        
-                        Spacer()
-                        
-                        LocalizedText(localizationKey: quotedData.isAvailable ? "available" : "not_available",
-                                      textWeight: .medium,
-                                      fontSize: 12,
-                                      color: item.itemViewBorderColor)
-                    }
-                    .frame(height: 20)
-                }
-            }
-        }
-        .fixedSize(horizontal: false, vertical: true)
     }
     
     private func getDetailView(titleLocalizationKey: String,
@@ -453,25 +412,6 @@ struct PriceWithFootnoteView: View {
                             fontSize: fontSize,
                             color: AppColor.lightBlue)
         }
-    }
-}
-
-extension DataCartItem {
-    var itemViewBorderColor: AppColor {
-        switch self.quotedData?.isAvailable {
-        case .some(true):
-            return .green
-            
-        case .some(false):
-            return .red
-            
-        default:
-            return .darkBlue
-        }
-    }
-    
-    var itemViewBorderOpacity: Double {
-        self.quotedData != nil ? 1 : 0.12
     }
 }
 

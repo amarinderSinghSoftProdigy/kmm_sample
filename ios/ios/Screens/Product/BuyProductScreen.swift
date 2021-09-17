@@ -612,6 +612,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     private let addActionEnabled: Bool
     private let showsDivider: Bool
     private let isReadonly: Bool
+    private let isQuoted: Bool
     
     func body(content: Content) -> some View {
         VStack {
@@ -672,6 +673,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
          showsDivider: Bool = true,
          addActionEnabled: Bool = true,
          isReadonly: Bool = false,
+         isQuoted: Bool = false,
          initialQuantity: Double,
          initialFreeQuantity: Double,
          maxQuantity: Double,
@@ -687,6 +689,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
         self.showsDivider = showsDivider
         self.addActionEnabled = addActionEnabled
         self.isReadonly = isReadonly
+        self.isQuoted = isQuoted
         
         self.initialQuantity = initialQuantity
         self.initialFreeQuantity = initialFreeQuantity
@@ -722,6 +725,19 @@ struct BaseSellerView<Header: View>: ViewModifier {
             case .update:
                 HStack {
                     QuantityView(quantity: quantity, freeQuantity: freeQuantity)
+                    
+                    if isQuoted {
+                        LocalizedText(localizationKey: "quoted",
+                                      textWeight: .semiBold,
+                                      fontSize: 12)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .strokeBorder(.darkBlue,
+                                          borderOpacity: 0.3,
+                                          fill: .darkBlue,
+                                          fillOpacity: 0.08,
+                                          cornerRadius: 4)
+                    }
                     
                     Spacer()
                     
