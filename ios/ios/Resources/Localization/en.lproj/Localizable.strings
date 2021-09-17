@@ -276,6 +276,7 @@
 "store" = "Store";
 "empty_stores" = "No stores to view";
 "stores_search" = "Stores Search";
+"empty_store_title" = "No inventory found with";
 
 // MARK: Help
 "help" = "Help";
