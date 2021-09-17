@@ -155,6 +155,21 @@ extension DataStockInfo {
     }
 }
 
+extension DataCartItem {
+    var quoteAvailabilityColor: AppColor {
+        switch self.quotedData?.isAvailable {
+        case .some(true):
+            return .green
+            
+        case .some(false):
+            return .red
+            
+        case .none:
+            return .lightGrey
+        }
+    }
+}
+
 
 extension DataSubscriptionStatus {
     var statusColor: AppColor {

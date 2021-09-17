@@ -332,8 +332,7 @@ struct CartItemView: View {
     
     private var header: some View {
         HStack(spacing: 8) {
-            item.stockInfo?.statusColor
-                .color
+            item.quoteAvailabilityColor.color
                 .cornerRadius(4)
                 .frame(width: 12, height: 12)
             
