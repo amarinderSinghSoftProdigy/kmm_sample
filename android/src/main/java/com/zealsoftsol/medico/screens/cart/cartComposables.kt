@@ -338,7 +338,11 @@ private fun CartItem(
         shape = RectangleShape,
         color = Color.White,
     ) {
-        Canvas(modifier = Modifier.fillMaxWidth().height(2.dp)) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+        ) {
             drawRect(labelColor)
         }
         BaseCartItem(
@@ -477,13 +481,19 @@ private fun BaseCartItem(
         Space(8.dp)
         when (mode.value) {
             BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
-            BottomSectionMode.ConfirmQty -> Box {
+            BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
+                val isError = (qty.value + freeQty.value) % 1 != 0.0
+                val wasError = remember { mutableStateOf(isError) }
+                val wasErrorSaved = wasError.value
+                val focusedError = remember(mode.value) { mutableStateOf(-1) }
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     Box(modifier = Modifier.width(maxWidth / 3)) {
                         EditField(
                             label = stringResource(id = R.string.qty),
                             qty = qty.value.toString(),
+                            isError = isError && focusedError.value == 0,
                             onChange = { qty.value = it.toDouble() },
+                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
                         )
                     }
                     Box(
@@ -494,11 +504,23 @@ private fun BaseCartItem(
                         EditField(
                             label = stringResource(id = R.string.free),
                             isEnabled = qty.value > 0.0,
+                            isError = isError && focusedError.value == 1,
                             qty = freeQty.value.toString(),
                             onChange = { freeQty.value = it.toDouble() },
+                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
                         )
                     }
                 }
+                if (isError) {
+                    Space(8.dp)
+                    Text(
+                        text = stringResource(id = R.string.invalid_qty),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        color = ConstColors.red,
+                    )
+                }
+                wasError.value = isError
             }
         }
         Space(10.dp)
