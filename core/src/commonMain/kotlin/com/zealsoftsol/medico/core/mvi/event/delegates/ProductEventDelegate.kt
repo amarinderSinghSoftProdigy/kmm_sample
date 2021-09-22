@@ -136,7 +136,9 @@ internal class ProductEventDelegate(
                 networkProductScope.buyProductSelectSeasonBoyRetailer(
                     productCode,
                     userRepo.requireUser().unitCode,
-                    sellerInfo?.unitCode
+                    sellerInfo?.unitCode,
+                    userRepo.requireUser().addressData.latitude,
+                    userRepo.requireUser().addressData.longitude,
                 )
             }.onSuccess { body ->
                 setScope(

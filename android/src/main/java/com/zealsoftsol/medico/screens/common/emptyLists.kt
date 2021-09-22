@@ -25,7 +25,7 @@ import com.zealsoftsol.medico.R
 fun NoRecords(
     @DrawableRes icon: Int,
     @StringRes text: Int,
-    @StringRes subtitle: Int? = null,
+    subtitle: String? = null,
     onHome: () -> Unit,
 ) {
     Column(
@@ -50,7 +50,7 @@ fun NoRecords(
         subtitle?.let {
             Space(8.dp)
             Text(
-                text = stringResource(id = text),
+                text = it,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W400,
                 color = ConstColors.gray,

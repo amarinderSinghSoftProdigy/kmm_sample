@@ -205,7 +205,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
         NoRecords(
             icon = icon,
             text = text,
-            subtitle = if (scope is ManagementScope.User.Stockist) R.string.please_connect_stockists else null,
+            subtitle = if (scope is ManagementScope.User.Stockist) stringResource(R.string.please_connect_stockists) else null,
             onHome = { scope.goHome() },
         )
     } else {

@@ -66,7 +66,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.Simple(
                 icon = ScopeIcon.BACK,
-                title = StringResource.Raw(store.tradeName),
+                title = StringResource.Raw(null),
                 cartItemsCount = cartItemsCount,
             )
         }
