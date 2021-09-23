@@ -1171,7 +1171,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1267,7 +1267,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1357,7 +1357,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1447,7 +1447,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1598,7 +1598,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1633,7 +1633,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 51;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
