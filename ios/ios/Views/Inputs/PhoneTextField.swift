@@ -39,6 +39,7 @@ struct PhoneTextField: View {
                                      onTextChange: { newValue in
                                         phone.wrappedValue = newValue
                                      },
+                                     constText: "+91",
                                      keyboardType: .phonePad,
                                      isValid: canSubmitPhone.wrappedValue,
                                      errorMessageKey: errorMessageKey,
@@ -56,19 +57,14 @@ struct PhoneTextField: View {
         self.onTextChange = onTextChange
         
         self.phone = Binding(get: {
-            PhoneNumberUtil.shared.getFormattedPhoneNumber(phone ?? "")
+            phone ?? ""
         },
         set: {
-            let isValid = PhoneNumberUtil.shared.isValidNumber($0).isValid
-                                
-            let rawPhoneNumber = isValid ? PhoneNumberUtil.shared.getRawPhoneNumber($0) : $0
-            onTextChange(rawPhoneNumber)
+            onTextChange($0)
         })
     }
     
     private func updatePhoneValidationState(for phone: String) {
-        let isValid = PhoneNumberUtil.shared.isValidNumber(phone).isValid
-        
-        canSubmitPhone.wrappedValue = isValid
+        canSubmitPhone.wrappedValue = !phone.isEmpty
     }
 }

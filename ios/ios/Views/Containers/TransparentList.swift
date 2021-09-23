@@ -29,13 +29,21 @@ struct TransparentList<Content: View, T: Hashable>: View {
     var body: some View {
         guard let data = self.data.value as? [T] else { return AnyView(EmptyView()) }
         
+        let needsPadding: Bool
+        if #available(iOS 15.0, *) {
+            needsPadding = false
+        }
+        else {
+            needsPadding = true
+        }
+        
         return AnyView(
             List {
                 ForEach(Array(data.enumerated()), id: \.offset) { index, element in
                     self.getCellView(index, element)
                         .padding(.bottom, elementsSpacing)
                         .listRowInsets(.init())
-                        .listRowBackground(Color.clear)
+                        .listRowBackground(Color.blue)
                         .background(appColor: .primary)
                         .onAppear {
                             if index == data.count - 1 &&
@@ -62,6 +70,8 @@ struct TransparentList<Content: View, T: Hashable>: View {
                 
                 UITableView.appearance().backgroundColor = UIColor.clear
                 UITableViewCell.appearance().backgroundColor = UIColor.clear
+                
+                UITableView.appearance().contentInset.top = !needsPadding ? -35 : 0
             }
             .introspectTableView { (tableView) in
                 if let listName = self.listName,
@@ -84,6 +94,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
 
                 self.scrollData.lists[listName]?.listTableView = nil
             }
+            .padding(.horizontal, !needsPadding ? -16 : 0)
         )
     }
     

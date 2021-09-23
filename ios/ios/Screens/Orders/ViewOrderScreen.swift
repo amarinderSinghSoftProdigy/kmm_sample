@@ -27,7 +27,7 @@ struct ViewOrderScreen: View {
                 CustomerView(b2bData: b2bData.value,
                              seasonBoyRetailerName: self.order.value?.seasonBoyRetailerName)
                 
-                if let orderStatus = self.order.value?.info.status {
+                if let orderStatus = self.order.value?.info.status.stringValue {
                     OrderStatusView(status: orderStatus)
                 }
             }
@@ -313,6 +313,8 @@ struct CustomerView: View {
                         .padding(.horizontal, 4)
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .lineLimit(1)
                 .expandableView(expanded: $expandedCustomerView) {
                     HStack(spacing: 8) {

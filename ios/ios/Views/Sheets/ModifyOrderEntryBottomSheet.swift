@@ -8,14 +8,22 @@
 
 import core
 import SwiftUI
+import Combine
 
 struct ModifyOrderEntryBottomSheet: ViewModifier {
     let bottomSheet: BottomSheet.ModifyOrderEntry
         
     let onBottomSheetDismiss: () -> ()
     
+    @State private var quantitiesCorrect: Bool = true
+    
     @ObservedObject var checked: SwiftDataSource<KotlinBoolean>
-    @ObservedObject var quantity: SwiftDataSource<KotlinInt>
+    
+    @ObservedObject var batch: SwiftDataSource<NSString>
+    @ObservedObject var expiry: SwiftDataSource<NSString>
+    @ObservedObject var ptr: SwiftDataSource<NSString>
+    @ObservedObject var quantity: SwiftDataSource<KotlinDouble>
+    @ObservedObject var freeQuantity: SwiftDataSource<KotlinDouble>
     
     func body(content: Content) -> some View {
         let bottomSheetOpened = Binding(get: { true },
@@ -23,7 +31,7 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened,
-                                maxHeight: 370) {
+                                maxHeight: bottomSheet.canEdit ? 425 : 370) {
                 VStack(spacing: 30) {
                     HStack(alignment: .top, spacing: 20) {
                         if bottomSheet.canEdit {
@@ -47,31 +55,12 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    HStack {
-                        VStack(alignment: .leading, spacing: 8) {
-                            getDetailsView(titleLocalizationKey: "price:",
-                                           bodyText: bottomSheet.orderEntry.price.formatted)
-                            
-                            getDetailsView(titleLocalizationKey: "mrp:",
-                                           bodyText: bottomSheet.orderEntry.mrp.formatted)
-                            
-                            getDetailsView(titleLocalizationKey: "requested_qty:",
-                                           bodyText: bottomSheet.orderEntry.requestedQty.formatted,
-                                           bodyColor: .lightBlue)
-                        }
-                        
-                        Spacer()
-                        
+                    Group {
                         if bottomSheet.canEdit {
-                            NumberPicker(quantity: Int(truncating: self.quantity.value ?? 0),
-                                         onQuantityIncrease: { bottomSheet.inc(tapMode: $0) },
-                                         onQuantityDecrease: { bottomSheet.dec(tapMode: $0) },
-                                         longPressEnabled: true)
+                            editableOrderFieldsView
                         }
                         else {
-                            getDetailsView(titleLocalizationKey: "served_qty:",
-                                           bodyText: bottomSheet.orderEntry.servedQty.formatted,
-                                           bodyColor: .lightBlue)
+                            noneditableOrderFieldsView
                         }
                     }
                     .padding(.vertical, 20)
@@ -98,7 +87,7 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                             Spacer()
                             
                             MedicoButton(localizedStringKey: "save",
-                                         isEnabled: true,
+                                         isEnabled: quantitiesCorrect,
                                          width: 88,
                                          height: 40,
                                          cornerRadius: 6,
@@ -112,7 +101,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                 }
                 .padding(25)
             }
-            .edgesIgnoringSafeArea(.all)
+            .textFieldsModifiers()
+            .edgesIgnoringSafeArea(.bottom)
         )
     }
     
@@ -122,7 +112,78 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         self.onBottomSheetDismiss = onBottomSheetDismiss
         
         self.checked = .init(dataSource: bottomSheet.isChecked)
+        
+        self.batch = .init(dataSource: bottomSheet.batch)
+        self.expiry = .init(dataSource: bottomSheet.expiry)
+        self.ptr = .init(dataSource: bottomSheet.ptr)
         self.quantity = .init(dataSource: bottomSheet.quantity)
+        self.freeQuantity = .init(dataSource: bottomSheet.freeQuantity)
+    }
+    
+    private var editableOrderFieldsView: some View {
+        VStack(spacing: 28) {
+            let columnsSpacing: CGFloat = 20
+            let leftColumnWidth: CGFloat = 120
+            
+            if let quantityValue = self.quantity.value,
+               let freeQuantityValue = self.freeQuantity.value {
+                let quantity = Binding<Double>(get: { Double(truncating: quantityValue) },
+                                               set: { bottomSheet.updateQuantity(value: $0) })
+                let freeQuantity = Binding<Double>(get: { Double(truncating: freeQuantityValue) },
+                                                   set: { bottomSheet.updateFreeQuantity(value: $0) })
+                
+                QuantityInput(quantity: quantity,
+                              freeQuantity: freeQuantity,
+                              maxQuantity: .infinity,
+                              quantitiesCorrect: $quantitiesCorrect)
+            }
+            
+            HStack(spacing: columnsSpacing) {
+                EditableInput(titleLocalizationKey: "PTR",
+                              text: ptr.value as String?,
+                              onTextChange: { bottomSheet.updatePtr(value: $0) },
+                              keyboardType: .decimalPad)
+                    .frame(width: leftColumnWidth)
+                
+                Spacer()
+                
+                EditableInput(titleLocalizationKey: "BATCH",
+                              text: batch.value as String?,
+                              onTextChange: { bottomSheet.updateBatch(value: $0) })
+            }
+            
+            HStack(spacing: columnsSpacing) {
+                EditableInput(titleLocalizationKey: "EXP",
+                              text: expiry.value as String?,
+                              onTextChange: { bottomSheet.updateExpiry(value: $0) },
+                              keyboardType: .numbersAndPunctuation)
+                    .frame(width: 180)
+                
+                Spacer()
+            }
+        }
+    }
+    
+    private var noneditableOrderFieldsView: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                getDetailsView(titleLocalizationKey: "price:",
+                               bodyText: bottomSheet.orderEntry.price.formatted)
+                
+                getDetailsView(titleLocalizationKey: "mrp:",
+                               bodyText: bottomSheet.orderEntry.mrp.formatted)
+                
+                getDetailsView(titleLocalizationKey: "requested_qty:",
+                               bodyText: bottomSheet.orderEntry.requestedQty.formatted,
+                               bodyColor: .lightBlue)
+            }
+            
+            Spacer()
+            
+            getDetailsView(titleLocalizationKey: "served_qty:",
+                           bodyText: bottomSheet.orderEntry.servedQty.formatted,
+                           bodyColor: .lightBlue)
+        }
     }
     
     private func getDetailsView(titleLocalizationKey: String,

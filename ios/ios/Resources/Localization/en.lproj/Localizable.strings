@@ -170,6 +170,9 @@
 "margin:" = "Margin:";
 "stocks:" = "Stocks:";
 "expiry:" = "Expiry:";
+"ptr:" = "PTR:";
+"update" = "Update";
+"qty_error" = "Qty + Free must be a whole number";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
@@ -274,6 +277,7 @@
 "store" = "Store";
 "empty_stores" = "No stores to view";
 "stores_search" = "Stores Search";
+"empty_store_title" = "No inventory found with";
 
 // MARK: Help
 "help" = "Help";
@@ -317,6 +321,10 @@
 "no" = "No";
 "order_with_quote_body" = "Are you sure you want to place an order with a quoted item?";
 "order_modified_body" = "It looks like one item quantity is missing. Are you sure you want to continue?";
+"items" = "Items";
+"qty" = "Qty";
+"free" = "Free";
+"tot:" = "TOT:";
 
 // MARK: Completed Cart Order
 "home" = "Home";
@@ -331,8 +339,14 @@
 "new_orders" = "Purchase Orders";
 "new" = "NEW";
 "empty_new_orders" = "No Purchase Orders from any of your connected Users";
+"QTY" = "QTY";
+"PTR" = "PTR";
+"EXP" = "EXP (MM/YYYY)";
+"FREE" = "FREE";
+"BATCH" = "BATCH";
 
 // MARK: Orders
+"my_orders" = "My Orders";
 "orders" = "Orders";
 "search_tradename" = "Search Tradename";
 "search_orders" = "Search in Orders";
@@ -344,6 +358,7 @@
 "reject_all" = "Decline All";
 "quote" = "Quote";
 "batch_no %@" = "Batch No: %@";
+"batch_no:" = "Batch No:";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
 "served_qty:" = "Served QTY:";

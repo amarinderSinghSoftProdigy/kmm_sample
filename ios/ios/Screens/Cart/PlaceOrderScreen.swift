@@ -18,55 +18,69 @@ struct PlaceOrderScreen: View {
     @ObservedObject var total: SwiftDataSource<DataTotal>
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            LocalizedText(localizationKey: "place_your_order",
-                          textWeight: .bold,
-                          fontSize: 20,
-                          multilineTextAlignment: .leading)
-            
-//            Text("11-32-12, Challamraju Vari Streen, One Town, Vijaywada, Krishna, 520000")
-//                .medicoText(multilineTextAlignment: .leading)
-//                .padding(.horizontal, 5)
-//                .padding(.bottom, 13)
-//                .frame(maxWidth: .infinity, alignment: .leading)
-//                .expandableView(expanded: .init(get: { expandedItems["shipping_address"] == true },
-//                                                set: { expandedItems["shipping_address"] = $0 })) {
-//                    LocalizedText(localizationKey: "shipping_address",
-//                                  textWeight: .bold,
-//                                  multilineTextAlignment: .leading)
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                        .padding(.leading, 12)
-//                        .padding(.vertical, 10)
-//                }
-            
+        VStack(spacing: 12) {
             if let sellerCarts = self.sellerCarts.value as? [DataSellerCart] {
-                VStack(spacing: 8) {
-                    ForEach(sellerCarts, id: \.self) { sellerCart in
-                        let expanded = Binding(get: { expandedItems[sellerCart.sellerCode] == true },
-                                               set: { expandedItems[sellerCart.sellerCode] = $0 })
-                        
-                        SellerCartView(sellerCart: sellerCart,
-                                       expanded: expanded)
+                VStack(spacing: 0) {
+                    HStack(spacing: 8) {
+                        CartInfoView(sellers: sellerCarts)
                     }
+                    .padding(8)
+                    .background(appColor: .white)
+                    
+                    AppColor.lightGrey.color
+                        .frame(height: 1)
                 }
-                .scrollView()
+            
+                VStack(spacing: 8) {
+                    ForEach(sellerCarts, id: \.self) { seller in
+                        let expanded = Binding(get: { expandedItems[seller.sellerCode] == true },
+                                               set: { expandedItems[seller.sellerCode] = $0 })
+                        
+                        SellerCartDataView(seller: seller,
+                                           isReadonly: true,
+                                           onQuantitySelect: nil,
+                                           onRemoveSeller: nil,
+                                           onRemoveItem: nil,
+                                           expanded: expanded)
+                    }
+                }.scrollView()
             }
             
-            Spacer()
-            
-            VStack(spacing: 32) {
-                if let totalPrice = self.total.value?.formattedPrice {
-                    CartOrderTotalPriceView(price: totalPrice)
-                }
+            if let price = total.value?.formattedPrice {
+                Spacer()
                 
-                MedicoButton(localizedStringKey: "place_order") {
-                    scope.placeOrder()
+                VStack(spacing: 12) {
+                    AppColor.black.color
+                        .opacity(0.27)
+                        .frame(height: 1)
+                    
+                    HStack(spacing: 6) {
+                        HStack(spacing: 4) {
+                            LocalizedText(localizationKey: "total:",
+                                          textWeight: .medium,
+                                          fontSize: 20)
+                            
+                            Text(price)
+                                .medicoText(textWeight: .bold,
+                                            fontSize: 20)
+                        }
+                    
+                        Spacer()
+                        
+                        MedicoButton(localizedStringKey: "place_order",
+                                     width: 170,
+                                     height: 48,
+                                     cornerRadius: 24,
+                                     fontSize: 15,
+                                     fontWeight: .bold) {
+                            scope.placeOrder()
+                        }
+                    }
+                    .padding(.horizontal, 17)
                 }
             }
         }
-        .padding(.horizontal, 22)
-        .padding(.top, 28)
-        .padding(.bottom, 20)
+        .padding(.vertical, 25)
         .notificationAlertSender(withHandler: self.scope)
     }
     
@@ -84,8 +98,7 @@ struct PlaceOrderScreen: View {
         var body: some View {
             VStack(spacing: 8) {
                 ForEach(sellerCart.items, id: \.self) {
-                    CartItemView(item: $0,
-                                 showPriceCaption: true)
+                    CartItemView(item: $0, isReadonly: true)
                 }
             }
             .expandableView(expanded: expanded) {

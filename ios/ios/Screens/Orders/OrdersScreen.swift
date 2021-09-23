@@ -64,6 +64,9 @@ struct OrdersScreen: View {
         }
         .padding(.vertical, 32)
         .padding(.horizontal, 16)
+        .onAppear {
+            scope.firstLoad()
+        }
     }
     
     init(scope: OrdersScope) {
@@ -163,7 +166,7 @@ struct OrdersScreen: View {
                         .lineLimit(1)
                     
                     HStack(spacing: 2) {
-                        OrderStatusView(status: order.info.status)
+                        OrderStatusView(status: order.info.status.stringValue)
                         
                         Spacer()
                         
@@ -236,7 +239,10 @@ extension DataOrderType {
         case .purchaseOrder:
             return "new_orders"
             
-        case .order, .history:
+        case .order:
+            return "my_orders"
+            
+        case .history:
             return "orders"
             
         default:
