@@ -263,8 +263,10 @@
     <string name="missing_retailers">No Retailers connected yet.</string>
     <string name="missing_sb">No SeasonBoy connected yet</string>
     <string name="missing_stores">No stores to view</string>
+    <string name="missing_inventory_stores">No inventory found with</string>
     <string name="please_connect_stockists">Please connect to any Stockist</string>
     <string name="delete_products">Delete Not Available products</string>
+    <string name="invalid_qty">Qty + Free must be a whole number</string>
 
     <!--error codes-->
 

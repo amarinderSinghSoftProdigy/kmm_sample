@@ -476,13 +476,22 @@ private fun QuotedItem(
                         BottomSectionMode.Select, BottomSectionMode.AddToCart, BottomSectionMode.Update -> Unit
                         BottomSectionMode.ConfirmQty -> {
                             Space(12.dp)
-                            Box {
+                            Column(horizontalAlignment = Alignment.End) {
+                                val isError = (qty.value + freeQty.value) % 1 != 0.0
+                                val wasError = remember { mutableStateOf(isError) }
+                                val wasErrorSaved = wasError.value
+                                val focusedError = remember(mode.value) { mutableStateOf(-1) }
                                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                                     Box(modifier = Modifier.width(maxWidth / 3)) {
                                         EditField(
                                             label = stringResource(id = R.string.qty),
                                             qty = qty.value.toString(),
+                                            isError = isError && focusedError.value == 0,
                                             onChange = { qty.value = it.toDouble() },
+                                            onFocus = {
+                                                if (!wasErrorSaved && isError) focusedError.value =
+                                                    0
+                                            },
                                         )
                                     }
                                     Box(
@@ -492,11 +501,27 @@ private fun QuotedItem(
                                     ) {
                                         EditField(
                                             label = stringResource(id = R.string.free),
+                                            isEnabled = qty.value > 0.0,
+                                            isError = isError && focusedError.value == 1,
                                             qty = freeQty.value.toString(),
                                             onChange = { freeQty.value = it.toDouble() },
+                                            onFocus = {
+                                                if (!wasErrorSaved && isError) focusedError.value =
+                                                    1
+                                            },
                                         )
                                     }
                                 }
+                                if (isError) {
+                                    Space(8.dp)
+                                    Text(
+                                        text = stringResource(id = R.string.invalid_qty),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        color = ConstColors.red,
+                                    )
+                                }
+                                wasError.value = isError
                             }
                         }
                     }
@@ -612,6 +637,7 @@ private fun SellerInfoItem(
         onSaveQty = onSaveQty,
         forceMode = if (isSelectable) BottomSectionMode.Select else null,
         onItemClick = onItemClick,
+        canAddToCart = sellerInfo.stockInfo?.status != StockStatus.OUT_OF_STOCK,
         headerContent = {
             val labelColor = when (sellerInfo.stockInfo?.status) {
                 StockStatus.IN_STOCK -> ConstColors.green
@@ -747,6 +773,7 @@ private fun SeasonBoyReatilerInfoItem(
         freeQtyInitial = quantityFree,
         onSaveQty = onSaveQty,
         onItemClick = null,
+        canAddToCart = true,
         headerContent = {
             Text(
                 text = seasonBoyRetailer.tradeName,
@@ -825,6 +852,7 @@ private fun BaseSellerItem(
     mainBodyContent: @Composable ColumnScope.() -> Unit,
     qtyInitial: Double,
     freeQtyInitial: Double,
+    canAddToCart: Boolean,
     onSaveQty: (Double?, Double?) -> Unit,
     forceMode: BottomSectionMode? = null,
     onItemClick: (() -> Unit)? = null,
@@ -838,7 +866,7 @@ private fun BaseSellerItem(
         )
     }
 
-    NeededSurface(onItemClick) {
+    NeededSurface(if (mode.value == BottomSectionMode.Update || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -848,13 +876,19 @@ private fun BaseSellerItem(
             Space(16.dp)
             when (mode.value) {
                 BottomSectionMode.Select, BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
-                BottomSectionMode.ConfirmQty -> Box {
+                BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
+                    val isError = (qty.value + freeQty.value) % 1 != 0.0
+                    val wasError = remember { mutableStateOf(isError) }
+                    val wasErrorSaved = wasError.value
+                    val focusedError = remember(mode.value) { mutableStateOf(-1) }
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 3)) {
                             EditField(
                                 label = stringResource(id = R.string.qty),
                                 qty = qty.value.toString(),
+                                isError = isError && focusedError.value == 0,
                                 onChange = { qty.value = it.toDouble() },
+                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
                             )
                         }
                         Box(
@@ -864,11 +898,24 @@ private fun BaseSellerItem(
                         ) {
                             EditField(
                                 label = stringResource(id = R.string.free),
+                                isEnabled = qty.value > 0.0,
+                                isError = isError && focusedError.value == 1,
                                 qty = freeQty.value.toString(),
                                 onChange = { freeQty.value = it.toDouble() },
+                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
                             )
                         }
                     }
+                    if (isError) {
+                        Space(8.dp)
+                        Text(
+                            text = stringResource(id = R.string.invalid_qty),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            color = ConstColors.red,
+                        )
+                    }
+                    wasError.value = isError
                 }
             }
             Space(10.dp)
@@ -889,7 +936,12 @@ private fun BaseSellerItem(
                     BottomSectionMode.AddToCart -> {
                         MedicoRoundButton(
                             text = stringResource(id = R.string.add_to_cart),
-                            onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                            onClick = {
+                                if (canAddToCart) {
+                                    mode.value = BottomSectionMode.ConfirmQty
+                                }
+                            },
+                            color = if (canAddToCart) ConstColors.yellow else Color.LightGray,
                         )
                     }
                     BottomSectionMode.ConfirmQty -> {
@@ -899,6 +951,8 @@ private fun BaseSellerItem(
                             onClick = {
                                 mode.value =
                                     if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                qty.value = qtyInitial
+                                freeQty.value = freeQtyInitial
                             },
                             modifier = Modifier.weight(1f),
                         )
@@ -909,7 +963,7 @@ private fun BaseSellerItem(
                         )
                         MedicoRoundButton(
                             text = stringResource(id = R.string.confirm),
-                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0,
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0,
                             onClick = {
                                 mode.value =
                                     if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart

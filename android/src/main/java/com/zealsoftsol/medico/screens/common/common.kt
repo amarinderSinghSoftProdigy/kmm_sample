@@ -55,6 +55,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
@@ -562,10 +563,17 @@ fun EditField(
     label: String,
     qty: String,
     onChange: (String) -> Unit,
+    onFocus: (() -> Unit)? = null,
     isEnabled: Boolean = true,
+    isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 ) {
+    val color = when {
+        isError -> ConstColors.red
+        isEnabled -> MaterialTheme.colors.background
+        else -> ConstColors.gray.copy(alpha = 0.8f)
+    }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -579,6 +587,7 @@ fun EditField(
             )
             Space(16.dp)
             BasicTextField(
+                modifier = Modifier.onFocusEvent { if (it.isFocused) onFocus?.invoke() },
                 value = qty,
                 onValueChange = {
                     if (formattingRule) {
@@ -610,8 +619,9 @@ fun EditField(
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,
+                enabled = isEnabled,
                 textStyle = TextStyle(
-                    color = MaterialTheme.colors.background,
+                    color = color,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W700
                 )
@@ -623,7 +633,7 @@ fun EditField(
                 .height(1.5.dp)
                 .fillMaxWidth()
         ) {
-            drawRect(if (isEnabled) ConstColors.lightBlue else ConstColors.gray)
+            drawRect(color)
         }
     }
 }

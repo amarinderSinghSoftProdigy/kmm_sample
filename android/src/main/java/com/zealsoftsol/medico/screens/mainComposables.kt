@@ -256,7 +256,7 @@ private fun RowScope.SimpleTabBar(
                 .padding(start = 16.dp),
         )
         is StringResource.Raw -> Text(
-            text = res.string,
+            text = res.string.orEmpty(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.h6,
