@@ -46,7 +46,7 @@ struct SettingsScreen: View {
         let scope: SettingsScope.List
         
         var body: some View {
-            VStack(spacing: 22) {
+            VStack(alignment: .leading, spacing: 22) {
                 ForEach(scope.sections, id: \.self) { section in
                     TableViewCell(textLocalizationKey: section.getTextLocalizationKey(),
                                   imageName: section.getImageName(),

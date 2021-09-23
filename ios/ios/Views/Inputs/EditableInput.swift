@@ -28,7 +28,6 @@ struct EditableInput: View {
                               color: .greyBlue,
                               multilineTextAlignment: .leading)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.3)
                 
                 TextField("", text: text) { editingChanged in
                     self.fieldSelected = editingChanged
