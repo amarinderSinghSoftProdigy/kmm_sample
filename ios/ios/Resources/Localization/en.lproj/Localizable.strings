@@ -172,6 +172,7 @@
 "expiry:" = "Expiry:";
 "ptr:" = "PTR:";
 "update" = "Update";
+"qty_error" = "Qty + Free must be a whole number";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";

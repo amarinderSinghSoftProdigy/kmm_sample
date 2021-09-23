@@ -15,6 +15,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
         
     let onBottomSheetDismiss: () -> ()
     
+    @State private var quantitiesCorrect: Bool = true
+    
     @ObservedObject var checked: SwiftDataSource<KotlinBoolean>
     
     @ObservedObject var batch: SwiftDataSource<NSString>
@@ -84,12 +86,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                         if bottomSheet.canEdit {
                             Spacer()
                             
-                            let isEnabled =
-                                (Double(truncating:quantity.value ?? 0) + Double(truncating: freeQuantity.value ?? 0))
-                                    .truncatingRemainder(dividingBy: 1) == 0
-                            
                             MedicoButton(localizedStringKey: "save",
-                                         isEnabled: isEnabled,
+                                         isEnabled: quantitiesCorrect,
                                          width: 88,
                                          height: 40,
                                          cornerRadius: 6,
@@ -105,9 +103,6 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
             }
             .textFieldsModifiers()
             .edgesIgnoringSafeArea(.bottom)
-            .onReceive(Just(quantity.value)) {
-                print($0)
-            }
         )
     }
     
@@ -139,7 +134,8 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                 
                 QuantityInput(quantity: quantity,
                               freeQuantity: freeQuantity,
-                              maxQuantity: .infinity)
+                              maxQuantity: .infinity,
+                              quantitiesCorrect: $quantitiesCorrect)
             }
             
             HStack(spacing: columnsSpacing) {

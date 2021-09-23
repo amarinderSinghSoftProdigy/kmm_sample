@@ -244,7 +244,7 @@ private struct _CustomizedNavigationBar: View {
                                           fontSize: 17)
                             
                         case let rawTitle as StringResource.Raw:
-                            Text(rawTitle.string)
+                            Text(rawTitle.string ?? "")
                                 .medicoText(textWeight: .semiBold,
                                             fontSize: 17)
                             

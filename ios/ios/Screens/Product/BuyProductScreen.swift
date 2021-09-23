@@ -605,6 +605,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     
     @State private var quantity: Double
     @State private var freeQuantity: Double
+    @State private var quantitiesCorrect: Bool = true
     
     private let onQuantitySelect: (Double?, Double?) -> Void
     private let onViewTap: (() -> Void)?
@@ -622,7 +623,8 @@ struct BaseSellerView<Header: View>: ViewModifier {
                 if mode == .confirmQuantity {
                     QuantityInput(quantity: $quantity,
                                   freeQuantity: $freeQuantity,
-                                  maxQuantity: maxQuantity)
+                                  maxQuantity: maxQuantity,
+                                  quantitiesCorrect: $quantitiesCorrect)
                         .padding(.bottom, 12)
                 }
                 else {
@@ -774,7 +776,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
                     Spacer()
                     
                     MedicoButton(localizedStringKey: "confirm",
-                                 isEnabled: (quantity + freeQuantity).truncatingRemainder(dividingBy: 1) == 0,
+                                 isEnabled: quantitiesCorrect,
                                  width: 112,
                                  height: buttonsHeight,
                                  cornerRadius: buttonsHeight / 2,

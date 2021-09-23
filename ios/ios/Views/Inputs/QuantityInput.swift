@@ -16,61 +16,77 @@ struct QuantityInput: View {
     private let maxQuantity: Double
     
     @State private var cursorPosition: Int?
+    private var quantitiesCorrect: Binding<Bool>
     
     var body: some View {
-        HStack {
-            EditableInput(titleLocalizationKey: "QTY",
-                          text: String(format: "%.1f", quantity.wrappedValue),
-                          onTextChange: {
-                            if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
-                                quantity.wrappedValue = newValue
-                            }
-                          },
-                          keyboardType: .decimalPad)
-                .frame(width: 110)
-                .onReceive(Just(quantity.wrappedValue)) {
-                    quantity.wrappedValue = roundQuantity($0)
-                    
-                    if quantity.wrappedValue > maxQuantity {
-                        quantity.wrappedValue = maxQuantity
+        VStack(alignment: .trailing, spacing: 5) {
+            HStack {
+                EditableInput(titleLocalizationKey: "QTY",
+                              text: String(format: "%.1f", quantity.wrappedValue),
+                              onTextChange: {
+                                if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
+                                    quantity.wrappedValue = newValue
+                                }
+                              },
+                              keyboardType: .decimalPad)
+                    .frame(width: 110)
+                    .onReceive(Just(quantity.wrappedValue)) {
+                        quantity.wrappedValue = roundQuantity($0)
+                        
+                        if quantity.wrappedValue > maxQuantity {
+                            quantity.wrappedValue = maxQuantity
+                        }
+                        
+                        if freeQuantity.wrappedValue > quantity.wrappedValue {
+                            freeQuantity.wrappedValue = quantity.wrappedValue
+                        }
+                        
+                        validateQuantity()
                     }
-                    
-                    if freeQuantity.wrappedValue > quantity.wrappedValue {
-                        freeQuantity.wrappedValue = quantity.wrappedValue
+                
+                Spacer()
+                
+                let isFreeQuantityDisabled = quantity.wrappedValue == 0
+                EditableInput(titleLocalizationKey: "FREE",
+                              text: String(format: "%.1f", freeQuantity.wrappedValue),
+                              onTextChange: {
+                                if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
+                                    freeQuantity.wrappedValue = newValue
+                                }
+                              },
+                              keyboardType: .decimalPad)
+                    .frame(width: 110)
+                    .disabled(isFreeQuantityDisabled)
+                    .opacity(isFreeQuantityDisabled ? 0.5 : 1)
+                    .onReceive(Just(freeQuantity.wrappedValue)) {
+                        freeQuantity.wrappedValue = roundQuantity($0)
+                        
+                        if freeQuantity.wrappedValue > quantity.wrappedValue {
+                            freeQuantity.wrappedValue = quantity.wrappedValue
+                        }
+                        
+                        validateQuantity()
                     }
-                }
+            }
             
-            Spacer()
-            
-            let isFreeQuantityDisabled = quantity.wrappedValue == 0
-            EditableInput(titleLocalizationKey: "FREE",
-                          text: String(format: "%.1f", freeQuantity.wrappedValue),
-                          onTextChange: {
-                            if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
-                                freeQuantity.wrappedValue = newValue
-                            }
-                          },
-                          keyboardType: .decimalPad)
-                .frame(width: 110)
-                .disabled(isFreeQuantityDisabled)
-                .opacity(isFreeQuantityDisabled ? 0.5 : 1)
-                .onReceive(Just(freeQuantity.wrappedValue)) {
-                    freeQuantity.wrappedValue = roundQuantity($0)
-                    
-                    if freeQuantity.wrappedValue > quantity.wrappedValue {
-                        freeQuantity.wrappedValue = quantity.wrappedValue
-                    }
-                }
+            if !quantitiesCorrect.wrappedValue {
+                LocalizedText(localizationKey: "qty_error",
+                              textWeight: .medium,
+                              fontSize: 12,
+                              color: .red)
+            }
         }
     }
     
     init(quantity: Binding<Double>,
          freeQuantity: Binding<Double>,
-         maxQuantity: Double) {
+         maxQuantity: Double,
+         quantitiesCorrect: Binding<Bool>) {
         self.quantity = quantity
         self.freeQuantity = freeQuantity
         
         self.maxQuantity = maxQuantity
+        self.quantitiesCorrect = quantitiesCorrect
     }
     
     private func roundQuantity(_ quantity: Double) -> Double {
@@ -86,5 +102,10 @@ struct QuantityInput: View {
         default:
             return quantity
         }
+    }
+    
+    private func validateQuantity() {
+        quantitiesCorrect.wrappedValue =
+            (quantity.wrappedValue + freeQuantity.wrappedValue).truncatingRemainder(dividingBy: 1) == 0
     }
 }
