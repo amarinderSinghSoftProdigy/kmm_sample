@@ -26,24 +26,16 @@ struct QuantityInput: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack {
-                let handleQuantityChange: (String, Int?) -> Void = { value, cursorPosition in
-                    quantityUpdated = false
-                    quantityText = value
-                    
-                    if let number = handleInputString(value) {
-                        quantityUpdated = true
-                        quantity.wrappedValue = number
-                    }
+                let handleQuantityChange: (String) -> Void = { value in
+                    self.handleQuantityChange(newValue: value,
+                                              quantity: quantity,
+                                              quantityText: &quantityText)
                 }
                 
-                let handleFreeQuantityChange: (String, Int?) -> Void = { value, cursorPosition in
-                    quantityUpdated = false
-                    freeQuantityText = value
-                    
-                    if let number = handleInputString(value) {
-                        quantityUpdated = true
-                        freeQuantity.wrappedValue = number
-                    }
+                let handleFreeQuantityChange: (String) -> Void = { value in
+                    self.handleQuantityChange(newValue: value,
+                                              quantity: freeQuantity,
+                                              quantityText: &freeQuantityText)
                 }
                 
                 EditableInput(titleLocalizationKey: "QTY",
@@ -118,6 +110,21 @@ struct QuantityInput: View {
         
         self.maxQuantity = maxQuantity
         self.quantitiesCorrect = quantitiesCorrect
+    }
+    
+    private func handleQuantityChange(newValue: String,
+                                      quantity: Binding<Double>,
+                                      quantityText: inout String) {
+        quantityUpdated = false
+        
+        guard newValue.filter({ $0 == "." || $0 == "," }).count <= 1 else { return }
+        
+        quantityText = newValue
+        
+        if let number = handleInputString(newValue) {
+            quantityUpdated = true
+            quantity.wrappedValue = number
+        }
     }
     
     private func handleInputString(_ input: String) -> Double? {

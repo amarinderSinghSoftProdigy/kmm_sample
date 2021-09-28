@@ -4,24 +4,10 @@ import core
 struct HostScreen: View {
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
-    @State private var quantity: Double = 0
-    @State private var freeQuantity: Double = 0
-    @State private var quantitiesCorrect: Bool = true
-    
     var body: some View {
-        ZStack {
-            AppColor.primary.color
-
-            QuantityInput(quantity: $quantity,
-                          freeQuantity: $freeQuantity,
-                          maxQuantity: .infinity,
-                          quantitiesCorrect: $quantitiesCorrect)
-                .padding()
+        if let scope = currentScope.value {
+            BaseScopeView(scope: scope)
         }
-        
-//        if let scope = currentScope.value {
-//            BaseScopeView(scope: scope)
-//        }
     }
     
     init() {

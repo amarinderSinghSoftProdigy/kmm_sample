@@ -273,6 +273,8 @@ struct TextFieldContainer: UIViewRepresentable {
     private let autocapitalization: UITextAutocapitalizationType
     private let textContentType: UITextContentType?
     
+    private let textProperties: TextProperties
+    
     init(_ placeholder: String,
          text: Binding<String>,
          cursorPosition: Binding<Int?>,
@@ -281,7 +283,8 @@ struct TextFieldContainer: UIViewRepresentable {
          keyboardType: UIKeyboardType,
          disableAutocorrection: Bool,
          autocapitalization: UITextAutocapitalizationType,
-         textContentType: UITextContentType? = nil) {
+         textContentType: UITextContentType? = nil,
+         textProperties: TextProperties = .init()) {
         self.placeholder = placeholder
         self.text = text
         
@@ -294,20 +297,25 @@ struct TextFieldContainer: UIViewRepresentable {
         self.disableAutocorrection = disableAutocorrection
         self.autocapitalization = autocapitalization
         self.textContentType = textContentType
+        
+        self.textProperties = textProperties
     }
 
     func makeCoordinator() -> TextFieldContainer.Coordinator {
         Coordinator(self)
     }
 
-    func makeUIView(context: UIViewRepresentableContext<TextFieldContainer>) -> UITextField {
-        let textField = UITextField(frame: .zero)
+    func makeUIView(context: UIViewRepresentableContext<TextFieldContainer>) -> CustomCursorTextField {
+        let textField = CustomCursorTextField(frame: .zero)
+        textField.constTrailingCursor = constTrailingCursor
+        
         textField.placeholder = placeholder
         textField.text = text.wrappedValue
         textField.delegate = context.coordinator
         
-        textField.font = UIFont(name: "Barlow-Regular", size: 15)
-        textField.textColor = UIColor(named: "DarkBlue")
+        textField.font = textProperties.font
+        textField.textColor = UIColor(named: textProperties.textColorName)
+        textField.textAlignment = textProperties.textAlignment
         
         textField.keyboardType = keyboardType
         textField.autocorrectionType = disableAutocorrection ? .no : .yes
@@ -322,12 +330,14 @@ struct TextFieldContainer: UIViewRepresentable {
         return textField
     }
 
-    func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<TextFieldContainer>) {
+    func updateUIView(_ uiView: CustomCursorTextField, context: UIViewRepresentableContext<TextFieldContainer>) {
         let text = self.text.wrappedValue
         uiView.text = text
         
-        let cursorPosition = constTrailingCursor ? text.count : cursorPosition.wrappedValue
-        if let newPosition = uiView.position(from: uiView.beginningOfDocument, offset: cursorPosition) {
+        uiView.textColor = UIColor(named: textProperties.textColorName)
+        
+        if let newPosition = constTrailingCursor ? uiView.endOfDocument :
+            uiView.position(from: uiView.beginningOfDocument, offset: cursorPosition.wrappedValue) {
             uiView.selectedTextRange = uiView.textRange(from: newPosition, to: newPosition)
         }
     }
@@ -360,5 +370,33 @@ struct TextFieldContainer: UIViewRepresentable {
             
             parent.text.wrappedValue = textField.text ?? ""
         }
+    }
+    
+    struct TextProperties {
+        let font: UIFont?
+        let textColorName: String
+        let textAlignment: NSTextAlignment
+        
+        init() {
+            font = UIFont(name: "Barlow-Regular", size: 15)
+            textColorName = "DarkBlue"
+            textAlignment = .left
+        }
+        
+        init(font: UIFont?,
+             textColorName: String,
+             textAlignment: NSTextAlignment) {
+            self.font = font
+            self.textColorName = textColorName
+            self.textAlignment = textAlignment
+        }
+    }
+}
+
+class CustomCursorTextField: UITextField {
+    var constTrailingCursor: Bool = false
+    
+    override func closestPosition(to point: CGPoint) -> UITextPosition? {
+        constTrailingCursor ? endOfDocument : super.closestPosition(to: point)
     }
 }

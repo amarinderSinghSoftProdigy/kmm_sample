@@ -14,13 +14,15 @@ struct EditableInput: View {
     
     let titleLocalizationKey: String
     let text: String?
-    let onTextChange: (String, Int?) -> Void
+    let onTextChange: (String) -> Void
     
     let constTrailingCursor: Bool
     
     let keyboardType: UIKeyboardType
     let disableAutocorrection: Bool
     let autocapitalization: UITextAutocapitalizationType
+    
+    let height: CGFloat
     
     var body: some View {
         VStack(spacing: 6) {
@@ -33,7 +35,13 @@ struct EditableInput: View {
                     .lineLimit(1)
                 
                 let textBinding = Binding(get: { text ?? "" },
-                                          set: { onTextChange($0, cursorPosition) })
+                                          set: { onTextChange($0) })
+                
+                let textProperties = TextFieldContainer.TextProperties(
+                    font: UIFont(name: "Barlow-Bold", size: 20),
+                    textColorName: fieldSelected ? "DarkBlue" : "GreyBlue",
+                    textAlignment: .right
+                )
                 
                 TextFieldContainer("",
                                    text: textBinding,
@@ -42,7 +50,9 @@ struct EditableInput: View {
                                    fieldSelected: $fieldSelected,
                                    keyboardType: keyboardType,
                                    disableAutocorrection: disableAutocorrection,
-                                   autocapitalization: autocapitalization)
+                                   autocapitalization: autocapitalization,
+                                   textProperties: textProperties)
+                    .frame(maxHeight: height)
                 
 //                TextField("", text: text) { editingChanged in
 //                    self.fieldSelected = editingChanged
@@ -51,9 +61,6 @@ struct EditableInput: View {
 //                            fontSize: 20,
 //                            color: fieldSelected ? .darkBlue : .greyBlue,
 //                            multilineTextAlignment: .trailing)
-//                .keyboardType(keyboardType)
-//                .disableAutocorrection(disableAutocorrection)
-//                .autocapitalization(autocapitalization)
             }
             
             (fieldSelected ? AppColor.lightBlue : AppColor.greyBlue).color
@@ -63,11 +70,12 @@ struct EditableInput: View {
     
     init(titleLocalizationKey: String,
          text: String?,
-         onTextChange: @escaping (String, Int?) -> Void,
+         onTextChange: @escaping (String) -> Void,
          keyboardType: UIKeyboardType = .default,
-         constTrailingCursor: Bool = true,
+         constTrailingCursor: Bool = false,
          disableAutocorrection: Bool = true,
-         autocapitalization: UITextAutocapitalizationType = .none) {
+         autocapitalization: UITextAutocapitalizationType = .none,
+         height: CGFloat = 28) {
         self.titleLocalizationKey = titleLocalizationKey
         
         self.text = text
@@ -78,5 +86,7 @@ struct EditableInput: View {
         self.keyboardType = keyboardType
         self.disableAutocorrection = disableAutocorrection
         self.autocapitalization = autocapitalization
+        
+        self.height = height
     }
 }
