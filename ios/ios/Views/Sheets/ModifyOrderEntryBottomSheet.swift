@@ -141,7 +141,7 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
             HStack(spacing: columnsSpacing) {
                 EditableInput(titleLocalizationKey: "PTR",
                               text: ptr.value as String?,
-                              onTextChange: { bottomSheet.updatePtr(value: $0) },
+                              onTextChange: { value, _ in bottomSheet.updatePtr(value: value) },
                               keyboardType: .decimalPad)
                     .frame(width: leftColumnWidth)
                 
@@ -149,13 +149,13 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                 
                 EditableInput(titleLocalizationKey: "BATCH",
                               text: batch.value as String?,
-                              onTextChange: { bottomSheet.updateBatch(value: $0) })
+                              onTextChange: { value, _ in bottomSheet.updateBatch(value: value) })
             }
             
             HStack(spacing: columnsSpacing) {
                 EditableInput(titleLocalizationKey: "EXP",
                               text: expiry.value as String?,
-                              onTextChange: { bottomSheet.updateExpiry(value: $0) },
+                              onTextChange: { value, _ in bottomSheet.updateExpiry(value: value) },
                               keyboardType: .numbersAndPunctuation)
                     .frame(width: 180)
                 

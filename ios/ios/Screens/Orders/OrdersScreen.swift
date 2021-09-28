@@ -99,7 +99,7 @@ struct OrdersScreen: View {
                     OrderView(order: order)
                 }
             }
-            else {
+            else if orders.updateCount > 0 {
                 emptyListView
             }
         }

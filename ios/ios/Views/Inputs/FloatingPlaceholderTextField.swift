@@ -260,11 +260,12 @@ struct FloatingPlaceholderModifier: ViewModifier {
     }
 }
 
-private struct TextFieldContainer: UIViewRepresentable {
+struct TextFieldContainer: UIViewRepresentable {
     private let placeholder: String
     private let text: Binding<String>
     
     private let cursorPosition: Binding<Int>
+    private let constTrailingCursor: Bool
     private let fieldSelected: Binding<Bool>?
     
     private let keyboardType: UIKeyboardType
@@ -275,6 +276,7 @@ private struct TextFieldContainer: UIViewRepresentable {
     init(_ placeholder: String,
          text: Binding<String>,
          cursorPosition: Binding<Int?>,
+         constTrailingCursor: Bool = false,
          fieldSelected: Binding<Bool>? = nil,
          keyboardType: UIKeyboardType,
          disableAutocorrection: Bool,
@@ -285,6 +287,7 @@ private struct TextFieldContainer: UIViewRepresentable {
         
         self.cursorPosition = Binding(get: { cursorPosition.wrappedValue ?? text.wrappedValue.count },
                                       set: { cursorPosition.wrappedValue = $0 })
+        self.constTrailingCursor = constTrailingCursor
         self.fieldSelected = fieldSelected
         
         self.keyboardType = keyboardType
@@ -320,9 +323,11 @@ private struct TextFieldContainer: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextField, context: UIViewRepresentableContext<TextFieldContainer>) {
-        uiView.text = self.text.wrappedValue
+        let text = self.text.wrappedValue
+        uiView.text = text
         
-        if let newPosition = uiView.position(from: uiView.beginningOfDocument, offset: cursorPosition.wrappedValue) {
+        let cursorPosition = constTrailingCursor ? text.count : cursorPosition.wrappedValue
+        if let newPosition = uiView.position(from: uiView.beginningOfDocument, offset: cursorPosition) {
             uiView.selectedTextRange = uiView.textRange(from: newPosition, to: newPosition)
         }
     }

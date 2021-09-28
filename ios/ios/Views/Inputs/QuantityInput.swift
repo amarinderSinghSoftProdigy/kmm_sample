@@ -13,6 +13,11 @@ struct QuantityInput: View {
     private var quantity: Binding<Double>
     private var freeQuantity: Binding<Double>
     
+    @State private var quantityText: String
+    @State private var freeQuantityText: String
+    
+    @State private var quantityUpdated: Bool = false
+    
     private let maxQuantity: Double
     
     @State private var cursorPosition: Int?
@@ -21,26 +26,48 @@ struct QuantityInput: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 5) {
             HStack {
+                let handleQuantityChange: (String, Int?) -> Void = { value, cursorPosition in
+                    quantityUpdated = false
+                    quantityText = value
+                    
+                    if let number = handleInputString(value) {
+                        quantityUpdated = true
+                        quantity.wrappedValue = number
+                    }
+                }
+                
+                let handleFreeQuantityChange: (String, Int?) -> Void = { value, cursorPosition in
+                    quantityUpdated = false
+                    freeQuantityText = value
+                    
+                    if let number = handleInputString(value) {
+                        quantityUpdated = true
+                        freeQuantity.wrappedValue = number
+                    }
+                }
+                
                 EditableInput(titleLocalizationKey: "QTY",
-                              text: String(format: "%.1f", quantity.wrappedValue),
-                              onTextChange: {
-                                if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
-                                    quantity.wrappedValue = newValue
-                                }
-                              },
-                              keyboardType: .decimalPad)
+                              text: quantityText,
+                              onTextChange: handleQuantityChange,
+                              keyboardType: .decimalPad,
+                              constTrailingCursor: true)
                     .frame(width: 110)
                     .onReceive(Just(quantity.wrappedValue)) {
-                        quantity.wrappedValue = roundQuantity($0)
+                        guard quantityUpdated else { return }
                         
+                        quantity.wrappedValue = roundQuantity($0)
+
                         if quantity.wrappedValue > maxQuantity {
                             quantity.wrappedValue = maxQuantity
                         }
-                        
+
                         if freeQuantity.wrappedValue > quantity.wrappedValue {
                             freeQuantity.wrappedValue = quantity.wrappedValue
+                            freeQuantityText = freeQuantity.wrappedValue.clean
                         }
                         
+                        quantityText = quantity.wrappedValue.clean
+
                         validateQuantity()
                     }
                 
@@ -48,22 +75,23 @@ struct QuantityInput: View {
                 
                 let isFreeQuantityDisabled = quantity.wrappedValue == 0
                 EditableInput(titleLocalizationKey: "FREE",
-                              text: String(format: "%.1f", freeQuantity.wrappedValue),
-                              onTextChange: {
-                                if let newValue = Double($0.replacingOccurrences(of: ",", with: ".")) {
-                                    freeQuantity.wrappedValue = newValue
-                                }
-                              },
-                              keyboardType: .decimalPad)
+                              text: freeQuantityText,
+                              onTextChange: handleFreeQuantityChange,
+                              keyboardType: .decimalPad,
+                              constTrailingCursor: true)
                     .frame(width: 110)
                     .disabled(isFreeQuantityDisabled)
                     .opacity(isFreeQuantityDisabled ? 0.5 : 1)
                     .onReceive(Just(freeQuantity.wrappedValue)) {
+                        guard quantityUpdated else { return }
+                        
                         freeQuantity.wrappedValue = roundQuantity($0)
                         
                         if freeQuantity.wrappedValue > quantity.wrappedValue {
                             freeQuantity.wrappedValue = quantity.wrappedValue
                         }
+                        
+                        freeQuantityText = freeQuantity.wrappedValue.clean
                         
                         validateQuantity()
                     }
@@ -85,8 +113,20 @@ struct QuantityInput: View {
         self.quantity = quantity
         self.freeQuantity = freeQuantity
         
+        self._quantityText = State(initialValue: quantity.wrappedValue.clean)
+        self._freeQuantityText = State(initialValue: freeQuantity.wrappedValue.clean)
+        
         self.maxQuantity = maxQuantity
         self.quantitiesCorrect = quantitiesCorrect
+    }
+    
+    private func handleInputString(_ input: String) -> Double? {
+        let replaceDecimalPointString = input.replacingOccurrences(of: ",", with: ".")
+        
+        guard replaceDecimalPointString.last != ".",
+            let number = Double(replaceDecimalPointString) else { return nil }
+        
+        return number
     }
     
     private func roundQuantity(_ quantity: Double) -> Double {
