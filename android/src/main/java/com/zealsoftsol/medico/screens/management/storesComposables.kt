@@ -133,7 +133,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             Space(16.dp)
         }
     } else {
-        if (products.value.isEmpty()) {
+        if (products.value.isEmpty() && scope.products.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.missing_inventory_stores,

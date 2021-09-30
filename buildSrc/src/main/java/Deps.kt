@@ -2,13 +2,13 @@ import groovy.json.JsonSlurper
 import java.io.File
 
 object Versions {
-    const val agp = "7.0.0"
-    const val kotlin = "1.5.10"
+    const val agp = "7.0.2"
+    const val kotlin = "1.5.21"
     const val ktor = "1.6.0"
-    const val coroutines = "1.5.0-native-mt"
+    const val coroutines = "1.5.2-native-mt"
     const val kserialize = "1.2.1"
     const val kodeinDi = "7.5.0"
-    const val compose = "1.0.0-beta08"
+    const val compose = "1.0.2"
 }
 
 object Deps {
@@ -53,9 +53,9 @@ object Deps {
                 "androidx.compose.material:material-icons-core:${Versions.compose}"
             const val iconsExtended =
                 "androidx.compose.material:material-icons-extended:${Versions.compose}"
-            const val activity = "androidx.activity:activity-compose:1.3.0-beta01"
+            const val activity = "androidx.activity:activity-compose:1.3.1"
             const val constraint =
-                "androidx.constraintlayout:constraintlayout-compose:1.0.0-alpha07"
+                "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
 
             val all = listOf(
                 ui,
@@ -69,7 +69,7 @@ object Deps {
             )
         }
 
-        const val coil = "com.google.accompanist:accompanist-coil:0.11.0"
+        const val coil = "io.coil-kt:coil-compose:1.3.0"
     }
 
     object Kodein {
@@ -104,8 +104,7 @@ object Deps {
         const val log = "io.ktor:ktor-client-logging:${Versions.ktor}"
     }
 
-    const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.6.3"
-    const val libphonenumber = "com.googlecode.libphonenumber:libphonenumber:8.12.7"
+    const val multiplatformSettings = "com.russhwolf:multiplatform-settings:0.7.7"
     const val okhttpinterceptor = "com.squareup.okhttp3:logging-interceptor:4.9.0"
 }
 
