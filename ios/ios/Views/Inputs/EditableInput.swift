@@ -13,11 +13,16 @@ struct EditableInput: View {
     @State private var fieldSelected = false
     
     let titleLocalizationKey: String
-    let text: Binding<String>
+    let text: String?
+    let onTextChange: (String) -> Void
+    
+    let constTrailingCursor: Bool
     
     let keyboardType: UIKeyboardType
     let disableAutocorrection: Bool
     let autocapitalization: UITextAutocapitalizationType
+    
+    let height: CGFloat
     
     var body: some View {
         VStack(spacing: 6) {
@@ -29,16 +34,33 @@ struct EditableInput: View {
                               multilineTextAlignment: .leading)
                     .lineLimit(1)
                 
-                TextField("", text: text) { editingChanged in
-                    self.fieldSelected = editingChanged
-                }
-                .medicoText(textWeight: .bold,
-                            fontSize: 20,
-                            color: fieldSelected ? .darkBlue : .greyBlue,
-                            multilineTextAlignment: .trailing)
-                .keyboardType(keyboardType)
-                .disableAutocorrection(disableAutocorrection)
-                .autocapitalization(autocapitalization)
+                let textBinding = Binding(get: { text ?? "" },
+                                          set: { onTextChange($0) })
+                
+                let textProperties = TextFieldContainer.TextProperties(
+                    font: UIFont(name: "Barlow-Bold", size: 20),
+                    textColorName: fieldSelected ? "DarkBlue" : "GreyBlue",
+                    textAlignment: .right
+                )
+                
+                TextFieldContainer("",
+                                   text: textBinding,
+                                   cursorPosition: $cursorPosition,
+                                   constTrailingCursor: constTrailingCursor,
+                                   fieldSelected: $fieldSelected,
+                                   keyboardType: keyboardType,
+                                   disableAutocorrection: disableAutocorrection,
+                                   autocapitalization: autocapitalization,
+                                   textProperties: textProperties)
+                    .frame(maxHeight: height)
+                
+//                TextField("", text: text) { editingChanged in
+//                    self.fieldSelected = editingChanged
+//                }
+//                .medicoText(textWeight: .bold,
+//                            fontSize: 20,
+//                            color: fieldSelected ? .darkBlue : .greyBlue,
+//                            multilineTextAlignment: .trailing)
             }
             
             (fieldSelected ? AppColor.lightBlue : AppColor.greyBlue).color
@@ -50,15 +72,21 @@ struct EditableInput: View {
          text: String?,
          onTextChange: @escaping (String) -> Void,
          keyboardType: UIKeyboardType = .default,
+         constTrailingCursor: Bool = false,
          disableAutocorrection: Bool = true,
-         autocapitalization: UITextAutocapitalizationType = .none) {
+         autocapitalization: UITextAutocapitalizationType = .none,
+         height: CGFloat = 28) {
         self.titleLocalizationKey = titleLocalizationKey
         
-        self.text = Binding(get: { text ?? "" },
-                            set: { onTextChange($0) })
+        self.text = text
+        self.onTextChange = onTextChange
+        
+        self.constTrailingCursor = constTrailingCursor
         
         self.keyboardType = keyboardType
         self.disableAutocorrection = disableAutocorrection
         self.autocapitalization = autocapitalization
+        
+        self.height = height
     }
 }

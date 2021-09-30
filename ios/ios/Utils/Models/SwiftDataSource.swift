@@ -11,6 +11,10 @@ import core
 class SwiftDataSource<T: AnyObject> : ObservableObject {
     private var dataSource: BaseDataSource<T>
     
+    var updateCount: Int32 {
+        (dataSource as? DataSource<T>)?.updateCount ?? -1
+    }
+    
     @Published private(set) var value: T? {
         didSet {
             onValueDidSet?(value)
@@ -21,6 +25,7 @@ class SwiftDataSource<T: AnyObject> : ObservableObject {
     
     init(dataSource: BaseDataSource<T>) {
         self.dataSource = dataSource
+        
         self.dataSource.observeOnUi { newValue in
             self.value = newValue
         }

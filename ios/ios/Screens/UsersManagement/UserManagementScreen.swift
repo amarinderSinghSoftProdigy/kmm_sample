@@ -144,7 +144,7 @@ struct UserManagementScreen: View {
                         }
                         .hideKeyboardOnTap()
                     }
-                    else {
+                    else if users.updateCount > 0 {
                         emptyListView
                     }
                 }

@@ -251,3 +251,11 @@ extension Array {
         }
     }
 }
+
+extension Double {
+    var clean: String {
+        let format = self.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.1f"
+        
+        return String(format: format, self)
+    }
+}
