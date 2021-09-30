@@ -477,7 +477,8 @@ private fun QuotedItem(
                         BottomSectionMode.ConfirmQty -> {
                             Space(12.dp)
                             Column(horizontalAlignment = Alignment.End) {
-                                val isError = (qty.value + freeQty.value) % 1 != 0.0
+                                val isError =
+                                    (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
                                 val wasError = remember { mutableStateOf(isError) }
                                 val wasErrorSaved = wasError.value
                                 val focusedError = remember(mode.value) { mutableStateOf(-1) }
@@ -515,7 +516,7 @@ private fun QuotedItem(
                                 if (isError) {
                                     Space(8.dp)
                                     Text(
-                                        text = stringResource(id = R.string.invalid_qty),
+                                        text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.W500,
                                         color = ConstColors.red,
@@ -561,7 +562,7 @@ private fun QuotedItem(
                                 )
                                 MedicoRoundButton(
                                     text = stringResource(id = R.string.confirm),
-                                    isEnabled = (qty.value + freeQty.value) % 1 == 0.0,
+                                    isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value >= freeQty.value,
                                     onClick = {
                                         mode.value =
                                             if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
@@ -877,7 +878,8 @@ private fun BaseSellerItem(
             when (mode.value) {
                 BottomSectionMode.Select, BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
                 BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
-                    val isError = (qty.value + freeQty.value) % 1 != 0.0
+                    val isError =
+                        (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
                     val wasError = remember { mutableStateOf(isError) }
                     val wasErrorSaved = wasError.value
                     val focusedError = remember(mode.value) { mutableStateOf(-1) }
@@ -909,7 +911,7 @@ private fun BaseSellerItem(
                     if (isError) {
                         Space(8.dp)
                         Text(
-                            text = stringResource(id = R.string.invalid_qty),
+                            text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
                             color = ConstColors.red,
@@ -963,7 +965,7 @@ private fun BaseSellerItem(
                         )
                         MedicoRoundButton(
                             text = stringResource(id = R.string.confirm),
-                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0,
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
                             onClick = {
                                 mode.value =
                                     if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart

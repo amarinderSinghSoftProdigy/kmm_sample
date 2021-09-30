@@ -267,6 +267,7 @@
     <string name="please_connect_stockists">Please connect to any Stockist</string>
     <string name="delete_products">Delete Not Available products</string>
     <string name="invalid_qty">Qty + Free must be a whole number</string>
+    <string name="free_more_qty">Free can\'t be more than Qty</string>
 
     <!--error codes-->
 

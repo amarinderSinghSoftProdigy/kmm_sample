@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.ImageLoadState
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
+import coil.compose.rememberImagePainter
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun CoilImage(
     src: Any,
@@ -16,14 +18,14 @@ fun CoilImage(
     onError: @Composable (() -> Unit)? = null,
     onLoading: @Composable (() -> Unit)? = null,
 ) {
-    val painter = rememberCoilPainter(src)
-    when (painter.loadState) {
-        is ImageLoadState.Loading -> Box(Modifier.size(size)) { onLoading?.invoke() }
-        is ImageLoadState.Success -> Image(
+    val painter = rememberImagePainter(src)
+    when (painter.state) {
+        is ImagePainter.State.Loading -> Box(Modifier.size(size)) { onLoading?.invoke() }
+        is ImagePainter.State.Success -> Image(
             painter = painter,
             modifier = Modifier.size(size),
             contentDescription = null,
         )
-        is ImageLoadState.Error, is ImageLoadState.Empty -> Box(Modifier.size(size)) { onError?.invoke() }
+        is ImagePainter.State.Error, is ImagePainter.State.Empty -> Box(Modifier.size(size)) { onError?.invoke() }
     }
 }
