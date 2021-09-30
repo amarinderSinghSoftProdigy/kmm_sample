@@ -61,9 +61,11 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -576,7 +578,6 @@ fun EditField(
     }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -586,33 +587,43 @@ fun EditField(
                 color = ConstColors.gray,
             )
             Space(16.dp)
+            val wasQty = remember {
+                mutableStateOf(
+                    if (qty.split(".").lastOrNull() == "0") qty.split(".").first() else qty
+                )
+            }
+
             BasicTextField(
-                modifier = Modifier.onFocusEvent { if (it.isFocused) onFocus?.invoke() },
-                value = qty,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusEvent { if (it.isFocused) onFocus?.invoke() },
+                value = TextFieldValue(wasQty.value, selection = TextRange(wasQty.value.length)),
                 onValueChange = {
                     if (formattingRule) {
-                        if (it.contains(".")) {
-                            val (beforeDot, afterDot) = it.split(".")
-                            var modBefore = beforeDot.toIntOrNull() ?: 0
-                            val newAfter = if (afterDot.length > 1) {
-                                afterDot.take(1)
-                            } else {
-                                afterDot
-                            }
-                            val modAfter = when (newAfter.toIntOrNull() ?: 0) {
-                                0 -> "0"
-                                in 1..4 -> "0"
-                                5 -> "5"
+                        val split = it.text.replace(",", ".").split(".")
+                        val beforeDot = split[0]
+                        val afterDot = split.getOrNull(1)
+                        var modBefore = beforeDot.toIntOrNull() ?: 0
+                        val modAfter = when (afterDot?.length) {
+                            0 -> "."
+                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(1).toIntOrNull()) {
+                                0 -> ".0"
+                                in 1..4 -> ".0"
+                                5 -> ".5"
                                 in 6..9 -> {
                                     modBefore++
-                                    "0"
+                                    ".0"
                                 }
+                                null -> ""
                                 else -> throw UnsupportedOperationException("cant be that")
                             }
-                            onChange("$modBefore.$modAfter")
+                            null -> ""
+                            else -> throw UnsupportedOperationException("cant be that")
                         }
+                        wasQty.value = "$modBefore$modAfter"
+                        onChange("$modBefore$modAfter")
                     } else {
-                        onChange(it)
+                        onChange(it.text)
                     }
                 },
                 keyboardOptions = keyboardOptions,
@@ -623,7 +634,8 @@ fun EditField(
                 textStyle = TextStyle(
                     color = color,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.W700
+                    fontWeight = FontWeight.W700,
+                    textAlign = TextAlign.End,
                 )
             )
         }
