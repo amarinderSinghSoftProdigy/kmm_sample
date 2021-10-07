@@ -23,9 +23,15 @@ struct ViewOrderScreen: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            CustomerView(b2bData: b2bData.value,
-                         seasonBoyRetailerName: self.order.value?.seasonBoyRetailerName)
-            
+            VStack(spacing: 5) {
+                CustomerView(b2bData: b2bData.value,
+                             seasonBoyRetailerName: self.order.value?.seasonBoyRetailerName)
+                
+                if let orderStatus = self.order.value?.info.status.stringValue {
+                    OrderStatusView(status: orderStatus)
+                }
+            }
+                
             self.orderView
             
             OrderEntriesView(selectableOrderEntry: scope,
@@ -121,7 +127,7 @@ extension DataBuyingOption {
     var borderColor: AppColor {
         switch self {
         case .quote:
-            return .placeholderGrey
+            return .lightGrey
             
         default:
             return .white
@@ -209,9 +215,17 @@ struct OrderEntriesView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 6) {
-                    OrderDetailsView(titleLocalizationKey: "qty:",
-                                     bodyText: entry.servedQty.formatted,
-                                     bodyColor: .lightBlue)
+                    HStack(spacing: 8) {
+                        if entry.status == .rejected {
+                            LocalizedText(localizationKey: "rejected",
+                                          textWeight: .bold,
+                                          color: .red)
+                        }
+                        
+                        OrderDetailsView(titleLocalizationKey: "qty:",
+                                         bodyText: entry.servedQty.formatted,
+                                         bodyColor: .lightBlue)
+                    }
                     
                     if entry.buyingOption == .buy {
                         OrderDetailsView(titleLocalizationKey: "subtotal:",
@@ -224,10 +238,12 @@ struct OrderEntriesView: View {
                 }
             }
             .padding(8)
+            .padding(.leading, 5)
             .background(
                 RoundedRectangle(cornerRadius: 5)
                     .foregroundColor(appColor: .white)
                     .padding(2)
+                    .padding(.leading, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 5)
                             .foregroundColor(appColor: entry.status == .rejected ? .red : entry.buyingOption.borderColor)
@@ -297,6 +313,8 @@ struct CustomerView: View {
                         .padding(.horizontal, 4)
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .lineLimit(1)
                 .expandableView(expanded: $expandedCustomerView) {
                     HStack(spacing: 8) {

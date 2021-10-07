@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens.orders
 
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -43,6 +46,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
+import com.zealsoftsol.medico.data.OrderStatus
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
@@ -55,6 +59,7 @@ import org.joda.time.format.DateTimeFormatter
 @Composable
 fun OrdersScreen(scope: OrdersScope) {
     Column(modifier = Modifier.fillMaxSize()) {
+        remember { scope.firstLoad() }
         val search = scope.searchText.flow.collectAsState()
         val isFilterOpened = scope.isFilterOpened.flow.collectAsState()
         Space(16.dp)
@@ -226,14 +231,7 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = order.info.id,
-                    color = ConstColors.gray,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                OrdersStatus(order.info.status)
                 Text(
                     text = "${order.info.date} ${order.info.time}",
                     color = ConstColors.gray,
@@ -252,27 +250,17 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = buildAnnotatedString {
-                        append(stringResource(id = R.string.type))
-                        append(": ")
-                        val startIndex = length
-                        append(order.info.paymentMethod.serverValue)
-                        addStyle(
-                            SpanStyle(
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W600
-                            ),
-                            startIndex,
-                            length,
-                        )
-                    },
+                    text = order.info.id,
                     color = ConstColors.gray,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.W500,
-                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = buildAnnotatedString {
                         append(stringResource(id = R.string.total))
+                        append(" ")
                         val startIndex = length
                         append(order.info.total.formattedPrice)
                         addStyle(
@@ -287,6 +275,33 @@ private fun OrderItem(order: Order, onClick: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun OrdersStatus(status: OrderStatus) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Canvas(modifier = Modifier.size(10.dp)) {
+            drawRoundRect(
+                color = when (status) {
+                    OrderStatus.COMPLETED -> ConstColors.green
+                    OrderStatus.CANCELLED -> ConstColors.red
+                    else -> ConstColors.orange
+                },
+                cornerRadius = CornerRadius(8.dp.value),
+            )
+        }
+        Space(4.dp)
+        Text(
+            text = status.stringValue,
+            color = ConstColors.gray,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.W500,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

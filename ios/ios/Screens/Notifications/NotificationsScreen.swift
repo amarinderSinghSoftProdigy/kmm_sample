@@ -43,7 +43,7 @@ struct NotificationsScreen: View {
                     }
                 }
             }
-            else {
+            else if notifications.updateCount > 0 {
                 EmptyListView(imageName: "EmptyNotifications",
                               titleLocalizationKey: "empty_notifications",
                               handleHomeTap: { scope.goHome() })

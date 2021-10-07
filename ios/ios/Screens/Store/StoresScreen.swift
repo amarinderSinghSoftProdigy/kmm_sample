@@ -57,7 +57,7 @@ private struct StoresListScreen: View {
                 }
                 .hideKeyboardOnTap()
             }
-            else {
+            else if stores.updateCount > 0 {
                 EmptyListView(imageName: "EmptyStores",
                               titleLocalizationKey: "empty_stores",
                               handleHomeTap: { scope.goHome() })
@@ -189,8 +189,23 @@ private struct StorePreviewScreen: View {
     private var productsList: some View {
         let productsCount = self.products.value?.count ?? 0
         
+        if productsCount == 0 && products.updateCount > 0 {
+            let subtitleText =
+                Text(scope.store.tradeName)
+                    .medicoText(textWeight: .semiBold,
+                                fontSize: 15,
+                                color: .lightBlue)
+            
+            return AnyView(
+                EmptyListView(imageName: "EmptyStores",
+                              titleLocalizationKey: "empty_store_title",
+                              subtitleText: AnyView(subtitleText),
+                              handleHomeTap: { scope.goHome() })
+            )
+        }
+        
         return AnyView(
-            TransparentList(data: products,
+            TransparentList(data: self.products,
                             dataType: DataProductSearch.self,
                             listName: .storeProducts,
                             pagination: scope.pagination,

@@ -17,7 +17,7 @@ struct OrderPlacedScreen: View {
             VStack(spacing: 10) {
                 Image("OrderSuccess")
                 
-                LocalizedText(localizationKey: "order_success",
+                LocalizedText(localizedStringKey: LocalizedStringKey("thank_you_for_fulfilment \(scope.order.tradeName)"),
                               textWeight: .semiBold,
                               fontSize: 16,
                               multilineTextAlignment: .center)
@@ -30,10 +30,11 @@ struct OrderPlacedScreen: View {
                                            withBody: scope.order.info.time)
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
             
-            MedicoButton(localizedStringKey: "home",
+            MedicoButton(localizedStringKey: "new_orders",
                          isEnabled: true,
-                         cornerRadius: 2,
+                         cornerRadius: 6,
                          fontColor: .white,
                          buttonColor: .lightBlue) {
                 scope.goHome()
@@ -53,12 +54,10 @@ struct OrderPlacedScreen: View {
                                         withBody body: String) -> some View {
         HStack(spacing: 2) {
             LocalizedText(localizationKey: titleLocalizationKey,
-                          fontSize: 16,
                           color: .grey3)
             
             Text(body)
-                .medicoText(fontSize: 16,
-                            color: .lightBlue)
+                .medicoText(color: .lightBlue)
         }
     }
 }

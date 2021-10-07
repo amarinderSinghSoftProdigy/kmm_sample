@@ -64,6 +64,9 @@ struct OrdersScreen: View {
         }
         .padding(.vertical, 32)
         .padding(.horizontal, 16)
+        .onAppear {
+            scope.firstLoad()
+        }
     }
     
     init(scope: OrdersScope) {
@@ -96,7 +99,7 @@ struct OrdersScreen: View {
                     OrderView(order: order)
                 }
             }
-            else {
+            else if orders.updateCount > 0 {
                 emptyListView
             }
         }
@@ -163,22 +166,23 @@ struct OrdersScreen: View {
                         .lineLimit(1)
                     
                     HStack(spacing: 2) {
-                        Text(order.info.date)
-                            .medicoText(textWeight: .medium)
+                        OrderStatusView(status: order.info.status.stringValue)
                         
-                        Text(order.info.time)
-                            .medicoText(textWeight: .semiBold)
+                        Spacer()
+                        
+                        Group {
+                            Text(order.info.date)
+                                .medicoText(textWeight: .medium)
+                            
+                            Text(order.info.time)
+                                .medicoText(textWeight: .semiBold)
+                        }
+                        .opacity(0.6)
                     }
-                    .opacity(0.6)
                 }
                 .padding(8)
                 
                 HStack(spacing: 10) {
-                    OrderDetailsView(titleLocalizationKey: "type:",
-                                     bodyText: order.info.paymentMethod.serverValue)
-                    
-                    Spacer()
-                    
                     Text(order.info.id)
                         .medicoText(textWeight: .medium,
                                     color: .grey3)
@@ -206,13 +210,39 @@ struct OrdersScreen: View {
     }
 }
 
+struct OrderStatusView: View {
+    var status: String
+    
+    var body: some View {
+        let statusColor: AppColor =
+            status == "COMPLETED" ? .green :
+            status == "" || status == "" ? .red :
+            .orange
+        
+        return AnyView(
+            HStack(spacing: 4) {
+                statusColor.color
+                    .cornerRadius(3)
+                    .frame(width: 10, height: 10)
+                
+                Text(status)
+                    .medicoText(textWeight: .medium)
+                    .opacity(0.7)
+            }
+        )
+    }
+}
+
 extension DataOrderType {
     var localizationKey: String {
         switch self {
         case .purchaseOrder:
             return "new_orders"
             
-        case .order, .history:
+        case .order:
+            return "my_orders"
+            
+        case .history:
             return "orders"
             
         default:

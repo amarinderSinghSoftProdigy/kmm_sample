@@ -82,8 +82,8 @@
 "trade_name" = "Trade Name";
 "pan_number" = "PAN Number";
 "gstin" = "GSTIN";
-"drug_license_No1" = "Drug License №1";
-"drug_license_No2" = "Drug License №2";
+"drug_license_No1" = "Drug License No1";
+"drug_license_No2" = "Drug License No2";
 "gstin_or_pan_number_are_required" = "GSTIN or PAN Number are required for the registration";
 
 // MARK: Authentication Sign Up Aadhaar Card
@@ -117,7 +117,7 @@
 "dashboard" = "Dashboard";
 "stores" = "Stores";
 "trial_ends" = "Trial Ends on ";
-"orders_history" = "Orders History";
+"orders_history" = "PO History";
 "version %@" = "v %@";
 
 // MARK: Dashboard
@@ -127,7 +127,7 @@
 "add_stockist" = "Add Stockist";
 "in_stock" = "In Stock";
 "out_of_stock" = "Out of Stock";
-"today_sold_products" = "Today’s Sold Products";
+"today_sold_products" = "Most Sold Products";
 "most_searched_products" = "Most Searched Products in Market Today";
 
 // MARK: Limited App Access
@@ -170,6 +170,9 @@
 "margin:" = "Margin:";
 "stocks:" = "Stocks:";
 "expiry:" = "Expiry:";
+"ptr:" = "PTR:";
+"update" = "Update";
+"qty_error" = "Qty + Free must be a whole number";
 
 // MARK: Settings
 "personal_profile" = "Personal Profile";
@@ -226,7 +229,7 @@
 "gstin_number" = "GSTIN Number:";
 "pan_number:" = "PAN Number:";
 "payment_method" = "Type:";
-"orders:" = "Orders:";
+"orders:" = "My Orders:";
 "retailers:" = "Retailers:";
 
 // MARK: Bottom Sheet Season Boy Details
@@ -274,6 +277,7 @@
 "store" = "Store";
 "empty_stores" = "No stores to view";
 "stores_search" = "Stores Search";
+"empty_store_title" = "No inventory found with";
 
 // MARK: Help
 "help" = "Help";
@@ -317,10 +321,15 @@
 "no" = "No";
 "order_with_quote_body" = "Are you sure you want to place an order with a quoted item?";
 "order_modified_body" = "It looks like one item quantity is missing. Are you sure you want to continue?";
+"items" = "Items";
+"qty" = "Qty";
+"free" = "Free";
+"tot:" = "TOT:";
 
 // MARK: Completed Cart Order
 "home" = "Home";
 "order_success" = "Order placed successfully!";
+"thank_you_for_fulfilment %@" = "%@ will be notified, thank you for fulfilment.";
 "date:" = "Date:";
 "time:" = "Time:";
 "sent_confirmation" = "A confirmation of your order has been sent to";
@@ -330,8 +339,14 @@
 "new_orders" = "Purchase Orders";
 "new" = "NEW";
 "empty_new_orders" = "No Purchase Orders from any of your connected Users";
+"QTY" = "QTY";
+"PTR" = "PTR";
+"EXP" = "EXP (MM/YYYY)";
+"FREE" = "FREE";
+"BATCH" = "BATCH";
 
 // MARK: Orders
+"my_orders" = "My Orders";
 "orders" = "Orders";
 "search_tradename" = "Search Tradename";
 "search_orders" = "Search in Orders";
@@ -343,6 +358,7 @@
 "reject_all" = "Decline All";
 "quote" = "Quote";
 "batch_no %@" = "Batch No: %@";
+"batch_no:" = "Batch No:";
 "subtotal %@" = "Subtotal: %@";
 "requested_qty:" = "Requested QTY:";
 "served_qty:" = "Served QTY:";
@@ -360,8 +376,8 @@
 "reject_selected" = "Decline Selected";
 
 // MARK: Invoices
-"invoices" = "Invoices";
-"inv_total:" = "INV Total:";
+"invoices" = "My Invoices";
+"inv_total:" = "Total:";
 "invoice_no:" = "Invoice No:";
 "empty_invoices" = "No Invoices were found";
 
@@ -414,4 +430,4 @@
 "E0045" = "Gstin/Pan number already registered, Please try again";
 "E0046" = "Invalid current password, please enter valid password again!!";
 "E0047" = "Something went wrong!! Please try, change password again after sometime";
-
+"E0048" = "Invalid (Qty + FreeQty), Please correct to nearest number";

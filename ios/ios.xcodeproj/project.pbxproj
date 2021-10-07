@@ -20,6 +20,7 @@
 		332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4025AF31FC00341A7E /* ScreenLogger.swift */; };
 		332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */; };
 		332CFD4825AF337F00341A7E /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332CFD4725AF337F00341A7E /* AppColor.swift */; };
+		332DE72726E6120C0032698A /* EditableInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332DE72626E6120C0032698A /* EditableInput.swift */; };
 		332EB65325F2253C009BC392 /* PopSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332EB65225F2253C009BC392 /* PopSheet.swift */; };
 		33377B1C2632D49D00B619F9 /* CartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33377B1B2632D49D00B619F9 /* CartScreen.swift */; };
 		33385A7D256FB66B00DACD7C /* ColorExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33385A7A256FB66B00DACD7C /* ColorExt.swift */; };
@@ -65,6 +66,7 @@
 		339D372225B05CCF00C57B2D /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339D372125B05CCF00C57B2D /* SettingsScreen.swift */; };
 		33A0202425B9920000615349 /* TransparentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202325B9920000615349 /* TransparentList.swift */; };
 		33A0202625B99E1100615349 /* BaseBottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A0202525B99E1100615349 /* BaseBottomSheetView.swift */; };
+		33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */; };
 		33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ABAEC7258B826A0061F63C /* CommonViews.swift */; };
 		33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */; };
 		33B1B8002563F4EB005215A3 /* AuthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */; };
@@ -72,6 +74,7 @@
 		33B4A30F25A34E6900B04AF3 /* Barlow-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */; };
 		33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */; };
 		33BAF811265FDFED00559A68 /* ViewOrderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */; };
+		33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */; };
 		33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67C825AEF87600148A27 /* AnalyticsService.swift */; };
 		33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */; };
 		33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CA67E925AF0EFD00148A27 /* DIContainer.swift */; };
@@ -144,6 +147,7 @@
 		332CFD4025AF31FC00341A7E /* ScreenLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLogger.swift; sourceTree = "<group>"; };
 		332CFD4425AF335E00341A7E /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtil.swift; sourceTree = "<group>"; };
 		332CFD4725AF337F00341A7E /* AppColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
+		332DE72626E6120C0032698A /* EditableInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableInput.swift; sourceTree = "<group>"; };
 		332EB65225F2253C009BC392 /* PopSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopSheet.swift; sourceTree = "<group>"; };
 		332F7E0C258B3BB100C5BF6B /* commonMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = commonMain; path = ../../data/src/commonMain; sourceTree = "<group>"; };
 		332F7E0D258B3BC100C5BF6B /* iosMain */ = {isa = PBXFileReference; lastKnownFileType = folder; name = iosMain; path = ../../core/src/iosMain; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 		339D372125B05CCF00C57B2D /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		33A0202325B9920000615349 /* TransparentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransparentList.swift; sourceTree = "<group>"; };
 		33A0202525B99E1100615349 /* BaseBottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseBottomSheetView.swift; sourceTree = "<group>"; };
+		33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStockistBottomSheet.swift; sourceTree = "<group>"; };
 		33ABAEC7258B826A0061F63C /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
 		33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SwiftUIExtensions.swift; path = ios/extensions/SwiftUIExtensions.swift; sourceTree = SOURCE_ROOT; };
 		33B1B7FF2563F4EB005215A3 /* AuthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthScreen.swift; sourceTree = "<group>"; };
@@ -199,6 +204,7 @@
 		33B4A30E25A34E6900B04AF3 /* Barlow-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Barlow-Black.ttf"; sourceTree = "<group>"; };
 		33B834DE2577764D00D72CE8 /* SignUpPersonalDataScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPersonalDataScreen.swift; sourceTree = "<group>"; };
 		33BAF810265FDFED00559A68 /* ViewOrderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOrderScreen.swift; sourceTree = "<group>"; };
+		33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityInput.swift; sourceTree = "<group>"; };
 		33CA67C825AEF87600148A27 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
 		33CA67CA25AEF8E100148A27 /* FirebaseAnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAnalyticsService.swift; sourceTree = "<group>"; };
 		33CA67E925AF0EFD00148A27 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
@@ -389,8 +395,10 @@
 		333F45D525A4B616008DE1D2 /* Inputs */ = {
 			isa = PBXGroup;
 			children = (
+				332DE72626E6120C0032698A /* EditableInput.swift */,
 				33789561256E3BE70034D79F /* FloatingPlaceholderTextField.swift */,
 				3367284C2579294F00C7E73D /* PhoneTextField.swift */,
+				33C3216526E79BAD00C7CAB4 /* QuantityInput.swift */,
 				33FD6A3F259CAD640092887D /* SearchBar.swift */,
 			);
 			path = Inputs;
@@ -503,8 +511,8 @@
 		337C0A36256D426900C3F0A5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				3398A33326C3CF09003F692D /* Configs */,
 				3391B0BA25B820360025B945 /* Assets */,
+				3398A33326C3CF09003F692D /* Configs */,
 				33E7682D256D5F6D00B35FDF /* Fonts */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
 				3391B0BC25B820680025B945 /* Localization */,
@@ -624,6 +632,7 @@
 				33D7F29825BEBCB40070C9DB /* EntityInfoBottomSheet.swift */,
 				33ED9E9B2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift */,
 				332EB65225F2253C009BC392 /* PopSheet.swift */,
+				33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -990,6 +999,7 @@
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
 				33AD104C256F92CC005FF354 /* SwiftUIExtensions.swift in Sources */,
 				333D3299262EC6A20075E1D3 /* MailView.swift in Sources */,
+				332DE72726E6120C0032698A /* EditableInput.swift in Sources */,
 				3354F9702657D4CA00A4D252 /* CompletedCartOrderScreen.swift in Sources */,
 				330D8C53266A0FFF005D46DB /* InvoiceDetailsScreen.swift in Sources */,
 				336589BF257E779C008D1CCC /* SignUpLegalDocumentsScreen.swift in Sources */,
@@ -1029,6 +1039,7 @@
 				3367284D2579294F00C7E73D /* PhoneTextField.swift in Sources */,
 				3391B0C025B871000025B945 /* AlertViewModifiers.swift in Sources */,
 				339C5045257A548F00AAB45F /* PickerSelector.swift in Sources */,
+				33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */,
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
@@ -1039,6 +1050,7 @@
 				333D3268262EBABF0075E1D3 /* HelpScreen.swift in Sources */,
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
+				33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,
@@ -1159,7 +1171,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1255,7 +1267,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1345,7 +1357,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1435,7 +1447,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1586,7 +1598,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1621,7 +1633,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;

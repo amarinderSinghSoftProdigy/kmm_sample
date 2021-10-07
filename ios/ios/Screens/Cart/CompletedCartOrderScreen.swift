@@ -22,7 +22,7 @@ struct CompletedCartOrderScreen: View {
             
             Spacer()
             
-            MedicoButton(localizedStringKey: "orders") {
+            MedicoButton(localizedStringKey: "my_orders") {
                 scope.goToOrders()
             }
          }

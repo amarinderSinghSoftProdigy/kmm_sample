@@ -96,7 +96,7 @@ struct InvoicesScreen: View {
                     InvoiceView(invoice: invoice)
                 }
             }
-            else {
+            else if invoices.updateCount > 0 {
                 EmptyListView(imageName: "EmptyInvoices",
                               titleLocalizationKey: "empty_invoices",
                               handleHomeTap: { scope.goHome() })

@@ -17,7 +17,7 @@ extension UIApplication {
 extension String {
     func getText(withBoldSubstring substring: String,
                  withFontSize fontSize: CGFloat) -> Text {
-        let tag = "<SPLIT>"
+        let tag = "<@@@>"
         let split = self
             .replacingOccurrences(of: substring,
                                   with: tag + ">\(substring)" + tag)

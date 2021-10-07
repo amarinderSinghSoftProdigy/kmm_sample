@@ -344,17 +344,27 @@ class NetworkClient(
             }
         }
 
-    override suspend fun buyProductInfo(productCode: String) =
+    override suspend fun buyProductInfo(
+        productCode: String,
+        latitude: Double,
+        longitude: Double,
+    ) =
         simpleRequest {
             client.get<BodyResponse<ProductBuyResponse>>("${baseUrl.url}/search/buy/${productCode}") {
                 withMainToken()
+                url {
+                    parameters.append("latitude", latitude.toString())
+                    parameters.append("longitude", longitude.toString())
+                }
             }
         }
 
     override suspend fun buyProductSelectSeasonBoyRetailer(
         productCode: String,
         unitCode: String,
-        sellerUnitCode: String?
+        sellerUnitCode: String?,
+        latitude: Double,
+        longitude: Double
     ) = simpleRequest {
         client.get<BodyResponse<ProductSeasonBoyRetailerSelectResponse>>("${baseUrl.url}/search/sb/select/${productCode}") {
             withMainToken()
@@ -363,6 +373,8 @@ class NetworkClient(
                 if (sellerUnitCode != null) {
                     parameters.append("sellerUnitCode", sellerUnitCode)
                 }
+                parameters.append("latitude", latitude.toString())
+                parameters.append("longitude", longitude.toString())
             }
         }
     }

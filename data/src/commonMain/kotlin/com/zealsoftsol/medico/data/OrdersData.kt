@@ -36,6 +36,7 @@ data class OrderEntry(
     val productName: String,
     val requestedQty: FormattedData<Double>,
     val servedQty: FormattedData<Double>,
+    val freeQty: FormattedData<Double>,
     val spid: String,
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
@@ -82,10 +83,16 @@ data class OrderInfo(
     @SerialName("orderTime")
     val time: String,
     @SerialName("orderStatus")
-    val status: String,
+    val status: OrderStatus,
     val paymentMethod: PaymentMethod,
     val total: Total,
 )
+
+enum class OrderStatus(val stringValue: String) {
+    CANCELLED("Cancelled"), COMPLETED("Completed"), NEW("New"), PENDING_PAYMENT("Pending Payment"), PENDING_DELIVERY(
+        "Pending Delivery"
+    );
+}
 
 @Serializable
 data class OrderNewQtyRequest(
@@ -93,7 +100,11 @@ data class OrderNewQtyRequest(
     val orderEntryId: String,
     @SerialName("sellerUnitCode")
     val unitCode: String,
-    val servedQty: Int,
+    val servedQty: Double,
+    val freeQty: Double,
+    val price: Double,
+    val batchNo: String,
+    val expiryDate: String,
 )
 
 @Serializable

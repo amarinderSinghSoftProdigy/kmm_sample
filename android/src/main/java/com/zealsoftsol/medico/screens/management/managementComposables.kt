@@ -55,7 +55,7 @@ import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.rememberPhoneNumberFormatter
+import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarBox
@@ -205,7 +205,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
         NoRecords(
             icon = icon,
             text = text,
-            subtitle = if (scope is ManagementScope.User.Stockist) R.string.please_connect_stockists else null,
+            subtitle = if (scope is ManagementScope.User.Stockist) stringResource(R.string.please_connect_stockists) else null,
             onHome = { scope.goHome() },
         )
     } else {
@@ -338,10 +338,8 @@ private fun SeasonBoyItem(entityInfo: EntityInfo, onClick: () -> Unit) {
                     fontSize = 15.sp,
                 )
                 Space(8.dp)
-                val formatter = rememberPhoneNumberFormatter()
                 Text(
-                    text = entityInfo.phoneNumber?.let { formatter.verifyNumber(it) ?: it }
-                        .orEmpty(),
+                    text = entityInfo.phoneNumber?.formatIndia().orEmpty(),
                     fontWeight = FontWeight.W600,
                     color = ConstColors.lightBlue,
                 )

@@ -75,8 +75,8 @@
     <string name="pan_number">PAN Number</string>
     <string name="gstin">GSTIN</string>
     <string name="drug_license">Drug License</string>
-    <string name="drug_license_1">Drug License №1</string>
-    <string name="drug_license_2">Drug License №2</string>
+    <string name="drug_license_1">Drug License No1</string>
+    <string name="drug_license_2">Drug License No2</string>
     <string name="aadhaar_card">Aadhaar Card</string>
     <string name="aadhaar_card_invalid">Invalid Aadhaar Card</string>
     <string name="share_code">Share Code</string>
@@ -86,6 +86,7 @@
     <string name="skip_for_now">Skip for now</string>
     <string name="actions">Actions</string>
     <string name="upload">Upload</string>
+    <string name="update">Update</string>
     <string name="upload_aadhaar">Upload Aadhaar</string>
     <string name="use_camera">Use camera</string>
     <string name="thanks_for_registration">Thank you for registration!</string>
@@ -128,10 +129,10 @@
     <string name="status">Status</string>
     <string name="gstin_num">GSTIN Number</string>
     <string name="payment_method">Type</string>
-    <string name="orders">Orders</string>
+    <string name="orders">My Orders</string>
     <string name="new_orders">Purchase orders</string>
     <string name="purchase_orders">Purchase orders</string>
-    <string name="orders_history">Order history</string>
+    <string name="orders_history">PO history</string>
     <string name="search_orders">Search orders</string>
     <string name="cancel">Cancel</string>
     <string name="send_request">Send Request</string>
@@ -172,14 +173,15 @@
     <string name="map_location">Map Location</string>
     <string name="dashboard">Dashboard</string>
     <string name="total">Total:</string>
-    <string name="invoice_total">INV Total:</string>
+    <string name="invoice_total">Total:</string>
     <string name="continue_text">Continue</string>
-    <string name="empty_cart_hint_1">Looks like you dont have anything!</string>
+    <string name="empty_cart_hint_1">Looks like you don\'t have anything!</string>
     <string name="empty_cart_hint_2">Please try to add something on cart then try again.</string>
     <string name="go_back">Go Back</string>
     <string name="available">Available</string>
     <string name="not_available">Not available</string>
     <string name="limited">Limited</string>
+    <string name="items">Items</string>
     <string name="quoted">Quoted</string>
     <string name="empty_cart">Empty Cart</string>
     <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 10MB.</string>
@@ -197,12 +199,15 @@
     <string name="place_order">Place your order</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="ptr">Ptr</string>
+    <string name="free">Free</string>
     <string name="subtotal">Subtotal</string>
     <string name="order_total">Order Total:</string>
     <string name="tax_exclusive">*Exclusive of all taxes</string>
     <string name="order_with_quote_body">Are you sure you want to place order with a quoted item?</string>
     <string name="order_modified_body">It looks like one item quantity is missing, Are you sure you want to continue?</string>
-    <string name="order_success">Order placed successfully!</string>
+    <string name="order_success">%1$s will be notified, thank you for your fulfillment.</string>
+    <string name="order_success_old">Order placed successfully!</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
     <string name="type">Type</string>
@@ -216,7 +221,9 @@
     <string name="reject_selected">Decline Selected</string>
     <string name="accept_selected">Accept Selected</string>
     <string name="batch_no">Batch No:</string>
+    <string name="batch">Batch</string>
     <string name="expiry">Expiry:</string>
+    <string name="expiry_">Expiry</string>
     <string name="requested_qty">Requested QTY:</string>
     <string name="served_qty">Served QTY:</string>
     <string name="serve_quoted">Are you sure you want to serve quote product?</string>
@@ -231,14 +238,14 @@
     <string name="available_formats">Available File Formats</string>
     <string name="max_file_size">Maximum file size:</string>
     <string name="mb_10">10 MB</string>
-    <string name="invoices">Invoices</string>
+    <string name="invoices">My Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="trial_ends">Trial Ends on</string>
     <string name="home">Home</string>
     <string name="filters">Filters</string>
-    <string name="today_sold">Today’s Sold Products</string>
+    <string name="today_sold">Most Sold Products</string>
     <string name="most_searched">Most Searched Products in MarketToday</string>
     <string name="in_stock">In Stock</string>
     <string name="out_stock">Out of Stock</string>
@@ -256,8 +263,11 @@
     <string name="missing_retailers">No Retailers connected yet.</string>
     <string name="missing_sb">No SeasonBoy connected yet</string>
     <string name="missing_stores">No stores to view</string>
+    <string name="missing_inventory_stores">No inventory found with</string>
     <string name="please_connect_stockists">Please connect to any Stockist</string>
     <string name="delete_products">Delete Not Available products</string>
+    <string name="invalid_qty">Qty + Free must be a whole number</string>
+    <string name="free_more_qty">Free can\'t be more than Qty</string>
 
     <!--error codes-->
 
@@ -309,4 +319,5 @@
     <string name="E0045">Gstin/Pan number already registered, Please try again</string>
     <string name="E0046">Invalid current password, please enter valid password again!!</string>
     <string name="E0047">Something went wrong!! Please try, change password again after sometime</string>
+    <string name="E0048">Invalid (Qty + FreeQty), Please correct to nearest number</string>
 </resources>

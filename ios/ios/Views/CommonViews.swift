@@ -237,13 +237,6 @@ struct TableViewCell: View {
                                 )
                         }
                     }
-                    
-                    if style.hasNavigationArrow {
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(appColor: style.foregroundColor)
-                    }
                 }
             }
             .testingIdentifier("\(localizationKey)_button")
@@ -271,10 +264,6 @@ struct TableViewCell: View {
     enum Style {
         case navigation
         case plain
-        
-        var hasNavigationArrow: Bool {
-            return self == .navigation
-        }
         
         var textWeight: TextWeight {
             switch self {
@@ -387,7 +376,8 @@ struct EmptyListView: View {
     let imageName: String
     
     let titleLocalizationKey: String
-    let subtitleLocalizationKey: String?
+    
+    let subtitleText: AnyView?
     
     let handleHomeTap: () -> Void
     
@@ -401,10 +391,8 @@ struct EmptyListView: View {
                                   textWeight: .bold,
                                   fontSize: 15)
                     
-                    if let subtitleLocalizationKey = self.subtitleLocalizationKey {
-                        LocalizedText(localizationKey: subtitleLocalizationKey,
-                                      fontSize: 12)
-                            .opacity(0.6)
+                    if let subtitleText = self.subtitleText {
+                        subtitleText
                     }
                 }
             }
@@ -426,7 +414,29 @@ struct EmptyListView: View {
         self.imageName = imageName
         
         self.titleLocalizationKey = titleLocalizationKey
-        self.subtitleLocalizationKey = subtitleLocalizationKey
+        
+        if let subtitleLocalizationKey = subtitleLocalizationKey {
+            self.subtitleText = AnyView(
+                LocalizedText(localizationKey: subtitleLocalizationKey,
+                              fontSize: 12)
+                    .opacity(0.6)
+            )
+        }
+        else {
+            self.subtitleText = nil
+        }
+        
+        self.handleHomeTap = handleHomeTap
+    }
+    
+    init(imageName: String,
+         titleLocalizationKey: String,
+         subtitleText: AnyView,
+         handleHomeTap: @escaping () -> Void) {
+        self.imageName = imageName
+        
+        self.titleLocalizationKey = titleLocalizationKey
+        self.subtitleText = subtitleText
         
         self.handleHomeTap = handleHomeTap
     }

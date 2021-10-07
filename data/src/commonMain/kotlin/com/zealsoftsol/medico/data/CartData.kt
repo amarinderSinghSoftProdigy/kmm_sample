@@ -11,7 +11,9 @@ data class CartRequest(
     val buyingOption: BuyingOption,
     @SerialName("cartIdentifier")
     val id: CartIdentifier? = null,
-    val quantity: Int? = null,
+    val quantity: Double? = null,
+    @SerialName("freeQty")
+    val freeQuantity: Double? = null,
 )
 
 @Serializable
@@ -72,6 +74,8 @@ data class CartItem(
     val productCode: String,
     val productName: String,
     val quantity: FormattedData<Double>,
+    @SerialName("freeQty")
+    val freeQuantity: FormattedData<Double>,
     val sellerId: String,
     val standardUnit: String,
     @SerialName("stock")
@@ -92,6 +96,8 @@ data class CartIdentifier(
 @Serializable
 data class CartInfo(
     val quantity: FormattedData<Double>,
+    @SerialName("freeQty")
+    val freeQuantity: FormattedData<Double>,
 )
 
 @Serializable

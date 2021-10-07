@@ -298,7 +298,7 @@ extension NavigationOption {
             return "purchase_orders"
             
         case .Orders():
-            return "orders"
+            return "my_orders"
             
         case .Invoices():
             return "invoices"

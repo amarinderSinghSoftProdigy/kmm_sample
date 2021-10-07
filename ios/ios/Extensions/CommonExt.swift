@@ -155,6 +155,21 @@ extension DataStockInfo {
     }
 }
 
+extension DataCartItem {
+    var quoteAvailabilityColor: AppColor {
+        switch self.quotedData?.isAvailable {
+        case .some(true):
+            return .green
+            
+        case .some(false):
+            return .red
+            
+        case .none:
+            return .lightGrey
+        }
+    }
+}
+
 
 extension DataSubscriptionStatus {
     var statusColor: AppColor {
@@ -234,5 +249,13 @@ extension Array {
             
             return newSections
         }
+    }
+}
+
+extension Double {
+    var clean: String {
+        let format = self.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.1f"
+        
+        return String(format: format, self)
     }
 }

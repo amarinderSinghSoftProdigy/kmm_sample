@@ -133,21 +133,33 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             Space(16.dp)
         }
     } else {
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(top = 8.dp)) {
-            itemsIndexed(
-                items = products.value,
-                key = { _, item -> item.id },
-                itemContent = { index, item ->
-                    ProductItem(
-                        item,
-                        onClick = { scope.selectProduct(item) },
-                        onBuy = { scope.buy(item) },
-                    )
-                    if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                        scope.loadMoreProducts()
-                    }
-                },
+        if (products.value.isEmpty() && scope.products.updateCount > 0) {
+            NoRecords(
+                icon = R.drawable.ic_missing_stores,
+                text = R.string.missing_inventory_stores,
+                subtitle = scope.store.tradeName,
+                onHome = { scope.goHome() },
             )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(top = 8.dp)
+            ) {
+                itemsIndexed(
+                    items = products.value,
+                    key = { _, item -> item.id },
+                    itemContent = { index, item ->
+                        ProductItem(
+                            item,
+                            onClick = { scope.selectProduct(item) },
+                            onBuy = { scope.buy(item) },
+                        )
+                        if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                            scope.loadMoreProducts()
+                        }
+                    },
+                )
+            }
         }
     }
 }

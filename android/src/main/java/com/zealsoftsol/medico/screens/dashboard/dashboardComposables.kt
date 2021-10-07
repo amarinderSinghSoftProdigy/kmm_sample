@@ -487,13 +487,13 @@ private inline fun DashboardScope.Section.getIcon(): Painter = when (this) {
 
 @Composable
 private inline fun DashboardScope.Section.getCount(dashboard: DashboardData): Int? = when (this) {
-    DashboardScope.Section.STOCKIST_COUNT -> dashboard.userData.stockist.connected
+    DashboardScope.Section.STOCKIST_COUNT -> dashboard.userData.stockist.totalSubscribed
     DashboardScope.Section.STOCKIST_ADD -> null
     DashboardScope.Section.STOCKIST_CONNECT -> null
-    DashboardScope.Section.RETAILER_COUNT -> dashboard.userData.retailer?.connected
+    DashboardScope.Section.RETAILER_COUNT -> dashboard.userData.retailer?.totalSubscribed
     DashboardScope.Section.RETAILER_ADD -> null
-    DashboardScope.Section.HOSPITAL_COUNT -> dashboard.userData.hospital?.connected
-    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.connected
+    DashboardScope.Section.HOSPITAL_COUNT -> dashboard.userData.hospital?.totalSubscribed
+    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.totalSubscribed
 }
 
 private inline fun DashboardScope.Section.countSupported(): Boolean = when (this) {

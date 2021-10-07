@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ProductInfoScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -38,6 +39,7 @@ internal class ProductEventDelegate(
             event.productCode,
             event.sellerInfo
         )
+        is Event.Action.Product.PreviewStockistBottomSheet -> previewStockistBottomSheet(event.sellerInfo)
     }
 
     private suspend fun selectProduct(productCode: String) {
@@ -74,7 +76,8 @@ internal class ProductEventDelegate(
                             product.code,
                             product.buyingOption!!,
                             CartIdentifier(spid),
-                            1,
+                            1.0,
+                            0.0,
                         )
                     )
                     return
@@ -85,8 +88,13 @@ internal class ProductEventDelegate(
             }
         }
         navigator.withProgress {
+            val address = userRepo.requireUser().addressData
             when (buyingOption) {
-                BuyingOption.BUY -> networkProductScope.buyProductInfo(product.code)
+                BuyingOption.BUY -> networkProductScope.buyProductInfo(
+                    product.code,
+                    address.latitude,
+                    address.longitude
+                )
                 BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(product.code)
             }
         }.onSuccess { body ->
@@ -128,7 +136,9 @@ internal class ProductEventDelegate(
                 networkProductScope.buyProductSelectSeasonBoyRetailer(
                     productCode,
                     userRepo.requireUser().unitCode,
-                    sellerInfo?.unitCode
+                    sellerInfo?.unitCode,
+                    userRepo.requireUser().addressData.latitude,
+                    userRepo.requireUser().addressData.longitude,
                 )
             }.onSuccess { body ->
                 setScope(
@@ -141,5 +151,9 @@ internal class ProductEventDelegate(
                 )
             }.onError(navigator)
         }
+    }
+
+    private fun previewStockistBottomSheet(sellerInfo: SellerInfo) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.PreviewStockist(sellerInfo)
     }
 }

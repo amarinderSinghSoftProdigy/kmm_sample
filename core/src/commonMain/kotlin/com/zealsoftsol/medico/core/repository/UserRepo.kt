@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
-import com.zealsoftsol.medico.core.utils.PhoneEmailVerifier
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
@@ -48,7 +47,6 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
-    private val phoneEmailVerifier: PhoneEmailVerifier,
     private val ipAddressFetcher: IpAddressFetcher,
 ) {
 
@@ -69,7 +67,12 @@ class UserRepo(
 
     suspend fun login(login: String, password: String): BodyResponse<TokenInfo> {
         settings.putString(AUTH_LOGIN_KEY, login)
-        return networkAuthScope.login(UserRequest(login, password))
+        return networkAuthScope.login(
+            UserRequest(
+                if (login.contains("@")) login else login.formatIndia(),
+                password
+            )
+        )
     }
 
     suspend fun loadUserFromServer(): BodyResponse<CustomerData> {
@@ -133,7 +136,6 @@ class UserRepo(
         val login = settings.getString(AUTH_LOGIN_KEY, "")
         return AuthCredentials(
             login,
-            phoneEmailVerifier.verify(login),
             "",
         )
     }
@@ -145,21 +147,20 @@ class UserRepo(
     ): AuthCredentials {
         return current.copy(
             emailOrPhone,
-            phoneEmailVerifier.verify(emailOrPhone),
             password,
         )
     }
 
     suspend fun checkCanResetPassword(phoneNumber: String): AnyResponse {
-        return networkAuthScope.checkCanResetPassword(phoneNumber)
+        return networkAuthScope.checkCanResetPassword(phoneNumber.formatIndia())
     }
 
     suspend fun sendOtp(phoneNumber: String): AnyResponse {
-        return networkAuthScope.sendOtp(phoneNumber)
+        return networkAuthScope.sendOtp(phoneNumber.formatIndia())
     }
 
     suspend fun submitOtp(phoneNumber: String, otp: String): BodyResponse<TokenInfo> {
-        return networkAuthScope.verifyOtp(phoneNumber, otp)
+        return networkAuthScope.verifyOtp(phoneNumber.formatIndia(), otp)
     }
 
     suspend fun verifyPassword(password: String): ValidationResponse<PasswordValidation> {
@@ -174,7 +175,7 @@ class UserRepo(
     }
 
     suspend fun resendOtp(phoneNumber: String): AnyResponse {
-        return networkAuthScope.retryOtp(phoneNumber)
+        return networkAuthScope.retryOtp(phoneNumber.formatIndia())
     }
 
     suspend fun signUpValidation1(userRegistration1: UserRegistration1): ValidationResponse<UserValidation1> {
@@ -316,3 +317,5 @@ internal inline fun UserRepo.getDashboardDataSource(): ReadOnlyDataSource<Dashbo
     ReadOnlyDataSource(
         dashboardFlow.stateIn(GlobalScope, SharingStarted.Eagerly, null)
     )
+
+private inline fun String.formatIndia() = "91$this"
