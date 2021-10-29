@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -40,6 +42,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -123,6 +126,63 @@ fun ProductScreen(scope: ProductInfoScope) {
                 )
             }
         }
+        Space(12.dp)
+        Text(
+            text = stringResource(id = R.string.variants),
+            color = MaterialTheme.colors.background,
+            fontWeight = FontWeight.W500,
+            fontSize = 16.sp,
+        )
+        Space(4.dp)
+        FoldableItem(
+            expanded = false,
+            headerBackground = Color.White,
+            header = { isExpanded ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = scope.product.name,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W500,
+                    )
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        tint = ConstColors.lightBlue,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            },
+            childItems = scope.variants,
+            itemSpacing = 0.dp,
+            itemHorizontalPadding = 0.dp,
+            item = { item, _ ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable { scope.selectVariantProduct(item) }
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = item.name,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+        )
         Space(12.dp)
         val context = LocalContext.current
         when (scope.product.buyingOption) {

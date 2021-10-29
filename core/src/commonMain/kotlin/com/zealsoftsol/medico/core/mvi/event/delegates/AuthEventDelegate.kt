@@ -52,6 +52,7 @@ internal class AuthEventDelegate(
                     .onSuccess {
                         withProgress {
                             userRepo.sendFirebaseToken()
+                            userRepo.loadConfig()
                             notificationRepo.loadUnreadMessagesFromServer()
                             cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }

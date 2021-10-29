@@ -269,6 +269,7 @@ object DebugScopeCreator {
                     )
                 ),
                 isDetailsOpened = DataSource(false),
+                variants = emptyList(),
             )
         )
     }

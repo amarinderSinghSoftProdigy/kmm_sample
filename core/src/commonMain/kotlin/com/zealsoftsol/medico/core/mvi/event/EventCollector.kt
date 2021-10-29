@@ -134,7 +134,7 @@ internal class EventCollector(
         scope.launch {
             while (isActive) {
                 delay(60_000)
-                if (Time.now - lastActionTime > INACTIVITY_THRESHOLD_MS) {
+                if (Time.now - lastActionTime > userRepo.configFlow.value.sessionTimeout) {
                     sendEvent(Event.Action.Auth.LogOut(notifyServer = true))
                 }
             }
@@ -167,14 +167,15 @@ internal class EventCollector(
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
             }
             GlobalScope.launch(compatDispatcher) {
+                userRepo.loadConfig()
+            }
+            GlobalScope.launch(compatDispatcher) {
                 notificationRepo.loadUnreadMessagesFromServer()
             }
         }
     }
 
     companion object {
-        private const val INACTIVITY_THRESHOLD_MS = 1000 * 60 * 30
-
         private val events = MutableSharedFlow<Event>(1, 0, BufferOverflow.DROP_OLDEST)
 
         fun sendEvent(event: Event) = events.tryEmit(event)

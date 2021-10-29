@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -351,14 +349,14 @@ private fun ModifyOrderEntryBottomSheet(
             }
             Column {
                 Row(modifier = Modifier.padding(end = 30.dp)) {
-                    if (canEdit) {
-                        Checkbox(
-                            checked = isChecked.value,
-                            colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                            onCheckedChange = { entry.toggleCheck() },
-                        )
-                        Space(18.dp)
-                    }
+//                    if (canEdit) {
+//                        Checkbox(
+//                            checked = isChecked.value,
+//                            colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+//                            onCheckedChange = { entry.toggleCheck() },
+//                        )
+//                        Space(18.dp)
+//                    }
                     Column {
                         Text(
                             text = entry.orderEntry.productName,
@@ -524,14 +522,14 @@ private fun ModifyOrderEntryBottomSheet(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    if (canEdit) {
-                        MedicoSmallButton(
-                            text = stringResource(id = R.string.save),
-                            enabledColor = ConstColors.lightBlue,
-                            contentColor = Color.White,
-                            onClick = { entry.save() },
-                        )
-                    }
+//                    if (canEdit) {
+//                        MedicoSmallButton(
+//                            text = stringResource(id = R.string.save),
+//                            enabledColor = ConstColors.lightBlue,
+//                            contentColor = Color.White,
+//                            onClick = { entry.save() },
+//                        )
+//                    }
                 }
 //                Space(8.dp)
             }

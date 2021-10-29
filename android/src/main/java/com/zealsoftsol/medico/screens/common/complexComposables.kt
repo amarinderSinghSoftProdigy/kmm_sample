@@ -65,7 +65,9 @@ fun <T> FoldableItem(
                     if (hasItemLeadingSpacing) Space(itemSpacing)
                     childItems.forEachIndexed { index, value ->
                         item(value, index)
-                        if (index < childItems.lastIndex || hasItemLeadingSpacing) Space(itemSpacing)
+                        if (index < childItems.lastIndex || hasItemTrailingSpacing) Space(
+                            itemSpacing
+                        )
                     }
                 }
             }

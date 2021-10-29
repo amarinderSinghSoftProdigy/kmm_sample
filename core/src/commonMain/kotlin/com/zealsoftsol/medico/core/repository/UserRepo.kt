@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
@@ -45,6 +46,7 @@ class UserRepo(
     private val networkPasswordScope: NetworkScope.Password,
     private val networkCustomerScope: NetworkScope.Customer,
     private val networkNotificationScope: NetworkScope.Notification,
+    private val networkConfigScope: NetworkScope.Config,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -57,6 +59,7 @@ class UserRepo(
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
     )
+    val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
     val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
@@ -112,6 +115,12 @@ class UserRepo(
             user
         }
         return result
+    }
+
+    suspend fun loadConfig() {
+        networkConfigScope.getConfig().onSuccess {
+            configFlow.value = it
+        }
     }
 
     suspend fun loadDashboard() {

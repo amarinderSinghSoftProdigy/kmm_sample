@@ -50,6 +50,7 @@ internal class ProductEventDelegate(
                 ProductInfoScope(
                     product = body.product!!,
                     alternativeBrands = body.alternateProducts,
+                    variants = body.variants,
                 )
             )
         }.onError(navigator)

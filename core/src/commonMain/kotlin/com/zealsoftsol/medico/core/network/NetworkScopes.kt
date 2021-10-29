@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
@@ -222,5 +223,9 @@ interface NetworkScope {
 
     interface Help : NetworkScope {
         suspend fun getHelp(): BodyResponse<HelpData>
+    }
+
+    interface Config : NetworkScope {
+        suspend fun getConfig(): BodyResponse<ConfigData>
     }
 }

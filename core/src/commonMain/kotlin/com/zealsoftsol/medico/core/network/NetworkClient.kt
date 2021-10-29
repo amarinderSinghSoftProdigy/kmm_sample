@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
@@ -106,7 +107,8 @@ class NetworkClient(
     NetworkScope.Stores,
     NetworkScope.Cart,
     NetworkScope.Help,
-    NetworkScope.Orders {
+    NetworkScope.Orders,
+    NetworkScope.Config {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -669,6 +671,12 @@ class NetworkClient(
                     append("b2bUnitCode", unitCode)
                 }
             }
+        }
+    }
+
+    override suspend fun getConfig(): BodyResponse<ConfigData> = simpleRequest {
+        client.get<BodyResponse<ConfigData>>("${baseUrl.url}/medico/config") {
+            withMainToken()
         }
     }
 
