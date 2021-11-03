@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceEntry
 
 internal class InvoicesEventDelegate(
     navigator: Navigator,
@@ -27,6 +29,8 @@ internal class InvoicesEventDelegate(
         is Event.Action.Invoices.Search -> searchInvoices(event.value)
         is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId)
         is Event.Action.Invoices.Download -> download()
+        is Event.Action.Invoices.ShowTaxInfo -> showTaxInfo()
+        is Event.Action.Invoices.ShowTaxFor -> showTaxFor(event.invoiceEntry)
     }
 
     private suspend fun loadInvoices(isFirstLoad: Boolean) {
@@ -62,8 +66,8 @@ internal class InvoicesEventDelegate(
             }.onSuccess { body ->
                 setScope(
                     ViewInvoiceScope(
-                        DataSource(body.invoice),
-                        DataSource(body.data),
+                        DataSource(body.taxInfo),
+                        DataSource(body.sellerData),
                         DataSource(body.invoiceEntries),
                     )
                 )
@@ -74,6 +78,18 @@ internal class InvoicesEventDelegate(
     private suspend fun download() {
         navigator.withScope<ViewInvoiceScope> {
 
+        }
+    }
+
+    private fun showTaxInfo() {
+        navigator.withScope<ViewInvoiceScope> {
+            navigator.scope.value.bottomSheet.value = BottomSheet.ViewTaxInfo(it.taxInfo.value)
+        }
+    }
+
+    private fun showTaxFor(invoiceEntry: InvoiceEntry) {
+        navigator.withScope<ViewInvoiceScope> {
+            navigator.scope.value.bottomSheet.value = BottomSheet.ViewItemTax(invoiceEntry)
         }
     }
 }

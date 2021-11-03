@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.TaxInfo
 
 class InvoicesScope : Scope.Child.TabBar(), Loadable<Invoice> {
 
@@ -62,10 +63,15 @@ class InvoicesScope : Scope.Child.TabBar(), Loadable<Invoice> {
 }
 
 class ViewInvoiceScope(
-    val invoice: DataSource<Invoice>,
+    val taxInfo: DataSource<TaxInfo>,
     val b2bData: DataSource<B2BData>,
     val entries: DataSource<List<InvoiceEntry>>,
 ) : Scope.Child.TabBar() {
+
+    fun viewTaxInfo() = EventCollector.sendEvent(Event.Action.Invoices.ShowTaxInfo)
+
+    fun viewInvoice(entry: InvoiceEntry) =
+        EventCollector.sendEvent(Event.Action.Invoices.ShowTaxFor(entry))
 
 //    fun download() = EventCollector.sendEvent(Event.Action.Invoices.Download)
 }

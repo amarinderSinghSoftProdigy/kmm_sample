@@ -1,5 +1,7 @@
 package com.zealsoftsol.medico.screens.invoices
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -34,15 +37,15 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.data.InvoiceEntry
-import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
 @Composable
 fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
-    val invoice = scope.invoice.flow.collectAsState()
+    val taxInfo = scope.taxInfo.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
+    val entries = scope.entries.flow.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,7 +70,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                         )
                         Space(8.dp)
                         Text(
-                            text = invoice.value.tradeName,
+                            text = b2bData.value.tradeName,
                             color = MaterialTheme.colors.background,
                             fontWeight = FontWeight.W700,
                             fontSize = 15.sp,
@@ -89,15 +92,15 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                         )
                     }
                 },
-                childItems = listOf(invoice.value.info),
-                item = { value, _ ->
+                childItems = listOf(""),
+                item = { _, _ ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column {
                             Text(
-                                text = invoice.value.tradeName,
+                                text = b2bData.value.addressData.landmark,
                                 color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.W500,
                                 fontSize = 12.sp,
@@ -139,7 +142,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                             append(stringResource(id = R.string.invoice_no))
                             append(" ")
                             val startIndex = length
-                            append(invoice.value.info.id)
+                            append(taxInfo.value.b2bUnitInvoiceId)
                             addStyle(
                                 SpanStyle(fontWeight = FontWeight.W700),
                                 startIndex,
@@ -156,7 +159,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                             append(stringResource(id = R.string.type))
                             append(": ")
                             val startIndex = length
-                            append(invoice.value.info.paymentMethod.serverValue)
+                            append(taxInfo.value.paymentMethod.serverValue)
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
@@ -173,14 +176,14 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = invoice.value.info.date,
+                        text = taxInfo.value.invoiceDate,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W500,
                         fontSize = 14.sp,
                     )
                     Space(4.dp)
                     Text(
-                        text = invoice.value.info.time,
+                        text = taxInfo.value.invoiceTime,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W500,
                         fontSize = 14.sp,
@@ -189,38 +192,63 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
             }
             Space(8.dp)
             Divider()
-            val entries = scope.entries.flow.collectAsState()
             Column {
                 Space(8.dp)
                 entries.value.forEach {
-                    InvoiceEntryItem(it)
+                    InvoiceEntryItem(it) { scope.viewInvoice(it) }
                 }
                 Space(8.dp)
             }
         }
-        Column {
-            OrderTotal(invoice.value.info.total.formattedPrice)
-//            Space(16.dp)
-//            MedicoButton(
-//                text = stringResource(id = R.string.download),
-//                isEnabled = true,
-//                color = ConstColors.lightBlue,
-//                contentColor = Color.White,
-//                onClick = { scope.download() },
-//            )
-            Space(10.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                .clickable { scope.viewTaxInfo() }
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.net_payable),
+                    color = Color.White,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = taxInfo.value.netAmount.formatted,
+                    color = Color.White,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 20.sp,
+                )
+            }
+            Space(2.dp)
+            Text(
+                text = taxInfo.value.amountInWords,
+                color = Color.White,
+                fontWeight = FontWeight.W600,
+                fontSize = 10.sp,
+                modifier = Modifier.align(Alignment.End),
+            )
+            Space(4.dp)
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun InvoiceEntryItem(entry: InvoiceEntry) {
+fun InvoiceEntryItem(entry: InvoiceEntry, onClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
+        onClick = onClick,
     ) {
         Row(
             modifier = Modifier

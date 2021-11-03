@@ -5,8 +5,10 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.TaxInfo
 
 sealed class BottomSheet {
 
@@ -108,4 +110,8 @@ sealed class BottomSheet {
     }
 
     data class PreviewStockist(val sellerInfo: SellerInfo) : BottomSheet()
+
+    data class ViewTaxInfo(val taxInfo: TaxInfo) : BottomSheet()
+
+    data class ViewItemTax(val invoiceEntry: InvoiceEntry) : BottomSheet()
 }

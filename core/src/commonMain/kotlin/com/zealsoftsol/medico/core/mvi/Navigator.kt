@@ -37,6 +37,12 @@ class Navigator(private val safeCastEnabled: Boolean) : UiNavigator {
         strategy: DropStrategy = DropStrategy.First,
         updateDataSource: Boolean = true
     ): Scope? {
+        if (hostScope.value.bottomSheet.value != null) {
+            hostScope.value.dismissBottomSheet()
+        }
+        if (hostScope.value.alertError.value != null) {
+            hostScope.value.dismissAlertError()
+        }
         val queue = getQueue(activeQueue)
         return when (strategy) {
             is DropStrategy.First -> {

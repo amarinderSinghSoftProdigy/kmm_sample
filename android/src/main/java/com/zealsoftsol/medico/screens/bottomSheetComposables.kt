@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -53,12 +54,17 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.TaxInfo
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
@@ -107,7 +113,393 @@ fun Scope.Host.showBottomSheet(
                 sellerInfo = bs.sellerInfo,
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.ViewTaxInfo -> ViewTaxInfoBottomSheet(
+                taxInfo = bs.taxInfo,
+                onDismiss = { dismissBottomSheet() },
+            )
+            is BottomSheet.ViewItemTax -> ViewItemTaxBottomSheet(
+                invoiceEntry = bs.invoiceEntry,
+                onDismiss = { dismissBottomSheet() },
+            )
         }
+    }
+}
+
+@Composable
+private fun ViewItemTaxBottomSheet(
+    invoiceEntry: InvoiceEntry,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        invoiceEntry.productCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 71.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+                Space(16.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = invoiceEntry.productName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 20.sp,
+                    )
+                    Space(4.dp)
+                    Row {
+                        Text(
+                            text = invoiceEntry.productCode,
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                        Space(6.dp)
+                        Box(
+                            modifier = Modifier
+                                .height(14.dp)
+                                .width(1.dp)
+                                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                                .align(Alignment.CenterVertically)
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Units: ")
+                                val startIndex = length
+                                append(invoiceEntry.standardUnit)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                    }
+                    Space(4.dp)
+                    Text(
+                        text = invoiceEntry.manufacturerName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                    )
+                }
+            }
+            Divider()
+            Space(10.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.qty),
+                    value = invoiceEntry.quantity.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.free),
+                    value = invoiceEntry.freeQty.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.price),
+                    value = invoiceEntry.price.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.total),
+                    value = invoiceEntry.totalAmount.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(10.dp)
+            Divider()
+            Column(Modifier.background(ConstColors.gray.copy(alpha = 0.05f))) {
+                Space(10.dp)
+                if (invoiceEntry.cgstTax.amount.value > 0.0 || invoiceEntry.sgstTax.amount.value > 0.0 || invoiceEntry.igstTax.amount.value > 0.0) {
+                    val taxTypeString = when (invoiceEntry.taxType) {
+                        TaxType.IGST -> "IGST"
+                        else -> "GST"
+                    }
+                    ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = "$taxTypeString(${invoiceEntry.gstTaxRate.string})",
+                        value = invoiceEntry.totalTaxAmount.formatted,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                    Space(8.dp)
+                    Column(Modifier.padding(start = 30.dp, end = 16.dp)) {
+//                        if (invoiceEntry.igstTax.amount.value > 0.0) {
+//                            ItemValue(
+//                                Modifier.fillMaxWidth(),
+//                                item = "GST(${invoiceEntry.igstTax.rate.string})",
+//                                value = invoiceEntry.igstTax.amount.formatted,
+//                                valueTextColor = MaterialTheme.colors.background,
+//                                itemTextColor = ConstColors.gray,
+//                            )
+//                            Space(8.dp)
+//                        }
+                        if (invoiceEntry.cgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = "CGST(${invoiceEntry.cgstTax.rate.string})",
+                                value = invoiceEntry.cgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = ConstColors.gray,
+                            )
+                            Space(8.dp)
+                        }
+                        if (invoiceEntry.sgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = "SGST(${invoiceEntry.sgstTax.rate.string})",
+                                value = invoiceEntry.sgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = ConstColors.gray,
+                            )
+                            Space(8.dp)
+                        }
+                    }
+                } else {
+                    ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = "GST(0.0%)",
+                        value = invoiceEntry.totalTaxAmount.formatted,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                    Space(8.dp)
+                }
+                Space(10.dp)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ViewTaxInfoBottomSheet(
+    taxInfo: TaxInfo,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.items),
+                    value = taxInfo.total.itemCount.toString()
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.units),
+                    value = taxInfo.noOfUnits.toString()
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.adjust),
+                    value = taxInfo.adjWithoutRounded.formatted
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.rounding),
+                    value = taxInfo.adjRounded.formatted
+                )
+            }
+            Space(10.dp)
+            Divider()
+            Space(10.dp)
+            ItemValue(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                item = stringResource(id = R.string.gross),
+                value = taxInfo.grossAmount.formatted,
+                valueTextColor = MaterialTheme.colors.background
+            )
+            Space(8.dp)
+            ItemValue(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                item = stringResource(id = R.string.discount),
+                value = "${taxInfo.discount.value} | ${taxInfo.discount.formatted}",
+                valueTextColor = MaterialTheme.colors.background
+            )
+            Space(8.dp)
+            ItemValue(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                item = stringResource(id = R.string.freight),
+                value = taxInfo.freight.formatted,
+                valueTextColor = MaterialTheme.colors.background
+            )
+            Space(8.dp)
+            ItemValue(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                item = stringResource(id = R.string.total_tax),
+                value = taxInfo.totalTaxAmount.formatted,
+                valueTextColor = MaterialTheme.colors.background
+            )
+            Space(10.dp)
+            Divider()
+            Column(
+                Modifier
+                    .background(ConstColors.gray.copy(alpha = 0.05f))
+            ) {
+                Space(10.dp)
+                val availableTaxes =
+                    taxInfo.totalTaxRates.filter { it.totalTaxableAmount.value > 0.0 }
+                if (availableTaxes.isNotEmpty()) {
+                    val taxTypeString = when (taxInfo.type) {
+                        TaxType.IGST -> "IGST"
+                        else -> "GST"
+                    }
+                    availableTaxes.forEach {
+                        ItemValue(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            item = "$taxTypeString(${it.gstDisplayName})",
+                            value = it.totalTaxableAmount.formatted,
+                            valueTextColor = MaterialTheme.colors.background
+                        )
+                        Space(8.dp)
+                        if (taxInfo.type != TaxType.IGST) Column(
+                            Modifier.padding(
+                                start = 30.dp,
+                                end = 16.dp
+                            )
+                        ) {
+                            if (it.cgstTotalAmt.value > 0.0) {
+                                ItemValue(
+                                    Modifier.fillMaxWidth(),
+                                    item = "CGST(${it.cgstTaxPercent.formatted})",
+                                    value = it.cgstTotalAmt.formatted,
+                                    valueTextColor = MaterialTheme.colors.background,
+                                    itemTextColor = ConstColors.gray,
+                                )
+                                Space(8.dp)
+                            }
+                            if (it.sgstTotalAmt.value > 0.0) {
+                                ItemValue(
+                                    Modifier.fillMaxWidth(),
+                                    item = "SGST(${it.sgstTaxPercent.formatted})",
+                                    value = it.sgstTotalAmt.formatted,
+                                    valueTextColor = MaterialTheme.colors.background,
+                                    itemTextColor = ConstColors.gray,
+                                )
+                                Space(8.dp)
+                            }
+                        }
+                    }
+                } else {
+                    ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = "GST(0.0%)",
+                        value = taxInfo.totalIGST.formatted,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                    Space(8.dp)
+                }
+                Space(2.dp)
+                Divider()
+                Space(10.dp)
+                ItemValue(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    item = stringResource(id = R.string.net_payable),
+                    value = taxInfo.netAmount.formatted,
+                    itemTextSize = 20.sp,
+                    valueTextSize = 20.sp,
+                    valueTextColor = MaterialTheme.colors.background,
+                )
+                Space(16.dp)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ItemValue(
+    modifier: Modifier = Modifier,
+    item: String,
+    value: String,
+    itemTextColor: Color = MaterialTheme.colors.background,
+    valueTextColor: Color = ConstColors.lightBlue,
+    itemTextSize: TextUnit = 16.sp,
+    valueTextSize: TextUnit = 15.sp,
+) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(
+            text = item,
+            color = itemTextColor,
+            fontWeight = FontWeight.W600,
+            fontSize = itemTextSize,
+        )
+        Text(
+            text = value,
+            color = valueTextColor,
+            fontWeight = FontWeight.W700,
+            fontSize = valueTextSize,
+        )
     }
 }
 

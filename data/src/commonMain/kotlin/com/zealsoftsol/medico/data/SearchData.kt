@@ -104,7 +104,8 @@ data class PriceInfo(
 @Serializable
 data class PriceData(
     val price: Double,
-    val formattedPrice: String
+    val formattedPrice: String,
+    val itemCount: Int = -1,
 )
 
 @Serializable

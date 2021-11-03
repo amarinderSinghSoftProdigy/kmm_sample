@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
@@ -227,6 +228,9 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Invoices()
             data class Select(val invoiceId: String) : Invoices()
             object Download : Invoices()
+
+            object ShowTaxInfo : Invoices()
+            data class ShowTaxFor(val invoiceEntry: InvoiceEntry) : Invoices()
         }
     }
 

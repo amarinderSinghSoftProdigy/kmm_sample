@@ -643,7 +643,7 @@ class NetworkClient(
         to: Long?,
         pagination: Pagination
     ) = simpleRequest {
-        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices/tax") {
             withMainToken()
             url {
                 parameters.apply {
@@ -664,7 +664,7 @@ class NetworkClient(
         unitCode: String,
         invoiceId: String
     ) = simpleRequest {
-        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices/tax/$invoiceId") {
             withMainToken()
             url {
                 parameters.apply {
