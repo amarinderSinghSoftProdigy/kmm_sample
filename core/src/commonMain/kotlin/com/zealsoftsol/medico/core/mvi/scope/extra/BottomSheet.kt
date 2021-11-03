@@ -114,4 +114,6 @@ sealed class BottomSheet {
     data class ViewTaxInfo(val taxInfo: TaxInfo) : BottomSheet()
 
     data class ViewItemTax(val invoiceEntry: InvoiceEntry) : BottomSheet()
+
+    data class ViewQrCode(val qrUrl: String) : BottomSheet()
 }

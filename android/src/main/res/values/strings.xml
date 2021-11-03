@@ -213,6 +213,8 @@
     <string name="place_order">Place your order</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="qr_code">QR Code</string>
+    <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
     <string name="ptr">Ptr</string>
     <string name="free">Free</string>
     <string name="subtotal">Subtotal</string>
@@ -283,6 +285,11 @@
     <string name="delete_products">Delete Not Available products</string>
     <string name="invalid_qty">Qty + Free must be a whole number</string>
     <string name="free_more_qty">Free can\'t be more than Qty</string>
+    <string name="view_qr">View QR</string>
+    <string name="download_invoice">Download Invoice</string>
+    <string name="invoice_downloading">Downloading Invoice</string>
+    <string name="invoice_download_success">Invoice has been successfully downloaded</string>
+    <string name="invoice_download_fail">Error downloading invoice</string>
 
     <!--error codes-->
 

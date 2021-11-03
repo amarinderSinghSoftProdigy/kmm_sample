@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -52,6 +53,8 @@ import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
@@ -120,6 +123,46 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.ViewItemTax -> ViewItemTaxBottomSheet(
                 invoiceEntry = bs.invoiceEntry,
                 onDismiss = { dismissBottomSheet() },
+            )
+            is BottomSheet.ViewQrCode -> ViewQrBottomSheet(
+                url = bs.qrUrl,
+                onDismiss = { dismissBottomSheet() },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ViewQrBottomSheet(
+    url: String,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.qr_code).uppercase(),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 20.sp,
+            )
+            Space(16.dp)
+            CoilImage(
+                src = url,
+                size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+            )
+            Space(16.dp)
+            Text(
+                text = stringResource(id = R.string.qr_hint),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W500,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
     }

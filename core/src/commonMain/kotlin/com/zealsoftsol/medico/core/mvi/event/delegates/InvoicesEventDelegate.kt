@@ -28,9 +28,9 @@ internal class InvoicesEventDelegate(
         is Event.Action.Invoices.Load -> loadInvoices(event.isFirstLoad)
         is Event.Action.Invoices.Search -> searchInvoices(event.value)
         is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId, event.isPoInvoice)
-        is Event.Action.Invoices.Download -> download()
         is Event.Action.Invoices.ShowTaxInfo -> showTaxInfo()
         is Event.Action.Invoices.ShowTaxFor -> showTaxFor(event.invoiceEntry)
+        is Event.Action.Invoices.ViewInvoiceAction -> viewInvoiceAction(event.action, event.payload)
     }
 
     private suspend fun loadInvoices(isFirstLoad: Boolean) {
@@ -81,9 +81,17 @@ internal class InvoicesEventDelegate(
         }
     }
 
-    private suspend fun download() {
+    private fun viewInvoiceAction(action: ViewInvoiceScope.Action, payload: Any?) {
         navigator.withScope<ViewInvoiceScope> {
-
+            when (action) {
+                ViewInvoiceScope.Action.VIEW_QR -> {
+                    navigator.scope.value.bottomSheet.value =
+                        BottomSheet.ViewQrCode(payload as String)
+                }
+                ViewInvoiceScope.Action.DOWNLOAD_INVOICE -> {
+                    it.notifications.value = ViewInvoiceScope.InvoiceDownloading
+                }
+            }
         }
     }
 

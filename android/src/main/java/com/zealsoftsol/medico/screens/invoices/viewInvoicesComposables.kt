@@ -22,9 +22,11 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -33,13 +35,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
@@ -200,41 +208,80 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                 Space(8.dp)
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
-                .clickable { scope.viewTaxInfo() }
-                .padding(12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                    .clickable { scope.viewTaxInfo() }
+                    .padding(12.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.net_payable),
+                        color = Color.White,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 16.sp,
+                    )
+                    Text(
+                        text = taxInfo.value.netAmount.formatted,
+                        color = Color.White,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 20.sp,
+                    )
+                }
+                Space(2.dp)
                 Text(
-                    text = stringResource(id = R.string.net_payable),
+                    text = taxInfo.value.amountInWords,
                     color = Color.White,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 10.sp,
+                    modifier = Modifier.align(Alignment.End),
                 )
-                Text(
-                    text = taxInfo.value.netAmount.formatted,
-                    color = Color.White,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
-                )
+                Space(4.dp)
             }
-            Space(2.dp)
-            Text(
-                text = taxInfo.value.amountInWords,
-                color = Color.White,
-                fontWeight = FontWeight.W600,
-                fontSize = 10.sp,
-                modifier = Modifier.align(Alignment.End),
-            )
-            Space(4.dp)
+            val actions = scope.actions.flow.collectAsState()
+            val coroutineScope = rememberCoroutineScope()
+            Row(modifier = Modifier.fillMaxWidth()) {
+                actions.value.forEachIndexed { index, action ->
+                    val activity = LocalContext.current as MainActivity
+                    MedicoButton(
+                        modifier = Modifier.weight(action.weight),
+                        text = stringResourceByName(action.stringId),
+                        isEnabled = true,
+                        color = Color(action.bgColorHex.toColorInt()),
+                        contentColor = Color(action.textColorHex.toColorInt()),
+                        onClick = {
+                            when (action) {
+                                ViewInvoiceScope.Action.VIEW_QR -> scope.acceptAction(
+                                    action,
+                                    taxInfo.value.qrCodeUrl
+                                )
+                                ViewInvoiceScope.Action.DOWNLOAD_INVOICE -> {
+                                    scope.acceptAction(action, taxInfo.value.invoiceUrl)
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        val result = activity.saveInvoice(
+                                            taxInfo.value.invoiceUrl,
+                                            taxInfo.value.invoiceId
+                                        )
+                                        scope.dismissNotification()
+                                        scope.sendInvoiceDownloadResult(result.getOrNull() == true)
+                                    }
+                                }
+                            }
+                        },
+                    )
+                    if (index != actions.value.lastIndex) {
+                        Space(12.dp)
+                    }
+                }
+            }
+            Space(16.dp)
         }
     }
 }

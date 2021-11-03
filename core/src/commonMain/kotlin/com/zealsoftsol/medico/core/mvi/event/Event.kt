@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
@@ -227,10 +228,14 @@ sealed class Event {
             data class Search(val value: String) : Invoices()
             data class Load(val isFirstLoad: Boolean) : Invoices()
             data class Select(val invoiceId: String, val isPoInvoice: Boolean) : Invoices()
-            object Download : Invoices()
 
             object ShowTaxInfo : Invoices()
             data class ShowTaxFor(val invoiceEntry: InvoiceEntry) : Invoices()
+
+            data class ViewInvoiceAction(
+                val action: ViewInvoiceScope.Action,
+                val payload: Any?,
+            ) : Invoices()
         }
     }
 
