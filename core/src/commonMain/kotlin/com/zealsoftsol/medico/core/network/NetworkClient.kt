@@ -637,13 +637,14 @@ class NetworkClient(
         }
 
     override suspend fun getInvoices(
+        isPoInvoice: Boolean,
         unitCode: String,
         search: String,
         from: Long?,
         to: Long?,
         pagination: Pagination
     ) = simpleRequest {
-        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices/tax") {
+        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices${if (isPoInvoice) "/po" else ""}/tax") {
             withMainToken()
             url {
                 parameters.apply {
@@ -661,10 +662,11 @@ class NetworkClient(
     }
 
     override suspend fun getInvoice(
+        isPoInvoice: Boolean,
         unitCode: String,
         invoiceId: String
     ) = simpleRequest {
-        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices/tax/$invoiceId") {
+        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices${if (isPoInvoice) "/po" else ""}/tax/$invoiceId") {
             withMainToken()
             url {
                 parameters.apply {

@@ -12,7 +12,7 @@ import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.TaxInfo
 
-class InvoicesScope : Scope.Child.TabBar(), Loadable<Invoice> {
+class InvoicesScope(val isPoInvoice: Boolean) : Scope.Child.TabBar(), Loadable<Invoice> {
 
     override val isRoot: Boolean = true
 
@@ -40,7 +40,7 @@ class InvoicesScope : Scope.Child.TabBar(), Loadable<Invoice> {
     }
 
     fun selectItem(item: Invoice) =
-        EventCollector.sendEvent(Event.Action.Invoices.Select(item.info.id))
+        EventCollector.sendEvent(Event.Action.Invoices.Select(item.info.id, isPoInvoice))
 
     fun setFrom(fromMs: Long) {
         this.dateRange.value = dateRange.value?.copy(fromMs = fromMs) ?: DateRange(fromMs = fromMs)

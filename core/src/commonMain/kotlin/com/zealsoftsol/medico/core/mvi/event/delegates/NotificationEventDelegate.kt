@@ -105,7 +105,10 @@ internal class NotificationEventDelegate(
                     )
                 )
                 body.invoiceOption != null -> EventCollector.sendEvent(
-                    Event.Action.Invoices.Select(invoiceId = body.invoiceOption!!.invoiceId)
+                    Event.Action.Invoices.Select(
+                        invoiceId = body.invoiceOption!!.invoiceId,
+                        isPoInvoice = false
+                    )
                 )
                 else -> {
                     setHostError(ErrorCode.somethingWentWrong)

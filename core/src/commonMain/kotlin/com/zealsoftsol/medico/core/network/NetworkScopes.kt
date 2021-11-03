@@ -208,6 +208,7 @@ interface NetworkScope {
         suspend fun confirmOrder(request: ConfirmOrderRequest): AnyResponse
 
         suspend fun getInvoices(
+            isPoInvoice: Boolean,
             unitCode: String,
             search: String,
             from: Long?,
@@ -216,6 +217,7 @@ interface NetworkScope {
         ): BodyResponse<PaginatedData<Invoice>>
 
         suspend fun getInvoice(
+            isPoInvoice: Boolean,
             unitCode: String,
             invoiceId: String
         ): BodyResponse<InvoiceResponse>

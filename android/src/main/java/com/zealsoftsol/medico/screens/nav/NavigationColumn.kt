@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.nav
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -99,18 +97,18 @@ fun NavigationColumn(
                     NavigationCell(
                         icon = icon,
                         text = text,
-                        label = if (it == NavigationOption.NewOrders) {
+                        label = if (it == NavigationOption.PoOrdersAndHistory) {
                             {
-                                Space(12.dp)
-                                Text(
-                                    text = "NEW",
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W600,
-                                    modifier = Modifier
-                                        .background(Color.Red, RoundedCornerShape(percent = 50))
-                                        .padding(vertical = 4.dp, horizontal = 8.dp),
-                                )
+//                                Space(12.dp)
+//                                Text(
+//                                    text = "NEW",
+//                                    color = Color.White,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.W600,
+//                                    modifier = Modifier
+//                                        .background(Color.Red, RoundedCornerShape(percent = 50))
+//                                        .padding(vertical = 4.dp, horizontal = 8.dp),
+//                                )
                             }
                         } else null,
                         onClick = {
@@ -155,13 +153,14 @@ fun NavigationColumn(
 private fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
     NavigationOption.Dashboard -> painterResource(id = R.drawable.ic_dashboard)
     NavigationOption.Orders -> painterResource(id = R.drawable.ic_cart_filled)
-    NavigationOption.NewOrders, NavigationOption.OrdersHistory -> painterResource(id = R.drawable.ic_cart_arrow)
+    NavigationOption.PoOrdersAndHistory -> painterResource(id = R.drawable.ic_cart_arrow)
     NavigationOption.Stores -> painterResource(id = R.drawable.ic_stores)
     NavigationOption.Stockists -> painterResource(id = R.drawable.ic_stockist)
     NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
     NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
     NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
-    NavigationOption.Invoices -> painterResource(id = R.drawable.ic_invoice)
+    NavigationOption.MyInvoices -> painterResource(id = R.drawable.ic_invoice)
+    NavigationOption.PoInvoices -> painterResource(id = R.drawable.ic_invoice)
     NavigationOption.Help -> rememberVectorPainter(Icons.Filled.Help)
     NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
     NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)

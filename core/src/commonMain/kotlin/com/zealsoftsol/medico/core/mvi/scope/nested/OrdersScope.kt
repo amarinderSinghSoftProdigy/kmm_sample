@@ -15,7 +15,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 
-class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
+class OrdersScope(val tabs: List<Tab>) : Scope.Child.TabBar(), Loadable<Order> {
 
     override val isRoot: Boolean = true
 
@@ -23,6 +23,8 @@ class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
     override val totalItems: DataSource<Int> = DataSource(0)
     override val searchText: DataSource<String> = DataSource("")
     override val pagination: Pagination = Pagination()
+
+    val activeTab: DataSource<Tab> = DataSource(tabs.first())
 
     val isFilterOpened: DataSource<Boolean> = DataSource(false)
     val dateRange: DataSource<DateRange?> = DataSource(null)
@@ -40,8 +42,22 @@ class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
         }
     }
 
+    fun selectTab(tab: Tab) {
+        searchText.value = ""
+        pagination.reset()
+        items.value = emptyList()
+        dateRange.value = null
+        activeTab.value = tab
+        EventCollector.sendEvent(Event.Action.Orders.Load(isFirstLoad = true))
+    }
+
     fun selectItem(item: Order) =
-        EventCollector.sendEvent(Event.Action.Orders.Select(item.info.id, type))
+        EventCollector.sendEvent(
+            Event.Action.Orders.Select(
+                item.info.id,
+                activeTab.value.orderType
+            )
+        )
 
     fun setFrom(fromMs: Long) {
         this.dateRange.value = dateRange.value?.copy(fromMs = fromMs) ?: DateRange(fromMs = fromMs)
@@ -60,6 +76,12 @@ class OrdersScope(val type: OrderType) : Scope.Child.TabBar(), Loadable<Order> {
 
     fun toggleFilter() {
         isFilterOpened.value = !isFilterOpened.value
+    }
+
+    enum class Tab(val stringId: String, val orderType: OrderType) {
+        ORDERS("orders", OrderType.ORDER),
+        PO_ORDERS("purchase_orders", OrderType.PURCHASE_ORDER),
+        HISTORY_ORDERS("orders_history", OrderType.HISTORY),
     }
 }
 

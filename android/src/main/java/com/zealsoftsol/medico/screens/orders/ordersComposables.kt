@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
@@ -50,6 +52,7 @@ import com.zealsoftsol.medico.data.OrderStatus
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import org.joda.time.DateTime
@@ -57,7 +60,7 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
 @Composable
-fun OrdersScreen(scope: OrdersScope) {
+fun OrdersScreen(scope: OrdersScope, isInProgress: DataSource<Boolean>) {
     Column(modifier = Modifier.fillMaxSize()) {
         remember { scope.firstLoad() }
         val search = scope.searchText.flow.collectAsState()
@@ -76,41 +79,59 @@ fun OrdersScreen(scope: OrdersScope) {
         Space(16.dp)
 
         if (!isFilterOpened.value) {
+            val activeTab = scope.activeTab.flow.collectAsState()
             val totalItems = scope.totalItems.flow.collectAsState()
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(41.dp)
                     .padding(horizontal = 16.dp)
-                    .background(ConstColors.lightBlue, MaterialTheme.shapes.medium),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                    .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
             ) {
-                Text(
-                    text = stringResource(
-                        id = when (scope.type) {
-                            OrderType.PURCHASE_ORDER -> R.string.new_orders
-                            OrderType.ORDER -> R.string.orders
-                            OrderType.HISTORY -> R.string.orders_history
+                scope.tabs.forEach {
+                    var boxMod = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                    boxMod = if (scope.tabs.size == 1) {
+                        boxMod
+                    } else {
+                        boxMod
+                            .padding(5.dp)
+                            .clickable { scope.selectTab(it) }
+                    }
+                    val isActive = activeTab.value == it
+                    boxMod = if (isActive) {
+                        boxMod.background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                    } else {
+                        boxMod
+                    }
+                    Row(
+                        modifier = boxMod,
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = stringResourceByName(it.stringId),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            color = if (isActive) Color.White else MaterialTheme.colors.background,
+                        )
+                        if (isActive && totalItems.value != 0) {
+                            Space(6.dp)
+                            Text(
+                                text = totalItems.value.toString(),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W700,
+                                color = ConstColors.yellow,
+                            )
                         }
-                    ),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W600,
-                    color = Color.White,
-                )
-                if (totalItems.value != 0) {
-                    Space(6.dp)
-                    Text(
-                        text = totalItems.value.toString(),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700,
-                        color = ConstColors.yellow,
-                    )
+                    }
                 }
             }
+
             val items = scope.items.flow.collectAsState()
-            if (items.value.isEmpty() && scope.items.updateCount > 0) {
-                val (icon, text) = when (scope.type) {
+            if (items.value.isEmpty() && !isInProgress.flow.value) {
+                val (icon, text) = when (activeTab.value.orderType) {
                     OrderType.ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
                     OrderType.PURCHASE_ORDER -> R.drawable.ic_missing_orders to R.string.missing_po_orders
                     OrderType.HISTORY -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders

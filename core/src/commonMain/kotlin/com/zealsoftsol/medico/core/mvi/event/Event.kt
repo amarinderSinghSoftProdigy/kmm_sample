@@ -226,7 +226,7 @@ sealed class Event {
 
             data class Search(val value: String) : Invoices()
             data class Load(val isFirstLoad: Boolean) : Invoices()
-            data class Select(val invoiceId: String) : Invoices()
+            data class Select(val invoiceId: String, val isPoInvoice: Boolean) : Invoices()
             object Download : Invoices()
 
             object ShowTaxInfo : Invoices()
@@ -260,8 +260,8 @@ sealed class Event {
         object Stores : Transition()
         object Cart : Transition()
         object Orders : Transition()
-        object NewOrders : Transition()
-        object OrdersHistory : Transition()
-        object Invoices : Transition()
+        object PoOrdersAndHistory : Transition()
+        object MyInvoices : Transition()
+        object PoInvoices : Transition()
     }
 }
