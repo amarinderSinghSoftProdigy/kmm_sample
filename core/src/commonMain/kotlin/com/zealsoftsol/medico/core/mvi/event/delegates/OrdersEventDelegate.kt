@@ -56,7 +56,7 @@ internal class OrdersEventDelegate(
         loadHelper.load<OrdersScope, Order>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
             networkOrdersScope.getOrders(
-                type = type,
+                type = activeTab.value.orderType,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
@@ -70,7 +70,7 @@ internal class OrdersEventDelegate(
         loadHelper.search<OrdersScope, Order>(searchValue = search) {
             val user = userRepo.requireUser()
             networkOrdersScope.getOrders(
-                type = type,
+                type = activeTab.value.orderType,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,

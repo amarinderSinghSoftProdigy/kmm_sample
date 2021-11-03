@@ -7,9 +7,11 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.ProductVariant
 
 class ProductInfoScope(
     val product: ProductSearch,
+    val variants: List<ProductVariant>,
     val alternativeBrands: List<AlternateProductData>,
     val isDetailsOpened: DataSource<Boolean> = DataSource(false),
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
@@ -30,4 +32,7 @@ class ProductInfoScope(
 
     fun selectAlternativeProduct(product: AlternateProductData) =
         EventCollector.sendEvent(Event.Action.Product.SelectAlternative(product))
+
+    fun selectVariantProduct(variant: ProductVariant) =
+        EventCollector.sendEvent(Event.Action.Product.SelectFromSearch(variant.code))
 }

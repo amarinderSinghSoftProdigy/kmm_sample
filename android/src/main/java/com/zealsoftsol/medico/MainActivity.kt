@@ -1,12 +1,18 @@
 package com.zealsoftsol.medico
 
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -40,6 +46,8 @@ import org.kodein.di.DIAware
 import org.kodein.di.android.closestDI
 import org.kodein.di.instance
 import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 
 class MainActivity : ComponentActivity(), DIAware {
 
@@ -61,6 +69,13 @@ class MainActivity : ComponentActivity(), DIAware {
         }
     }
     private val messaging by lazy { (application as MedicoApp).messaging }
+    private var permissionCompletion: CompletableDeferred<Boolean> = CompletableDeferred()
+    private val requestPermission by lazy {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isSuccess ->
+            permissionCompletion.complete(isSuccess)
+            permissionCompletion = CompletableDeferred()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,6 +173,52 @@ class MainActivity : ComponentActivity(), DIAware {
             .setToolbarColor("#0084D4".toColorInt())
             .build()
             .launchUrl(this, url.toUri())
+    }
+
+    suspend fun saveInvoice(url: String, invoiceName: String): Result<Boolean> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    saveFileUsingMediaStore(this@MainActivity, url, "invoice_$invoiceName")
+                } else {
+                    requestPermission.launch(WRITE_EXTERNAL_STORAGE)
+                    if (permissionCompletion.await()) {
+                        val target = File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            invoiceName
+                        )
+                        URL(url).openStream().use { input ->
+                            FileOutputStream(target).use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+        }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun saveFileUsingMediaStore(context: Context, url: String, fileName: String): Boolean {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+        }
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+        return if (uri != null) {
+            URL(url).openStream().use { input ->
+                resolver.openOutputStream(uri).use { output ->
+                    input.copyTo(output!!, DEFAULT_BUFFER_SIZE)
+                }
+            }
+            true
+        } else {
+            false
+        }
     }
 
     private fun handleIntent(intent: Intent) {

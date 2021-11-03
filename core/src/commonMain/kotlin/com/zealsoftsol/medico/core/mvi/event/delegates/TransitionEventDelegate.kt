@@ -24,7 +24,6 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -134,16 +133,16 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Orders -> setScope(
-                    OrdersScope(OrderType.ORDER)
+                    OrdersScope(listOf(OrdersScope.Tab.ORDERS))
                 )
-                is Event.Transition.NewOrders -> setScope(
-                    OrdersScope(OrderType.PURCHASE_ORDER)
+                is Event.Transition.PoOrdersAndHistory -> setScope(
+                    OrdersScope(listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS))
                 )
-                is Event.Transition.OrdersHistory -> setScope(
-                    OrdersScope(OrderType.HISTORY)
+                is Event.Transition.MyInvoices -> setScope(
+                    InvoicesScope(isPoInvoice = false)
                 )
-                is Event.Transition.Invoices -> setScope(
-                    InvoicesScope()
+                is Event.Transition.PoInvoices -> setScope(
+                    InvoicesScope(isPoInvoice = true)
                 )
             }
         }

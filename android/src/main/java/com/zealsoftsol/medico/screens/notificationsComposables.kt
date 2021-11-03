@@ -1,11 +1,13 @@
 package com.zealsoftsol.medico.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
@@ -26,6 +28,7 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.common.AlertButton
@@ -91,6 +94,12 @@ fun Notification(
                     text = stringResource(id = R.string.sure_confirm_order),
                     style = MaterialTheme.typography.subtitle1,
                 )
+                is ViewInvoiceScope.InvoiceDownloading -> Box(
+                    Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = ConstColors.yellow)
+                }
             }
         },
         buttons = {
@@ -131,6 +140,7 @@ fun Notification(
                 is ConfirmOrderScope.AreYouSure -> CartNotificationButtons(onDismiss) {
                     notification.confirm()
                 }
+                is ViewInvoiceScope.InvoiceDownloading -> Unit
             }
         },
         properties = DialogProperties(

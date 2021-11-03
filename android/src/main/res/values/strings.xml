@@ -111,6 +111,7 @@
     <string name="add_to_cart">Add to cart</string>
     <string name="get_quote">Get Quote</string>
     <string name="details">Details</string>
+    <string name="variants">Variants</string>
     <string name="alternative_brands">Alternative Brands</string>
     <string name="manufacturer">Manufacturer</string>
     <string name="compositions">Compositions</string>
@@ -132,6 +133,7 @@
     <string name="orders">My Orders</string>
     <string name="new_orders">Purchase orders</string>
     <string name="purchase_orders">Purchase orders</string>
+    <string name="purchase_orders_history">Purchase orders &amp; PO History</string>
     <string name="orders_history">PO history</string>
     <string name="search_orders">Search orders</string>
     <string name="cancel">Cancel</string>
@@ -182,7 +184,19 @@
     <string name="not_available">Not available</string>
     <string name="limited">Limited</string>
     <string name="items">Items</string>
+    <string name="adjust">(-/+ Adjust)</string>
+    <string name="rounding">Rounding</string>
+    <string name="units">Units</string>
+    <string name="gross">Gross Amount</string>
     <string name="quoted">Quoted</string>
+    <string name="discount">Discount</string>
+    <string name="freight">Freight</string>
+    <string name="total_tax">Total Tax</string>
+    <string name="net_payable">Net Payable:</string>
+    <string name="gst">GST</string>
+    <string name="sgst">SGST</string>
+    <string name="cgst">CGST</string>
+    <string name="igst">IGST</string>
     <string name="empty_cart">Empty Cart</string>
     <string name="upload_file_too_big">The file you are trying to upload is too big. Maximum size 10MB.</string>
     <string name="connect_with_us">Instantly Connect with us</string>
@@ -199,6 +213,8 @@
     <string name="place_order">Place your order</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="qr_code">QR Code</string>
+    <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
     <string name="ptr">Ptr</string>
     <string name="free">Free</string>
     <string name="subtotal">Subtotal</string>
@@ -239,6 +255,7 @@
     <string name="max_file_size">Maximum file size:</string>
     <string name="mb_10">10 MB</string>
     <string name="invoices">My Invoices</string>
+    <string name="po_invoices">PO Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
@@ -268,6 +285,11 @@
     <string name="delete_products">Delete Not Available products</string>
     <string name="invalid_qty">Qty + Free must be a whole number</string>
     <string name="free_more_qty">Free can\'t be more than Qty</string>
+    <string name="view_qr">View QR</string>
+    <string name="download_invoice">Download Invoice</string>
+    <string name="invoice_downloading">Downloading Invoice</string>
+    <string name="invoice_download_success">Invoice has been successfully downloaded</string>
+    <string name="invoice_download_fail">Error downloading invoice</string>
 
     <!--error codes-->
 

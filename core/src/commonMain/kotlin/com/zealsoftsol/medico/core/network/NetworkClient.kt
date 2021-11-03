@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
 import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
+import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
@@ -106,7 +107,8 @@ class NetworkClient(
     NetworkScope.Stores,
     NetworkScope.Cart,
     NetworkScope.Help,
-    NetworkScope.Orders {
+    NetworkScope.Orders,
+    NetworkScope.Config {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -635,13 +637,14 @@ class NetworkClient(
         }
 
     override suspend fun getInvoices(
+        isPoInvoice: Boolean,
         unitCode: String,
         search: String,
         from: Long?,
         to: Long?,
         pagination: Pagination
     ) = simpleRequest {
-        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices") {
+        client.get<BodyResponse<PaginatedData<Invoice>>>("${baseUrl.url}/invoices${if (isPoInvoice) "/po" else ""}/tax") {
             withMainToken()
             url {
                 parameters.apply {
@@ -659,16 +662,23 @@ class NetworkClient(
     }
 
     override suspend fun getInvoice(
+        isPoInvoice: Boolean,
         unitCode: String,
         invoiceId: String
     ) = simpleRequest {
-        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices/$invoiceId") {
+        client.get<BodyResponse<InvoiceResponse>>("${baseUrl.url}/invoices${if (isPoInvoice) "/po" else ""}/tax/$invoiceId") {
             withMainToken()
             url {
                 parameters.apply {
                     append("b2bUnitCode", unitCode)
                 }
             }
+        }
+    }
+
+    override suspend fun getConfig(): BodyResponse<ConfigData> = simpleRequest {
+        client.get<BodyResponse<ConfigData>>("${baseUrl.url}/medico/config") {
+            withMainToken()
         }
     }
 

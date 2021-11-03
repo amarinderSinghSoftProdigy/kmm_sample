@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -37,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
@@ -45,9 +42,7 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.FoldableItem
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
 @Composable
@@ -236,25 +231,25 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
         }
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             OrderTotal(order.value.info.total.formattedPrice)
-            Space(16.dp)
-            if (scope.canEdit) {
-                val actions = scope.actions.flow.collectAsState()
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    actions.value.forEachIndexed { index, action ->
-                        MedicoButton(
-                            modifier = Modifier.weight(action.weight),
-                            text = stringResourceByName(action.stringId),
-                            isEnabled = true,
-                            color = Color(action.bgColorHex.toColorInt()),
-                            contentColor = Color(action.textColorHex.toColorInt()),
-                            onClick = { scope.acceptAction(action) },
-                        )
-                        if (index != actions.value.lastIndex) {
-                            Space(16.dp)
-                        }
-                    }
-                }
-            }
+//            Space(16.dp)
+//            if (scope.canEdit) {
+//                val actions = scope.actions.flow.collectAsState()
+//                Row(modifier = Modifier.fillMaxWidth()) {
+//                    actions.value.forEachIndexed { index, action ->
+//                        MedicoButton(
+//                            modifier = Modifier.weight(action.weight),
+//                            text = stringResourceByName(action.stringId),
+//                            isEnabled = true,
+//                            color = Color(action.bgColorHex.toColorInt()),
+//                            contentColor = Color(action.textColorHex.toColorInt()),
+//                            onClick = { scope.acceptAction(action) },
+//                        )
+//                        if (index != actions.value.lastIndex) {
+//                            Space(16.dp)
+//                        }
+//                    }
+//                }
+//            }
             Space(10.dp)
         }
     }
@@ -291,15 +286,15 @@ fun OrderEntryItem(
         Row(
             modifier = Modifier.padding(8.dp),
         ) {
-            if (canEdit) {
-                Checkbox(
-                    checked = isChecked,
-                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                    onCheckedChange = onChecked,
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                )
-                Space(8.dp)
-            }
+//            if (canEdit) {
+//                Checkbox(
+//                    checked = isChecked,
+//                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+//                    onCheckedChange = onChecked,
+//                    modifier = Modifier.align(Alignment.CenterVertically),
+//                )
+//                Space(8.dp)
+//            }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

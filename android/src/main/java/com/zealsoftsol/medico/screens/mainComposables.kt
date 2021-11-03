@@ -198,7 +198,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is CartPreviewScope -> CartPreviewScreen(it)
                     is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
                     is HelpScope -> HelpScreen(it)
-                    is OrdersScope -> OrdersScreen(it)
+                    is OrdersScope -> OrdersScreen(it, scope.isInProgress)
                     is ViewOrderScope -> ViewOrderScreen(it)
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
                     is InvoicesScope -> InvoicesScreen(it)

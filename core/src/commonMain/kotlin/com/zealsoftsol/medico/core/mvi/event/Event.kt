@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
@@ -9,6 +10,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
@@ -225,8 +227,15 @@ sealed class Event {
 
             data class Search(val value: String) : Invoices()
             data class Load(val isFirstLoad: Boolean) : Invoices()
-            data class Select(val invoiceId: String) : Invoices()
-            object Download : Invoices()
+            data class Select(val invoiceId: String, val isPoInvoice: Boolean) : Invoices()
+
+            object ShowTaxInfo : Invoices()
+            data class ShowTaxFor(val invoiceEntry: InvoiceEntry) : Invoices()
+
+            data class ViewInvoiceAction(
+                val action: ViewInvoiceScope.Action,
+                val payload: Any?,
+            ) : Invoices()
         }
     }
 
@@ -256,8 +265,8 @@ sealed class Event {
         object Stores : Transition()
         object Cart : Transition()
         object Orders : Transition()
-        object NewOrders : Transition()
-        object OrdersHistory : Transition()
-        object Invoices : Transition()
+        object PoOrdersAndHistory : Transition()
+        object MyInvoices : Transition()
+        object PoInvoices : Transition()
     }
 }
