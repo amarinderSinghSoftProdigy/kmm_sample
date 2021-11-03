@@ -27,7 +27,7 @@ internal class InvoicesEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Invoices) = when (event) {
         is Event.Action.Invoices.Load -> loadInvoices(event.isFirstLoad)
         is Event.Action.Invoices.Search -> searchInvoices(event.value)
-        is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId)
+        is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId, event.isPoInvoice)
         is Event.Action.Invoices.Download -> download()
         is Event.Action.Invoices.ShowTaxInfo -> showTaxInfo()
         is Event.Action.Invoices.ShowTaxFor -> showTaxFor(event.invoiceEntry)
@@ -37,6 +37,7 @@ internal class InvoicesEventDelegate(
         loadHelper.load<InvoicesScope, Invoice>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
             networkOrdersScope.getInvoices(
+                isPoInvoice = isPoInvoice,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
@@ -50,6 +51,7 @@ internal class InvoicesEventDelegate(
         loadHelper.search<InvoicesScope, Invoice>(searchValue = search) {
             val user = userRepo.requireUser()
             networkOrdersScope.getInvoices(
+                isPoInvoice = isPoInvoice,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
@@ -59,15 +61,19 @@ internal class InvoicesEventDelegate(
         }
     }
 
-    private suspend fun selectInvoice(invoiceId: String) {
+    private suspend fun selectInvoice(invoiceId: String, isPoInvoice: Boolean) {
         navigator.withScope<Scopable> {
             withProgress {
-                networkOrdersScope.getInvoice(userRepo.requireUser().unitCode, invoiceId)
+                networkOrdersScope.getInvoice(
+                    isPoInvoice,
+                    userRepo.requireUser().unitCode,
+                    invoiceId
+                )
             }.onSuccess { body ->
                 setScope(
                     ViewInvoiceScope(
                         DataSource(body.taxInfo),
-                        DataSource(body.sellerData),
+                        DataSource(if (isPoInvoice) body.buyerData else body.sellerData),
                         DataSource(body.invoiceEntries),
                     )
                 )
