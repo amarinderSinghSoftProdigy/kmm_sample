@@ -30,7 +30,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
     object Orders : NavigationOption(Event.Transition.Orders, "orders")
 
     object PoOrdersAndHistory :
-        NavigationOption(Event.Transition.PoOrdersAndHistory, "purchase_orders_history")
+        NavigationOption(Event.Transition.PoOrdersAndHistory, "new_orders")
 
     object MyInvoices : NavigationOption(Event.Transition.MyInvoices, "invoices")
 

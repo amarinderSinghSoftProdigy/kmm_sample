@@ -109,7 +109,7 @@
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
     <string name="add_to_cart">Add to cart</string>
-    <string name="get_quote">Get Quote</string>
+    <string name="get_quote">Request</string>
     <string name="details">Details</string>
     <string name="variants">Variants</string>
     <string name="alternative_brands">Alternative Brands</string>
@@ -174,8 +174,8 @@
     <string name="choose_seller">Please, choose a seller</string>
     <string name="map_location">Map Location</string>
     <string name="dashboard">Dashboard</string>
-    <string name="total">Total:</string>
-    <string name="invoice_total">Total:</string>
+    <string name="total">Tot:</string>
+    <string name="invoice_total">Tot:</string>
     <string name="continue_text">Continue</string>
     <string name="empty_cart_hint_1">Looks like you don\'t have anything!</string>
     <string name="empty_cart_hint_2">Please try to add something on cart then try again.</string>
@@ -184,7 +184,7 @@
     <string name="not_available">Not available</string>
     <string name="limited">Limited</string>
     <string name="items">Items</string>
-    <string name="adjust">(-/+ Adjust)</string>
+    <string name="adjust">(-/+ Adj.)</string>
     <string name="rounding">Rounding</string>
     <string name="units">Units</string>
     <string name="gross">Gross Amount</string>
@@ -217,7 +217,7 @@
     <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
     <string name="ptr">Ptr</string>
     <string name="free">Free</string>
-    <string name="subtotal">Subtotal</string>
+    <string name="subtotal">ST</string>
     <string name="order_total">Order Total:</string>
     <string name="tax_exclusive">*Exclusive of all taxes</string>
     <string name="order_with_quote_body">Are you sure you want to place order with a quoted item?</string>
@@ -240,8 +240,8 @@
     <string name="batch">Batch</string>
     <string name="expiry">Expiry:</string>
     <string name="expiry_">Expiry</string>
-    <string name="requested_qty">Requested QTY:</string>
-    <string name="served_qty">Served QTY:</string>
+    <string name="requested_qty">Req QTY:</string>
+    <string name="served_qty">Picked QTY:</string>
     <string name="serve_quoted">Are you sure you want to serve quote product?</string>
     <string name="sure_reject_all">Are you sure you want to Decline all products?</string>
     <string name="sure_confirm_order">Are you sure you want to confirm the order?</string>
@@ -342,4 +342,6 @@
     <string name="E0046">Invalid current password, please enter valid password again!!</string>
     <string name="E0047">Something went wrong!! Please try, change password again after sometime</string>
     <string name="E0048">Invalid (Qty + FreeQty), Please correct to nearest number</string>
+    <string name="E0053">Invoice not found, please try after sometime.</string>
+    <string name="E0054">QRCode can't be generated, try after sometime.</string>
 </resources>
