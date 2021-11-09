@@ -163,7 +163,7 @@ private fun InvoiceItem(invoice: Invoice, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = invoice.info.id,
+                    text = invoice.info.sellerId,
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,

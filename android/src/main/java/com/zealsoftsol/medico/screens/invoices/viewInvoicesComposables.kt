@@ -21,18 +21,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -297,22 +300,55 @@ fun InvoiceEntryItem(entry: InvoiceEntry, onClick: () -> Unit) {
         color = Color.White,
         onClick = onClick,
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(.6f)) {
-                Text(
-                    text = entry.productName,
-                    color = MaterialTheme.colors.background,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W600,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Space(4.dp)
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.qty))
+                            append(": ")
+                            val startIndex = length
+                            append(entry.quantity.formatted)
+                            addStyle(
+                                SpanStyle(
+                                    color = ConstColors.lightBlue,
+                                    fontWeight = FontWeight.W600
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(4.dp)
+                    Text(
+                        text = entry.productName,
+                        color = MaterialTheme.colors.background,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W600,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            Space(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = buildAnnotatedString {
                         append(stringResource(id = R.string.price))
@@ -344,20 +380,44 @@ fun InvoiceEntryItem(entry: InvoiceEntry, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Space(4.dp)
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.subtotal))
+                        append(": ")
+                        val startIndex = length
+                        append(entry.totalAmount.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W600
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
-            Column(
-                modifier = Modifier.weight(.4f),
-                horizontalAlignment = Alignment.End,
+            Space(4.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.qty))
+                        append(stringResource(id = R.string.gst))
                         append(": ")
                         val startIndex = length
-                        append(entry.quantity.formatted)
+                        append(entry.gstTaxRate.string)
                         addStyle(
                             SpanStyle(
-                                color = ConstColors.lightBlue,
+                                color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.W600
                             ),
                             startIndex,
@@ -373,10 +433,10 @@ fun InvoiceEntryItem(entry: InvoiceEntry, onClick: () -> Unit) {
                 Space(4.dp)
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.subtotal))
+                        append(stringResource(id = R.string.discount))
                         append(": ")
                         val startIndex = length
-                        append(entry.totalAmount.formatted)
+                        append(entry.discount.formatted)
                         addStyle(
                             SpanStyle(
                                 color = MaterialTheme.colors.background,

@@ -482,7 +482,7 @@ private inline fun DashboardScope.Section.getIcon(): Painter = when (this) {
     DashboardScope.Section.RETAILER_COUNT -> painterResource(id = R.drawable.ic_retailer)
     DashboardScope.Section.RETAILER_ADD -> painterResource(id = R.drawable.ic_retailer)
     DashboardScope.Section.HOSPITAL_COUNT -> painterResource(id = R.drawable.ic_hospital)
-    DashboardScope.Section.SEASON_BOY_COUNT -> painterResource(id = R.drawable.ic_season_boy)
+//    DashboardScope.Section.SEASON_BOY_COUNT -> painterResource(id = R.drawable.ic_season_boy)
 }
 
 @Composable
@@ -493,7 +493,7 @@ private inline fun DashboardScope.Section.getCount(dashboard: DashboardData): In
     DashboardScope.Section.RETAILER_COUNT -> dashboard.userData.retailer?.totalSubscribed
     DashboardScope.Section.RETAILER_ADD -> null
     DashboardScope.Section.HOSPITAL_COUNT -> dashboard.userData.hospital?.totalSubscribed
-    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.totalSubscribed
+//    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.totalSubscribed
 }
 
 private inline fun DashboardScope.Section.countSupported(): Boolean = when (this) {
@@ -503,5 +503,5 @@ private inline fun DashboardScope.Section.countSupported(): Boolean = when (this
     DashboardScope.Section.RETAILER_COUNT -> true
     DashboardScope.Section.RETAILER_ADD -> false
     DashboardScope.Section.HOSPITAL_COUNT -> true
-    DashboardScope.Section.SEASON_BOY_COUNT -> true
+//    DashboardScope.Section.SEASON_BOY_COUNT -> true
 }

@@ -28,7 +28,7 @@ class DashboardScope private constructor(
             Section.STOCKIST_CONNECT,
             Section.RETAILER_COUNT,
             Section.HOSPITAL_COUNT,
-            Section.SEASON_BOY_COUNT
+//            Section.SEASON_BOY_COUNT
         )
         UserType.RETAILER, UserType.HOSPITAL -> listOf(
 //            Section.NOTIFICATIONS,
@@ -65,8 +65,8 @@ class DashboardScope private constructor(
         STOCKIST_CONNECT("connect_stockist", Event.Transition.Management(UserType.STOCKIST)),
         RETAILER_COUNT("retailers", Event.Transition.Management(UserType.RETAILER)),
         RETAILER_ADD("add_retailer", Event.Transition.Management(UserType.RETAILER)),
-        HOSPITAL_COUNT("hospitals", Event.Transition.Management(UserType.HOSPITAL)),
-        SEASON_BOY_COUNT("season_boys", Event.Transition.Management(UserType.SEASON_BOY));
+        HOSPITAL_COUNT("hospitals", Event.Transition.Management(UserType.HOSPITAL));
+//        SEASON_BOY_COUNT("season_boys", Event.Transition.Management(UserType.SEASON_BOY));
 
 //        NOTIFICATIONS("notifications", Event.Transition.Notifications),
 //        ORDERS("orders", Event.Transition.Orders),
