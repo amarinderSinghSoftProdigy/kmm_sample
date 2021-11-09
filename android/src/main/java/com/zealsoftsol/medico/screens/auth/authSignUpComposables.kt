@@ -117,13 +117,13 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     isSelected = selectedType.value == DataUserType.HOSPITAL,
                     onClick = { scope.chooseUserType(DataUserType.HOSPITAL) },
                 )
-                Spacer(modifier = Modifier.size(18.dp))
-                UserType(
-                    iconRes = R.drawable.ic_season_boy,
-                    textRes = R.string.season_boy,
-                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
-                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
-                )
+//                Spacer(modifier = Modifier.size(18.dp))
+//                UserType(
+//                    iconRes = R.drawable.ic_season_boy,
+//                    textRes = R.string.season_boy,
+//                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
+//                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
+//                )
             }
         }
     )

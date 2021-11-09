@@ -22,8 +22,8 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
     object Stockists : NavigationOption(Event.Transition.Management(UserType.STOCKIST), "stockists")
     object Retailers : NavigationOption(Event.Transition.Management(UserType.RETAILER), "retailers")
     object Hospitals : NavigationOption(Event.Transition.Management(UserType.HOSPITAL), "hospitals")
-    object SeasonBoys :
-        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
+//    object SeasonBoys :
+//        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
 
     object Stores : NavigationOption(Event.Transition.Stores, "stores")
 
@@ -52,7 +52,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
-            SeasonBoys.takeIf { userType == UserType.STOCKIST },
+//            SeasonBoys.takeIf { userType == UserType.STOCKIST },
             MyInvoices,
             PoInvoices.takeIf { userType == UserType.STOCKIST },
             Help,

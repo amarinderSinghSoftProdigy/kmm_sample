@@ -66,7 +66,6 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -277,42 +276,42 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             val chosenSeller = chooseQuote.chosenSeller.flow.collectAsState()
             val quantities = scope.quantities.flow.collectAsState()
 
-            Space(16.dp)
-            QuotedItem(
-                title = stringResource(id = R.string.quote_existing_stockist),
-                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST,
-                isSeasonBoy = chooseQuote.isSeasonBoy,
-                qtyInitial = chosenSeller.value?.let { quantities.value[it]?.first ?: 0.0 } ?: 0.0,
-                freeQtyInitial = chosenSeller.value?.let { quantities.value[it]?.second ?: 0.0 }
-                    ?: 0.0,
-                onSaveQty = { qty, freeQty ->
-                    chosenSeller.value?.let {
-                        if (qty != null && freeQty != null) {
-                            scope.saveQuantitiesAndSelect(it, qty, freeQty)
-                        } else {
-                            scope.select(it)
-                        }
-                    }
-                },
-                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST) },
-                body = {
-                    Column {
-                        Dropdown(
-                            rememberChooseKey = chosenSeller.value,
-                            value = chosenSeller.value?.tradeName,
-                            hint = stringResource(id = R.string.select_stockist),
-                            dropDownItems = sellers.value.map { it.tradeName },
-                            backgroundColor = MaterialTheme.colors.primary,
-                            arrowTintColor = ConstColors.lightBlue,
-                            onSelected = { selected -> chooseQuote.chooseSeller(sellers.value.first { it.tradeName == selected }) },
-                        )
-                    }
-                },
-            )
+//            Space(16.dp)
+//            QuotedItem(
+//                title = stringResource(id = R.string.quote_existing_stockist),
+//                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST,
+//                isSeasonBoy = chooseQuote.isSeasonBoy,
+//                qtyInitial = chosenSeller.value?.let { quantities.value[it]?.first ?: 0.0 } ?: 0.0,
+//                freeQtyInitial = chosenSeller.value?.let { quantities.value[it]?.second ?: 0.0 }
+//                    ?: 0.0,
+//                onSaveQty = { qty, freeQty ->
+//                    chosenSeller.value?.let {
+//                        if (qty != null && freeQty != null) {
+//                            scope.saveQuantitiesAndSelect(it, qty, freeQty)
+//                        } else {
+//                            scope.select(it)
+//                        }
+//                    }
+//                },
+//                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST) },
+//                body = {
+//                    Column {
+//                        Dropdown(
+//                            rememberChooseKey = chosenSeller.value,
+//                            value = chosenSeller.value?.tradeName,
+//                            hint = stringResource(id = R.string.select_stockist),
+//                            dropDownItems = sellers.value.map { it.tradeName },
+//                            backgroundColor = MaterialTheme.colors.primary,
+//                            arrowTintColor = ConstColors.lightBlue,
+//                            onSelected = { selected -> chooseQuote.chooseSeller(sellers.value.first { it.tradeName == selected }) },
+//                        )
+//                    }
+//                },
+//            )
             Space(16.dp)
             QuotedItem(
                 title = stringResource(id = R.string.quote_anyone),
-                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.ANYONE,
+                isSelected = null,// selectedOption.value == BuyProductScope.ChooseQuote.Option.ANYONE,
                 isSeasonBoy = chooseQuote.isSeasonBoy,
                 onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.ANYONE) },
                 qtyInitial = SellerInfo.anyone.let { quantities.value[it]?.first ?: 0.0 },
@@ -424,7 +423,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
 @Composable
 private fun QuotedItem(
     title: String,
-    isSelected: Boolean,
+    isSelected: Boolean?,
     isSeasonBoy: Boolean,
     qtyInitial: Double,
     freeQtyInitial: Double,
@@ -441,18 +440,20 @@ private fun QuotedItem(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = isSelected,
-                    enabled = true,
-                    onClick = onToggle,
-                    colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
-                )
-                Space(16.dp)
+                if (isSelected != null) {
+                    RadioButton(
+                        selected = isSelected,
+                        enabled = true,
+                        onClick = onToggle,
+                        colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+                    )
+                    Space(16.dp)
+                }
                 Text(
                     text = title,
                     color = Color.Black,
                     fontSize = 16.sp,
-                    fontWeight = if (isSelected) FontWeight.W700 else FontWeight.W400,
+                    fontWeight = if (isSelected != false) FontWeight.W700 else FontWeight.W400,
                 )
             }
             val qty = remember { mutableStateOf(qtyInitial) }
@@ -466,7 +467,7 @@ private fun QuotedItem(
                     }
                 )
             }
-            AnimatedVisibility(visible = isSelected) {
+            AnimatedVisibility(visible = isSelected ?: true) {
                 Column {
                     Space(16.dp)
                     Divider()

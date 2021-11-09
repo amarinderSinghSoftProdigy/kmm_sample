@@ -289,6 +289,22 @@ private fun ViewItemTaxBottomSheet(
                     valueTextColor = MaterialTheme.colors.background
                 )
             }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                BoxWithConstraints {
+                    ItemValue(
+                        Modifier.width(maxWidth / 2 - 6.dp),
+                        item = stringResource(id = R.string.discount),
+                        value = invoiceEntry.discount.formatted,
+                        itemTextColor = ConstColors.lightBlue,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                }
+            }
             Space(10.dp)
             Divider()
             Column(Modifier.background(ConstColors.gray.copy(alpha = 0.05f))) {
@@ -759,7 +775,7 @@ private fun ModifyOrderEntryBottomSheet(
     val expiry = entry.expiry.flow.collectAsState()
     val isChecked = entry.isChecked.flow.collectAsState()
 
-    val canEdit = entry.canEdit
+    val canEdit = false//entry.canEdit
 
     BaseBottomSheet(onDismiss) {
         Box(
