@@ -337,7 +337,7 @@ private fun ViewItemTaxBottomSheet(
                         if (invoiceEntry.cgstTax.amount.value > 0.0) {
                             ItemValue(
                                 Modifier.fillMaxWidth(),
-                                item = "CGST(${invoiceEntry.cgstTax.rate.string})",
+                                item = "CGST(${invoiceEntry.cgstTax.percent.formatted})",
                                 value = invoiceEntry.cgstTax.amount.formatted,
                                 valueTextColor = MaterialTheme.colors.background,
                                 itemTextColor = ConstColors.gray,
@@ -347,7 +347,7 @@ private fun ViewItemTaxBottomSheet(
                         if (invoiceEntry.sgstTax.amount.value > 0.0) {
                             ItemValue(
                                 Modifier.fillMaxWidth(),
-                                item = "SGST(${invoiceEntry.sgstTax.rate.string})",
+                                item = "SGST(${invoiceEntry.sgstTax.percent.formatted})",
                                 value = invoiceEntry.sgstTax.amount.formatted,
                                 valueTextColor = MaterialTheme.colors.background,
                                 itemTextColor = ConstColors.gray,
@@ -433,7 +433,7 @@ private fun ViewTaxInfoBottomSheet(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 item = stringResource(id = R.string.discount),
-                value = "${taxInfo.discount.value} | ${taxInfo.discount.formatted}",
+                value = "${taxInfo.invoiceDiscount.value} | ${taxInfo.totalDiscountAmt.formatted}",
                 valueTextColor = MaterialTheme.colors.background
             )
             Space(8.dp)
