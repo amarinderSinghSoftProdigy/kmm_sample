@@ -58,6 +58,8 @@ data class SellerInfo(
     val stockInfo: StockInfo?,
     val priceInfo: PriceInfo?,
     val cartInfo: CartInfo? = null,
+    val isPromotionActive: Boolean,
+    val promotionData: PromotionData? = null,
 ) : WithTradeName {
 
     companion object Anyone {
@@ -89,10 +91,23 @@ data class SellerInfo(
                 price = PriceData(0.0, ""),
                 mrp = PriceData(0.0, ""),
                 marginPercent = "",
-            )
+            ),
+            isPromotionActive = false,
         )
     }
 }
+
+@Serializable
+data class PromotionData(
+    val type: String,
+    val code: String,
+    val buy: FormattedData<Double>,
+    val free: FormattedData<Double>,
+    val productDiscount: FormattedData<Double>,
+    val displayLabel: String,
+    val offerPrice: FormattedData<Double>,
+    val validity: String? = null,
+)
 
 @Serializable
 data class PriceInfo(
