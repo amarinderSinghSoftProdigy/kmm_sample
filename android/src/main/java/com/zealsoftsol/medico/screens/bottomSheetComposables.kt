@@ -54,6 +54,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
@@ -601,6 +602,48 @@ private fun PreviewStockistBottomSheet(
                 }
             }
             Space(16.dp)
+            sellerInfo.promotionData?.takeIf { sellerInfo.isPromotionActive }?.let {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, ConstColors.red, RoundedCornerShape(4.dp))
+                        .padding(16.dp),
+                ) {
+                    Text(
+                        text = it.displayLabel,
+                        color = ConstColors.red,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                    )
+                    Space(8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = it.offerPrice.formatted,
+                            color = MaterialTheme.colors.background,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = sellerInfo.priceInfo?.price?.formattedPrice.orEmpty(),
+                            color = ConstColors.gray,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W500,
+                            textDecoration = TextDecoration.LineThrough,
+                        )
+                    }
+                    it.validity?.let { v ->
+                        Space(8.dp)
+                        Text(
+                            text = v,
+                            color = ConstColors.gray,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.W300,
+                        )
+                    }
+                }
+                Space(16.dp)
+            }
             Column(
                 modifier = Modifier
                     .border(1.dp, ConstColors.gray.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
