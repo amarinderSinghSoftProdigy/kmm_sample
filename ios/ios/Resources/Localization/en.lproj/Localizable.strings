@@ -160,6 +160,7 @@
 "storage" = "Storage";
 "storage_description" = "Store at room temperature (10–30°C)";
 "alternative_brands" = "Alternative Brands";
+"variants" = "Variants";
 
 // MARK: Buy Product
 "units:" = "Units:";
@@ -380,6 +381,16 @@
 "inv_total:" = "Total:";
 "invoice_no:" = "Invoice No:";
 "empty_invoices" = "No Invoices were found";
+"discount:" = "Discount:";
+"net_payable:" = "Net Payable:";
+"units" = "Units";
+"adjust" = "(-/+ Adjust)";
+"rounding" = "Rounding";
+"gross_amount" = "Gross Amount";
+"discount" = "Discount";
+"freight" = "Freight";
+"total_tax" = "Total Tax";
+"price" = "Price";
 
 // MARK: Error Codes
 "E0000" = "Error";

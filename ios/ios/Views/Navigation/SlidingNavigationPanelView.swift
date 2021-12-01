@@ -198,7 +198,8 @@ private struct _SlidingPanelView: View {
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
                           style: style,
-                          extraChipTextLocalizationKey: navigationOption == .NewOrders() ? "new" : nil,
+                          extraChipTextLocalizationKey: nil
+                          ,
                           onTapAction: {
                             _ = navigationOption.select()
                             
@@ -239,8 +240,8 @@ extension NavigationOption {
         case .Hospitals():
             return "Hospital"
             
-        case .SeasonBoys():
-            return "SeasonBoy"
+//        case .SeasonBoys():
+//            return "SeasonBoy"
             
         case .Stores():
             return "Store"
@@ -248,17 +249,14 @@ extension NavigationOption {
         case .Help():
             return "Help"
             
-        case .NewOrders():
-            return "NewOrders"
-            
         case .Orders():
             return "Orders"
             
-        case .Invoices():
-            return "Invoice"
+        case .PoOrdersAndHistory():
+            return "PurchaseOrders"
             
-        case .OrdersHistory():
-            return "OrdersHistory"
+        case .MyInvoices():
+            return "Invoice"
             
         default:
             return nil
@@ -285,8 +283,8 @@ extension NavigationOption {
         case .Hospitals():
             return "hospitals"
             
-        case .SeasonBoys():
-            return "seasonBoys"
+//        case .SeasonBoys():
+//            return "seasonBoys"
             
         case .Stores():
             return "stores"
@@ -294,17 +292,14 @@ extension NavigationOption {
         case .Help():
             return "help"
             
-        case .NewOrders():
-            return "purchase_orders"
-            
         case .Orders():
             return "my_orders"
             
-        case .Invoices():
-            return "invoices"
+        case .PoOrdersAndHistory():
+            return "purchase_orders"
             
-        case .OrdersHistory():
-            return "orders_history"
+        case .MyInvoices():
+            return "invoices"
             
         default:
             return nil

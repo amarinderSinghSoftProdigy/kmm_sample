@@ -421,17 +421,17 @@ struct BuyProductScreen: View {
         var body: some View {
             VStack(spacing: 16) {
                 if let quantities = self.quantities.value as? [DataSellerInfo: KotlinPair<KotlinDouble, KotlinDouble>] {
-                    QuoteView(localizationKey: "quote_existing_stockist",
-                              isSelected: self.selectedOption.value == .existingStockist,
-                              needsSelectedStockist: true,
-                              isSeasonBoy: scope.isSeasonBoy,
-                              availableStockists: availableStockists.value as? [DataSellerInfo],
-                              chosenSeller: selectedStockist.value?.tradeName,
-                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
-                              quantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.first ?? 0)),
-                              freeQuantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.second ?? 0)),
-                              onQuantitySelect: handleQuantitySelect,
-                              onToggle: { scope.toggleOption(option: .existingStockist) })
+//                    QuoteView(localizationKey: "quote_existing_stockist",
+//                              isSelected: self.selectedOption.value == .existingStockist,
+//                              needsSelectedStockist: true,
+//                              isSeasonBoy: scope.isSeasonBoy,
+//                              availableStockists: availableStockists.value as? [DataSellerInfo],
+//                              chosenSeller: selectedStockist.value?.tradeName,
+//                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
+//                              quantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.first ?? 0)),
+//                              freeQuantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.second ?? 0)),
+//                              onQuantitySelect: handleQuantitySelect,
+//                              onToggle: { scope.toggleOption(option: .existingStockist) })
                     
                     QuoteView(localizationKey: "quote_any_stockist",
                               isSelected: selectedOption.value == .anyone,
