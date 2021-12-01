@@ -43,9 +43,9 @@ struct ViewOrderScreen: View {
                 CartOrderTotalPriceView(price: price)
             }
             
-            if scope.canEdit {
-                self.actionsView
-            }
+//            if scope.canEdit {
+//                self.actionsView
+//            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 24)
