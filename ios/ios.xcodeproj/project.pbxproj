@@ -110,6 +110,8 @@
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
 		7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF87242A565B00829871 /* Preview Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
+		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
+		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -245,6 +247,8 @@
 		7AA80CF33BE2304862146BEE /* Pods_Medico.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Medico.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ED1FF174FDDF050269DD464 /* Pods-Medico.prod-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.prod-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.prod-debug.xcconfig"; sourceTree = "<group>"; };
 		8F4C16B158170595A4EC8EE8 /* Pods-Medico-MedicoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico-MedicoUITests.release.xcconfig"; path = "Target Support Files/Pods-Medico-MedicoUITests/Pods-Medico-MedicoUITests.release.xcconfig"; sourceTree = "<group>"; };
+		9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTaxInfoBottomSheet.swift; sourceTree = "<group>"; };
+		9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewItemTaxBottomSheet.swift; sourceTree = "<group>"; };
 		A4D04C257EEAE918940525D2 /* Pods_Medico_MedicoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Medico_MedicoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
@@ -633,6 +637,8 @@
 				33ED9E9B2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift */,
 				332EB65225F2253C009BC392 /* PopSheet.swift */,
 				33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */,
+				9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */,
+				9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1013,6 +1019,7 @@
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
 				33BAF811265FDFED00559A68 /* ViewOrderScreen.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
+				9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */,
 				332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */,
 				338BFF0625C8171500514E79 /* NotificationsManager.swift in Sources */,
 				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
@@ -1059,6 +1066,7 @@
 				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
 				33FD6A40259CAD640092887D /* SearchBar.swift in Sources */,
 				331FC3AC25D3F6C00072D3B3 /* ComplexNotifications.swift in Sources */,
+				9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */,
 				33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				330D8C51266A0F85005D46DB /* InvoicesScreen.swift in Sources */,
@@ -1186,7 +1194,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Development";
@@ -1265,7 +1273,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
@@ -1282,10 +1290,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Development";
+				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Distribution";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
@@ -1372,7 +1380,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Distribution";
@@ -1462,7 +1470,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Distribution";
@@ -1613,7 +1621,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Development";
@@ -1631,7 +1639,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_LOADER = "";
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
@@ -1648,10 +1656,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Distribution";
+				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Development";
 				SCHEME_FILE = "${INTERMEDIATES_OUTPUT_DIR}scheme_name.txt";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "${MEDICO_COMPILATION_CONDITION}";
 				SWIFT_VERSION = 5.0;
