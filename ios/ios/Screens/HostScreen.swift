@@ -219,6 +219,16 @@ struct BottomSheetView: View {
                 Color.clear
                     .modifier(PreviewStockistBottomSheet(bottomSheet: previewStockistSheet,
                                                          onBottomSheetDismiss: dismissBottomSheet))
+            
+            case let viewTaxInfoSheet as BottomSheet.ViewTaxInfo:
+                Color.clear
+                    .modifier(ViewTaxInfoBottomSheet(bottomSheet: viewTaxInfoSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
+                
+            case let viewItemTaxSheet as BottomSheet.ViewItemTax:
+                Color.clear
+                    .modifier(ViewItemTaxBottomSheet(bottomSheet: viewItemTaxSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
                         
             default:
                 Color.clear
