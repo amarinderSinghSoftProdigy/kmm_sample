@@ -324,8 +324,8 @@ extension DashboardScope.Section {
         case .retailerCount, .retailerAdd:
             return "Retailer"
             
-        case .seasonBoyCount:
-            return "SeasonBoy"
+//        case .seasonBoyCount:
+//            return "SeasonBoy"
             
         case .hospitalCount:
             return "Hospital"
@@ -346,8 +346,8 @@ extension DashboardScope.Section {
         case .retailerCount:
             return dashboardData.userData.retailer?.connected
             
-        case .seasonBoyCount:
-            return dashboardData.userData.seasonBoy?.connected
+//        case .seasonBoyCount:
+//            return dashboardData.userData.seasonBoy?.connected
             
         case .hospitalCount:
             return dashboardData.userData.hospital?.connected
