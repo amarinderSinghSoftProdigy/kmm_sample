@@ -50,7 +50,7 @@ struct InvoiceDetailsScreen: View {
                               fontSize: 16,
                               color: .white)
                 Spacer()
-                Text(taxInfo.value?.total.formattedPrice ?? "")
+                Text(taxInfo.value?.netAmount.formatted ?? "")
                     .medicoText(textWeight: .semiBold, fontSize: 16, color: .white, multilineTextAlignment: .trailing)
             }
             HStack {
