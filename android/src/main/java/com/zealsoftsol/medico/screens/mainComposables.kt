@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,12 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreOrderPlacedScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -79,12 +86,19 @@ import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
+import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.help.HelpScreen
+import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
+import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
+import com.zealsoftsol.medico.screens.instore.InStoreOrderPlacedScreen
+import com.zealsoftsol.medico.screens.instore.InStoreProductsScreen
+import com.zealsoftsol.medico.screens.instore.InStoreSellersScreen
+import com.zealsoftsol.medico.screens.instore.InStoreUsersScreen
 import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
 import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -135,8 +149,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         },
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            TabBar {
-                val tabBarInfo = scope.tabBar.flow.collectAsState()
+            val tabBarInfo = scope.tabBar.flow.collectAsState()
+            TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     when (val info = tabBarInfo.value) {
                         is TabBarInfo.Simple -> SimpleTabBar(
@@ -152,6 +166,49 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                             coroutineScope
                         )
                         is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
+                        is TabBarInfo.NewDesignLogo -> {
+                            val keyboard = LocalSoftwareKeyboardController.current
+                            Icon(
+                                imageVector = info.icon.toLocalIcon(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .fillMaxHeight()
+                                    .padding(16.dp)
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                            when (info.icon) {
+                                                ScopeIcon.BACK -> scope.goBack()
+                                                ScopeIcon.HAMBURGER -> {
+                                                    keyboard?.hide()
+                                                    coroutineScope.launch { scaffoldState.drawerState.open() }
+                                                }
+                                            }
+                                        },
+                                    )
+                            )
+                            Space(4.dp)
+                            Image(
+                                painter = painterResource(id = R.drawable.medico_logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(vertical = 16.dp),
+                            )
+                        }
+                        is TabBarInfo.NewDesignTitle -> {
+                            Text(
+                                text = info.title,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colors.background,
+                                modifier = Modifier
+                                    .weight(0.7f)
+                                    .align(Alignment.CenterVertically)
+                                    .padding(start = 16.dp),
+                            )
+                        }
                     }
                 }
             }
@@ -204,6 +261,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InvoicesScope -> InvoicesScreen(it)
                     is ViewInvoiceScope -> ViewInvoiceScreen(it)
                     is OrderPlacedScope -> OrderPlacedScreen(it)
+                    is InStoreSellerScope -> InStoreSellersScreen(it)
+                    is InStoreProductsScope -> InStoreProductsScreen(it)
+                    is InStoreUsersScope -> InStoreUsersScreen(it)
+                    is InStoreAddUserScope -> InStoreAddUserScreen(it)
+                    is InStoreCartScope -> InStoreCartScreen(it)
+                    is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

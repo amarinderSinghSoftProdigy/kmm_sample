@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 fun <T> FoldableItem(
     expanded: Boolean,
     headerBackground: Color = Color.LightGray.copy(alpha = 0.2f),
+    headerBorder: BorderStroke? = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
     headerMinHeight: Dp = 50.dp,
     header: @Composable RowScope.(Boolean) -> Unit,
     childItems: List<T>,
@@ -42,7 +43,7 @@ fun <T> FoldableItem(
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+        border = headerBorder,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(

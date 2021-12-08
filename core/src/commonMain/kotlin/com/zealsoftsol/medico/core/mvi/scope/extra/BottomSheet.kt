@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SellerInfo
@@ -116,4 +117,17 @@ sealed class BottomSheet {
     data class ViewItemTax(val invoiceEntry: InvoiceEntry) : BottomSheet()
 
     data class ViewQrCode(val qrUrl: String) : BottomSheet()
+
+    data class InStoreViewProduct(val product: InStoreProduct) : BottomSheet() {
+
+        fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
+            EventCollector.sendEvent(
+                Event.Action.InStore.AddCartItem(
+                    product.code,
+                    product.spid,
+                    quantity,
+                    freeQuantity,
+                )
+            )
+    }
 }

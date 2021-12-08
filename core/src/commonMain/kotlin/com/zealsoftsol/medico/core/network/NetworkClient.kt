@@ -28,6 +28,12 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.InStoreCart
+import com.zealsoftsol.medico.data.InStoreCartRequest
+import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InStoreSeller
+import com.zealsoftsol.medico.data.InStoreUser
+import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
@@ -108,7 +114,8 @@ class NetworkClient(
     NetworkScope.Cart,
     NetworkScope.Help,
     NetworkScope.Orders,
-    NetworkScope.Config {
+    NetworkScope.Config,
+    NetworkScope.InStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -679,6 +686,125 @@ class NetworkClient(
     override suspend fun getConfig(): BodyResponse<ConfigData> = simpleRequest {
         client.get<BodyResponse<ConfigData>>("${baseUrl.url}/medico/config") {
             withMainToken()
+        }
+    }
+
+    override suspend fun getInStoreSellers(
+        unitCode: String,
+        search: String,
+        pagination: Pagination
+    ): BodyResponse<PaginatedData<InStoreSeller>> = simpleRequest {
+        client.get<BodyResponse<PaginatedData<InStoreSeller>>>("${baseUrl.url}/instore") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun searchInStoreSeller(
+        unitCode: String,
+        search: String,
+        pagination: Pagination
+    ): BodyResponse<PaginatedData<InStoreProduct>> = simpleRequest {
+        client.get<BodyResponse<PaginatedData<InStoreProduct>>>("${baseUrl.url}/instore/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun getInStoreUsers(
+        unitCode: String,
+        search: String,
+        pagination: Pagination
+    ): BodyResponse<PaginatedData<InStoreUser>> = simpleRequest {
+        client.get<BodyResponse<PaginatedData<InStoreUser>>>("${baseUrl.url}/instore/users") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("b2bUnitCode", unitCode)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun addUser(registration: InStoreUserRegistration): AnyResponse =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/instore/user/add") {
+                withMainToken()
+                jsonBody(registration)
+            }
+        }
+
+    override suspend fun getInStoreCart(unitCode: String) = simpleRequest {
+        client.get<BodyResponse<InStoreCart>>("${baseUrl.url}/instore/order/view") {
+            withMainToken()
+            url {
+                parameters.append("b2bUnitCode", unitCode)
+            }
+        }
+    }
+
+    override suspend fun deleteInStoreCart(unitCode: String, cartId: String) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/instore/order/deleteOrder") {
+                withMainToken()
+                jsonBody(mapOf("id" to cartId, "buyerUnitCode" to unitCode))
+            }
+        }
+
+    override suspend fun addInStoreCartEntry(request: InStoreCartRequest) =
+        simpleRequest {
+            client.post<BodyResponse<InStoreCart>>("${baseUrl.url}/instore/order/addEntry") {
+                withMainToken()
+                jsonBody(request)
+            }
+        }
+
+    override suspend fun updateInStoreCartEntry(request: InStoreCartRequest) =
+        simpleRequest {
+            client.post<BodyResponse<InStoreCart>>("${baseUrl.url}/instore/order/updateEntry") {
+                withMainToken()
+                jsonBody(request)
+            }
+        }
+
+    override suspend fun deleteInStoreCartEntry(unitCode: String, entryId: String) =
+        simpleRequest {
+            client.post<BodyResponse<InStoreCart>>("${baseUrl.url}/instore/order/deleteEntry") {
+                withMainToken()
+                jsonBody(mapOf("entryId" to entryId, "buyerUnitCode" to unitCode))
+
+            }
+        }
+
+    override suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse {
+        return simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/instore/order/confirm") {
+                withMainToken()
+                jsonBody(mapOf("id" to id, "buyerUnitCode" to unitCode))
+            }
         }
     }
 

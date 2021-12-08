@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InStoreEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
@@ -53,6 +54,7 @@ internal class EventCollector(
     storesNetworkScope: NetworkScope.Stores,
     helpNetworkScope: NetworkScope.Help,
     ordersNetworkScope: NetworkScope.Orders,
+    inStoreNetworkScope: NetworkScope.InStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -121,7 +123,13 @@ internal class EventCollector(
             userRepo,
             ordersNetworkScope,
             LoadHelper(navigator, loadHelperScope),
-        )
+        ),
+        Event.Action.InStore::class to InStoreEventDelegate(
+            navigator,
+            userRepo,
+            inStoreNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
     )
 
     init {

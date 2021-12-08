@@ -84,13 +84,14 @@ import java.util.Locale
 @Composable
 fun TabBar(
     color: Color = MaterialTheme.colors.secondary,
+    isNewDesign: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(color),
+            .background(if (!isNewDesign) color else ConstColors.newDesignGray),
         contentAlignment = Alignment.CenterStart,
     ) {
         content()

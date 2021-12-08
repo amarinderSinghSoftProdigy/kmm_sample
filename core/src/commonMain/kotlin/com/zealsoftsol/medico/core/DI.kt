@@ -128,7 +128,10 @@ fun startKodein(
             MockHelpScope()
         }
     }
-    bind<NetworkScope.Orders>() with singleton {
+    bind<NetworkScope.Config>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.InStore>() with singleton {
         instance<NetworkClient>()
     }
     bind<UserRepo>() with singleton {
@@ -149,6 +152,7 @@ fun startKodein(
     bind<Navigator>() with singleton { Navigator(useNavigatorSafeCasts) }
     bind<EventCollector>() with singleton {
         EventCollector(
+            instance(),
             instance(),
             instance(),
             instance(),
