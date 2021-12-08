@@ -6,6 +6,10 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
@@ -143,6 +147,18 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.PoInvoices -> setScope(
                     InvoicesScope(isPoInvoice = true)
+                )
+                is Event.Transition.InStore -> setScope(
+                    InStoreSellerScope()
+                )
+                is Event.Transition.InStoreUsers -> setScope(
+                    InStoreUsersScope()
+                )
+                is Event.Transition.InStoreAddUser -> setScope(
+                    InStoreAddUserScope()
+                )
+                is Event.Transition.InStoreCart -> setScope(
+                    InStoreCartScope(event.unitcode, event.name)
                 )
             }
         }

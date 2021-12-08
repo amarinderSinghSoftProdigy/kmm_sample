@@ -18,6 +18,12 @@ import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.InStoreCart
+import com.zealsoftsol.medico.data.InStoreCartRequest
+import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InStoreSeller
+import com.zealsoftsol.medico.data.InStoreUser
+import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
@@ -229,5 +235,41 @@ interface NetworkScope {
 
     interface Config : NetworkScope {
         suspend fun getConfig(): BodyResponse<ConfigData>
+    }
+
+    interface InStore : NetworkScope {
+        suspend fun getInStoreSellers(
+            unitCode: String,
+            search: String,
+            pagination: Pagination,
+        ): BodyResponse<PaginatedData<InStoreSeller>>
+
+        suspend fun searchInStoreSeller(
+            unitCode: String,
+            search: String,
+            pagination: Pagination,
+        ): BodyResponse<PaginatedData<InStoreProduct>>
+
+        suspend fun getInStoreUsers(
+            unitCode: String,
+            search: String,
+            pagination: Pagination,
+        ): BodyResponse<PaginatedData<InStoreUser>>
+
+        suspend fun addUser(
+            registration: InStoreUserRegistration
+        ): AnyResponse
+
+        suspend fun getInStoreCart(unitCode: String): BodyResponse<InStoreCart>
+        suspend fun deleteInStoreCart(unitCode: String, cartId: String): AnyResponse
+
+        suspend fun addInStoreCartEntry(request: InStoreCartRequest): BodyResponse<InStoreCart>
+        suspend fun updateInStoreCartEntry(request: InStoreCartRequest): BodyResponse<InStoreCart>
+        suspend fun deleteInStoreCartEntry(
+            unitCode: String,
+            entryId: String
+        ): BodyResponse<InStoreCart>
+
+        suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse
     }
 }

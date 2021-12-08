@@ -831,7 +831,7 @@ private fun SeasonBoyReatilerInfoItem(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun NeededSurface(
+fun NeededSurface(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {

@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
@@ -237,6 +238,47 @@ sealed class Event {
                 val payload: Any?,
             ) : Invoices()
         }
+
+        sealed class InStore : Action() {
+            override val typeClazz: KClass<*> = InStore::class
+
+            data class SellerSearch(val value: String) : InStore()
+            data class SellerLoad(val isFirstLoad: Boolean) : InStore()
+            data class SellerSelect(val unitcode: String) : InStore()
+
+            data class ProductSearch(val value: String) : InStore()
+            data class ProductLoad(val isFirstLoad: Boolean) : InStore()
+            data class ProductSelect(val item: InStoreProduct) : InStore()
+
+            data class UserSearch(val value: String) : InStore()
+            data class UserLoad(val isFirstLoad: Boolean) : InStore()
+
+            data class AddUserUpdatePincode(val pincode: String) : InStore()
+            object AddUser : InStore()
+            object FinishAddUser : InStore()
+
+            object LoadCart : InStore()
+            object ClearCart : InStore()
+            data class AddCartItem(
+                val productCode: String,
+                val spid: String,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : InStore()
+
+            data class UpdateCartItem(
+                val productCode: String,
+                val spid: String,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : InStore()
+
+            data class RemoveCartItem(
+                val entryId: String,
+            ) : InStore()
+
+            object ConfirmCartOrder : InStore()
+        }
     }
 
     sealed class Transition : Event() {
@@ -268,5 +310,9 @@ sealed class Event {
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
         object PoInvoices : Transition()
+        object InStore : Transition()
+        object InStoreUsers : Transition()
+        object InStoreAddUser : Transition()
+        data class InStoreCart(val unitcode: String, val name: String) : Transition()
     }
 }

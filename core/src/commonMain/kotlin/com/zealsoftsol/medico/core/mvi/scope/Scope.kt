@@ -99,6 +99,14 @@ sealed class TabBarInfo {
             }
         }
     }
+
+    object NewDesignLogo : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.HAMBURGER
+    }
+
+    data class NewDesignTitle(val title: String) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.HAMBURGER
+    }
 }
 
 internal object StartScope : Scope.Host()

@@ -36,6 +36,8 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object PoInvoices : NavigationOption(Event.Transition.PoInvoices, "po_invoices")
 
+    object InStore : NavigationOption(Event.Transition.InStore, "instore")
+
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
 
     companion object {
@@ -49,6 +51,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             Orders,
             PoOrdersAndHistory.takeIf { userType == UserType.STOCKIST },
             Stores,
+            InStore.takeIf { userType == UserType.STOCKIST },
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },

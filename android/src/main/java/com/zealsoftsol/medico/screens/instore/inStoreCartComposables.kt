@@ -1,6 +1,5 @@
-package com.zealsoftsol.medico.screens.cart
+package com.zealsoftsol.medico.screens.instore
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,14 +33,12 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
@@ -55,299 +52,148 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
-import com.zealsoftsol.medico.data.BuyingOption
-import com.zealsoftsol.medico.data.CartItem
-import com.zealsoftsol.medico.data.SellerCart
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
+import com.zealsoftsol.medico.data.InStoreCartEntry
 import com.zealsoftsol.medico.screens.common.EditField
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 
 @Composable
-fun CartScreen(scope: CartScope) {
+fun InStoreCartScreen(scope: InStoreCartScope) {
     val items = scope.items.flow.collectAsState()
     val total = scope.total.flow.collectAsState()
-    val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
 
-    if (items.value.isEmpty()) {
-        EmptyCart { scope.goBack() }
-    } else {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .background(Color.White),
             ) {
-                Box(
+                Button(
+                    onClick = { scope.clearCart() },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = ConstColors.red,
+                        contentColor = Color(0xFFFDE7E7),
+                    ),
+                    shape = RectangleShape,
+                    elevation = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .background(Color.White),
+                        .fillMaxHeight()
+                        .width(58.dp)
+                        .align(Alignment.CenterEnd)
                 ) {
-                    Button(
-                        onClick = { scope.clearCart() },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = ConstColors.red,
-                            contentColor = Color(0xFFFDE7E7),
-                        ),
-                        shape = RectangleShape,
-                        elevation = null,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(58.dp)
-                            .align(Alignment.CenterEnd)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_cart_remove),
-                            contentDescription = null,
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .padding(end = 58.dp)
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        TextItem(R.string.items, items.value.sumOf { it.items.size })
-                        TextItem(
-                            R.string.qty,
-                            items.value.sumOf { it.items.sumOf { it.quantity.value } })
-                        TextItem(
-                            R.string.free,
-                            items.value.sumOf { it.items.sumOf { it.freeQuantity.value } })
-                        TextItem(R.string.stockist, items.value.size)
-                    }
-                    Divider(modifier = Modifier.align(Alignment.BottomCenter))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_cart_remove),
+                        contentDescription = null,
+                    )
                 }
-                BoxWithConstraints {
-                    LazyColumn(
-                        state = rememberLazyListState(),
-                        contentPadding = PaddingValues(top = 6.dp),
-                        modifier = Modifier.height(maxHeight - 80.dp),
-                    ) {
-                        items(
-                            items.value,
-                            key = { it.sellerCode },
-                            itemContent = { value ->
-                                Box(modifier = Modifier.padding(vertical = 4.dp)) {
-                                    SellerCartItem(
-                                        sellerCart = value,
-                                        expand = true,
-                                        onRemoveSeller = { scope.removeSellerItems(value) },
-                                        onSaveQty = { item, qty, freeQty ->
-                                            scope.updateItemCount(
-                                                value,
-                                                item,
-                                                qty,
-                                                freeQty,
-                                            )
-                                        },
-                                        onRemoveItem = { scope.removeItem(value, it) },
-                                    )
-                                }
-                            }
-                        )
-                    }
+                Row(
+                    modifier = Modifier
+                        .padding(end = 58.dp)
+                        .fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    TextItem(R.string.items, items.value.size)
+                    TextItem(
+                        R.string.qty,
+                        items.value.sumOf { it.quantity.value })
+                    TextItem(
+                        R.string.free,
+                        items.value.sumOf { it.freeQty.value })
                 }
+                Divider(modifier = Modifier.align(Alignment.BottomCenter))
             }
-
-            total.value?.let {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                ) {
-                    if (!isContinueEnabled.value) {
-                        Space(16.dp)
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    Color.Red.copy(alpha = .1f),
-                                    RoundedCornerShape(percent = 50)
+            LazyColumn(
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 6.dp),
+            ) {
+                items(
+                    items.value,
+                    key = { it.id },
+                    itemContent = { value ->
+                        CartItem(
+                            cartItem = value,
+                            onSaveQty = { qty, freeQty ->
+                                scope.updateItemCount(
+                                    value,
+                                    qty!!,
+                                    freeQty!!
                                 )
-                                .padding(horizontal = 8.dp, vertical = 6.dp)
-                                .align(Alignment.CenterHorizontally),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Error,
-                                tint = Color.Red,
-                                contentDescription = null,
-                            )
-                            Space(8.dp)
-                            Text(
-                                text = stringResource(id = R.string.delete_products),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                            )
-                        }
-                        Space(16.dp)
+                            },
+                            onRemove = { scope.removeItem(value) },
+                        )
                     }
-                    Divider()
-                    Space(16.dp)
+                )
+            }
+        }
+
+        total.value?.let {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            ) {
+                Divider()
+                Space(16.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.total),
-                                fontWeight = FontWeight.W500,
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                            Space(4.dp)
-                            Text(
-                                text = it.formattedPrice,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 20.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                        }
-                        MedicoRoundButton(
-                            text = stringResource(id = R.string.continue_text),
-                            isEnabled = isContinueEnabled.value,
-                            onClick = { scope.continueWithCart() },
-                            height = 48.dp,
-                            wrapTextSize = true,
+                        Text(
+                            text = stringResource(id = R.string.total),
+                            fontWeight = FontWeight.W500,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colors.background,
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = it.formattedPrice,
+                            fontWeight = FontWeight.W700,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colors.background,
                         )
                     }
-                    Space(16.dp)
+                    MedicoRoundButton(
+                        text = stringResource(id = R.string.complete_order),
+                        onClick = { scope.continueWithCart() },
+                        height = 48.dp,
+                        wrapTextSize = true,
+                    )
                 }
+                Space(16.dp)
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun SellerCartItem(
-    sellerCart: SellerCart,
-    expand: Boolean,
-    onRemoveSeller: () -> Unit,
-    onSaveQty: (CartItem, Double, Double) -> Unit,
-    onRemoveItem: (CartItem) -> Unit,
-) {
-    FoldableItem(
-        expanded = expand,
-        headerBackground = ConstColors.ltgray,
-        headerMinHeight = 60.dp,
-        header = { _ ->
-            Space(12.dp)
-            Surface(
-                shape = CircleShape,
-                color = Color.Red.copy(alpha = 0.12f),
-                onClick = onRemoveSeller,
-                modifier = Modifier.size(24.dp),
-            ) {
-                Box(modifier = Modifier.padding(2.dp)) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        tint = ConstColors.red,
-                    )
-                }
-            }
-            Space(12.dp)
-            Column {
-                Text(
-                    text = sellerCart.sellerName,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Space(2.dp)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.payment_method))
-                            append(": ")
-                            val startIndex = length
-                            append(sellerCart.paymentMethod.serverValue)
-                            addStyle(
-                                SpanStyle(color = ConstColors.lightBlue),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                    )
-                    Space(4.dp)
-                    Box(
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(1.dp)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = sellerCart.total.formattedPrice,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-        },
-        childItems = sellerCart.items,
-        hasItemLeadingSpacing = false,
-        hasItemTrailingSpacing = false,
-        itemSpacing = 8.dp,
-        itemHorizontalPadding = 0.dp,
-        itemsBackground = ConstColors.ltgray,
-        item = { value, _ ->
-            CartItem(
-                cartItem = value,
-                onSaveQty = { qty, freeQty -> onSaveQty(value, qty!!, freeQty!!) },
-                onRemove = { onRemoveItem(value) },
-            )
-        }
-    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CartItem(
-    cartItem: CartItem,
+    cartItem: InStoreCartEntry,
     onSaveQty: (Double?, Double?) -> Unit,
     onRemove: () -> Unit,
 ) {
-    val labelColor = when (cartItem.buyingOption) {
-        BuyingOption.BUY -> ConstColors.green
-        BuyingOption.QUOTE -> when (cartItem.quotedData?.isAvailable) {
-            true -> ConstColors.green
-            false -> ConstColors.red
-            null -> Color.LightGray
-        }
-    }
     Surface(
         shape = RectangleShape,
         color = Color.White,
+        modifier = Modifier.padding(vertical = 4.dp)
     ) {
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-        ) {
-            drawRect(labelColor)
-        }
         BaseCartItem(
             qtyInitial = cartItem.quantity.value,
-            freeQtyInitial = cartItem.freeQuantity.value,
+            freeQtyInitial = cartItem.freeQty.value,
             onSaveQty = onSaveQty,
             headerContent = {
                 Column {
@@ -356,10 +202,10 @@ private fun CartItem(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Canvas(modifier = Modifier.size(10.dp)) {
-                                drawRoundRect(labelColor, cornerRadius = CornerRadius(8.dp.value))
-                            }
-                            Space(8.dp)
+//                            Canvas(modifier = Modifier.size(10.dp)) {
+//                                drawRoundRect(labelColor, cornerRadius = CornerRadius(8.dp.value))
+//                            }
+//                            Space(8.dp)
                             Text(
                                 text = cartItem.productName,
                                 color = MaterialTheme.colors.background,
@@ -387,17 +233,6 @@ private fun CartItem(
                             }
                         }
                     }
-                    cartItem.seasonBoyRetailer?.let {
-                        Space(4.dp)
-                        Text(
-                            text = it.tradeName,
-                            color = ConstColors.gray,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 12.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
                 }
             },
             mainBodyContent = {
@@ -406,38 +241,29 @@ private fun CartItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    if (cartItem.quotedData?.isAvailable != false) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append("PTR: ")
-                                val startIndex = length
-                                append(cartItem.price.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W800
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontWeight = FontWeight.W700,
-                            fontSize = 16.sp,
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(id = R.string.not_available),
-                            color = ConstColors.red,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 14.sp,
-                        )
-                    }
+                    Text(
+                        text = buildAnnotatedString {
+                            append("PTR: ")
+                            val startIndex = length
+                            append(cartItem.price.formatted)
+                            addStyle(
+                                SpanStyle(
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 16.sp,
+                    )
                     Text(
                         text = buildAnnotatedString {
                             append("TOT: ")
                             val startIndex = length
-                            append(cartItem.subtotalPrice.formatted)
+                            append(cartItem.totalPrice.formatted)
                             addStyle(
                                 SpanStyle(
                                     color = MaterialTheme.colors.background,
@@ -632,29 +458,6 @@ fun TextItem(label: Int, count: Number) {
         )
         Text(
             text = count.toString(),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(bottom = 6.dp)
-        )
-    }
-}
-
-@Composable
-fun TextItemString(label: Int, count: String) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxHeight(),
-    ) {
-        Text(
-            text = stringResource(id = label),
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W400,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(top = 6.dp)
-        )
-        Text(
-            text = count,
             color = MaterialTheme.colors.background,
             fontWeight = FontWeight.W600,
             fontSize = 12.sp,
