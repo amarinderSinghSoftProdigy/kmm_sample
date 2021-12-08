@@ -202,6 +202,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontSize = 20.sp,
+                                fontWeight = FontWeight.W600,
                                 color = MaterialTheme.colors.background,
                                 modifier = Modifier
                                     .weight(0.7f)
