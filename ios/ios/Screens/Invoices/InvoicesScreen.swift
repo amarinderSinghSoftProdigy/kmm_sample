@@ -150,7 +150,7 @@ struct InvoicesScreen: View {
                 .padding(8)
                 
                 HStack(spacing: 10) {
-                    Text(invoice.info.id)
+                    Text(invoice.info.sellerId)
                         .medicoText(textWeight: .medium,
                                     color: .grey3)
                     

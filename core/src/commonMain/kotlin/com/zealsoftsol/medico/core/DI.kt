@@ -131,6 +131,11 @@ fun startKodein(
     bind<NetworkScope.Config>() with singleton {
         instance<NetworkClient>()
     }
+
+    bind<NetworkScope.Orders>() with singleton {
+        instance<NetworkClient>()
+    }
+
     bind<NetworkScope.InStore>() with singleton {
         instance<NetworkClient>()
     }

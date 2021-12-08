@@ -316,6 +316,7 @@ struct BuyProductScreen: View {
                                    initialQuantity: quantity,
                                    initialFreeQuantity: freeQuantity,
                                    maxQuantity: Double(info.stockInfo?.availableQty ?? .max),
+                                   promotionData: info.promotionData,
                                    onQuantitySelect: onQuantitySelect,
                                    onViewTap: { onViewTap(info) })
                 )
@@ -595,6 +596,8 @@ struct BaseSellerView<Header: View>: ViewModifier {
     
     let header: Header
     
+    let promotionData: DataPromotionData?
+    
     private let horizontalPadding: CGFloat
     private let standaloneButtonsHeight: CGFloat
     private let buttonsHeight: CGFloat = 38
@@ -617,6 +620,21 @@ struct BaseSellerView<Header: View>: ViewModifier {
     
     func body(content: Content) -> some View {
         VStack {
+            if let promotionData = promotionData {
+            HStack {
+                    Spacer()
+                    Text(promotionData.displayLabel)
+                        .medicoText(textWeight: .bold, fontSize: 12, color: .white, multilineTextAlignment: .center)
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 2)
+                        .background(
+                            Rectangle()
+                                .trim(from: 0.08, to: 0.9)
+                                .fill(AppColor.red.color)
+                        )
+                }
+                .padding(.top, -10)
+            }
             Group {
                 header
                 
@@ -679,6 +697,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
          initialQuantity: Double,
          initialFreeQuantity: Double,
          maxQuantity: Double,
+         promotionData: DataPromotionData? = nil,
          onQuantitySelect: @escaping (Double?, Double?) -> Void,
          onViewTap: (() -> Void)? = nil) {
         let initialMode = initialMode ?? (initialQuantity > 0 || initialFreeQuantity > 0 ? .update : .addToCart)
@@ -703,6 +722,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
         
         self.onQuantitySelect = onQuantitySelect
         self.onViewTap = onViewTap
+        self.promotionData = promotionData
     }
     
     private var bottomPanel: some View {
