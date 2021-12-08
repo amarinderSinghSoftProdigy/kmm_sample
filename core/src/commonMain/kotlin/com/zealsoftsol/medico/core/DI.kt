@@ -134,9 +134,6 @@ fun startKodein(
     bind<NetworkScope.InStore>() with singleton {
         instance<NetworkClient>()
     }
-    bind<NetworkScope.Config>() with singleton {
-        instance<NetworkClient>()
-    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
