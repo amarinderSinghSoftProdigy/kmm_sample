@@ -152,7 +152,7 @@ struct OrderEntriesView: View {
                     ForEach(entries, id: \.self) { entry in
                         EntryView(entry: entry,
                                   selected: checkedEntries?.contains(entry) == true,
-                                  canEdit: selectableOrderEntry.canEdit) {
+                                  canEdit: false) {
                             selectableOrderEntry.toggleCheck(entry: entry)
                         }
                         .onTapGesture {
