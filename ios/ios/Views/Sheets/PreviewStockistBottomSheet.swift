@@ -6,8 +6,8 @@
 //  Copyright © 2021 Zeal Software Solutions. All rights reserved.
 //
 
-import SwiftUI
 import core
+import SwiftUI
 
 struct PreviewStockistBottomSheet: ViewModifier {
     let bottomSheet: BottomSheet.PreviewStockist
@@ -20,7 +20,7 @@ struct PreviewStockistBottomSheet: ViewModifier {
         
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened,
-                                maxHeight: 380) {
+                                maxHeight: bottomSheet.sellerInfo.isPromotionActive ? 420 : 380) {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 16) {
                         UserNameImage(username: bottomSheet.sellerInfo.tradeName)
@@ -37,6 +37,44 @@ struct PreviewStockistBottomSheet: ViewModifier {
                                             multilineTextAlignment: .leading)
                         }
                         .fixedSize(horizontal: false, vertical: true)
+                    }
+                    
+                    if bottomSheet.sellerInfo.isPromotionActive,
+                       let promotion = bottomSheet.sellerInfo.promotionData
+                    {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(promotion.displayLabel)
+                                    .medicoText(textWeight: .bold,
+                                                fontSize: 16,
+                                                color: AppColor.red)
+                                HStack(spacing: 8) {
+                                    Text(promotion.offerPrice.formatted)
+                                        .medicoText(textWeight: .bold,
+                                                    fontSize: 16)
+                                    Text(bottomSheet.sellerInfo.priceInfo?.price.formattedPrice ?? "")
+                                        .strikethrough(true, color: AppColor.textGrey.color)
+                                        .medicoText(textWeight: .medium,
+                                                    fontSize: 12,
+                                                    color: AppColor.textGrey)
+                                
+                                }
+                                if let validity = promotion.validity {
+                              
+                                    Text(validity)
+                                        .medicoText(textWeight: .regular,
+                                                    fontSize: 8,
+                                                    color: AppColor.textGrey)
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(AppColor.red.color, lineWidth: 1)
+                        )
                     }
                     
                     VStack(spacing: 13) {
@@ -110,14 +148,16 @@ struct PreviewStockistBottomSheet: ViewModifier {
     }
     
     init(bottomSheet: BottomSheet.PreviewStockist,
-         onBottomSheetDismiss: @escaping () -> ()) {
+         onBottomSheetDismiss: @escaping () -> ())
+    {
         self.bottomSheet = bottomSheet
         self.onBottomSheetDismiss = onBottomSheetDismiss
     }
     
     private func getDetailsView(titleLocalizationKey: String,
                                 bodyText: String,
-                                bodyColor: AppColor = .greyBlue) -> some View {
+                                bodyColor: AppColor = .greyBlue) -> some View
+    {
         HStack(spacing: 2) {
             LocalizedText(localizationKey: titleLocalizationKey,
                           color: .greyBlue)
