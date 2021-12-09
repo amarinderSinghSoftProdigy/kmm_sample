@@ -96,7 +96,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         val search = scope.searchText.flow.collectAsState()
         BasicSearchBar(
             input = search.value,
-            hint = R.string.search_tradename,
+            hint = R.string.search_products,
             searchBarEnd = SearchBarEnd.Eraser,
             icon = Icons.Default.Search,
             elevation = 0.dp,
@@ -191,7 +191,7 @@ private fun ProductItem(
                     text = buildAnnotatedString {
                         append("Stock: ")
                         val startIndex = length
-                        append("N/A")
+                        append(item.stockInfo.availableQty.toString())
                         addStyle(
                             SpanStyle(
                                 fontWeight = FontWeight.W800
@@ -288,7 +288,7 @@ private fun BaseItem(
     }
 
     Space(4.dp)
-    NeededSurface(if (mode.value == BottomSectionMode.Update || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
+    NeededSurface(null) {
         Box {
             promotionData?.let {
                 Text(

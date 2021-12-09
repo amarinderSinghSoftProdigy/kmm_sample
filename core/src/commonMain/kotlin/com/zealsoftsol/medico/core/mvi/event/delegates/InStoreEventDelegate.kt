@@ -248,7 +248,7 @@ internal class InStoreEventDelegate(
     private suspend fun clearCart() {
         navigator.withScope<InStoreCartScope> {
             withProgress {
-                networkInStoreScope.deleteInStoreCart(userRepo.requireUser().unitCode, cartId)
+                networkInStoreScope.deleteInStoreCart(it.unitCode, cartId)
             }.onSuccess { _ ->
                 cartId = ""
                 it.items.value = emptyList()
