@@ -107,8 +107,7 @@ data class InStoreUserRegistration(
 ) {
     fun isNotEmpty() =
         tradeName.isNotEmpty() &&
-                gstin.isNotEmpty() &&
-                panNumber.isNotEmpty() &&
+                (gstin.isNotEmpty() || panNumber.isNotEmpty()) &&
                 drugLicenseNo1.isNotEmpty() &&
                 drugLicenseNo2.isNotEmpty() &&
                 pincode.isNotEmpty() &&
