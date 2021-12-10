@@ -48,16 +48,16 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
         internal fun default(userType: UserType) = listOfNotNull(
             Dashboard,
-            Orders,
             PoOrdersAndHistory.takeIf { userType == UserType.STOCKIST },
-            Stores,
             InStore.takeIf { userType == UserType.STOCKIST },
+            PoInvoices.takeIf { userType == UserType.STOCKIST },
+            Stores,
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
 //            SeasonBoys.takeIf { userType == UserType.STOCKIST },
+            Orders,
             MyInvoices,
-            PoInvoices.takeIf { userType == UserType.STOCKIST },
             Help,
             Settings,
         )
