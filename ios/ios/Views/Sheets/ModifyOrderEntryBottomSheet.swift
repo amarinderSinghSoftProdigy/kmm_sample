@@ -34,11 +34,6 @@ struct ModifyOrderEntryBottomSheet: ViewModifier {
                                 maxHeight: bottomSheet.canEdit ? 425 : 370) {
                 VStack(spacing: 30) {
                     HStack(alignment: .top, spacing: 20) {
-                        if bottomSheet.canEdit {
-                            CheckBox(selected: .init(get: { checked.value == true },
-                                                     set: { _ in bottomSheet.toggleCheck() }))
-                                .frame(width: 22, height: 22)
-                        }
                         
                         VStack(alignment: .leading) {
                             Text(bottomSheet.orderEntry.productName)
