@@ -112,27 +112,31 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
                 }
                 Divider(modifier = Modifier.align(Alignment.BottomCenter))
             }
-            LazyColumn(
-                state = rememberLazyListState(),
-                contentPadding = PaddingValues(top = 6.dp),
-            ) {
-                items(
-                    items.value,
-                    key = { it.id },
-                    itemContent = { value ->
-                        CartItem(
-                            cartItem = value,
-                            onSaveQty = { qty, freeQty ->
-                                scope.updateItemCount(
-                                    value,
-                                    qty!!,
-                                    freeQty!!
-                                )
-                            },
-                            onRemove = { scope.removeItem(value) },
-                        )
-                    }
-                )
+            BoxWithConstraints {
+
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 6.dp),
+                    modifier = Modifier.height(maxHeight - 80.dp),
+                ) {
+                    items(
+                        items.value,
+                        key = { it.id },
+                        itemContent = { value ->
+                            CartItem(
+                                cartItem = value,
+                                onSaveQty = { qty, freeQty ->
+                                    scope.updateItemCount(
+                                        value,
+                                        qty!!,
+                                        freeQty!!
+                                    )
+                                },
+                                onRemove = { scope.removeItem(value) },
+                            )
+                        }
+                    )
+                }
             }
         }
 
@@ -166,6 +170,7 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
                             color = MaterialTheme.colors.background,
                         )
                     }
+                    Space(8.dp)
                     MedicoRoundButton(
                         text = stringResource(id = R.string.complete_order),
                         onClick = { scope.continueWithCart() },
