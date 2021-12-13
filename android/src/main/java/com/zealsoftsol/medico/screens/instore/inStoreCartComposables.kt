@@ -162,7 +162,8 @@ fun InStoreCartScreen(scope: InStoreCartScope) {
                             fontSize = 20.sp,
                             color = MaterialTheme.colors.background,
                         )
-                        Space(4.dp)
+                        Space(2.dp)
+                        Space(2.dp)
                         Text(
                             text = it.formattedPrice,
                             fontWeight = FontWeight.W700,
