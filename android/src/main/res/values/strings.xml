@@ -359,4 +359,7 @@
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
     <string name="whatsapp_preference">Whatsapp Preference</string>
+    <string name="language_english">English</string>
+    <string name="language_tamil">Tamil</string>
+    <string name="preferred_language">Please choose your preferred language </string>
 </resources>
