@@ -6,31 +6,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.screens.common.NavigationCell
-import com.zealsoftsol.medico.screens.common.ReadOnlyField
-import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.formatIndia
-import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.common.*
 
+@Preview
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp, vertical = 32.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 32.dp)
+    ) {
         when (scope) {
             is SettingsScope.List -> SettingsList(scope.sections)
             is SettingsScope.Profile -> Profile(scope.user)
             is SettingsScope.Address -> Address(scope.addressData)
             is SettingsScope.GstinDetails -> GstinDetails(scope.details)
+            is SettingsScope.WhatsAppPreference -> WhatsappPreference()
         }
     }
 }
 
+@Preview
 @Composable
 private fun SettingsList(sections: List<SettingsScope.List.Section>) {
     sections.forEach {
@@ -41,6 +43,7 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
                     SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password_lock
                     SettingsScope.List.Section.ADDRESS -> R.drawable.ic_address
                     SettingsScope.List.Section.GSTIN_DETAILS -> R.drawable.ic_folder
+                    SettingsScope.List.Section.WHATSAPP_PREFERENCE -> R.drawable.ic_folder
                 }
             ),
             text = stringResourceByName(it.stringId),
@@ -51,6 +54,7 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
     }
 }
 
+@Preview
 @Composable
 private fun Profile(user: User) {
     ReadOnlyField(user.firstName, R.string.first_name)
@@ -62,6 +66,7 @@ private fun Profile(user: User) {
     ReadOnlyField(user.phoneNumber.formatIndia(), R.string.phone_number)
 }
 
+@Preview
 @Composable
 private fun Address(addressData: AddressData) {
     ReadOnlyField(addressData.pincode.toString(), R.string.pincode)
@@ -79,6 +84,7 @@ private fun Address(addressData: AddressData) {
     ReadOnlyField(addressData.state, R.string.state)
 }
 
+@Preview
 @Composable
 private fun GstinDetails(details: User.Details.DrugLicense) {
     ReadOnlyField(details.tradeName, R.string.trade_name)
@@ -88,4 +94,16 @@ private fun GstinDetails(details: User.Details.DrugLicense) {
     ReadOnlyField(details.license1, R.string.drug_license_1)
     Space(12.dp)
     ReadOnlyField(details.license2, R.string.drug_license_2)
+}
+
+@Preview
+@Composable
+private fun WhatsappPreference() {
+    ReadOnlyField("name", R.string.trade_name)
+    Space(12.dp)
+    ReadOnlyField("tin", R.string.gstin)
+    Space(12.dp)
+    ReadOnlyField("details.license1", R.string.drug_license_1)
+    Space(12.dp)
+    ReadOnlyField("details.license2", R.string.drug_license_2)
 }

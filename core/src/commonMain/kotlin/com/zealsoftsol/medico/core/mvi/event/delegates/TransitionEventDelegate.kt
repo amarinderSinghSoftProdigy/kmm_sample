@@ -4,30 +4,8 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
-import com.zealsoftsol.medico.core.repository.CartRepo
-import com.zealsoftsol.medico.core.repository.NotificationRepo
-import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.getDashboardDataSource
-import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
-import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
-import com.zealsoftsol.medico.core.repository.getUserDataSource
-import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.mvi.scope.nested.*
+import com.zealsoftsol.medico.core.repository.*
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -160,6 +138,8 @@ internal class TransitionEventDelegate(
                 is Event.Transition.InStoreCart -> setScope(
                     InStoreCartScope(event.unitcode, event.name)
                 )
+                is Event.Transition.WhatsappPreference -> setScope(SettingsScope.WhatsAppPreference())
+
             }
         }
     }

@@ -295,6 +295,7 @@ sealed class Event {
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
+        object WhatsappPreference : Transition()
         data class Management(val manageUserType: UserType) : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
