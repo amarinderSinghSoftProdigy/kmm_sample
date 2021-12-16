@@ -19,10 +19,16 @@ sealed class WhatsappPreferenceScope(
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
     }
 
+    /**
+     * get the current selected language by user
+     */
     fun changeLanguage(language: String) {
         this.language.value = language
     }
 
+    /**
+     * get the current entered phone number by user
+     */
     fun changePhoneNumber(phoneNumber: String) {
         this.phoneNumber.value = phoneNumber
     }

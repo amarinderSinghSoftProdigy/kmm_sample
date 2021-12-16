@@ -39,6 +39,11 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
 
+/**
+ * @param scope current scope to get the current and updated state of views
+ * show the view to update phone number and language for user
+ */
+
 @Composable
 fun WhatsappPreference(scope: WhatsappPreferenceScope) {
     val phoneNumber = scope.phoneNumber.flow.collectAsState()
@@ -78,16 +83,24 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
                 disabledIndicatorColor = Color.Transparent
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = { scope.changePhoneNumber(it) },
+            onValueChange = {
+                if (it.length < 11) // only 10 chars allowed for phone number
+                    scope.changePhoneNumber(it)
+            },
         )
         Space(20.dp)
         MedicoButton(
             text = stringResource(id = R.string.submit),
             onClick = { scope.submit() },
-            isEnabled = language.value.isNotEmpty() && phoneNumber.value.length == 10,
+            isEnabled = language.value.isNotEmpty() && phoneNumber.value.length == 10, // submit only when language is selected and phone number is 10 chars
         )
     }
 }
+
+/**
+ * @param scope current scope to get the current and updated state of views
+ * open language picker for user to select language
+ */
 
 @Composable
 private fun LanguagePicker(scope: WhatsappPreferenceScope) {
@@ -126,7 +139,7 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                     DropdownMenuItem(
                         onClick = {
                             expanded = false
-                            scope.changeLanguage(language)
+                            scope.changeLanguage(language) // update language selected by user
                         }) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
