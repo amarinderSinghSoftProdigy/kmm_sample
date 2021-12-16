@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.WhatsappEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
@@ -55,6 +56,7 @@ internal class EventCollector(
     helpNetworkScope: NetworkScope.Help,
     ordersNetworkScope: NetworkScope.Orders,
     inStoreNetworkScope: NetworkScope.InStore,
+    whatsappNetworkScope: NetworkScope.WhatsappStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -130,6 +132,7 @@ internal class EventCollector(
             inStoreNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),
+        Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
     )
 
     init {

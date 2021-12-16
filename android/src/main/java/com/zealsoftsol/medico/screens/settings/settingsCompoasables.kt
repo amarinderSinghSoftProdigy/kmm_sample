@@ -43,7 +43,7 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
                     SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password_lock
                     SettingsScope.List.Section.ADDRESS -> R.drawable.ic_address
                     SettingsScope.List.Section.GSTIN_DETAILS -> R.drawable.ic_folder
-                    SettingsScope.List.Section.WHATSAPP_PREFERENCE -> R.drawable.ic_folder
+                    SettingsScope.List.Section.WHATSAPP_PREFERENCE -> R.drawable.ic_whatsapp
                 }
             ),
             text = stringResourceByName(it.stringId),

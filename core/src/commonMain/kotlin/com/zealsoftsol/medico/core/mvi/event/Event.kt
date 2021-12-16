@@ -40,6 +40,7 @@ sealed class Event {
             data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
+
             object UpdateDashboard : Auth()
         }
 
@@ -69,6 +70,7 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+
             object UploadFileTooBig : Registration()
 
             object SignUp : Registration()
@@ -131,6 +133,7 @@ sealed class Event {
             data class RequestSubscribe(val item: EntityInfo) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
                 Management()
+
             object VerifyRetailerTraderDetails : Management()
         }
 
@@ -278,6 +281,15 @@ sealed class Event {
             ) : InStore()
 
             object ConfirmCartOrder : InStore()
+        }
+
+        sealed class WhatsAppPreference : Action() {
+            override val typeClazz: KClass<*> = WhatsAppPreference::class
+
+            data class SavePreference(val language: String, val phoneNumber: String) :
+                WhatsAppPreference()
+
+            object GetPreference : WhatsAppPreference()
         }
     }
 

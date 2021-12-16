@@ -73,8 +73,10 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import com.zealsoftsol.medico.data.UserWhatsAppData
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
+import com.zealsoftsol.medico.data.WhatsappPreferenceData
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -115,7 +117,8 @@ class NetworkClient(
     NetworkScope.Help,
     NetworkScope.Orders,
     NetworkScope.Config,
-    NetworkScope.InStore {
+    NetworkScope.InStore,
+    NetworkScope.WhatsappStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -807,6 +810,20 @@ class NetworkClient(
             }
         }
     }
+
+    override suspend fun getWhatsappPreferences() =
+        simpleRequest {
+            client.get<BodyResponse<WhatsappPreferenceData>>("${baseUrl.url}/preference/whatsapp") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun saveWhatsappPreferences(language: String, phoneNumber: String) =
+        simpleRequest {
+            client.post<BodyResponse<UserWhatsAppData>>("${baseUrl.url}/preference/whatsapp/save") {
+                withMainToken()
+            }
+        }
 
     // Utils
 
