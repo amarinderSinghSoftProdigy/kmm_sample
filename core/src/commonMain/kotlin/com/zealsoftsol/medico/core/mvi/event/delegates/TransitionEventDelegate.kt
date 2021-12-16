@@ -138,7 +138,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.InStoreCart -> setScope(
                     InStoreCartScope(event.unitcode, event.name)
                 )
-                is Event.Transition.WhatsappPreference -> setScope(SettingsScope.WhatsAppPreference())
+                is Event.Transition.WhatsappPreference -> setScope(WhatsappPreferenceScope.GetCurrent())
 
             }
         }

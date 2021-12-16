@@ -60,6 +60,4 @@ sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(),
 
     class GstinDetails(val details: User.Details.DrugLicense) : SettingsScope("gstin_details")
 
-    class WhatsAppPreference : SettingsScope("whatsapp_preference")
-
 }
