@@ -360,4 +360,6 @@
     <string name="E0055">Customer already registered, please check again</string>
     <string name="whatsapp_preference">Whatsapp Preference</string>
     <string name="preferred_language">Please choose your preferred language </string>
+    <string name="alert">Alert</string>
+    <string name="update_successfull">Updated Successfully</string>
 </resources>

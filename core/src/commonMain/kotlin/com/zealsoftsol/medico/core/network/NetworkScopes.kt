@@ -58,9 +58,8 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.UserWhatsAppData
 import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.WhatsappPreferenceData
+import com.zealsoftsol.medico.data.WhatsappData
 
 interface NetworkScope {
 
@@ -276,7 +275,7 @@ interface NetworkScope {
     }
 
     interface WhatsappStore : NetworkScope {
-        suspend fun getWhatsappPreferences(): BodyResponse<WhatsappPreferenceData>
+        suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
         suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
     }
 

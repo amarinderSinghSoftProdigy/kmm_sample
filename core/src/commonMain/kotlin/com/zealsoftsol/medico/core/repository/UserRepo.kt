@@ -32,9 +32,8 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.UserWhatsAppData
 import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.WhatsappPreferenceData
+import com.zealsoftsol.medico.data.WhatsappData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -302,8 +301,8 @@ class UserRepo(
         }
     }
 
-    suspend fun getWhatsappPreference(): BodyResponse<WhatsappPreferenceData> {
-        return whatsappPreferenceScope.getWhatsappPreferences()
+    suspend fun getWhatsappPreference(): BodyResponse<WhatsappData> {
+        return whatsappPreferenceScope.getWhatsappPreferences(requireUser().unitCode)
     }
 
     suspend fun saveWhatsappPreference(

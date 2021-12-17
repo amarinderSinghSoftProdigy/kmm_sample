@@ -73,10 +73,9 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.UserWhatsAppData
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
-import com.zealsoftsol.medico.data.WhatsappPreferenceData
+import com.zealsoftsol.medico.data.WhatsappData
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -812,10 +811,13 @@ class NetworkClient(
         }
     }
 
-    override suspend fun getWhatsappPreferences() =
+    override suspend fun getWhatsappPreferences(unitCode: String) =
         simpleRequest {
-            client.get<BodyResponse<WhatsappPreferenceData>>("${baseUrl.url}/b2bapp/preference/whatsapp") {
+            client.get<BodyResponse<WhatsappData>>("${baseUrl.url}/b2bapp/preference/whatsapp") {
                 withMainToken()
+                url {
+                    parameters.append("b2bUnitCode", unitCode)
+                }
             }
         }
 
@@ -827,7 +829,7 @@ class NetworkClient(
         simpleRequest {
             client.post<AnyResponse>("${baseUrl.url}/b2bapp/preference/whatsapp/save") {
                 withMainToken()
-                jsonBody(mapOf("language" to language.toUpperCase(), "mobileNo" to phoneNumber))
+                jsonBody(mapOf("language" to language, "mobileNo" to phoneNumber))
                 url {
                     parameters.append("b2bUnitCode", unitCode)
                 }

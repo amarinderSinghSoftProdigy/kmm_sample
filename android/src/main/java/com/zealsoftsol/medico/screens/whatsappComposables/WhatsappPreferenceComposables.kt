@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.whatsappComposables
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +9,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -61,6 +62,7 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
         )
         Space(12.dp)
         LanguagePicker(scope)
+        ShowAlert(scope)
         Space(20.dp)
         Text(
             text = stringResource(id = R.string.phone_number),
@@ -90,9 +92,9 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
         )
         Space(20.dp)
         MedicoButton(
-            text = stringResource(id = R.string.submit),
+            text = stringResource(id = R.string.save),
             onClick = { scope.submit() },
-            isEnabled = language.value.isNotEmpty() && phoneNumber.value.length == 10, // submit only when language is selected and phone number is 10 chars
+            isEnabled = language.value.language.isNotEmpty() && phoneNumber.value.length == 10, // submit only when language is selected and phone number is 10 chars
         )
     }
 }
@@ -104,7 +106,7 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
 
 @Composable
 private fun LanguagePicker(scope: WhatsappPreferenceScope) {
-    val languagesList = mutableListOf("English", "Tamil")
+    val languagesList = scope.availableLanguages.flow.collectAsState()
     var expanded by remember { mutableStateOf(false) }
 
     val language = scope.language.flow.collectAsState()
@@ -120,7 +122,7 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = language.value,
+                text = language.value.language,
                 color = Color.Black,
                 fontSize = 14.sp,
             )
@@ -135,15 +137,18 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                 expanded = expanded, onDismissRequest = {
                     expanded = false
                 }) {
-                languagesList.forEach { language ->
+                languagesList.value.forEach { language ->
                     DropdownMenuItem(
                         onClick = {
                             expanded = false
-                            scope.changeLanguage(language) // update language selected by user
+                            scope.changeLanguage(
+                                language.name,
+                                language.code
+                            ) // update language selected by user
                         }) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = language,
+                            text = language.name,
                             color = Color.Black,
                             fontSize = 14.sp,
                         )
@@ -151,5 +156,33 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShowAlert(scope: WhatsappPreferenceScope) {
+    MaterialTheme {
+        val openDialog = scope.showAlert.flow.collectAsState()
+
+        if (openDialog.value) {
+
+            AlertDialog(
+                onDismissRequest = {
+                    scope.changeAlertScope(false)
+                },
+                text = {
+                    Text(stringResource(id = R.string.update_successfull))
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            scope.changeAlertScope(false)
+                        }) {
+                        Text(stringResource(id = R.string.okay))
+                    }
+                }
+            )
+        }
+
     }
 }

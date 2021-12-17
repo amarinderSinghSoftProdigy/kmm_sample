@@ -26,7 +26,12 @@ internal class WhatsappEventDelegate(
                 userRepo.getWhatsappPreference()
             }
 
-            result.onSuccess {
+            result.onSuccess { _ ->
+                val data = result.getBodyOrNull()
+                it.updateDataFromServer(
+                    languageCode = data!!.selectedLanguage, phoneNumber = data.mobileNo,
+                    availableLanguages = data.whatsappLanguages
+                )
             }.onError(navigator)
         }
     }
@@ -40,7 +45,8 @@ internal class WhatsappEventDelegate(
                 userRepo.saveWhatsappPreference(language, phoneNumber)
             }
 
-            result.onSuccess { _ ->
+            result.onSuccess {_ ->
+                it.showAlert.value = true
             }.onError(navigator)
         }
     }
