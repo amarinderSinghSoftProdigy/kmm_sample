@@ -774,6 +774,7 @@ class NetworkClient(
             client.post<AnyResponse>("${baseUrl.url}/instore/order/deleteOrder") {
                 withMainToken()
                 jsonBody(mapOf("id" to cartId, "buyerUnitCode" to unitCode))
+
             }
         }
 
@@ -813,15 +814,23 @@ class NetworkClient(
 
     override suspend fun getWhatsappPreferences() =
         simpleRequest {
-            client.get<BodyResponse<WhatsappPreferenceData>>("${baseUrl.url}/preference/whatsapp") {
+            client.get<BodyResponse<WhatsappPreferenceData>>("${baseUrl.url}/b2bapp/preference/whatsapp") {
                 withMainToken()
             }
         }
 
-    override suspend fun saveWhatsappPreferences(language: String, phoneNumber: String) =
+    override suspend fun saveWhatsappPreferences(
+        language: String,
+        phoneNumber: String,
+        unitCode: String
+    ) =
         simpleRequest {
-            client.post<BodyResponse<UserWhatsAppData>>("${baseUrl.url}/preference/whatsapp/save") {
+            client.post<AnyResponse>("${baseUrl.url}/b2bapp/preference/whatsapp/save") {
                 withMainToken()
+                jsonBody(mapOf("language" to language.toUpperCase(), "mobileNo" to phoneNumber))
+                url {
+                    parameters.append("b2bUnitCode", unitCode)
+                }
             }
         }
 

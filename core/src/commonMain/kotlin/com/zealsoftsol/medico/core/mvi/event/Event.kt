@@ -243,6 +243,7 @@ sealed class Event {
         }
 
         sealed class InStore : Action() {
+
             override val typeClazz: KClass<*> = InStore::class
 
             data class SellerSearch(val value: String) : InStore()
@@ -286,7 +287,10 @@ sealed class Event {
         sealed class WhatsAppPreference : Action() {
             override val typeClazz: KClass<*> = WhatsAppPreference::class
 
-            data class SavePreference(val language: String, val phoneNumber: String) :
+            data class SavePreference(
+                val language: String,
+                val phoneNumber: String,
+            ) :
                 WhatsAppPreference()
 
             object GetPreference : WhatsAppPreference()

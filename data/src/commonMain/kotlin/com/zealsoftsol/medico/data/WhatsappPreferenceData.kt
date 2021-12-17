@@ -18,6 +18,3 @@ data class WhatsappData(
 
 @Serializable
 data class WhatsappLanguagesItem(val code: String = "", val name: String = "")
-
-@Serializable
-data class UserWhatsAppData(val data: String = "", val type: String = "")

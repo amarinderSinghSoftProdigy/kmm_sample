@@ -277,7 +277,7 @@ interface NetworkScope {
 
     interface WhatsappStore : NetworkScope {
         suspend fun getWhatsappPreferences(): BodyResponse<WhatsappPreferenceData>
-        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String): BodyResponse<UserWhatsAppData>
+        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
     }
 
 }

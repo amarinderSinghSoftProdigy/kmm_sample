@@ -308,9 +308,9 @@ class UserRepo(
 
     suspend fun saveWhatsappPreference(
         language: String,
-        phoneNumber: String
-    ): BodyResponse<UserWhatsAppData> {
-        return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber)
+        phoneNumber: String,
+    ): AnyResponse {
+        return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
     }
 
     private fun clearUserData() {
