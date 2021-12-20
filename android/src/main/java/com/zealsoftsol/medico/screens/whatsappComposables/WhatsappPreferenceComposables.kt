@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -28,12 +29,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
@@ -110,6 +115,7 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
     var expanded by remember { mutableStateOf(false) }
 
     val language = scope.language.flow.collectAsState()
+    var rowSize by remember { mutableStateOf(Size.Zero) }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -117,7 +123,10 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                 .fillMaxWidth()
                 .background(color = Color.White, shape = MaterialTheme.shapes.medium)
                 .clickable(onClick = { expanded = !expanded })
-                .padding(vertical = 16.dp, horizontal = 16.dp),
+                .padding(vertical = 16.dp, horizontal = 16.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    rowSize = layoutCoordinates.size.toSize()
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
@@ -133,7 +142,7 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                 tint = ConstColors.gray,
             )
             DropdownMenu(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.width(with(LocalDensity.current) { rowSize.width.toDp() }),
                 expanded = expanded, onDismissRequest = {
                     expanded = false
                 }) {
