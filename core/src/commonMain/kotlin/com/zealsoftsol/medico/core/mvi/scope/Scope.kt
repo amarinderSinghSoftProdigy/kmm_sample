@@ -107,6 +107,10 @@ sealed class TabBarInfo {
     data class NewDesignTitle(val title: String) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER
     }
+
+    object InStoreProductTitle : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
 }
 
 internal object StartScope : Scope.Host()

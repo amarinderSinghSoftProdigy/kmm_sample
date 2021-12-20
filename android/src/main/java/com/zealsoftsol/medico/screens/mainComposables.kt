@@ -210,6 +210,31 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                                     .padding(start = 16.dp),
                             )
                         }
+                        //display header in instore section from side menu when a retailer is selected
+                        is TabBarInfo.InStoreProductTitle -> {
+                            val keyboard = LocalSoftwareKeyboardController.current
+                            Icon(
+                                imageVector = info.icon.toLocalIcon(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .fillMaxHeight()
+                                    .padding(16.dp)
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                                scope.goBack()
+                                        },
+                                    )
+                            )
+                            Space(4.dp)
+                            Image(
+                                painter = painterResource(id = R.drawable.medico_logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(vertical = 16.dp),
+                            )
+                        }
                     }
                 }
             }

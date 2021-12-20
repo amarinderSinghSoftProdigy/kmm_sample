@@ -64,7 +64,7 @@ class InStoreProductsScope(internal val unitCode: String) : Scope.Child.TabBar()
     fun firstLoad() = EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true))
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+        TabBarInfo.InStoreProductTitle
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = false))
