@@ -5,10 +5,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,9 +36,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -212,28 +219,74 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         }
                         //display header in instore section from side menu when a retailer is selected
                         is TabBarInfo.InStoreProductTitle -> {
-                            val keyboard = LocalSoftwareKeyboardController.current
-                            Icon(
-                                imageVector = info.icon.toLocalIcon(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        onClick = {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                Icon(
+                                    imageVector = info.icon.toLocalIcon(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .fillMaxHeight()
+                                        .padding(start = 16.dp)
+                                        .clickable(
+                                            indication = null,
+                                            onClick = {
                                                 scope.goBack()
-                                        },
+                                            },
+                                        )
+                                )
+                                ConstraintLayout(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 10.dp)
+                                ) {
+                                    val (name, address, phone, phoneLogo, locationLogo) = createRefs()
+                                    Text(
+                                        text = "name of the company",
+                                        color = MaterialTheme.colors.background,
+                                        modifier = Modifier.constrainAs(name) {
+                                            width = Dimension.preferredWrapContent
+                                            start.linkTo(parent.start)
+                                            top.linkTo(parent.top, margin = 5.dp)
+                                        }
                                     )
-                            )
-                            Space(4.dp)
-                            Image(
-                                painter = painterResource(id = R.drawable.medico_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp),
-                            )
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_address_small),
+                                        contentDescription = null,
+                                        modifier = Modifier.constrainAs(locationLogo) {
+                                            start.linkTo(parent.start)
+                                            top.linkTo(parent.bottom, margin = 5.dp)
+                                        }
+                                    )
+                                    Text(
+                                        text = "address ",
+                                        textAlign = TextAlign.Start,
+                                        color = MaterialTheme.colors.background,
+                                        modifier = Modifier.constrainAs(address) {
+                                            width = Dimension.fillToConstraints
+                                            start.linkTo(locationLogo.end)
+                                            end.linkTo(phoneLogo.start, margin = 5.dp)
+                                            top.linkTo(parent.bottom, margin = 5.dp)
+                                        }
+                                    )
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_address_small),
+                                        contentDescription = null,
+                                        modifier = Modifier.constrainAs(phoneLogo) {
+                                            end.linkTo(phone.start, margin = 3.dp)
+                                            top.linkTo(parent.bottom, margin = 5.dp)
+                                        }
+                                    )
+                                    Text(
+                                        text = "+91-8989898989",
+                                        color = MaterialTheme.colors.background,
+                                        modifier = Modifier.constrainAs(phone) {
+                                            width = Dimension.preferredWrapContent
+                                            end.linkTo(parent.end, margin = 10.dp)
+                                            top.linkTo(parent.bottom, margin = 5.dp)
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
