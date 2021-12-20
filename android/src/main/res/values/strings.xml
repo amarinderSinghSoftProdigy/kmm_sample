@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="whatsapp_preference">Whatsapp Preference</string>
+    <string name="preferred_language">Please choose your preferred language </string>
+    <string name="update_successfull">Updated Successfully</string>
     <string name="app_name">medicostores</string>
     <string name="log_in">Login</string>
     <string name="phone_number_or_email">Email / Phone No.</string>
@@ -358,8 +361,4 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
-    <string name="whatsapp_preference">Whatsapp Preference</string>
-    <string name="preferred_language">Please choose your preferred language </string>
-    <string name="alert">Alert</string>
-    <string name="update_successfull">Updated Successfully</string>
 </resources>
