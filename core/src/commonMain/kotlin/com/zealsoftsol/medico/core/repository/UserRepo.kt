@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.WhatsappData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -47,6 +48,7 @@ class UserRepo(
     private val networkCustomerScope: NetworkScope.Customer,
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
+    private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -297,6 +299,17 @@ class UserRepo(
         if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
             networkNotificationScope.sendFirebaseToken(token)
         }
+    }
+
+    suspend fun getWhatsappPreference(): BodyResponse<WhatsappData> {
+        return whatsappPreferenceScope.getWhatsappPreferences(requireUser().unitCode)
+    }
+
+    suspend fun saveWhatsappPreference(
+        language: String,
+        phoneNumber: String,
+    ): AnyResponse {
+        return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
     }
 
     private fun clearUserData() {

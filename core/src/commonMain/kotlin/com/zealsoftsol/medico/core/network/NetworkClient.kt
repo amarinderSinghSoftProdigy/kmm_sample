@@ -75,6 +75,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
+import com.zealsoftsol.medico.data.WhatsappData
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -115,7 +116,8 @@ class NetworkClient(
     NetworkScope.Help,
     NetworkScope.Orders,
     NetworkScope.Config,
-    NetworkScope.InStore {
+    NetworkScope.InStore,
+    NetworkScope.WhatsappStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -771,6 +773,7 @@ class NetworkClient(
             client.post<AnyResponse>("${baseUrl.url}/instore/order/deleteOrder") {
                 withMainToken()
                 jsonBody(mapOf("id" to cartId, "buyerUnitCode" to unitCode))
+
             }
         }
 
@@ -807,6 +810,31 @@ class NetworkClient(
             }
         }
     }
+
+    override suspend fun getWhatsappPreferences(unitCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<WhatsappData>>("${baseUrl.url}/b2bapp/preference/whatsapp") {
+                withMainToken()
+                url {
+                    parameters.append("b2bUnitCode", unitCode)
+                }
+            }
+        }
+
+    override suspend fun saveWhatsappPreferences(
+        language: String,
+        phoneNumber: String,
+        unitCode: String
+    ) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/b2bapp/preference/whatsapp/save") {
+                withMainToken()
+                jsonBody(mapOf("language" to language, "mobileNo" to phoneNumber))
+                url {
+                    parameters.append("b2bUnitCode", unitCode)
+                }
+            }
+        }
 
     // Utils
 

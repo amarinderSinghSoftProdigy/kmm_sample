@@ -19,9 +19,11 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp, vertical = 32.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 32.dp)
+    ) {
         when (scope) {
             is SettingsScope.List -> SettingsList(scope.sections)
             is SettingsScope.Profile -> Profile(scope.user)
@@ -41,6 +43,7 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
                     SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password_lock
                     SettingsScope.List.Section.ADDRESS -> R.drawable.ic_address
                     SettingsScope.List.Section.GSTIN_DETAILS -> R.drawable.ic_folder
+                    SettingsScope.List.Section.WHATSAPP_PREFERENCE -> R.drawable.ic_whatsapp
                 }
             ),
             text = stringResourceByName(it.stringId),

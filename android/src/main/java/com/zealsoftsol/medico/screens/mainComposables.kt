@@ -70,6 +70,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.WithTradeName
@@ -118,6 +119,7 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchScreen
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
+import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -268,6 +270,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InStoreAddUserScope -> InStoreAddUserScreen(it)
                     is InStoreCartScope -> InStoreCartScreen(it)
                     is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
+                    is WhatsappPreferenceScope -> WhatsappPreference(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

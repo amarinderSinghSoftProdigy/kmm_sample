@@ -303,6 +303,9 @@
     <string name="add_customer">Add Customer</string>
     <string name="customer_details">Customer Details</string>
     <string name="success_user_add">Successfully added new customer</string>
+    <string name="whatsapp_preference">Whatsapp Preference</string>
+    <string name="preferred_language">Please choose your preferred language </string>
+    <string name="update_successfull">Updated Successfully</string>
 
     <!--error codes-->
 

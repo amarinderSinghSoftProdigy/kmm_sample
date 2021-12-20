@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -160,6 +161,10 @@ internal class TransitionEventDelegate(
                 is Event.Transition.InStoreCart -> setScope(
                     InStoreCartScope(event.unitcode, event.name)
                 )
+                is Event.Transition.WhatsappPreference -> setScope(
+                    WhatsappPreferenceScope("whatsapp_preference")
+                )
+
             }
         }
     }
