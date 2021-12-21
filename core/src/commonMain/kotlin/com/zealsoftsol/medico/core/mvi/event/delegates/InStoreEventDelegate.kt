@@ -33,7 +33,12 @@ internal class InStoreEventDelegate(
     override suspend fun handleEvent(event: Event.Action.InStore) = when (event) {
         is Event.Action.InStore.SellerLoad -> loadSellerInStore(event.isFirstLoad)
         is Event.Action.InStore.SellerSearch -> searchSellerInStore(event.value)
-        is Event.Action.InStore.SellerSelect -> selectSellerInStore(event.unitcode)
+        is Event.Action.InStore.SellerSelect -> selectSellerInStore(
+            event.unitcode,
+            event.sellerName,
+            event.address,
+            event.phoneNumber
+        )
         is Event.Action.InStore.ProductLoad -> loadProductInStore(event.isFirstLoad)
         is Event.Action.InStore.ProductSearch -> searchProductInStore(event.value)
         is Event.Action.InStore.ProductSelect -> selectProductInStore(event.item)
@@ -88,9 +93,14 @@ internal class InStoreEventDelegate(
         }
     }
 
-    private fun selectSellerInStore(unitcode: String) {
+    private fun selectSellerInStore(
+        unitcode: String,
+        sellerName: String,
+        address: String,
+        phoneNumber: String
+    ) {
         navigator.withScope<Scopable> {
-            setScope(InStoreProductsScope(unitcode))
+            setScope(InStoreProductsScope(unitcode, sellerName, address, phoneNumber))
         }
     }
 

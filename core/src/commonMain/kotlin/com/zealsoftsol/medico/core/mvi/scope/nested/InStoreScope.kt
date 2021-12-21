@@ -46,13 +46,25 @@ class InStoreSellerScope : Scope.Child.TabBar(), Loadable<InStoreSeller> {
     }
 
     fun selectItem(item: InStoreSeller) =
-        EventCollector.sendEvent(Event.Action.InStore.SellerSelect(item.unitCode))
+        EventCollector.sendEvent(
+            Event.Action.InStore.SellerSelect(
+                item.unitCode,
+                item.tradeName,
+                item.city,
+                item.phoneNumber
+            )
+        )
 
     fun goToInStoreUsers() =
         EventCollector.sendEvent(Event.Transition.InStoreUsers)
 }
 
-class InStoreProductsScope(internal val unitCode: String) : Scope.Child.TabBar(),
+class InStoreProductsScope(
+    internal val unitCode: String,
+    private val sellerName: String,
+    private val address: String,
+    private val phoneNumber: String
+) : Scope.Child.TabBar(),
     Loadable<InStoreProduct> {
 
     override val items: DataSource<List<InStoreProduct>> = DataSource(emptyList())
@@ -63,8 +75,9 @@ class InStoreProductsScope(internal val unitCode: String) : Scope.Child.TabBar()
 
     fun firstLoad() = EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = true))
 
+    //pass on the seller info to be displayed on header
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+        TabBarInfo.InStoreProductTitle(sellerName, address, phoneNumber)
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.ProductLoad(isFirstLoad = false))
@@ -83,7 +96,9 @@ class InStoreProductsScope(internal val unitCode: String) : Scope.Child.TabBar()
     fun goToInStoreCart(): Boolean = EventCollector.sendEvent(
         Event.Transition.InStoreCart(
             unitCode,
-            cart.value?.buyerTradeName.orEmpty()
+            cart.value?.buyerTradeName.orEmpty(),
+            cart.value?.city.orEmpty(),
+            cart.value?.mobileNumber.orEmpty()
         )
     )
 }
@@ -114,7 +129,12 @@ class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser> {
     }
 
     fun selectItem(item: InStoreUser) =
-        EventCollector.sendEvent(Event.Action.InStore.SellerSelect(item.buyerUnitCode))
+        EventCollector.sendEvent(
+            Event.Action.InStore.SellerSelect(
+                item.buyerUnitCode,
+                item.tradeName, item.addressData.city, item.mobileNumber
+            )
+        )
 
     fun goToInStoreCreateUser() =
         EventCollector.sendEvent(Event.Transition.InStoreAddUser)
@@ -251,6 +271,8 @@ class InStoreAddUserScope(
 class InStoreCartScope(
     internal val unitCode: String,
     internal val name: String,
+    internal val address: String,
+    internal val phoneNumber: String,
     val items: DataSource<List<InStoreCartEntry>> = DataSource(emptyList()),
     val total: DataSource<Total?> = DataSource(null),
 ) : Scope.Child.TabBar() {
@@ -260,7 +282,7 @@ class InStoreCartScope(
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignTitle(name)
+        TabBarInfo.InStoreProductTitle(name, address, phoneNumber)
 
     fun updateItemCount(
         item: InStoreCartEntry,

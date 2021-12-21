@@ -248,7 +248,12 @@ sealed class Event {
 
             data class SellerSearch(val value: String) : InStore()
             data class SellerLoad(val isFirstLoad: Boolean) : InStore()
-            data class SellerSelect(val unitcode: String) : InStore()
+            data class SellerSelect(
+                val unitcode: String,
+                val sellerName: String,
+                val address: String,
+                val phoneNumber: String
+            ) : InStore()
 
             data class ProductSearch(val value: String) : InStore()
             data class ProductLoad(val isFirstLoad: Boolean) : InStore()
@@ -330,6 +335,11 @@ sealed class Event {
         object InStore : Transition()
         object InStoreUsers : Transition()
         object InStoreAddUser : Transition()
-        data class InStoreCart(val unitcode: String, val name: String) : Transition()
+        data class InStoreCart(
+            val unitcode: String,
+            val name: String,
+            val address: String,
+            val phoneNumber: String
+        ) : Transition()
     }
 }
