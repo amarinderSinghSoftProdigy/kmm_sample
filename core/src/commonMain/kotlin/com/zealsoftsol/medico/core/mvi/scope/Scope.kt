@@ -108,7 +108,8 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER
     }
 
-    object InStoreProductTitle : TabBarInfo() {
+    data class InStoreProductTitle(val title: String, val address: String, val phone: String) :
+        TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.BACK
     }
 }

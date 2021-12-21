@@ -40,6 +40,7 @@ sealed class Event {
             data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
+
             object UpdateDashboard : Auth()
         }
 
@@ -69,6 +70,7 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+
             object UploadFileTooBig : Registration()
 
             object SignUp : Registration()
@@ -131,6 +133,7 @@ sealed class Event {
             data class RequestSubscribe(val item: EntityInfo) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
                 Management()
+
             object VerifyRetailerTraderDetails : Management()
         }
 
@@ -244,7 +247,12 @@ sealed class Event {
 
             data class SellerSearch(val value: String) : InStore()
             data class SellerLoad(val isFirstLoad: Boolean) : InStore()
-            data class SellerSelect(val unitcode: String) : InStore()
+            data class SellerSelect(
+                val unitcode: String,
+                val sellerName: String,
+                val address: String,
+                val phoneNumber: String
+            ) : InStore()
 
             data class ProductSearch(val value: String) : InStore()
             data class ProductLoad(val isFirstLoad: Boolean) : InStore()
@@ -313,6 +321,11 @@ sealed class Event {
         object InStore : Transition()
         object InStoreUsers : Transition()
         object InStoreAddUser : Transition()
-        data class InStoreCart(val unitcode: String, val name: String) : Transition()
+        data class InStoreCart(
+            val unitcode: String,
+            val name: String,
+            val address: String,
+            val phoneNumber: String
+        ) : Transition()
     }
 }

@@ -158,7 +158,7 @@ internal class TransitionEventDelegate(
                     InStoreAddUserScope()
                 )
                 is Event.Transition.InStoreCart -> setScope(
-                    InStoreCartScope(event.unitcode, event.name)
+                    InStoreCartScope(event.unitcode, event.name, event.address, event.phoneNumber)
                 )
             }
         }
