@@ -56,6 +56,7 @@ data class AddressData(
     val state: String,
 ) {
     fun fullAddress() = "$city $pincode"
+    fun fullAddressForInStoresItem() = "$address, $landmark, $city \n$district $pincode \n$state"
 }
 
 @Serializable

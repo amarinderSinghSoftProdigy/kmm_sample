@@ -68,7 +68,10 @@ data class InStoreUser(
     val mobileNumber: String,
     val addressData: AddressData,
     val status: String
-)
+) {
+    fun getGstinOrPan(): String = if (gstin.isEmpty()) panNumber else gstin
+
+}
 
 @Serializable
 data class InStoreUserRegistration(
