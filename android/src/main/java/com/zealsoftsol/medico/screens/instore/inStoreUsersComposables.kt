@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.instore
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -174,14 +175,14 @@ private fun InStoreUserItem(item: InStoreUser, isSelected: Boolean, onClick: () 
         itemHorizontalPadding = 54.dp,
         item = { _, _ ->
             Text(
-                text = item.addressData.fullAddress(),
+                text = item.addressData.fullAddressForInStoresItem(),
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W400,
                 fontSize = 14.sp,
             )
             Space(8.dp)
             Text(
-                text = item.gstin,
+                text = item.getGstinOrPan(),
                 color = ConstColors.lightBlue,
                 fontWeight = FontWeight.W500,
                 fontSize = 14.sp,
