@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,73 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 fun DashboardScreen(scope: DashboardScope) {
     val unreadNotifications = scope.unreadNotifications.flow.collectAsState()
     val dashboard = scope.dashboard.flow.collectAsState()
+    if (scope.userType == UserType.STOCKIST) {
+        ShowStockistDashBoard(unreadNotifications, dashboard, scope)
+    } else if (scope.userType == UserType.RETAILER || scope.userType == UserType.HOSPITAL) {
+        ShowRetailerAndHospitalDashboard(unreadNotifications, dashboard, scope)
+    }
+}
+
+/**
+ * show dashboard specific to retailer and hospitals
+ */
+@Composable
+private fun ShowRetailerAndHospitalDashboard(
+    unreadNotifications: State<Int>,
+    dashboard: State<DashboardData?>,
+    scope: DashboardScope
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Space(dp = 16.dp)
+        Row {
+            BigButtonRetailer(
+                icon = R.drawable.ic_orders_dashboard,
+                text = stringResource(id = R.string.orders),
+                counter = dashboard.value?.ordersCount ?: 0,
+                onClick = { scope.goToOrders() },
+            )
+            Space(16.dp)
+            BigButtonRetailer(
+                icon = R.drawable.ic_bell_dashboard,
+                text = stringResource(id = R.string.notifications),
+                counter = unreadNotifications.value,
+                onClick = { scope.goToNotifications() },
+            )
+            Space(16.dp)
+            BigButtonRetailer(
+                icon = R.drawable.ic_stockist_dashboard,
+                text = stringResource(id = R.string.stockist),
+                counter = scope.sections[1].getCount(dashboard = dashboard.value),
+                onClick = { scope.selectSection(scope.sections[1]) },
+            )
+        }
+        Space(dp = 16.dp)
+        Text(
+            text = stringResource(id = R.string.our_brands),
+            color = ConstColors.lightBlue,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W600,
+        )
+        Space(dp = 16.dp)
+    }
+}
+
+
+
+/**
+ * show user type specific to stockist only
+ */
+@Composable
+private fun ShowStockistDashBoard(
+    unreadNotifications: State<Int>,
+    dashboard: State<DashboardData?>,
+    scope: DashboardScope
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,214 +170,212 @@ fun DashboardScreen(scope: DashboardScope) {
                 }
             }
 
-            if (scope.userType == UserType.STOCKIST) {
-                Space(16.dp)
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    val shape1 = MaterialTheme.shapes.large.copy(
-                        topEnd = CornerSize(0.dp),
-                        bottomEnd = CornerSize(0.dp)
+            Space(16.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                val shape1 = MaterialTheme.shapes.large.copy(
+                    topEnd = CornerSize(0.dp),
+                    bottomEnd = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(ConstColors.green.copy(alpha = .2f), shape1)
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.in_stock),
+                        color = ConstColors.gray.copy(alpha = .5f),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
                     )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(ConstColors.green.copy(alpha = .2f), shape1)
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.Start,
-                    ) {
+                    dash?.stockStatusData?.inStock?.let {
                         Text(
-                            text = stringResource(id = R.string.in_stock),
-                            color = ConstColors.gray.copy(alpha = .5f),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
+                            text = it.toString(),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.W700,
                         )
-                        dash?.stockStatusData?.inStock?.let {
-                            Text(
-                                text = it.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
-                    }
-                    val shape2 = MaterialTheme.shapes.large.copy(
-                        topStart = CornerSize(0.dp),
-                        bottomStart = CornerSize(0.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(ConstColors.red.copy(alpha = .2f), shape2)
-                            .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.SpaceBetween,
-                        horizontalAlignment = Alignment.End,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.out_stock),
-                            color = ConstColors.gray.copy(alpha = .5f),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                        dash?.stockStatusData?.outOfStock?.let {
-                            Text(
-                                text = it.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
-                    }
+                    } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
                 }
-                Space(16.dp)
-                val soldExpanded = remember { mutableStateOf(false) }
-                FoldableItem(
-                    expanded = soldExpanded.value,
-                    headerBackground = Color.White,
-                    headerMinHeight = 62.dp,
-                    header = { isExpanded ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 18.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.today_sold),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W600,
-                            )
-                            Icon(
-                                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                tint = ConstColors.lightBlue,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                    },
-                    childItems = dash?.productInfo?.mostSold ?: listOf(ProductSold.skeleton),
-                    itemHorizontalPadding = 0.dp,
-                    itemSpacing = 0.dp,
-                    item = { value, index ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
-                                .background(
-                                    if (index % 2 != 0) Color.White else ConstColors.gray.copy(
-                                        alpha = .05f
-                                    )
-                                )
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (!value.isSkeletonItem) {
-                                Text(
-                                    text = value.productName,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(end = 8.dp),
-                                )
-                                Text(
-                                    text = value.count.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W500,
-                                    modifier = Modifier
-                                        .background(
-                                            ConstColors.gray.copy(.15f),
-                                            MaterialTheme.shapes.medium
-                                        )
-                                        .padding(vertical = 4.dp, horizontal = 6.dp),
-                                )
-                            } else {
-                                ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
-                            }
-                        }
-                    },
+                val shape2 = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(0.dp),
+                    bottomStart = CornerSize(0.dp)
                 )
-
-                Space(16.dp)
-                val searchExpanded = remember { mutableStateOf(false) }
-                FoldableItem(
-                    expanded = searchExpanded.value,
-                    headerBackground = Color.White,
-                    headerMinHeight = 62.dp,
-                    header = { isExpanded ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 18.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.most_searched),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W600,
-                            )
-                            Icon(
-                                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                tint = ConstColors.lightBlue,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                    },
-                    childItems = dash?.productInfo?.mostSearched ?: listOf(ProductSold.skeleton),
-                    itemHorizontalPadding = 0.dp,
-                    itemSpacing = 0.dp,
-                    item = { value, index ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
-                                .background(
-                                    if (index % 2 != 0) Color.White else ConstColors.gray.copy(
-                                        alpha = .05f
-                                    )
-                                )
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            if (!value.isSkeletonItem) {
-                                Text(
-                                    text = value.productName,
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(end = 8.dp),
-                                )
-                                Text(
-                                    text = value.count.toString(),
-                                    color = MaterialTheme.colors.background,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.W500,
-                                    modifier = Modifier
-                                        .background(
-                                            ConstColors.gray.copy(.15f),
-                                            MaterialTheme.shapes.medium
-                                        )
-                                        .padding(vertical = 4.dp, horizontal = 6.dp),
-                                )
-                            } else {
-                                ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
-                            }
-                        }
-                    },
-                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(ConstColors.red.copy(alpha = .2f), shape2)
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.End,
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.out_stock),
+                        color = ConstColors.gray.copy(alpha = .5f),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                    dash?.stockStatusData?.outOfStock?.let {
+                        Text(
+                            text = it.toString(),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.W700,
+                        )
+                    } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                }
             }
+            Space(16.dp)
+            val soldExpanded = remember { mutableStateOf(false) }
+            FoldableItem(
+                expanded = soldExpanded.value,
+                headerBackground = Color.White,
+                headerMinHeight = 62.dp,
+                header = { isExpanded ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.today_sold),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                            tint = ConstColors.lightBlue,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                },
+                childItems = dash?.productInfo?.mostSold ?: listOf(ProductSold.skeleton),
+                itemHorizontalPadding = 0.dp,
+                itemSpacing = 0.dp,
+                item = { value, index ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
+                            .background(
+                                if (index % 2 != 0) Color.White else ConstColors.gray.copy(
+                                    alpha = .05f
+                                )
+                            )
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (!value.isSkeletonItem) {
+                            Text(
+                                text = value.productName,
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                            Text(
+                                text = value.count.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                                modifier = Modifier
+                                    .background(
+                                        ConstColors.gray.copy(.15f),
+                                        MaterialTheme.shapes.medium
+                                    )
+                                    .padding(vertical = 4.dp, horizontal = 6.dp),
+                            )
+                        } else {
+                            ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
+                        }
+                    }
+                },
+            )
+
+            Space(16.dp)
+            val searchExpanded = remember { mutableStateOf(false) }
+            FoldableItem(
+                expanded = searchExpanded.value,
+                headerBackground = Color.White,
+                headerMinHeight = 62.dp,
+                header = { isExpanded ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.most_searched),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.W600,
+                        )
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                            tint = ConstColors.lightBlue,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                },
+                childItems = dash?.productInfo?.mostSearched ?: listOf(ProductSold.skeleton),
+                itemHorizontalPadding = 0.dp,
+                itemSpacing = 0.dp,
+                item = { value, index ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
+                            .background(
+                                if (index % 2 != 0) Color.White else ConstColors.gray.copy(
+                                    alpha = .05f
+                                )
+                            )
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (!value.isSkeletonItem) {
+                            Text(
+                                text = value.productName,
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                            Text(
+                                text = value.count.toString(),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W500,
+                                modifier = Modifier
+                                    .background(
+                                        ConstColors.gray.copy(.15f),
+                                        MaterialTheme.shapes.medium
+                                    )
+                                    .padding(vertical = 4.dp, horizontal = 6.dp),
+                            )
+                        } else {
+                            ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
+                        }
+                    }
+                },
+            )
         }
         Space(dp = 16.dp)
     }
@@ -350,6 +416,53 @@ private fun RowScope.BigButton(
                             .align(Alignment.Center),
                     )
                     if (counter > 0) {
+                        RedCounter(
+                            modifier = Modifier.align(Alignment.TopEnd),
+                            count = counter,
+                        )
+                    }
+                }
+                Text(
+                    text = text,
+                    color = ConstColors.gray,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun RowScope.BigButtonRetailer(
+    icon: Int,
+    text: String,
+    counter: Int?,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier.weight(1f),
+        shape = MaterialTheme.shapes.medium,
+        color = ConstColors.yellow,
+        onClick = onClick,
+        elevation = 5.dp
+    ) {
+        Box(modifier = Modifier.padding(10.dp)) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Box(modifier = Modifier.size(50.dp)) {
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .align(Alignment.Center),
+                    )
+                    if (counter != null && counter > 0) {
                         RedCounter(
                             modifier = Modifier.align(Alignment.TopEnd),
                             count = counter,
@@ -462,13 +575,13 @@ private fun RedCounter(
     Box(
         modifier = modifier
             .background(Color.Red, CircleShape)
-            .size(30.dp),
+            .size(20.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             text = count.toString(),
             color = Color.White,
-            fontSize = 16.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.W700,
         )
     }
@@ -486,13 +599,13 @@ private inline fun DashboardScope.Section.getIcon(): Painter = when (this) {
 }
 
 @Composable
-private inline fun DashboardScope.Section.getCount(dashboard: DashboardData): Int? = when (this) {
-    DashboardScope.Section.STOCKIST_COUNT -> dashboard.userData.stockist.totalSubscribed
+private inline fun DashboardScope.Section.getCount(dashboard: DashboardData?): Int? = when (this) {
+    DashboardScope.Section.STOCKIST_COUNT -> dashboard?.userData?.stockist?.totalSubscribed
     DashboardScope.Section.STOCKIST_ADD -> null
     DashboardScope.Section.STOCKIST_CONNECT -> null
-    DashboardScope.Section.RETAILER_COUNT -> dashboard.userData.retailer?.totalSubscribed
+    DashboardScope.Section.RETAILER_COUNT -> dashboard?.userData?.retailer?.totalSubscribed
     DashboardScope.Section.RETAILER_ADD -> null
-    DashboardScope.Section.HOSPITAL_COUNT -> dashboard.userData.hospital?.totalSubscribed
+    DashboardScope.Section.HOSPITAL_COUNT -> dashboard?.userData?.hospital?.totalSubscribed
 //    DashboardScope.Section.SEASON_BOY_COUNT -> dashboard.userData.seasonBoy?.totalSubscribed
 }
 
