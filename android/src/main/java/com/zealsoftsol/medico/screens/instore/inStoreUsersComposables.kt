@@ -136,6 +136,7 @@ private fun InStoreUserItem(item: InStoreUser, isSelected: Boolean, onClick: () 
         expanded = isSelected,
         headerBackground = if (isExpandedOut.value) Color.White else ConstColors.newDesignGray,
         headerBorder = null,
+        itemSpacing = 0.dp,
         header = { isExpanded ->
             isExpandedOut.value = isExpanded
             Row(
@@ -174,7 +175,7 @@ private fun InStoreUserItem(item: InStoreUser, isSelected: Boolean, onClick: () 
         itemHorizontalPadding = 54.dp,
         item = { _, _ ->
             Text(
-                text = item.addressData.fullAddressForInStoresItem(),
+                text = item.addressData.fullAddress(),
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W400,
                 fontSize = 14.sp,
@@ -227,6 +228,7 @@ private fun InStoreUserItem(item: InStoreUser, isSelected: Boolean, onClick: () 
                     )
                     .padding(horizontal = 4.dp, vertical = 2.dp),
             )
+            Space(8.dp)
         }
     )
 }
