@@ -55,7 +55,7 @@ import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
@@ -161,7 +161,7 @@ private fun BrandsItem(item: BrandsData) {
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
-        CoilImage(
+        CoilImageBrands(
             src = item.imageUrl,
             contentScale = ContentScale.Crop,
             onError = { ItemPlaceholder() },
