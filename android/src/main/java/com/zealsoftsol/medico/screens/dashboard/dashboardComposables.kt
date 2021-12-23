@@ -13,10 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -35,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,10 +51,13 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
@@ -109,10 +119,59 @@ private fun ShowRetailerAndHospitalDashboard(
             fontWeight = FontWeight.W600,
         )
         Space(dp = 16.dp)
+        LazyRow(
+            contentPadding = PaddingValues(start = 3.dp),
+        ) {
+            dashboard.value?.brands?.let {
+                itemsIndexed(
+                    items = it,
+                    key = { _, item -> item.searchTerm },
+                    itemContent = { _, item ->
+                        BrandsItem(item)
+                    },
+                )
+            }
+        }
+        Space(dp = 16.dp)
+        Text(
+            text = stringResource(id = R.string.our_products),
+            color = ConstColors.lightBlue,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W600,
+        )
+        Space(dp = 16.dp)
     }
 }
 
-
+/**
+ * ui item for brands listing
+ */
+@Composable
+private fun BrandsItem(item: BrandsData) {
+    Card(
+        modifier = Modifier
+            .height(80.dp)
+            .width(120.dp)
+            .selectable(
+                selected = true,
+                onClick = {
+                    //todo move to searched page on click
+                }),
+        elevation = 5.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        CoilImage(
+            src = item.imageUrl,
+            contentScale = ContentScale.Crop,
+            onError = { ItemPlaceholder() },
+            onLoading = { ItemPlaceholder() },
+            height = 80.dp,
+            width = 120.dp,
+        )
+    }
+    Space(8.dp)
+}
 
 /**
  * show user type specific to stockist only
