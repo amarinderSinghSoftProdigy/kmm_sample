@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.dashboard
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -45,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,6 +80,7 @@ fun DashboardScreen(scope: DashboardScope) {
 /**
  * show dashboard specific to retailer and hospitals
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShowRetailerAndHospitalDashboard(
     unreadNotifications: State<Int>,
@@ -86,7 +91,6 @@ private fun ShowRetailerAndHospitalDashboard(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
     ) {
         Space(dp = 16.dp)
         Row {
@@ -140,6 +144,15 @@ private fun ShowRetailerAndHospitalDashboard(
             fontWeight = FontWeight.W600,
         )
         Space(dp = 16.dp)
+        LazyVerticalGrid(
+            cells = GridCells.Fixed(2)
+        ) {
+            dashboard.value?.brands?.let {
+                items(it.size) { index ->
+                    CategoriesItem(it[index], scope)
+                }
+            }
+        }
     }
 }
 
@@ -172,6 +185,46 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
         )
     }
     Space(8.dp)
+}
+
+/**
+ * ui item for categories listing
+ */
+@Composable
+private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
+    Card(
+        modifier = Modifier
+            .height(200.dp)
+            .padding(end = 15.dp, bottom = 15.dp)
+            .selectable(
+                selected = true,
+                onClick = {
+                    //send parameters for search based on product
+                    scope.startBrandSearch(item.searchTerm, item.field)
+                }),
+        elevation = 5.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CoilImageBrands(
+                src = item.imageUrl,
+                contentScale = ContentScale.Crop,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
+                height = 150.dp,
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp, bottom = 5.dp),
+                text = item.field,
+                textAlign = TextAlign.Center,
+                color = ConstColors.lightBlue,
+                fontSize = 15.sp,
+            )
+        }
+    }
 }
 
 /**
