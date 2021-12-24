@@ -87,73 +87,80 @@ private fun ShowRetailerAndHospitalDashboard(
     dashboard: State<DashboardData?>,
     scope: DashboardScope
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Space(dp = 16.dp)
-        Row {
-            BigButtonRetailer(
-                icon = R.drawable.ic_orders_dashboard,
-                text = stringResource(id = R.string.orders),
-                counter = dashboard.value?.ordersCount ?: 0,
-                onClick = { scope.goToOrders() },
-            )
-            Space(16.dp)
-            BigButtonRetailer(
-                icon = R.drawable.ic_bell_dashboard,
-                text = stringResource(id = R.string.notifications),
-                counter = unreadNotifications.value,
-                onClick = { scope.goToNotifications() },
-            )
-            Space(16.dp)
-            BigButtonRetailer(
-                icon = R.drawable.ic_stockist_dashboard,
-                text = stringResource(id = R.string.stockist),
-                counter = scope.sections[1].getCount(dashboard = dashboard.value),
-                onClick = { scope.selectSection(scope.sections[1]) },
-            )
-        }
-        Space(dp = 16.dp)
-        Text(
-            text = stringResource(id = R.string.our_brands),
-            color = ConstColors.lightBlue,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W600,
-        )
-        Space(dp = 16.dp)
-        LazyRow(
-            contentPadding = PaddingValues(start = 3.dp),
+            .background(Color.White)
+    ){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
         ) {
-            dashboard.value?.brands?.let {
-                itemsIndexed(
-                    items = it,
-                    key = { _, item -> item.searchTerm },
-                    itemContent = { _, item ->
-                        BrandsItem(item, scope)
-                    },
+            Space(dp = 16.dp)
+            Row {
+                BigButtonRetailer(
+                    icon = R.drawable.ic_orders_dashboard,
+                    text = stringResource(id = R.string.orders),
+                    counter = dashboard.value?.ordersCount ?: 0,
+                    onClick = { scope.goToOrders() },
+                )
+                Space(16.dp)
+                BigButtonRetailer(
+                    icon = R.drawable.ic_bell_dashboard,
+                    text = stringResource(id = R.string.notifications),
+                    counter = unreadNotifications.value,
+                    onClick = { scope.goToNotifications() },
+                )
+                Space(16.dp)
+                BigButtonRetailer(
+                    icon = R.drawable.ic_stockist_dashboard,
+                    text = stringResource(id = R.string.stockist),
+                    counter = scope.sections[1].getCount(dashboard = dashboard.value),
+                    onClick = { scope.selectSection(scope.sections[1]) },
                 )
             }
-        }
-        Space(dp = 16.dp)
-        Text(
-            text = stringResource(id = R.string.our_categories),
-            color = ConstColors.lightBlue,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W600,
-        )
-        Space(dp = 16.dp)
-        LazyVerticalGrid(
-            cells = GridCells.Fixed(2)
-        ) {
-            dashboard.value?.brands?.let {
-                items(it.size) { index ->
-                    CategoriesItem(it[index], scope)
+            Space(dp = 16.dp)
+            Text(
+                text = stringResource(id = R.string.our_brands),
+                color = ConstColors.lightBlue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 16.dp)
+            LazyRow(
+                contentPadding = PaddingValues(start = 3.dp),
+            ) {
+                dashboard.value?.brands?.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { _, item -> item.searchTerm },
+                        itemContent = { _, item ->
+                            BrandsItem(item, scope)
+                        },
+                    )
+                }
+            }
+            Space(dp = 16.dp)
+            Text(
+                text = stringResource(id = R.string.our_categories),
+                color = ConstColors.lightBlue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 16.dp)
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(2)
+            ) {
+                dashboard.value?.brands?.let {
+                    items(it.size) { index ->
+                        CategoriesItem(it[index], scope)
+                    }
                 }
             }
         }
     }
+
 }
 
 /**
@@ -163,15 +170,15 @@ private fun ShowRetailerAndHospitalDashboard(
 private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
     Card(
         modifier = Modifier
-            .height(80.dp)
-            .width(120.dp)
+            .height(90.dp)
+            .width(150.dp)
             .selectable(
                 selected = true,
                 onClick = {
                     //send parameters for search based on product
                     scope.startBrandSearch(item.searchTerm, item.field)
                 }),
-        elevation = 5.dp,
+        elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
@@ -180,11 +187,11 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
             contentScale = ContentScale.Crop,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
-            height = 80.dp,
-            width = 120.dp,
+            height = 90.dp,
+            width = 150.dp,
         )
     }
-    Space(8.dp)
+    Space(12.dp)
 }
 
 /**
@@ -202,7 +209,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
                     //send parameters for search based on product
                     scope.startBrandSearch(item.searchTerm, item.field)
                 }),
-        elevation = 5.dp,
+        elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
@@ -559,7 +566,7 @@ private fun RowScope.BigButtonRetailer(
         shape = MaterialTheme.shapes.medium,
         color = ConstColors.yellow,
         onClick = onClick,
-        elevation = 5.dp
+        elevation = 3.dp
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
             Column(
