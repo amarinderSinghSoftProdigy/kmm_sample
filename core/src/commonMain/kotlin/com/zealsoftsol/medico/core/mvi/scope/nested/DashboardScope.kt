@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -50,6 +51,19 @@ class DashboardScope private constructor(
 
     init {
         EventCollector.sendEvent(Event.Action.Auth.UpdateDashboard)
+    }
+
+    /**
+     * Opens search screen with params required for search based on brand
+     * @param searchTerm Search term for the brand
+     * @param field Which field to search (for eg - manufacturer)
+     */
+    fun startBrandSearch(searchTerm: String, field: String) {
+        val autoComplete = AutoComplete(
+            query = field, details = "in Manufacturers",
+            suggestion = searchTerm
+        )
+        EventCollector.sendEvent(Event.Transition.Search(autoComplete))
     }
 
     fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)

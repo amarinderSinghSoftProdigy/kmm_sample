@@ -306,8 +306,8 @@
     <string name="whatsapp_preference">Whatsapp Preference</string>
     <string name="preferred_language">Please choose your preferred language </string>
     <string name="update_successfull">Updated Successfully</string>
-    <string name ="our_brands">Our Brands</string>
-    <string name="our_products">Our Products</string>
+    <string name ="our_brands">Brands</string>
+    <string name="our_categories">Categories</string>
 
     <!--error codes-->
 

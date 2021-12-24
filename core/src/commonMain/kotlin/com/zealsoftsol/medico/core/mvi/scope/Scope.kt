@@ -75,7 +75,7 @@ sealed class TabBarInfo {
 
         override fun withBackIcon() = copy(icon = ScopeIcon.BACK)
 
-        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search)
+        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search(null))
 
         fun goToCart() = EventCollector.sendEvent(Event.Transition.Cart)
     }

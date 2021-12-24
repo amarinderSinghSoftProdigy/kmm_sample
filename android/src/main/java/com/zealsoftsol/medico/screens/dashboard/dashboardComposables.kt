@@ -127,14 +127,14 @@ private fun ShowRetailerAndHospitalDashboard(
                     items = it,
                     key = { _, item -> item.searchTerm },
                     itemContent = { _, item ->
-                        BrandsItem(item)
+                        BrandsItem(item, scope)
                     },
                 )
             }
         }
         Space(dp = 16.dp)
         Text(
-            text = stringResource(id = R.string.our_products),
+            text = stringResource(id = R.string.our_categories),
             color = ConstColors.lightBlue,
             fontSize = 16.sp,
             fontWeight = FontWeight.W600,
@@ -147,7 +147,7 @@ private fun ShowRetailerAndHospitalDashboard(
  * ui item for brands listing
  */
 @Composable
-private fun BrandsItem(item: BrandsData) {
+private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
     Card(
         modifier = Modifier
             .height(80.dp)
@@ -155,7 +155,8 @@ private fun BrandsItem(item: BrandsData) {
             .selectable(
                 selected = true,
                 onClick = {
-                    //todo move to searched page on click
+                    //send parameters for search based on product
+                    scope.startBrandSearch(item.searchTerm, item.field)
                 }),
         elevation = 5.dp,
         shape = RoundedCornerShape(5.dp),
