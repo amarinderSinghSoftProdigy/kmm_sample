@@ -228,7 +228,7 @@ object DebugScopeCreator {
     }
 
     fun searchQueryScreen() {
-        nav.setScope(SearchScope())
+        nav.setScope(SearchScope(null))
     }
 
     fun productScreen() {

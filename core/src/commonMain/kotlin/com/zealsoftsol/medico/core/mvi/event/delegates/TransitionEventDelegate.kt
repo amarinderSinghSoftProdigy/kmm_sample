@@ -53,7 +53,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.SignUp -> setScope(SignUpScope.SelectUserType.get())
-                is Event.Transition.Search -> setScope(SearchScope())
+                is Event.Transition.Search -> setScope(SearchScope(event.autoComplete))
                 is Event.Transition.Dashboard -> {
                     dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     setScope(

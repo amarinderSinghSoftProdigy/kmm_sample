@@ -310,7 +310,7 @@ sealed class Event {
         object SignUp : Transition()
         object Otp : Transition()
         object ChangePassword : Transition()
-        object Search : Transition()
+        data class Search(val autoComplete: AutoComplete? = null) : Transition()
         object Dashboard : Transition()
         object Settings : Transition()
         object Profile : Transition()

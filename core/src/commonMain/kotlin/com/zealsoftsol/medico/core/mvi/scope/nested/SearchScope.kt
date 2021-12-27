@@ -84,6 +84,7 @@ interface BaseSearchScope : Scopable {
 }
 
 class SearchScope(
+    autoCompleteDashboard: AutoComplete?,
     override val productSearch: DataSource<String> = DataSource(""),
     override val isFilterOpened: DataSource<Boolean> = DataSource(false),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
@@ -100,7 +101,12 @@ class SearchScope(
     override val pagination: Pagination = Pagination()
 
     init {
-        EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
+        if (autoCompleteDashboard != null) {
+            EventCollector.sendEvent(Event.Action.Search.SelectAutoComplete(autoCompleteDashboard))
+        } else {
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        }
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
