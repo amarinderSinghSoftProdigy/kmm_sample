@@ -74,7 +74,7 @@ class DashboardScope private constructor(
     fun selectSection(section: Section) = section.event?.let(EventCollector::sendEvent) ?: false
 
     enum class Section(val stringId: String, val event: Event?) {
-        STOCKIST_COUNT("stockists", null),
+        STOCKIST_COUNT("stockists", Event.Transition.Management(UserType.STOCKIST)),
         STOCKIST_ADD("add_stockist", Event.Transition.Management(UserType.STOCKIST)),
         STOCKIST_CONNECT("connect_stockist", Event.Transition.Management(UserType.STOCKIST)),
         RETAILER_COUNT("retailers", Event.Transition.Management(UserType.RETAILER)),

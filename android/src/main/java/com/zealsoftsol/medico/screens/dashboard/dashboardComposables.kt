@@ -48,7 +48,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,14 +90,15 @@ private fun ShowRetailerAndHospitalDashboard(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
         ) {
             Space(dp = 16.dp)
-            Row {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+            ) {
                 BigButtonRetailer(
                     icon = R.drawable.ic_orders_dashboard,
                     text = stringResource(id = R.string.orders),
@@ -126,10 +126,12 @@ private fun ShowRetailerAndHospitalDashboard(
                 color = ConstColors.lightBlue,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W600,
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             Space(dp = 16.dp)
             LazyRow(
                 contentPadding = PaddingValues(start = 3.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
             ) {
                 dashboard.value?.brands?.let {
                     itemsIndexed(
@@ -147,12 +149,14 @@ private fun ShowRetailerAndHospitalDashboard(
                 color = ConstColors.lightBlue,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W600,
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             Space(dp = 16.dp)
             LazyVerticalGrid(
-                cells = GridCells.Fixed(2)
+                cells = GridCells.Fixed(2),
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
             ) {
-                dashboard.value?.brands?.let {
+                dashboard.value?.categories?.let {
                     items(it.size) { index ->
                         CategoriesItem(it[index], scope)
                     }
@@ -175,7 +179,7 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
             .selectable(
                 selected = true,
                 onClick = {
-                    //send parameters for search based on product
+                    //send parameters for search based on category
                     scope.startBrandSearch(item.searchTerm, item.field)
                 }),
         elevation = 3.dp,
@@ -202,13 +206,13 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
     Card(
         modifier = Modifier
             .height(200.dp)
-            .padding(end = 15.dp, bottom = 15.dp)
             .selectable(
                 selected = true,
                 onClick = {
                     //send parameters for search based on product
                     scope.startBrandSearch(item.searchTerm, item.field)
-                }),
+                })
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
@@ -219,16 +223,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
                 contentScale = ContentScale.Crop,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },
-                height = 150.dp,
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 5.dp, bottom = 5.dp),
-                text = item.field,
-                textAlign = TextAlign.Center,
-                color = ConstColors.lightBlue,
-                fontSize = 15.sp,
+                height = 200.dp,
             )
         }
     }

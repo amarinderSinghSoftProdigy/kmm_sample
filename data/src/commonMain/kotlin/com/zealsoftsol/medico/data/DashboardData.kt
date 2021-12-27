@@ -13,7 +13,8 @@ data class DashboardData(
     @SerialName("recentProductInfo")
     val productInfo: RecentProductInfo? = null,
     val stockStatusData: StockStatusData? = null,
-    val brands: List<BrandsData> = emptyList()
+    val brands: List<BrandsData> = emptyList(),
+    val categories: List<BrandsData> = emptyList()
 )
 
 @Serializable
