@@ -220,7 +220,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CoilImageBrands(
                 src = item.imageUrl,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillBounds,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },
                 height = 200.dp,
