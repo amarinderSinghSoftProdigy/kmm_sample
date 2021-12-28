@@ -231,6 +231,7 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
                 text = item.name!!,
                 textAlign = TextAlign.Center,
                 color = ConstColors.lightBlue,
+                fontWeight = FontWeight.W600,
                 fontSize = 15.sp,
             )
         }
