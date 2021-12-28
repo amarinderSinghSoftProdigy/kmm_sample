@@ -165,4 +165,6 @@ private fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) 
     NavigationOption.Help -> rememberVectorPainter(Icons.Filled.Help)
     NavigationOption.Settings -> rememberVectorPainter(Icons.Filled.Settings)
     NavigationOption.LogOut -> painterResource(id = R.drawable.ic_exit)
+    NavigationOption.Inventory -> painterResource(id = R.drawable.ic_stores)
+
 } to stringResourceByName(stringId)

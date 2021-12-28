@@ -308,6 +308,9 @@
     <string name="update_successfull">Updated Successfully</string>
     <string name ="our_brands">Brands</string>
     <string name="our_categories">Categories</string>
+    <string name ="inventory">Inventory</string>
+    <string name ="online">Online</string>
+    <string name ="offline">Offline</string>
 
     <!--error codes-->
 

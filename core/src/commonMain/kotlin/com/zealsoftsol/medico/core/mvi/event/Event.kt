@@ -300,7 +300,15 @@ sealed class Event {
 
             object GetPreference : WhatsAppPreference()
         }
+
+        sealed class Inventory : Action(){
+            override val typeClazz: KClass<*> = Inventory::class
+
+            object GetInventory : Inventory()
+        }
     }
+
+
 
     sealed class Transition : Event() {
         override val typeClazz: KClass<*> = Transition::class
@@ -341,5 +349,7 @@ sealed class Event {
             val address: String,
             val phoneNumber: String
         ) : Transition()
+
+        object Inventory : Transition()
     }
 }

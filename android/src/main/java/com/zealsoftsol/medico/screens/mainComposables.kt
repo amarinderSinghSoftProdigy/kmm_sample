@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import android.text.style.StyleSpan
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -37,7 +36,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -66,6 +64,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreOrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
@@ -111,6 +110,7 @@ import com.zealsoftsol.medico.screens.instore.InStoreOrderPlacedScreen
 import com.zealsoftsol.medico.screens.instore.InStoreProductsScreen
 import com.zealsoftsol.medico.screens.instore.InStoreSellersScreen
 import com.zealsoftsol.medico.screens.instore.InStoreUsersScreen
+import com.zealsoftsol.medico.screens.inventory.InventoryMainComposable
 import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
 import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -284,6 +284,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InStoreCartScope -> InStoreCartScreen(it)
                     is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
                     is WhatsappPreferenceScope -> WhatsappPreference(it)
+                    is InventoryScope -> InventoryMainComposable(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

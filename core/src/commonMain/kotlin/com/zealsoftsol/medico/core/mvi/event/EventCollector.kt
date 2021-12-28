@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InStoreEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InventoryEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
@@ -133,6 +134,7 @@ internal class EventCollector(
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
+        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo)
     )
 
     init {

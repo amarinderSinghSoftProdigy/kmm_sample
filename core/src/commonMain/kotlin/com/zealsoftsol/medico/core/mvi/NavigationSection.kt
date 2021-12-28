@@ -27,6 +27,8 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object Stores : NavigationOption(Event.Transition.Stores, "stores")
 
+    object Inventory : NavigationOption(Event.Transition.Inventory, "inventory")
+
     object Orders : NavigationOption(Event.Transition.Orders, "orders")
 
     object PoOrdersAndHistory :
@@ -40,6 +42,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
 
+
     companion object {
         internal fun empty() = emptyList<NavigationOption>()
         internal fun limited() = listOf(
@@ -52,6 +55,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             InStore.takeIf { userType == UserType.STOCKIST },
             PoInvoices.takeIf { userType == UserType.STOCKIST },
             Stores,
+            Inventory.takeIf { userType == UserType.STOCKIST },
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
