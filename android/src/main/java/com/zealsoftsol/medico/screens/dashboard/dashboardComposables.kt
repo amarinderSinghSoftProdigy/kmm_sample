@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -205,7 +206,7 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
 private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
     Card(
         modifier = Modifier
-            .height(200.dp)
+            .height(215.dp)
             .selectable(
                 selected = true,
                 onClick = {
@@ -220,10 +221,18 @@ private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CoilImageBrands(
                 src = item.imageUrl,
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Crop,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },
-                height = 200.dp,
+                height = 180.dp,
+            )
+
+            Text(
+                text = item.name!!,
+                textAlign = TextAlign.Center,
+                color = ConstColors.lightBlue,
+                fontWeight = FontWeight.W600,
+                fontSize = 15.sp,
             )
         }
     }
