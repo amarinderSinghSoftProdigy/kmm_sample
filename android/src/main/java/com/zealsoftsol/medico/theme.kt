@@ -34,6 +34,8 @@ object ConstColors {
     val orange = Color(0xffff912c)
     val red = Color(0xffed5152)
     val newDesignGray = Color(0xffF0F3F5)
+    val darkGreen = Color(0xff509F00)
+    val darkRed = Color(0xffF42525)
 }
 
 @Composable
