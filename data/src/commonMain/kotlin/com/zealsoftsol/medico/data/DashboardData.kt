@@ -19,7 +19,7 @@ data class DashboardData(
 
 @Serializable
 data class BrandsData(
-    val imageUrl: String, val field: String, val searchTerm: String
+    val imageUrl: String, val field: String, val searchTerm: String, val name: String? = null
 )
 
 @Serializable

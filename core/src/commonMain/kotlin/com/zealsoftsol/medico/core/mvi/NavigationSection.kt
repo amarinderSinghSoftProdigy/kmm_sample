@@ -56,6 +56,7 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
             PoInvoices.takeIf { userType == UserType.STOCKIST },
             Stores,
 //            Inventory.takeIf { userType == UserType.STOCKIST },
+            // Inventory.takeIf { userType == UserType.STOCKIST },
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },

@@ -1,9 +1,9 @@
 name: android-development
 
 on:
-  pull_request:
-    branches: [ develop ]
-    types: [ closed ]
+  push:
+    branches:
+    - develop
 
   workflow_dispatch:
 
@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v2
+        with:
+          ref: develop
 
       - name: Set CI gradle.properties
         run: cp gradle.properties.ci gradle.properties
