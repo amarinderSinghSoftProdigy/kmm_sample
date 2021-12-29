@@ -311,6 +311,8 @@
     <string name ="inventory">Inventory</string>
     <string name ="online">Online</string>
     <string name ="offline">Offline</string>
+    <string name="dl_one">DL1</string>
+    <string name="dl_two">DL2</string>
 
     <!--error codes-->
 

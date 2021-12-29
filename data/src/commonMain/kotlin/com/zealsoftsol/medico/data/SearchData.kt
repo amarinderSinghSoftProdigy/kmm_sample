@@ -73,6 +73,7 @@ data class SellerInfo(
                 pincode = "",
                 city = "",
                 landmark = "",
+                addressLine = ""
             ),
             tradeName = "",
             unitCode = "",
