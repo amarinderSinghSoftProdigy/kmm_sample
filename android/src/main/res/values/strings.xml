@@ -315,6 +315,7 @@
     <string name="long_expiry">Long Expiry(&gt;6 months)</string>
     <string name="near_expiry">Near Expiry(&lt;6 months)</string>
     <string name="expired">Expired</string>
+    <string name="availability">Availability</string>
 
     <!--error codes-->
 
