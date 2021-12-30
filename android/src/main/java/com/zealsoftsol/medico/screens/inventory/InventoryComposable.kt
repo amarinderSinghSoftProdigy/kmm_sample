@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +49,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 StatusView(
                     scope = scope, modifier = Modifier
                         .fillParentMaxWidth()
-                        .padding(8.dp), 100f
+                        .padding(8.dp)
                 )
             }
             item {
@@ -57,7 +58,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     modifier = Modifier
                         .fillParentMaxWidth()
                         .padding(8.dp),
-                    70f,
                 )
             }
             item {
@@ -66,7 +66,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     modifier = Modifier
                         .fillParentMaxWidth()
                         .padding(8.dp),
-                    70f,
                 )
             }
         }
@@ -74,10 +73,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
 }
 
 /**
- * Status of online and offline
+ * View to display Status of online and offline
  */
 @Composable
-fun StatusView(scope: InventoryScope, modifier: Modifier, sliceThickness: Float) {
+private fun StatusView(scope: InventoryScope, modifier: Modifier) {
+    val statusData = scope.mInventoryData.flow.collectAsState().value?.onlineStatusData
+
     Card(
         modifier = modifier,
         elevation = 5.dp,
@@ -89,65 +90,75 @@ fun StatusView(scope: InventoryScope, modifier: Modifier, sliceThickness: Float)
                 .fillMaxWidth()
                 .padding(start = 10.dp)
         ) {
-            val (status, online, offline, chart) = createRefs()
-            Text(
-                text = stringResource(R.string.status),
-                color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W700,
-                modifier = Modifier.constrainAs(status) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    top.linkTo(parent.top, margin = 5.dp)
-                }
-            )
-            CommonRoundedView(
-                text = "${stringResource(R.string.online)}: 1000",
-                modifier = Modifier.constrainAs(online) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(offline.top, margin = 5.dp)
-                },
-                color = ConstColors.darkGreen
-            )
+            statusData?.let {
+                val (status, online, offline, chart) = createRefs()
+                Text(
+                    text = stringResource(R.string.status),
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.constrainAs(status) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        top.linkTo(parent.top, margin = 5.dp)
+                    }
+                )
+                CommonRoundedView(
+                    text = "${stringResource(R.string.online)}: ${it.onlineProductsCount}",
+                    modifier = Modifier.constrainAs(online) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(offline.top, margin = 5.dp)
+                    },
+                    color = ConstColors.darkGreen
+                )
 
-            CommonRoundedView(
-                text = "${stringResource(R.string.offline)}: 1000",
-                modifier = Modifier.constrainAs(offline) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                },
-                color = ConstColors.darkRed
-            )
+                CommonRoundedView(
+                    text = "${stringResource(R.string.offline)}: ${it.offlineProductCount}",
+                    modifier = Modifier.constrainAs(offline) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                    },
+                    color = ConstColors.darkRed
+                )
 
-            MyChartParent(
-                thickness = sliceThickness,
-                listPieChartData = listOf(
-                    PieChartData.Slice(10f, ConstColors.darkRed), PieChartData.Slice(
-                        90f,
-                        ConstColors.darkGreen
-                    )
-                ),
-                modifier = Modifier.constrainAs(chart) {
-                    width = Dimension.value(140.dp)
-                    height = Dimension.value(140.dp)
-                    end.linkTo(parent.end, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                    top.linkTo(parent.top, margin = 10.dp)
-                }
-            )
+                MyChartParent(
+                    thickness = 100f,
+                    listPieChartData = listOf(
+                        //online product
+                        PieChartData.Slice(
+                            it.onlineProductsCount.divideToPercent(it.onlineProductsCount + it.offlineProductCount),
+                            ConstColors.darkGreen
+                        ),
+                        //offline product
+                        PieChartData.Slice(
+                            it.offlineProductCount.divideToPercent(it.onlineProductsCount + it.offlineProductCount),
+                            ConstColors.darkRed
+                        )
+                    ),
+                    modifier = Modifier.constrainAs(chart) {
+                        width = Dimension.value(140.dp)
+                        height = Dimension.value(140.dp)
+                        end.linkTo(parent.end, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 10.dp)
+                    }
+                )
+            }
+
         }
     }
 }
 
 
 /**
- * Availability view
+ * View to display Availability of products
  */
 @Composable
-fun AvailabilityView(
+private fun AvailabilityView(
     scope: InventoryScope,
     modifier: Modifier,
-    sliceThickness: Float,
 ) {
+    val availabilityData = scope.mInventoryData.flow.collectAsState().value?.stockStatusData
+
     Card(
         modifier = modifier,
         elevation = 5.dp,
@@ -170,64 +181,77 @@ fun AvailabilityView(
                     top.linkTo(parent.top, margin = 5.dp)
                 }
             )
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.in_stock)}: 1000",
-                modifier = Modifier.constrainAs(first) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(second.top, margin = 5.dp)
-                },
-                color = ConstColors.darkGreen
-            )
+            availabilityData?.let {
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.in_stock)}: ${it.inStock}",
+                    modifier = Modifier.constrainAs(first) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(second.top, margin = 5.dp)
+                    },
+                    color = ConstColors.darkGreen
+                )
 
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.limited_stock)}: 1000",
-                modifier = Modifier.constrainAs(second) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(third.top, margin = 5.dp)
-                },
-                color = ConstColors.orange
-            )
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.limited_stock)}: ${it.limitedStock}",
+                    modifier = Modifier.constrainAs(second) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(third.top, margin = 5.dp)
+                    },
+                    color = ConstColors.orange
+                )
 
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.out_stock)}: 1000",
-                modifier = Modifier.constrainAs(third) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                },
-                color = ConstColors.darkRed
-            )
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.out_stock)}: ${it.outOfStock}",
+                    modifier = Modifier.constrainAs(third) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                    },
+                    color = ConstColors.darkRed
+                )
 
-            MyChartParent(
-                thickness = sliceThickness,
-                listPieChartData = listOf(
-                    PieChartData.Slice(10f, ConstColors.darkRed), PieChartData.Slice(
-                        70f, ConstColors.darkGreen
-                    ), PieChartData.Slice(
-                        20f, ConstColors.orange
-                    )
-                ),
-                modifier = Modifier.constrainAs(chart) {
-                    width = Dimension.value(140.dp)
-                    height = Dimension.value(140.dp)
-                    end.linkTo(parent.end, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                    top.linkTo(parent.top, margin = 10.dp)
-                }
-            )
+                MyChartParent(
+                    thickness = 70F,
+                    listPieChartData = listOf(
+                        //out of stock data
+                        PieChartData.Slice(
+                            it.outOfStock.divideToPercent(it.outOfStock + it.inStock + it.limitedStock),
+                            ConstColors.darkRed
+                        ),
+                        // in stock data
+                        PieChartData.Slice(
+                            it.inStock.divideToPercent(it.outOfStock + it.inStock + it.limitedStock),
+                            ConstColors.darkGreen
+                        ),
+                        //limited stock data
+                        PieChartData.Slice(
+                            it.limitedStock.divideToPercent(it.limitedStock + it.inStock + it.limitedStock),
+                            ConstColors.orange
+                        )
+                    ),
+                    modifier = Modifier.constrainAs(chart) {
+                        width = Dimension.value(140.dp)
+                        height = Dimension.value(140.dp)
+                        end.linkTo(parent.end, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 10.dp)
+                    }
+                )
+            }
         }
     }
 }
 
 /**
- * Expiry view
+ * View to display data of expiry of products
  */
 
 @Composable
-fun ExpiryView(
+private fun ExpiryView(
     scope: InventoryScope,
     modifier: Modifier,
-    sliceThickness: Float,
 ) {
+    val expiryData = scope.mInventoryData.flow.collectAsState().value?.stockExpiredData
+
     Card(
         modifier = modifier,
         elevation = 5.dp,
@@ -250,50 +274,66 @@ fun ExpiryView(
                     top.linkTo(parent.top, margin = 5.dp)
                 }
             )
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.long_expiry)}: 1000",
-                modifier = Modifier.constrainAs(first) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(second.top, margin = 5.dp)
-                },
-                color = ConstColors.lightBlue
-            )
+            expiryData?.let {
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.long_expiry)}: ${it.moreThan6Months}",
+                    modifier = Modifier.constrainAs(first) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(second.top, margin = 5.dp)
+                    },
+                    color = ConstColors.lightBlue
+                )
 
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.near_expiry)}: 1000",
-                modifier = Modifier.constrainAs(second) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(third.top, margin = 5.dp)
-                },
-                color = ConstColors.orange
-            )
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.near_expiry)}: ${it.lessThan6Months}",
+                    modifier = Modifier.constrainAs(second) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(third.top, margin = 5.dp)
+                    },
+                    color = ConstColors.orange
+                )
 
-            ColorIndicatorTextView(
-                text = "${stringResource(R.string.expired)}: 1000",
-                modifier = Modifier.constrainAs(third) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                },
-                color = ConstColors.darkRed
-            )
+                ColorIndicatorTextView(
+                    text = "${stringResource(R.string.expired)}: ${it.expired}",
+                    modifier = Modifier.constrainAs(third) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                    },
+                    color = ConstColors.darkRed
+                )
 
-            MyChartParent(
-                thickness = sliceThickness,
-                listPieChartData = listOf(
-                    PieChartData.Slice(10f, ConstColors.lightBlue), PieChartData.Slice(
-                        70f, ConstColors.darkRed
-                    ), PieChartData.Slice(
-                        20f, ConstColors.orange
-                    )
-                ),
-                modifier = Modifier.constrainAs(chart) {
-                    width = Dimension.value(140.dp)
-                    height = Dimension.value(140.dp)
-                    end.linkTo(parent.end, margin = 5.dp)
-                    bottom.linkTo(parent.bottom, margin = 10.dp)
-                    top.linkTo(parent.top, margin = 10.dp)
-                }
-            )
+                MyChartParent(
+                    thickness = 70f,
+                    listPieChartData = listOf(
+                        //Long expiry data
+                        PieChartData.Slice(
+                            it.moreThan6Months.divideToPercent(
+                                it.moreThan6Months + it.lessThan6Months + it.expired
+                            ), ConstColors.lightBlue
+                        ),
+                        //Expired data
+                        PieChartData.Slice(
+                            it.expired.divideToPercent(
+                                it.moreThan6Months + it.lessThan6Months + it.expired
+                            ),
+                            ConstColors.darkRed
+                        ),
+                        //Near expiry data
+                        PieChartData.Slice(
+                            it.lessThan6Months.divideToPercent(
+                                it.moreThan6Months + it.lessThan6Months + it.expired
+                            ), ConstColors.orange
+                        )
+                    ),
+                    modifier = Modifier.constrainAs(chart) {
+                        width = Dimension.value(140.dp)
+                        height = Dimension.value(140.dp)
+                        end.linkTo(parent.end, margin = 5.dp)
+                        bottom.linkTo(parent.bottom, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 10.dp)
+                    }
+                )
+            }
         }
     }
 }
@@ -306,7 +346,7 @@ fun ExpiryView(
  * @param listPieChartData list of {@PieChartData.Slice} containing the values to be drawn
  */
 @Composable
-fun MyChartParent(
+private fun MyChartParent(
     modifier: Modifier,
     thickness: Float,
     listPieChartData: List<PieChartData.Slice>
@@ -326,7 +366,7 @@ fun MyChartParent(
  * common rounded textview
  */
 @Composable
-fun CommonRoundedView(
+private fun CommonRoundedView(
     text: String,
     modifier: Modifier,
     color: Color
@@ -352,7 +392,7 @@ fun CommonRoundedView(
  */
 
 @Composable
-fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
+private fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Box(
@@ -364,8 +404,21 @@ fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
 
         )
 
-        Text(text = text, color = Color.Black, fontSize = 12.sp, modifier = Modifier.padding(start = 5.dp))
+        Text(
+            text = text,
+            color = Color.Black,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 5.dp)
+        )
 
     }
 
+}
+
+/**
+ * calculate percentage of inventory based on total products
+ */
+fun Int.divideToPercent(divideTo: Int): Float {
+    return if (divideTo == 0) 0F
+    else (this / divideTo.toFloat())
 }

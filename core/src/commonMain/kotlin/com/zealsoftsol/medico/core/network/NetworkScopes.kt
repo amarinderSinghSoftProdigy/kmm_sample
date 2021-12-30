@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
@@ -277,6 +278,10 @@ interface NetworkScope {
     interface WhatsappStore : NetworkScope {
         suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
         suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
+    }
+
+    interface InventoryStore : NetworkScope{
+        suspend fun getInventoryData(unitCode: String): BodyResponse<InventoryData>
     }
 
 }

@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -49,6 +50,7 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
+    private val inventoryScope: NetworkScope.InventoryStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -310,6 +312,10 @@ class UserRepo(
         phoneNumber: String,
     ): AnyResponse {
         return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
+    }
+
+    suspend fun getInventoryData(): BodyResponse<InventoryData>{
+        return inventoryScope.getInventoryData(requireUser().unitCode)
     }
 
     private fun clearUserData() {

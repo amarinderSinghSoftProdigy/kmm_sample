@@ -34,6 +34,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LocationData
@@ -117,7 +118,8 @@ class NetworkClient(
     NetworkScope.Orders,
     NetworkScope.Config,
     NetworkScope.InStore,
-    NetworkScope.WhatsappStore {
+    NetworkScope.WhatsappStore,
+    NetworkScope.InventoryStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -833,6 +835,14 @@ class NetworkClient(
                 url {
                     parameters.append("b2bUnitCode", unitCode)
                 }
+            }
+        }
+
+    override suspend fun getInventoryData(unitCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<InventoryData>>("${baseUrl.url}/inventory/view") {
+                withMainToken()
+                header("X-TENANT-ID",unitCode)
             }
         }
 
