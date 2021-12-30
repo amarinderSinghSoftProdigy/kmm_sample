@@ -126,7 +126,7 @@ fun ViewInvoiceScreen(scope: ViewInvoiceScope) {
                         Space(4.dp)
                         Column {
                             Text(
-                                text = b2bData.value.gstin,
+                                text = b2bData.value.gstin?: b2bData.value.panNumber,
                                 color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.W400,
                                 fontSize = 12.sp,

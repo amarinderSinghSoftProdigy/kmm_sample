@@ -67,7 +67,7 @@ data class B2BData(
     val addressData: AddressData,
     val drugLicenseNo1: String,
     val drugLicenseNo2: String,
-    val gstin: String,
+    val gstin: String?,
     @SerialName("mobileNumber")
     val phoneNumber: String,
     val panNumber: String,
