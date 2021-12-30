@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -239,7 +241,7 @@ fun ExpiryView(
         ) {
             val (status, first, second, third, chart) = createRefs()
             Text(
-                text = stringResource(id = R.string.expiry),
+                text = stringResource(id = R.string.expiry_),
                 color = Color.Black,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.W700,
@@ -279,7 +281,7 @@ fun ExpiryView(
                 thickness = sliceThickness,
                 listPieChartData = listOf(
                     PieChartData.Slice(10f, ConstColors.lightBlue), PieChartData.Slice(
-                        70f, ConstColors.darkGreen
+                        70f, ConstColors.darkRed
                     ), PieChartData.Slice(
                         20f, ConstColors.orange
                     )
@@ -339,7 +341,7 @@ fun CommonRoundedView(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
         )
 
     }
@@ -352,15 +354,17 @@ fun CommonRoundedView(
 @Composable
 fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
 
-    Row(modifier = modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(3.dp))
                 .background(color)
-                .padding(3.dp)
+                .height(12.dp)
+                .width(12.dp)
+
         )
 
-        Text(text = text, color = Color.Black, fontSize = 14.sp)
+        Text(text = text, color = Color.Black, fontSize = 12.sp, modifier = Modifier.padding(start = 5.dp))
 
     }
 
