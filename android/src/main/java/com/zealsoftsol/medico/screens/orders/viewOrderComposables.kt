@@ -3,15 +3,14 @@ package com.zealsoftsol.medico.screens.orders
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,15 +26,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.BuyingOption
@@ -49,6 +52,8 @@ import com.zealsoftsol.medico.screens.management.GeoLocation
 fun ViewOrderScreen(scope: ViewOrderScope) {
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
+    val activity = LocalContext.current as MainActivity
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,45 +107,74 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     },
                     childItems = listOf(order.value.info),
                     item = { value, _ ->
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Column {
-                                BoxWithConstraints {
-                                    Text(
-                                        text = b2bData.value.addressData.address,
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W500,
-                                        fontSize = 12.sp,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.widthIn(max = maxWidth / 2),
-                                    )
-                                }
-                                Space(8.dp)
+                            Text(
+                                text = b2bData.value.addressData.address,
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Space(8.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
                                 GeoLocation(
                                     location = b2bData.value.addressData.fullAddress(),
                                     textSize = 12.sp,
                                     tint = MaterialTheme.colors.background
                                 )
+                                Space(8.dp)
+                                ClickableText(
+                                    text = AnnotatedString(b2bData.value.phoneNumber),
+                                    style = TextStyle(
+                                        color = MaterialTheme.colors.background,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.W400,
+                                    ),
+                                    onClick = { activity.openDialer(b2bData.value.phoneNumber) },
+                                )
                             }
-                            Space(4.dp)
-                            Column {
+                            Space(8.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
                                 Text(
-                                    text = b2bData.value.gstin,
+                                    text = b2bData.value.gstin ?: b2bData.value.panNumber,
                                     color = MaterialTheme.colors.background,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 12.sp,
                                 )
                                 Space(8.dp)
-                                Text(
-                                    text = b2bData.value.phoneNumber,
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W400,
-                                    fontSize = 12.sp,
-                                )
+                                if (b2bData.value.gstin != null) {
+                                    Text(
+                                        text = b2bData.value.panNumber,
+                                        color = MaterialTheme.colors.background,
+                                        fontWeight = FontWeight.W400,
+                                        fontSize = 12.sp,
+                                    )
+                                }
                             }
+                            Space(8.dp)
+                            Text(
+                                text = "${stringResource(id = R.string.dl_one)}: ${b2bData.value.drugLicenseNo1}",
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 12.sp,
+                            )
+                            Space(8.dp)
+                            Text(
+                                text = "${stringResource(id = R.string.dl_two)}: ${b2bData.value.drugLicenseNo2}",
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 12.sp,
+                            )
                         }
                     }
                 )
