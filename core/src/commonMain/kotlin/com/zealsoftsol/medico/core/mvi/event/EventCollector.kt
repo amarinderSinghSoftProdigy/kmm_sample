@@ -48,7 +48,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-internal class EventCollector(
+class EventCollector(
     navigator: Navigator,
     searchNetworkScope: NetworkScope.Search,
     productNetworkScope: NetworkScope.Product,

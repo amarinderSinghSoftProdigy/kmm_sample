@@ -5,11 +5,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,6 +21,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -25,7 +29,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -47,6 +53,8 @@ import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
@@ -116,7 +124,6 @@ import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
-import com.zealsoftsol.medico.screens.nav.NavigationColumn
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
 import com.zealsoftsol.medico.screens.orders.OrderPlacedScreen
@@ -144,6 +151,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
+/*
         drawerContent = {
             navigation.value?.let {
                 val user = it.user.flow.collectAsState()
@@ -160,6 +168,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                 }
             }
         },
+*/
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
             val tabBarInfo = scope.tabBar.flow.collectAsState()
@@ -289,6 +298,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
+        bottomBar = {
+            BottomNavigationBar()
+        }
     )
 }
 
@@ -564,6 +576,107 @@ private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBa
             )
         }
     }
+}
+
+/**
+ * composable for bottom navgation item
+ */
+@Composable
+fun BottomNavigationBar() {
+    val items = listOf(
+        BottomNavigationItem.Dashboard,
+        BottomNavigationItem.Settings,
+        BottomNavigationItem.PurchaseOrders,
+        BottomNavigationItem.Cart,
+        BottomNavigationItem.Drawer
+    )
+
+    var selectedIndex = 0
+
+    Surface(elevation = 5.dp, color = Color.White) {
+        Row(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .height(48.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+
+            items.forEachIndexed { index , item ->
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
+                        .clickable {
+                            EventCollector.sendEvent(item.route)
+                            items[selectedIndex].selected.value = false
+                            item.selected.value = true
+                            selectedIndex = index
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
+                            id = item.unSelectedIcon
+                        ),
+                        contentDescription = null,
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+/**
+ * bottom nav items , icons and their selected state
+ */
+sealed class BottomNavigationItem(
+    var route: Event.Transition,
+    var unSelectedIcon: Int,
+    var selectedIcon: Int,
+    var selected: MutableState<Boolean>
+) {
+    object Dashboard :
+        BottomNavigationItem(
+            Event.Transition.Dashboard,
+            R.drawable.ic_home,
+            R.drawable.ic_account,
+            mutableStateOf(true)
+        )
+
+    object Settings :
+        BottomNavigationItem(
+            Event.Transition.Settings,
+            R.drawable.ic_account,
+            R.drawable.ic_home,
+            mutableStateOf(false)
+        )
+
+    object PurchaseOrders :
+        BottomNavigationItem(
+            Event.Transition.PoOrdersAndHistory,
+            R.drawable.ic_po,
+            R.drawable.ic_call,
+            mutableStateOf(false)
+        )
+
+    object Cart :
+        BottomNavigationItem(
+            Event.Transition.Cart,
+            R.drawable.ic_cart,
+            R.drawable.ic_orders,
+            mutableStateOf(false)
+        )
+
+    object Drawer :
+        BottomNavigationItem(
+            Event.Transition.Cart,
+            R.drawable.ic_hamburger,
+            R.drawable.ic_stores,
+            mutableStateOf(false)
+        )
 }
 
 private inline fun ScopeIcon.toLocalIcon(): ImageVector = when (this) {
