@@ -105,8 +105,6 @@ import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
-import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
@@ -171,7 +169,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 */
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            val tabBarInfo = scope.tabBar.flow.collectAsState()
+          /*  val tabBarInfo = scope.tabBar.flow.collectAsState()
             TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     when (val info = tabBarInfo.value) {
@@ -236,7 +234,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
                     }
                 }
-            }
+            }*/
         },
         content = {
             val childScope = scope.childScope.flow.collectAsState()

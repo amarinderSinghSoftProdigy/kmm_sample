@@ -313,6 +313,9 @@
     <string name ="offline">Offline</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
+    <string name="my_account">My Account</string>
+    <string name="tc_privacy_policy">T&amp;C and Privacy Policies</string>
+    <string name="customer_care">Customer Care</string>
 
     <!--error codes-->
 
