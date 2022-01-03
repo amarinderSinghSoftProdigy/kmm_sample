@@ -91,6 +91,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
 import com.zealsoftsol.medico.screens.auth.AuthAwaitVerificationScreen
@@ -139,6 +140,8 @@ import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+var items: List<BottomNavigationItem>? = null
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
@@ -146,6 +149,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val notificationList = rememberLazyListState()
     val searchList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
+    val userType = navigation.value?.user?.flow?.value?.type
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
@@ -169,76 +173,79 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 */
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-          /*  val tabBarInfo = scope.tabBar.flow.collectAsState()
-            TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    when (val info = tabBarInfo.value) {
-                        is TabBarInfo.Simple -> SimpleTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.Search -> SearchTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
-                        is TabBarInfo.NewDesignLogo -> {
-                            val keyboard = LocalSoftwareKeyboardController.current
-                            Icon(
-                                imageVector = info.icon.toLocalIcon(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        onClick = {
-                                            when (info.icon) {
-                                                ScopeIcon.BACK -> scope.goBack()
-                                                ScopeIcon.HAMBURGER -> {
-                                                    keyboard?.hide()
-                                                    coroutineScope.launch { scaffoldState.drawerState.open() }
-                                                }
-                                            }
-                                        },
-                                    )
-                            )
-                            Space(4.dp)
-                            Image(
-                                painter = painterResource(id = R.drawable.medico_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp),
-                            )
-                        }
-                        is TabBarInfo.NewDesignTitle -> {
-                            Text(
-                                text = info.title,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.W600,
-                                color = MaterialTheme.colors.background,
-                                modifier = Modifier
-                                    .weight(0.7f)
-                                    .align(Alignment.CenterVertically)
-                                    .padding(start = 16.dp),
-                            )
-                        }
-                        //display header in instore section from side menu when a retailer is selected
-                        is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
-                    }
-                }
-            }*/
+            /*  val tabBarInfo = scope.tabBar.flow.collectAsState()
+              TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                      when (val info = tabBarInfo.value) {
+                          is TabBarInfo.Simple -> SimpleTabBar(
+                              scope,
+                              info,
+                              scaffoldState,
+                              coroutineScope
+                          )
+                          is TabBarInfo.Search -> SearchTabBar(
+                              scope,
+                              info,
+                              scaffoldState,
+                              coroutineScope
+                          )
+                          is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
+                          is TabBarInfo.NewDesignLogo -> {
+                              val keyboard = LocalSoftwareKeyboardController.current
+                              Icon(
+                                  imageVector = info.icon.toLocalIcon(),
+                                  contentDescription = null,
+                                  modifier = Modifier
+                                      .align(Alignment.CenterVertically)
+                                      .fillMaxHeight()
+                                      .padding(16.dp)
+                                      .clickable(
+                                          indication = null,
+                                          onClick = {
+                                              when (info.icon) {
+                                                  ScopeIcon.BACK -> scope.goBack()
+                                                  ScopeIcon.HAMBURGER -> {
+                                                      keyboard?.hide()
+                                                      coroutineScope.launch { scaffoldState.drawerState.open() }
+                                                  }
+                                              }
+                                          },
+                                      )
+                              )
+                              Space(4.dp)
+                              Image(
+                                  painter = painterResource(id = R.drawable.medico_logo),
+                                  contentDescription = null,
+                                  modifier = Modifier
+                                      .padding(vertical = 16.dp),
+                              )
+                          }
+                          is TabBarInfo.NewDesignTitle -> {
+                              Text(
+                                  text = info.title,
+                                  maxLines = 1,
+                                  overflow = TextOverflow.Ellipsis,
+                                  fontSize = 20.sp,
+                                  fontWeight = FontWeight.W600,
+                                  color = MaterialTheme.colors.background,
+                                  modifier = Modifier
+                                      .weight(0.7f)
+                                      .align(Alignment.CenterVertically)
+                                      .padding(start = 16.dp),
+                              )
+                          }
+                          //display header in instore section from side menu when a retailer is selected
+                          is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                      }
+                  }
+              }*/
         },
         content = {
             val childScope = scope.childScope.flow.collectAsState()
-            Crossfade(childScope.value, animationSpec = tween(durationMillis = 200)) {
+            Crossfade(
+                childScope.value,
+                animationSpec = tween(durationMillis = 200),
+            ) {
                 when (it) {
                     is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
@@ -297,7 +304,26 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
-            BottomNavigationBar()
+            if(items.isNullOrEmpty()) {
+                if (userType == UserType.STOCKIST) {
+                    items = listOf(
+                        BottomNavigationItem.Dashboard,
+                        BottomNavigationItem.Settings,
+                        BottomNavigationItem.PurchaseOrders,
+                        BottomNavigationItem.Cart,
+                        BottomNavigationItem.Drawer
+                    )
+                } else {
+                    items = listOf(
+                        BottomNavigationItem.Dashboard,
+                        BottomNavigationItem.Settings,
+                        BottomNavigationItem.Stores,
+                        BottomNavigationItem.Cart,
+                        BottomNavigationItem.Drawer
+                    )
+                }
+            }
+            BottomNavigationBar(items)
         }
     )
 }
@@ -579,19 +605,14 @@ private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBa
 /**
  * composable for bottom navgation item
  */
+
+
 @Composable
-fun BottomNavigationBar() {
-    val items = listOf(
-        BottomNavigationItem.Dashboard,
-        BottomNavigationItem.Settings,
-        BottomNavigationItem.PurchaseOrders,
-        BottomNavigationItem.Cart,
-        BottomNavigationItem.Drawer
-    )
+fun BottomNavigationBar(items: List<BottomNavigationItem>?) {
 
-    var selectedIndex = 0
-
-    Surface(elevation = 5.dp, color = Color.White) {
+    Surface(
+        elevation = 5.dp, color = Color.White
+    ) {
         Row(
             modifier = Modifier
                 .background(Color.White)
@@ -601,16 +622,18 @@ fun BottomNavigationBar() {
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
-            items.forEachIndexed { index , item ->
+            items?.forEach { item ->
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)
                         .clickable {
-                            EventCollector.sendEvent(item.route)
-                            items[selectedIndex].selected.value = false
+                            items.forEach {
+                                it.selected.value = false
+                            }
                             item.selected.value = true
-                            selectedIndex = index
+                            EventCollector.sendEvent(item.route)
+
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -624,7 +647,6 @@ fun BottomNavigationBar() {
             }
         }
     }
-
 }
 
 /**
@@ -640,7 +662,7 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             Event.Transition.Dashboard,
             R.drawable.ic_home,
-            R.drawable.ic_account,
+            R.drawable.ic_home_selected,
             mutableStateOf(true)
         )
 
@@ -648,7 +670,7 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             Event.Transition.Settings,
             R.drawable.ic_account,
-            R.drawable.ic_home,
+            R.drawable.ic_account_selected,
             mutableStateOf(false)
         )
 
@@ -656,15 +678,15 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             Event.Transition.PoOrdersAndHistory,
             R.drawable.ic_po,
-            R.drawable.ic_call,
+            R.drawable.ic_po_selected,
             mutableStateOf(false)
         )
 
     object Cart :
         BottomNavigationItem(
             Event.Transition.Cart,
-            R.drawable.ic_cart,
-            R.drawable.ic_orders,
+            R.drawable.ic_grey_cart,
+            R.drawable.ic_cart_selected,
             mutableStateOf(false)
         )
 
@@ -672,7 +694,15 @@ sealed class BottomNavigationItem(
         BottomNavigationItem(
             Event.Transition.Cart,
             R.drawable.ic_hamburger,
+            R.drawable.ic_hamburger_selected,
+            mutableStateOf(false)
+        )
+
+    object Stores :
+        BottomNavigationItem(
+            Event.Transition.Stores,
             R.drawable.ic_stores,
+            R.drawable.ic_strores_selected,
             mutableStateOf(false)
         )
 }

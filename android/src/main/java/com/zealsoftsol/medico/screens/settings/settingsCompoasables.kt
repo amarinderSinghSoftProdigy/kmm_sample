@@ -45,7 +45,7 @@ fun SettingsScreen(scope: SettingsScope) {
     ) {
 
         Image(
-            painter = painterResource(id = R.drawable.ic_acc_bg), contentDescription = null,
+            painter = painterResource(id = R.drawable.ic_acc_place), contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
@@ -80,13 +80,13 @@ fun SettingsScreen(scope: SettingsScope) {
                 is SettingsScope.Address -> Address(scope.addressData)
                 is SettingsScope.GstinDetails -> GstinDetails(scope.details)
             }
-            Divider(color = ConstColors.separator, thickness = 1.dp)
+            Divider(color = ConstColors.separator, thickness = (0.5).dp)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_terms_cond,
                 stringResourceId = R.string.tc_privacy_policy
             )
-            Divider(color = ConstColors.separator, thickness = 1.dp)
+            Divider(color = ConstColors.separator, thickness = (0.5).dp)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_customer_care_acc,

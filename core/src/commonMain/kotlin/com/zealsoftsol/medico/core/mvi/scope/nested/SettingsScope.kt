@@ -2,15 +2,13 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 
-sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(),
-    CommonScope.CanGoBack {
+sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(){
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
