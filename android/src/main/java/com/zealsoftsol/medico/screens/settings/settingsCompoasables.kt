@@ -40,6 +40,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -49,6 +50,8 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
     val activity = LocalContext.current as MainActivity
+    val user = scope.mUser
+    val userType = user.type
 
     Box(
         modifier = Modifier
@@ -75,21 +78,51 @@ fun SettingsScreen(scope: SettingsScope) {
         )
 
         Text(
-            text = scope.mUser.fullName(),
+            text = user.fullName(),
             color = Color.Black,
-            modifier = Modifier.padding(start = 115.dp, top = 175.dp)
+            modifier = Modifier.padding(start = 115.dp, top = 175.dp),
+            fontSize = 14.sp
         )
 
-        ClickableText(
-            text = AnnotatedString(scope.mUser.phoneNumber),
-            style = TextStyle(
-                color = ConstColors.lightBlue,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W600,
-            ),
-            onClick = { activity.openDialer(scope.mUser.phoneNumber) },
-            modifier = Modifier.padding(start = 115.dp, top = 195.dp)
-        )
+        //show view based on user type
+        if (userType == UserType.STOCKIST) {
+            Row(
+                modifier = Modifier.padding(start = 115.dp, top = 195.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = (user.details as User.Details.DrugLicense).tradeName,
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+                Space(dp = 5.dp)
+                Divider(
+                    color = Color.Black,
+                    modifier = Modifier
+                        .height(10.dp)
+                        .width(1.dp)
+                )
+                Space(dp = 5.dp)
+                ClickableText(
+                    text = AnnotatedString(user.phoneNumber),
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                    ),
+                    onClick = { activity.openDialer(user.phoneNumber) },
+                )
+            }
+        } else {
+            ClickableText(
+                text = AnnotatedString(user.phoneNumber),
+                style = TextStyle(
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                ),
+                onClick = { activity.openDialer(user.phoneNumber) },
+                modifier = Modifier.padding(start = 115.dp, top = 195.dp)
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -99,7 +132,7 @@ fun SettingsScreen(scope: SettingsScope) {
 
             Text(
                 text = stringResource(id = R.string.my_account),
-                fontWeight = FontWeight.W600,
+                fontWeight = FontWeight.W700,
                 color = Color.Black,
                 modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
             )
@@ -110,13 +143,44 @@ fun SettingsScreen(scope: SettingsScope) {
                 is SettingsScope.Address -> Address(scope.addressData)
                 is SettingsScope.GstinDetails -> GstinDetails(scope.details)
             }
-            AccountContentItem(
-                route = Event.Transition.WhatsappPreference,
-                drawableResourceId = R.drawable.ic_whatsapp,
-                stringResourceId = R.string.whatsapp_preference,
-                scope = scope
-            )
-            Divider(color = ConstColors.separator, thickness = (1).dp)
+
+            //show ui options based on user type
+            if (userType == UserType.STOCKIST) {
+                Separator(thickness = 1f)
+                Text(
+                    text = stringResource(id = R.string.preference),
+                    fontWeight = FontWeight.W700,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 18.dp, top = 18.dp)
+                )
+                Separator(thickness = 0.5f)
+                AccountContentItem(
+                    route = Event.Transition.WhatsappPreference,
+                    drawableResourceId = R.drawable.ic_whatsapp,
+                    stringResourceId = R.string.whatsapp,
+                    scope = scope
+                )
+                Separator(thickness = 0.5f)
+                AccountContentItem(
+                    drawableResourceId = R.drawable.ic_invoice_pref,
+                    stringResourceId = R.string.invoice_preferences,
+                    scope = scope
+                )
+                Separator(thickness = 0.5f)
+                AccountContentItem(
+                    drawableResourceId = R.drawable.ic_order_value,
+                    stringResourceId = R.string.order_value,
+                    scope = scope
+                )
+            } else {
+                AccountContentItem(
+                    route = Event.Transition.WhatsappPreference,
+                    drawableResourceId = R.drawable.ic_whatsapp,
+                    stringResourceId = R.string.whatsapp_preference,
+                    scope = scope
+                )
+            }
+            Separator(thickness = 1f)
             //get website url
             val website = stringResource(id = R.string.website_name)
             Box(modifier = Modifier.height(56.dp), contentAlignment = Alignment.BottomStart) {
@@ -132,23 +196,23 @@ fun SettingsScreen(scope: SettingsScope) {
                         .padding(start = 16.dp, bottom = 10.dp)
                 )
             }
-            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Separator(thickness = 0.5f)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_terms_cond,
                 stringResourceId = R.string.tc_privacy_policy,
                 scope = scope
             )
-            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Separator(thickness = 0.5f)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_customer_care_acc,
                 stringResourceId = R.string.customer_care,
                 scope = scope
             )
-            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Separator(thickness = 0.5f)
             Box(modifier = Modifier.height(56.dp))
-            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Separator(thickness = 0.5f)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -205,7 +269,7 @@ fun SettingsScreen(scope: SettingsScope) {
 private fun SettingsList(sections: List<SettingsScope.List.Section>) {
     sections.forEach {
         Column {
-            Divider(color = ConstColors.separator, thickness = 1.dp)
+            Separator(thickness = 1f)
 
             ConstraintLayout(modifier = Modifier
                 .fillMaxWidth()
@@ -239,7 +303,7 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
                     color = Color.Black,
                     fontSize = 16.sp,
                     modifier = Modifier.constrainAs(text) {
-                        start.linkTo(icon.end, 16.dp)
+                        start.linkTo(icon.end, 24.dp)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     }
@@ -255,6 +319,12 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
         }
 
     }
+}
+
+
+@Composable
+fun Separator(thickness: Float) {
+    Divider(color = ConstColors.separator, thickness = thickness.dp)
 }
 
 /**
@@ -273,7 +343,7 @@ private fun AccountContentItem(
     scope: SettingsScope? = null
 ) {
     Column {
-        Divider(color = ConstColors.separator, thickness = 1.dp)
+        Separator(thickness = 1f)
 
         ConstraintLayout(modifier = Modifier
             .fillMaxWidth()
@@ -304,7 +374,7 @@ private fun AccountContentItem(
                 color = Color.Black,
                 fontSize = 16.sp,
                 modifier = Modifier.constrainAs(text) {
-                    start.linkTo(icon.end, 16.dp)
+                    start.linkTo(icon.end, 24.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 }
@@ -318,7 +388,6 @@ private fun AccountContentItem(
                 })
         }
     }
-
 }
 
 @Composable

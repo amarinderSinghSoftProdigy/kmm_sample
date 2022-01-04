@@ -318,6 +318,10 @@
     <string name="customer_care">Customer Care</string>
     <string name="website_name">medicostores.com</string>
     <string name="version">Version</string>
+    <string name="preference">Preferences</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="invoice_preferences">Invoice Preferences</string>
+    <string name="order_value">Order Value</string>
 
     <!--error codes-->
 
