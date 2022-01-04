@@ -74,7 +74,8 @@ internal class TransitionEventDelegate(
                             if (user.type == UserType.SEASON_BOY)
                                 SettingsScope.List.Section.simple(user.isActivated)
                             else
-                                SettingsScope.List.Section.all(user.isActivated)
+                                SettingsScope.List.Section.all(user.isActivated),
+                            userRepo.requireUser()
                         )
                     )
                 }
@@ -85,10 +86,16 @@ internal class TransitionEventDelegate(
                     PasswordScope.VerifyCurrent()
                 )
                 is Event.Transition.Address -> setScope(
-                    SettingsScope.Address(userRepo.requireUser().addressData)
+                    SettingsScope.Address(
+                        userRepo.requireUser().addressData,
+                        userRepo.requireUser()
+                    )
                 )
                 is Event.Transition.GstinDetails -> setScope(
-                    SettingsScope.GstinDetails(userRepo.requireUser().details as User.Details.DrugLicense)
+                    SettingsScope.GstinDetails(
+                        userRepo.requireUser().details as User.Details.DrugLicense,
+                        userRepo.requireUser()
+                    )
                 )
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {

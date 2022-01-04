@@ -2,31 +2,41 @@ package com.zealsoftsol.medico.screens.settings
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
@@ -38,17 +48,21 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
+    val activity = LocalContext.current as MainActivity
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
     ) {
 
         Image(
             painter = painterResource(id = R.drawable.ic_acc_place), contentDescription = null,
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(170.dp)
         )
 
         Image(
@@ -60,11 +74,27 @@ fun SettingsScreen(scope: SettingsScope) {
                 .width(90.dp)
         )
 
+        Text(
+            text = scope.mUser.fullName(),
+            color = Color.Black,
+            modifier = Modifier.padding(start = 115.dp, top = 175.dp)
+        )
+
+        ClickableText(
+            text = AnnotatedString(scope.mUser.phoneNumber),
+            style = TextStyle(
+                color = ConstColors.lightBlue,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W600,
+            ),
+            onClick = { activity.openDialer(scope.mUser.phoneNumber) },
+            modifier = Modifier.padding(start = 115.dp, top = 195.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 220.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(top = 230.dp)
         ) {
 
             Text(
@@ -80,6 +110,22 @@ fun SettingsScreen(scope: SettingsScope) {
                 is SettingsScope.Address -> Address(scope.addressData)
                 is SettingsScope.GstinDetails -> GstinDetails(scope.details)
             }
+            Divider(color = ConstColors.separator, thickness = (1).dp)
+            //get website url
+            val website = stringResource(id = R.string.website_name)
+            Box(modifier = Modifier.height(56.dp), contentAlignment = Alignment.BottomStart) {
+                ClickableText(
+                    text = AnnotatedString(website),
+                    style = TextStyle(
+                        color = ConstColors.lightBlue,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
+                    ),
+                    onClick = { activity.openUrl("https://" + website) },
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 10.dp)
+                )
+            }
             Divider(color = ConstColors.separator, thickness = (0.5).dp)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
@@ -92,6 +138,57 @@ fun SettingsScreen(scope: SettingsScope) {
                 drawableResourceId = R.drawable.ic_customer_care_acc,
                 stringResourceId = R.string.customer_care
             )
+            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Box(modifier = Modifier.height(56.dp))
+            Divider(color = ConstColors.separator, thickness = (0.5).dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(60.dp),
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(
+                        text = "${stringResource(id = R.string.version)} ${BuildConfig.VERSION_NAME}",
+                        color = ConstColors.txtGrey,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = stringResource(id = R.string.copyright),
+                        color = ConstColors.txtGrey,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .clickable {
+                            scope.sendEvent(action = Event.Action.Auth.LogOut(true))
+                        },
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_logout),
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(id = R.string.log_out),
+                        color = ConstColors.red,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+                }
+
+            }
+
         }
     }
 }
@@ -165,7 +262,8 @@ private fun AccountContentItem(
     route: Event.Transition? = null,
     altRoute: Event.Action? = null,
     drawableResourceId: Int,
-    stringResourceId: Int
+    stringResourceId: Int,
+    scope: SettingsScope? = null
 ) {
     Column {
         Divider(color = ConstColors.separator, thickness = 1.dp)
@@ -177,9 +275,9 @@ private fun AccountContentItem(
                 indication = rememberRipple(),
                 onClick = {
                     if (route != null)
-                        EventCollector.sendEvent(route)
+                        scope?.sendEvent(transition = route)
                     else if (altRoute != null)
-                        EventCollector.sendEvent(altRoute)
+                        scope?.sendEvent(action = altRoute)
 
                 }
             )) {

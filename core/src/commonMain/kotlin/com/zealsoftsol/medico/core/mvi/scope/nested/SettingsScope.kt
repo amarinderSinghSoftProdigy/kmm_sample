@@ -8,15 +8,28 @@ import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 
-sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(){
+sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
     }
 
+    /**
+     * Handle events
+     */
+    fun sendEvent(action: Event.Action? = null, transition: Event.Transition? = null) {
+
+        if (action != null) {
+            EventCollector.sendEvent(action)
+        } else if (transition != null) {
+            EventCollector.sendEvent(transition)
+        }
+    }
+
     class List(
-        val sections: kotlin.collections.List<Section>
-    ) : SettingsScope("settings") {
+        val sections: kotlin.collections.List<Section>,
+        val user: User
+    ) : SettingsScope("settings", user) {
 
         enum class Section(
             private val event: Event,
@@ -49,13 +62,14 @@ sealed class SettingsScope(private val titleId: String) : Scope.Child.TabBar(){
         }
     }
 
-    class Profile(val user: User) : SettingsScope("personal_profile")
+    class Profile(val user: User) : SettingsScope("personal_profile", user)
 
-    class Address(val addressData: AddressData) : SettingsScope("address") {
+    class Address(val addressData: AddressData, val user: User) : SettingsScope("address", user) {
 
         fun openMap(): Boolean = TODO("open map")
     }
 
-    class GstinDetails(val details: User.Details.DrugLicense) : SettingsScope("gstin_details")
+    class GstinDetails(val details: User.Details.DrugLicense, val user: User) :
+        SettingsScope("gstin_details", user)
 
 }

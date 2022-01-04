@@ -316,6 +316,8 @@
     <string name="my_account">My Account</string>
     <string name="tc_privacy_policy">T&amp;C and Privacy Policies</string>
     <string name="customer_care">Customer Care</string>
+    <string name="website_name">medicostores.com</string>
+    <string name="version">Version</string>
 
     <!--error codes-->
 
