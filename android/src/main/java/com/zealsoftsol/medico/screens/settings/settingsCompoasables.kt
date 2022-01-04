@@ -110,6 +110,12 @@ fun SettingsScreen(scope: SettingsScope) {
                 is SettingsScope.Address -> Address(scope.addressData)
                 is SettingsScope.GstinDetails -> GstinDetails(scope.details)
             }
+            AccountContentItem(
+                route = Event.Transition.WhatsappPreference,
+                drawableResourceId = R.drawable.ic_whatsapp,
+                stringResourceId = R.string.whatsapp_preference,
+                scope = scope
+            )
             Divider(color = ConstColors.separator, thickness = (1).dp)
             //get website url
             val website = stringResource(id = R.string.website_name)
@@ -130,13 +136,15 @@ fun SettingsScreen(scope: SettingsScope) {
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_terms_cond,
-                stringResourceId = R.string.tc_privacy_policy
+                stringResourceId = R.string.tc_privacy_policy,
+                scope = scope
             )
             Divider(color = ConstColors.separator, thickness = (0.5).dp)
             AccountContentItem(
                 altRoute = Event.Action.Help.GetHelp,
                 drawableResourceId = R.drawable.ic_customer_care_acc,
-                stringResourceId = R.string.customer_care
+                stringResourceId = R.string.customer_care,
+                scope = scope
             )
             Divider(color = ConstColors.separator, thickness = (0.5).dp)
             Box(modifier = Modifier.height(56.dp))
@@ -218,7 +226,6 @@ private fun SettingsList(sections: List<SettingsScope.List.Section>) {
                             SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password
                             SettingsScope.List.Section.ADDRESS -> R.drawable.ic_address_account
                             SettingsScope.List.Section.GSTIN_DETAILS -> R.drawable.ic_gstin_account
-                            SettingsScope.List.Section.WHATSAPP_PREFERENCE -> R.drawable.ic_whatsapp
                         }
                     ), contentDescription = null,
                     modifier = Modifier.constrainAs(icon) {

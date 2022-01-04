@@ -38,8 +38,7 @@ sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope
             PROFILE(Event.Transition.Profile, "personal_profile"),
             CHANGE_PASSWORD(Event.Transition.ChangePassword, "change_password"),
             ADDRESS(Event.Transition.Address, "address"),
-            GSTIN_DETAILS(Event.Transition.GstinDetails, "gstin_details"),
-            WHATSAPP_PREFERENCE(Event.Transition.WhatsappPreference, "whatsapp_preference");
+            GSTIN_DETAILS(Event.Transition.GstinDetails, "gstin_details");
 
             fun select() = EventCollector.sendEvent(event)
 
@@ -50,7 +49,6 @@ sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope
                         CHANGE_PASSWORD.takeIf { canChangePassword },
                         ADDRESS,
                         GSTIN_DETAILS,
-                        WHATSAPP_PREFERENCE
                     )
 
                 fun simple(canChangePassword: Boolean) =
