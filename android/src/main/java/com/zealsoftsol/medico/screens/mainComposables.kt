@@ -91,6 +91,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.auth.AuthAddressData
@@ -137,6 +138,9 @@ import com.zealsoftsol.medico.screens.product.ProductScreen
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchScreen
+import com.zealsoftsol.medico.screens.settings.AddressComposable
+import com.zealsoftsol.medico.screens.settings.GstinDetailsComposable
+import com.zealsoftsol.medico.screens.settings.ProfileComposable
 import com.zealsoftsol.medico.screens.settings.SettingsScreen
 import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
 import kotlinx.coroutines.CoroutineScope
@@ -175,72 +179,72 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 */
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-              val tabBarInfo = scope.tabBar.flow.collectAsState()
-              TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                  Row(verticalAlignment = Alignment.CenterVertically) {
-                      when (val info = tabBarInfo.value) {
-                          is TabBarInfo.Simple -> SimpleTabBar(
-                              scope,
-                              info,
-                              scaffoldState,
-                              coroutineScope
-                          )
-                          is TabBarInfo.Search -> SearchTabBar(
-                              scope,
-                              info,
-                              scaffoldState,
-                              coroutineScope
-                          )
-                          is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
-                          is TabBarInfo.NewDesignLogo -> {
-                              val keyboard = LocalSoftwareKeyboardController.current
-                              Icon(
-                                  imageVector = info.icon.toLocalIcon(),
-                                  contentDescription = null,
-                                  modifier = Modifier
-                                      .align(Alignment.CenterVertically)
-                                      .fillMaxHeight()
-                                      .padding(16.dp)
-                                      .clickable(
-                                          indication = null,
-                                          onClick = {
-                                              when (info.icon) {
-                                                  ScopeIcon.BACK -> scope.goBack()
-                                                  ScopeIcon.HAMBURGER -> {
-                                                      keyboard?.hide()
-                                                      coroutineScope.launch { scaffoldState.drawerState.open() }
-                                                  }
-                                              }
-                                          },
-                                      )
-                              )
-                              Space(4.dp)
-                              Image(
-                                  painter = painterResource(id = R.drawable.medico_logo),
-                                  contentDescription = null,
-                                  modifier = Modifier
-                                      .padding(vertical = 16.dp),
-                              )
-                          }
-                          is TabBarInfo.NewDesignTitle -> {
-                              Text(
-                                  text = info.title,
-                                  maxLines = 1,
-                                  overflow = TextOverflow.Ellipsis,
-                                  fontSize = 20.sp,
-                                  fontWeight = FontWeight.W600,
-                                  color = MaterialTheme.colors.background,
-                                  modifier = Modifier
-                                      .weight(0.7f)
-                                      .align(Alignment.CenterVertically)
-                                      .padding(start = 16.dp),
-                              )
-                          }
-                          //display header in instore section from side menu when a retailer is selected
-                          is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
-                      }
-                  }
-              }
+            val tabBarInfo = scope.tabBar.flow.collectAsState()
+            TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    when (val info = tabBarInfo.value) {
+                        is TabBarInfo.Simple -> SimpleTabBar(
+                            scope,
+                            info,
+                            scaffoldState,
+                            coroutineScope
+                        )
+                        is TabBarInfo.Search -> SearchTabBar(
+                            scope,
+                            info,
+                            scaffoldState,
+                            coroutineScope
+                        )
+                        is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
+                        is TabBarInfo.NewDesignLogo -> {
+                            val keyboard = LocalSoftwareKeyboardController.current
+                            Icon(
+                                imageVector = info.icon.toLocalIcon(),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .fillMaxHeight()
+                                    .padding(16.dp)
+                                    .clickable(
+                                        indication = null,
+                                        onClick = {
+                                            when (info.icon) {
+                                                ScopeIcon.BACK -> scope.goBack()
+                                                ScopeIcon.HAMBURGER -> {
+                                                    keyboard?.hide()
+                                                    coroutineScope.launch { scaffoldState.drawerState.open() }
+                                                }
+                                            }
+                                        },
+                                    )
+                            )
+                            Space(4.dp)
+                            Image(
+                                painter = painterResource(id = R.drawable.medico_logo),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(vertical = 16.dp),
+                            )
+                        }
+                        is TabBarInfo.NewDesignTitle -> {
+                            Text(
+                                text = info.title,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.W600,
+                                color = MaterialTheme.colors.background,
+                                modifier = Modifier
+                                    .weight(0.7f)
+                                    .align(Alignment.CenterVertically)
+                                    .padding(start = 16.dp),
+                            )
+                        }
+                        //display header in instore section from side menu when a retailer is selected
+                        is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                    }
+                }
+            }
         },
         content = {
             val childScope = scope.childScope.flow.collectAsState()
@@ -302,12 +306,17 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
                     is WhatsappPreferenceScope -> WhatsappPreference(it)
                     is InventoryScope -> InventoryMainComposable(it)
+                    is SettingsScope.Profile -> ProfileComposable(it.user)
+                    is SettingsScope.Address -> AddressComposable(it.user.addressData)
+                    is SettingsScope.GstinDetails -> GstinDetailsComposable(
+                        it.user.details as User.Details.DrugLicense,
+                    )
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
         bottomBar = {
-            if(items.isNullOrEmpty()) {
+            if (items.isNullOrEmpty()) {
                 if (userType == UserType.STOCKIST) {
                     items = listOf(
                         BottomNavigationItem.Dashboard,

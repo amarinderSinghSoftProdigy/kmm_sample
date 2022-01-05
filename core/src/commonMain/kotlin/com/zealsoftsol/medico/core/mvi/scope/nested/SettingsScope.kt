@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
@@ -60,14 +61,13 @@ sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope
         }
     }
 
-    class Profile(val user: User) : SettingsScope("personal_profile", user)
+    class Profile(val user: User) : Child.TabBar(),
+        CommonScope.CanGoBack
 
-    class Address(val addressData: AddressData, val user: User) : SettingsScope("address", user) {
+    class Address(val addressData: AddressData, val user: User) : Child.TabBar(),
+        CommonScope.CanGoBack
 
-        fun openMap(): Boolean = TODO("open map")
-    }
-
-    class GstinDetails(val details: User.Details.DrugLicense, val user: User) :
-        SettingsScope("gstin_details", user)
+    class GstinDetails(val details: User.Details.DrugLicense, val user: User): Child.TabBar(),
+        CommonScope.CanGoBack
 
 }

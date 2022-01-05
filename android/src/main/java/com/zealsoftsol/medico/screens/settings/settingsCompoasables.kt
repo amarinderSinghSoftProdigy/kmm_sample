@@ -45,7 +45,6 @@ import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
-import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
 fun SettingsScreen(scope: SettingsScope) {
@@ -137,12 +136,34 @@ fun SettingsScreen(scope: SettingsScope) {
                 modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
             )
 
-            when (scope) {
-                is SettingsScope.List -> SettingsList(scope.sections)
-                is SettingsScope.Profile -> Profile(scope.user)
-                is SettingsScope.Address -> Address(scope.addressData)
-                is SettingsScope.GstinDetails -> GstinDetails(scope.details)
-            }
+            Separator(thickness = 0.5f)
+            AccountContentItem(
+                route = Event.Transition.Profile,
+                drawableResourceId = R.drawable.ic_personal,
+                stringResourceId = R.string.personal_profile,
+                scope = scope
+            )
+            Separator(thickness = 0.5f)
+            AccountContentItem(
+                route = Event.Transition.ChangePassword,
+                drawableResourceId = R.drawable.ic_password,
+                stringResourceId = R.string.change_password,
+                scope = scope
+            )
+            Separator(thickness = 0.5f)
+            AccountContentItem(
+                route = Event.Transition.Address,
+                drawableResourceId = R.drawable.ic_address_account,
+                stringResourceId = R.string.address,
+                scope = scope
+            )
+            Separator(thickness = 0.5f)
+            AccountContentItem(
+                route = Event.Transition.GstinDetails,
+                drawableResourceId = R.drawable.ic_gstin_account,
+                stringResourceId = R.string.gstin_details,
+                scope = scope
+            )
 
             //show ui options based on user type
             if (userType == UserType.STOCKIST) {
@@ -265,66 +286,10 @@ fun SettingsScreen(scope: SettingsScope) {
     }
 }
 
-@Composable
-private fun SettingsList(sections: List<SettingsScope.List.Section>) {
-    sections.forEach {
-        Column {
-            Separator(thickness = 1f)
-
-            ConstraintLayout(modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .clickable(
-                    indication = rememberRipple(),
-                    onClick = {
-                        it.select()
-                    }
-                )) {
-
-                val (icon, text, arrow) = createRefs()
-
-                Image(
-                    painter = painterResource(
-                        id = when (it) {
-                            SettingsScope.List.Section.PROFILE -> R.drawable.ic_personal
-                            SettingsScope.List.Section.CHANGE_PASSWORD -> R.drawable.ic_password
-                            SettingsScope.List.Section.ADDRESS -> R.drawable.ic_address_account
-                            SettingsScope.List.Section.GSTIN_DETAILS -> R.drawable.ic_gstin_account
-                        }
-                    ), contentDescription = null,
-                    modifier = Modifier.constrainAs(icon) {
-                        start.linkTo(parent.start, 16.dp)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                )
-                Text(
-                    text = stringResourceByName(it.stringId),
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    modifier = Modifier.constrainAs(text) {
-                        start.linkTo(icon.end, 24.dp)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                )
-                Image(painter = painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = null,
-                    modifier = Modifier.constrainAs(arrow) {
-                        end.linkTo(parent.end, 16.dp)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    })
-            }
-        }
-
-    }
-}
-
 
 @Composable
 fun Separator(thickness: Float) {
-    Divider(color = ConstColors.separator, thickness = thickness.dp)
+    Divider(color = ConstColors.separator.copy(alpha = 0.5f), thickness = thickness.dp)
 }
 
 /**
@@ -391,40 +356,61 @@ private fun AccountContentItem(
 }
 
 @Composable
-private fun Profile(user: User) {
-    ReadOnlyField(user.firstName, R.string.first_name)
-    Space(12.dp)
-    ReadOnlyField(user.lastName, R.string.last_name)
-    Space(12.dp)
-    ReadOnlyField(user.email, R.string.email)
-    Space(12.dp)
-    ReadOnlyField(user.phoneNumber.formatIndia(), R.string.phone_number)
+fun ProfileComposable(user: User) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(Color.White)
+            .fillMaxSize()
+    ) {
+        ReadOnlyField(user.firstName, R.string.first_name)
+        Space(12.dp)
+        ReadOnlyField(user.lastName, R.string.last_name)
+        Space(12.dp)
+        ReadOnlyField(user.email, R.string.email)
+        Space(12.dp)
+        ReadOnlyField(user.phoneNumber.formatIndia(), R.string.phone_number)
+    }
 }
 
 @Composable
-private fun Address(addressData: AddressData) {
-    ReadOnlyField(addressData.pincode.toString(), R.string.pincode)
-    Space(12.dp)
-    ReadOnlyField(addressData.address, R.string.address_line)
-    Space(12.dp)
-    ReadOnlyField(addressData.landmark, R.string.landmark)
-    Space(12.dp)
-    ReadOnlyField(addressData.location, R.string.location)
-    Space(12.dp)
-    ReadOnlyField(addressData.city, R.string.city)
-    Space(12.dp)
-    ReadOnlyField(addressData.district, R.string.district)
-    Space(12.dp)
-    ReadOnlyField(addressData.state, R.string.state)
+fun AddressComposable(addressData: AddressData) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(Color.White)
+            .fillMaxSize()
+    ) {
+        ReadOnlyField(addressData.pincode.toString(), R.string.pincode)
+        Space(12.dp)
+        ReadOnlyField(addressData.address, R.string.address_line)
+        Space(12.dp)
+        ReadOnlyField(addressData.landmark, R.string.landmark)
+        Space(12.dp)
+        ReadOnlyField(addressData.location, R.string.location)
+        Space(12.dp)
+        ReadOnlyField(addressData.city, R.string.city)
+        Space(12.dp)
+        ReadOnlyField(addressData.district, R.string.district)
+        Space(12.dp)
+        ReadOnlyField(addressData.state, R.string.state)
+    }
 }
 
 @Composable
-private fun GstinDetails(details: User.Details.DrugLicense) {
-    ReadOnlyField(details.tradeName, R.string.trade_name)
-    Space(12.dp)
-    ReadOnlyField(details.gstin, R.string.gstin)
-    Space(12.dp)
-    ReadOnlyField(details.license1, R.string.drug_license_1)
-    Space(12.dp)
-    ReadOnlyField(details.license2, R.string.drug_license_2)
+fun GstinDetailsComposable(details: User.Details.DrugLicense) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(Color.White)
+            .fillMaxSize()
+    ) {
+        ReadOnlyField(details.tradeName, R.string.trade_name)
+        Space(12.dp)
+        ReadOnlyField(details.gstin, R.string.gstin)
+        Space(12.dp)
+        ReadOnlyField(details.license1, R.string.drug_license_1)
+        Space(12.dp)
+        ReadOnlyField(details.license2, R.string.drug_license_2)
+    }
 }
