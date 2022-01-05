@@ -322,7 +322,10 @@
     <string name="whatsapp">Whatsapp</string>
     <string name="invoice_preferences">Invoice Preferences</string>
     <string name="order_value">Order Value</string>
-
+    <string name="your_dashboard">Your Dashboard</string>
+    <string name="your_orders">Your Orders</string>
+    <string name="your_invoices">Your Invoices</string>
+    <string name="connections">Connections</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>
@@ -377,8 +380,5 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
-    <string name="your_dashboard">Your Dashboard</string>
-    <string name="your_orders">Your Orders</string>
-    <string name="your_invoices">Your Invoices</string>
-    <string name="connections">Connections</string>
+
 </resources>
