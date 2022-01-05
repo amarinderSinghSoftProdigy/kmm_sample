@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
@@ -226,6 +227,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         }
                         //display header in instore section from side menu when a retailer is selected
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                        is TabBarInfo.NoIconTitle -> NoIconHeader(scope)
                     }
                 }
             }
@@ -334,7 +336,7 @@ private fun RowScope.SimpleTabBar(
     scaffoldState: ScaffoldState,
     coroutineScope: CoroutineScope,
 ) {
-    if (info.icon != ScopeIcon.NO_ICON) {
+    if (info.icon != ScopeIcon.NO_ICON || info.icon != ScopeIcon.HAMBURGER) {
         val keyboard = LocalSoftwareKeyboardController.current
         Icon(
             imageVector = info.icon.toLocalIcon(),
@@ -421,22 +423,30 @@ private fun RowScope.SearchTabBar(
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
 
-    Icon(
-        imageVector = info.icon.toLocalIcon(),
-        contentDescription = null,
-        modifier = Modifier
-            .weight(0.15f)
-            .clickable(indication = null) {
-                when (info.icon) {
-                    ScopeIcon.BACK -> scope.goBack()
-                    ScopeIcon.HAMBURGER -> {
-                        keyboard?.hide()
-                        coroutineScope.launch { scaffoldState.drawerState.open() }
+    if (info.icon != ScopeIcon.HAMBURGER) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .weight(0.15f)
+                .clickable(indication = null) {
+                    when (info.icon) {
+                        ScopeIcon.BACK -> scope.goBack()
+                        ScopeIcon.HAMBURGER -> {
+                            keyboard?.hide()
+                            coroutineScope.launch { scaffoldState.drawerState.open() }
+                        }
                     }
                 }
-            }
-            .padding(16.dp)
-    )
+                .padding(16.dp)
+        )
+    } else {
+        Box(
+            modifier = Modifier.width(
+                20.dp
+            )
+        )
+    }
     Row(
         modifier = Modifier
             .weight(0.7f)
@@ -599,11 +609,44 @@ private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBa
     }
 }
 
+
+/**
+ * display header data for instore seller details
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun NoIconHeader(
+    scope: TabBarScope,
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .clickable(indication = null) { EventCollector.sendEvent(Event.Transition.Search()) }
+            .padding(vertical = 4.dp, horizontal = 16.dp)
+            .background(Color.White, MaterialTheme.shapes.medium)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            tint = ConstColors.gray,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+        )
+        Text(
+            text = stringResource(id = R.string.search_products),
+            color = ConstColors.gray.copy(alpha = 0.5f),
+            modifier = Modifier.padding(start = 24.dp),
+        )
+    }
+}
+
+
 /**
  * composable for bottom navgation item
  */
-
-
 @Composable
 fun BottomNavigationBar(items: List<BottomNavigationItem>?) {
 

@@ -22,6 +22,8 @@ class DashboardScope private constructor(
     val dashboard: ReadOnlyDataSource<DashboardData?>,
 ) : Scope.Child.TabBar() {
 
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("")
+
     val sections = when (userType) {
         UserType.STOCKIST -> listOf(
 //            Section.NOTIFICATIONS,
