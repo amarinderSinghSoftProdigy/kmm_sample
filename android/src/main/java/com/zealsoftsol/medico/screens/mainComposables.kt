@@ -161,24 +161,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
-/*
-        drawerContent = {
-            navigation.value?.let {
-                val user = it.user.flow.collectAsState()
-                NavigationColumn(
-                    fullName = user.value.fullName(),
-                    userType = user.value.type,
-                    trialString = user.value.subscription?.validUntil,
-                    navigationSection = it,
-                    onSectionSelected = { coroutineScope.launch { scaffoldState.drawerState.close() } }
-                )
-            } ?: run {
-                if (scaffoldState.drawerState.isOpen) {
-                    coroutineScope.launch { scaffoldState.drawerState.close() }
-                }
-            }
-        },
-*/
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
             val tabBarInfo = scope.tabBar.flow.collectAsState()

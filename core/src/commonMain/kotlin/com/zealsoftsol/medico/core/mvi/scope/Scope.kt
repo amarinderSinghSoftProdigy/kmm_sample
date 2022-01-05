@@ -58,7 +58,7 @@ sealed class TabBarInfo {
     open fun withBackIcon(): TabBarInfo? = null
 
     data class Simple(
-        override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
+        override val icon: ScopeIcon = ScopeIcon.BACK,
         val title: StringResource?,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null,
     ) : TabBarInfo() {
@@ -69,7 +69,7 @@ sealed class TabBarInfo {
     }
 
     data class Search(
-        override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
+        override val icon: ScopeIcon = ScopeIcon.BACK,
         val cartItemsCount: ReadOnlyDataSource<Int>,
     ) : TabBarInfo() {
 
@@ -101,11 +101,11 @@ sealed class TabBarInfo {
     }
 
     object NewDesignLogo : TabBarInfo() {
-        override val icon: ScopeIcon = ScopeIcon.HAMBURGER
+        override val icon: ScopeIcon = ScopeIcon.BACK
     }
 
     data class NewDesignTitle(val title: String) : TabBarInfo() {
-        override val icon: ScopeIcon = ScopeIcon.HAMBURGER
+        override val icon: ScopeIcon = ScopeIcon.BACK
     }
 
     data class InStoreProductTitle(val title: String, val address: String, val phone: String) :
