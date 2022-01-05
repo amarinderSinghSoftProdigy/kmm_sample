@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.SellerCart
@@ -17,6 +18,8 @@ class CartScope(
     val total: ReadOnlyDataSource<Total?>,
     val isContinueEnabled: ReadOnlyDataSource<Boolean>,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("")
 
     init {
         EventCollector.sendEvent(Event.Action.Cart.LoadCart)
