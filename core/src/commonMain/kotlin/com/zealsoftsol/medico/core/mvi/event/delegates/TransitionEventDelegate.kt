@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
@@ -173,7 +174,7 @@ internal class TransitionEventDelegate(
                     WhatsappPreferenceScope("whatsapp_preference")
                 )
                 is Event.Transition.Inventory -> setScope(InventoryScope())
-
+                is Event.Transition.Menu -> setScope(MenuScope(userRepo.requireUser()))
             }
         }
     }

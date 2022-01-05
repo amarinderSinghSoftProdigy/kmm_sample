@@ -377,4 +377,7 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
+    <string name="your_dashboard">Your Dashboard</string>
+    <string name="your_orders">Your Orders</string>
+    <string name="your_invoices">Your Invoices</string>
 </resources>

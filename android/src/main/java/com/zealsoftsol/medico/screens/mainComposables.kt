@@ -76,6 +76,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
@@ -126,6 +127,7 @@ import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
+import com.zealsoftsol.medico.screens.menu.MenuScreen
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
 import com.zealsoftsol.medico.screens.orders.OrderPlacedScreen
@@ -311,6 +313,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
                         it.user.details as User.Details.DrugLicense,
                     )
+                    is MenuScope -> MenuScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -704,7 +707,7 @@ sealed class BottomNavigationItem(
 
     object Drawer :
         BottomNavigationItem(
-            Event.Transition.Cart,
+            Event.Transition.Menu,
             R.drawable.ic_hamburger,
             R.drawable.ic_hamburger_selected,
             mutableStateOf(false)

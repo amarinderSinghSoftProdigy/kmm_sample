@@ -351,5 +351,7 @@ sealed class Event {
         ) : Transition()
 
         object Inventory : Transition()
+        object Menu : Transition()
+
     }
 }
