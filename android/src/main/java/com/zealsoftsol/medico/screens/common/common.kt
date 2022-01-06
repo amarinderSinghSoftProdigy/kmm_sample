@@ -98,7 +98,7 @@ fun TabBar(
         ) {
             content()
         }
-        Divider(color = ConstColors.lightBlue, thickness = 1.dp)
+        Divider(color = ConstColors.lightBlue.copy(alpha = 0.5f), thickness = (0.7).dp)
     }
 }
 

@@ -86,10 +86,11 @@ fun SettingsScreen(scope: SettingsScope) {
         //show view based on user type
         if (userType == UserType.STOCKIST) {
             Row(
-                modifier = Modifier.padding(start = 115.dp, top = 155.dp),
+                modifier = Modifier.padding(start = 115.dp, top = 170.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(0.5f),
                     text = (user.details as User.Details.DrugLicense).tradeName,
                     color = Color.Black,
                     fontSize = 14.sp
@@ -103,6 +104,7 @@ fun SettingsScreen(scope: SettingsScope) {
                 )
                 Space(dp = 5.dp)
                 ClickableText(
+                    modifier = Modifier.weight(0.45f),
                     text = AnnotatedString(user.phoneNumber),
                     style = TextStyle(
                         color = Color.Black,

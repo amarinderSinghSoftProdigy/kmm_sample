@@ -449,7 +449,7 @@ private fun RowScope.SearchTabBar(
 
         Row(
             modifier = Modifier
-                .height(45.dp)
+                .height(40.dp)
                 .clickable(indication = null) { info.goToSearch() }
                 .background(Color.White, MaterialTheme.shapes.medium)
                 .padding(horizontal = 14.dp),
@@ -635,7 +635,7 @@ private fun NoIconHeader(
                     .clickable(indication = null) { info.goToSearch() }
                     .background(Color.White, MaterialTheme.shapes.medium)
                     .padding(horizontal = 14.dp)
-                    .height(45.dp),
+                    .height(40.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
