@@ -64,14 +64,14 @@ fun SettingsScreen(scope: SettingsScope) {
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(170.dp)
+                .height(150.dp)
         )
 
         Image(
             painter = painterResource(id = R.drawable.ic_user_placeholder),
             contentDescription = null,
             modifier = Modifier
-                .padding(start = 16.dp, top = 120.dp)
+                .padding(start = 16.dp, top = 100.dp)
                 .height(90.dp)
                 .width(90.dp)
         )
@@ -79,14 +79,14 @@ fun SettingsScreen(scope: SettingsScope) {
         Text(
             text = user.fullName(),
             color = Color.Black,
-            modifier = Modifier.padding(start = 115.dp, top = 175.dp),
+            modifier = Modifier.padding(start = 115.dp, top = 155.dp),
             fontSize = 14.sp
         )
 
         //show view based on user type
         if (userType == UserType.STOCKIST) {
             Row(
-                modifier = Modifier.padding(start = 115.dp, top = 195.dp),
+                modifier = Modifier.padding(start = 115.dp, top = 155.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -209,7 +209,7 @@ fun SettingsScreen(scope: SettingsScope) {
                     text = AnnotatedString(website),
                     style = TextStyle(
                         color = ConstColors.lightBlue,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.W700,
                     ),
                     onClick = { activity.openUrl("https://" + website) },
@@ -243,25 +243,26 @@ fun SettingsScreen(scope: SettingsScope) {
             ) {
                 Column(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1.3f)
                 ) {
                     Text(
                         text = "${stringResource(id = R.string.version)} ${BuildConfig.VERSION_NAME}",
                         color = ConstColors.txtGrey,
-                        fontSize = 16.sp
+                        fontSize = 15.sp
                     )
                     Text(
                         text = stringResource(id = R.string.copyright),
                         color = ConstColors.txtGrey,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(top = 10.dp)
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(top = 10.dp, bottom = 10.dp)
                     )
                 }
 
                 Row(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(0.7f)
                         .fillMaxWidth()
+                        .padding(10.dp)
                         .clickable {
                             scope.sendEvent(action = Event.Action.Auth.LogOut(true))
                         },
@@ -275,7 +276,7 @@ fun SettingsScreen(scope: SettingsScope) {
                         text = stringResource(id = R.string.log_out),
                         color = ConstColors.red,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         modifier = Modifier.padding(start = 10.dp)
                     )
                 }
@@ -337,7 +338,7 @@ private fun AccountContentItem(
             Text(
                 text = stringResource(stringResourceId),
                 color = Color.Black,
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 modifier = Modifier.constrainAs(text) {
                     start.linkTo(icon.end, 24.dp)
                     top.linkTo(parent.top)

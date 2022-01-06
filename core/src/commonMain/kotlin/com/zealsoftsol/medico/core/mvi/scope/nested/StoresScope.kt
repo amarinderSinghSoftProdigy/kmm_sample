@@ -17,7 +17,16 @@ import com.zealsoftsol.medico.data.Store
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
 
-    class All : StoresScope(), Loadable<Store> {
+    class All(
+        private val notificationCount: ReadOnlyDataSource<Int>,
+    ) : StoresScope(), Loadable<Store> {
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+            return TabBarInfo.NoIconTitle(
+                title = "",
+                notificationItemsCount = notificationCount,
+            )
+        }
 
         override val isRoot: Boolean = true
 

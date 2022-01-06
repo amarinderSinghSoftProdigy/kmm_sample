@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
@@ -444,27 +445,28 @@ private fun RowScope.SearchTabBar(
             modifier = Modifier.weight(0.05f)
         )
     }
-    Row(
-        modifier = Modifier
-            .weight(0.7f)
-            .fillMaxHeight()
-            .clickable(indication = null) { info.goToSearch() }
-            .padding(vertical = 4.dp)
-            .background(Color.White, MaterialTheme.shapes.medium)
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Search,
-            tint = ConstColors.gray,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-        )
-        Text(
-            text = stringResource(id = R.string.search_products),
-            color = ConstColors.gray.copy(alpha = 0.5f),
-            modifier = Modifier.padding(start = 24.dp),
-        )
+    Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
+
+        Row(
+            modifier = Modifier
+                .height(45.dp)
+                .clickable(indication = null) { info.goToSearch() }
+                .background(Color.White, MaterialTheme.shapes.medium)
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                tint = ConstColors.gray,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+            Text(
+                text = stringResource(id = R.string.search_products),
+                color = ConstColors.gray.copy(alpha = 0.5f),
+                modifier = Modifier.padding(start = 24.dp),
+            )
+        }
     }
     Box(
         modifier = Modifier
@@ -616,32 +618,40 @@ private fun NoIconHeader(
     scope: TabBarScope,
     info: TabBarInfo.NoIconTitle,
 ) {
-    Row {
-        Box(
-            modifier = Modifier.weight(0.05f)
-        )
-        Row(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
             modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .clickable(indication = null) { info.goToNotifications() }
-                .padding(vertical = 4.dp)
-                .background(Color.White, MaterialTheme.shapes.medium)
-                .padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = ConstColors.gray,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-            )
-            Text(
-                text = stringResource(id = R.string.search_products),
-                color = ConstColors.gray.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 24.dp),
-            )
+                .weight(0.15f)
+                .height(30.dp)
+                .width(30.dp),
+            painter = painterResource(id = R.drawable.ic_small_logo),
+            contentDescription = null
+        )
+        Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
+            Row(
+                modifier = Modifier
+                    .clickable(indication = null) { info.goToSearch() }
+                    .background(Color.White, MaterialTheme.shapes.medium)
+                    .padding(horizontal = 14.dp)
+                    .height(45.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    tint = ConstColors.gray,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                )
+                Text(
+                    text = stringResource(id = R.string.search_products),
+                    color = ConstColors.gray.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(start = 24.dp),
+                )
+            }
         }
+
         Box(
             modifier = Modifier
                 .weight(0.15f)
@@ -669,7 +679,6 @@ private fun NoIconHeader(
             }
         }
     }
-
 }
 
 
