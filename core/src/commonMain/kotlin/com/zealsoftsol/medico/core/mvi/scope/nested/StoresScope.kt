@@ -44,6 +44,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
     class StorePreview(
         val store: Store,
         private val cartItemsCount: ReadOnlyDataSource<Int>,
+        private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
@@ -67,7 +68,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             return TabBarInfo.Simple(
                 icon = ScopeIcon.BACK,
                 title = StringResource.Raw(null),
-                cartItemsCount = cartItemsCount,
+                notificationItemsCount = notificationCount,
             )
         }
     }

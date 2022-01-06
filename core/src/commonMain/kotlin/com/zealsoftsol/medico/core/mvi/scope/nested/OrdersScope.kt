@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -16,9 +17,12 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 
-class OrdersScope(val tabs: List<Tab>) : Scope.Child.TabBar(), Loadable<Order> {
+class OrdersScope(
+    val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
+) : Scope.Child.TabBar(), Loadable<Order> {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("")
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.NoIconTitle("", unreadNotifications)
 
     override val isRoot: Boolean = true
 

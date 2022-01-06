@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -8,9 +9,11 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 
-sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope.Child.TabBar() {
+sealed class SettingsScope(
+    private val titleId: String, val mUser: User, val unreadNotifications: ReadOnlyDataSource<Int>,
+) : Scope.Child.TabBar() {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("")
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("", unreadNotifications)
 
     /**
      * Handle events
@@ -25,9 +28,10 @@ sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope
     }
 
     class List(
+        val unReadNotifications: ReadOnlyDataSource<Int>,
         val sections: kotlin.collections.List<Section>,
         val user: User
-    ) : SettingsScope("settings", user) {
+    ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications) {
 
         enum class Section(
             private val event: Event,
@@ -64,7 +68,7 @@ sealed class SettingsScope(private val titleId: String, val mUser: User) : Scope
     class Address(val addressData: AddressData, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
-    class GstinDetails(val details: User.Details.DrugLicense, val user: User): Child.TabBar(),
+    class GstinDetails(val details: User.Details.DrugLicense, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
 }

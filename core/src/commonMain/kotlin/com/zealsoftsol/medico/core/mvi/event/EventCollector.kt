@@ -103,6 +103,7 @@ class EventCollector(
             navigator,
             userRepo,
             cartRepo,
+            notificationRepo,
             storesNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),

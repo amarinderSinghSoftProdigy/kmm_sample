@@ -227,7 +227,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         }
                         //display header in instore section from side menu when a retailer is selected
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
-                        is TabBarInfo.NoIconTitle -> NoIconHeader(scope)
+                        is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                     }
                 }
             }
@@ -383,15 +383,15 @@ private fun RowScope.SimpleTabBar(
         )
     }
 
-    info.cartItemsCount?.let {
+    info.notificationItemsCount?.let {
         Box(
             modifier = Modifier
                 .weight(0.15f)
-                .clickable(indication = null) { info.goToCart() }
+                .clickable(indication = null) { info.goToNotifications() }
                 .padding(10.dp),
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_cart),
+                painter = painterResource(id = R.drawable.ic_bell_dashboard),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(6.dp)
@@ -472,23 +472,23 @@ private fun RowScope.SearchTabBar(
     Box(
         modifier = Modifier
             .weight(0.15f)
-            .clickable(indication = null) { info.goToCart() }
+            .clickable(indication = null) { info.goToNotifications() }
             .padding(10.dp),
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_cart),
+            painter = painterResource(id = R.drawable.ic_bell_dashboard),
             contentDescription = null,
             modifier = Modifier
                 .padding(6.dp)
                 .align(Alignment.Center)
         )
-        val cartItems = info.cartItemsCount.flow.collectAsState()
+        val notification = info.notificationItemsCount.flow.collectAsState()
         Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
             Canvas(modifier = Modifier.size(15.dp)) {
                 drawCircle(Color.White)
             }
             Text(
-                text = cartItems.value.toString(),
+                text = notification.value.toString(),
                 color = ConstColors.red,
                 fontWeight = FontWeight.W700,
                 fontSize = 10.sp,
@@ -617,30 +617,62 @@ private fun InStoreHeaderData(info: TabBarInfo.InStoreProductTitle, scope: TabBa
 @Composable
 private fun NoIconHeader(
     scope: TabBarScope,
+    info: TabBarInfo.NoIconTitle,
 ) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .clickable(indication = null) { EventCollector.sendEvent(Event.Transition.Search()) }
-            .padding(vertical = 4.dp, horizontal = 16.dp)
-            .background(Color.White, MaterialTheme.shapes.medium)
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Search,
-            tint = ConstColors.gray,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
+    Row {
+        Box(
+            modifier = Modifier.weight(0.05f)
         )
-        Text(
-            text = stringResource(id = R.string.search_products),
-            color = ConstColors.gray.copy(alpha = 0.5f),
-            modifier = Modifier.padding(start = 24.dp),
-        )
+        Row(
+            modifier = Modifier
+                .weight(0.7f)
+                .fillMaxHeight()
+                .clickable(indication = null) { info.goToNotifications() }
+                .padding(vertical = 4.dp)
+                .background(Color.White, MaterialTheme.shapes.medium)
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                tint = ConstColors.gray,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+            )
+            Text(
+                text = stringResource(id = R.string.search_products),
+                color = ConstColors.gray.copy(alpha = 0.5f),
+                modifier = Modifier.padding(start = 24.dp),
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(0.15f)
+                .clickable(indication = null) { info.goToNotifications() }
+                .padding(10.dp),
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_bell_dashboard),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .align(Alignment.Center)
+            )
+            val cartItems = info.notificationItemsCount.flow.collectAsState()
+            Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
+                Canvas(modifier = Modifier.size(15.dp)) {
+                    drawCircle(Color.White)
+                }
+                Text(
+                    text = cartItems.value.toString(),
+                    color = ConstColors.red,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 10.sp,
+                )
+            }
+        }
     }
+
 }
 
 

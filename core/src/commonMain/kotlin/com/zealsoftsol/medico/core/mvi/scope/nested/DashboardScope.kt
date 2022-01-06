@@ -22,7 +22,7 @@ class DashboardScope private constructor(
     val dashboard: ReadOnlyDataSource<DashboardData?>,
 ) : Scope.Child.TabBar() {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("")
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("", unreadNotifications)
 
     val sections = when (userType) {
         UserType.STOCKIST -> listOf(
@@ -101,7 +101,7 @@ class DashboardScope private constructor(
             cartItemsCount: ReadOnlyDataSource<Int>,
         ) = TabBarScope(
             childScope = DashboardScope(user.type, unreadNotifications, dashboardData),
-            initialTabBarInfo = TabBarInfo.Search(cartItemsCount = cartItemsCount),
+            initialTabBarInfo = TabBarInfo.Search(notificationItemsCount = unreadNotifications),
             initialNavigationSection = NavigationSection(
                 userDataSource,
                 NavigationOption.default(user.type),

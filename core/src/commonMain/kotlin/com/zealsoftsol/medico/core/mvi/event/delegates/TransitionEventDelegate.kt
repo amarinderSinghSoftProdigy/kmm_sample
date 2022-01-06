@@ -72,11 +72,12 @@ internal class TransitionEventDelegate(
                     val user = userRepo.requireUser()
                     setScope(
                         SettingsScope.List(
+                            notificationRepo.getUnreadMessagesDataSource(),
                             if (user.type == UserType.SEASON_BOY)
                                 SettingsScope.List.Section.simple(user.isActivated)
                             else
                                 SettingsScope.List.Section.all(user.isActivated),
-                            userRepo.requireUser()
+                            userRepo.requireUser(),
                         )
                     )
                 }
@@ -144,13 +145,14 @@ internal class TransitionEventDelegate(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
                         isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
+                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource()
                     )
                 )
                 is Event.Transition.Orders -> setScope(
-                    OrdersScope(listOf(OrdersScope.Tab.ORDERS))
+                    OrdersScope(listOf(OrdersScope.Tab.ORDERS), notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.PoOrdersAndHistory -> setScope(
-                    OrdersScope(listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS))
+                    OrdersScope(listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS), notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.MyInvoices -> setScope(
                     InvoicesScope(isPoInvoice = false)
@@ -174,7 +176,7 @@ internal class TransitionEventDelegate(
                     WhatsappPreferenceScope("whatsapp_preference")
                 )
                 is Event.Transition.Inventory -> setScope(InventoryScope())
-                is Event.Transition.Menu -> setScope(MenuScope(userRepo.requireUser()))
+                is Event.Transition.Menu -> setScope(MenuScope(userRepo.requireUser(), notificationRepo.getUnreadMessagesDataSource()))
             }
         }
     }
