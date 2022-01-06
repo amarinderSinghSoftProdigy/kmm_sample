@@ -155,10 +155,10 @@ internal class TransitionEventDelegate(
                     OrdersScope(listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS), notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.MyInvoices -> setScope(
-                    InvoicesScope(isPoInvoice = false)
+                    InvoicesScope(isPoInvoice = false, notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.PoInvoices -> setScope(
-                    InvoicesScope(isPoInvoice = true)
+                    InvoicesScope(isPoInvoice = true, notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.InStore -> setScope(
                     InStoreSellerScope()

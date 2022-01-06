@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
@@ -442,9 +441,7 @@ private fun RowScope.SearchTabBar(
         )
     } else {
         Box(
-            modifier = Modifier.width(
-                20.dp
-            )
+            modifier = Modifier.weight(0.05f)
         )
     }
     Row(

@@ -1,11 +1,14 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
@@ -14,9 +17,12 @@ import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.TaxInfo
 
-class InvoicesScope(val isPoInvoice: Boolean) : Scope.Child.TabBar(), Loadable<Invoice> {
+class InvoicesScope(val isPoInvoice: Boolean, val unreadNotifications: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(), Loadable<Invoice> {
 
-    override val isRoot: Boolean = true
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.Search(icon = ScopeIcon.BACK, unreadNotifications)
+
+    override val isRoot: Boolean = false
 
     override val items: DataSource<List<Invoice>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)

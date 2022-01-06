@@ -5,11 +5,9 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
@@ -65,9 +63,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.Simple(
-                icon = ScopeIcon.BACK,
-                title = StringResource.Raw(null),
+            return TabBarInfo.NoIconTitle(
+                title = "",
                 notificationItemsCount = notificationCount,
             )
         }
