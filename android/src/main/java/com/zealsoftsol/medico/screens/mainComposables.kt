@@ -398,16 +398,24 @@ private fun RowScope.SimpleTabBar(
                     .align(Alignment.Center)
             )
             val cartItems = it.flow.collectAsState()
-            Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
-                Canvas(modifier = Modifier.size(15.dp)) {
-                    drawCircle(Color.White)
+
+            if (cartItems.value > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 6.dp, end = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(5.dp)) {
+                        drawCircle(Color.Red)
+                    }
+                    /* Text(
+                        text = cartItems.value.toString(),
+                        color = ConstColors.red,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 10.sp,
+                    )*/
                 }
-                Text(
-                    text = cartItems.value.toString(),
-                    color = ConstColors.red,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 10.sp,
-                )
             }
         }
     }
@@ -482,16 +490,23 @@ private fun RowScope.SearchTabBar(
                 .align(Alignment.Center)
         )
         val notification = info.notificationItemsCount.flow.collectAsState()
-        Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
-            Canvas(modifier = Modifier.size(15.dp)) {
-                drawCircle(Color.White)
+        if (notification.value > 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 6.dp, end = 6.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(5.dp)) {
+                    drawCircle(Color.Red)
+                }
+                /* Text(
+                    text = cartItems.value.toString(),
+                    color = ConstColors.red,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 10.sp,
+                )*/
             }
-            Text(
-                text = notification.value.toString(),
-                color = ConstColors.red,
-                fontWeight = FontWeight.W700,
-                fontSize = 10.sp,
-            )
         }
     }
 }
@@ -666,16 +681,23 @@ private fun NoIconHeader(
                     .align(Alignment.Center)
             )
             val cartItems = info.notificationItemsCount.flow.collectAsState()
-            Box(modifier = Modifier.align(Alignment.TopEnd), contentAlignment = Alignment.Center) {
-                Canvas(modifier = Modifier.size(15.dp)) {
-                    drawCircle(Color.White)
+            if (cartItems.value > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 6.dp, end = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(5.dp)) {
+                        drawCircle(Color.Red)
+                    }
+                    /* Text(
+                        text = cartItems.value.toString(),
+                        color = ConstColors.red,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 10.sp,
+                    )*/
                 }
-                Text(
-                    text = cartItems.value.toString(),
-                    color = ConstColors.red,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 10.sp,
-                )
             }
         }
     }

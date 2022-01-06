@@ -7,7 +7,6 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
@@ -23,7 +22,7 @@ class OrdersScope(
 ) : Scope.Child.TabBar(),Loadable<Order> {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.Search(icon = ScopeIcon.BACK, unreadNotifications)
+        TabBarInfo.NoIconTitle("", unreadNotifications)
 
     override val isRoot: Boolean = false
 
