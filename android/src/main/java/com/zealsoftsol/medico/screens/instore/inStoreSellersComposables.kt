@@ -42,7 +42,8 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(ConstColors.newDesignGray),
+            .background(ConstColors.newDesignGray)
+            .padding(top = 16.dp),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(

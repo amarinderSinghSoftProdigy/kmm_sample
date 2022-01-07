@@ -1,12 +1,14 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
@@ -15,9 +17,14 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 
-class OrdersScope(val tabs: List<Tab>) : Scope.Child.TabBar(), Loadable<Order> {
+class OrdersScope(
+    val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
+) : Scope.Child.TabBar(),Loadable<Order> {
 
-    override val isRoot: Boolean = true
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.NoIconTitle("", unreadNotifications)
+
+    override val isRoot: Boolean = false
 
     override val items: DataSource<List<Order>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)

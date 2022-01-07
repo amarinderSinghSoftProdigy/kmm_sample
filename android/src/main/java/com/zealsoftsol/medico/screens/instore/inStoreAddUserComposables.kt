@@ -59,7 +59,8 @@ fun InStoreAddUserScreen(scope: InStoreAddUserScope) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(ConstColors.newDesignGray)
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp),
     ) {
         Text(
             text = stringResource(id = R.string.customer_details),

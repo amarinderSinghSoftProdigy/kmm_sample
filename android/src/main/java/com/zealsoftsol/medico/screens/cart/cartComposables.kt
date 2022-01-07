@@ -61,7 +61,6 @@ import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FoldableItem
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
@@ -73,7 +72,7 @@ fun CartScreen(scope: CartScope) {
     val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
 
     if (items.value.isEmpty()) {
-        EmptyCart { scope.goBack() }
+        EmptyCart { /*scope.goBack()*/ }
     } else {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -695,7 +694,8 @@ private fun EmptyCart(onBack: () -> Unit) {
                 textAlign = TextAlign.Center,
             )
         }
-        MedicoButton(
+        //unused go back button
+     /*   MedicoButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp)
@@ -703,6 +703,6 @@ private fun EmptyCart(onBack: () -> Unit) {
             text = stringResource(id = R.string.go_back),
             isEnabled = true,
             onClick = onBack
-        )
+        )*/
     }
 }

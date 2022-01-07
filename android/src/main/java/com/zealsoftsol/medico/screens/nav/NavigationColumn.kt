@@ -150,7 +150,7 @@ fun NavigationColumn(
 }
 
 @Composable
-private fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
+fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
     NavigationOption.Dashboard -> painterResource(id = R.drawable.ic_dashboard)
     NavigationOption.Orders -> painterResource(id = R.drawable.ic_cart_filled)
     NavigationOption.PoOrdersAndHistory -> painterResource(id = R.drawable.ic_cart_arrow)

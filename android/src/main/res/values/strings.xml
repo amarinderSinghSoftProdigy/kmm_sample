@@ -119,7 +119,7 @@
     <string name="compositions">Compositions</string>
     <string name="storage">Storage</string>
     <string name="storage_desc">Store at room temperature (10–30°C)</string>
-    <string name="personal_profile">Personal Profile</string>
+    <string name="personal_profile">Personal Info</string>
     <string name="change_password">Change Password</string>
     <string name="gstin_details">GSTIN Details</string>
     <string name="your_stockists">Your Stockists</string>
@@ -135,7 +135,7 @@
     <string name="orders">My Orders</string>
     <string name="new_orders">Purchase orders</string>
     <string name="purchase_orders">Purchase orders</string>
-    <string name="purchase_orders_history">Purchase orders &amp; PO History</string>
+    <string name="purchase_orders_history">Purchase orders / History</string>
     <string name="orders_history">PO history</string>
     <string name="search_orders">Search orders</string>
     <string name="cancel">Cancel</string>
@@ -313,7 +313,19 @@
     <string name ="offline">Offline</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
-
+    <string name="my_account">My Account</string>
+    <string name="tc_privacy_policy">T&amp;C and Privacy Policies</string>
+    <string name="customer_care">Customer Care</string>
+    <string name="website_name">medicostores.com</string>
+    <string name="version">Version</string>
+    <string name="preference">Preferences</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="invoice_preferences">Invoice Preferences</string>
+    <string name="order_value">Order Value</string>
+    <string name="your_dashboard">Your Dashboard</string>
+    <string name="your_orders">Your Orders</string>
+    <string name="your_invoices">Your Invoices</string>
+    <string name="connections">Connections</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>
@@ -368,4 +380,5 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
+
 </resources>

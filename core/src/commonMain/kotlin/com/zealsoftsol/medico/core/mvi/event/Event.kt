@@ -320,7 +320,7 @@ sealed class Event {
         object ChangePassword : Transition()
         data class Search(val autoComplete: AutoComplete? = null) : Transition()
         object Dashboard : Transition()
-        object Settings : Transition()
+        data class Settings(val showBackIcon: Boolean) : Transition()
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
@@ -351,5 +351,7 @@ sealed class Event {
         ) : Transition()
 
         object Inventory : Transition()
+        object Menu : Transition()
+
     }
 }

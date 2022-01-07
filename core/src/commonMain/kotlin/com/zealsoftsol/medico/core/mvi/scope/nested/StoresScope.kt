@@ -5,11 +5,9 @@ import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
@@ -19,7 +17,16 @@ import com.zealsoftsol.medico.data.Store
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
 
-    class All : StoresScope(), Loadable<Store> {
+    class All(
+        private val notificationCount: ReadOnlyDataSource<Int>,
+    ) : StoresScope(), Loadable<Store> {
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+            return TabBarInfo.NoIconTitle(
+                title = "",
+                notificationItemsCount = notificationCount,
+            )
+        }
 
         override val isRoot: Boolean = true
 
@@ -44,6 +51,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
     class StorePreview(
         val store: Store,
         private val cartItemsCount: ReadOnlyDataSource<Int>,
+        private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
@@ -64,10 +72,9 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.Simple(
-                icon = ScopeIcon.BACK,
-                title = StringResource.Raw(null),
-                cartItemsCount = cartItemsCount,
+            return TabBarInfo.NoIconTitle(
+                title = "",
+                notificationItemsCount = notificationCount,
             )
         }
     }

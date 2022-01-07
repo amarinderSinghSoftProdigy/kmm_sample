@@ -38,6 +38,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -83,18 +84,21 @@ import java.util.Locale
 
 @Composable
 fun TabBar(
-    color: Color = MaterialTheme.colors.secondary,
+    color: Color = Color.White,
     isNewDesign: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .background(if (!isNewDesign) color else ConstColors.newDesignGray),
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        content()
+    Column() {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(if (!isNewDesign) color else ConstColors.newDesignGray),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            content()
+        }
+        Divider(color = ConstColors.lightBlue.copy(alpha = 0.5f), thickness = (0.7).dp)
     }
 }
 
