@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -21,7 +22,8 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.Total
 
-class InStoreSellerScope : Scope.Child.TabBar(), Loadable<InStoreSeller> {
+class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>) : Scope.Child.TabBar(),
+    Loadable<InStoreSeller> {
 
     override val items: DataSource<List<InStoreSeller>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)
@@ -32,9 +34,8 @@ class InStoreSellerScope : Scope.Child.TabBar(), Loadable<InStoreSeller> {
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = true))
     }
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
-    }
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.NoIconTitle("", unreadNotifications)
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = false))

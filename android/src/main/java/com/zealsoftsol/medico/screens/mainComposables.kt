@@ -252,12 +252,34 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
                     is PasswordScope.VerifyCurrent -> VerifyCurrentPasswordScreen(it)
                     is PasswordScope.EnterNew -> EnterNewPasswordScreen(it)
-                    is SignUpScope.SelectUserType -> AuthUserType(it)
-                    is SignUpScope.PersonalData -> AuthPersonalData(it)
-                    is SignUpScope.AddressData -> AuthAddressData(it)
-                    is SignUpScope.Details.TraderData -> AuthDetailsTraderData(it)
-                    is SignUpScope.Details.Aadhaar -> AuthDetailsAadhaar(it)
-                    is SignUpScope.LegalDocuments -> AuthLegalDocuments(it)
+                    is SignUpScope.SelectUserType -> {
+                        mUserType = null
+                        AuthUserType(it)
+                    }
+
+                    is SignUpScope.PersonalData -> {
+                        mUserType = null
+                        AuthPersonalData(it)
+                    }
+
+                    is SignUpScope.AddressData -> {
+                        mUserType = null
+                        AuthAddressData(it)
+                    }
+
+                    is SignUpScope.Details.TraderData -> {
+                        mUserType = null
+                        AuthDetailsTraderData(it)
+                    }
+                    is SignUpScope.Details.Aadhaar -> {
+                        mUserType = null
+                        AuthDetailsAadhaar(it)
+                    }
+
+                    is SignUpScope.LegalDocuments -> {
+                        mUserType = null
+                        AuthLegalDocuments(it)
+                    }
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
                         WelcomeScreen(
@@ -303,8 +325,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         OrdersScreen(it, scope.isInProgress)
                         manageBottomNavState(BottomNavKey.PO)
                     }
-                    is ViewOrderScope ->
-                        ViewOrderScreen(it)
+                    is ViewOrderScope -> ViewOrderScreen(it)
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
                     is InvoicesScope -> InvoicesScreen(it)
                     is ViewInvoiceScope -> ViewInvoiceScreen(it)
@@ -353,7 +374,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     )
                 }
             }
-            BottomNavigationBar(mBottomNavItems)
+            if (mUserType != null)
+                BottomNavigationBar(mBottomNavItems, scope)
         }
     )
 }
@@ -739,51 +761,55 @@ private fun NoIconHeader(
  * composable for bottom navgation item
  */
 @Composable
-fun BottomNavigationBar(items: List<BottomNavigationItem>?) {
-
-    Surface(
-        elevation = 5.dp, color = Color.White
-    ) {
-        Row(
-            modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .height(56.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
+fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) {
+    if(mUserType != null){
+        Surface(
+            elevation = 5.dp, color = Color.White
         ) {
+            Row(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .height(56.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
 
-            items?.forEach { item ->
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp)
-                        .clickable {
-                            EventCollector.sendEvent(item.route)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
+                items?.forEach { item ->
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .clickable {
+                                EventCollector.sendEvent(item.route)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
 
-                    Image(
-                        painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
-                            id = item.unSelectedIcon
-                        ),
-                        contentDescription = null,
-                    )
-
-                    if (item.cartCount?.flow?.value != null && item.cartCount?.flow?.value!! > 0) {
-                        Text(
-                            text = item.cartCount?.flow?.value.toString(),
-                            color = Color.Red,
-                            fontSize = 10.sp,
-                            modifier = Modifier.padding(bottom = 15.dp),
-                            fontWeight = FontWeight.W800,
+                        Image(
+                            painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
+                                id = item.unSelectedIcon
+                            ),
+                            contentDescription = null,
                         )
+
+                        if (item.cartCount?.flow?.value != null && item.cartCount?.flow?.value!! > 0) {
+                            Text(
+                                text = item.cartCount?.flow?.value.toString(),
+                                color = Color.Red,
+                                fontSize = 10.sp,
+                                modifier = Modifier.padding(bottom = 15.dp),
+                                fontWeight = FontWeight.W800,
+                            )
+                        }
                     }
                 }
             }
         }
+    }else{
+        Box{}
     }
+
 }
 
 

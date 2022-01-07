@@ -174,7 +174,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.InStore -> setScope(
-                    InStoreSellerScope()
+                    InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
                 )
                 is Event.Transition.InStoreUsers -> setScope(
                     InStoreUsersScope()
