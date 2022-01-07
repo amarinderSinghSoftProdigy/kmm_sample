@@ -36,8 +36,9 @@ sealed class SettingsScope(
     class List(
         val unReadNotifications: ReadOnlyDataSource<Int>,
         val sections: kotlin.collections.List<Section>,
-        val user: User
-    ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications, true) {
+        val user: User,
+        val showBack: Boolean
+    ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications, showBack) {
 
         enum class Section(
             private val event: Event,

@@ -78,6 +78,7 @@ internal class TransitionEventDelegate(
                             else
                                 SettingsScope.List.Section.all(user.isActivated),
                             userRepo.requireUser(),
+                            event.showBackIcon,
                         )
                     )
                 }
@@ -149,16 +150,28 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Orders -> setScope(
-                    OrdersScope(listOf(OrdersScope.Tab.ORDERS), notificationRepo.getUnreadMessagesDataSource())
+                    OrdersScope(
+                        listOf(OrdersScope.Tab.ORDERS),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
                 is Event.Transition.PoOrdersAndHistory -> setScope(
-                    OrdersScope(listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS), notificationRepo.getUnreadMessagesDataSource())
+                    OrdersScope(
+                        listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
                 is Event.Transition.MyInvoices -> setScope(
-                    InvoicesScope(isPoInvoice = false, notificationRepo.getUnreadMessagesDataSource())
+                    InvoicesScope(
+                        isPoInvoice = false,
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
                 is Event.Transition.PoInvoices -> setScope(
-                    InvoicesScope(isPoInvoice = true, notificationRepo.getUnreadMessagesDataSource())
+                    InvoicesScope(
+                        isPoInvoice = true,
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
                 is Event.Transition.InStore -> setScope(
                     InStoreSellerScope()
@@ -176,7 +189,12 @@ internal class TransitionEventDelegate(
                     WhatsappPreferenceScope("whatsapp_preference")
                 )
                 is Event.Transition.Inventory -> setScope(InventoryScope())
-                is Event.Transition.Menu -> setScope(MenuScope(userRepo.requireUser(), notificationRepo.getUnreadMessagesDataSource()))
+                is Event.Transition.Menu -> setScope(
+                    MenuScope(
+                        userRepo.requireUser(),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
+                )
             }
         }
     }

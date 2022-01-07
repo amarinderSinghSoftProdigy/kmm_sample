@@ -282,7 +282,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is BuyProductScope<*> -> BuyProductScreen(it as BuyProductScope<WithTradeName>)
                     is SettingsScope -> {
                         SettingsScreen(it)
-                        manageBottomNavState(BottomNavKey.SETTINGS)
+                        if (mUserType != UserType.STOCKIST) // this will not change bottom nave when user type is stockist
+                            manageBottomNavState(BottomNavKey.SETTINGS)
                     }
                     is ManagementScope.User -> ManagementScreen(it, scope.isInProgress)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
@@ -808,7 +809,7 @@ sealed class BottomNavigationItem(
 
     object Settings :
         BottomNavigationItem(
-            Event.Transition.Settings,
+            Event.Transition.Settings(false),
             R.drawable.ic_account,
             R.drawable.ic_account_selected,
             mutableStateOf(false),

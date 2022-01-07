@@ -151,7 +151,7 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
 fun StockistMenu(scope: MenuScope) {
     Separator(thickness = 0.5f)
     AccountContentItem(
-        route = Event.Transition.Settings,
+        route = Event.Transition.Settings(true),
         drawableResourceId = R.drawable.ic_personal,
         stringResourceId = R.string.my_account,
         scope = scope,
