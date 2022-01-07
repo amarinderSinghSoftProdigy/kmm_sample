@@ -54,6 +54,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -149,7 +150,8 @@ import com.zealsoftsol.medico.screens.whatsappComposables.WhatsappPreference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-var items: List<BottomNavigationItem>? = null
+private var mBottomNavItems: List<BottomNavigationItem>? = null
+private var mUserType: UserType? = null
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -158,7 +160,12 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val notificationList = rememberLazyListState()
     val searchList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
-    val userType = navigation.value?.user?.flow?.value?.type
+
+    //assign user type if it is not null or if it has changed. This is being used to draw bottom navigation items
+    if (navigation.value?.user?.flow?.value?.type != null && mUserType != navigation.value?.user?.flow?.value?.type) {
+        mBottomNavItems = null
+        mUserType = navigation.value?.user?.flow?.value?.type
+    }
     Scaffold(
         backgroundColor = MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
@@ -227,6 +234,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         }
                         //display header in instore section from side menu when a retailer is selected
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                        //display search bar with product logo
                         is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                     }
                 }
@@ -265,26 +273,45 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                             },
                         )
                     }
-                    is DashboardScope -> DashboardScreen(it)
+                    is DashboardScope -> {
+                        DashboardScreen(it)
+                        manageBottomNavState(BottomNavKey.DASHBOARD)
+                    }
                     is SearchScope -> SearchScreen(it, searchList)
                     is ProductInfoScope -> ProductScreen(it)
                     is BuyProductScope<*> -> BuyProductScreen(it as BuyProductScope<WithTradeName>)
-                    is SettingsScope -> SettingsScreen(it)
+                    is SettingsScope -> {
+                        SettingsScreen(it)
+                        manageBottomNavState(BottomNavKey.SETTINGS)
+                    }
                     is ManagementScope.User -> ManagementScreen(it, scope.isInProgress)
                     is ManagementScope.AddRetailer -> AddRetailerScreen(it)
                     is NotificationScope -> NotificationScreen(it, notificationList)
-                    is StoresScope -> StoresScreen(it)
-                    is CartScope -> CartScreen(it)
+                    is StoresScope -> {
+                        StoresScreen(it)
+                        manageBottomNavState(BottomNavKey.STORES)
+                    }
+                    is CartScope -> {
+                        CartScreen(it)
+                        manageBottomNavState(BottomNavKey.CART)
+                    }
                     is CartPreviewScope -> CartPreviewScreen(it)
                     is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
                     is HelpScope -> HelpScreen(it)
-                    is OrdersScope -> OrdersScreen(it, scope.isInProgress)
-                    is ViewOrderScope -> ViewOrderScreen(it)
+                    is OrdersScope -> {
+                        OrdersScreen(it, scope.isInProgress)
+                        manageBottomNavState(BottomNavKey.PO)
+                    }
+                    is ViewOrderScope ->
+                        ViewOrderScreen(it)
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
                     is InvoicesScope -> InvoicesScreen(it)
                     is ViewInvoiceScope -> ViewInvoiceScreen(it)
                     is OrderPlacedScope -> OrderPlacedScreen(it)
-                    is InStoreSellerScope -> InStoreSellersScreen(it)
+                    is InStoreSellerScope -> {
+                        InStoreSellersScreen(it)
+                        manageBottomNavState(BottomNavKey.INSTORES)
+                    }
                     is InStoreProductsScope -> InStoreProductsScreen(it)
                     is InStoreUsersScope -> InStoreUsersScreen(it)
                     is InStoreAddUserScope -> InStoreAddUserScreen(it)
@@ -297,23 +324,26 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
                         it.user.details as User.Details.DrugLicense,
                     )
-                    is MenuScope -> MenuScreen(it)
+                    is MenuScope -> {
+                        MenuScreen(it)
+                        manageBottomNavState(BottomNavKey.MENU)
+                    }
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
         },
         bottomBar = {
-            if (items.isNullOrEmpty()) {
-                if (userType == UserType.STOCKIST) {
-                    items = listOf(
+            if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
+                if (mUserType == UserType.STOCKIST) {
+                    mBottomNavItems = listOf(
                         BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.Settings,
+                        BottomNavigationItem.InStores,
                         BottomNavigationItem.PurchaseOrders,
                         BottomNavigationItem.Cart,
                         BottomNavigationItem.Drawer
                     )
                 } else {
-                    items = listOf(
+                    mBottomNavItems = listOf(
                         BottomNavigationItem.Dashboard,
                         BottomNavigationItem.Settings,
                         BottomNavigationItem.Stores,
@@ -322,7 +352,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     )
                 }
             }
-            BottomNavigationBar(items)
+            BottomNavigationBar(mBottomNavItems)
         }
     )
 }
@@ -728,26 +758,33 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?) {
                         .weight(1f)
                         .height(48.dp)
                         .clickable {
-                            items.forEach {
-                                it.selected.value = false
-                            }
-                            item.selected.value = true
                             EventCollector.sendEvent(item.route)
-
                         },
                     contentAlignment = Alignment.Center
                 ) {
+
                     Image(
                         painter = if (item.selected.value) painterResource(id = item.selectedIcon) else painterResource(
                             id = item.unSelectedIcon
                         ),
                         contentDescription = null,
                     )
+
+                    if (item.cartCount?.flow?.value != null && item.cartCount?.flow?.value!! > 0) {
+                        Text(
+                            text = item.cartCount?.flow?.value.toString(),
+                            color = Color.Red,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(bottom = 15.dp),
+                            fontWeight = FontWeight.W800,
+                        )
+                    }
                 }
             }
         }
     }
 }
+
 
 /**
  * bottom nav items , icons and their selected state
@@ -756,14 +793,17 @@ sealed class BottomNavigationItem(
     var route: Event.Transition,
     var unSelectedIcon: Int,
     var selectedIcon: Int,
-    var selected: MutableState<Boolean>
+    var selected: MutableState<Boolean>,
+    var cartCount: DataSource<Int>? = null,
+    var key: BottomNavKey
 ) {
     object Dashboard :
         BottomNavigationItem(
             Event.Transition.Dashboard,
             R.drawable.ic_home,
             R.drawable.ic_home_selected,
-            mutableStateOf(true)
+            mutableStateOf(true),
+            key = BottomNavKey.DASHBOARD
         )
 
     object Settings :
@@ -771,7 +811,8 @@ sealed class BottomNavigationItem(
             Event.Transition.Settings,
             R.drawable.ic_account,
             R.drawable.ic_account_selected,
-            mutableStateOf(false)
+            mutableStateOf(false),
+            key = BottomNavKey.SETTINGS
         )
 
     object PurchaseOrders :
@@ -779,7 +820,8 @@ sealed class BottomNavigationItem(
             Event.Transition.PoOrdersAndHistory,
             R.drawable.ic_po,
             R.drawable.ic_po_selected,
-            mutableStateOf(false)
+            mutableStateOf(false),
+            key = BottomNavKey.PO
         )
 
     object Cart :
@@ -787,7 +829,8 @@ sealed class BottomNavigationItem(
             Event.Transition.Cart,
             R.drawable.ic_grey_cart,
             R.drawable.ic_cart_selected,
-            mutableStateOf(false)
+            mutableStateOf(false),
+            key = BottomNavKey.CART
         )
 
     object Drawer :
@@ -795,7 +838,8 @@ sealed class BottomNavigationItem(
             Event.Transition.Menu,
             R.drawable.ic_hamburger,
             R.drawable.ic_hamburger_selected,
-            mutableStateOf(false)
+            mutableStateOf(false),
+            key = BottomNavKey.MENU
         )
 
     object Stores :
@@ -803,8 +847,37 @@ sealed class BottomNavigationItem(
             Event.Transition.Stores,
             R.drawable.ic_stores,
             R.drawable.ic_strores_selected,
-            mutableStateOf(false)
+            mutableStateOf(false),
+            DataSource(0),
+            key = BottomNavKey.STORES
         )
+
+    object InStores :
+        BottomNavigationItem(
+            Event.Transition.InStore,
+            R.drawable.ic_instore_unselected,
+            R.drawable.ic_instore_selected,
+            mutableStateOf(false),
+            key = BottomNavKey.INSTORES
+        )
+}
+
+enum class BottomNavKey {
+    DASHBOARD, SETTINGS, PO, CART, MENU, STORES, INSTORES
+}
+
+/**
+ * Show selected and unselected icon on bottom nav based on navigation stack
+ */
+private fun manageBottomNavState(selectedKey: BottomNavKey) {
+
+    mBottomNavItems?.forEach {
+        it.selected.value = false
+    }
+
+    val selectedItem = mBottomNavItems?.find { it.key == selectedKey }
+    selectedItem?.selected?.value = true
+
 }
 
 private inline fun ScopeIcon.toLocalIcon(): ImageVector = when (this) {

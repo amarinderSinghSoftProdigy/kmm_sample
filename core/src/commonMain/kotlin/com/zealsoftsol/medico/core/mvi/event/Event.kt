@@ -320,7 +320,7 @@ sealed class Event {
         object ChangePassword : Transition()
         data class Search(val autoComplete: AutoComplete? = null) : Transition()
         object Dashboard : Transition()
-        object Settings : Transition()
+        data class Settings() : Transition()
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()

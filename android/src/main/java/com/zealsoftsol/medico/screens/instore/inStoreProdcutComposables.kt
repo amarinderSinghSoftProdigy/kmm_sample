@@ -67,6 +67,7 @@ fun InStoreProductsScreen(scope: InStoreProductsScope) {
         modifier = Modifier
             .fillMaxSize()
             .background(ConstColors.newDesignGray)
+            .padding(top = 16.dp)
     ) {
         val cart = scope.cart.flow.collectAsState()
         Row(

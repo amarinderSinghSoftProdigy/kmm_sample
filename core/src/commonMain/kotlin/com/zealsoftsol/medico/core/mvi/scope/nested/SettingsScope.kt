@@ -6,14 +6,20 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(
     private val titleId: String, val mUser: User, val unreadNotifications: ReadOnlyDataSource<Int>,
+    private val showBackIcon: Boolean
 ) : Scope.Child.TabBar() {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("", unreadNotifications)
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        if (showBackIcon)
+            (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+        else
+            TabBarInfo.NoIconTitle("", unreadNotifications)
 
     /**
      * Handle events
@@ -31,7 +37,7 @@ sealed class SettingsScope(
         val unReadNotifications: ReadOnlyDataSource<Int>,
         val sections: kotlin.collections.List<Section>,
         val user: User
-    ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications) {
+    ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications, true) {
 
         enum class Section(
             private val event: Event,

@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartEntry
@@ -31,8 +32,9 @@ class InStoreSellerScope : Scope.Child.TabBar(), Loadable<InStoreSeller> {
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = true))
     }
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = false))
@@ -114,8 +116,9 @@ class InStoreUsersScope : Scope.Child.TabBar(), Loadable<InStoreUser> {
         EventCollector.sendEvent(Event.Action.InStore.UserLoad(isFirstLoad = true))
     }
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
 
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.UserLoad(isFirstLoad = false))
@@ -149,8 +152,9 @@ class InStoreAddUserScope(
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
 
     fun changePaymentMethod(paymentMethod: String) {
         val pm = when (paymentMethod) {
@@ -314,8 +318,9 @@ class InStoreCartScope(
 
 class InStoreOrderPlacedScope(val tradeName: String) : Scope.Child.TabBar() {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =
-        TabBarInfo.NewDesignLogo
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
 
     fun goToOrders() = EventCollector.sendEvent(Event.Transition.InStore)
 }
