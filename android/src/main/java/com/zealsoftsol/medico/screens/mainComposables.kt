@@ -54,7 +54,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -561,6 +560,13 @@ private fun RowScope.SearchTabBar(
                 )*/
             }
         }
+
+
+        val cartCount = info.cartItemsCount?.flow?.collectAsState()
+        if(cartCount !=null && cartCount.value > 0){
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        }
     }
 }
 
@@ -793,9 +799,9 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) 
                             contentDescription = null,
                         )
 
-                        if (item.cartCount?.flow?.value != null && item.cartCount?.flow?.value!! > 0) {
+                        if (item.cartCount?.value != null && item.cartCount?.value!! > 0) {
                             Text(
-                                text = item.cartCount?.flow?.value.toString(),
+                                text = item.cartCount?.value.toString(),
                                 color = Color.Red,
                                 fontSize = 10.sp,
                                 modifier = Modifier.padding(bottom = 15.dp),
@@ -821,7 +827,7 @@ sealed class BottomNavigationItem(
     var unSelectedIcon: Int,
     var selectedIcon: Int,
     var selected: MutableState<Boolean>,
-    var cartCount: DataSource<Int>? = null,
+    var cartCount: MutableState<Int>? = null,
     var key: BottomNavKey
 ) {
     object Dashboard :
@@ -875,7 +881,7 @@ sealed class BottomNavigationItem(
             R.drawable.ic_stores,
             R.drawable.ic_strores_selected,
             mutableStateOf(false),
-            DataSource(0),
+            mutableStateOf(0),
             key = BottomNavKey.STORES
         )
 

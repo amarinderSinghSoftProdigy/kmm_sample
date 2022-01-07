@@ -73,7 +73,8 @@ sealed class TabBarInfo {
     data class Search(
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
         val notificationItemsCount: ReadOnlyDataSource<Int>,
-    ) : TabBarInfo() {
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null,
+        ) : TabBarInfo() {
 
         override fun withBackIcon() = copy(icon = ScopeIcon.BACK)
 
