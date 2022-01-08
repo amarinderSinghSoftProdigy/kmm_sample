@@ -183,18 +183,18 @@ fun SettingsScreen(scope: SettingsScope) {
                     stringResourceId = R.string.whatsapp,
                     scope = scope
                 )
-                Separator(thickness = 0.5f)
-                AccountContentItem(
-                    drawableResourceId = R.drawable.ic_invoice_pref,
-                    stringResourceId = R.string.invoice_preferences,
-                    scope = scope
-                )
-                Separator(thickness = 0.5f)
-                AccountContentItem(
-                    drawableResourceId = R.drawable.ic_order_value,
-                    stringResourceId = R.string.order_value,
-                    scope = scope
-                )
+//                Separator(thickness = 0.5f)
+//                AccountContentItem(
+//                    drawableResourceId = R.drawable.ic_invoice_pref,
+//                    stringResourceId = R.string.invoice_preferences,
+//                    scope = scope
+//                )
+//                Separator(thickness = 0.5f)
+//                AccountContentItem(
+//                    drawableResourceId = R.drawable.ic_order_value,
+//                    stringResourceId = R.string.order_value,
+//                    scope = scope
+//                )
             } else {
                 AccountContentItem(
                     route = Event.Transition.WhatsappPreference,
