@@ -63,8 +63,8 @@ internal class TransitionEventDelegate(
                             userRepo.requireUser(),
                             userRepo.getUserDataSource(),
                             dashboardData = userRepo.getDashboardDataSource(),
-                            notificationRepo.getUnreadMessagesDataSource(),
-                            cartRepo.getEntriesCountDataSource(),
+                            unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                            cartItemsCount = cartRepo.getEntriesCountDataSource(),
                         )
                     )
                 }
@@ -146,7 +146,8 @@ internal class TransitionEventDelegate(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
                         isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
-                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource()
+                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                        cartCount = cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.Orders -> setScope(

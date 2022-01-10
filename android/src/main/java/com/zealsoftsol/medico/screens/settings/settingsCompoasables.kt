@@ -29,11 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.BuildConfig
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
@@ -78,68 +76,26 @@ fun SettingsScreen(scope: SettingsScope) {
                 .width(90.dp)
         )
 
-        Text(
-            text = user.fullName(),
-            color = Color.Black,
-            modifier = Modifier.padding(start = 115.dp, top = 155.dp),
-            fontSize = 14.sp
-        )
+            Text(
+                text = if (userType == UserType.STOCKIST) {
+                    (user.details as User.Details.DrugLicense).tradeName
+                } else {
+                    user.fullName()
+                },
+                color = Color.Black,
+                modifier = Modifier.padding(start = 115.dp, top = 155.dp),
+                fontSize = 16.sp
+            )
 
-        //show view based on user type
-        if (userType == UserType.STOCKIST) {
-            ConstraintLayout(
-                modifier = Modifier.padding(start = 115.dp, top = 170.dp)
-            ) {
-                val (tradename, divider, phone) = createRefs()
-                Text(
-                    text = (user.details as User.Details.DrugLicense).tradeName,
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.constrainAs(tradename) {
-                        width = Dimension.preferredWrapContent
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top, margin = 5.dp)
-                        end.linkTo(divider.start, 3.dp)
-                    }
-                )
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier.constrainAs(divider) {
-                        height = Dimension.value(10.dp)
-                        width = Dimension.value(1.dp)
-                        end.linkTo(phone.start, 3.dp)
-                        top.linkTo(tradename.top)
-                        bottom.linkTo(tradename.bottom)
-                    }
-                )
-                ClickableText(
-                    text = AnnotatedString(user.phoneNumber),
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 14.sp
-                    ),
-                    onClick = { activity.openDialer(user.phoneNumber) },
-                    modifier = Modifier.constrainAs(phone) {
-                        width = Dimension.preferredWrapContent
-                        end.linkTo(parent.end, margin = 10.dp)
-                        bottom.linkTo(tradename.bottom)
-                        top.linkTo(tradename.top)
-                    }
-                )
-            }
-        } else {
             ClickableText(
                 text = AnnotatedString(user.phoneNumber),
                 style = TextStyle(
                     color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                 ),
                 onClick = { activity.openDialer(user.phoneNumber) },
                 modifier = Modifier.padding(start = 115.dp, top = 170.dp)
             )
-        }
 
         Column(
             modifier = Modifier

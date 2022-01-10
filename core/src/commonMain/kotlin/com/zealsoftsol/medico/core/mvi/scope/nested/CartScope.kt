@@ -18,9 +18,12 @@ class CartScope(
     val total: ReadOnlyDataSource<Total?>,
     val isContinueEnabled: ReadOnlyDataSource<Boolean>,
     val unreadNotifications: ReadOnlyDataSource<Int>,
-    ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+    val cartCount: ReadOnlyDataSource<Int>,
+) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle("", unreadNotifications)
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle(
+        "", unreadNotifications, cartCount
+    )
 
     init {
         EventCollector.sendEvent(Event.Action.Cart.LoadCart)

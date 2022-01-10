@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -21,14 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -59,70 +54,17 @@ fun MenuScreen(scope: MenuScope) {
                 .height(30.dp)
         )
 
-
-        //show view based on user type
-        if (userType == UserType.STOCKIST) {
-            Text(
-                text = user.fullName(),
-                color = Color.Black,
-                modifier = Modifier.padding(start = 50.dp, top = 50.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W700,
-            )
-
-            ConstraintLayout(
-                modifier = Modifier.padding(start = 50.dp, top = 65.dp)
-            ) {
-                val (tradename, divider, phone) = createRefs()
-                Text(
-                    text = (user.details as User.Details.DrugLicense).tradeName,
-                    color = Color.Black,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.constrainAs(tradename) {
-                        width = Dimension.preferredWrapContent
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top, margin = 5.dp)
-                        end.linkTo(divider.start, 3.dp)
-                    }
-                )
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier.constrainAs(divider) {
-                        height = Dimension.value(10.dp)
-                        width = Dimension.value(1.dp)
-                        end.linkTo(phone.start, 3.dp)
-                        top.linkTo(tradename.top)
-                        bottom.linkTo(tradename.bottom)
-                    }
-                )
-                ClickableText(
-                    text = AnnotatedString(user.phoneNumber),
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 16.sp
-                    ),
-                    onClick = { activity.openDialer(user.phoneNumber) },
-                    modifier = Modifier.constrainAs(phone) {
-                        width = Dimension.preferredWrapContent
-                        end.linkTo(parent.end, margin = 10.dp)
-                        bottom.linkTo(tradename.bottom)
-                        top.linkTo(tradename.top)
-                    }
-                )
-            }
-        } else {
-            Text(
-                text = user.fullName(),
-                color = Color.Black,
-                modifier = Modifier.padding(start = 50.dp, top = 50.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W700
-            )
-        }
+        Text(
+            text = if (userType == UserType.STOCKIST) {
+                (user.details as User.Details.DrugLicense).tradeName
+            } else {
+                user.fullName()
+            },
+            color = Color.Black,
+            modifier = Modifier.padding(start = 50.dp, top = 50.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W700
+        )
 
         Column(
             modifier = Modifier

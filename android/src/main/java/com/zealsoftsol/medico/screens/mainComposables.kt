@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -442,16 +443,20 @@ private fun RowScope.SimpleTabBar(
                 .clickable(indication = null) { info.goToNotifications() }
                 .padding(10.dp),
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_bell_dashboard),
+            Image(
+                painter = painterResource(id = R.drawable.ic_bell),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(6.dp)
-                    .align(Alignment.Center)
-            )
-            val cartItems = it.flow.collectAsState()
+                    .align(Alignment.Center),
+                colorFilter = ColorFilter.tint(
+                    Color(0xFF003657)
+                )
 
-            if (cartItems.value > 0) {
+            )
+            val notificationItems = it.flow.collectAsState()
+
+            if (notificationItems.value > 0) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -534,12 +539,15 @@ private fun RowScope.SearchTabBar(
             .clickable(indication = null) { info.goToNotifications() }
             .padding(10.dp),
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_bell_dashboard),
+        Image(
+            painter = painterResource(id = R.drawable.ic_bell),
             contentDescription = null,
             modifier = Modifier
                 .padding(6.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            colorFilter = ColorFilter.tint(
+                Color(0xFF003657)
+            )
         )
         val notification = info.notificationItemsCount.flow.collectAsState()
         if (notification.value > 0) {
@@ -566,6 +574,9 @@ private fun RowScope.SearchTabBar(
         if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
+        }else{
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
         }
     }
 }
@@ -699,13 +710,16 @@ private fun NoIconHeader(
             Image(
                 modifier = Modifier
                     .weight(0.15f)
-                    .height(30.dp)
-                    .width(30.dp)
+                    .height(25.dp)
+                    .width(25.dp)
                     .clickable {
                         EventCollector.sendEvent(Event.Transition.Settings(true))
                     },
                 painter = painterResource(id = R.drawable.ic_personal),
-                contentDescription = null
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(
+                    Color(0xFF003657)
+                )
             )
         } else {
             Image(
@@ -717,26 +731,30 @@ private fun NoIconHeader(
                 contentDescription = null
             )
         }
-        Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
-            Row(
-                modifier = Modifier
-                    .clickable(indication = null) { info.goToSearch() }
-                    .background(Color.White, MaterialTheme.shapes.medium)
-                    .padding(horizontal = 14.dp)
-                    .height(40.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    tint = ConstColors.gray,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                )
-                Text(
-                    text = stringResource(id = R.string.search_products),
-                    color = ConstColors.gray.copy(alpha = 0.5f),
-                    modifier = Modifier.padding(start = 24.dp),
-                )
+        if (scope.childScope.flow.collectAsState().value is StoresScope) {
+            Box(modifier = Modifier.weight(0.7f))
+        } else {
+            Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
+                Row(
+                    modifier = Modifier
+                        .clickable(indication = null) { info.goToSearch() }
+                        .background(Color.White, MaterialTheme.shapes.medium)
+                        .padding(horizontal = 14.dp)
+                        .height(40.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        tint = ConstColors.gray,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Text(
+                        text = stringResource(id = R.string.search_products),
+                        color = ConstColors.gray.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 24.dp),
+                    )
+                }
             }
         }
 
@@ -746,15 +764,18 @@ private fun NoIconHeader(
                 .clickable(indication = null) { info.goToNotifications() }
                 .padding(10.dp),
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_bell_dashboard),
+            Image(
+                painter = painterResource(id = R.drawable.ic_bell),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(6.dp)
-                    .align(Alignment.Center)
+                    .align(Alignment.Center),
+                colorFilter = ColorFilter.tint(
+                    Color(0xFF003657)
+                )
             )
-            val cartItems = info.notificationItemsCount.flow.collectAsState()
-            if (cartItems.value > 0) {
+            val cartItems = info.cartItemsCount?.flow?.collectAsState()
+            if (cartItems?.value != null && cartItems.value > 0) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -773,6 +794,15 @@ private fun NoIconHeader(
                 }
             }
         }
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null && cartCount.value > 0) {
+        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+        cart?.cartCount?.value = cartCount.value
+    } else {
+        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+        cart?.cartCount?.value = 0
     }
 }
 
@@ -813,12 +843,12 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) 
                             contentDescription = null,
                         )
 
-                        if (item.cartCount?.value != null && item.cartCount?.value!! > 0) {
+                        if (item.cartCount.value > 0) {
                             Text(
-                                text = item.cartCount?.value.toString(),
+                                text = item.cartCount.value.toString(),
                                 color = Color.Red,
-                                fontSize = 10.sp,
-                                modifier = Modifier.padding(bottom = 15.dp),
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(bottom = 20.dp, start = 20.dp),
                                 fontWeight = FontWeight.W800,
                             )
                         }
@@ -841,7 +871,7 @@ sealed class BottomNavigationItem(
     var unSelectedIcon: Int,
     var selectedIcon: Int,
     var selected: MutableState<Boolean>,
-    var cartCount: MutableState<Int>? = null,
+    var cartCount: MutableState<Int> = mutableStateOf(0),
     var key: BottomNavKey
 ) {
     object Dashboard :

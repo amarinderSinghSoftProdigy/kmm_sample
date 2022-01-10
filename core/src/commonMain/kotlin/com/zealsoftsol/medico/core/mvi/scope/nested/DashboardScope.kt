@@ -19,11 +19,12 @@ import com.zealsoftsol.medico.data.UserType
 class DashboardScope private constructor(
     val userType: UserType,
     val unreadNotifications: ReadOnlyDataSource<Int>,
+    val cartItemsCount: ReadOnlyDataSource<Int>,
     val dashboard: ReadOnlyDataSource<DashboardData?>,
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.NoIconTitle("", unreadNotifications)
+        TabBarInfo.NoIconTitle("", unreadNotifications, cartItemsCount)
 
     val sections = when (userType) {
         UserType.STOCKIST -> listOf(
@@ -101,7 +102,12 @@ class DashboardScope private constructor(
             unreadNotifications: ReadOnlyDataSource<Int>,
             cartItemsCount: ReadOnlyDataSource<Int>,
         ) = TabBarScope(
-            childScope = DashboardScope(user.type, unreadNotifications, dashboardData),
+            childScope = DashboardScope(
+                user.type,
+                unreadNotifications = unreadNotifications,
+                cartItemsCount = cartItemsCount,
+                dashboard = dashboardData
+            ),
             initialTabBarInfo = TabBarInfo.Search(
                 notificationItemsCount = unreadNotifications,
                 cartItemsCount = cartItemsCount
