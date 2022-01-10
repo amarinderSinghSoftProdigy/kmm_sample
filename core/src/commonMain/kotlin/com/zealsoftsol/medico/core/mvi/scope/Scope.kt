@@ -124,7 +124,7 @@ sealed class TabBarInfo {
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
         fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
-        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search(null))
+        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search())
     }
 }
 

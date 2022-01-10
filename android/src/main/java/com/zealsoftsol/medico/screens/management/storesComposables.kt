@@ -95,7 +95,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
         onIconClick = null,
         isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
-        onSearch = { value, _ -> scope.searchProduct(value, withAutoComplete = false) },
+        onSearch = { value, _ -> scope.searchProduct(value, withAutoComplete = true, scope.store.sellerUnitCode) },
     )
     scope.storage.save("focus", false)
     if (showFilter.value) {
