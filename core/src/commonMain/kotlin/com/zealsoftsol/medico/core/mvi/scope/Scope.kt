@@ -120,6 +120,7 @@ sealed class TabBarInfo {
 
     data class NoIconTitle(
         val title: String, val notificationItemsCount: ReadOnlyDataSource<Int>,
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
         fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)

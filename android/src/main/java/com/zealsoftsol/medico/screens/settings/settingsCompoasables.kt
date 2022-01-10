@@ -76,54 +76,26 @@ fun SettingsScreen(scope: SettingsScope) {
                 .width(90.dp)
         )
 
-        Text(
-            text = user.fullName(),
-            color = Color.Black,
-            modifier = Modifier.padding(start = 115.dp, top = 155.dp),
-            fontSize = 14.sp
-        )
+            Text(
+                text = if (userType == UserType.STOCKIST) {
+                    (user.details as User.Details.DrugLicense).tradeName
+                } else {
+                    user.fullName()
+                },
+                color = Color.Black,
+                modifier = Modifier.padding(start = 115.dp, top = 155.dp),
+                fontSize = 16.sp
+            )
 
-        //show view based on user type
-        if (userType == UserType.STOCKIST) {
-            Row(
-                modifier = Modifier.padding(start = 115.dp, top = 170.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(0.5f),
-                    text = (user.details as User.Details.DrugLicense).tradeName,
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
-                Space(dp = 5.dp)
-                Divider(
-                    color = Color.Black,
-                    modifier = Modifier
-                        .height(10.dp)
-                        .width(1.dp)
-                )
-                Space(dp = 5.dp)
-                ClickableText(
-                    modifier = Modifier.weight(0.45f),
-                    text = AnnotatedString(user.phoneNumber),
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                    ),
-                    onClick = { activity.openDialer(user.phoneNumber) },
-                )
-            }
-        } else {
             ClickableText(
                 text = AnnotatedString(user.phoneNumber),
                 style = TextStyle(
                     color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                 ),
                 onClick = { activity.openDialer(user.phoneNumber) },
-                modifier = Modifier.padding(start = 115.dp, top = 195.dp)
+                modifier = Modifier.padding(start = 115.dp, top = 170.dp)
             )
-        }
 
         Column(
             modifier = Modifier
