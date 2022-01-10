@@ -94,7 +94,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         horizontalPadding = 16.dp,
         searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
         onIconClick = null,
-        isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
+        isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, _ -> scope.searchProduct(value, withAutoComplete = false) },
     )
     scope.storage.save("focus", false)
@@ -207,7 +207,7 @@ private fun AllStores(scope: StoresScope.All) {
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
-            isSearchFocused = true,
+            isSearchFocused = false,
             onSearch = { v, _ -> scope.search(v) },
             onIconClick = {
                 scope.search("")

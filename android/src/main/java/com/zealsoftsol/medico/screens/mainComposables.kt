@@ -563,7 +563,7 @@ private fun RowScope.SearchTabBar(
 
 
         val cartCount = info.cartItemsCount?.flow?.collectAsState()
-        if(cartCount !=null && cartCount.value > 0){
+        if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
         }
@@ -695,14 +695,28 @@ private fun NoIconHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            modifier = Modifier
-                .weight(0.15f)
-                .height(30.dp)
-                .width(30.dp),
-            painter = painterResource(id = R.drawable.ic_small_logo),
-            contentDescription = null
-        )
+        if (mUserType == UserType.STOCKIST) {
+            Image(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .height(30.dp)
+                    .width(30.dp)
+                    .clickable {
+                        EventCollector.sendEvent(Event.Transition.Settings(true))
+                    },
+                painter = painterResource(id = R.drawable.ic_personal),
+                contentDescription = null
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .height(30.dp)
+                    .width(30.dp),
+                painter = painterResource(id = R.drawable.ic_small_logo),
+                contentDescription = null
+            )
+        }
         Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
             Row(
                 modifier = Modifier
@@ -768,7 +782,7 @@ private fun NoIconHeader(
  */
 @Composable
 fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) {
-    if(mUserType != null){
+    if (mUserType != null) {
         Surface(
             elevation = 5.dp, color = Color.White
         ) {
@@ -812,8 +826,8 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) 
                 }
             }
         }
-    }else{
-        Box{}
+    } else {
+        Box {}
     }
 
 }
