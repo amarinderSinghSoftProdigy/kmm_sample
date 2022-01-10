@@ -570,14 +570,14 @@ private fun RowScope.SearchTabBar(
         }
 
 
-        val cartCount = info.cartItemsCount?.flow?.collectAsState()
+        /*val cartCount = info.cartItemsCount?.flow?.collectAsState()
         if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
         }else{
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = 0
-        }
+        }*/
     }
 }
 
@@ -797,12 +797,14 @@ private fun NoIconHeader(
     }
 
     val cartCount = info.cartItemsCount?.flow?.collectAsState()
-    if (cartCount != null && cartCount.value > 0) {
-        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
-        cart?.cartCount?.value = cartCount.value
-    } else {
-        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
-        cart?.cartCount?.value = 0
+    if(cartCount!=null){
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
     }
 }
 
