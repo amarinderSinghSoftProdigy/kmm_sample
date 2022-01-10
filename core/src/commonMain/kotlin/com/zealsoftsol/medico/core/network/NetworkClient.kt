@@ -117,7 +117,8 @@ class NetworkClient(
     NetworkScope.Orders,
     NetworkScope.Config,
     NetworkScope.InStore,
-    NetworkScope.WhatsappStore {
+    NetworkScope.WhatsappStore,
+    NetworkScope.OrderHsnEditStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()

@@ -7,11 +7,7 @@ import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
-import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.*
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -149,11 +145,12 @@ internal class OrdersEventDelegate(
 
     private fun selectEntry(orderEntry: OrderEntry) {
         navigator.withScope<ViewOrderScope> {
-            navigator.scope.value.bottomSheet.value = BottomSheet.ModifyOrderEntry(
+            navigator.setScope(OrderHsnEditScope(orderEntry))
+            /*navigator.scope.value.bottomSheet.value = BottomSheet.ModifyOrderEntry(
                 orderEntry,
                 isChecked = DataSource(orderEntry in it.checkedEntries.value),
                 canEdit = it.canEdit,
-            )
+            )*/
         }
     }
 
