@@ -137,7 +137,7 @@ fun SettingsScreen(scope: SettingsScope) {
                     fontSize = 14.sp,
                 ),
                 onClick = { activity.openDialer(user.phoneNumber) },
-                modifier = Modifier.padding(start = 115.dp, top = 195.dp)
+                modifier = Modifier.padding(start = 115.dp, top = 170.dp)
             )
         }
 
