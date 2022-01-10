@@ -94,7 +94,7 @@ fun SettingsScreen(scope: SettingsScope) {
                 Text(
                     text = (user.details as User.Details.DrugLicense).tradeName,
                     color = Color.Black,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.constrainAs(tradename) {
@@ -118,7 +118,7 @@ fun SettingsScreen(scope: SettingsScope) {
                     text = AnnotatedString(user.phoneNumber),
                     style = TextStyle(
                         color = Color.Black,
-                        fontSize = 16.sp
+                        fontSize = 14.sp
                     ),
                     onClick = { activity.openDialer(user.phoneNumber) },
                     modifier = Modifier.constrainAs(phone) {
