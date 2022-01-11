@@ -6,10 +6,12 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.ScopeNotification
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
@@ -22,12 +24,16 @@ import com.zealsoftsol.medico.data.UserValidation3
 
 sealed class ManagementScope : Scope.Child.TabBar() {
 
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
+
     sealed class User(
         val tabs: List<Tab>,
         internal val forType: UserType,
     ) : ManagementScope(), Loadable<EntityInfo> {
 
-        override val isRoot: Boolean = true
+        override val isRoot: Boolean = false
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<EntityInfo>> = DataSource(emptyList())

@@ -54,7 +54,8 @@ fun InStoreUsersScreen(scope: InStoreUsersScope) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ConstColors.newDesignGray),
+            .background(ConstColors.newDesignGray)
+            .padding(16.dp),
     ) {
         val selectedUser = remember { mutableStateOf<InStoreUser?>(null) }
         Column(

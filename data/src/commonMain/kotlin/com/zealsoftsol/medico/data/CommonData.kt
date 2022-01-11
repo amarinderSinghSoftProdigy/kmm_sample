@@ -34,9 +34,10 @@ data class GeoData(
     val origin: GeoPoints,
     @SerialName("destinationPoints")
     val destination: GeoPoints? = null,
+    val addressLine: String
 ) {
+
     fun fullAddress() = "$city $pincode"
-    fun fullLandmark() = "$landmark, $city"
     fun full() = "$location, $landmark, $city, $pincode "
 }
 

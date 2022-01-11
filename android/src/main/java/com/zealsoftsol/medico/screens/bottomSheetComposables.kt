@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -43,7 +44,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -1537,9 +1540,11 @@ private fun PreviewItemBottomSheet(
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 24.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
             Surface(
                 shape = CircleShape,
                 color = Color.Black.copy(alpha = 0.12f),
@@ -1618,8 +1623,10 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
+    val activity = LocalContext.current as MainActivity
+
     Text(
-        text = entityInfo.geoData.fullLandmark(),
+        text = entityInfo.geoData.addressLine,
         fontSize = 14.sp,
         color = ConstColors.gray,
     )
@@ -1644,7 +1651,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
-            val activity = LocalContext.current as MainActivity
             Text(
                 text = stringResource(id = R.string.see_on_the_map),
                 fontSize = 12.sp,
@@ -1692,6 +1698,31 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             }
             entityInfo.panNumber?.let {
                 DataWithLabel(label = R.string.pan_number, data = it)
+            }
+            entityInfo.drugLicenseNo1?.let {
+                DataWithLabel(label = R.string.dl_one, data = it)
+            }
+            entityInfo.drugLicenseNo2?.let {
+                DataWithLabel(label = R.string.dl_two, data = it)
+            }
+            entityInfo.phoneNumber?.let {
+                Row {
+                    Text(
+                        text = "${stringResource(id = R.string.phone_number)}:",
+                        fontSize = 14.sp,
+                        color = ConstColors.gray,
+                    )
+                    Space(4.dp)
+                    ClickableText(
+                        text = AnnotatedString(it),
+                        style = TextStyle(
+                            color = MaterialTheme.colors.background,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600
+                        ),
+                        onClick = { activity.openDialer(entityInfo.phoneNumber!!) },
+                    )
+                }
             }
             DataWithLabel(
                 label = R.string.payment_method,

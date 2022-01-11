@@ -96,7 +96,7 @@ sealed class Event {
                 }
             }
 
-            data class SearchAutoComplete(val value: String) : Search()
+            data class SearchAutoComplete(val value: String, val sellerUnitCode: String?= null) : Search()
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
@@ -301,13 +301,12 @@ sealed class Event {
             object GetPreference : WhatsAppPreference()
         }
 
-        sealed class Inventory : Action(){
+        sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
             object GetInventory : Inventory()
         }
     }
-
 
 
     sealed class Transition : Event() {
@@ -320,7 +319,7 @@ sealed class Event {
         object ChangePassword : Transition()
         data class Search(val autoComplete: AutoComplete? = null) : Transition()
         object Dashboard : Transition()
-        object Settings : Transition()
+        data class Settings(val showBackIcon: Boolean) : Transition()
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
@@ -351,5 +350,7 @@ sealed class Event {
         ) : Transition()
 
         object Inventory : Transition()
+        object Menu : Transition()
+
     }
 }

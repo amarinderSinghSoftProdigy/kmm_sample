@@ -1,7 +1,10 @@
 package com.zealsoftsol.medico.screens.management
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,16 +13,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,8 +34,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.DataWithLabel
@@ -64,9 +75,11 @@ fun StoresScreen(scope: StoresScope) {
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
     Space(16.dp)
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
         Text(
             text = scope.store.tradeName,
             color = MaterialTheme.colors.background,
@@ -87,6 +100,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     val sortOptions = scope.sortOptions.flow.collectAsState()
     val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
     val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+    val autoComplete = scope.autoComplete.flow.collectAsState()
     BasicSearchBar(
         input = search.value,
         hint = R.string.search_products,
@@ -94,8 +108,14 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         horizontalPadding = 16.dp,
         searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
         onIconClick = null,
-        isSearchFocused = scope.storage.restore("focus") as? Boolean ?: true,
-        onSearch = { value, _ -> scope.searchProduct(value, withAutoComplete = false) },
+        isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
+        onSearch = { value, _ ->
+                scope.searchProduct(
+                    value,
+                    withAutoComplete = true,
+                    scope.store.sellerUnitCode
+                )
+        },
     )
     scope.storage.save("focus", false)
     if (showFilter.value) {
@@ -133,7 +153,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             Space(16.dp)
         }
     } else {
-        if (products.value.isEmpty() && scope.products.updateCount > 0) {
+        if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.missing_inventory_stores,
@@ -141,26 +161,106 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 onHome = { scope.goHome() },
             )
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 8.dp)
-            ) {
-                itemsIndexed(
-                    items = products.value,
-                    key = { _, item -> item.id },
-                    itemContent = { index, item ->
-                        ProductItem(
-                            item,
-                            onClick = { scope.selectProduct(item) },
-                            onBuy = { scope.buy(item) },
-                        )
-                        if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadMoreProducts()
-                        }
-                    },
-                )
+            if (autoComplete.value.isEmpty()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(top = 8.dp)
+                ) {
+                    itemsIndexed(
+                        items = products.value,
+                        key = { _, item -> item.id },
+                        itemContent = { index, item ->
+                            ProductItem(
+                                item,
+                                onClick = { scope.selectProduct(item) },
+                                onBuy = { scope.buy(item) },
+                            )
+                            if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadMoreProducts()
+                            }
+                        },
+                    )
+                }
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .background(color = Color.White)
+                ) {
+                    items(
+                        items = autoComplete.value,
+                        key = { item -> item.suggestion },
+                        itemContent = { item ->
+                            AutoCompleteItem(
+                                item,
+                                search.value
+                            ) { scope.selectAutoComplete(item) }
+                        },
+                    )
+                }
             }
         }
+    }
+}
+
+/**
+ * items to be displayed in autocomplete dropdown list
+ */
+@Composable
+private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
+    val regex = "(?i)$input".toRegex()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 12.dp, horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            BoxWithConstraints {
+                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(autoComplete.suggestion)
+                            regex.find(autoComplete.suggestion)?.let {
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W700),
+                                    it.range.first,
+                                    it.range.last + 1,
+                                )
+                            }
+                        },
+                        color = MaterialTheme.colors.background,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                    if (autoComplete.details.isNotEmpty()) {
+                        Text(
+                            text = autoComplete.details,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W400,
+                        )
+                    }
+                }
+            }
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                tint = ConstColors.lightBlue,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Divider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = Color(0xFFE6F0F7),
+        )
     }
 }
 
@@ -207,7 +307,7 @@ private fun AllStores(scope: StoresScope.All) {
             icon = Icons.Default.ArrowBack,
             elevation = 0.dp,
             horizontalPadding = 16.dp,
-            isSearchFocused = true,
+            isSearchFocused = false,
             onSearch = { v, _ -> scope.search(v) },
             onIconClick = {
                 scope.search("")
