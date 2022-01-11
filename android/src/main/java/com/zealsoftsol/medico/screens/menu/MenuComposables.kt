@@ -17,7 +17,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.zealsoftsol.medico.ConstColors
-import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
@@ -37,7 +35,6 @@ import com.zealsoftsol.medico.screens.common.clickable
 fun MenuScreen(scope: MenuScope) {
     val user = scope.user
     val userType = user.type
-    val activity = LocalContext.current as MainActivity
 
     Box(
         modifier = Modifier
@@ -169,13 +166,13 @@ fun StockistMenu(scope: MenuScope) {
         paddingStart = 50
     )
     Separator(thickness = 0.5f)
-    /*   AccountContentItem(
-           route = Event.Transition.Inventory,
-           drawableResourceId = R.drawable.ic_menu_inventory,
-           stringResourceId = R.string.inventory,
-           scope = scope,
-       )
-       Separator(thickness = 0.5f)*/
+    AccountContentItem(
+        route = Event.Transition.Inventory,
+        drawableResourceId = R.drawable.ic_menu_inventory,
+        stringResourceId = R.string.inventory,
+        scope = scope,
+    )
+    Separator(thickness = 0.5f)
     AccountContentItem(
         route = Event.Transition.Stores,
         drawableResourceId = R.drawable.ic_menu_stores,

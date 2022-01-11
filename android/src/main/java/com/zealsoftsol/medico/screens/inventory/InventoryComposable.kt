@@ -1,16 +1,24 @@
 package com.zealsoftsol.medico.screens.inventory
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,6 +36,13 @@ import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.ManufacturerData
+import com.zealsoftsol.medico.data.ProductsData
+import com.zealsoftsol.medico.screens.common.CoilImageBrands
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.utils.parseDateToMmYy
 import com.zealsoftsol.medico.utils.piechart.PieChart
 import com.zealsoftsol.medico.utils.piechart.PieChartData
 import com.zealsoftsol.medico.utils.piechart.renderer.SimpleSliceDrawer
@@ -34,7 +50,10 @@ import com.zealsoftsol.medico.utils.piechart.simpleChartAnimation
 
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
-    Box(
+    val manufacturersList = scope.mInventoryData.flow.collectAsState().value?.manufacturers
+    val productsList = scope.mInventoryData.flow.collectAsState().value?.productData
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
@@ -42,8 +61,8 @@ fun InventoryMainComposable(scope: InventoryScope) {
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
-                .padding(16.dp)
+                .height(200.dp)
+                .padding(10.dp)
         ) {
             item {
                 StatusView(
@@ -69,7 +88,187 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 )
             }
         }
+        LazyRow(
+            contentPadding = PaddingValues(start = 3.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
+            manufacturersList?.let {
+                itemsIndexed(
+                    items = it,
+                    key = { index, _ -> index },
+                    itemContent = { _, item ->
+                        ManufacturersItem(item, scope)
+                    },
+                )
+            }
+        }
+        Space(dp = 16.dp)
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 5.dp),
+            elevation = 3.dp,
+            shape = RoundedCornerShape(5.dp),
+            backgroundColor = Color.White,
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Cipla",
+                        color = ConstColors.green,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W700
+                    )
+
+                    Row {
+                        Text(
+                            text = stringResource(id = R.string.total_prod),
+                            color = Color.Black,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
+                        Text(
+                            text = "999.9",
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .border(
+                                    1.dp,
+                                    color = ConstColors.green,
+                                    shape = RoundedCornerShape(2.dp)
+                                )
+                                .padding(3.dp)
+                        )
+
+                    }
+                }
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 3.dp),
+                    modifier = Modifier.padding(horizontal = 7.dp),
+                ) {
+                    productsList?.let {
+                        itemsIndexed(
+                            items = it,
+                            key = { index, _ -> index },
+                            itemContent = { _, item ->
+                                ProductsItem(item, scope)
+                            },
+                        )
+                    }
+                }
+            }
+        }
     }
+}
+
+/**
+ * Display product data
+ */
+@Composable
+private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
+    Column(modifier = Modifier.height(55.dp)) {
+        Text(
+            text = item.vendorProductName,
+            color = Color.Black,
+            fontSize = 12.sp,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.weight(1f).padding(top = 5.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.mrp.formattedValue,
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.padding(end = 5.dp)
+                )
+
+                Divider(
+                    thickness = 1.dp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .height(15.dp)
+                        .width(1.dp)
+                )
+
+                Text(
+                    text = item.expiryDate.formattedValue.parseDateToMmYy(),
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.padding(start = 5.dp)
+                )
+            }
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.stock),
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.padding(end = 5.dp)
+                )
+                CommonRoundedView(
+                    text = item.availableQty.formattedValue, modifier = Modifier.padding(
+                        end = 5.dp
+                    ), color = ConstColors.darkGreen, radius = 2
+                )
+            }
+        }
+        Divider(
+            thickness = 1.dp,
+            color = ConstColors.separator.copy(alpha = 0.5f),
+            modifier = Modifier.padding(top = 5.dp)
+        )
+    }
+}
+
+/**
+ * ui item for manufacturer listing
+ */
+@Composable
+private fun ManufacturersItem(item: ManufacturerData, scope: InventoryScope) {
+    Card(
+        modifier = Modifier
+            .height(90.dp)
+            .width(150.dp)
+            .selectable(
+                selected = true,
+                onClick = {
+                    //send parameters for get products based on selected manufactured
+                }),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        CoilImageBrands(
+            src = CdnUrlProvider.urlForManufacturers(item.code),
+            contentScale = ContentScale.Crop,
+            onError = { ItemPlaceholder() },
+            onLoading = { ItemPlaceholder() },
+            height = 90.dp,
+            width = 150.dp,
+        )
+    }
+    Space(12.dp)
 }
 
 /**
@@ -81,7 +280,7 @@ private fun StatusView(scope: InventoryScope, modifier: Modifier) {
 
     Card(
         modifier = modifier,
-        elevation = 5.dp,
+        elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
@@ -161,7 +360,7 @@ private fun AvailabilityView(
 
     Card(
         modifier = modifier,
-        elevation = 5.dp,
+        elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
@@ -254,7 +453,7 @@ private fun ExpiryView(
 
     Card(
         modifier = modifier,
-        elevation = 5.dp,
+        elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
     ) {
@@ -369,13 +568,16 @@ private fun MyChartParent(
 private fun CommonRoundedView(
     text: String,
     modifier: Modifier,
-    color: Color
+    color: Color,
+    radius: Int = 5
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(5.dp))
+            .clip(RoundedCornerShape(radius.dp))
             .background(color)
+            .height(20.dp)
             .padding(3.dp),
+        contentAlignment = Alignment.Center
     ) {
 
         Text(
@@ -422,3 +624,12 @@ fun Int.divideToPercent(divideTo: Int): Float {
     return if (divideTo == 0) 0F
     else (this / divideTo.toFloat())
 }
+
+/**
+ * return colour based on stock value
+ */
+//fun String.returnColorBasedOnStock(): Color{
+//    return when(this){
+//
+//    }
+//}

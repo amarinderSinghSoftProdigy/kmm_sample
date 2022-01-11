@@ -137,7 +137,7 @@ private fun ShowRetailerAndHospitalDashboard(
                 dashboard.value?.brands?.let {
                     itemsIndexed(
                         items = it,
-                        key = { _, item -> item.searchTerm },
+                        key = { index, _ -> index },
                         itemContent = { _, item ->
                             BrandsItem(item, scope)
                         },

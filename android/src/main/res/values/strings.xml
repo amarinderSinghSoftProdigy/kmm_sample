@@ -331,6 +331,9 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="total_prod">Total Products</string>
+    <string name="stock">Stock:</string>
+
     <!--error codes-->
 
     <string name="E0000">Error</string>

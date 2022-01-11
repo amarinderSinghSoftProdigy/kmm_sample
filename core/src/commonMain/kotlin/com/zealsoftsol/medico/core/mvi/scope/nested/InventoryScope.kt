@@ -8,7 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.data.InventoryData
 
 class InventoryScope(
-    val mInventoryData: DataSource<InventoryData?> = DataSource(InventoryData(null, null, null)),
+    val mInventoryData: DataSource<InventoryData?> = DataSource(InventoryData(null, null, null, null, null)),
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     init {
