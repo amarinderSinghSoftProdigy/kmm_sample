@@ -139,7 +139,7 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All(notificationRepo.getUnreadMessagesDataSource())
+                    StoresScope.All(notificationRepo.getUnreadMessagesDataSource(), cartRepo.getEntriesCountDataSource())
                 )
                 is Event.Transition.Cart -> setScope(
                     CartScope(

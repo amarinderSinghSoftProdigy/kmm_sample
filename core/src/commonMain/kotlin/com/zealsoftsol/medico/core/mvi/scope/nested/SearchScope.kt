@@ -56,7 +56,7 @@ interface BaseSearchScope : Scopable {
         }
     }
 
-    fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String? = null): Boolean {
+    fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String): Boolean {
         return trimInput(input, productSearch.value) {
             val event = if (withAutoComplete) {
                 Event.Action.Search.SearchAutoComplete(it, sellerUnitCode)
