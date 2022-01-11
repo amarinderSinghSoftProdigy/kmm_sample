@@ -31,7 +31,10 @@ internal class SearchEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
         is Event.Action.Search.SearchInput -> searchInput(event.isOneOf, event.search, event.query)
-        is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(event.value)
+        is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(
+            event.value,
+            event.sellerUnitCode
+        )
         is Event.Action.Search.SearchFilter -> searchFilter(event.filter, event.value)
         is Event.Action.Search.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Search.SelectFilter -> selectFilter(event.filter, event.option)
@@ -85,15 +88,22 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun searchAutoComplete(value: String) {
+    /**
+     * search for Autocomplete item
+     * @param value - term for search
+     * @param sellerB2bCode - send seller B2B code is searching for stores products
+     */
+    private suspend fun searchAutoComplete(value: String, sellerB2bCode: String? = null) {
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = value
             searchAsync(withDelay = true, withProgress = false) {
-                val unitCodeForStores = when (it) {
-                    is StoresScope.StorePreview -> userRepo.requireUser().unitCode
-                    is SearchScope -> null
-                    else -> throw UnsupportedOperationException("unknown search scope")
-                }
+
+                val unitCodeForStores: String? = sellerB2bCode
+                    ?: when (it) {
+                        is StoresScope.StorePreview -> userRepo.requireUser().unitCode
+                        is SearchScope -> null
+                        else -> throw UnsupportedOperationException("unknown search scope")
+                    }
                 networkSearchScope.autocomplete(value, unitCodeForStores)
                     .onSuccess { body ->
                         it.autoComplete.value = body

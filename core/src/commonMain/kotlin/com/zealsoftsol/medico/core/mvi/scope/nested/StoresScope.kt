@@ -19,12 +19,14 @@ sealed class StoresScope : Scope.Child.TabBar() {
 
     class All(
         private val notificationCount: ReadOnlyDataSource<Int>,
+        private val cartItemsCount: ReadOnlyDataSource<Int>,
     ) : StoresScope(), Loadable<Store> {
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.NoIconTitle(
                 title = "",
                 notificationItemsCount = notificationCount,
+                cartItemsCount = cartItemsCount
             )
         }
 
@@ -68,6 +70,10 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val supportsAutoComplete: Boolean = false
 
         init {
+            startSearch()
+        }
+
+        fun startSearch(){
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
 
@@ -75,6 +81,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             return TabBarInfo.NoIconTitle(
                 title = "",
                 notificationItemsCount = notificationCount,
+                cartItemsCount = cartItemsCount
             )
         }
     }
