@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
+import com.zealsoftsol.medico.core.mvi.event.delegates.*
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
@@ -58,6 +60,7 @@ class EventCollector(
     ordersNetworkScope: NetworkScope.Orders,
     inStoreNetworkScope: NetworkScope.InStore,
     whatsappNetworkScope: NetworkScope.WhatsappStore,
+    orderHsnScope: NetworkScope.OrderHsnEditStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -120,6 +123,12 @@ class EventCollector(
             navigator,
             userRepo,
             ordersNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.OrderHsn::class to OrdersHsnEventDelegate(
+            navigator,
+            userRepo,
+            orderHsnScope,
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.Invoices::class to InvoicesEventDelegate(

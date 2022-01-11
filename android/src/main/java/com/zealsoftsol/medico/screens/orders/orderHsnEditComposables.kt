@@ -1,7 +1,12 @@
 package com.zealsoftsol.medico.screens.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,27 +47,37 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
 
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         ShowAlert(scope)
-        Space(20.dp)
-
         Space(12.dp)
         Column {
             Row(modifier = Modifier.padding(end = 30.dp)) {
                 Column {
                     Text(
                         text = scope.orderEntry.productName,
-                        color = MaterialTheme.colors.background,
-                        fontSize = 20.sp,
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.W600,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Space(8.dp)
                     Text(
+                        text = scope.orderEntry.productName,
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(8.dp)
+
+                    Text(
                         text = "${stringResource(id = R.string.batch_no)} ${batch.value}",
-                        color = MaterialTheme.colors.background,
+                        color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
@@ -71,66 +86,169 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     Space(8.dp)
                     Text(
                         text = "${stringResource(id = R.string.expiry)} ${expiry.value}",
-                        color = MaterialTheme.colors.background,
+                        color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Space(8.dp)
-                    Row {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.price))
-                                append(": ")
-                                val startIndex = length
-                                append(scope.orderEntry.price.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W600
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Space(8.dp)
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.requested_qty))
-                                append(" ")
-                                val startIndex = length
-                                append(scope.orderEntry.requestedQty.formatted)
-                                addStyle(
-                                    SpanStyle(
-                                        color = ConstColors.lightBlue,
-                                        fontWeight = FontWeight.W600
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.price))
+                            append(": ")
+                            val startIndex = length
+                            append(scope.orderEntry.price.formatted)
+                            addStyle(
+                                SpanStyle(
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W600
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(8.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.requested_qty))
+                            append(" ")
+                            val startIndex = length
+                            append(scope.orderEntry.requestedQty.formatted)
+                            addStyle(
+                                SpanStyle(
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W600
+                                ),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
             Space(20.dp)
             Divider()
+
+            Space(8.dp)
+
+            Column {
+                Text(
+                    text = stringResource(id = R.string.hsn_code),
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Space(8.dp)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                        ) {
+                            BasicTextField(value =batch.value , onValueChange = { scope.updateBatch(it) })
+                            /*EditField(
+                                label = "",
+                                qty = batch.value,
+                                onChange = { scope.updateBatch(it) },
+                                isEnabled = true,
+                                formattingRule = false,
+                                keyboardOptions = KeyboardOptions.Default,
+                            )*/
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.CenterEnd)
+                                .background(
+                                    ConstColors.green,
+                                    // rounded corner to match with the OutlinedTextField
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.hsn_code),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+                Space(8.dp)
+                Text(
+                    text = stringResource(id = R.string.hsn_code_error),
+                    color = ConstColors.red,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Space(8.dp)
+            }
+
             Space(20.dp)
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        EditField(
+                            label = stringResource(id = R.string.batch_no),
+                            qty = batch.value,
+                            onChange = { scope.updateBatch(it) },
+                            isEnabled = canEdit,
+                            formattingRule = false,
+                            keyboardOptions = KeyboardOptions.Default,
+                        )
+                    }
+                }
+                Space(8.dp)
+                Box {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                            EditField(
+                                label = stringResource(id = R.string.ptr),
+                                qty = ptr.value,
+                                onChange = { scope.updatePtr(it) },
+                                isEnabled = canEdit,
+                                formattingRule = false,
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.mrp),
+                                qty = scope.orderEntry.price.value.toString(),
+                                onChange = { scope.updateFreeQuantity(it.toDouble()) },
+                                isEnabled = canEdit,
+                            )
+                        }
+                    }
+                }
+                Space(8.dp)
                 Box {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
@@ -156,34 +274,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
                 Space(8.dp)
-                Box {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                            EditField(
-                                label = stringResource(id = R.string.ptr),
-                                qty = ptr.value,
-                                onChange = { scope.updatePtr(it) },
-                                isEnabled = canEdit,
-                                formattingRule = false,
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2 - 8.dp)
-                                .align(Alignment.BottomEnd)
-                        ) {
-                            EditField(
-                                label = stringResource(id = R.string.batch),
-                                qty = batch.value,
-                                onChange = { scope.updateBatch(it) },
-                                isEnabled = canEdit,
-                                formattingRule = false,
-                                keyboardOptions = KeyboardOptions.Default,
-                            )
-                        }
-                    }
-                }
-                Space(8.dp)
+
                 Box {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
@@ -194,6 +285,18 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 isEnabled = canEdit,
                                 formattingRule = false,
                                 keyboardOptions = KeyboardOptions.Default,
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.discount),
+                                qty = freeQty.value.toString(),
+                                onChange = { scope.updateFreeQuantity(it.toDouble()) },
+                                isEnabled = canEdit,
                             )
                         }
                     }

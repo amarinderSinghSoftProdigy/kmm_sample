@@ -301,13 +301,18 @@ sealed class Event {
             object GetPreference : WhatsAppPreference()
         }
 
-        sealed class Inventory : Action(){
+        sealed class OrderHsn : Action() {
+            override val typeClazz: KClass<*> = OrderHsn::class
+
+            object SelectHsn : OrderHsn()
+        }
+
+        sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
             object GetInventory : Inventory()
         }
     }
-
 
 
     sealed class Transition : Event() {

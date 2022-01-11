@@ -326,6 +326,8 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="hsn_code">HSN Code:</string>
+    <string name="hsn_code_error">HSN Code not available for the product.</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>
