@@ -10,72 +10,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
-import com.zealsoftsol.medico.data.AadhaarUpload
-import com.zealsoftsol.medico.data.AnyResponse
-import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.BodyResponse
-import com.zealsoftsol.medico.data.CartConfirmData
-import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.CartOrderRequest
-import com.zealsoftsol.medico.data.CartRequest
-import com.zealsoftsol.medico.data.CartSubmitResponse
-import com.zealsoftsol.medico.data.ConfigData
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
-import com.zealsoftsol.medico.data.CreateRetailer
-import com.zealsoftsol.medico.data.CustomerData
-import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.DrugLicenseUpload
-import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.HelpData
-import com.zealsoftsol.medico.data.InStoreCart
-import com.zealsoftsol.medico.data.InStoreCartRequest
-import com.zealsoftsol.medico.data.InStoreProduct
-import com.zealsoftsol.medico.data.InStoreSeller
-import com.zealsoftsol.medico.data.InStoreUser
-import com.zealsoftsol.medico.data.InStoreUserRegistration
-import com.zealsoftsol.medico.data.Invoice
-import com.zealsoftsol.medico.data.InvoiceResponse
-import com.zealsoftsol.medico.data.LocationData
-import com.zealsoftsol.medico.data.ManagementCriteria
-import com.zealsoftsol.medico.data.MapBody
-import com.zealsoftsol.medico.data.NotificationActionRequest
-import com.zealsoftsol.medico.data.NotificationData
-import com.zealsoftsol.medico.data.NotificationDetails
-import com.zealsoftsol.medico.data.NotificationFilter
-import com.zealsoftsol.medico.data.Order
-import com.zealsoftsol.medico.data.OrderNewQtyRequest
-import com.zealsoftsol.medico.data.OrderResponse
-import com.zealsoftsol.medico.data.OrderType
-import com.zealsoftsol.medico.data.OtpRequest
-import com.zealsoftsol.medico.data.PaginatedData
-import com.zealsoftsol.medico.data.PasswordResetRequest
-import com.zealsoftsol.medico.data.PasswordResetRequest2
-import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.PincodeValidation
-import com.zealsoftsol.medico.data.ProductBuyResponse
-import com.zealsoftsol.medico.data.ProductResponse
-import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
-import com.zealsoftsol.medico.data.RefreshTokenRequest
-import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SearchResponse
-import com.zealsoftsol.medico.data.StorageKeyResponse
-import com.zealsoftsol.medico.data.Store
-import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.SubscribeRequest
-import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.UnreadNotifications
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRequest
-import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.data.UserValidation1
-import com.zealsoftsol.medico.data.UserValidation2
-import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.VerifyOtpRequest
-import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.*
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -831,6 +766,27 @@ class NetworkClient(
             client.post<AnyResponse>("${baseUrl.url}/b2bapp/preference/whatsapp/save") {
                 withMainToken()
                 jsonBody(mapOf("language" to language, "mobileNo" to phoneNumber))
+                url {
+                    parameters.append("b2bUnitCode", unitCode)
+                }
+            }
+        }
+
+
+    override suspend fun getHsnCodes() =
+        simpleRequest {
+            client.get<BodyResponse<SearchData>>("${baseUrl.url}/products/hsncodes/search?page=0&pageSize=8") {
+                withMainToken()
+            }
+        }
+
+    override suspend fun saveHsnCodes(
+        unitCode: String
+    ) =
+        simpleRequest {
+            client.post<AnyResponse>("${baseUrl.url}/") {//need to add save endpoint
+                withMainToken()
+                //jsonBody()
                 url {
                     parameters.append("b2bUnitCode", unitCode)
                 }

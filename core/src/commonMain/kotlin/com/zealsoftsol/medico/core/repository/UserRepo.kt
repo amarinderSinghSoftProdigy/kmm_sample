@@ -6,34 +6,7 @@ import com.zealsoftsol.medico.core.interop.IpAddressFetcher
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
-import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.AadhaarUpload
-import com.zealsoftsol.medico.data.AnyResponse
-import com.zealsoftsol.medico.data.AuthCredentials
-import com.zealsoftsol.medico.data.BodyResponse
-import com.zealsoftsol.medico.data.ConfigData
-import com.zealsoftsol.medico.data.CreateRetailer
-import com.zealsoftsol.medico.data.CustomerData
-import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.DrugLicenseUpload
-import com.zealsoftsol.medico.data.LocationData
-import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.PincodeValidation
-import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.StorageKeyResponse
-import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.User
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRequest
-import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.data.UserValidation1
-import com.zealsoftsol.medico.data.UserValidation2
-import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,6 +22,7 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
+    private val orderHsnScope: NetworkScope.OrderHsnEditStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -310,6 +284,17 @@ class UserRepo(
         phoneNumber: String,
     ): AnyResponse {
         return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
+    }
+
+    suspend fun getHsnCodes(): BodyResponse<SearchData> {
+        return orderHsnScope.getHsnCodes()
+    }
+
+    suspend fun saveOrderValue(
+        language: String,
+        phoneNumber: String,
+    ): AnyResponse {
+        return orderHsnScope.saveHsnCodes(requireUser().unitCode)
     }
 
     private fun clearUserData() {

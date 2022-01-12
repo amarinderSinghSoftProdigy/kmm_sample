@@ -1,22 +1,10 @@
 package com.zealsoftsol.medico.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -64,13 +52,7 @@ import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
-import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.InStoreProduct
-import com.zealsoftsol.medico.data.InvoiceEntry
-import com.zealsoftsol.medico.data.SellerInfo
-import com.zealsoftsol.medico.data.TaxInfo
-import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.*
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
@@ -117,6 +99,12 @@ fun Scope.Host.showBottomSheet(
             )
             is BottomSheet.ModifyOrderEntry -> {
                 ModifyOrderEntryBottomSheet(
+                    bs,
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
+            is BottomSheet.SelectHsnEntry -> {
+                SelectHsnEntryBottomSheet(
                     bs,
                     onDismiss = { dismissBottomSheet() },
                 )
@@ -1495,6 +1483,87 @@ private fun ModifyOrderEntryBottomSheet(
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun SelectHsnEntryBottomSheet(
+    entry: BottomSheet.SelectHsnEntry,
+    onDismiss: () -> Unit,
+) {
+
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = Color.Black.copy(alpha = 0.12f),
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = ConstColors.gray,
+                    modifier = Modifier.size(16.dp),
+                )
+                val items = entry.hsnList
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Space(8.dp)
+                    items.forEach {
+                        HsnItem(it) { entry.selectItem("") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun HsnItem(item: SearchDataItem, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        onClick = onClick,
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Space(4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(ConstColors.gray.copy(0.05f))
+                    .padding(vertical = 6.dp, horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = item.hsncode,
+                    color = ConstColors.gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 private fun DocumentUploadBottomSheet(

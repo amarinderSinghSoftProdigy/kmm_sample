@@ -40,6 +40,7 @@ data class OrderEntry(
     val spid: String,
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
+    val hsnCode: String,
 ) {
 
     enum class Status {

@@ -7,19 +7,30 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
-import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.*
 
 class OrderHsnEditScope(
     val orderEntry: OrderEntry,
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
-    val isChecked= DataSource(false)
+    var hsnList = ArrayList<SearchDataItem>()
+    val isChecked = DataSource(false)
+    val hsnCode = DataSource(orderEntry.hsnCode)
     val quantity = DataSource(orderEntry.servedQty.value)
     val freeQuantity = DataSource(orderEntry.freeQty.value)
     val ptr = DataSource(orderEntry.price.value.toString())
     val batch = DataSource(orderEntry.batchNo)
     val expiry = DataSource(orderEntry.expiryDate?.formatted ?: "")
+
+    fun updateDataFromServer(
+        hsnCode: ArrayList<SearchDataItem>
+    ) {
+        this.hsnList = hsnCode
+    }
+
+    fun selectEntry() =
+        EventCollector.sendEvent(Event.Action.OrderHsn.SelectHsn)
 
     fun updateQuantity(value: Double) {
         quantity.value = value
@@ -35,6 +46,10 @@ class OrderHsnEditScope(
 
     fun updateBatch(value: String) {
         batch.value = value
+    }
+
+    fun updateHsnCode(value: String) {
+        hsnCode.value = value
     }
 
     fun updateExpiry(value: String) {
@@ -69,7 +84,7 @@ class OrderHsnEditScope(
      */
     fun submit() = EventCollector.sendEvent(
         Event.Action.WhatsAppPreference.SavePreference(
-            "",""
+            "", ""
         )
     )
 

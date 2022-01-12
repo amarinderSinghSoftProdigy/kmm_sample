@@ -1,65 +1,7 @@
 package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
-import com.zealsoftsol.medico.data.AadhaarUpload
-import com.zealsoftsol.medico.data.AnyResponse
-import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.BodyResponse
-import com.zealsoftsol.medico.data.CartConfirmData
-import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.CartOrderRequest
-import com.zealsoftsol.medico.data.CartRequest
-import com.zealsoftsol.medico.data.CartSubmitResponse
-import com.zealsoftsol.medico.data.ConfigData
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
-import com.zealsoftsol.medico.data.CreateRetailer
-import com.zealsoftsol.medico.data.CustomerData
-import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.DrugLicenseUpload
-import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.HelpData
-import com.zealsoftsol.medico.data.InStoreCart
-import com.zealsoftsol.medico.data.InStoreCartRequest
-import com.zealsoftsol.medico.data.InStoreProduct
-import com.zealsoftsol.medico.data.InStoreSeller
-import com.zealsoftsol.medico.data.InStoreUser
-import com.zealsoftsol.medico.data.InStoreUserRegistration
-import com.zealsoftsol.medico.data.Invoice
-import com.zealsoftsol.medico.data.InvoiceResponse
-import com.zealsoftsol.medico.data.LocationData
-import com.zealsoftsol.medico.data.ManagementCriteria
-import com.zealsoftsol.medico.data.NotificationActionRequest
-import com.zealsoftsol.medico.data.NotificationData
-import com.zealsoftsol.medico.data.NotificationDetails
-import com.zealsoftsol.medico.data.NotificationFilter
-import com.zealsoftsol.medico.data.Order
-import com.zealsoftsol.medico.data.OrderNewQtyRequest
-import com.zealsoftsol.medico.data.OrderResponse
-import com.zealsoftsol.medico.data.OrderType
-import com.zealsoftsol.medico.data.PaginatedData
-import com.zealsoftsol.medico.data.PasswordValidation
-import com.zealsoftsol.medico.data.PincodeValidation
-import com.zealsoftsol.medico.data.ProductBuyResponse
-import com.zealsoftsol.medico.data.ProductResponse
-import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
-import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SearchResponse
-import com.zealsoftsol.medico.data.StorageKeyResponse
-import com.zealsoftsol.medico.data.Store
-import com.zealsoftsol.medico.data.SubmitRegistration
-import com.zealsoftsol.medico.data.SubscribeRequest
-import com.zealsoftsol.medico.data.TokenInfo
-import com.zealsoftsol.medico.data.UnreadNotifications
-import com.zealsoftsol.medico.data.UserRegistration1
-import com.zealsoftsol.medico.data.UserRegistration2
-import com.zealsoftsol.medico.data.UserRegistration3
-import com.zealsoftsol.medico.data.UserRequest
-import com.zealsoftsol.medico.data.UserType
-import com.zealsoftsol.medico.data.UserValidation1
-import com.zealsoftsol.medico.data.UserValidation2
-import com.zealsoftsol.medico.data.UserValidation3
-import com.zealsoftsol.medico.data.ValidationResponse
-import com.zealsoftsol.medico.data.WhatsappData
+import com.zealsoftsol.medico.data.*
 
 interface NetworkScope {
 
@@ -276,12 +218,16 @@ interface NetworkScope {
 
     interface WhatsappStore : NetworkScope {
         suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
-        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
+        suspend fun saveWhatsappPreferences(
+            language: String,
+            phoneNumber: String,
+            unitCode: String
+        ): AnyResponse
     }
 
     interface OrderHsnEditStore : NetworkScope {
-        suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
-        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
+        suspend fun getHsnCodes(): BodyResponse<SearchData>
+        suspend fun saveHsnCodes(unitCode: String): AnyResponse
     }
 
 }

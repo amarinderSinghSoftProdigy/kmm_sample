@@ -157,6 +157,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
             )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }

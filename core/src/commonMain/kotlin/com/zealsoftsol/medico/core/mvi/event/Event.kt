@@ -295,14 +295,15 @@ sealed class Event {
             data class SavePreference(
                 val language: String,
                 val phoneNumber: String,
-            ) :
-                WhatsAppPreference()
+            ) : WhatsAppPreference()
 
             object GetPreference : WhatsAppPreference()
         }
 
         sealed class OrderHsn : Action() {
             override val typeClazz: KClass<*> = OrderHsn::class
+
+            data class Load(val isFirstLoad: Boolean) : OrderHsn()
 
             object SelectHsn : OrderHsn()
         }
