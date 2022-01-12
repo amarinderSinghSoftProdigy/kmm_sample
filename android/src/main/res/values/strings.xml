@@ -329,6 +329,8 @@
     <string name="search_hsn_code">Search HSN Code</string>
     <string name="hsn_code">HSN Code:</string>
     <string name="hsn_code_error">*HSN Code not available for the product.</string>
+    <string name="rate">Rate</string>
+    <string name="effective_date">Effective Date</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>
