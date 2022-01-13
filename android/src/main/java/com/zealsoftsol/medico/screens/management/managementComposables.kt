@@ -22,12 +22,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -270,6 +265,8 @@ private fun NonSeasonBoyItem(
                 fontWeight = FontWeight.W500,
                 color = ConstColors.gray,
             )
+            Space(4.dp)
+            Divider()
             Space(4.dp)
             /*Text(
                 text = entityInfo.geoData.landmark,
