@@ -575,6 +575,8 @@ fun EditField(
     isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    showThinDivider: Boolean = false,
+    textStyle: TextStyle? = null
 ) {
     val color = when {
         isError -> ConstColors.red
@@ -597,6 +599,13 @@ fun EditField(
                     if (qty.split(".").lastOrNull() == "0") qty.split(".").first() else qty
                 )
             }
+
+            val style = textStyle?: TextStyle(
+                color = color,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                textAlign = TextAlign.End,
+            )
 
             BasicTextField(
                 modifier = Modifier
@@ -636,21 +645,20 @@ fun EditField(
                 singleLine = true,
                 readOnly = !isEnabled,
                 enabled = isEnabled,
-                textStyle = TextStyle(
-                    color = color,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W700,
-                    textAlign = TextAlign.End,
-                )
+                textStyle = style
             )
         }
         Space(4.dp)
-        Canvas(
-            modifier = Modifier
-                .height(1.5.dp)
-                .fillMaxWidth()
-        ) {
-            drawRect(color)
+        if(showThinDivider){
+            Divider()
+        }else{
+            Canvas(
+                modifier = Modifier
+                    .height((1.5).dp)
+                    .fillMaxWidth()
+            ) {
+                drawRect(color)
+            }
         }
     }
 }

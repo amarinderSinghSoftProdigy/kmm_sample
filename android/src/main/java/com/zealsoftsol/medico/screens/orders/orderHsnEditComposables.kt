@@ -32,8 +32,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +58,13 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
     val orderEntry = scope.orderEntry.flow.collectAsState().value
     val selectedIndex = scope.selectedIndex.flow.collectAsState().value
+
+    val textStyle  = TextStyle(
+        color = Color.Black,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.End,
+    )
 
     Box(
         modifier = Modifier
@@ -92,7 +101,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
 
                     Text(
-                        text = "${stringResource(id = R.string.line_item)}${selectedIndex + 1}",
+                        text = "${stringResource(id = R.string.line_item)} ${selectedIndex + 1}",
                         color = ConstColors.green,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W600
@@ -353,179 +362,200 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Space(10.dp)
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2 - 8.dp)
-                            ) {
-                                /*BasicTextField(
-                                value = hsn.value,
-                                onValueChange = { scope.updateBatch(it) })*/
-                                EditFieldCustom(
-                                    label = "",
-                                    qty = orderEntry.hsnCode,
-                                    onChange = {
-
-                                    },
-                                    isEnabled = false,
-                                    formattingRule = false,
-                                    keyboardOptions = KeyboardOptions.Default,
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2 - 8.dp)
-                                    .align(Alignment.CenterEnd)
-                            ) {
-                                OpenHsnScreen { scope.selectEntry() }
-                            }
-                        }
-                    }
-                    Space(10.dp)
-                    HsnErrorText(orderEntry.hsnCode.isEmpty())
-                    Space(10.dp)
-                }
-
-                Space(20.dp)
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.Center) {
                         Box(
                             modifier = Modifier
-                                .width(maxWidth)
-                                .align(Alignment.BottomEnd)
+                                .weight(1f)
+                                .padding(bottom = 4.dp, end = 10.dp)
                         ) {
-                            EditField(
-                                label = stringResource(id = R.string.batch_no),
-                                qty = orderEntry.batchNo,
+                            EditFieldCustom(
+                                label = "",
+                                qty = orderEntry.hsnCode,
                                 onChange = {
 
                                 },
-                                isEnabled = canEdit,
+                                isEnabled = false,
                                 formattingRule = false,
                                 keyboardOptions = KeyboardOptions.Default,
                             )
                         }
-                    }
-                    Space(10.dp)
-                    Box {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                                EditField(
-                                    label = stringResource(id = R.string.ptr),
-                                    qty = orderEntry.price.formatted,
-                                    onChange = { },
-                                    isEnabled = canEdit,
-                                    formattingRule = false,
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2 - 8.dp)
-                                    .align(Alignment.BottomEnd)
-                            ) {
-                                EditField(
-                                    label = stringResource(id = R.string.mrp),
-                                    qty = orderEntry.price.value.toString(),
-                                    onChange = {
-
-                                    },
-                                    isEnabled = canEdit,
-                                )
-                            }
-                        }
-                    }
-                    Space(10.dp)
-                    Box {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                                EditField(
-                                    label = stringResource(id = R.string.qty),
-                                    qty = orderEntry.servedQty.formatted,
-                                    onChange = {
-
-                                    },
-                                    isEnabled = canEdit,
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2 - 8.dp)
-                                    .align(Alignment.BottomEnd)
-                            ) {
-                                EditField(
-                                    label = stringResource(id = R.string.free),
-                                    qty = orderEntry.freeQty.formatted,
-                                    onChange = {
-
-                                    },
-                                    isEnabled = canEdit,
-                                )
-                            }
-                        }
-                    }
-                    Space(10.dp)
-
-                    Box {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                                orderEntry.expiryDate?.formatted?.let {
-                                    EditField(
-                                        label = stringResource(id = R.string.expiry_),
-                                        qty = it,
-                                        onChange = {
-
-                                        },
-                                        isEnabled = canEdit,
-                                        formattingRule = false,
-                                        keyboardOptions = KeyboardOptions.Default,
-                                    )
-                                }
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2 - 8.dp)
-                                    .align(Alignment.BottomEnd)
-                            ) {
-                                EditField(
-                                    label = stringResource(id = R.string.discount),
-                                    qty = orderEntry.freeQty.formatted,
-                                    onChange = {
-
-                                    },
-                                    isEnabled = canEdit,
-                                )
-                            }
+                        Box(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            OpenHsnScreen { scope.selectEntry() }
                         }
                     }
                 }
-                Space(20.dp)
-                Divider()
                 Space(10.dp)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "${stringResource(id = R.string.subtotal)}: ${orderEntry.totalAmount.formatted}",
-                        color = MaterialTheme.colors.background,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W600,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                HsnErrorText(orderEntry.hsnCode.isEmpty())
+                Space(10.dp)
+            }
+            Divider()
+            Space(20.dp)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        EditField(
+                            label = stringResource(id = R.string.batch_no),
+                            qty = orderEntry.batchNo,
+                            onChange = {
+
+                            },
+                            isEnabled = canEdit,
+                            formattingRule = false,
+                            keyboardOptions = KeyboardOptions.Default,
+                            showThinDivider = true,
+                            textStyle = textStyle
+                        )
+                    }
+                }
+                Space(10.dp)
+                Box {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                            EditField(
+                                label = stringResource(id = R.string.ptr),
+                                qty = orderEntry.price.formatted,
+                                onChange = { },
+                                isEnabled = canEdit,
+                                formattingRule = false,
+                                showThinDivider = true,
+                                textStyle = textStyle
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.mrp),
+                                qty = orderEntry.price.value.toString(),
+                                onChange = {
+
+                                },
+                                isEnabled = canEdit,
+                                showThinDivider = true,
+                                textStyle = textStyle
+                            )
+                        }
+                    }
+                }
+                Space(10.dp)
+                Box {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                            EditField(
+                                label = stringResource(id = R.string.qty),
+                                qty = orderEntry.servedQty.formatted,
+                                onChange = {
+
+                                },
+                                isEnabled = canEdit,
+                                showThinDivider = true,
+                                textStyle = textStyle
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.free),
+                                qty = orderEntry.freeQty.formatted,
+                                onChange = {
+
+                                },
+                                isEnabled = canEdit,
+                                showThinDivider = true,
+                                textStyle = textStyle
+                            )
+                        }
+                    }
+                }
+                Space(10.dp)
+
+                Box {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                            orderEntry.expiryDate?.formatted?.let {
+                                EditField(
+                                    label = stringResource(id = R.string.expiry_),
+                                    qty = it,
+                                    onChange = {
+
+                                    },
+                                    isEnabled = canEdit,
+                                    formattingRule = false,
+                                    keyboardOptions = KeyboardOptions.Default,
+                                    showThinDivider = true,
+                                    textStyle = textStyle
+                                )
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2 - 8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            EditField(
+                                label = stringResource(id = R.string.discount),
+                                qty = orderEntry.freeQty.formatted,
+                                onChange = {
+
+                                },
+                                isEnabled = canEdit,
+                                showThinDivider = true,
+                                textStyle = textStyle
+                            )
+                        }
+                    }
                 }
             }
             Space(20.dp)
-            MedicoButton(
-                text = stringResource(id = R.string.save),
-                onClick = { scope.submit() },
-                isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
-            )
+           /* Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "${stringResource(id = R.string.subtotal)}: ${orderEntry.totalAmount.formatted}",
+                    color = MaterialTheme.colors.background,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W600,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }*/
+            Row(modifier = Modifier.fillMaxSize()) {
+
+                MedicoButton(
+                    modifier = Modifier.weight(1f).padding(10.dp).height(40.dp),
+                    text = stringResource(id = R.string.not_available),
+                    onClick = {  },
+                    color = ConstColors.txtGrey,
+                    contentColor = Color.White,
+                    isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
+                )
+
+                MedicoButton(
+                    modifier = Modifier.weight(1f).padding(10.dp).height(40.dp),
+                    text = stringResource(id = R.string.save),
+                    onClick = { scope.submit() },
+                    isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
+                )
+            }
         }
     }
 }
@@ -540,7 +570,7 @@ fun OpenHsnScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .height(40.dp),
+            .height(50.dp),
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
