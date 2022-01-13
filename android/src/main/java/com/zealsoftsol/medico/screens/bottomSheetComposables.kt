@@ -1977,7 +1977,7 @@ private fun SingleHsnItem(item: SearchDataItem) {
                     })
                 Text(
                     text = item.hsncode,
-                    color = ConstColors.green,
+                    color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W600,
                     modifier = Modifier.padding(start = 5.dp)
@@ -1986,7 +1986,7 @@ private fun SingleHsnItem(item: SearchDataItem) {
 
             Text(
                 text = item.rate.formattedValue,
-                color = ConstColors.green,
+                color = Color.Black,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W600
             )

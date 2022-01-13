@@ -213,7 +213,7 @@ sealed class Event {
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
-            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(val entry: List<OrderEntry>, val index: Int) : Orders()
             data class SaveEntryQty(
                 val entry: OrderEntry,
                 val quantity: Double,

@@ -251,13 +251,13 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Space(8.dp)
-                entries.value.forEach {
+                entries.value.forEachIndexed { index, it ->
                     OrderEntryItem(
                         canEdit = scope.canEdit,
                         entry = it,
                         isChecked = it in checkedEntries.value,
                         onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = { scope.selectEntry(it) },
+                        onClick = { scope.selectEntry(entries.value, index) },
                     )
                 }
                 Space(8.dp)

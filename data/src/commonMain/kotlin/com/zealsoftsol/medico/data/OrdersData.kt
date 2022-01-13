@@ -41,6 +41,7 @@ data class OrderEntry(
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
     val hsnCode: String,
+    val manufacturerName: String
 ) {
 
     enum class Status {

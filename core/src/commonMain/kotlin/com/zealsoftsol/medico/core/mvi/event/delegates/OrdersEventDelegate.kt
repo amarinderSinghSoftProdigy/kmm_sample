@@ -6,8 +6,12 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
-import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.*
+import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -35,7 +39,7 @@ internal class OrdersEventDelegate(
             event.action,
             event.fromNotification,
         )
-        is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
+        is Event.Action.Orders.SelectEntry -> selectEntry(event.entry, event.index)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(
             event.entry,
@@ -143,9 +147,9 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private fun selectEntry(orderEntry: OrderEntry) {
+    private fun selectEntry(orderEntry: List<OrderEntry>, index: Int) {
         navigator.withScope<ViewOrderScope> {
-            navigator.setScope(OrderHsnEditScope(orderEntry))
+            navigator.setScope(OrderHsnEditScope(orderEntry, index))
             /*navigator.scope.value.bottomSheet.value = BottomSheet.ModifyOrderEntry(
                 orderEntry,
                 isChecked = DataSource(orderEntry in it.checkedEntries.value),

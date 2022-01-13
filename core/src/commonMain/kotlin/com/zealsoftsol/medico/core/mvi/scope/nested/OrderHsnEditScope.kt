@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -7,21 +8,38 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
-import com.zealsoftsol.medico.data.*
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.SearchDataItem
 
 class OrderHsnEditScope(
-    val orderEntry: OrderEntry,
+    val orderEntries: List<OrderEntry>,
+    val index: Int,
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
-    var hsnList = ArrayList<SearchDataItem>()
-    val isChecked = DataSource(false)
-    val hsnCode = DataSource(orderEntry.hsnCode)
-    val quantity = DataSource(orderEntry.servedQty.value)
-    val freeQuantity = DataSource(orderEntry.freeQty.value)
-    val ptr = DataSource(orderEntry.price.value.toString())
-    val batch = DataSource(orderEntry.batchNo)
-    val expiry = DataSource(orderEntry.expiryDate?.formatted ?: "")
+    val selectedIndex = DataSource(index)
+
+    private var hsnList = ArrayList<SearchDataItem>()
+
+    var orderEntry: DataSource<OrderEntry> = DataSource(orderEntries[selectedIndex.value])
+
+//    val isChecked = DataSource(false)
+//    val hsnCode = DataSource(orderEntry.value.hsnCode)
+//    val quantity = DataSource(orderEntry.value.servedQty.value)
+//    val freeQuantity = DataSource(orderEntry.value.freeQty.value)
+//    val ptr = DataSource(orderEntry.value.price.value.toString())
+//    val batch = DataSource(orderEntry.value.batchNo)
+//    val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
+
+    /**
+     * Update this whenever user switches the line index so that you get correct data for order entries
+     */
+    fun updateSelectedIndex(currentIndex: Int) {
+        currentIndex.toString().log("index")
+        this.selectedIndex.value = currentIndex
+        orderEntry.value = orderEntries[currentIndex]
+    }
+
 
     fun updateDataFromServer(
         hsnCode: ArrayList<SearchDataItem>
@@ -32,29 +50,30 @@ class OrderHsnEditScope(
     fun selectEntry() =
         EventCollector.sendEvent(Event.Action.OrderHsn.SelectHsn)
 
-    fun updateQuantity(value: Double) {
-        quantity.value = value
-    }
 
-    fun updateFreeQuantity(value: Double) {
-        freeQuantity.value = value
-    }
-
-    fun updatePtr(value: String) {
-        ptr.value = value
-    }
-
-    fun updateBatch(value: String) {
-        batch.value = value
-    }
-
-    fun updateHsnCode(value: String) {
-        hsnCode.value = value
-    }
-
-    fun updateExpiry(value: String) {
-        expiry.value = value
-    }
+//    fun updateQuantity(value: Double) {
+//        quantity.value = value
+//    }
+//
+//    fun updateFreeQuantity(value: Double) {
+//        freeQuantity.value = value
+//    }
+//
+//    fun updatePtr(value: String) {
+//        ptr.value = value
+//    }
+//
+//    fun updateBatch(value: String) {
+//        batch.value = value
+//    }
+//
+//    fun updateHsnCode(value: String) {
+//        hsnCode.value = value
+//    }
+//
+//    fun updateExpiry(value: String) {
+//        expiry.value = value
+//    }
 
 
     init {
@@ -72,20 +91,9 @@ class OrderHsnEditScope(
         this.showAlert.value = enable
     }
 
-
     /**
-     * get current product details
+     * submit data to server
      */
-    private fun getCurrentPreference() =
-        Event.Action.WhatsAppPreference.GetPreference
-
-    /**
-     * submit user preference to server
-     */
-    fun submit() = EventCollector.sendEvent(
-        Event.Action.WhatsAppPreference.SavePreference(
-            "", ""
-        )
-    )
+    fun submit() {}
 
 }
