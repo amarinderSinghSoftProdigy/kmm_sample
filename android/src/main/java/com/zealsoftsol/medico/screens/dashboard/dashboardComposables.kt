@@ -264,7 +264,7 @@ private fun ShowStockistDashBoard(
             Space(16.dp)
             BigButton(
                 icon = R.drawable.ic_orders,
-                text = stringResource(id = R.string.orders),
+                text = stringResource(id = R.string.orders_label),
                 counter = dashboard.value?.ordersCount ?: 0,
                 onClick = { scope.goToOrders() },
             )

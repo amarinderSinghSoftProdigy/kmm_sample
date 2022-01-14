@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +70,7 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
@@ -79,11 +81,12 @@ import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
-import com.zealsoftsol.medico.screens.management.GeoLocation
+import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -1539,52 +1542,114 @@ private fun PreviewItemBottomSheet(
     onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
+    val activity = LocalContext.current as MainActivity
     BaseBottomSheet(onDismiss) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp, horizontal = 24.dp)
         ) {
-            Surface(
-                shape = CircleShape,
-                color = Color.Black.copy(alpha = 0.12f),
-                onClick = onDismiss,
+            Column(
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(24.dp),
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = null,
-                    tint = ConstColors.gray,
-                    modifier = Modifier.size(16.dp),
-                )
-            }
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (isForSeasonBoy) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            //.align(Alignment.TopEnd)
+                            .size(24.dp),
+                    ) {
+
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_season_boy),
+                            imageVector = Icons.Default.Close,
                             contentDescription = null,
-                            tint = MaterialTheme.colors.background,
-                            modifier = Modifier.size(24.dp),
+
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
                         )
-                        Space(16.dp)
                     }
-                    Text(
-                        text = entityInfo.tradeName,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W600,
-                        color = MaterialTheme.colors.background,
-                        modifier = Modifier.padding(end = 30.dp),
-                    )
                 }
-                Space(4.dp)
-                if (isForSeasonBoy) {
-                    Space(8.dp)
-                    SeasonBoyPreviewItem(entityInfo)
-                } else {
-                    NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
+
+                Space(dp = 16.dp)
+                Column {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_acc_place),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                    )
+                    Space(dp = 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (isForSeasonBoy) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_season_boy),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.background,
+                                modifier = Modifier.size(24.dp),
+                            )
+                            Space(16.dp)
+                        }
+                        Text(
+                            text = entityInfo.tradeName,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            color = MaterialTheme.colors.background,
+                            modifier = Modifier.padding(end = 10.dp),
+                        )
+                        if (entityInfo.isVerified == true) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_verified),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                /*Space(6.dp)
+                                Text(
+                                    text = stringResource(id = R.string.verified),
+                                    color = Color(0xFF00C37D),
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 12.sp,
+                                )*/
+                            }
+                        }
+                    }
+                    Space(4.dp)
+                    entityInfo.phoneNumber?.let {
+                        Row {
+                            /*Text(
+                                text = "${stringResource(id = R.string.phone_number)}:",
+                                fontSize = 14.sp,
+                                color = ConstColors.gray,
+                            )
+                            Space(4.dp)*/
+                            ClickableText(
+                                text = AnnotatedString(it),
+                                style = TextStyle(
+                                    color = ConstColors.gray,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W600
+                                ),
+                                onClick = { activity.openDialer(entityInfo.phoneNumber!!) },
+                            )
+                        }
+                    }
+                    //Space(4.dp)
+                    if (isForSeasonBoy) {
+                        Space(8.dp)
+                        SeasonBoyPreviewItem(entityInfo)
+                    } else {
+                        NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
+                    }
                 }
             }
         }
@@ -1623,35 +1688,91 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
-    val activity = LocalContext.current as MainActivity
+    // val activity = LocalContext.current as MainActivity
+    Space(8.dp)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(2.dp, ConstColors.separator)
+    ) {
+        /* Column {
 
-    Text(
-        text = entityInfo.geoData.addressLine,
-        fontSize = 14.sp,
-        color = ConstColors.gray,
-    )
-    Space(16.dp)
-    Row(modifier = Modifier.fillMaxWidth()) {
-        CoilImage(
-            src = "",
-            size = 123.dp,
-            onError = { UserLogoPlaceholder(entityInfo.tradeName) },
-            onLoading = { UserLogoPlaceholder(entityInfo.tradeName) },
-        )
-        Space(24.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                 CoilImage(
+                     src = "",
+                     size = 123.dp,
+                     onError = { UserLogoPlaceholder(entityInfo.tradeName) },
+                     onLoading = { UserLogoPlaceholder(entityInfo.tradeName) },
+                 )
+                 Space(24.dp)*/
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 123.dp),
+                .padding(all = 12.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            GeoLocation(entityInfo.geoData.fullAddress(), isBold = true)
             Text(
-                text = entityInfo.geoData.formattedDistance,
+                text = entityInfo.geoData.addressLine,
                 fontSize = 12.sp,
                 color = ConstColors.gray,
             )
-            Text(
+            Space(4.dp)
+            Divider(thickness = 0.3.dp)
+            Space(4.dp)
+            GeoLocationSheet(entityInfo.geoData.cityAddress(), isBold = true, textSize = 12.sp)
+
+            entityInfo.geoData.let { data ->
+                Space(4.dp)
+                Divider(thickness = 0.3.dp)
+                Space(4.dp)
+                Row {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2)) {
+                            SingleTextLabel(
+                                data = data.location
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2)
+                                .align(Alignment.BottomEnd),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            SingleTextLabel(
+                                data = data.landmark
+                            )
+                        }
+                    }
+                }
+                Space(4.dp)
+                Divider(thickness = 0.3.dp)
+                Space(4.dp)
+                Row {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.width(maxWidth / 2)) {
+                            SingleTextLabel(
+                                data = data.city
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(maxWidth / 2)
+                                .align(Alignment.BottomEnd),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            SingleTextLabel(
+                                data = data.pincode
+                            )
+                        }
+                    }
+                }
+            }
+
+
+            /*Text(
                 text = stringResource(id = R.string.see_on_the_map),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -1661,96 +1782,217 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                         activity.openMaps(it.latitude, it.longitude)
                     }
                 },
-            )
-            if (entityInfo.isVerified == true) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_verified),
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Space(6.dp)
-                    Text(
-                        text = stringResource(id = R.string.verified),
-                        color = Color(0xFF00C37D),
-                        fontWeight = FontWeight.W600,
-                        fontSize = 12.sp,
+            )*/
+            if (onSubscribe != null) {
+                Space(4.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    MedicoSmallButton(
+                        text = stringResource(id = R.string.subscribe),
+                        onClick = onSubscribe,
                     )
                 }
             }
-            if (onSubscribe != null) {
-                MedicoSmallButton(
-                    text = stringResource(id = R.string.subscribe),
-                    onClick = onSubscribe,
-                )
-            }
+            //}
+            // }
+            //Space(24.dp)
+
         }
     }
-    Space(24.dp)
-    when {
-        entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
-            DataWithLabel(
-                label = R.string.status,
-                data = data.status.serverValue
-            )
-            entityInfo.gstin?.let {
-                DataWithLabel(label = R.string.gstin_num, data = it)
-            }
-            entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_number, data = it)
-            }
-            entityInfo.drugLicenseNo1?.let {
-                DataWithLabel(label = R.string.dl_one, data = it)
-            }
-            entityInfo.drugLicenseNo2?.let {
-                DataWithLabel(label = R.string.dl_two, data = it)
-            }
-            entityInfo.phoneNumber?.let {
-                Row {
-                    Text(
-                        text = "${stringResource(id = R.string.phone_number)}:",
-                        fontSize = 14.sp,
-                        color = ConstColors.gray,
-                    )
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(2.dp, ConstColors.separator)
+    ) {
+        Column(modifier = Modifier.padding(all = 12.dp)) {
+            when {
+                entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                Row {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_connected),
+                                        contentDescription = null,
+                                        tint = when (data.status) {
+                                            SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                            SubscriptionStatus.REJECTED -> ConstColors.red
+                                        },
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Space(dp = 4.dp)
+                                    SingleTextLabel(
+                                        data = data.status.serverValue, when (data.status) {
+                                            SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                            SubscriptionStatus.REJECTED -> ConstColors.red
+                                        }
+                                    )
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+
+                                /*DataWithLabel(
+                         label = R.string.status,
+                         data = data.status.serverValue
+                     )*/
+                                Row {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_location),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = ConstColors.orange
+                                    )
+                                    Space(4.dp)
+                                    SingleTextLabel(
+                                        data = entityInfo.geoData.formattedDistance
+                                    )
+                                }
+                            }
+                        }
+                    }
                     Space(4.dp)
-                    ClickableText(
-                        text = AnnotatedString(it),
-                        style = TextStyle(
-                            color = MaterialTheme.colors.background,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600
-                        ),
-                        onClick = { activity.openDialer(entityInfo.phoneNumber!!) },
+                    Divider(thickness = 0.3.dp)
+                    Space(4.dp)
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.gstin?.let {
+                                    SingleTextLabel(data = it)
+                                    //DataWithLabel(label = R.string.gstin_num, data = it)
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+
+                                entityInfo.panNumber?.let {
+                                    SingleTextLabel(data = it)
+                                    //DataWithLabel(label = R.string.pan_number, data = it)
+                                }
+                            }
+                        }
+                    }
+                    Space(4.dp)
+                    Divider(thickness = 0.3.dp)
+                    Space(4.dp)
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                DataWithLabel(
+                                    label = R.string.payment_method,
+                                    data = data.paymentMethod.serverValue, size = 12.sp
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                DataWithLabel(
+                                    label = R.string.orders,
+                                    data = data.orders.toString(), size = 12.sp
+                                )
+                            }
+                        }
+                    }
+                    Space(4.dp)
+                    Divider(thickness = 0.3.dp)
+                    Space(4.dp)
+                    entityInfo.drugLicenseNo1?.let {
+                        DataWithLabel(label = R.string.dl_one, data = it, size = 12.sp)
+                    }
+                    Space(4.dp)
+                    Divider(thickness = 0.3.dp)
+                    Space(4.dp)
+                    entityInfo.drugLicenseNo2?.let {
+                        DataWithLabel(label = R.string.dl_two, data = it, size = 12.sp)
+                    }
+
+                }
+                entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
+                    Row {
+                        entityInfo.gstin?.let {
+                            Text(
+                                text = it,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+                            //DataWithLabel(label = R.string.gstin_num, data = it)
+                        }
+                        entityInfo.panNumber?.let {
+                            Text(
+                                text = it,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+                            //DataWithLabel(label = R.string.pan_number, data = it)
+                        }
+                    }
+                    /*entityInfo.gstin?.let {
+                        DataWithLabel(label = R.string.gstin_num, data = it)
+                    }
+                    entityInfo.panNumber?.let {
+                        DataWithLabel(label = R.string.pan_number, data = it)
+                    }*/
+                    DataWithLabel(
+                        label = R.string.orders,
+                        data = data.orders.toString()
                     )
                 }
-            }
-            DataWithLabel(
-                label = R.string.payment_method,
-                data = data.paymentMethod.serverValue
-            )
-            DataWithLabel(
-                label = R.string.orders,
-                data = data.orders.toString()
-            )
-        }
-        entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
-            entityInfo.gstin?.let {
-                DataWithLabel(label = R.string.gstin_num, data = it)
-            }
-            entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_number, data = it)
-            }
-            DataWithLabel(
-                label = R.string.orders,
-                data = data.orders.toString()
-            )
-        }
-        else -> {
-            entityInfo.gstin?.let {
-                DataWithLabel(label = R.string.gstin_num, data = it)
-            }
-            entityInfo.panNumber?.let {
-                DataWithLabel(label = R.string.pan_number, data = it)
+                else -> {
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.gstin?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    //DataWithLabel(label = R.string.gstin_num, data = it)
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                entityInfo.panNumber?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    //DataWithLabel(label = R.string.pan_number, data = it)
+                                }
+                            }
+                        }
+                    }
+                    /*entityInfo.gstin?.let {
+                        DataWithLabel(label = R.string.gstin_num, data = it)
+                    }
+                    entityInfo.panNumber?.let {
+                        DataWithLabel(label = R.string.pan_number, data = it)
+                    }*/
+                }
             }
         }
     }

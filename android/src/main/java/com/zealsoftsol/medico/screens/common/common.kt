@@ -505,6 +505,37 @@ fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier, size: TextUnit) {
+    Row(modifier = modifier) {
+        Text(
+            text = "${stringResource(id = label)}:",
+            fontSize = size,
+            color = ConstColors.gray,
+        )
+        Space(4.dp)
+        Text(
+            text = data,
+            fontSize = size,
+            fontWeight = FontWeight.W600,
+            color = MaterialTheme.colors.background,
+        )
+    }
+}
+
+@Composable
+fun SingleTextLabel(
+    data: String,
+    color: Color = MaterialTheme.colors.background
+) {
+    Text(
+        text = data,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W600,
+        color = color,
+    )
+}
+
+@Composable
 fun Dropdown(
     rememberChooseKey: Any?,
     value: String?,
