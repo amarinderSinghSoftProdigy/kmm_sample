@@ -65,6 +65,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.*
 import com.zealsoftsol.medico.screens.common.*
 import com.zealsoftsol.medico.screens.management.GeoLocation
+import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -1582,7 +1583,7 @@ private fun PreviewItemBottomSheet(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colors.background,
-                            modifier = Modifier.padding(end = 30.dp),
+                            modifier = Modifier.padding(end = 10.dp),
                         )
                         if (entityInfo.isVerified == true) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1667,7 +1668,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
     // val activity = LocalContext.current as MainActivity
-    Space(16.dp)
+    Space(8.dp)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -1698,19 +1699,19 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 color = ConstColors.gray,
             )
             Space(4.dp)
-            Divider()
+            Divider(thickness = 0.3.dp)
             Space(4.dp)
-            GeoLocation(entityInfo.geoData.fullAddress(), isBold = true, textSize = 12.sp)
+            GeoLocationSheet(entityInfo.geoData.cityAddress(), isBold = true, textSize = 12.sp)
 
             entityInfo.geoData.let { data ->
                 Space(4.dp)
-                Divider()
+                Divider(thickness = 0.3.dp)
                 Space(4.dp)
                 Row {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2)) {
                             SingleTextLabel(
-                                data = data.location, MaterialTheme.colors.background
+                                data = data.location
                             )
                         }
                         Box(
@@ -1720,21 +1721,19 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             SingleTextLabel(
-                                data = data.landmark,
-                                MaterialTheme.colors.background
+                                data = data.landmark
                             )
                         }
                     }
                 }
                 Space(4.dp)
-                Divider()
+                Divider(thickness = 0.3.dp)
                 Space(4.dp)
                 Row {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2)) {
                             SingleTextLabel(
-                                data = data.city,
-                                MaterialTheme.colors.background
+                                data = data.city
                             )
                         }
                         Box(
@@ -1744,8 +1743,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             SingleTextLabel(
-                                data = data.pincode,
-                                MaterialTheme.colors.background
+                                data = data.pincode
                             )
                         }
                     }
@@ -1765,14 +1763,22 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 },
             )*/
             if (onSubscribe != null) {
-                MedicoSmallButton(
-                    text = stringResource(id = R.string.subscribe),
-                    onClick = onSubscribe,
-                )
+                Space(4.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    MedicoSmallButton(
+                        text = stringResource(id = R.string.subscribe),
+                        onClick = onSubscribe,
+                    )
+                }
             }
             //}
             // }
             //Space(24.dp)
+
         }
     }
     Surface(
@@ -1789,13 +1795,26 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
-                                SingleTextLabel(
-                                    data = data.status.serverValue, when (data.status) {
-                                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
-                                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
-                                        SubscriptionStatus.REJECTED -> ConstColors.red
-                                    }
-                                )
+                                Row {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_connected),
+                                        contentDescription = null,
+                                        tint = when (data.status) {
+                                            SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                            SubscriptionStatus.REJECTED -> ConstColors.red
+                                        },
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Space(dp = 4.dp)
+                                    SingleTextLabel(
+                                        data = data.status.serverValue, when (data.status) {
+                                            SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                            SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                            SubscriptionStatus.REJECTED -> ConstColors.red
+                                        }
+                                    )
+                                }
                             }
                             Box(
                                 modifier = Modifier
@@ -1808,21 +1827,29 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                          label = R.string.status,
                          data = data.status.serverValue
                      )*/
-                                SingleTextLabel(
-                                    data = entityInfo.geoData.formattedDistance,
-                                    MaterialTheme.colors.background
-                                )
+                                Row {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_location),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = ConstColors.orange
+                                    )
+                                    Space(4.dp)
+                                    SingleTextLabel(
+                                        data = entityInfo.geoData.formattedDistance
+                                    )
+                                }
                             }
                         }
                     }
                     Space(4.dp)
-                    Divider()
+                    Divider(thickness = 0.3.dp)
                     Space(4.dp)
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                             Box(modifier = Modifier.width(maxWidth / 2)) {
                                 entityInfo.gstin?.let {
-                                    SingleTextLabel(data = it, MaterialTheme.colors.background)
+                                    SingleTextLabel(data = it)
                                     //DataWithLabel(label = R.string.gstin_num, data = it)
                                 }
                             }
@@ -1834,14 +1861,14 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             ) {
 
                                 entityInfo.panNumber?.let {
-                                    SingleTextLabel(data = it, MaterialTheme.colors.background)
+                                    SingleTextLabel(data = it)
                                     //DataWithLabel(label = R.string.pan_number, data = it)
                                 }
                             }
                         }
                     }
                     Space(4.dp)
-                    Divider()
+                    Divider(thickness = 0.3.dp)
                     Space(4.dp)
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -1865,13 +1892,13 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                         }
                     }
                     Space(4.dp)
-                    Divider()
+                    Divider(thickness = 0.3.dp)
                     Space(4.dp)
                     entityInfo.drugLicenseNo1?.let {
                         DataWithLabel(label = R.string.dl_one, data = it, size = 12.sp)
                     }
                     Space(4.dp)
-                    Divider()
+                    Divider(thickness = 0.3.dp)
                     Space(4.dp)
                     entityInfo.drugLicenseNo2?.let {
                         DataWithLabel(label = R.string.dl_two, data = it, size = 12.sp)
@@ -1910,21 +1937,32 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 }
                 else -> {
                     Row {
-                        entityInfo.gstin?.let {
-                            Text(
-                                text = it,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                            //DataWithLabel(label = R.string.gstin_num, data = it)
-                        }
-                        entityInfo.panNumber?.let {
-                            Text(
-                                text = it,
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                            //DataWithLabel(label = R.string.pan_number, data = it)
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.gstin?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    //DataWithLabel(label = R.string.gstin_num, data = it)
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                entityInfo.panNumber?.let {
+                                    Text(
+                                        text = it,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    //DataWithLabel(label = R.string.pan_number, data = it)
+                                }
+                            }
                         }
                     }
                     /*entityInfo.gstin?.let {

@@ -523,7 +523,10 @@ fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier, size:
 }
 
 @Composable
-fun SingleTextLabel(data: String,color:Color) {
+fun SingleTextLabel(
+    data: String,
+    color: Color = MaterialTheme.colors.background
+) {
     Text(
         text = data,
         fontSize = 12.sp,

@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,7 +100,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = ConstColors.lightBlue,
+                tint = ConstColors.lightGreen,
                 modifier = Modifier.size(24.dp),
             )
             Space(16.dp)
@@ -163,7 +164,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                 }
                 val isActive = activeTab.value == it
                 boxMod = if (isActive) {
-                    boxMod.background(ConstColors.greenLight, MaterialTheme.shapes.medium)
+                    boxMod.background(ConstColors.lightGreen, MaterialTheme.shapes.medium)
                 } else {
                     boxMod
                 }
@@ -260,13 +261,13 @@ private fun NonSeasonBoyItem(
                 }
             }
             Text(
-                text = entityInfo.geoData.fullAddress(),
+                text = entityInfo.geoData.fullLocationCityAddress(),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W500,
                 color = ConstColors.gray,
             )
             Space(4.dp)
-            Divider()
+            Divider(thickness = 0.5.dp)
             Space(4.dp)
             /*Text(
                 text = entityInfo.geoData.landmark,
@@ -283,16 +284,30 @@ private fun NonSeasonBoyItem(
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     Box(modifier = Modifier.width(maxWidth / 2)) {
                         entityInfo.subscriptionData?.let {
-                            Text(
-                                text = it.status.serverValue,
-                                fontSize = 12.sp,
-                                color = when (it.status) {
-                                    SubscriptionStatus.SUBSCRIBED -> ConstColors.green
-                                    SubscriptionStatus.PENDING -> ConstColors.lightBlue
-                                    SubscriptionStatus.REJECTED -> ConstColors.red
-                                },
-                                fontWeight = FontWeight.Bold,
-                            )
+                            Row {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_connected),
+                                    contentDescription = null,
+                                    tint = when (it.status) {
+                                        SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                        SubscriptionStatus.REJECTED -> ConstColors.red
+                                    },
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Space(dp = 4.dp)
+                                Text(
+                                    text = it.status.serverValue,
+                                    fontSize = 12.sp,
+                                    color = when (it.status) {
+                                        SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                        SubscriptionStatus.REJECTED -> ConstColors.red
+                                    },
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
                         } ?: Space(4.dp)
                     }
 
@@ -305,9 +320,10 @@ private fun NonSeasonBoyItem(
                     ) {
                         Row {
                             Icon(
-                                imageVector = Icons.Outlined.LocationOn,
+                                painter = painterResource(id = R.drawable.ic_location),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(18.dp),
+                                tint = ConstColors.orange
                             )
                             Space(4.dp)
                             Text(
@@ -417,6 +433,30 @@ fun GeoLocation(
             fontSize = textSize,
             fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
             color = tint,
+        )
+    }
+}
+
+@Composable
+fun GeoLocationSheet(
+    location: String,
+    isBold: Boolean = false,
+    textSize: TextUnit = 14.sp,
+    painter: Painter = painterResource(id = R.drawable.ic_bulding),
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = ConstColors.lightGreen
+        )
+        Space(4.dp)
+        Text(
+            text = location,
+            fontSize = textSize,
+            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            color = MaterialTheme.colors.background,
         )
     }
 }
