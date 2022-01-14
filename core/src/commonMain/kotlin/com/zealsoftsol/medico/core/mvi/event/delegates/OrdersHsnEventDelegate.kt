@@ -2,19 +2,14 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.utils.LoadHelper
-import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.data.SearchData
 import com.zealsoftsol.medico.data.SearchDataItem
 
 internal class OrdersHsnEventDelegate(
@@ -27,6 +22,16 @@ internal class OrdersHsnEventDelegate(
     override suspend fun handleEvent(event: Event.Action.OrderHsn) = when (event) {
         is Event.Action.OrderHsn.SelectHsn -> getHsnCodes()
         is Event.Action.OrderHsn.Load -> loadHsn(false)
+        is Event.Action.OrderHsn.GetSelectedHsnCode ->  getSelectedHsnCode(event.selectedHsnCode)
+    }
+
+    /**
+     * get selected hsn code by user
+     */
+    private fun getSelectedHsnCode(selectedHsnCode: String) {
+        navigator.withScope<OrderHsnEditScope> {
+            it.getSelectedHsnCode(selectedHsnCode)
+        }
     }
 
     private suspend fun getHsnCodes() {

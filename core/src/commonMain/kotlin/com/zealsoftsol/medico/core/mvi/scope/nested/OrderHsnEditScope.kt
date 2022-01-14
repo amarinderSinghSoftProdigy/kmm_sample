@@ -17,6 +17,7 @@ class OrderHsnEditScope(
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     val selectedIndex = DataSource(index)
+    val selectedHsnCode = DataSource("")
 
     private var hsnList = ArrayList<SearchDataItem>()
 
@@ -36,6 +37,13 @@ class OrderHsnEditScope(
     fun updateSelectedIndex(currentIndex: Int) {
         this.selectedIndex.value = currentIndex
         orderEntry.value = orderEntries[currentIndex]
+    }
+
+    /**
+     * get the HSN code selected by user from bottomsheet
+     */
+    fun getSelectedHsnCode(selectedHsnCode: String){
+        this.selectedHsnCode.value = selectedHsnCode
     }
 
 

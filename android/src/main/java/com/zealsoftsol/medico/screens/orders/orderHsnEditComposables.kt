@@ -58,6 +58,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
     val orderEntry = scope.orderEntry.flow.collectAsState().value
     val selectedIndex = scope.selectedIndex.flow.collectAsState().value
+    val selectedHsnCode = scope.selectedHsnCode.flow.collectAsState().value
 
     val textStyle  = TextStyle(
         color = Color.Black,
@@ -373,7 +374,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 .padding(bottom = 4.dp, end = 10.dp)
                         ) {
                             EditFieldCustom(
-                                label = "",
+                                label = selectedHsnCode,
                                 qty = orderEntry.hsnCode,
                                 onChange = {
 
@@ -541,7 +542,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             Row(modifier = Modifier.fillMaxSize()) {
 
                 MedicoButton(
-                    modifier = Modifier.weight(1f).padding(10.dp).height(40.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(10.dp)
+                        .height(40.dp),
                     text = stringResource(id = R.string.not_available),
                     onClick = {  },
                     color = ConstColors.txtGrey,
@@ -550,7 +554,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 )
 
                 MedicoButton(
-                    modifier = Modifier.weight(1f).padding(10.dp).height(40.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(10.dp)
+                        .height(40.dp),
                     text = stringResource(id = R.string.save),
                     onClick = { scope.submit() },
                     isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added

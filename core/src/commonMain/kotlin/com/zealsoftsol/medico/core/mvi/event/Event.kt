@@ -305,6 +305,8 @@ sealed class Event {
 
             data class Load(val isFirstLoad: Boolean) : OrderHsn()
 
+            data class GetSelectedHsnCode(val selectedHsnCode: String): OrderHsn()
+
             object SelectHsn : OrderHsn()
         }
 

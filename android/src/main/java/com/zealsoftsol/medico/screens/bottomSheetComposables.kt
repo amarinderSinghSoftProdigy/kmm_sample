@@ -71,6 +71,8 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
+import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
@@ -1856,7 +1858,7 @@ private fun HsnCodeSheet(
     val mutableList = remember { mutableStateListOf<SearchDataItem>() }
     mutableList.addAll(hsnList)
 
-    val selectedHsnCode = remember { mutableStateOf("")}
+    val selectedHsnCode = remember { mutableStateOf("") }
 
     BaseBottomSheet(onDismiss) {
         Column(
@@ -1956,11 +1958,20 @@ private fun HsnCodeSheet(
                 )
             }
 
-            MedicoButton(text = stringResource(id = R.string.select), isEnabled = selectedHsnCode.value.isNotEmpty(),
+            MedicoButton(text = stringResource(id = R.string.select),
+                isEnabled = selectedHsnCode.value.isNotEmpty(),
                 modifier = Modifier
                     .padding(10.dp)
                     .width(100.dp)
-                    .height(40.dp), onClick = {})
+                    .height(40.dp),
+                onClick = {
+                    EventCollector.sendEvent(
+                        Event.Action.OrderHsn.GetSelectedHsnCode(
+                            selectedHsnCode.value
+                        )
+                    )
+                    onDismiss()
+                })
         }
     }
 }
