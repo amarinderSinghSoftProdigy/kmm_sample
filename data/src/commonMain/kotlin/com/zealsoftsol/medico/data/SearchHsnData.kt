@@ -3,12 +3,6 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchData(
-    val results: List<SearchDataItem>?,
-    val totalResults: String = ""
-)
-
-@Serializable
 data class SearchDataItem(
     val hsncode: String,
     val hsncodeId: String,

@@ -43,7 +43,7 @@ import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SearchData
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -285,7 +285,10 @@ interface NetworkScope {
     }
 
     interface OrderHsnEditStore : NetworkScope {
-        suspend fun getHsnCodes(): BodyResponse<SearchData>
+        suspend fun getHsnCodes(
+            pagination: Pagination
+        ): BodyResponse<PaginatedData<SearchDataItem>>
+
         suspend fun saveHsnCodes(unitCode: String): AnyResponse
     }
 

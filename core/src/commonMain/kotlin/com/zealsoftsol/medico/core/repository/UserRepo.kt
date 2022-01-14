@@ -20,7 +20,6 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SearchData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
@@ -50,7 +49,6 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
-    private val orderHsnScope: NetworkScope.OrderHsnEditStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -312,17 +310,6 @@ class UserRepo(
         phoneNumber: String,
     ): AnyResponse {
         return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
-    }
-
-    suspend fun getHsnCodes(): BodyResponse<SearchData> {
-        return orderHsnScope.getHsnCodes()
-    }
-
-    suspend fun saveOrderValue(
-        language: String,
-        phoneNumber: String,
-    ): AnyResponse {
-        return orderHsnScope.saveHsnCodes(requireUser().unitCode)
     }
 
     private fun clearUserData() {

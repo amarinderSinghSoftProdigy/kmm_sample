@@ -58,7 +58,7 @@ import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
-import com.zealsoftsol.medico.data.SearchData
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -838,13 +838,20 @@ class NetworkClient(
             }
         }
 
-
-    override suspend fun getHsnCodes() =
-        simpleRequest {
-            client.get<BodyResponse<SearchData>>("${baseUrl.url}/products/hsncodes/search?page=0&pageSize=8") {
-                withMainToken()
+    override suspend fun getHsnCodes(pagination: Pagination) =  simpleRequest {
+        client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
             }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
         }
+    }
+
 
     override suspend fun saveHsnCodes(
         unitCode: String

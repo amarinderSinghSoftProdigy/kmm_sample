@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -305,9 +306,11 @@ sealed class Event {
 
             data class Load(val isFirstLoad: Boolean) : OrderHsn()
 
-            data class GetSelectedHsnCode(val selectedHsnCode: String): OrderHsn()
+            data class GetSelectedHsnCode(val selectedHsnCode: String) : OrderHsn()
 
             object SelectHsn : OrderHsn()
+
+            data class DisplayHsnCodes(val hsnList: List<SearchDataItem>) : OrderHsn()
         }
 
         sealed class Inventory : Action() {

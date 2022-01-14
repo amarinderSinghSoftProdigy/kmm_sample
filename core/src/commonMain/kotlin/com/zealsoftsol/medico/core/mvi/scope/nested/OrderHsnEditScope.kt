@@ -6,6 +6,8 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -14,14 +16,23 @@ class OrderHsnEditScope(
     val orderEntries: List<OrderEntry>,
     val index: Int,
     val showAlert: DataSource<Boolean> = DataSource(false)
-) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
+
+    init {
+        getHsnCodes(true)
+    }
 
     val selectedIndex = DataSource(index)
     val selectedHsnCode = DataSource("")
 
-    private var hsnList = ArrayList<SearchDataItem>()
 
     var orderEntry: DataSource<OrderEntry> = DataSource(orderEntries[selectedIndex.value])
+
+    override val pagination: Pagination = Pagination()
+    override val items: DataSource<List<SearchDataItem>> = DataSource(emptyList())
+    override val totalItems: DataSource<Int> = DataSource(0)
+    override val searchText: DataSource<String> = DataSource("")
+
 
 //    val isChecked = DataSource(false)
 //    val hsnCode = DataSource(orderEntry.value.hsnCode)
@@ -47,14 +58,16 @@ class OrderHsnEditScope(
     }
 
 
-    fun updateDataFromServer(
-        hsnCode: ArrayList<SearchDataItem>
-    ) {
-        this.hsnList = hsnCode
-    }
+    /**
+     * get Hsn codes from server
+     */
+    fun getHsnCodes(isFirstLoad: Boolean = false) =
+        EventCollector.sendEvent(Event.Action.OrderHsn.Load(isFirstLoad))
 
-    fun selectEntry() =
-        EventCollector.sendEvent(Event.Action.OrderHsn.SelectHsn)
+    /**
+     * open bottom sheet with all hsn codes
+     */
+    fun openHsnBottomSheet() = EventCollector.sendEvent(Event.Action.OrderHsn.DisplayHsnCodes(items.value))
 
 
 //    fun updateQuantity(value: Double) {
@@ -81,10 +94,6 @@ class OrderHsnEditScope(
 //        expiry.value = value
 //    }
 
-
-    init {
-        //EventCollector.sendEvent(getCurrentPreference())
-    }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))

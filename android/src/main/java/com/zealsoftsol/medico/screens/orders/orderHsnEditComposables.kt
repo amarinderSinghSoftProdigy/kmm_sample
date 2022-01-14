@@ -387,7 +387,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         Box(
                             modifier = Modifier.weight(1f)
                         ) {
-                            OpenHsnScreen { scope.selectEntry() }
+                            OpenHsnScreen { scope.openHsnBottomSheet() }
                         }
                     }
                 }

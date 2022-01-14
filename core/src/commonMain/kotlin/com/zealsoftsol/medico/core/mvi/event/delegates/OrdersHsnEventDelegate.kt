@@ -2,11 +2,9 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
-import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.utils.LoadHelper
@@ -20,9 +18,10 @@ internal class OrdersHsnEventDelegate(
 ) : EventDelegate<Event.Action.OrderHsn>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.OrderHsn) = when (event) {
-        is Event.Action.OrderHsn.SelectHsn -> getHsnCodes()
-        is Event.Action.OrderHsn.Load -> loadHsn(false)
+        is Event.Action.OrderHsn.SelectHsn ->{ }
+        is Event.Action.OrderHsn.Load -> getHsnCodes(event.isFirstLoad)
         is Event.Action.OrderHsn.GetSelectedHsnCode ->  getSelectedHsnCode(event.selectedHsnCode)
+        is Event.Action.OrderHsn.DisplayHsnCodes -> selectHsn(event.hsnList as ArrayList<SearchDataItem>)
     }
 
     /**
@@ -34,8 +33,17 @@ internal class OrdersHsnEventDelegate(
         }
     }
 
-    private suspend fun getHsnCodes() {
-        navigator.withScope<OrderHsnEditScope> {
+    /**
+     * get available hsn codes from server
+     */
+    private suspend fun getHsnCodes(isFirstLoad: Boolean) {
+        loadHelper.load<OrderHsnEditScope, SearchDataItem>(isFirstLoad = isFirstLoad) {
+            networkOrdersScope.getHsnCodes(
+                pagination = pagination
+            ).getBodyOrNull()
+        }
+
+      /*  navigator.withScope<OrderHsnEditScope> {
             val result = withProgress {
                 userRepo.getHsnCodes()
             }
@@ -47,20 +55,19 @@ internal class OrdersHsnEventDelegate(
                 )
                 selectHsn(data.results as ArrayList<SearchDataItem>)
             }.onError(navigator)
-        }
+        }*/
     }
 
-    private fun selectHsn( hsnList : ArrayList<SearchDataItem>
-    ) {
+    /**
+     * open bottom sheet with hsn codes
+     * @param hsnList list of hsn codes
+     */
+    private fun selectHsn(hsnList : ArrayList<SearchDataItem>) {
         navigator.withScope<OrderHsnEditScope> {
             navigator.scope.value.bottomSheet.value = BottomSheet.SelectHsnEntry(
                 hsnList,false,
             )
         }
-    }
-
-    private fun loadHsn(isFirstLoad: Boolean) {
-
     }
 
 }
