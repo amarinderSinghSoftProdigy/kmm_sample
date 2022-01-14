@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -35,7 +34,6 @@ class OrderHsnEditScope(
      * Update this whenever user switches the line index so that you get correct data for order entries
      */
     fun updateSelectedIndex(currentIndex: Int) {
-        currentIndex.toString().log("index")
         this.selectedIndex.value = currentIndex
         orderEntry.value = orderEntries[currentIndex]
     }

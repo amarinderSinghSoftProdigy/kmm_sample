@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -132,12 +133,6 @@ fun Scope.Host.showBottomSheet(
                     onDismiss = { dismissBottomSheet() },
                 )
             }
-//            is BottomSheet.SelectHsnEntry -> {
-//                SelectHsnEntryBottomSheet(
-//                    bs,
-//                    onDismiss = { dismissBottomSheet() },
-//                )
-//            }
             is BottomSheet.PreviewStockist -> PreviewStockistBottomSheet(
                 sellerInfo = bs.sellerInfo,
                 onDismiss = { dismissBottomSheet() },
@@ -1858,6 +1853,10 @@ private fun HsnCodeSheet(
     hsnList: ArrayList<SearchDataItem>,
     onDismiss: () -> Unit,
 ) {
+    val mutableList = remember { mutableStateListOf<SearchDataItem>() }
+    mutableList.addAll(hsnList)
+
+    val selectedHsnCode = remember { mutableStateOf("")}
 
     BaseBottomSheet(onDismiss) {
         Column(
@@ -1939,15 +1938,25 @@ private fun HsnCodeSheet(
                     .fillMaxWidth(),
             ) {
                 itemsIndexed(
-                    items = hsnList,
+                    items = mutableList,
                     key = { index, _ -> index },
-                    itemContent = { _, item ->
-                        SingleHsnItem(item)
+                    itemContent = { index, item ->
+                        SingleHsnItem(item) { checked ->
+                            hsnList.forEachIndexed { ind, it ->
+                                if (checked && it.checked) {
+                                    hsnList[ind].checked = false
+                                }
+                            }
+                            hsnList[index].checked = true
+                            selectedHsnCode.value = hsnList[index].hsncode
+                            mutableList.clear()
+                            mutableList.addAll(hsnList)
+                        }
                     },
                 )
             }
 
-            MedicoButton(text = stringResource(id = R.string.select), isEnabled = true,
+            MedicoButton(text = stringResource(id = R.string.select), isEnabled = selectedHsnCode.value.isNotEmpty(),
                 modifier = Modifier
                     .padding(10.dp)
                     .width(100.dp)
@@ -1957,7 +1966,7 @@ private fun HsnCodeSheet(
 }
 
 @Composable
-private fun SingleHsnItem(item: SearchDataItem) {
+private fun SingleHsnItem(item: SearchDataItem, onCheckedChange: ((Boolean) -> Unit)) {
     Column {
         Row(
             modifier = Modifier.height(40.dp),
@@ -1970,11 +1979,12 @@ private fun SingleHsnItem(item: SearchDataItem) {
                     .padding(start = 10.dp)
                     .weight(1f)
             ) {
-                Checkbox(colors = CheckboxDefaults.colors(ConstColors.green),
-                    checked = false,
-                    onCheckedChange = {
+                Checkbox(
+                    colors = CheckboxDefaults.colors(ConstColors.green),
+                    checked = item.checked,
+                    onCheckedChange = onCheckedChange
+                )
 
-                    })
                 Text(
                     text = item.hsncode,
                     color = Color.Black,

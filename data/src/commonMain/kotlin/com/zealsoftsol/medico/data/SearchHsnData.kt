@@ -17,7 +17,8 @@ data class SearchDataItem(
     val revisedDate: String,
     val description: String,
     val displayValue: String,
-    val rate: Rate
+    val rate: Rate,
+    var checked: Boolean = false
 )
 
 @Serializable

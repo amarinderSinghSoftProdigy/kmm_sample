@@ -3,7 +3,14 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.data.*
+import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.SearchDataItem
+import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.TaxInfo
 
 sealed class BottomSheet {
 
