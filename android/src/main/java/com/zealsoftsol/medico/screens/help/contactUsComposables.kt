@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.help
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,7 +38,7 @@ import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
 
 @Composable
-fun HelpScreen(scope: HelpScope) {
+fun ContactUsScreen(scope: HelpScope) {
     val activity = LocalContext.current as MainActivity
     Box(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(bottom = 50.dp),
@@ -147,65 +145,6 @@ fun HelpScreen(scope: HelpScope) {
                     }
                 }
                 Space(12.dp)
-                Divider()
-                Space(12.dp)
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(50.dp)
-                        .clickable { activity.openUrl(scope.helpData.tosUrl) }
-                        .padding(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_tos),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.background,
-                        )
-                        Space(24.dp)
-                        Text(
-                            text = stringResource(id = R.string.tos),
-
-                            color = MaterialTheme.colors.background,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.Link,
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                    )
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(50.dp)
-                        .clickable { activity.openUrl(scope.helpData.privacyPolicyUrl) }
-                        .padding(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_privacy),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.background,
-                        )
-                        Space(24.dp)
-                        Text(
-                            text = stringResource(id = R.string.privacy_policy),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                    }
-                    Icon(
-                        imageVector = Icons.Default.Link,
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                    )
-                }
             }
         }
     }
