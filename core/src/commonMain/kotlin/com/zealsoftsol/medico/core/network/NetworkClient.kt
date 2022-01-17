@@ -838,11 +838,12 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getHsnCodes(pagination: Pagination) =  simpleRequest {
+    override suspend fun getHsnCodes(search: String,pagination: Pagination) =  simpleRequest {
         client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
             withMainToken()
             url {
                 parameters.apply {
+                    append("search", search)
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
                 }

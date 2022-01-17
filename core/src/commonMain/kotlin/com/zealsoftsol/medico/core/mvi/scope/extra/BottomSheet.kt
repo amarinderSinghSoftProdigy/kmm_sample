@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -108,26 +107,6 @@ sealed class BottomSheet {
                     batch.value,
                     expiry.value
                 )
-            )
-    }
-
-    class SelectHsnEntry(
-        val hsnList : ArrayList<SearchDataItem>,
-        val isChecked: Boolean,
-    ) : BottomSheet() {
-
-
-        fun selectItem(value: String) {
-        }
-
-
-        fun loadItems() =
-            EventCollector.sendEvent(Event.Action.OrderHsn.Load(isFirstLoad = false))
-
-
-        fun save() =
-            EventCollector.sendEvent(
-                Event.Action.OrderHsn.SelectHsn
             )
     }
 

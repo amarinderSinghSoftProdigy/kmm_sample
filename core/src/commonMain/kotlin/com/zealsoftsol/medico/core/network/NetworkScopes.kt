@@ -286,6 +286,7 @@ interface NetworkScope {
 
     interface OrderHsnEditStore : NetworkScope {
         suspend fun getHsnCodes(
+            search: String,
             pagination: Pagination
         ): BodyResponse<PaginatedData<SearchDataItem>>
 

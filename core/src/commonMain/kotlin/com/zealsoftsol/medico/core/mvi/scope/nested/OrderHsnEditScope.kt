@@ -18,6 +18,10 @@ class OrderHsnEditScope(
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
 
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    }
+
     init {
         getHsnCodes(true)
     }
@@ -27,6 +31,8 @@ class OrderHsnEditScope(
 
 
     var orderEntry: DataSource<OrderEntry> = DataSource(orderEntries[selectedIndex.value])
+    var showHsnBottomSheet = DataSource(false)
+    var showWarningBottomSheet = DataSource(false)
 
     override val pagination: Pagination = Pagination()
     override val items: DataSource<List<SearchDataItem>> = DataSource(emptyList())
@@ -34,13 +40,13 @@ class OrderHsnEditScope(
     override val searchText: DataSource<String> = DataSource("")
 
 
-//    val isChecked = DataSource(false)
-//    val hsnCode = DataSource(orderEntry.value.hsnCode)
 //    val quantity = DataSource(orderEntry.value.servedQty.value)
 //    val freeQuantity = DataSource(orderEntry.value.freeQty.value)
 //    val ptr = DataSource(orderEntry.value.price.value.toString())
 //    val batch = DataSource(orderEntry.value.batchNo)
-//    val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
+
+    val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
+    val hsnCode = DataSource(orderEntry.value.hsnCode)
 
     /**
      * Update this whenever user switches the line index so that you get correct data for order entries
@@ -50,11 +56,27 @@ class OrderHsnEditScope(
         orderEntry.value = orderEntries[currentIndex]
     }
 
+
     /**
-     * get the HSN code selected by user from bottomsheet
+     * update whether to show hsn bottom sheet or not
+     * @param openSheet true is want to display sheet else false
+     * also reset search in case sheet is closed
      */
-    fun getSelectedHsnCode(selectedHsnCode: String){
-        this.selectedHsnCode.value = selectedHsnCode
+    fun manageBottomSheetVisibility(openSheet: Boolean) {
+        if (!openSheet) {
+            if (searchText.value.isNotEmpty()) {
+                searchText.value = ""
+                getHsnCodes(true)
+            }
+        }
+        this.showHsnBottomSheet.value = openSheet
+    }
+
+    /**
+     * mange visibility of warning bottom sheet
+     */
+    fun manageWarningBottomSheetVisibility(openSheet: Boolean) {
+        this.showWarningBottomSheet.value = openSheet
     }
 
 
@@ -65,10 +87,10 @@ class OrderHsnEditScope(
         EventCollector.sendEvent(Event.Action.OrderHsn.Load(isFirstLoad))
 
     /**
-     * open bottom sheet with all hsn codes
+     * search for scopes
      */
-    fun openHsnBottomSheet() = EventCollector.sendEvent(Event.Action.OrderHsn.DisplayHsnCodes(items.value))
-
+    fun search(value: String) =
+        EventCollector.sendEvent(Event.Action.OrderHsn.Search(value))
 
 //    fun updateQuantity(value: Double) {
 //        quantity.value = value
@@ -86,18 +108,15 @@ class OrderHsnEditScope(
 //        batch.value = value
 //    }
 //
-//    fun updateHsnCode(value: String) {
-//        hsnCode.value = value
-//    }
-//
-//    fun updateExpiry(value: String) {
-//        expiry.value = value
-//    }
 
-
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    fun updateExpiry(value: String) {
+        expiry.value = value
     }
+
+    fun updateHsnCode(value: String) {
+        hsnCode.value = value
+    }
+
 
     /**
      * update the scope of alert dialog

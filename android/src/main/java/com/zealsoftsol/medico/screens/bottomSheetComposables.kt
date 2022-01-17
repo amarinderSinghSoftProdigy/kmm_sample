@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,14 +17,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -34,8 +28,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
@@ -43,7 +35,6 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -58,7 +49,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,8 +61,6 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.mvi.event.Event
-import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
@@ -80,7 +68,6 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
-import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
@@ -88,7 +75,6 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -156,9 +142,6 @@ fun Scope.Host.showBottomSheet(
                 onSaveQty = { qty, freeQty -> bs.addToCart(qty, freeQty) },
                 onDismiss = { dismissBottomSheet() },
             )
-            is BottomSheet.SelectHsnEntry -> HsnCodeSheet(
-                hsnList = bs.hsnList,
-                onDismiss = { dismissBottomSheet() })
         }
     }
 }
@@ -1844,179 +1827,5 @@ private fun BaseBottomSheet(
         ) {
             body()
         }
-    }
-}
-
-/**
- * Bottom sheet for displaying HSN codes for purchase orders
- */
-@Composable
-private fun HsnCodeSheet(
-    hsnList: ArrayList<SearchDataItem>,
-    onDismiss: () -> Unit,
-) {
-    val mutableList = remember { mutableStateListOf<SearchDataItem>() }
-    mutableList.addAll(hsnList)
-
-    val selectedHsnCode = remember { mutableStateOf("") }
-
-    BaseBottomSheet(onDismiss) {
-        Column(
-            modifier = Modifier
-                .background(color = Color.White),
-            horizontalAlignment = Alignment.End
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_cross),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .padding(end = 10.dp)
-                    .clickable {
-                        onDismiss()
-                    }
-            )
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 10.dp)
-                    .border(
-                        border = BorderStroke(1.dp, color = Color.LightGray),
-                        shape = RoundedCornerShape(3.dp)
-                    ),
-                value = "",
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
-                    textColor = Color.Black,
-                    placeholderColor = Color.Black,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                onValueChange = {
-                },
-                label = { Text(stringResource(id = R.string.search_hsn_code), color = Color.Black) }
-            )
-            Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Text(
-                    text = stringResource(id = R.string.hsn_code),
-                    color = ConstColors.green,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.rate),
-                    color = ConstColors.green,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.effective_date),
-                    color = ConstColors.green,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                )
-            }
-            Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
-            LazyColumn(
-                contentPadding = PaddingValues(start = 3.dp),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-            ) {
-                itemsIndexed(
-                    items = mutableList,
-                    key = { index, _ -> index },
-                    itemContent = { index, item ->
-                        SingleHsnItem(item) { checked ->
-                            hsnList.forEachIndexed { ind, it ->
-                                if (checked && it.checked) {
-                                    hsnList[ind].checked = false
-                                }
-                            }
-                            hsnList[index].checked = true
-                            selectedHsnCode.value = hsnList[index].hsncode
-                            mutableList.clear()
-                            mutableList.addAll(hsnList)
-                        }
-                    },
-                )
-            }
-
-            MedicoButton(text = stringResource(id = R.string.select),
-                isEnabled = selectedHsnCode.value.isNotEmpty(),
-                modifier = Modifier
-                    .padding(10.dp)
-                    .width(100.dp)
-                    .height(40.dp),
-                onClick = {
-                    EventCollector.sendEvent(
-                        Event.Action.OrderHsn.GetSelectedHsnCode(
-                            selectedHsnCode.value
-                        )
-                    )
-                    onDismiss()
-                })
-        }
-    }
-}
-
-@Composable
-private fun SingleHsnItem(item: SearchDataItem, onCheckedChange: ((Boolean) -> Unit)) {
-    Column {
-        Row(
-            modifier = Modifier.height(40.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .weight(1f)
-            ) {
-                Checkbox(
-                    colors = CheckboxDefaults.colors(ConstColors.green),
-                    checked = item.checked,
-                    onCheckedChange = onCheckedChange
-                )
-
-                Text(
-                    text = item.hsncode,
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier.padding(start = 5.dp)
-                )
-            }
-
-            Text(
-                text = item.rate.formattedValue,
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W600
-            )
-            Box(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .weight(1f)
-            ) {}
-        }
-        Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
     }
 }

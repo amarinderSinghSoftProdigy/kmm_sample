@@ -306,11 +306,11 @@
     <string name="whatsapp_preference">Whatsapp Preference</string>
     <string name="preferred_language">Please choose your preferred language </string>
     <string name="update_successfull">Updated Successfully</string>
-    <string name ="our_brands">Brands</string>
+    <string name="our_brands">Brands</string>
     <string name="our_categories">Categories</string>
-    <string name ="inventory">Inventory</string>
-    <string name ="online">Online</string>
-    <string name ="offline">Offline</string>
+    <string name="inventory">Inventory</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
     <string name="my_account">My Account</string>
@@ -332,6 +332,8 @@
     <string name="rate">Rate</string>
     <string name="effective_date">Effective Date</string>
     <string name="line_item">Line Item</string>
+    <string name="sub_total">Subtotal</string>
+    <string name="unavailable_warning">Retailer will be notified that this product is not available.\n Are you sure?</string>
 
     <!--error codes-->
 
