@@ -257,6 +257,7 @@ object DebugScopeCreator {
                     ),
                     standardUnit = "1x20",
                     sellerInfo = null,
+                    drugFormName = "",
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(

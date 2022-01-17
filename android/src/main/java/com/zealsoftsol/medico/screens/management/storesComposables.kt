@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -26,6 +29,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -37,9 +42,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,11 +58,14 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.DataWithLabel
+import com.zealsoftsol.medico.screens.common.EditField
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.FilterSection
+import com.zealsoftsol.medico.screens.search.HorizontalFilterSection
 import com.zealsoftsol.medico.screens.search.ProductItem
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
@@ -79,19 +90,84 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
+            .background(Color.White, RoundedCornerShape(8.dp)),
     ) {
-        Text(
-            text = scope.store.tradeName,
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W600,
-            fontSize = 20.sp,
+
+        FoldableItem(
+            expanded = false,
+            header = { isExpanded ->
+                Space(8.dp)
+                Row(
+                    modifier = Modifier.weight(.8f),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Space(8.dp)
+                    Text(
+                        text = scope.store.tradeName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .weight(.1f)
+                        .padding(end = 4.dp),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    Icon(
+                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        tint = ConstColors.gray,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            },
+            childItems = listOf(""),
+            item = { value, _ ->
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = scope.store.fullAddress(),
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(8.dp)
+                }
+            }
         )
-        Space(10.dp)
-        GeoLocation(scope.store.fullAddress())
-        Space(4.dp)
-        DataWithLabel(R.string.gstin_num, scope.store.gstin)
-        Space(16.dp)
+
+        /*Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+        ) {
+            Text(
+                text = scope.store.tradeName,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W600,
+                fontSize = 14.sp
+            )
+            Space(4.dp)
+            Text(
+                text = scope.store.fullAddress(),
+                fontSize = 12.sp,
+                color = ConstColors.gray
+            )
+            //GeoLocation(scope.store.fullAddress(),textSize = 12.sp)
+            //Space(16.dp)
+            //DataWithLabel(R.string.gstin_num, scope.store.gstin)
+            //Space(16.dp)
+        }*/
     }
+    Space(16.dp)
     val search = scope.productSearch.flow.collectAsState()
     val filters = scope.filters.flow.collectAsState()
     val filterSearches = scope.filterSearches.flow.collectAsState()
@@ -110,11 +186,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         onIconClick = null,
         isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
         onSearch = { value, _ ->
-                scope.searchProduct(
-                    value,
-                    withAutoComplete = true,
-                    scope.store.sellerUnitCode
-                )
+            scope.searchProduct(
+                value,
+                withAutoComplete = true,
+                scope.store.sellerUnitCode
+            )
         },
     )
     scope.storage.save("focus", false)
@@ -140,7 +216,76 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 onClick = { scope.selectSortOption(it) },
             )
             filters.value.forEach { filter ->
-                FilterSection(
+                if (filter.queryId != "manufacturers") {
+                    FilterSection(
+                        name = filter.name,
+                        options = filter.options,
+                        searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                            scope.searchFilter(filter, it)
+                        },
+                        onOptionClick = { scope.selectFilter(filter, it) },
+                        onFilterClear = { scope.clearFilter(filter) },
+                    )
+                }
+            }
+            Space(16.dp)
+        }
+    } else {
+        Space(16.dp)
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Box(
+                modifier = Modifier.width(maxWidth / 2 - 8.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        tint = ConstColors.red,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Space(8.dp)
+                    Text(
+                        text = stringResource(id = R.string.offers),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W700,
+                        color = ConstColors.red,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .width(maxWidth / 2 - 8.dp)
+                    .align(Alignment.CenterEnd),
+                contentAlignment = Alignment.BottomEnd,
+            ) {
+                Row {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Space(8.dp)
+                    Text(
+                        text = stringResource(id = R.string.view_all),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W700,
+                        color = ConstColors.lightBlue,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+
+        filters.value.forEach { filter ->
+            if (filter.queryId == "manufacturers")
+                HorizontalFilterSection(
                     name = filter.name,
                     options = filter.options,
                     searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
@@ -148,11 +293,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     },
                     onOptionClick = { scope.selectFilter(filter, it) },
                     onFilterClear = { scope.clearFilter(filter) },
+                    url = filter.queryId
                 )
-            }
-            Space(16.dp)
         }
-    } else {
+        Space(8.dp)
+
         if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,

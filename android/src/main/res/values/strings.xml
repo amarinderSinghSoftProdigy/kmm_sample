@@ -327,6 +327,7 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="offers">Offers</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>

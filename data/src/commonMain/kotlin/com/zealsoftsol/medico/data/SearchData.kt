@@ -37,6 +37,7 @@ data class ProductSearch(
     val formattedMrp: String,
     val formattedPrice: String? = null,
     val id: String,
+    val drugFormName: String,
     val manufacturer: String,
     val marginPercent: String? = null,
     val name: String,
