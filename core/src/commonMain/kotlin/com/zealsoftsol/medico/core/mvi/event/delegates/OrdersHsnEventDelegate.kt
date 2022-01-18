@@ -22,16 +22,24 @@ internal class OrdersHsnEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.OrderHsn) = when (event) {
         is Event.Action.OrderHsn.SaveOrderEntry -> saveEntry(
-            event.orderId,
-            event.orderEntryId,
-            event.servedQty,
-            event.freeQty,
-            event.price,
-            event.batchNo,
-            event.expiryDate
+            orderId = event.orderId,
+            orderEntryId = event.orderEntryId,
+            servedQty = event.servedQty,
+            freeQty = event.freeQty,
+            price = event.price,
+            batchNo = event.batchNo,
+            expiryDate = event.expiryDate,
+            mrp = event.mrp,
+            hsnCode = event.hsnCode,
+            discount = event.discount
         )
         is Event.Action.OrderHsn.Load -> load(event.isFirstLoad)
         is Event.Action.OrderHsn.Search -> search(event.value)
+        is Event.Action.OrderHsn.RejectOrderEntry -> rejectOrderEntry(
+            orderEntryId = event.orderEntryId,
+            spid = event.spid,
+            reasonCode = event.reasonCode
+        )
     }
 
     /**
@@ -68,11 +76,14 @@ internal class OrdersHsnEventDelegate(
         freeQty: Double,
         price: Double,
         batchNo: String,
-        expiryDate: String
+        expiryDate: String,
+        hsnCode: String,
+        mrp: Double,
+        discount: Double,
     ) {
         navigator.withScope<OrderHsnEditScope> {
             withProgress {
-                networkOrdersScope.saveNewOrderQty(
+                networkOrdersScope.saveNewOrder(
                     OrderNewQtyRequest(
                         orderId = orderId,
                         orderEntryId = orderEntryId,
@@ -82,6 +93,9 @@ internal class OrdersHsnEventDelegate(
                         price = price,
                         batchNo = batchNo,
                         expiryDate = expiryDate,
+                        hsnCode = hsnCode,
+                        mrp = mrp,
+                        discount = discount
                     )
                 )
             }.onSuccess { body ->
@@ -90,6 +104,17 @@ internal class OrdersHsnEventDelegate(
                 log(it.body)
             }
         }
+    }
+
+    /**
+     * reject an order entry
+     */
+    private suspend fun rejectOrderEntry(
+        orderEntryId: String,
+        spid: String,
+        reasonCode: String
+    ) {
+
     }
 
 }

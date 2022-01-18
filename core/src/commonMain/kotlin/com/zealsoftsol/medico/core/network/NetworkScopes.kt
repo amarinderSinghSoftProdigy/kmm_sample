@@ -290,8 +290,9 @@ interface NetworkScope {
             pagination: Pagination
         ): BodyResponse<PaginatedData<SearchDataItem>>
 
-        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
+        suspend fun saveNewOrder(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
 
+        suspend fun rejectEntry(orderEntryId: String, spid: String, reasonCode: String): BodyResponse<OrderResponse>
     }
 
 }

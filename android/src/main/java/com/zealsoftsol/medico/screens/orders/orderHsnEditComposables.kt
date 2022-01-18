@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
@@ -58,7 +59,6 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.data.SearchDataItem
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Space
@@ -81,11 +81,16 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
     val orderEntry = scope.orderEntry.flow.collectAsState().value
     val selectedIndex = scope.selectedIndex.flow.collectAsState().value
-    val selectedHsnCode = scope.selectedHsnCode.flow.collectAsState().value
     val openHsnBottomSheet = scope.showHsnBottomSheet.flow.collectAsState().value
     val openWarningBottomSheet = scope.showWarningBottomSheet.flow.collectAsState().value
+    val selectedHsnCode = scope.selectedHsnCode.flow.collectAsState().value
     val expiryDate = scope.expiry.flow.collectAsState().value
-    val hsnCode = scope.hsnCode.flow.collectAsState().value
+    val servedQty = scope.quantity.flow.collectAsState().value
+    val freeQty = scope.freeQuantity.flow.collectAsState().value
+    val mrp = scope.mrp.flow.collectAsState().value
+    val price = scope.ptr.flow.collectAsState().value
+    val batchNo = scope.batch.flow.collectAsState().value
+    val discount = scope.discount.flow.collectAsState().value
     val context = LocalContext.current
 
     val textStyle = TextStyle(
@@ -404,7 +409,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 .padding(bottom = 4.dp, end = 10.dp)
                         ) {
                             Text(
-                                text = hsnCode,
+                                text = selectedHsnCode,
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 maxLines = 1,
@@ -423,7 +428,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
                 Space(10.dp)
-                if (hsnCode.isEmpty())
+                if (selectedHsnCode.isEmpty())
                     HsnErrorText()
                 Space(10.dp)
             }
@@ -438,49 +443,90 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             .width(maxWidth)
                             .align(Alignment.BottomEnd)
                     ) {
-                        EditField(
-                            label = stringResource(id = R.string.batch_no),
-                            qty = orderEntry.batchNo,
-                            onChange = {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.batch_no),
+                                    color = ConstColors.gray,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
 
-                            },
-                            isEnabled = canEdit,
-                            formattingRule = false,
-                            keyboardOptions = KeyboardOptions.Default,
-                            showThinDivider = true,
-                            textStyle = textStyle
-                        )
+                                EditText(value = batchNo, onChange = {
+                                    scope.updateBatch(it)
+                                },
+                                    keyboardOptions = KeyboardOptions.Default
+                                )
+                            }
+                            Space(5.dp)
+                            Divider()
+                        }
+
                     }
                 }
                 Space(10.dp)
                 Box {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                            EditField(
-                                label = stringResource(id = R.string.ptr),
-                                qty = orderEntry.price.value.toString(),
-                                onChange = { },
-                                isEnabled = canEdit,
-                                formattingRule = false,
-                                showThinDivider = true,
-                                textStyle = textStyle
-                            )
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.ptr),
+                                        color = ConstColors.gray,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+
+                                    EditText(value = price.toString(), onChange = {
+                                        scope.updatePtr(it.toDouble())
+                                    }
+                                    )
+
+                                }
+                                Space(5.dp)
+                                Divider()
+                            }
                         }
                         Box(
                             modifier = Modifier
                                 .width(maxWidth / 2 - 8.dp)
                                 .align(Alignment.BottomEnd)
                         ) {
-                            EditField(
-                                label = stringResource(id = R.string.mrp),
-                                qty = orderEntry.mrp.value.toString(),
-                                onChange = {
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.mrp),
+                                        color = ConstColors.gray,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
 
-                                },
-                                isEnabled = canEdit,
-                                showThinDivider = true,
-                                textStyle = textStyle
-                            )
+                                    EditText(value = mrp.toString(), onChange = {
+                                        scope.updateMrp(it.toDouble())
+                                    }
+                                    )
+                                }
+                                Space(5.dp)
+                                Divider()
+                            }
                         }
                     }
                 }
@@ -488,32 +534,58 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 Box {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                            EditField(
-                                label = stringResource(id = R.string.qty),
-                                qty = orderEntry.servedQty.value.toString(),
-                                onChange = {
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.qty),
+                                        color = ConstColors.gray,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
 
-                                },
-                                isEnabled = canEdit,
-                                showThinDivider = true,
-                                textStyle = textStyle
-                            )
+                                    EditText(value = servedQty.toString(), onChange = {
+                                        scope.updateQuantity(it.toDouble())
+                                    }
+                                    )
+                                }
+                                Space(5.dp)
+                                Divider()
+                            }
                         }
                         Box(
                             modifier = Modifier
                                 .width(maxWidth / 2 - 8.dp)
                                 .align(Alignment.BottomEnd)
                         ) {
-                            EditField(
-                                label = stringResource(id = R.string.free),
-                                qty = orderEntry.freeQty.value.toString(),
-                                onChange = {
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.free),
+                                        color = ConstColors.gray,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
 
-                                },
-                                isEnabled = canEdit,
-                                showThinDivider = true,
-                                textStyle = textStyle
-                            )
+                                    EditText(value = freeQty.toString(), onChange = {
+                                        scope.updateFreeQuantity(it.toDouble())
+                                    }
+                                    )
+                                }
+                                Space(5.dp)
+                                Divider()
+                            }
                         }
                     }
                 }
@@ -538,7 +610,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 dialog.show()
                             }) {
 
-                            Column{
+                            Column {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth(),
@@ -571,116 +643,176 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 .width(maxWidth / 2 - 8.dp)
                                 .align(Alignment.BottomEnd)
                         ) {
-                            EditField(
-                                label = stringResource(id = R.string.discount),
-                                qty = orderEntry.discount.value.toString(),
-                                onChange = {
+                            Column {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "${stringResource(id = R.string.discount)}%",
+                                        color = ConstColors.gray,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
 
-                                },
-                                isEnabled = canEdit,
-                                showThinDivider = true,
-                                textStyle = textStyle
-                            )
+                                    EditText(value = discount.toString(), onChange = {
+                                        scope.updateDiscount(it.toDouble())
+                                    }
+                                    )
+                                }
+                                Space(5.dp)
+                                Divider()
+                            }
                         }
                     }
                 }
             }
             Space(20.dp)
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Box(
+                Row(
                     modifier = Modifier
                         .width(maxWidth)
                         .align(Alignment.BottomEnd)
                 ) {
-                    EditField(
-                        label = buildAnnotatedString {
+
+                    Text(
+                        text = buildAnnotatedString {
                             append(stringResource(id = R.string.sub_total))
                             append(":")
-                        }.toString(),
-                        qty = orderEntry.totalAmount.formatted,
-                        onChange = {
-
                         },
-                        isEnabled = canEdit,
-                        formattingRule = false,
-                        keyboardOptions = KeyboardOptions.Default,
-                        showThinDivider = true,
-                        textStyle = textStyle
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Text(
+                        text = orderEntry.totalAmount.formatted,
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700,
+                        maxLines = 1,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
                     )
                 }
             }
+            Space(5.dp)
+            Divider()
             Space(10.dp)
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Box(
+                Row(
                     modifier = Modifier
                         .width(maxWidth)
                         .align(Alignment.BottomEnd)
                 ) {
-                    EditField(
-                        label = buildAnnotatedString {
+                    Text(
+                        text = buildAnnotatedString {
                             append(stringResource(id = R.string.cgst))
                             append(":")
-                        }.toString(),
-                        qty = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
-                        onChange = {
-
                         },
-                        isEnabled = canEdit,
-                        formattingRule = false,
-                        keyboardOptions = KeyboardOptions.Default,
-                        showThinDivider = true,
-                        textStyle = textStyle
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Text(
+                        text = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700,
+                        maxLines = 1,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
                     )
                 }
             }
+            Space(5.dp)
+            Divider()
             Space(10.dp)
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Box(
+                Row(
                     modifier = Modifier
                         .width(maxWidth)
                         .align(Alignment.BottomEnd)
                 ) {
-                    EditField(
-                        label = buildAnnotatedString {
+                    Text(
+                        buildAnnotatedString {
                             append(stringResource(id = R.string.sgst))
                             append(":")
-                        }.toString(),
-                        qty = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
-                        onChange = {
-
                         },
-                        isEnabled = canEdit,
-                        formattingRule = false,
-                        keyboardOptions = KeyboardOptions.Default,
-                        showThinDivider = true,
-                        textStyle = textStyle
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
+
+                    Text(
+                        text = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700,
+                        maxLines = 1,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    )
+
                 }
             }
+            Space(5.dp)
+            Divider()
             Space(10.dp)
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Box(
+                Row(
                     modifier = Modifier
                         .width(maxWidth)
                         .align(Alignment.BottomEnd)
                 ) {
-                    EditField(
-                        label = buildAnnotatedString {
+                    Text(
+                        buildAnnotatedString {
                             append(stringResource(id = R.string.igst))
                             append(":")
-                        }.toString(),
-                        qty = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
-                        onChange = {
-
                         },
-                        isEnabled = canEdit,
-                        formattingRule = false,
-                        keyboardOptions = KeyboardOptions.Default,
-                        showThinDivider = true,
-                        textStyle = textStyle
+                        color = ConstColors.gray,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Text(
+                        text = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700,
+                        maxLines = 1,
+                        textAlign = TextAlign.End,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
                     )
                 }
             }
+            Space(5.dp)
+            Divider()
             Space(10.dp)
             Row(modifier = Modifier.fillMaxSize()) {
 
@@ -1110,4 +1242,33 @@ private fun WarningProductNotAvailable(
             }
         }
     }
+}
+
+@Composable
+fun EditText(
+    value: String,
+    onChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+) {
+
+    val textStyle = TextStyle(
+        color = Color.Black,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.End,
+    )
+
+    BasicTextField(
+        modifier = Modifier
+            .fillMaxWidth(),
+        value = value,
+        onValueChange = {
+            onChange(it)
+        },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        enabled = true,
+        textStyle = textStyle
+    )
 }

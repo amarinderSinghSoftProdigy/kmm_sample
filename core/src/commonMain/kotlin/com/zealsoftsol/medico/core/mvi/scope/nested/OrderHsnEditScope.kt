@@ -29,7 +29,6 @@ class OrderHsnEditScope(
     }
 
     val selectedIndex = DataSource(index)
-    val selectedHsnCode = DataSource("")
 
 
     var orderEntry: DataSource<OrderEntry> = DataSource(orderEntries[selectedIndex.value])
@@ -44,11 +43,12 @@ class OrderHsnEditScope(
 
     val quantity = DataSource(orderEntry.value.servedQty.value)
     val freeQuantity = DataSource(orderEntry.value.freeQty.value)
-    val ptr = DataSource(orderEntry.value.price.value.toString())
+    val ptr = DataSource(orderEntry.value.price.value)
     val batch = DataSource(orderEntry.value.batchNo)
-
     val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
-    val hsnCode = DataSource(orderEntry.value.hsnCode)
+    val discount = DataSource(orderEntry.value.discount.value)
+    val mrp = DataSource(orderEntry.value.mrp.value)
+    val selectedHsnCode = DataSource(orderEntry.value.hsnCode)
 
     /**
      * Update this whenever user switches the line index so that you get correct data for order entries
@@ -56,6 +56,14 @@ class OrderHsnEditScope(
     fun updateSelectedIndex(currentIndex: Int) {
         this.selectedIndex.value = currentIndex
         orderEntry.value = orderEntries[currentIndex]
+        selectedHsnCode.value = orderEntry.value.hsnCode
+        quantity.value = orderEntry.value.servedQty.value
+        freeQuantity.value = orderEntry.value.freeQty.value
+        ptr.value = orderEntry.value.price.value
+        batch.value = orderEntry.value.batchNo
+        expiry.value = orderEntry.value.expiryDate?.formatted ?: ""
+        mrp.value = orderEntry.value.mrp.value
+        discount.value = orderEntry.value.discount.value
     }
 
 
@@ -106,11 +114,12 @@ class OrderHsnEditScope(
         freeQuantity.value = value
     }
 
-    fun updatePtr(value: String) {
+    fun updatePtr(value: Double) {
         ptr.value = value
     }
 
     fun updateBatch(value: String) {
+        value.log("batch value")
         batch.value = value
     }
 
@@ -120,9 +129,16 @@ class OrderHsnEditScope(
     }
 
     fun updateHsnCode(value: String) {
-        hsnCode.value = value
+        selectedHsnCode.value = value
     }
 
+    fun updateMrp(value: Double){
+        mrp.value = value
+    }
+
+    fun updateDiscount(value: Double){
+        discount.value = value
+    }
     /****************************************/
 
     /**
@@ -130,6 +146,17 @@ class OrderHsnEditScope(
      */
     fun changeAlertScope(enable: Boolean) {
         this.showAlert.value = enable
+    }
+
+    /**
+     * reject an order entry
+     */
+    fun rejectEntry(){
+        EventCollector.sendEvent(Event.Action.OrderHsn.RejectOrderEntry(
+            orderEntryId = orderEntry.value.id,
+            spid = orderEntry.value.spid,
+            reasonCode = ""
+        ))
     }
 
     /**
@@ -142,10 +169,13 @@ class OrderHsnEditScope(
             orderEntryId = orderEntry.value.id,
             servedQty = quantity.value,
             freeQty = freeQuantity.value,
-            price = ptr.value.toDouble(),
+            price = ptr.value,
             batchNo = batch.value,
-            expiryDate = expiry.value
-        ).log("save data")
+            expiryDate = expiry.value,
+            mrp = mrp.value,
+            hsnCode = selectedHsnCode.value,
+            discount = discount.value
+        ).toString().log("save data")
 
 //        EventCollector.sendEvent(Event.Action.OrderHsn.SaveOrderEntry(
 //            orderId = orderID,
@@ -154,7 +184,10 @@ class OrderHsnEditScope(
 //            freeQty = freeQuantity.value,
 //            price = ptr.value.toDouble(),
 //            batchNo = batch.value,
-//            expiryDate = expiry.value
+//            expiryDate = expiry.value,
+//        mrp = mrp.value,
+//        hsnCode = hsnCode.value,
+//        discount = discount.value
 //        ))
     }
 }

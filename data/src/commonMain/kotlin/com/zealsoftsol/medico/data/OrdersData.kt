@@ -127,6 +127,9 @@ data class OrderNewQtyRequest(
     val price: Double,
     val batchNo: String,
     val expiryDate: String,
+    val discount: Double? = null,
+    val mrp: Double? = null,
+    val hsnCode: String? = null
 )
 
 @Serializable

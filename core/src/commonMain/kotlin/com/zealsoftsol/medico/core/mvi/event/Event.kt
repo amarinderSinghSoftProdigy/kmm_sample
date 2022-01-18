@@ -319,7 +319,16 @@ sealed class Event {
                 val freeQty: Double,
                 val price: Double,
                 val batchNo: String,
-                val expiryDate: String
+                val expiryDate: String,
+                val mrp: Double,
+                val discount: Double,
+                val hsnCode: String,
+            ) : OrderHsn()
+
+            data class RejectOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+                val reasonCode: String
             ) : OrderHsn()
         }
 
