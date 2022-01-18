@@ -594,13 +594,24 @@ fun ProductItemStore(
                             onLoading = { ItemPlaceholder() },
                         )
                         Space(10.dp)
-                        Column {
-                            Text(
-                                text = product.name,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W600,
-                                fontSize = 12.sp,
-                            )
+                        Column(modifier = Modifier.padding(top = 8.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = product.name,
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 12.sp,
+                                )
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_favorite),
+                                    contentDescription = null,
+                                    tint = ConstColors.gray,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                            }
                             Space(4.dp)
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -615,14 +626,14 @@ fun ProductItemStore(
                                             addStyle(
                                                 SpanStyle(
                                                     color = MaterialTheme.colors.background,
-                                                    fontWeight = FontWeight.W800
+                                                    fontWeight = FontWeight.W600
                                                 ),
                                                 startIndex,
                                                 length,
                                             )
                                         },
                                         color = ConstColors.gray,
-                                        fontWeight = FontWeight.W700,
+                                        fontWeight = FontWeight.W500,
                                         fontSize = 12.sp,
                                     )
                                     /*Space(4.dp)
@@ -641,14 +652,14 @@ fun ProductItemStore(
                                                 addStyle(
                                                     SpanStyle(
                                                         color = labelColor,
-                                                        fontWeight = FontWeight.W800
+                                                        fontWeight = FontWeight.W600
                                                     ),
                                                     startIndex,
                                                     length,
                                                 )
                                             },
                                             color = labelColor,
-                                            fontWeight = FontWeight.W700,
+                                            fontWeight = FontWeight.W500,
                                             fontSize = 12.sp,
                                         )
                                     }
@@ -662,7 +673,7 @@ fun ProductItemStore(
                                             addStyle(
                                                 SpanStyle(
                                                     color = MaterialTheme.colors.background,
-                                                    fontWeight = FontWeight.W800
+                                                    fontWeight = FontWeight.W600
                                                 ),
                                                 startIndex,
                                                 length,
@@ -670,6 +681,7 @@ fun ProductItemStore(
                                         },
                                         color = ConstColors.gray,
                                         fontSize = 12.sp,
+                                        fontWeight = FontWeight.W500
                                     )
                                     /*Space(4.dp)
                                     product.marginPercent?.let {
@@ -784,19 +796,26 @@ fun ProductItemStore(
                 }
             }
 
-            /*Box(
-                modifier = Modifier.width(120.dp)
-                    .align(Alignment.End)
-                    .background(ConstColors.red, RoundedCornerShape(50)),
-                contentAlignment = Alignment.CenterEnd
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.End),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Text(
-                    text = "10 + 1 Offer",
-                    color = Color.White,
-                    fontWeight = FontWeight.W300,
-                    fontSize = 12.sp,
-                )
-            }*/
+                Box(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .background(ConstColors.red),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Text(
+                        text = "10 + 1 Offer",
+                        color = Color.White,
+                        fontWeight = FontWeight.W300,
+                        fontSize = 12.sp,
+                    )
+                }
+            }
         }
         val batchSelected = scope.isBatchSelected.flow.collectAsState()
         val selectedProduct = scope.checkedProduct.flow.collectAsState()

@@ -749,7 +749,7 @@ fun ChipString(option: String, onClick: () -> Unit) {
             Text(
                 text = option,
                 color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W600,
+                fontWeight = FontWeight.W500,
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
