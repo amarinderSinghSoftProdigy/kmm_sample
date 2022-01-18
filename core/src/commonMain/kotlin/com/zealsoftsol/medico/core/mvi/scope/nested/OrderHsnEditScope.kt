@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -13,6 +14,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 
 class OrderHsnEditScope(
+    private val orderID: String,
     val orderEntries: List<OrderEntry>,
     val index: Int,
     val showAlert: DataSource<Boolean> = DataSource(false)
@@ -40,10 +42,10 @@ class OrderHsnEditScope(
     override val searchText: DataSource<String> = DataSource("")
 
 
-//    val quantity = DataSource(orderEntry.value.servedQty.value)
-//    val freeQuantity = DataSource(orderEntry.value.freeQty.value)
-//    val ptr = DataSource(orderEntry.value.price.value.toString())
-//    val batch = DataSource(orderEntry.value.batchNo)
+    val quantity = DataSource(orderEntry.value.servedQty.value)
+    val freeQuantity = DataSource(orderEntry.value.freeQty.value)
+    val ptr = DataSource(orderEntry.value.price.value.toString())
+    val batch = DataSource(orderEntry.value.batchNo)
 
     val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
     val hsnCode = DataSource(orderEntry.value.hsnCode)
@@ -92,22 +94,26 @@ class OrderHsnEditScope(
     fun search(value: String) =
         EventCollector.sendEvent(Event.Action.OrderHsn.Search(value))
 
-//    fun updateQuantity(value: Double) {
-//        quantity.value = value
-//    }
-//
-//    fun updateFreeQuantity(value: Double) {
-//        freeQuantity.value = value
-//    }
-//
-//    fun updatePtr(value: String) {
-//        ptr.value = value
-//    }
-//
-//    fun updateBatch(value: String) {
-//        batch.value = value
-//    }
-//
+
+    /**
+     * update following entries for sending the entered values to server
+     */
+    fun updateQuantity(value: Double) {
+        quantity.value = value
+    }
+
+    fun updateFreeQuantity(value: Double) {
+        freeQuantity.value = value
+    }
+
+    fun updatePtr(value: String) {
+        ptr.value = value
+    }
+
+    fun updateBatch(value: String) {
+        batch.value = value
+    }
+
 
     fun updateExpiry(value: String) {
         expiry.value = value
@@ -117,6 +123,7 @@ class OrderHsnEditScope(
         hsnCode.value = value
     }
 
+    /****************************************/
 
     /**
      * update the scope of alert dialog
@@ -128,6 +135,26 @@ class OrderHsnEditScope(
     /**
      * submit data to server
      */
-    fun submit() {}
+    fun saveEntry() {
 
+        Event.Action.OrderHsn.SaveOrderEntry(
+            orderId = orderID,
+            orderEntryId = orderEntry.value.id,
+            servedQty = quantity.value,
+            freeQty = freeQuantity.value,
+            price = ptr.value.toDouble(),
+            batchNo = batch.value,
+            expiryDate = expiry.value
+        ).log("save data")
+
+//        EventCollector.sendEvent(Event.Action.OrderHsn.SaveOrderEntry(
+//            orderId = orderID,
+//            orderEntryId = orderEntry.value.id,
+//            servedQty = quantity.value,
+//            freeQty = freeQuantity.value,
+//            price = ptr.value.toDouble(),
+//            batchNo = batch.value,
+//            expiryDate = expiry.value
+//        ))
+    }
 }

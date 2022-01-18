@@ -213,7 +213,12 @@ sealed class Event {
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
-            data class SelectEntry(val entry: List<OrderEntry>, val index: Int) : Orders()
+            data class SelectEntry(
+                val orderId: String,
+                val entry: List<OrderEntry>,
+                val index: Int
+            ) : Orders()
+
             data class SaveEntryQty(
                 val entry: OrderEntry,
                 val quantity: Double,
@@ -307,12 +312,15 @@ sealed class Event {
 
             data class Search(val value: String) : OrderHsn()
 
-            data class SaveOrderEntry(val entry: OrderEntry,
-                                      val quantity: Double,
-                                      val freeQuantity: Double,
-                                      val ptr: Double,
-                                      val batch: String,
-                                      val expiry: String,) : OrderHsn()
+            data class SaveOrderEntry(
+                val orderId: String,
+                val orderEntryId: String,
+                val servedQty: Double,
+                val freeQty: Double,
+                val price: Double,
+                val batchNo: String,
+                val expiryDate: String
+            ) : OrderHsn()
         }
 
         sealed class Inventory : Action() {

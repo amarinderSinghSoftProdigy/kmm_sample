@@ -1,13 +1,16 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
-import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.SearchDataItem
 
 internal class OrdersHsnEventDelegate(
@@ -18,7 +21,15 @@ internal class OrdersHsnEventDelegate(
 ) : EventDelegate<Event.Action.OrderHsn>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.OrderHsn) = when (event) {
-        is Event.Action.OrderHsn.SaveOrderEntry -> {}//saveEntryQty()
+        is Event.Action.OrderHsn.SaveOrderEntry -> saveEntry(
+            event.orderId,
+            event.orderEntryId,
+            event.servedQty,
+            event.freeQty,
+            event.price,
+            event.batchNo,
+            event.expiryDate
+        )
         is Event.Action.OrderHsn.Load -> load(event.isFirstLoad)
         is Event.Action.OrderHsn.Search -> search(event.value)
     }
@@ -50,32 +61,34 @@ internal class OrdersHsnEventDelegate(
     /**
      * save an order entry to backend
      */
-    private suspend fun saveEntryQty(
-        orderEntry: OrderEntry,
-        qty: Double,
+    private suspend fun saveEntry(
+        orderId: String,
+        orderEntryId: String,
+        servedQty: Double,
         freeQty: Double,
-        ptr: Double,
-        batch: String,
-        expiry: String,
+        price: Double,
+        batchNo: String,
+        expiryDate: String
     ) {
         navigator.withScope<OrderHsnEditScope> {
-//            withProgress {
-//                networkOrdersScope.saveNewOrderQty(
-//                    OrderNewQtyRequest(
-//                        orderId = it.order.value.info.id,
-//                        orderEntryId = orderEntry.id,
-//                        unitCode = userRepo.requireUser().unitCode,
-//                        servedQty = qty,
-//                        freeQty, ptr, batch, expiry,
-//                    )
-//                )
-//            }.onSuccess { body ->
-//                scope.value.dismissBottomSheet()
-//                it.order.value = body.order
-////                it.checkedEntries.value = emptyList()
-//                it.entries.value = body.entries
-//                it.calculateActions()
-//            }.onError(navigator)
+            withProgress {
+                networkOrdersScope.saveNewOrderQty(
+                    OrderNewQtyRequest(
+                        orderId = orderId,
+                        orderEntryId = orderEntryId,
+                        unitCode = userRepo.requireUser().unitCode,
+                        servedQty = servedQty,
+                        freeQty = freeQty,
+                        price = price,
+                        batchNo = batchNo,
+                        expiryDate = expiryDate,
+                    )
+                )
+            }.onSuccess { body ->
+                log(body.toString())
+            }.onError {
+                log(it.body)
+            }
         }
     }
 

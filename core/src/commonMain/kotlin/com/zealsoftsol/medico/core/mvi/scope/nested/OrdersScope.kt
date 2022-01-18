@@ -20,7 +20,7 @@ import com.zealsoftsol.medico.data.OrderType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
-) : Scope.Child.TabBar(),Loadable<Order> {
+) : Scope.Child.TabBar(), Loadable<Order> {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         TabBarInfo.NoIconTitle("", unreadNotifications)
@@ -105,7 +105,7 @@ class ViewOrderScope(
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
 
     fun selectEntry(entry: List<OrderEntry>, index: Int) =
-        EventCollector.sendEvent(Event.Action.Orders.SelectEntry(entry, index))
+        EventCollector.sendEvent(Event.Action.Orders.SelectEntry(order.value.info.id, entry, index))
 
     fun acceptAction(action: Action) =
         EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(action, false))

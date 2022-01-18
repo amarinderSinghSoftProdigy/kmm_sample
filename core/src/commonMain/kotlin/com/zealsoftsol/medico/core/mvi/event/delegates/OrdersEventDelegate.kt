@@ -39,7 +39,7 @@ internal class OrdersEventDelegate(
             event.action,
             event.fromNotification,
         )
-        is Event.Action.Orders.SelectEntry -> selectEntry(event.entry, event.index)
+        is Event.Action.Orders.SelectEntry -> selectEntry(event.orderId, event.entry, event.index)
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(
             event.entry,
@@ -147,14 +147,9 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private fun selectEntry(orderEntry: List<OrderEntry>, index: Int) {
+    private fun selectEntry(orderId: String, orderEntry: List<OrderEntry>, index: Int) {
         navigator.withScope<ViewOrderScope> {
-            navigator.setScope(OrderHsnEditScope(orderEntry, index))
-            /*navigator.scope.value.bottomSheet.value = BottomSheet.ModifyOrderEntry(
-                orderEntry,
-                isChecked = DataSource(orderEntry in it.checkedEntries.value),
-                canEdit = it.canEdit,
-            )*/
+            navigator.setScope(OrderHsnEditScope(orderId, orderEntry, index))
         }
     }
 

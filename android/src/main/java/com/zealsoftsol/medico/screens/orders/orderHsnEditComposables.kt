@@ -369,7 +369,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             )
                             Space(10.dp)
                             Text(
-                                text = orderEntry.freeQty.formatted,
+                                text = orderEntry.discount.formatted,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 maxLines = 1,
@@ -458,7 +458,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
                             EditField(
                                 label = stringResource(id = R.string.ptr),
-                                qty = orderEntry.price.formatted,
+                                qty = orderEntry.price.value.toString(),
                                 onChange = { },
                                 isEnabled = canEdit,
                                 formattingRule = false,
@@ -473,7 +473,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         ) {
                             EditField(
                                 label = stringResource(id = R.string.mrp),
-                                qty = orderEntry.price.value.toString(),
+                                qty = orderEntry.mrp.value.toString(),
                                 onChange = {
 
                                 },
@@ -490,7 +490,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
                             EditField(
                                 label = stringResource(id = R.string.qty),
-                                qty = orderEntry.servedQty.formatted,
+                                qty = orderEntry.servedQty.value.toString(),
                                 onChange = {
 
                                 },
@@ -506,7 +506,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         ) {
                             EditField(
                                 label = stringResource(id = R.string.free),
-                                qty = orderEntry.freeQty.formatted,
+                                qty = orderEntry.freeQty.value.toString(),
                                 onChange = {
 
                                 },
@@ -573,7 +573,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         ) {
                             EditField(
                                 label = stringResource(id = R.string.discount),
-                                qty = orderEntry.freeQty.formatted,
+                                qty = orderEntry.discount.value.toString(),
                                 onChange = {
 
                                 },
@@ -621,7 +621,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             append(stringResource(id = R.string.cgst))
                             append(":")
                         }.toString(),
-                        qty = "",
+                        qty = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
                         onChange = {
 
                         },
@@ -645,7 +645,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             append(stringResource(id = R.string.sgst))
                             append(":")
                         }.toString(),
-                        qty = "",
+                        qty = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
                         onChange = {
 
                         },
@@ -669,7 +669,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             append(stringResource(id = R.string.igst))
                             append(":")
                         }.toString(),
-                        qty = "",
+                        qty = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
                         onChange = {
 
                         },
@@ -704,7 +704,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         .padding(10.dp)
                         .height(40.dp),
                     text = stringResource(id = R.string.save),
-                    onClick = { scope.submit() },
+                    onClick = { scope.saveEntry() },
                     isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
                 )
             }
