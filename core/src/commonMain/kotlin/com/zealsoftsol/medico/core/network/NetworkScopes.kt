@@ -290,7 +290,8 @@ interface NetworkScope {
             pagination: Pagination
         ): BodyResponse<PaginatedData<SearchDataItem>>
 
-        suspend fun saveHsnCodes(unitCode: String): AnyResponse
+        suspend fun saveNewOrderQty(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
+
     }
 
 }

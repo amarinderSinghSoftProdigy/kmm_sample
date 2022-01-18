@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.utils.LoadHelper
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 
 internal class OrdersHsnEventDelegate(
@@ -17,7 +18,7 @@ internal class OrdersHsnEventDelegate(
 ) : EventDelegate<Event.Action.OrderHsn>(navigator), CommonScope.CanGoBack {
 
     override suspend fun handleEvent(event: Event.Action.OrderHsn) = when (event) {
-        is Event.Action.OrderHsn.SelectHsn -> {}
+        is Event.Action.OrderHsn.SaveOrderEntry -> {}//saveEntryQty()
         is Event.Action.OrderHsn.Load -> load(event.isFirstLoad)
         is Event.Action.OrderHsn.Search -> search(event.value)
     }
@@ -43,6 +44,38 @@ internal class OrdersHsnEventDelegate(
                 search = searchText.value,
                 pagination = pagination,
             ).getBodyOrNull()
+        }
+    }
+
+    /**
+     * save an order entry to backend
+     */
+    private suspend fun saveEntryQty(
+        orderEntry: OrderEntry,
+        qty: Double,
+        freeQty: Double,
+        ptr: Double,
+        batch: String,
+        expiry: String,
+    ) {
+        navigator.withScope<OrderHsnEditScope> {
+//            withProgress {
+//                networkOrdersScope.saveNewOrderQty(
+//                    OrderNewQtyRequest(
+//                        orderId = it.order.value.info.id,
+//                        orderEntryId = orderEntry.id,
+//                        unitCode = userRepo.requireUser().unitCode,
+//                        servedQty = qty,
+//                        freeQty, ptr, batch, expiry,
+//                    )
+//                )
+//            }.onSuccess { body ->
+//                scope.value.dismissBottomSheet()
+//                it.order.value = body.order
+////                it.checkedEntries.value = emptyList()
+//                it.entries.value = body.entries
+//                it.calculateActions()
+//            }.onError(navigator)
         }
     }
 

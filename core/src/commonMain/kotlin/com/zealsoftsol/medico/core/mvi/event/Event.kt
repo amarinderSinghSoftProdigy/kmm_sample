@@ -307,7 +307,12 @@ sealed class Event {
 
             data class Search(val value: String) : OrderHsn()
 
-            object SelectHsn : OrderHsn()
+            data class SaveOrderEntry(val entry: OrderEntry,
+                                      val quantity: Double,
+                                      val freeQuantity: Double,
+                                      val ptr: Double,
+                                      val batch: String,
+                                      val expiry: String,) : OrderHsn()
         }
 
         sealed class Inventory : Action() {

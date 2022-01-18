@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderType
 
 class OrdersScope(
@@ -94,7 +95,7 @@ class OrdersScope(
 
 class ViewOrderScope(
     override val canEdit: Boolean,
-    override val order: DataSource<Order>,
+    override val order: DataSource<OrderTax>,
     val b2bData: DataSource<B2BData>,
     val entries: DataSource<List<OrderEntry>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
@@ -151,7 +152,7 @@ class ViewOrderScope(
 }
 
 class ConfirmOrderScope(
-    override val order: DataSource<Order>,
+    override val order: DataSource<OrderTax>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
@@ -221,13 +222,13 @@ class ConfirmOrderScope(
     }
 }
 
-class OrderPlacedScope(val order: Order) : Scope.Child.TabBar() {
+class OrderPlacedScope(val order: OrderTax) : Scope.Child.TabBar() {
 
     override fun goHome() = EventCollector.sendEvent(Event.Transition.Back)
 }
 
 interface SelectableOrderEntry : Scopable {
-    val order: DataSource<Order>
+    val order: DataSource<OrderTax>
     val checkedEntries: DataSource<List<OrderEntry>>
     val canEdit: Boolean
 

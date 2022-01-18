@@ -621,7 +621,7 @@ class NetworkClient(
         unitCode: String,
         orderId: String
     ) = simpleRequest {
-        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
+        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax${type.path}$orderId") {
             withMainToken()
             url {
                 parameters.apply {
@@ -853,19 +853,6 @@ class NetworkClient(
         }
     }
 
-
-    override suspend fun saveHsnCodes(
-        unitCode: String
-    ) =
-        simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/") {//need to add save endpoint
-                withMainToken()
-                //jsonBody()
-                url {
-                    parameters.append("b2bUnitCode", unitCode)
-                }
-            }
-        }
 
     // Utils
 

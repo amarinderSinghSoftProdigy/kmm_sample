@@ -49,14 +49,30 @@ data class OrderEntry(
     }
 }
 
+
+@Serializable
+data class OrderTax(
+    @SerialName("orderTaxInfo")
+    val info: OrderInfo,
+    val tradeName: String,
+    @SerialName("sbRetailerTradeName")
+    val seasonBoyRetailerName: String? = null,
+)
+
 @Serializable
 data class OrderResponse(
     @SerialName("orderEntries")
     val entries: List<OrderEntry>,
-    val order: Order,
+    @SerialName("orderTax")
+    val order: OrderTax,
     @SerialName("unitInfoData")
     val unitData: UnitData,
+    val declineReasons: List<DeclineReason>,
+    val isDeliveryAvailable: Boolean
 )
+
+@Serializable
+data class DeclineReason(val code: String, val name: String)
 
 @Serializable
 data class UnitData(
