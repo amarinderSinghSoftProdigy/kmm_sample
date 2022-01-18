@@ -251,7 +251,7 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        Expiry(0, "", "#FF00FF"),
+                        Expiry(0, "", "#FF00FF",""),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),

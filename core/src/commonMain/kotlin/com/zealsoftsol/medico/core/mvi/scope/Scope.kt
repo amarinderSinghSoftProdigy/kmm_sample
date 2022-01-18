@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.Store
 import kotlin.reflect.KClass
 
 sealed class Scope : Scopable {
@@ -120,6 +121,15 @@ sealed class TabBarInfo {
 
     data class NoIconTitle(
         val title: String, val notificationItemsCount: ReadOnlyDataSource<Int>,
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.NO_ICON
+        fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
+        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search())
+    }
+
+    data class StoreTitle(
+        val store: Store, val notificationItemsCount: ReadOnlyDataSource<Int>,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON

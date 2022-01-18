@@ -101,12 +101,17 @@ internal class ProductEventDelegate(
         }.onSuccess { body ->
             val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
             val nextScope = when (buyingOption) {
-                BuyingOption.BUY -> BuyProductScope.ChooseStockist(
-                    isSeasonBoy = isSeasonBoy,
-                    product = body.product,
-                    sellersInfo = DataSource(body.sellerInfo),
-                    tapModeHelper = tapModeHelper,
-                )
+                BuyingOption.BUY -> {
+                    EventCollector.sendEvent(
+                        Event.Action.Search.showToast(body.type)
+                    )
+                    BuyProductScope.ChooseStockist(
+                        isSeasonBoy = isSeasonBoy,
+                        product = body.product,
+                        sellersInfo = DataSource(body.sellerInfo),
+                        tapModeHelper = tapModeHelper,
+                    )
+                }
                 BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
                     isSeasonBoy = isSeasonBoy,
                     product = body.product,

@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -26,6 +28,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -110,6 +114,7 @@ import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
@@ -236,6 +241,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
                         //display search bar with product logo
                         is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
+                        is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
                     }
                 }
             }
@@ -797,7 +803,181 @@ private fun NoIconHeader(
     }
 
     val cartCount = info.cartItemsCount?.flow?.collectAsState()
-    if(cartCount!=null){
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+}
+
+/**
+ * display header data for instore seller details
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun StoreHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.StoreTitle,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (mUserType == UserType.STOCKIST) {
+            Image(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .height(25.dp)
+                    .width(25.dp)
+                    .clickable {
+                        EventCollector.sendEvent(Event.Transition.Settings(true))
+                    },
+                painter = painterResource(id = R.drawable.ic_personal),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(
+                    Color(0xFF003657)
+                )
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .weight(0.15f)
+                    .height(30.dp)
+                    .width(30.dp),
+                painter = painterResource(id = R.drawable.ic_small_logo),
+                contentDescription = null
+            )
+        }
+        if (scope.childScope.flow.collectAsState().value is StoresScope) {
+            Box(modifier = Modifier.weight(0.7f)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp)),
+                ) {
+
+                    FoldableItem(
+                        expanded = false,
+                        headerMinHeight = 40.dp,
+                        header = { isExpanded ->
+                            Space(8.dp)
+                            Row(
+                                modifier = Modifier.weight(.8f),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Space(8.dp)
+                                Text(
+                                    text = info.store.tradeName,
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .weight(.1f)
+                                    .padding(end = 4.dp),
+                                horizontalArrangement = Arrangement.End,
+                            ) {
+                                Icon(
+                                    imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                    tint = ConstColors.gray,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            }
+                        },
+                        childItems = listOf(""),
+                        item = { value, _ ->
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    text = info.store.fullAddress(),
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Space(8.dp)
+                            }
+                        }
+                    )
+                }
+            }
+        } else {
+            Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
+                Row(
+                    modifier = Modifier
+                        .clickable(indication = null) { info.goToSearch() }
+                        .background(Color.White, MaterialTheme.shapes.medium)
+                        .padding(horizontal = 14.dp)
+                        .height(40.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        tint = ConstColors.gray,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Text(
+                        text = stringResource(id = R.string.search_products),
+                        color = ConstColors.gray.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(start = 24.dp),
+                    )
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(0.15f)
+                .clickable(indication = null) { info.goToNotifications() }
+                .padding(10.dp),
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_bell),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(6.dp)
+                    .align(Alignment.Center),
+                colorFilter = ColorFilter.tint(
+                    Color(0xFF003657)
+                )
+            )
+            val cartItems = info.cartItemsCount?.flow?.collectAsState()
+            if (cartItems?.value != null && cartItems.value > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 6.dp, end = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(5.dp)) {
+                        drawCircle(Color.Red)
+                    }
+                    /* Text(
+                        text = cartItems.value.toString(),
+                        color = ConstColors.red,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 10.sp,
+                    )*/
+                }
+            }
+        }
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
         if (cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value

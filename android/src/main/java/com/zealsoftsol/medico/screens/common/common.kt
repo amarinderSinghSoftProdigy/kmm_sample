@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.common
 
+import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -684,4 +685,20 @@ fun EditField(
             drawRect(color)
         }
     }
+}
+
+@Composable
+fun showToastGlobal(msg:String) {
+    val context = LocalContext.current
+    Column(
+        content = {
+            Toast.makeText(
+                context,
+                msg,
+                Toast.LENGTH_LONG
+            ).show()
+        }, modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
 }

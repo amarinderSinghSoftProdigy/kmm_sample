@@ -86,6 +86,7 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
@@ -508,7 +509,7 @@ fun SortSection(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BatchItem(
-    options: String,
+    options: StockInfo,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -523,7 +524,7 @@ fun BatchItem(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = BorderStroke(
-            2.dp, if (options.isEmpty()) {
+            2.dp, if (options.formattedStatus.isNotEmpty()) {
                 ConstColors.separator
             } else {
                 ConstColors.lightBlue
@@ -537,9 +538,9 @@ fun BatchItem(
         ) {
             Text(
                 text = buildAnnotatedString {
-                    append(stringResource(id = R.string.batch))
+                    append(stringResource(id = R.string.batch_no))
                     val startIndex = length
-                    append(options)
+                    append(options.formattedStatus)
                     addStyle(
                         SpanStyle(
                             color = MaterialTheme.colors.background,
@@ -558,7 +559,7 @@ fun BatchItem(
                 text = buildAnnotatedString {
                     append(stringResource(id = R.string.expiry))
                     val startIndex = length
-                    append(options)
+                    append(options.expiry.formattedDate)
                     addStyle(
                         SpanStyle(
                             color = MaterialTheme.colors.background,
@@ -577,7 +578,7 @@ fun BatchItem(
                 text = buildAnnotatedString {
                     append("In-Stock : ")
                     val startIndex = length
-                    append(options)
+                    append(options.availableQty.toString())
                     addStyle(
                         SpanStyle(
                             color = ConstColors.green,

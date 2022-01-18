@@ -44,15 +44,21 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectSortOption -> selectSortOption(event.option)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
-        is Event.Action.Search.SelectBatch -> updateBatchSelection()
+        is Event.Action.Search.SelectBatch -> updateBatchSelection(event.product)
+        is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
         is Event.Action.Search.AddToCart -> addToCart(event.product)
+        is Event.Action.Search.showToast -> showToast(event.msg)
     }
 
-    private suspend fun addToCart(product: ProductSearch) {
+    private fun showToast(msg: String) {
+       //Need to display a toast here with msg
+    }
+
+    private fun addToCart(product: ProductSearch) {
         navigator.withScope<BaseSearchScope> {
             navigator.scope.value.bottomSheet.value =
-                BottomSheet.BatchViewProduct(product,it)
+                BottomSheet.BatchViewProduct(product, it)
         }
     }
 
@@ -258,10 +264,17 @@ internal class SearchEventDelegate(
         }
     }
 
-    private fun updateBatchSelection() {
+    private fun updateBatchSelection(product: ProductSearch) {
         navigator.withScope<BaseSearchScope> {
             it.isBatchSelected.value = !it.isBatchSelected.value
+            it.checkedProduct.value = product
         }
+    }
+
+    private fun viewAllManufacturers() {
+        searchJob?.cancel()
+        activeFilters.clear()
+//        it.calculateActiveFilterNames()
     }
 
     private fun reset() {

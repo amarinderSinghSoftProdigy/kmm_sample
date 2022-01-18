@@ -56,6 +56,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+        override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
         override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
@@ -79,8 +80,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.NoIconTitle(
-                title = "",
+            return TabBarInfo.StoreTitle(
+                store = store,
                 notificationItemsCount = notificationCount,
                 cartItemsCount = cartItemsCount
             )

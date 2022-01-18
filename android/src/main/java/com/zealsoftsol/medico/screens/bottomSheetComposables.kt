@@ -76,6 +76,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
@@ -636,7 +637,12 @@ private fun BatchViewProductBottomSheet(
             ) {
 
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.width(maxWidth / 2)) {
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth / 2)
+                            .align(Alignment.CenterStart),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
                         Text(
                             text = stringResource(id = R.string.batchs),
                             color = MaterialTheme.colors.background,
@@ -669,24 +675,12 @@ private fun BatchViewProductBottomSheet(
 
             }
 
-            // Added a static list for batch items
-            val sliderList = ArrayList<String>()
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
-            sliderList.add("")
+            val sliderList = ArrayList<StockInfo>()
+            sliderList.add(product.stockInfo!!)
 
             BoxWithConstraints {
                 LazyColumn(
-                    modifier = Modifier.height(maxHeight - 80.dp),
+                    modifier = Modifier.height(maxHeight - 120.dp),
                     state = rememberLazyListState(),
                     contentPadding = PaddingValues(top = 8.dp)
                 ) {
@@ -696,7 +690,7 @@ private fun BatchViewProductBottomSheet(
                             BatchItem(
                                 value
                             ) {
-                                scope.selectBatch(index.toString())
+                                scope.selectBatch(index.toString(), product = product)
                                 onDismiss()
                             }
                         },

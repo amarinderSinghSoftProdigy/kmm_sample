@@ -60,6 +60,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
@@ -95,11 +96,11 @@ fun StoresScreen(scope: StoresScope) {
 
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
-    Space(16.dp)
-    Column(
+    //Space(16.dp)
+    /*Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 16.dp)
             .background(Color.White, RoundedCornerShape(8.dp)),
     ) {
 
@@ -155,7 +156,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             }
         )
 
-        /*Column(
+        *//*Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 16.dp)
@@ -176,8 +177,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             //Space(16.dp)
             //DataWithLabel(R.string.gstin_num, scope.store.gstin)
             //Space(16.dp)
-        }*/
-    }
+        }*//*
+    }*/
     Space(16.dp)
     val search = scope.productSearch.flow.collectAsState()
     val filters = scope.filters.flow.collectAsState()
@@ -272,10 +273,10 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             Box(
                 modifier = Modifier
                     .width(maxWidth / 2 - 8.dp)
-                    .align(Alignment.CenterEnd),
+                    .align(Alignment.CenterEnd)
+                    .clickable(onClick = { scope.selectFilter(filters.value[0], Option.ViewMore) }),
                 contentAlignment = Alignment.BottomEnd,
-
-                ) {
+            ) {
                 Row {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_eye),
@@ -798,8 +799,9 @@ fun ProductItemStore(
             }*/
         }
         val batchSelected = scope.isBatchSelected.flow.collectAsState()
+        val selectedProduct = scope.checkedProduct.flow.collectAsState()
 
-        if (batchSelected.value)
+        if (batchSelected.value && selectedProduct.value?.id == product.id)
             Surface(
                 color = Color.White,
                 shape = MaterialTheme.shapes.medium,
@@ -849,7 +851,7 @@ fun ProductItemStore(
                                 isEnabled = true,
                                 height = 32.dp,
                                 elevation = null,
-                                onClick = { scope.selectBatch("") },
+                                onClick = { scope.selectBatch("", product) },
                                 textSize = 12.sp,
                                 color = ConstColors.ltgray,
                                 contentColor = MaterialTheme.colors.background

@@ -86,7 +86,7 @@ data class SellerInfo(
                     date = 0,
                     formattedDate = "",
                     color = "",
-                ),
+                    ""),
                 formattedStatus = "",
                 status = StockStatus.OUT_OF_STOCK,
             ),
@@ -143,6 +143,7 @@ data class Expiry(
     val formattedDate: String,
     @SerialName("hexCode")
     val color: String,
+    val monthsToExpire: String,
 )
 
 enum class StockStatus {
