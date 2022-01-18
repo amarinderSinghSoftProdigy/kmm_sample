@@ -56,6 +56,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+        override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),

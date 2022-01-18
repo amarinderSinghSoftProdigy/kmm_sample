@@ -88,6 +88,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
@@ -208,7 +209,6 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 item,
                                 onClick = { scope.selectProduct(item) },
                                 onBuy = { scope.buy(item) },
-                                addToCart = { scope.addToCart(item) }
                             )
                             if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadMoreProducts()
@@ -294,12 +294,7 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductItem(
-    product: ProductSearch,
-    onClick: () -> Unit,
-    onBuy: () -> Unit,
-    addToCart: () -> Unit
-) {
+fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -323,7 +318,7 @@ fun ProductItem(
                 Row {
                     CoilImage(
                         src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
-                        size = 70.dp,
+                        size = 80.dp,
                         onError = { ItemPlaceholder() },
                         onLoading = { ItemPlaceholder() },
                     )
@@ -333,7 +328,7 @@ fun ProductItem(
                             text = product.name,
                             color = MaterialTheme.colors.background,
                             fontWeight = FontWeight.W600,
-                            fontSize = 12.sp,
+                            fontSize = 16.sp,
                         )
                         Space(4.dp)
                         Row(
@@ -342,45 +337,21 @@ fun ProductItem(
                         ) {
                             Column {
                                 Text(
-                                    text = buildAnnotatedString {
-                                        append("PTR: ")
-                                        val startIndex = length
-                                        append(product.formattedPrice.orEmpty())
-                                        addStyle(
-                                            SpanStyle(
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W800
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = ConstColors.gray,
-                                    fontWeight = FontWeight.W700,
-                                    fontSize = 12.sp,
+                                    text = product.formattedPrice.orEmpty(),
+                                    color = MaterialTheme.colors.background,
+                                    fontWeight = FontWeight.W900,
+                                    fontSize = 16.sp,
                                 )
-                                /*Space(4.dp)
+                                Space(4.dp)
                                 Text(
                                     text = product.code,
                                     color = ConstColors.gray,
                                     fontSize = 12.sp,
-                                )*/
+                                )
                                 product.stockInfo?.let {
                                     Space(4.dp)
                                     Text(
-                                        text = buildAnnotatedString {
-                                            append(it.formattedStatus)
-                                            val startIndex = length
-                                            append("(" + it.availableQty + ")")
-                                            addStyle(
-                                                SpanStyle(
-                                                    color = labelColor,
-                                                    fontWeight = FontWeight.W800
-                                                ),
-                                                startIndex,
-                                                length,
-                                            )
-                                        },
+                                        text = it.formattedStatus,
                                         color = labelColor,
                                         fontWeight = FontWeight.W700,
                                         fontSize = 12.sp,
@@ -395,7 +366,7 @@ fun ProductItem(
                                         append(product.formattedMrp)
                                         addStyle(
                                             SpanStyle(
-                                                color = MaterialTheme.colors.background,
+                                                color = ConstColors.lightBlue,
                                                 fontWeight = FontWeight.W800
                                             ),
                                             startIndex,
@@ -405,7 +376,7 @@ fun ProductItem(
                                     color = ConstColors.gray,
                                     fontSize = 12.sp,
                                 )
-                                /*Space(4.dp)
+                                Space(4.dp)
                                 product.marginPercent?.let {
                                     Text(
                                         text = buildAnnotatedString {
@@ -424,33 +395,17 @@ fun ProductItem(
                                         color = ConstColors.gray,
                                         fontSize = 12.sp,
                                     )
-                                }*/
+                                }
                             }
                         }
                     }
                 }
-
-                val sliderList = ArrayList<String>()
-                sliderList.add(product.drugFormName)
-                sliderList.addAll(product.compositions)
-                product.marginPercent?.let { sliderList.add(it) }
-                product.standardUnit?.let { sliderList.add(it) }
-                LazyRow(
-                    state = rememberLazyListState(),
-                    contentPadding = PaddingValues(top = 6.dp),
-                ) {
-                    items(
-                        items = sliderList,
-                        itemContent = { value -> ChipString(value) {} }
-                    )
-                }
-                Space(8.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom,
                 ) {
-                    /*Column {
+                    Column {
                         BoxWithConstraints {
                             Divider(modifier = Modifier.width(maxWidth / 2))
                         }
@@ -460,46 +415,31 @@ fun ProductItem(
                             color = ConstColors.lightBlue,
                             fontSize = 14.sp,
                         )
-                    }*/
-                    Box(modifier = Modifier.width(120.dp)) {
-                        MedicoButton(
-                            text = stringResource(id = R.string.batch),
-                            isEnabled = true,
-                            height = 32.dp,
-                            elevation = null,
-                            onClick = onBuy,
-                            textSize = 12.sp,
-                            color = ConstColors.lightGreen,
-                            contentColor = Color.White
-                        )
                     }
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {
                             BuyingOption.BUY -> MedicoButton(
-                                text = stringResource(id = R.string.add_to_cart),
+                                text = stringResource(id = R.string.buy),
                                 isEnabled = true,
-                                height = 32.dp,
+                                height = 36.dp,
                                 elevation = null,
-                                onClick = addToCart,
-                                textSize = 12.sp
+                                onClick = onBuy,
                             )
                             BuyingOption.QUOTE -> MedicoButton(
                                 text = stringResource(id = R.string.get_quote),
                                 isEnabled = true,
-                                height = 32.dp,
+                                height = 36.dp,
                                 elevation = null,
                                 color = ConstColors.yellow.copy(alpha = .1f),
                                 border = BorderStroke(2.dp, ConstColors.yellow),
                                 onClick = onBuy,
-                                textSize = 12.sp
                             )
                             null -> MedicoButton(
-                                text = stringResource(id = R.string.add_to_cart),
+                                text = stringResource(id = R.string.buy),
                                 isEnabled = false,
-                                height = 32.dp,
+                                height = 36.dp,
                                 elevation = null,
                                 onClick = {},
-                                textSize = 12.sp
                             )
                         }
                     }
@@ -569,7 +509,7 @@ fun SortSection(
 @Composable
 fun BatchItem(
     options: String,
-    onClick: (SortOption?) -> Unit,
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -579,9 +519,16 @@ fun BatchItem(
                 bottom = 16.dp,
                 end = 16.dp
             ),
+        onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = BorderStroke(2.dp, ConstColors.separator)
+        border = BorderStroke(
+            2.dp, if (options.isEmpty()) {
+                ConstColors.separator
+            } else {
+                ConstColors.lightBlue
+            }
+        )
     ) {
         Column(
             modifier = Modifier
@@ -730,7 +677,7 @@ data class SearchOption(val input: String, val onSearch: (String) -> Unit)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun Chip(option: Option, onClick: () -> Unit) {
+fun Chip(option: Option, onClick: () -> Unit) {
     when (option) {
         is Option.StringValue -> {
             if (option.isVisible) Surface(
@@ -790,7 +737,7 @@ private fun Chip(option: Option, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun ChipString(option: String, onClick: () -> Unit) {
+fun ChipString(option: String, onClick: () -> Unit) {
     Surface(
         color = ConstColors.ltgray,
         shape = RoundedCornerShape(percent = 50),
@@ -1056,7 +1003,7 @@ fun SearchBarBox(
     }
 }
 
-private object YellowOutlineIndication : Indication {
+object YellowOutlineIndication : Indication {
 
     private class YellowOutlineIndicationInstance(
         private val isPressed: State<Boolean>,

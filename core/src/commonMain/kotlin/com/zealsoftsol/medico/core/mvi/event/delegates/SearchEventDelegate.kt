@@ -44,13 +44,15 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectSortOption -> selectSortOption(event.option)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
+        is Event.Action.Search.SelectBatch -> updateBatchSelection()
         is Event.Action.Search.Reset -> reset()
         is Event.Action.Search.AddToCart -> addToCart(event.product)
     }
 
     private suspend fun addToCart(product: ProductSearch) {
         navigator.withScope<BaseSearchScope> {
-            navigator.scope.value.bottomSheet.value = BottomSheet.BatchViewProduct(product)
+            navigator.scope.value.bottomSheet.value =
+                BottomSheet.BatchViewProduct(product,it)
         }
     }
 
@@ -253,6 +255,12 @@ internal class SearchEventDelegate(
     private fun toggleFilter() {
         navigator.withScope<BaseSearchScope> {
             it.isFilterOpened.value = !it.isFilterOpened.value
+        }
+    }
+
+    private fun updateBatchSelection() {
+        navigator.withScope<BaseSearchScope> {
+            it.isBatchSelected.value = !it.isBatchSelected.value
         }
     }
 

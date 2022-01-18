@@ -1,6 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,16 +16,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,11 +42,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,24 +54,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
-import com.zealsoftsol.medico.screens.common.DataWithLabel
+import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
+import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
 import com.zealsoftsol.medico.screens.search.HorizontalFilterSection
-import com.zealsoftsol.medico.screens.search.ProductItem
 import com.zealsoftsol.medico.screens.search.SearchBarBox
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption
 import com.zealsoftsol.medico.screens.search.SortSection
+import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 
 // TODO reuse with management
 @Composable
@@ -89,12 +99,13 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 12.dp)
             .background(Color.White, RoundedCornerShape(8.dp)),
     ) {
 
         FoldableItem(
             expanded = false,
+            headerMinHeight = 40.dp,
             header = { isExpanded ->
                 Space(8.dp)
                 Row(
@@ -264,7 +275,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     .align(Alignment.CenterEnd),
                 contentAlignment = Alignment.BottomEnd,
 
-            ) {
+                ) {
                 Row {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_eye),
@@ -316,11 +327,12 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         items = products.value,
                         key = { _, item -> item.id },
                         itemContent = { index, item ->
-                            ProductItem(
+                            ProductItemStore(
                                 item,
                                 onClick = { scope.selectProduct(item) },
                                 onBuy = { scope.buy(item) },
-                                addToCart = {scope.addToCart(item)}
+                                addToCart = { scope.addToCart(item) },
+                                scope
                             )
                             if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadMoreProducts()
@@ -541,3 +553,342 @@ private fun StoreItem(
         }
     }
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ProductItemStore(
+    product: ProductSearch,
+    onClick: () -> Unit,
+    onBuy: () -> Unit,
+    addToCart: () -> Unit,
+    scope: StoresScope.StorePreview
+) {
+
+    Column {
+        Surface(
+            color = Color.White,
+            shape = MaterialTheme.shapes.medium,
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            Box {
+                val labelColor = when (product.stockInfo?.status) {
+                    StockStatus.IN_STOCK -> ConstColors.green
+                    StockStatus.LIMITED_STOCK -> ConstColors.orange
+                    StockStatus.OUT_OF_STOCK -> ConstColors.red
+                    null -> ConstColors.gray
+                }
+
+                Column(
+                    modifier = Modifier.padding(all = 16.dp),
+                ) {
+
+                    Row {
+                        CoilImage(
+                            src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                            size = 70.dp,
+                            onError = { ItemPlaceholder() },
+                            onLoading = { ItemPlaceholder() },
+                        )
+                        Space(10.dp)
+                        Column {
+                            Text(
+                                text = product.name,
+                                color = MaterialTheme.colors.background,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 12.sp,
+                            )
+                            Space(4.dp)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Column {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append("PTR: ")
+                                            val startIndex = length
+                                            append(product.formattedPrice.orEmpty())
+                                            addStyle(
+                                                SpanStyle(
+                                                    color = MaterialTheme.colors.background,
+                                                    fontWeight = FontWeight.W800
+                                                ),
+                                                startIndex,
+                                                length,
+                                            )
+                                        },
+                                        color = ConstColors.gray,
+                                        fontWeight = FontWeight.W700,
+                                        fontSize = 12.sp,
+                                    )
+                                    /*Space(4.dp)
+                                    Text(
+                                        text = product.code,
+                                        color = ConstColors.gray,
+                                        fontSize = 12.sp,
+                                    )*/
+                                    product.stockInfo?.let {
+                                        Space(4.dp)
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(it.formattedStatus)
+                                                val startIndex = length
+                                                append("(" + it.availableQty + ")")
+                                                addStyle(
+                                                    SpanStyle(
+                                                        color = labelColor,
+                                                        fontWeight = FontWeight.W800
+                                                    ),
+                                                    startIndex,
+                                                    length,
+                                                )
+                                            },
+                                            color = labelColor,
+                                            fontWeight = FontWeight.W700,
+                                            fontSize = 12.sp,
+                                        )
+                                    }
+                                }
+                                Column {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append("MRP: ")
+                                            val startIndex = length
+                                            append(product.formattedMrp)
+                                            addStyle(
+                                                SpanStyle(
+                                                    color = MaterialTheme.colors.background,
+                                                    fontWeight = FontWeight.W800
+                                                ),
+                                                startIndex,
+                                                length,
+                                            )
+                                        },
+                                        color = ConstColors.gray,
+                                        fontSize = 12.sp,
+                                    )
+                                    /*Space(4.dp)
+                                    product.marginPercent?.let {
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append("Margin: ")
+                                                val startIndex = length
+                                                append(it)
+                                                addStyle(
+                                                    SpanStyle(
+                                                        color = ConstColors.lightBlue,
+                                                        fontWeight = FontWeight.W800
+                                                    ),
+                                                    startIndex,
+                                                    length,
+                                                )
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 12.sp,
+                                        )
+                                    }*/
+                                }
+                            }
+                        }
+                    }
+
+                    val sliderList = ArrayList<String>()
+                    sliderList.add(product.drugFormName)
+                    sliderList.addAll(product.compositions)
+                    product.marginPercent?.let { sliderList.add(it) }
+                    product.standardUnit?.let { sliderList.add(it) }
+                    LazyRow(
+                        state = rememberLazyListState(),
+                        contentPadding = PaddingValues(top = 6.dp),
+                    ) {
+                        items(
+                            items = sliderList,
+                            itemContent = { value -> ChipString(value) {} }
+                        )
+                    }
+                    Space(8.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        /*Column {
+                            BoxWithConstraints {
+                                Divider(modifier = Modifier.width(maxWidth / 2))
+                            }
+                            Space(4.dp)
+                            Text(
+                                text = product.uomName,
+                                color = ConstColors.lightBlue,
+                                fontSize = 14.sp,
+                            )
+                        }*/
+                        Box(modifier = Modifier.width(120.dp)) {
+                            MedicoButton(
+                                text = stringResource(id = R.string.batch),
+                                isEnabled = true,
+                                height = 32.dp,
+                                elevation = null,
+                                onClick = onBuy,
+                                textSize = 12.sp,
+                                color = ConstColors.lightGreen,
+                                contentColor = Color.White
+                            )
+                        }
+                        Box(modifier = Modifier.width(120.dp)) {
+                            when (product.buyingOption) {
+                                BuyingOption.BUY -> MedicoButton(
+                                    text = stringResource(id = R.string.add_to_cart),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = addToCart,
+                                    textSize = 12.sp
+                                )
+                                BuyingOption.QUOTE -> MedicoButton(
+                                    text = stringResource(id = R.string.get_quote),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    color = ConstColors.yellow.copy(alpha = .1f),
+                                    border = BorderStroke(2.dp, ConstColors.yellow),
+                                    onClick = onBuy,
+                                    textSize = 12.sp
+                                )
+                                null -> MedicoButton(
+                                    text = stringResource(id = R.string.add_to_cart),
+                                    isEnabled = false,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = {},
+                                    textSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (labelColor != null) {
+                    val maxWidth =
+                        LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp - 5.dp
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .padding(end = maxWidth)
+                            .background(labelColor)
+                    )
+                }
+            }
+
+            /*Box(
+                modifier = Modifier.width(120.dp)
+                    .align(Alignment.End)
+                    .background(ConstColors.red, RoundedCornerShape(50)),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Text(
+                    text = "10 + 1 Offer",
+                    color = Color.White,
+                    fontWeight = FontWeight.W300,
+                    fontSize = 12.sp,
+                )
+            }*/
+        }
+        val batchSelected = scope.isBatchSelected.flow.collectAsState()
+
+        if (batchSelected.value)
+            Surface(
+                color = Color.White,
+                shape = MaterialTheme.shapes.medium,
+                onClick = { },
+                indication = YellowOutlineIndication,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 16.dp),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        Box(modifier = Modifier.width(120.dp)) {
+                            EditField(
+                                label = stringResource(id = R.string.qty),
+                                qty = "10",
+                                onChange = { },
+                                isEnabled = true,
+                            )
+                        }
+                        Box(modifier = Modifier.width(120.dp)) {
+                            EditField(
+                                label = stringResource(id = R.string.free),
+                                qty = "0",
+                                onChange = { },
+                                isEnabled = false,
+                            )
+                        }
+                    }
+                    Space(dp = 8.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+
+                        Box(modifier = Modifier.width(120.dp)) {
+                            MedicoButton(
+                                text = stringResource(id = R.string.cancel),
+                                isEnabled = true,
+                                height = 32.dp,
+                                elevation = null,
+                                onClick = { scope.selectBatch("") },
+                                textSize = 12.sp,
+                                color = ConstColors.ltgray,
+                                contentColor = MaterialTheme.colors.background
+                            )
+                        }
+                        Box(modifier = Modifier.width(120.dp)) {
+                            when (product.buyingOption) {
+                                BuyingOption.BUY -> MedicoButton(
+                                    text = stringResource(id = R.string.buy),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = onBuy,
+                                    textSize = 12.sp
+                                )
+                                BuyingOption.QUOTE -> MedicoButton(
+                                    text = stringResource(id = R.string.get_quote),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    color = ConstColors.yellow.copy(alpha = .1f),
+                                    border = BorderStroke(2.dp, ConstColors.yellow),
+                                    onClick = onBuy,
+                                    textSize = 12.sp
+                                )
+                                null -> MedicoButton(
+                                    text = stringResource(id = R.string.add_to_cart),
+                                    isEnabled = false,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = {},
+                                    textSize = 12.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+    }
+}
+
+

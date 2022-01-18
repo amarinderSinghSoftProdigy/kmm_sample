@@ -68,6 +68,7 @@ import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -94,7 +95,6 @@ import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
-import com.zealsoftsol.medico.screens.search.ProductItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -157,6 +157,7 @@ fun Scope.Host.showBottomSheet(
                 product = bs.product,
                 onSaveQty = { qty, freeQty -> bs.addToCart(qty, freeQty) },
                 onDismiss = { dismissBottomSheet() },
+                scope = bs.scope
             )
         }
     }
@@ -620,6 +621,7 @@ private fun BatchViewProductBottomSheet(
     product: ProductSearch,
     onSaveQty: (Double, Double) -> Unit,
     onDismiss: () -> Unit,
+    scope: BaseSearchScope
 ) {
     BaseBottomSheet(onDismiss) {
         Column(
@@ -667,6 +669,7 @@ private fun BatchViewProductBottomSheet(
 
             }
 
+            // Added a static list for batch items
             val sliderList = ArrayList<String>()
             sliderList.add("")
             sliderList.add("")
@@ -692,7 +695,10 @@ private fun BatchViewProductBottomSheet(
                         itemContent = { index, value ->
                             BatchItem(
                                 value
-                            ) {}
+                            ) {
+                                scope.selectBatch(index.toString())
+                                onDismiss()
+                            }
                         },
                     )
                 }

@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -133,7 +134,7 @@ sealed class BottomSheet {
     }
 
 
-    data class BatchViewProduct(val product: ProductSearch) : BottomSheet() {
+    data class BatchViewProduct(val product: ProductSearch,val scope: BaseSearchScope) : BottomSheet() {
 
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(

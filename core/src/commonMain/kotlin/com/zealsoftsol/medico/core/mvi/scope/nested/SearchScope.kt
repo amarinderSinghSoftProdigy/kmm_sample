@@ -17,6 +17,7 @@ import com.zealsoftsol.medico.data.SortOption
 interface BaseSearchScope : Scopable {
     val productSearch: DataSource<String>
     val isFilterOpened: DataSource<Boolean>
+    val isBatchSelected: DataSource<Boolean>
     val filters: DataSource<List<Filter>>
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
@@ -31,6 +32,8 @@ interface BaseSearchScope : Scopable {
     // searches without loading if false
     val supportsAutoComplete: Boolean
     val pagination: Pagination
+
+    fun selectBatch(selectedId:String) = EventCollector.sendEvent(Event.Action.Search.SelectBatch(selectedId))
 
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
 
@@ -90,6 +93,7 @@ class SearchScope(
     autoCompleteDashboard: AutoComplete?,
     override val productSearch: DataSource<String> = DataSource(""),
     override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+    override val isBatchSelected: DataSource<Boolean> = DataSource(false),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
