@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -125,6 +126,20 @@ sealed class BottomSheet {
                 Event.Action.InStore.AddCartItem(
                     product.code,
                     product.spid,
+                    quantity,
+                    freeQuantity,
+                )
+            )
+    }
+
+
+    data class BatchViewProduct(val product: ProductSearch) : BottomSheet() {
+
+        fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
+            EventCollector.sendEvent(
+                Event.Action.InStore.AddCartItem(
+                    product.code,
+                    product.sellerInfo?.spid ?: "",
                     quantity,
                     freeQuantity,
                 )

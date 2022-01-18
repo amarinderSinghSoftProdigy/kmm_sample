@@ -263,6 +263,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     .width(maxWidth / 2 - 8.dp)
                     .align(Alignment.CenterEnd),
                 contentAlignment = Alignment.BottomEnd,
+
             ) {
                 Row {
                     Icon(
@@ -319,6 +320,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 item,
                                 onClick = { scope.selectProduct(item) },
                                 onBuy = { scope.buy(item) },
+                                addToCart = {scope.addToCart(item)}
                             )
                             if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadMoreProducts()

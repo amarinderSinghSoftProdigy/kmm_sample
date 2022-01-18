@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -43,6 +45,13 @@ internal class SearchEventDelegate(
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
         is Event.Action.Search.Reset -> reset()
+        is Event.Action.Search.AddToCart -> addToCart(event.product)
+    }
+
+    private suspend fun addToCart(product: ProductSearch) {
+        navigator.withScope<BaseSearchScope> {
+            navigator.scope.value.bottomSheet.value = BottomSheet.BatchViewProduct(product)
+        }
     }
 
     private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {

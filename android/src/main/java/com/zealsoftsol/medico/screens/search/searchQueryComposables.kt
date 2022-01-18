@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -207,6 +208,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 item,
                                 onClick = { scope.selectProduct(item) },
                                 onBuy = { scope.buy(item) },
+                                addToCart = { scope.addToCart(item) }
                             )
                             if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadMoreProducts()
@@ -292,7 +294,12 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) {
+fun ProductItem(
+    product: ProductSearch,
+    onClick: () -> Unit,
+    onBuy: () -> Unit,
+    addToCart: () -> Unit
+) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -473,7 +480,7 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) 
                                 isEnabled = true,
                                 height = 32.dp,
                                 elevation = null,
-                                onClick = onBuy,
+                                onClick = addToCart,
                                 textSize = 12.sp
                             )
                             BuyingOption.QUOTE -> MedicoButton(
@@ -554,6 +561,89 @@ fun SortSection(
                     onClick = { onClick(it) },
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BatchItem(
+    options: String,
+    onClick: (SortOption?) -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                bottom = 16.dp,
+                end = 16.dp
+            ),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(2.dp, ConstColors.separator)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 12.dp)
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.batch))
+                    val startIndex = length
+                    append(options)
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.expiry))
+                    val startIndex = length
+                    append(options)
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append("In-Stock : ")
+                    val startIndex = length
+                    append(options)
+                    addStyle(
+                        SpanStyle(
+                            color = ConstColors.green,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.green,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
         }
     }
 }
