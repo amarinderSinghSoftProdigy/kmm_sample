@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -92,6 +93,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val price = scope.ptr.flow.collectAsState().value
     val batchNo = scope.batch.flow.collectAsState().value
     val discount = scope.discount.flow.collectAsState().value
+    val canEditOrderEntry = scope.canEditOrderEntry
     val context = LocalContext.current
 
     Box(
@@ -275,12 +277,12 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         ) {
                             Space(10.dp)
                             Text(
-                                text = "",
-                                color = Color.Black,
+                                text = stringResource(id = R.string.status),
+                                color = ConstColors.gray,
                                 fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
                             )
                             Space(10.dp)
                             Text(
@@ -332,8 +334,9 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         ) {
                             Space(10.dp)
                             Text(
-                                text = "",
-                                color = Color.Black,
+                                text = orderEntry.status.toString(),
+                                color = if (orderEntry.status == OrderEntry.Status.ACCEPTED)
+                                    Color.Green else Color.Red,
                                 fontSize = 14.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -379,52 +382,54 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
                 Space(20.dp)
-                Divider()
-                Space(10.dp)
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.hsn_code),
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        verticalAlignment = Alignment.Bottom,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Column(
+                if (canEditOrderEntry){ //only allow changing hsn code if order is editable
+                    Divider()
+                    Space(10.dp)
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.hsn_code),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(bottom = 4.dp, end = 10.dp)
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = selectedHsnCode,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Divider(color = Color.Black)
-                        }
-                        Box(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            OpenHsnScreen {
-                                scope.manageBottomSheetVisibility(!openHsnBottomSheet)
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(bottom = 4.dp, end = 10.dp)
+                            ) {
+                                Text(
+                                    text = selectedHsnCode,
+                                    color = Color.Black,
+                                    fontSize = 16.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.W700
+                                )
+                                Divider(color = Color.Black)
+                            }
+                            Box(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                OpenHsnScreen {
+                                    scope.manageBottomSheetVisibility(!openHsnBottomSheet)
+                                }
                             }
                         }
                     }
+                    Space(10.dp)
+                    if (selectedHsnCode.isEmpty())
+                        HsnErrorText()
+                    Space(10.dp)
                 }
-                Space(10.dp)
-                if (selectedHsnCode.isEmpty())
-                    HsnErrorText()
-                Space(10.dp)
             }
             Divider()
             Space(20.dp)
@@ -453,10 +458,12 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 )
 
                                 EditText(
-                                    value = batchNo, onChange = {
+                                    canEditOrderEntry,
+                                    value = batchNo,
+                                    onChange = {
                                         scope.updateBatch(it)
                                     },
-                                    keyboardOptions = KeyboardOptions.Default
+                                    keyboardOptions = KeyboardOptions.Default,
                                 )
                             }
                             Space(5.dp)
@@ -484,9 +491,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         overflow = TextOverflow.Ellipsis,
                                     )
 
-                                    EditText(value = price.toString(), onChange = {
-                                        scope.updatePtr(it.toDouble())
-                                    }
+                                    EditText(canEditOrderEntry,
+                                        value = price.toString(), onChange = {
+                                            scope.updatePtr(it.toDouble())
+                                        }
                                     )
 
                                 }
@@ -514,9 +522,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         overflow = TextOverflow.Ellipsis,
                                     )
 
-                                    EditText(value = mrp.toString(), onChange = {
-                                        scope.updateMrp(it.toDouble())
-                                    }
+                                    EditText(canEditOrderEntry,
+                                        value = mrp.toString(), onChange = {
+                                            scope.updateMrp(it.toDouble())
+                                        }
                                     )
                                 }
                                 Space(5.dp)
@@ -544,9 +553,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         overflow = TextOverflow.Ellipsis,
                                     )
 
-                                    EditText(value = servedQty.toString(), onChange = {
-                                        scope.updateQuantity(it.toDouble())
-                                    }
+                                    EditText(canEditOrderEntry,
+                                        value = servedQty.toString(), onChange = {
+                                            scope.updateQuantity(it.toDouble())
+                                        }
                                     )
                                 }
                                 Space(5.dp)
@@ -573,9 +583,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         overflow = TextOverflow.Ellipsis,
                                     )
 
-                                    EditText(value = freeQty.toString(), onChange = {
-                                        scope.updateFreeQuantity(it.toDouble())
-                                    }
+                                    EditText(canEditOrderEntry,
+                                        value = freeQty.toString(), onChange = {
+                                            scope.updateFreeQuantity(it.toDouble())
+                                        }
                                     )
                                 }
                                 Space(5.dp)
@@ -592,17 +603,19 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             .width(maxWidth / 2 - 8.dp)
                             .align(Alignment.BottomStart)
                             .clickable {
-                                val now = DateTime.now()
-                                val dialog = DatePickerDialog(
-                                    context,
-                                    { _, year, month, _ ->
-                                        scope.updateExpiry("${month + 1}/${year}")
-                                    },
-                                    now.year,
-                                    now.monthOfYear - 1,
-                                    now.dayOfMonth,
-                                )
-                                dialog.show()
+                                if (canEditOrderEntry) { //only allow date picker if order an be edited
+                                    val now = DateTime.now()
+                                    val dialog = DatePickerDialog(
+                                        context,
+                                        { _, year, month, _ ->
+                                            scope.updateExpiry("${month + 1}/${year}")
+                                        },
+                                        now.year,
+                                        now.monthOfYear - 1,
+                                        now.dayOfMonth,
+                                    )
+                                    dialog.show()
+                                }
                             }) {
 
                             Column {
@@ -653,9 +666,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                         overflow = TextOverflow.Ellipsis,
                                     )
 
-                                    EditText(value = discount.toString(), onChange = {
-                                        scope.updateDiscount(it.toDouble())
-                                    }
+                                    EditText(canEditOrderEntry,
+                                        value = discount.toString(), onChange = {
+                                            scope.updateDiscount(it.toDouble())
+                                        }
                                     )
                                 }
                                 Space(5.dp)
@@ -809,32 +823,33 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             Space(5.dp)
             Divider()
             Space(10.dp)
-            Row(modifier = Modifier.fillMaxSize()) {
+            if (canEditOrderEntry) // only allow changing status if order entry is editable i.e New
+                Row(modifier = Modifier.fillMaxSize()) {
 
-                MedicoButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .height(40.dp),
-                    text = stringResource(id = R.string.not_available),
-                    onClick = {
-                        scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
-                    },
-                    color = ConstColors.gray,
-                    contentColor = Color.White,
-                    isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
-                )
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .height(40.dp),
+                        text = stringResource(id = R.string.not_available),
+                        onClick = {
+                            scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
+                        },
+                        color = ConstColors.gray,
+                        contentColor = Color.White,
+                        isEnabled = true
+                    )
 
-                MedicoButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .height(40.dp),
-                    text = stringResource(id = R.string.save),
-                    onClick = { scope.saveEntry() },
-                    isEnabled = true //hsnCode.value.isNotEmpty() , // submit only when hsn code is added
-                )
-            }
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .height(40.dp),
+                        text = stringResource(id = R.string.save),
+                        onClick = { scope.saveEntry() },
+                        isEnabled = mrp != 0.0 && price != 0.0 // only allow submit if mrp and proce is entered
+                    )
+                }
             Space(10.dp)
         }
         if (openHsnBottomSheet)
@@ -1244,6 +1259,7 @@ private fun WarningProductNotAvailable(
 
 @Composable
 fun EditText(
+    canEdit: Boolean,
     value: String,
     onChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -1266,7 +1282,7 @@ fun EditText(
         maxLines = 1,
         singleLine = true,
         keyboardOptions = keyboardOptions,
-        enabled = true,
+        enabled = canEdit,
         textStyle = textStyle
     )
 }

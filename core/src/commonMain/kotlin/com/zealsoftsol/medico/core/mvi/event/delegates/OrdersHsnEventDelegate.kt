@@ -99,6 +99,8 @@ internal class OrdersHsnEventDelegate(
                     )
                 )
             }.onSuccess { body ->
+                it.updateOrderEntriesFromServer(body.entries)
+                it.changeAlertScope(true)
             }.onError {
                 log(it.body)
             }
@@ -120,7 +122,9 @@ internal class OrdersHsnEventDelegate(
                     spid = spid,
                     reasonCode = reasonCode
                 )
-            }.onSuccess {
+            }.onSuccess { body ->
+                it.updateOrderEntriesFromServer(body.entries)
+                it.changeAlertScope(true)
             }.onError {
                 log(it.body)
             }

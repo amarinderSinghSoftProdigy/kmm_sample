@@ -215,6 +215,7 @@ sealed class Event {
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(
+                val canEditOrderEntry: Boolean,
                 val orderId: String,
                 val declineReason: List<DeclineReason>,
                 val entry: List<OrderEntry>,

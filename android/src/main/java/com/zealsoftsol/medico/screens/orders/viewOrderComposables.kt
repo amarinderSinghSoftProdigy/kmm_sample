@@ -258,7 +258,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         entry = it,
                         isChecked = it in checkedEntries.value,
                         onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = { scope.selectEntry(declineReasons.value, entries.value, index) },
+                        onClick = { scope.selectEntry(scope.canEdit,
+                            declineReasons.value, entries.value, index) },
                     )
                 }
                 Space(8.dp)

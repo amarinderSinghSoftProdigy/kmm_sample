@@ -14,9 +14,10 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 
 class OrderHsnEditScope(
+    val canEditOrderEntry: Boolean,
     private val orderID: String,
     val declineReason: List<DeclineReason>,
-    val orderEntries: List<OrderEntry>,
+    var orderEntries: MutableList<OrderEntry>,
     val index: Int,
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
@@ -36,7 +37,7 @@ class OrderHsnEditScope(
     var showHsnBottomSheet = DataSource(false)
     var showWarningBottomSheet = DataSource(false)
     var showDeclineReasonsBottomSheet = DataSource(false)
-    val selectedDeclineReason = DataSource("")
+    private val selectedDeclineReason = DataSource("")
 
     /**
      * values used for pagination
@@ -202,5 +203,16 @@ class OrderHsnEditScope(
                 discount = discount.value
             )
         )
+    }
+
+
+    /**
+     * update order details from server after order is rejected or confirmed
+     */
+    fun updateOrderEntriesFromServer(
+        orderEntries: List<OrderEntry>,
+    ) {
+        this.orderEntries = orderEntries as MutableList<OrderEntry>
+        updateSelectedIndex(this.selectedIndex.value)
     }
 }

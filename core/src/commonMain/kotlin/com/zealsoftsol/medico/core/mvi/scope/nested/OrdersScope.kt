@@ -106,9 +106,15 @@ class ViewOrderScope(
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
 
-    fun selectEntry(declineReason: List<DeclineReason>, entry: List<OrderEntry>, index: Int) =
+    fun selectEntry(
+        canEditOrderEntry: Boolean,
+        declineReason: List<DeclineReason>,
+        entry: List<OrderEntry>,
+        index: Int
+    ) =
         EventCollector.sendEvent(
             Event.Action.Orders.SelectEntry(
+                canEditOrderEntry,
                 order.value.info.id,
                 declineReason,
                 entry,

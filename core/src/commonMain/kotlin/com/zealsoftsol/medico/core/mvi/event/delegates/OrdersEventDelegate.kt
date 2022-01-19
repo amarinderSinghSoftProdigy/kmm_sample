@@ -41,6 +41,7 @@ internal class OrdersEventDelegate(
             event.fromNotification,
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(
+            event.canEditOrderEntry,
             event.orderId,
             event.declineReason,
             event.entry,
@@ -155,13 +156,19 @@ internal class OrdersEventDelegate(
     }
 
     private fun selectEntry(
+        canEditOrderEntry: Boolean,
         orderId: String,
         declineReason: List<DeclineReason>,
         orderEntry: List<OrderEntry>,
         index: Int
     ) {
         navigator.withScope<ViewOrderScope> {
-            navigator.setScope(OrderHsnEditScope(orderId, declineReason, orderEntry, index))
+            navigator.setScope(
+                OrderHsnEditScope(
+                    canEditOrderEntry, orderId, declineReason,
+                    orderEntry as MutableList<OrderEntry>, index
+                )
+            )
         }
     }
 
