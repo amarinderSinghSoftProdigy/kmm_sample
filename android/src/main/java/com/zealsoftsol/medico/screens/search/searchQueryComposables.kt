@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.search
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
@@ -71,6 +72,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -671,7 +673,7 @@ fun HorizontalFilterSection(
                     itemContent = { value ->
                         RoundChip(
                             value,
-                            {  },
+                            { },
                             searchOption = searchOption
                         )
                     }
@@ -833,17 +835,17 @@ private fun RoundChip(
         }
 
         Row(
-            modifier = Modifier.width(80.dp),
-            horizontalArrangement = Arrangement.SpaceAround
+            modifier = Modifier.width(100.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
         ) {
-            //val check = option.value.substring(0, option.value.indexOf(' '))
             Text(
                 text = option.value,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W700,
                 color = MaterialTheme.colors.background,
                 modifier = Modifier.width(80.dp),
-                maxLines = 1
+                maxLines = 1,
+                textAlign = TextAlign.Center
             )
         }
     }
