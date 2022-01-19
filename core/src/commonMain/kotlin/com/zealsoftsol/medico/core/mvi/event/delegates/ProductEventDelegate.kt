@@ -77,7 +77,7 @@ internal class ProductEventDelegate(
                             product.code,
                             product.buyingOption!!,
                             CartIdentifier(spid),
-                            1.0,
+                            product.quantity,
                             0.0,
                         )
                     )

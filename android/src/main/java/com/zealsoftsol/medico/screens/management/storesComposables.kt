@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -31,8 +31,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -48,7 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,14 +57,12 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
-import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
@@ -179,72 +174,80 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             //Space(16.dp)
         }*//*
     }*/
-    Space(16.dp)
-    val search = scope.productSearch.flow.collectAsState()
-    val filters = scope.filters.flow.collectAsState()
-    val filterSearches = scope.filterSearches.flow.collectAsState()
-    val products = scope.products.flow.collectAsState()
-    val showFilter = scope.isFilterOpened.flow.collectAsState()
-    val sortOptions = scope.sortOptions.flow.collectAsState()
-    val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-    val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
-    val autoComplete = scope.autoComplete.flow.collectAsState()
-    BasicSearchBar(
-        input = search.value,
-        hint = R.string.search_products,
-        icon = null,
-        horizontalPadding = 16.dp,
-        searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
-        onIconClick = null,
-        isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
-        onSearch = { value, _ ->
-            scope.searchProduct(
-                value,
-                withAutoComplete = true,
-                scope.store.sellerUnitCode
-            )
-        },
-    )
-    scope.storage.save("focus", false)
-    if (showFilter.value) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Space(16.dp)
-            Text(
-                text = stringResource(id = R.string.clear_all),
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(horizontal = 16.dp)
-                    .clickable(indication = null) {
-                        scope.clearFilter(null)
-                    },
-            )
-            SortSection(
-                options = sortOptions.value,
-                selectedOption = selectedSortOption.value,
-                onClick = { scope.selectSortOption(it) },
-            )
-            filters.value.forEach { filter ->
-                if (filter.queryId != "manufacturers") {
-                    FilterSection(
-                        name = filter.name,
-                        options = filter.options,
-                        searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                            scope.searchFilter(filter, it)
-                        },
-                        onOptionClick = { scope.selectFilter(filter, it) },
-                        onFilterClear = { scope.clearFilter(filter) },
+
+    Surface(
+        color = Color.White,
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(),
+    ) {
+        Column {
+            Space(12.dp)
+            val search = scope.productSearch.flow.collectAsState()
+            val filters = scope.filters.flow.collectAsState()
+            val filterSearches = scope.filterSearches.flow.collectAsState()
+            val products = scope.products.flow.collectAsState()
+            val showFilter = scope.isFilterOpened.flow.collectAsState()
+            val sortOptions = scope.sortOptions.flow.collectAsState()
+            val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+            val autoComplete = scope.autoComplete.flow.collectAsState()
+            BasicSearchBar(
+                input = search.value,
+                hint = R.string.search_products,
+                icon = null,
+                horizontalPadding = 16.dp,
+                searchBarEnd = SearchBarEnd.Filter(isHighlighted = activeFilterIds.value.isNotEmpty()) { scope.toggleFilter() },
+                onIconClick = null,
+                isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
+                onSearch = { value, _ ->
+                    scope.searchProduct(
+                        value,
+                        withAutoComplete = true,
+                        scope.store.sellerUnitCode
                     )
+                },
+            )
+            scope.storage.save("focus", false)
+            if (showFilter.value) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    Space(16.dp)
+                    Text(
+                        text = stringResource(id = R.string.clear_all),
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(horizontal = 16.dp)
+                            .clickable(indication = null) {
+                                scope.clearFilter(null)
+                            },
+                    )
+                    SortSection(
+                        options = sortOptions.value,
+                        selectedOption = selectedSortOption.value,
+                        onClick = { scope.selectSortOption(it) },
+                    )
+                    filters.value.forEach { filter ->
+                        if (filter.queryId != "manufacturers") {
+                            FilterSection(
+                                name = filter.name,
+                                options = filter.options,
+                                searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                    scope.searchFilter(filter, it)
+                                },
+                                onOptionClick = { scope.selectFilter(filter, it) },
+                                onFilterClear = { scope.clearFilter(filter) },
+                            )
+                        }
+                    }
+                    Space(8.dp)
                 }
-            }
-            Space(16.dp)
-        }
-    } else {
-        Space(16.dp)
-        BoxWithConstraints(
+            } else {
+                //Space(4.dp)
+                /*BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -294,71 +297,73 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     )
                 }
             }
-        }
+        }*/
 
-        filters.value.forEach { filter ->
-            if (filter.queryId == "manufacturers")
-                HorizontalFilterSection(
-                    name = filter.name,
-                    options = filter.options,
-                    searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                        scope.searchFilter(filter, it)
-                    },
-                    onOptionClick = { scope.selectFilter(filter, it) },
-                    onFilterClear = { scope.clearFilter(filter) },
-                    url = filter.queryId
-                )
-        }
-        Space(8.dp)
-
-        if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
-            NoRecords(
-                icon = R.drawable.ic_missing_stores,
-                text = R.string.missing_inventory_stores,
-                subtitle = scope.store.tradeName,
-                onHome = { scope.goHome() },
-            )
-        } else {
-            if (autoComplete.value.isEmpty()) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = 8.dp)
-                ) {
-                    itemsIndexed(
-                        items = products.value,
-                        key = { _, item -> item.id },
-                        itemContent = { index, item ->
-                            ProductItemStore(
-                                item,
-                                onClick = { scope.selectProduct(item) },
-                                onBuy = { scope.buy(item) },
-                                addToCart = { scope.addToCart(item) },
-                                scope
-                            )
-                            if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                                scope.loadMoreProducts()
-                            }
-                        },
-                    )
+                filters.value.forEach { filter ->
+                    if (filter.queryId == "manufacturers")
+                        HorizontalFilterSection(
+                            /*name = filter.name,*/
+                            options = filter.options,
+                            /* searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                         scope.searchFilter(filter, it)
+                     },*/
+                            onOptionClick = { scope.selectFilter(filter, it) },
+                            onFilterClear = { scope.clearFilter(filter) },
+                            url = filter.queryId
+                        )
                 }
-            } else {
-                LazyColumn(
-                    state = rememberLazyListState(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp)
-                        .background(color = Color.White)
-                ) {
-                    items(
-                        items = autoComplete.value,
-                        key = { item -> item.suggestion },
-                        itemContent = { item ->
-                            AutoCompleteItem(
-                                item,
-                                search.value
-                            ) { scope.selectAutoComplete(item) }
-                        },
+                //Space(8.dp)
+
+                if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
+                    NoRecords(
+                        icon = R.drawable.ic_missing_stores,
+                        text = R.string.missing_inventory_stores,
+                        subtitle = scope.store.tradeName,
+                        onHome = { scope.goHome() },
                     )
+                } else {
+                    if (autoComplete.value.isEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(top = 8.dp)
+                        ) {
+                            itemsIndexed(
+                                items = products.value,
+                                key = { _, item -> item.id },
+                                itemContent = { index, item ->
+                                    ProductItemStore(
+                                        item,
+                                        onClick = { scope.selectProduct(item) },
+                                        onBuy = { scope.buy(item) },
+                                        addToCart = { scope.addToCart(item) },
+                                        scope
+                                    )
+                                    if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                                        scope.loadMoreProducts()
+                                    }
+                                },
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            state = rememberLazyListState(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
+                                .background(color = Color.White)
+                        ) {
+                            items(
+                                items = autoComplete.value,
+                                key = { item -> item.suggestion },
+                                itemContent = { item ->
+                                    AutoCompleteItem(
+                                        item,
+                                        search.value
+                                    ) { scope.selectAutoComplete(item) }
+                                },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -573,6 +578,8 @@ fun ProductItemStore(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
+            border = BorderStroke(1.dp, ConstColors.gray),
+            elevation = 8.dp
         ) {
             Box {
                 val labelColor = when (product.stockInfo?.status) {
@@ -605,12 +612,12 @@ fun ProductItemStore(
                                     fontWeight = FontWeight.W600,
                                     fontSize = 12.sp,
                                 )
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_favorite),
-                                    contentDescription = null,
-                                    tint = ConstColors.gray,
-                                    modifier = Modifier.size(16.dp),
-                                )
+                                /* Icon(
+                                     painter = painterResource(id = R.drawable.ic_favorite),
+                                     contentDescription = null,
+                                     tint = ConstColors.gray,
+                                     modifier = Modifier.size(16.dp),
+                                 )*/
                             }
                             Space(4.dp)
                             Row(
@@ -740,7 +747,7 @@ fun ProductItemStore(
                             )
                         }*/
                         Box(modifier = Modifier.width(120.dp)) {
-                            MedicoButton(
+                            /*MedicoButton(
                                 text = stringResource(id = R.string.batch),
                                 isEnabled = true,
                                 height = 32.dp,
@@ -749,7 +756,7 @@ fun ProductItemStore(
                                 textSize = 12.sp,
                                 color = ConstColors.lightGreen,
                                 contentColor = Color.White
-                            )
+                            )*/
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             when (product.buyingOption) {
@@ -796,27 +803,30 @@ fun ProductItemStore(
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.End),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Box(
+            if (product.sellerInfo?.isPromotionActive == true) {
+                Row(
                     modifier = Modifier
-                        .width(100.dp)
-                        .background(ConstColors.red),
-                    contentAlignment = Alignment.CenterEnd
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    horizontalArrangement = Arrangement.End,
                 ) {
-                    Text(
-                        text = "10 + 1 Offer",
-                        color = Color.White,
-                        fontWeight = FontWeight.W300,
-                        fontSize = 12.sp,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .width(100.dp)
+                            .background(ConstColors.red),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(
+                            text = product.sellerInfo?.promotionData?.displayLabel ?: "",
+                            color = Color.White,
+                            fontWeight = FontWeight.W300,
+                            fontSize = 12.sp,
+                        )
+                    }
                 }
             }
         }
+
         val batchSelected = scope.isBatchSelected.flow.collectAsState()
         val selectedProduct = scope.checkedProduct.flow.collectAsState()
 
@@ -829,6 +839,8 @@ fun ProductItemStore(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(all = 16.dp),
+                border = BorderStroke(1.dp, ConstColors.gray),
+                elevation = 8.dp
             ) {
                 Column(
                     modifier = Modifier
@@ -843,8 +855,8 @@ fun ProductItemStore(
                         Box(modifier = Modifier.width(120.dp)) {
                             EditField(
                                 label = stringResource(id = R.string.qty),
-                                qty = "10",
-                                onChange = { },
+                                qty = product.stockInfo?.availableQty.toString(),
+                                onChange = { product.quantity = it.toDouble() },
                                 isEnabled = true,
                             )
                         }
@@ -870,7 +882,10 @@ fun ProductItemStore(
                                 isEnabled = true,
                                 height = 32.dp,
                                 elevation = null,
-                                onClick = { scope.selectBatch("", product) },
+                                onClick = {
+                                    product.quantity = 1.0
+                                    scope.selectBatch("", product)
+                                },
                                 textSize = 12.sp,
                                 color = ConstColors.ltgray,
                                 contentColor = MaterialTheme.colors.background

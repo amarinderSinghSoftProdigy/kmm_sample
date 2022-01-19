@@ -648,7 +648,6 @@ fun FilterSection(
 
 @Composable
 fun HorizontalFilterSection(
-    name: String,
     options: List<Option>,
     searchOption: SearchOption? = null,
     onOptionClick: (Option) -> Unit,
@@ -658,7 +657,7 @@ fun HorizontalFilterSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 0.dp, start = 16.dp, end = 16.dp)
+            .padding(start = 16.dp, end = 16.dp)
     ) {
         if (options.isNotEmpty()) {
             LazyRow(
@@ -774,6 +773,7 @@ private fun RoundChip(option: Option, onClick: () -> Unit, url: String) {
                 shape = RoundedCornerShape(percent = 50),
                 onClick = onClick,
                 modifier = Modifier.padding(4.dp),
+                elevation = 8.dp,
             ) {
                 Row(
                     modifier = Modifier

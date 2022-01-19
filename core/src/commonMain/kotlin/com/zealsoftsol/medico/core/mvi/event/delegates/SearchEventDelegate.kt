@@ -47,7 +47,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectBatch -> updateBatchSelection(event.product)
         is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
-        is Event.Action.Search.AddToCart -> addToCart(event.product)
+        is Event.Action.Search.AddToCart -> updateBatchSelection(event.product)
         is Event.Action.Search.showToast -> showToast(event.msg)
     }
 

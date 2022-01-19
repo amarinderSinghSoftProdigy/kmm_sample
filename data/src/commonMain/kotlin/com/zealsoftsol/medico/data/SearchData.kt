@@ -48,6 +48,7 @@ data class ProductSearch(
     val standardUnit: String? = null,
     val sellerInfo: SellerInfo? = null,
     val manufacturerId: String? = null,
+    var quantity: Double = 1.0,
 )
 
 @Serializable
