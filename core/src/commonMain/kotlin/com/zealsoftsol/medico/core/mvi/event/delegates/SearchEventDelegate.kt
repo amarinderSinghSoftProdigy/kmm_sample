@@ -67,7 +67,7 @@ internal class SearchEventDelegate(
 
     private fun showToast(msg: String) {
         navigator.withScope<StoresScope.StorePreview> {
-            it.showToast.value = !it.showToast.value
+            it.showToast.value = msg == "success"
         }
     }
 

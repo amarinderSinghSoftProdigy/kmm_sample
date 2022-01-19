@@ -88,7 +88,7 @@ internal class CartEventDelegate(
                 freeQuantity,
             )
         }.onSuccess {
-            EventCollector.sendEvent(Event.Action.Search.showToast(""))
+            EventCollector.sendEvent(Event.Action.Search.showToast("success"))
 //            navigator.setScope(
 //                CartScope(
 //                    items = ReadOnlyDataSource(cartRepo.entries),
