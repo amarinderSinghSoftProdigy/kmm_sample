@@ -653,10 +653,12 @@ fun FilterSection(
 
 @Composable
 fun HorizontalFilterSection(
-    options: List<Value>,
-    searchOption: Filter? = null,
-    onOptionClick: (Value) -> Unit,
-    onFilterClear: () -> Unit
+    name: String,
+    options: List<Option>,
+    searchOption: SearchOption? = null,
+    onOptionClick: (Option) -> Unit,
+    onFilterClear: () -> Unit,
+    url:String
 ) {
     Column(
         modifier = Modifier
@@ -673,8 +675,8 @@ fun HorizontalFilterSection(
                     itemContent = { value ->
                         RoundChip(
                             value,
-                            { },
-                            searchOption = searchOption
+                            { onOptionClick(value) },
+                            searchOption = url
                         )
                     }
                 )
@@ -776,79 +778,86 @@ fun ChipString(option: String, onClick: () -> Unit) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun RoundChip(
-    option: Value, onClick: () -> Unit,
-    searchOption: Filter? = null
+    option: Option, onClick: () -> Unit,
+    searchOption: String? = null
 ) {
 
+    when (option) {
+        is Option.StringValue -> {
+            if (option.isVisible) {
+                Column {
+                    Surface(
+                        color = if (option.isSelected) ConstColors.yellow else Color.White,
+                        shape = RoundedCornerShape(percent = 50),
+                        onClick = onClick,
+                        modifier = Modifier.padding(4.dp),
+                        elevation = 8.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .background(Color.White, RoundedCornerShape(30.dp))
+                                .height(80.dp)
+                                .width(80.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            /*if (option.isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.background,
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .size(20.dp),
+                                )
+                            }*/
+                            CoilImage(
+                                src = CdnUrlProvider.urlFor(
+                                    searchOption ?: "",
+                                    CdnUrlProvider.Size.Px123
+                                ),
+                                size = 80.dp,
+                                onError = { ItemPlaceholder() },
+                                onLoading = { ItemPlaceholder() },
+                            )
 
-    Column {
-        Surface(
-            color = /*if (option.isSelected) ConstColors.yellow else*/ Color.White,
-            shape = RoundedCornerShape(percent = 50),
-            onClick = onClick,
-            modifier = Modifier.padding(4.dp),
-            elevation = 8.dp,
-        ) {
-            Row(
-                modifier = Modifier
-                    .background(Color.White, RoundedCornerShape(30.dp))
-                    .height(100.dp)
-                    .width(100.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                /*if (option.isSelected) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.background,
-                        modifier = Modifier
-                            .padding(start = 10.dp)
-                            .size(20.dp),
-                    )
-                }*/
-                CoilImage(
-                    src = CdnUrlProvider.urlFor(
-                        searchOption?.queryId ?: "",
-                        CdnUrlProvider.Size.Px123
-                    ),
-                    size = 100.dp,
-                    onError = { ItemPlaceholder() },
-                    onLoading = { ItemPlaceholder() },
-                )
+                            /*Text(
+                            text = option.value,
+                            color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                            fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(
+                                start = if (option.isSelected) 6.dp else 12.dp,
+                                end = 12.dp,
+                                top = 6.dp,
+                                bottom = 6.dp,
+                            ),
+                        )*/
+                        }
+                    }
 
-                /*Text(
-                text = option.value,
-                color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
-                fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(
-                    start = if (option.isSelected) 6.dp else 12.dp,
-                    end = 12.dp,
-                    top = 6.dp,
-                    bottom = 6.dp,
-                ),
-            )*/
+                    Row(
+                        modifier = Modifier.width(80.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                    ) {
+                        Text(
+                            color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                            fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                            text = option.value,
+                            fontSize = 12.sp,
+                            modifier = Modifier.width(60.dp),
+                            maxLines = 1,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
-
-        Row(
-            modifier = Modifier.width(100.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-        ) {
-            Text(
-                text = option.value,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W700,
-                color = MaterialTheme.colors.background,
-                modifier = Modifier.width(80.dp),
-                maxLines = 1,
-                textAlign = TextAlign.Center
-            )
-        }
     }
+
+
 /*is Option.ViewMore -> Surface(
     color = Color.Transparent,
     border = BorderStroke(1.dp, ConstColors.lightBlue),

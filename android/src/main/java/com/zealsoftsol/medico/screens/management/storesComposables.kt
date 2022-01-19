@@ -59,6 +59,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
@@ -197,7 +198,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
-            if(showToast.value){
+            if (showToast.value) {
                 showToastGlobal(msg = "Added into the cart")
             }
 
@@ -306,17 +307,20 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             }
         }*/
 
-                filtersManufactures.value.forEach { filter ->
-                    if (filter.queryId == "manufacturers")
+                filters.value.forEach { filter ->
+                    if (filter.queryId == "manufacturers") {
+                        scope.selectFilter(filter, Option.ViewMore)
                         HorizontalFilterSection(
-                            /*name = filter.name,*/
-                            options = filter.values,
-                            /* searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                         scope.searchFilter(filter, it)
-                     },*/
-                            onOptionClick = { },
-                            onFilterClear = { }
+                            name = filter.name,
+                            options = filter.options,
+                            searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                scope.searchFilter(filter, it)
+                            },
+                            onOptionClick = { scope.selectFilter(filter, it) },
+                            onFilterClear = { scope.clearFilter(filter) },
+                            filter.queryId
                         )
+                    }
                 }
                 //Space(8.dp)
 
@@ -342,7 +346,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                         onClick = { scope.selectProduct(item) },
                                         onBuy = {
                                             scope.selectBatch("", product = item)
-                                            scope.buy(item) },
+                                            scope.buy(item)
+                                        },
                                         addToCart = { scope.addToCart(item) },
                                         scope
                                     )
