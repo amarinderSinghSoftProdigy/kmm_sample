@@ -179,6 +179,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         }*//*
     }*/
 
+    val showToast = scope.showToast.flow.collectAsState()
     Surface(
         color = Color.White,
         modifier = Modifier
@@ -188,7 +189,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         Column {
             Space(12.dp)
             val search = scope.productSearch.flow.collectAsState()
-            val showToast = scope.showToast.flow.collectAsState()
             val filters = scope.filters.flow.collectAsState()
             val filtersManufactures = scope.filtersManufactures.flow.collectAsState()
             val filterSearches = scope.filterSearches.flow.collectAsState()
@@ -198,10 +198,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
-            if (showToast.value) {
-                showToastGlobal(msg = "Added into the cart")
-            }
-
             BasicSearchBar(
                 input = search.value,
                 hint = R.string.search_products,
@@ -309,7 +305,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
                 filters.value.forEach { filter ->
                     if (filter.queryId == "manufacturers") {
-                        scope.selectFilter(filter, Option.ViewMore)
+                        //scope.selectFilter(filter, Option.ViewMore)
                         HorizontalFilterSection(
                             name = filter.name,
                             options = filter.options,
@@ -380,6 +376,10 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 }
             }
         }
+    }
+
+    if (showToast.value) {
+        showToastGlobal(msg = "Item added into the cart")
     }
 }
 

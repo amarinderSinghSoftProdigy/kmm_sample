@@ -695,9 +695,9 @@ fun showToastGlobal(msg:String) {
             Toast.makeText(
                 context,
                 msg,
-                Toast.LENGTH_LONG
+                Toast.LENGTH_SHORT
             ).show()
-        }, modifier = Modifier.fillMaxSize(),
+        },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )
