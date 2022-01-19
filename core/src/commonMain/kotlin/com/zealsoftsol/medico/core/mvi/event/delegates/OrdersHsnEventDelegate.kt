@@ -99,7 +99,6 @@ internal class OrdersHsnEventDelegate(
                     )
                 )
             }.onSuccess { body ->
-                log(body.toString())
             }.onError {
                 log(it.body)
             }
@@ -114,7 +113,18 @@ internal class OrdersHsnEventDelegate(
         spid: String,
         reasonCode: String
     ) {
-
+        navigator.withScope<OrderHsnEditScope> {
+            withProgress {
+                networkOrdersScope.rejectEntry(
+                    orderEntryId = orderEntryId,
+                    spid = spid,
+                    reasonCode = reasonCode
+                )
+            }.onSuccess {
+            }.onError {
+                log(it.body)
+            }
+        }
     }
 
 }

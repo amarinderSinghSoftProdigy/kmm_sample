@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
-import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -101,7 +100,7 @@ class OrderHsnEditScope(
     /**
      * manage decline bottom sheet  visibility
      */
-    fun manageDeclineBottomSheetVisibility(openSheet: Boolean){
+    fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
         this.showDeclineReasonsBottomSheet.value = openSheet
     }
 
@@ -147,11 +146,11 @@ class OrderHsnEditScope(
         selectedHsnCode.value = value
     }
 
-    fun updateMrp(value: Double){
+    fun updateMrp(value: Double) {
         mrp.value = value
     }
 
-    fun updateDiscount(value: Double){
+    fun updateDiscount(value: Double) {
         discount.value = value
     }
     /****************************************/
@@ -159,7 +158,7 @@ class OrderHsnEditScope(
     /**
      * update the reason selected for decliening the order entry
      */
-    fun updateDeclineReason(reason: String){
+    fun updateDeclineReason(reason: String) {
         this.selectedDeclineReason.value = reason
         rejectEntry()
     }
@@ -174,17 +173,14 @@ class OrderHsnEditScope(
     /**
      * reject an order entry
      */
-    fun rejectEntry(){
-//        EventCollector.sendEvent(Event.Action.OrderHsn.RejectOrderEntry(
-//            orderEntryId = orderEntry.value.id,
-//            spid = orderEntry.value.spid,
-//            reasonCode = selectedDeclineReason.value
-//        ))
-        "decline reason".log(Event.Action.OrderHsn.RejectOrderEntry(
-            orderEntryId = orderEntry.value.id,
-            spid = orderEntry.value.spid,
-            reasonCode = selectedDeclineReason.value
-        ).toString())
+    private fun rejectEntry() {
+        EventCollector.sendEvent(
+            Event.Action.OrderHsn.RejectOrderEntry(
+                orderEntryId = orderEntry.value.id,
+                spid = orderEntry.value.spid,
+                reasonCode = selectedDeclineReason.value
+            )
+        )
     }
 
     /**
@@ -192,30 +188,19 @@ class OrderHsnEditScope(
      */
     fun saveEntry() {
 
-        "data".log(Event.Action.OrderHsn.SaveOrderEntry(
-            orderId = orderID,
-            orderEntryId = orderEntry.value.id,
-            servedQty = quantity.value,
-            freeQty = freeQuantity.value,
-            price = ptr.value,
-            batchNo = batch.value,
-            expiryDate = expiry.value,
-            mrp = mrp.value,
-            hsnCode = selectedHsnCode.value,
-            discount = discount.value
-        ).toString())
-
-//        EventCollector.sendEvent(Event.Action.OrderHsn.SaveOrderEntry(
-//            orderId = orderID,
-//            orderEntryId = orderEntry.value.id,
-//            servedQty = quantity.value,
-//            freeQty = freeQuantity.value,
-//            price = ptr.value.toDouble(),
-//            batchNo = batch.value,
-//            expiryDate = expiry.value,
-//        mrp = mrp.value,
-//        hsnCode = hsnCode.value,
-//        discount = discount.value
-//        ))
+        EventCollector.sendEvent(
+            Event.Action.OrderHsn.SaveOrderEntry(
+                orderId = orderID,
+                orderEntryId = orderEntry.value.id,
+                servedQty = quantity.value,
+                freeQty = freeQuantity.value,
+                price = ptr.value.toDouble(),
+                batchNo = batch.value,
+                expiryDate = expiry.value,
+                mrp = mrp.value,
+                hsnCode = selectedHsnCode.value,
+                discount = discount.value
+            )
+        )
     }
 }

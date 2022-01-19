@@ -855,15 +855,16 @@ class NetworkClient(
 
     override suspend fun saveNewOrder(request: OrderNewQtyRequest) =
         simpleRequest {
-            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/po/tax/entry/save") {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/save") {
                 withMainToken()
                 jsonBody(request)
             }
+
         }
 
     override suspend fun rejectEntry(orderEntryId: String, spid: String, reasonCode: String) =
         simpleRequest {
-            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/po/tax/entry/reject") {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/reject") {
                 withMainToken()
                 jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid, "reasonCode" to reasonCode))
             }
