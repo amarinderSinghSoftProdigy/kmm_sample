@@ -77,12 +77,13 @@ import org.joda.time.DateTime
 
 @Composable
 fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
-    val canEdit = false//scope.canEdit
 
     val orderEntry = scope.orderEntry.flow.collectAsState().value
     val selectedIndex = scope.selectedIndex.flow.collectAsState().value
     val openHsnBottomSheet = scope.showHsnBottomSheet.flow.collectAsState().value
     val openWarningBottomSheet = scope.showWarningBottomSheet.flow.collectAsState().value
+    val openDeclineReasonBottomSheet =
+        scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
     val selectedHsnCode = scope.selectedHsnCode.flow.collectAsState().value
     val expiryDate = scope.expiry.flow.collectAsState().value
     val servedQty = scope.quantity.flow.collectAsState().value
@@ -92,13 +93,6 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val batchNo = scope.batch.flow.collectAsState().value
     val discount = scope.discount.flow.collectAsState().value
     val context = LocalContext.current
-
-    val textStyle = TextStyle(
-        color = Color.Black,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.W600,
-        textAlign = TextAlign.End,
-    )
 
     Box(
         modifier = Modifier
@@ -458,9 +452,10 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     overflow = TextOverflow.Ellipsis,
                                 )
 
-                                EditText(value = batchNo, onChange = {
-                                    scope.updateBatch(it)
-                                },
+                                EditText(
+                                    value = batchNo, onChange = {
+                                        scope.updateBatch(it)
+                                    },
                                     keyboardOptions = KeyboardOptions.Default
                                 )
                             }
@@ -600,7 +595,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 val now = DateTime.now()
                                 val dialog = DatePickerDialog(
                                     context,
-                                    { _, year, month, day ->
+                                    { _, year, month, _ ->
                                         scope.updateExpiry("${month + 1}/${year}")
                                     },
                                     now.year,
@@ -843,9 +838,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             Space(10.dp)
         }
         if (openHsnBottomSheet)
-            HsnCodeSheet(scope = scope)
+            HsnCodeSheet(scope)
         if (openWarningBottomSheet)
             WarningProductNotAvailable(scope)
+        if (openDeclineReasonBottomSheet)
+            DeclineReasonBottomSheet(scope)
     }
 }
 
@@ -1221,6 +1218,7 @@ private fun WarningProductNotAvailable(
                         text = stringResource(id = R.string.okay),
                         onClick = {
                             scope.manageWarningBottomSheetVisibility(false)
+                            scope.manageDeclineBottomSheetVisibility(true)
                         },
                         color = ConstColors.gray,
                         contentColor = Color.White,
@@ -1253,7 +1251,7 @@ fun EditText(
 
     val textStyle = TextStyle(
         color = Color.Black,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.End,
     )
@@ -1271,4 +1269,87 @@ fun EditText(
         enabled = true,
         textStyle = textStyle
     )
+}
+
+
+@Composable
+fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
+    val declineReason = scope.declineReason
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.Black.copy(alpha = 0.5f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(indication = NoOpIndication) {
+                    scope.manageBottomSheetVisibility(false)
+                })
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(indication = null) { /* intercept touches */ }
+                .align(Alignment.BottomCenter),
+            color = Color.White,
+            elevation = 8.dp,
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(color = Color.White),
+                horizontalAlignment = Alignment.End
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .padding(end = 12.dp)
+                        .clickable {
+                            scope.manageDeclineBottomSheetVisibility(false)
+                        }
+                )
+                Divider()
+                Text(
+                    text = stringResource(id = R.string.decline_reason),
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 3.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(0.dp, 380.dp) //mention max height here
+                        .fillMaxWidth(),
+                ) {
+                    itemsIndexed(
+                        items = declineReason,
+                        key = { index, _ -> index },
+                        itemContent = { _, item ->
+                            Divider()
+                            Text(
+                                text = item.name,
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .clickable {
+                                        scope.updateDeclineReason(item.code)
+                                        scope.manageDeclineBottomSheetVisibility(false)
+                                    }
+                            )
+                        },
+                    )
+                }
+                Divider()
+                Space(10.dp)
+            }
+        }
+    }
 }

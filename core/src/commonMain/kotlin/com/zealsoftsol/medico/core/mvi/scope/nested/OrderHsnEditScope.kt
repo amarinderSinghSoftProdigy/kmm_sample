@@ -10,11 +10,13 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 
 class OrderHsnEditScope(
     private val orderID: String,
+    val declineReason: List<DeclineReason>,
     val orderEntries: List<OrderEntry>,
     val index: Int,
     val showAlert: DataSource<Boolean> = DataSource(false)
@@ -34,13 +36,20 @@ class OrderHsnEditScope(
     var orderEntry: DataSource<OrderEntry> = DataSource(orderEntries[selectedIndex.value])
     var showHsnBottomSheet = DataSource(false)
     var showWarningBottomSheet = DataSource(false)
+    var showDeclineReasonsBottomSheet = DataSource(false)
+    val selectedDeclineReason = DataSource("")
 
+    /**
+     * values used for pagination
+     */
     override val pagination: Pagination = Pagination()
     override val items: DataSource<List<SearchDataItem>> = DataSource(emptyList())
     override val totalItems: DataSource<Int> = DataSource(0)
     override val searchText: DataSource<String> = DataSource("")
 
-
+    /**
+     * values to be sent to server when order is accepted
+     */
     val quantity = DataSource(orderEntry.value.servedQty.value)
     val freeQuantity = DataSource(orderEntry.value.freeQty.value)
     val ptr = DataSource(orderEntry.value.price.value)
@@ -89,6 +98,13 @@ class OrderHsnEditScope(
         this.showWarningBottomSheet.value = openSheet
     }
 
+    /**
+     * manage decline bottom sheet  visibility
+     */
+    fun manageDeclineBottomSheetVisibility(openSheet: Boolean){
+        this.showDeclineReasonsBottomSheet.value = openSheet
+    }
+
 
     /**
      * get Hsn codes from server
@@ -119,7 +135,6 @@ class OrderHsnEditScope(
     }
 
     fun updateBatch(value: String) {
-        value.log("batch value")
         batch.value = value
     }
 
@@ -142,6 +157,14 @@ class OrderHsnEditScope(
     /****************************************/
 
     /**
+     * update the reason selected for decliening the order entry
+     */
+    fun updateDeclineReason(reason: String){
+        this.selectedDeclineReason.value = reason
+        rejectEntry()
+    }
+
+    /**
      * update the scope of alert dialog
      */
     fun changeAlertScope(enable: Boolean) {
@@ -152,11 +175,16 @@ class OrderHsnEditScope(
      * reject an order entry
      */
     fun rejectEntry(){
-        EventCollector.sendEvent(Event.Action.OrderHsn.RejectOrderEntry(
+//        EventCollector.sendEvent(Event.Action.OrderHsn.RejectOrderEntry(
+//            orderEntryId = orderEntry.value.id,
+//            spid = orderEntry.value.spid,
+//            reasonCode = selectedDeclineReason.value
+//        ))
+        "decline reason".log(Event.Action.OrderHsn.RejectOrderEntry(
             orderEntryId = orderEntry.value.id,
             spid = orderEntry.value.spid,
-            reasonCode = ""
-        ))
+            reasonCode = selectedDeclineReason.value
+        ).toString())
     }
 
     /**
@@ -164,7 +192,7 @@ class OrderHsnEditScope(
      */
     fun saveEntry() {
 
-        Event.Action.OrderHsn.SaveOrderEntry(
+        "data".log(Event.Action.OrderHsn.SaveOrderEntry(
             orderId = orderID,
             orderEntryId = orderEntry.value.id,
             servedQty = quantity.value,
@@ -175,7 +203,7 @@ class OrderHsnEditScope(
             mrp = mrp.value,
             hsnCode = selectedHsnCode.value,
             discount = discount.value
-        ).toString().log("save data")
+        ).toString())
 
 //        EventCollector.sendEvent(Event.Action.OrderHsn.SaveOrderEntry(
 //            orderId = orderID,

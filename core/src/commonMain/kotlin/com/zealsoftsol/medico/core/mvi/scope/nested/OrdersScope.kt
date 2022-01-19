@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.DateRange
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTax
@@ -98,14 +99,22 @@ class ViewOrderScope(
     override val order: DataSource<OrderTax>,
     val b2bData: DataSource<B2BData>,
     val entries: DataSource<List<OrderEntry>>,
+    val declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
 
-    fun selectEntry(entry: List<OrderEntry>, index: Int) =
-        EventCollector.sendEvent(Event.Action.Orders.SelectEntry(order.value.info.id, entry, index))
+    fun selectEntry(declineReason: List<DeclineReason>, entry: List<OrderEntry>, index: Int) =
+        EventCollector.sendEvent(
+            Event.Action.Orders.SelectEntry(
+                order.value.info.id,
+                declineReason,
+                entry,
+                index
+            )
+        )
 
     fun acceptAction(action: Action) =
         EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(action, false))

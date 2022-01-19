@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -215,6 +216,7 @@ sealed class Event {
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(
                 val orderId: String,
+                val declineReason: List<DeclineReason>,
                 val entry: List<OrderEntry>,
                 val index: Int
             ) : Orders()

@@ -246,6 +246,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
             Space(8.dp)
             Divider(Modifier.padding(horizontal = 16.dp))
             val entries = scope.entries.flow.collectAsState()
+            val declineReasons = scope.declineReason.flow.collectAsState()
             val checkedEntries = scope.checkedEntries.flow.collectAsState()
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -257,7 +258,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         entry = it,
                         isChecked = it in checkedEntries.value,
                         onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = { scope.selectEntry(entries.value, index) },
+                        onClick = { scope.selectEntry(declineReasons.value, entries.value, index) },
                     )
                 }
                 Space(8.dp)

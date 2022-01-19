@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
@@ -39,7 +40,12 @@ internal class OrdersEventDelegate(
             event.action,
             event.fromNotification,
         )
-        is Event.Action.Orders.SelectEntry -> selectEntry(event.orderId, event.entry, event.index)
+        is Event.Action.Orders.SelectEntry -> selectEntry(
+            event.orderId,
+            event.declineReason,
+            event.entry,
+            event.index
+        )
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(
             event.entry,
@@ -90,7 +96,8 @@ internal class OrdersEventDelegate(
                         canEdit = type == OrderType.PURCHASE_ORDER,
                         DataSource(body.order),
                         DataSource(body.unitData.data),
-                        DataSource(body.entries)
+                        DataSource(body.entries),
+                        DataSource(body.declineReasons)
                     )
                 )
             }.onError(navigator)
@@ -147,9 +154,14 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private fun selectEntry(orderId: String, orderEntry: List<OrderEntry>, index: Int) {
+    private fun selectEntry(
+        orderId: String,
+        declineReason: List<DeclineReason>,
+        orderEntry: List<OrderEntry>,
+        index: Int
+    ) {
         navigator.withScope<ViewOrderScope> {
-            navigator.setScope(OrderHsnEditScope(orderId, orderEntry, index))
+            navigator.setScope(OrderHsnEditScope(orderId, declineReason, orderEntry, index))
         }
     }
 
