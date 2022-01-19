@@ -99,12 +99,10 @@ internal class ProductEventDelegate(
                 BuyingOption.QUOTE -> networkProductScope.getQuotedProductData(product.code)
             }
         }.onSuccess { body ->
+            EventCollector.sendEvent(Event.Action.Search.showToast(body.type))
             val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
             val nextScope = when (buyingOption) {
                 BuyingOption.BUY -> {
-                    EventCollector.sendEvent(
-                        Event.Action.Search.showToast(body.type)
-                    )
                     BuyProductScope.ChooseStockist(
                         isSeasonBoy = isSeasonBoy,
                         product = body.product,

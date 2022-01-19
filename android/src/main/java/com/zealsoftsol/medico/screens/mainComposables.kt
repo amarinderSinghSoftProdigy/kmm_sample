@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -158,6 +160,7 @@ import kotlinx.coroutines.launch
 private var mBottomNavItems: List<BottomNavigationItem>? = null
 private var mUserType: UserType? = null
 
+@ExperimentalMaterialApi
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
@@ -817,6 +820,7 @@ private fun NoIconHeader(
 /**
  * display header data for instore seller details
  */
+@ExperimentalMaterialApi
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun StoreHeader(
@@ -826,65 +830,98 @@ private fun StoreHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
-        Box(modifier = Modifier.weight(0.85f)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp)
-                    .background(Color.White, RoundedCornerShape(8.dp)),
-            ) {
-                FoldableItem(
-                    expanded = false,
-                    headerMinHeight = 40.dp,
-                    header = { isExpanded ->
-                        Space(8.dp)
-                        Row(
-                            modifier = Modifier.weight(.8f),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Space(8.dp)
-                            Text(
-                                text = info.store.tradeName,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        Row(
-                            modifier = Modifier
-                                .weight(.1f)
-                                .padding(end = 4.dp),
-                            horizontalArrangement = Arrangement.End,
-                        ) {
-                            Icon(
-                                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                tint = ConstColors.gray,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(start = 16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
                     },
-                    childItems = listOf(""),
-                    item = { value, _ ->
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                text = info.store.fullAddress(),
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(8.dp)
-                        }
-                    }
                 )
+        )
+        Box(modifier = Modifier.weight(0.7f)) {
+            Surface(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, RoundedCornerShape(8.dp)),
+                border = BorderStroke(1.dp, ConstColors.ltgray),
+                onClick = { info.openBottomSheet() }) {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Space(8.dp)
+                    Text(
+                        text = info.store.tradeName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_verified),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+
+                /* FoldableItem(
+                     expanded = false,
+                     headerMinHeight = 40.dp,
+                     header = { isExpanded ->
+                         Space(8.dp)
+                         Row(
+                             modifier = Modifier.weight(.8f),
+                             verticalAlignment = Alignment.CenterVertically,
+                         ) {
+                             Space(8.dp)
+                             Text(
+                                 text = info.store.tradeName,
+                                 color = MaterialTheme.colors.background,
+                                 fontWeight = FontWeight.W700,
+                                 fontSize = 12.sp,
+                                 maxLines = 1,
+                                 overflow = TextOverflow.Ellipsis,
+                             )
+                         }
+                         Row(
+                             modifier = Modifier
+                                 .weight(.1f)
+                                 .padding(end = 4.dp),
+                             horizontalArrangement = Arrangement.End,
+                         ) {
+                             Icon(
+                                 imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                 tint = ConstColors.gray,
+                                 contentDescription = null,
+                                 modifier = Modifier.size(24.dp),
+                             )
+                         }
+                     },
+                     childItems = listOf(""),
+                     item = { value, _ ->
+                         Column(
+                             modifier = Modifier.fillMaxWidth(),
+                             verticalArrangement = Arrangement.SpaceBetween,
+                         ) {
+                             Text(
+                                 text = info.store.fullAddress(),
+                                 color = MaterialTheme.colors.background,
+                                 fontWeight = FontWeight.W500,
+                                 fontSize = 12.sp,
+                                 maxLines = 1,
+                                 overflow = TextOverflow.Ellipsis,
+                             )
+                             Space(8.dp)
+                         }
+                     }
+                 )*/
             }
         }
 

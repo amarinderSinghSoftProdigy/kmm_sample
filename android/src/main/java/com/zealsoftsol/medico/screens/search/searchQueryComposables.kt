@@ -83,11 +83,14 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.Facet
+import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.Value
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FlowRow
@@ -648,11 +651,10 @@ fun FilterSection(
 
 @Composable
 fun HorizontalFilterSection(
-    options: List<Option>,
-    searchOption: SearchOption? = null,
-    onOptionClick: (Option) -> Unit,
-    onFilterClear: () -> Unit,
-    url: String
+    options: List<Value>,
+    searchOption: Filter? = null,
+    onOptionClick: (Value) -> Unit,
+    onFilterClear: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -666,7 +668,13 @@ fun HorizontalFilterSection(
             ) {
                 items(
                     items = options,
-                    itemContent = { value -> RoundChip(value, { onOptionClick(value) }, url = url) }
+                    itemContent = { value ->
+                        RoundChip(
+                            value,
+                            {  },
+                            searchOption = searchOption
+                        )
+                    }
                 )
             }
         }
@@ -765,77 +773,98 @@ fun ChipString(option: String, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun RoundChip(option: Option, onClick: () -> Unit, url: String) {
-    when (option) {
-        is Option.StringValue -> {
-            if (option.isVisible) Surface(
-                color = if (option.isSelected) ConstColors.yellow else Color.White,
-                shape = RoundedCornerShape(percent = 50),
-                onClick = onClick,
-                modifier = Modifier.padding(4.dp),
-                elevation = 8.dp,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .background(Color.White, RoundedCornerShape(30.dp))
-                        .height(100.dp)
-                        .width(100.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (option.isSelected) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.background,
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .size(20.dp),
-                        )
-                    }
-                    CoilImage(
-                        src = CdnUrlProvider.urlFor(url, CdnUrlProvider.Size.Px123),
-                        size = 80.dp,
-                        onError = { ItemPlaceholder() },
-                        onLoading = { ItemPlaceholder() },
-                    )
+private fun RoundChip(
+    option: Value, onClick: () -> Unit,
+    searchOption: Filter? = null
+) {
 
-                    /*Text(
-                        text = option.value,
-                        color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
-                        fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(
-                            start = if (option.isSelected) 6.dp else 12.dp,
-                            end = 12.dp,
-                            top = 6.dp,
-                            bottom = 6.dp,
-                        ),
-                    )*/
-                }
-            }
-        }
-        /*is Option.ViewMore -> Surface(
-            color = Color.Transparent,
-            border = BorderStroke(1.dp, ConstColors.lightBlue),
-            contentColor = ConstColors.lightBlue,
+
+    Column {
+        Surface(
+            color = /*if (option.isSelected) ConstColors.yellow else*/ Color.White,
             shape = RoundedCornerShape(percent = 50),
             onClick = onClick,
             modifier = Modifier.padding(4.dp),
+            elevation = 8.dp,
         ) {
+            Row(
+                modifier = Modifier
+                    .background(Color.White, RoundedCornerShape(30.dp))
+                    .height(100.dp)
+                    .width(100.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                /*if (option.isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.background,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .size(20.dp),
+                    )
+                }*/
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        searchOption?.queryId ?: "",
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 100.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+
+                /*Text(
+                text = option.value,
+                color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(
+                    start = if (option.isSelected) 6.dp else 12.dp,
+                    end = 12.dp,
+                    top = 6.dp,
+                    bottom = 6.dp,
+                ),
+            )*/
+            }
+        }
+
+        Row(
+            modifier = Modifier.width(80.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            //val check = option.value.substring(0, option.value.indexOf(' '))
             Text(
-                text = stringResource(id = R.string.view_all),
+                text = option.value,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W700,
-                modifier = Modifier.padding(
-                    horizontal = 12.dp,
-                    vertical = 7.dp, // compensate for 2.sp smaller text
-                ),
+                color = MaterialTheme.colors.background,
+                modifier = Modifier.width(80.dp),
+                maxLines = 1
             )
-        }*/
+        }
     }
+/*is Option.ViewMore -> Surface(
+    color = Color.Transparent,
+    border = BorderStroke(1.dp, ConstColors.lightBlue),
+    contentColor = ConstColors.lightBlue,
+    shape = RoundedCornerShape(percent = 50),
+    onClick = onClick,
+    modifier = Modifier.padding(4.dp),
+) {
+    Text(
+        text = stringResource(id = R.string.view_all),
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W700,
+        modifier = Modifier.padding(
+            horizontal = 12.dp,
+            vertical = 7.dp, // compensate for 2.sp smaller text
+        ),
+    )
+}*/
 }
 
 @OptIn(ExperimentalMaterialApi::class)

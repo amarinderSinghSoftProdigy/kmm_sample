@@ -6,12 +6,14 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
@@ -49,10 +51,24 @@ internal class SearchEventDelegate(
         is Event.Action.Search.Reset -> reset()
         is Event.Action.Search.AddToCart -> updateBatchSelection(event.product)
         is Event.Action.Search.showToast -> showToast(event.msg)
+        is Event.Action.Search.ShowDetails -> select(event.item)
+    }
+
+    private fun select(item: EntityInfo) {
+        navigator.withScope<StoresScope.StorePreview> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
     }
 
     private fun showToast(msg: String) {
-       //Need to display a toast here with msg
+        navigator.withScope<StoresScope.StorePreview> {
+            it.showToast.value = !it.showToast.value
+        }
     }
 
     private fun addToCart(product: ProductSearch) {
@@ -305,6 +321,7 @@ internal class SearchEventDelegate(
                 pagination,
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)
+                filtersManufactures.value = body.facets
                 filters.value = body.facets.toFilter()
                 products.value = if (!addPage) body.products else products.value + body.products
                 sortOptions.value = body.sortOptions

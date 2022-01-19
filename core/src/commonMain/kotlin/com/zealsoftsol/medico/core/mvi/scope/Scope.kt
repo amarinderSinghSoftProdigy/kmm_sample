@@ -7,7 +7,10 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.Store
 import kotlin.reflect.KClass
 
@@ -75,7 +78,7 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
         val notificationItemsCount: ReadOnlyDataSource<Int>,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null,
-        ) : TabBarInfo() {
+    ) : TabBarInfo() {
 
         override fun withBackIcon() = copy(icon = ScopeIcon.BACK)
 
@@ -132,9 +135,36 @@ sealed class TabBarInfo {
         val store: Store, val notificationItemsCount: ReadOnlyDataSource<Int>,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null
     ) : TabBarInfo() {
-        override val icon: ScopeIcon = ScopeIcon.NO_ICON
+        override val icon: ScopeIcon = ScopeIcon.BACK
         fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
-        fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search())
+        fun openBottomSheet() {
+            val address = GeoData(
+                location = store.location,
+                city = store.city,
+                pincode = store.pincode,
+                distance = store.distance,
+                formattedDistance = store.formattedDistance,
+                addressLine = store.fullAddress(),
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = store.tradeName,
+                phoneNumber = store.mobileNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = "",
+                drugLicenseNo2 = "",
+                gstin = store.gstin,
+                isVerified = true,
+                panNumber = store.panNumber,
+                subscriptionData = null,
+                unitCode = store.sellerUnitCode
+            )
+            EventCollector.sendEvent(Event.Action.Search.ShowDetails(item))
+        }
     }
 }
 
