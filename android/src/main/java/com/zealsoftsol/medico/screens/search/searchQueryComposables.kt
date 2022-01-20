@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.search
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Indication
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,10 +25,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -68,6 +72,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -80,11 +85,16 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.Facet
+import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
+import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.StockStatus
+import com.zealsoftsol.medico.data.Value
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
@@ -159,7 +169,8 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                     Canvas(
                         Modifier
                             .fillMaxWidth()
-                            .height(24.dp)) {
+                            .height(24.dp)
+                    ) {
                         drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White)))
                     }
                     Separator(padding = 0.dp)
@@ -500,6 +511,96 @@ fun SortSection(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun BatchItem(
+    options: StockInfo,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                bottom = 16.dp,
+                end = 16.dp
+            ),
+        onClick = onClick,
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+        border = BorderStroke(
+            2.dp, if (options.formattedStatus.isNotEmpty()) {
+                ConstColors.separator
+            } else {
+                ConstColors.lightBlue
+            }
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 12.dp)
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.batch_no))
+                    val startIndex = length
+                    append(options.formattedStatus)
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.expiry))
+                    val startIndex = length
+                    append(options.expiry.formattedDate)
+                    addStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
+            Space(dp = 4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append("In-Stock : ")
+                    val startIndex = length
+                    append(options.availableQty.toString())
+                    addStyle(
+                        SpanStyle(
+                            color = ConstColors.green,
+                            fontWeight = FontWeight.W800
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.green,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W600,
+            )
+        }
+    }
+}
+
 @Composable
 fun FilterSection(
     name: String,
@@ -550,11 +651,45 @@ fun FilterSection(
     }
 }
 
+@Composable
+fun HorizontalFilterSection(
+    name: String,
+    options: List<Option>,
+    searchOption: SearchOption? = null,
+    onOptionClick: (Option) -> Unit,
+    onFilterClear: () -> Unit,
+    url:String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        if (options.isNotEmpty()) {
+            LazyRow(
+                state = rememberLazyListState(),
+                contentPadding = PaddingValues(top = 6.dp),
+            ) {
+                items(
+                    items = options,
+                    itemContent = { value ->
+                        RoundChip(
+                            value,
+                            { onOptionClick(value) },
+                            searchOption = url
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
 data class SearchOption(val input: String, val onSearch: (String) -> Unit)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun Chip(option: Option, onClick: () -> Unit) {
+fun Chip(option: Option, onClick: () -> Unit) {
     when (option) {
         is Option.StringValue -> {
             if (option.isVisible) Surface(
@@ -610,6 +745,137 @@ private fun Chip(option: Option, onClick: () -> Unit) {
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ChipString(option: String, onClick: () -> Unit) {
+    Surface(
+        color = ConstColors.ltgray,
+        shape = RoundedCornerShape(percent = 50),
+        onClick = onClick,
+        modifier = Modifier.padding(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = option,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 4.dp,
+                    bottom = 4.dp,
+                ),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun RoundChip(
+    option: Option, onClick: () -> Unit,
+    searchOption: String? = null
+) {
+
+    when (option) {
+        is Option.StringValue -> {
+            if (option.isVisible) {
+                Column {
+                    Surface(
+                        color = if (option.isSelected) ConstColors.yellow else Color.White,
+                        shape = RoundedCornerShape(percent = 50),
+                        onClick = onClick,
+                        modifier = Modifier.padding(4.dp),
+                        elevation = 8.dp,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .background(Color.White, RoundedCornerShape(30.dp))
+                                .height(80.dp)
+                                .width(80.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            /*if (option.isSelected) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.background,
+                                    modifier = Modifier
+                                        .padding(start = 10.dp)
+                                        .size(20.dp),
+                                )
+                            }*/
+                            CoilImage(
+                                src = CdnUrlProvider.urlFor(
+                                    searchOption ?: "",
+                                    CdnUrlProvider.Size.Px123
+                                ),
+                                size = 80.dp,
+                                onError = { ItemPlaceholder() },
+                                onLoading = { ItemPlaceholder() },
+                            )
+
+                            /*Text(
+                            text = option.value,
+                            color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                            fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                            fontSize = 14.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(
+                                start = if (option.isSelected) 6.dp else 12.dp,
+                                end = 12.dp,
+                                top = 6.dp,
+                                bottom = 6.dp,
+                            ),
+                        )*/
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.width(80.dp),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                    ) {
+                        Text(
+                            color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
+                            fontWeight = FontWeight.Bold/*if (option.isSelected) FontWeight.W600 else FontWeight.Normal*/,
+                            text = option.value,
+                            fontSize = 12.sp,
+                            modifier = Modifier.width(60.dp),
+                            maxLines = 1,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
+/*is Option.ViewMore -> Surface(
+    color = Color.Transparent,
+    border = BorderStroke(1.dp, ConstColors.lightBlue),
+    contentColor = ConstColors.lightBlue,
+    shape = RoundedCornerShape(percent = 50),
+    onClick = onClick,
+    modifier = Modifier.padding(4.dp),
+) {
+    Text(
+        text = stringResource(id = R.string.view_all),
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W700,
+        modifier = Modifier.padding(
+            horizontal = 12.dp,
+            vertical = 7.dp, // compensate for 2.sp smaller text
+        ),
+    )
+}*/
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -778,7 +1044,7 @@ fun SearchBarBox(
     }
 }
 
-private object YellowOutlineIndication : Indication {
+object YellowOutlineIndication : Indication {
 
     private class YellowOutlineIndicationInstance(
         private val isPressed: State<Boolean>,

@@ -9,14 +9,23 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 
 interface BaseSearchScope : Scopable {
+    val enableButton: DataSource<Boolean>
     val productSearch: DataSource<String>
     val isFilterOpened: DataSource<Boolean>
+    val isBatchSelected: DataSource<Boolean>
+    val showToast: DataSource<Boolean>
+    val cartData: DataSource<CartData?>
+    val checkedProduct: DataSource<ProductSearch?>
+    val filtersManufactures: DataSource<List<Facet>>
     val filters: DataSource<List<Filter>>
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
@@ -32,7 +41,12 @@ interface BaseSearchScope : Scopable {
     val supportsAutoComplete: Boolean
     val pagination: Pagination
 
+    fun selectBatch(selectedId: String, product: ProductSearch) =
+        EventCollector.sendEvent(Event.Action.Search.SelectBatch(selectedId, product))
+
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
+
+    fun resetButton(check:Boolean) = EventCollector.sendEvent(Event.Action.Search.ResetButton(check))
 
     fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
@@ -73,6 +87,9 @@ interface BaseSearchScope : Scopable {
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
 
+    fun addToCart(product: ProductSearch) =
+        EventCollector.sendEvent(Event.Action.Search.AddToCart(product))
+
     fun buy(product: ProductSearch) = product.buyingOption?.let {
         EventCollector.sendEvent(
             Event.Action.Product.BuyProduct(
@@ -85,8 +102,14 @@ interface BaseSearchScope : Scopable {
 
 class SearchScope(
     autoCompleteDashboard: AutoComplete?,
+    override val enableButton: DataSource<Boolean> = DataSource(false),
     override val productSearch: DataSource<String> = DataSource(""),
     override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+    override val isBatchSelected: DataSource<Boolean> = DataSource(false),
+    override val showToast: DataSource<Boolean> = DataSource(false),
+    override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
+    override val cartData: DataSource<CartData?> = DataSource(null),
+    override val filtersManufactures: DataSource<List<Facet>> = DataSource(emptyList()),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
@@ -64,12 +68,15 @@ import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
+import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
@@ -88,6 +95,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
+import com.zealsoftsol.medico.screens.search.BatchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -144,6 +152,13 @@ fun Scope.Host.showBottomSheet(
                 product = bs.product,
                 onSaveQty = { qty, freeQty -> bs.addToCart(qty, freeQty) },
                 onDismiss = { dismissBottomSheet() },
+            )
+
+            is BottomSheet.BatchViewProduct -> BatchViewProductBottomSheet(
+                product = bs.product,
+                onSaveQty = { qty, freeQty -> bs.addToCart(qty, freeQty) },
+                onDismiss = { dismissBottomSheet() },
+                scope = bs.scope
             )
         }
     }
@@ -596,6 +611,91 @@ private fun InStoreViewProductBottomSheet(
                     color = ConstColors.gray,
                     fontSize = 12.sp,
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun BatchViewProductBottomSheet(
+    product: ProductSearch,
+    onSaveQty: (Double, Double) -> Unit,
+    onDismiss: () -> Unit,
+    scope: BaseSearchScope
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+            ) {
+
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth / 2)
+                            .align(Alignment.CenterStart),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.batchs),
+                            color = MaterialTheme.colors.background,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth / 2)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.Black.copy(alpha = 0.12f),
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(24.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = ConstColors.gray,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    }
+                }
+
+            }
+
+            val sliderList = ArrayList<StockInfo>()
+            sliderList.add(product.stockInfo!!)
+
+            BoxWithConstraints {
+                LazyColumn(
+                    modifier = Modifier.height(maxHeight - 120.dp),
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 8.dp)
+                ) {
+                    itemsIndexed(
+                        items = sliderList,
+                        itemContent = { index, value ->
+                            BatchItem(
+                                value
+                            ) {
+                                scope.selectBatch(index.toString(), product = product)
+                                onDismiss()
+                            }
+                        },
+                    )
+                }
             }
         }
     }
@@ -1639,7 +1739,7 @@ private fun PreviewItemBottomSheet(
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.W600
                                 ),
-                                onClick = { activity.openDialer(entityInfo.phoneNumber!!) },
+                                onClick = { activity.openDialer(entityInfo.phoneNumber ?: "") },
                             )
                         }
                     }

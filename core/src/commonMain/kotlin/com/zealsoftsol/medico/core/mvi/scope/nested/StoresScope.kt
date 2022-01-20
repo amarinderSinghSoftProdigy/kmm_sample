@@ -9,6 +9,8 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
@@ -56,12 +58,18 @@ sealed class StoresScope : Scope.Child.TabBar() {
         private val notificationCount: ReadOnlyDataSource<Int>,
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+        override val showToast: DataSource<Boolean> = DataSource(false),
+        override val cartData: DataSource<CartData?> = DataSource(null),
+        override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
+        override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
+        override val filtersManufactures: DataSource<List<Facet>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
         override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
         override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
         override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
+        override val enableButton: DataSource<Boolean> = DataSource(false),
     ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
@@ -78,8 +86,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.NoIconTitle(
-                title = "",
+            return TabBarInfo.StoreTitle(
+                store = store,
                 notificationItemsCount = notificationCount,
                 cartItemsCount = cartItemsCount
             )

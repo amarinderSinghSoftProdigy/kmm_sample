@@ -251,12 +251,13 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        Expiry(0, "", "#FF00FF"),
+                        Expiry(0, "", "#FF00FF",""),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),
                     standardUnit = "1x20",
                     sellerInfo = null,
+                    drugFormName = "",
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(

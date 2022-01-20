@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -102,6 +103,12 @@ sealed class Event {
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SelectSortOption(val option: SortOption?) : Search()
+            data class SelectBatch(val option: String?,val product: ProductSearch) : Search()
+            data class ViewAllItems(val value: String) : Search()
+            data class AddToCart(val product: ProductSearch) : Search()
+            data class showToast(val msg:String,val cartData:CartData?) : Search()
+            data class ShowDetails(val item: EntityInfo) : Search()
+            data class ResetButton(val item: Boolean) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()

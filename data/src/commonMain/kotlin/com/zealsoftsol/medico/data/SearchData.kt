@@ -37,6 +37,7 @@ data class ProductSearch(
     val formattedMrp: String,
     val formattedPrice: String? = null,
     val id: String,
+    val drugFormName: String,
     val manufacturer: String,
     val marginPercent: String? = null,
     val name: String,
@@ -46,6 +47,8 @@ data class ProductSearch(
     val uomName: String,
     val standardUnit: String? = null,
     val sellerInfo: SellerInfo? = null,
+    val manufacturerId: String? = null,
+    var quantity: Double = 1.0,
 )
 
 @Serializable
@@ -84,7 +87,7 @@ data class SellerInfo(
                     date = 0,
                     formattedDate = "",
                     color = "",
-                ),
+                    ""),
                 formattedStatus = "",
                 status = StockStatus.OUT_OF_STOCK,
             ),
@@ -141,6 +144,7 @@ data class Expiry(
     val formattedDate: String,
     @SerialName("hexCode")
     val color: String,
+    val monthsToExpire: String,
 )
 
 enum class StockStatus {

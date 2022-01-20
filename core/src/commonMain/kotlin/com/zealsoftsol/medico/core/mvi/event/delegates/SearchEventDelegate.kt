@@ -4,16 +4,21 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -42,7 +47,38 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectSortOption -> selectSortOption(event.option)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
+        is Event.Action.Search.SelectBatch -> updateBatchSelection(event.product)
+        is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
+        is Event.Action.Search.ResetButton -> resetButton(event.item)
+        is Event.Action.Search.AddToCart -> updateBatchSelection(event.product)
+        is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
+        is Event.Action.Search.ShowDetails -> select(event.item)
+    }
+
+    private fun select(item: EntityInfo) {
+        navigator.withScope<StoresScope.StorePreview> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
+    }
+
+    private fun showToast(msg: String, cartData: CartData?) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.showToast.value = msg == "success"
+            it.cartData.value = cartData
+        }
+    }
+
+    private fun addToCart(product: ProductSearch) {
+        navigator.withScope<BaseSearchScope> {
+            navigator.scope.value.bottomSheet.value =
+                BottomSheet.BatchViewProduct(product, it)
+        }
     }
 
     private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {
@@ -247,10 +283,29 @@ internal class SearchEventDelegate(
         }
     }
 
+    private fun updateBatchSelection(product: ProductSearch) {
+        navigator.withScope<BaseSearchScope> {
+            it.isBatchSelected.value = !it.isBatchSelected.value
+            it.checkedProduct.value = product
+        }
+    }
+
+    private fun viewAllManufacturers() {
+        searchJob?.cancel()
+        activeFilters.clear()
+//        it.calculateActiveFilterNames()
+    }
+
     private fun reset() {
         searchJob?.cancel()
         activeFilters.clear()
 //        it.calculateActiveFilterNames()
+    }
+
+    private fun resetButton(check: Boolean) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.enableButton.value = check
+        }
     }
 
     private fun BaseSearchScope.calculateActiveFilterNames() {
@@ -275,6 +330,7 @@ internal class SearchEventDelegate(
                 pagination,
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)
+                filtersManufactures.value = body.facets
                 filters.value = body.facets.toFilter()
                 products.value = if (!addPage) body.products else products.value + body.products
                 sortOptions.value = body.sortOptions
