@@ -108,6 +108,7 @@ sealed class Event {
             data class AddToCart(val product: ProductSearch) : Search()
             data class showToast(val msg:String,val cartData:CartData?) : Search()
             data class ShowDetails(val item: EntityInfo) : Search()
+            data class ResetButton(val item: Boolean) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()

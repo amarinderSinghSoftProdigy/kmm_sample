@@ -844,7 +844,7 @@ private fun RoundChip(
                     ) {
                         Text(
                             color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
-                            fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
+                            fontWeight = FontWeight.Bold/*if (option.isSelected) FontWeight.W600 else FontWeight.Normal*/,
                             text = option.value,
                             fontSize = 12.sp,
                             modifier = Modifier.width(60.dp),

@@ -50,6 +50,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectBatch -> updateBatchSelection(event.product)
         is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
+        is Event.Action.Search.ResetButton -> resetButton(event.item)
         is Event.Action.Search.AddToCart -> updateBatchSelection(event.product)
         is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
         is Event.Action.Search.ShowDetails -> select(event.item)
@@ -299,6 +300,12 @@ internal class SearchEventDelegate(
         searchJob?.cancel()
         activeFilters.clear()
 //        it.calculateActiveFilterNames()
+    }
+
+    private fun resetButton(check: Boolean) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.enableButton.value = check
+        }
     }
 
     private fun BaseSearchScope.calculateActiveFilterNames() {

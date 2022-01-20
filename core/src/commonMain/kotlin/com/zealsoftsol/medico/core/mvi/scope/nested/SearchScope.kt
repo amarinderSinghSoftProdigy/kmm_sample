@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 
 interface BaseSearchScope : Scopable {
+    val enableButton: DataSource<Boolean>
     val productSearch: DataSource<String>
     val isFilterOpened: DataSource<Boolean>
     val isBatchSelected: DataSource<Boolean>
@@ -44,6 +45,8 @@ interface BaseSearchScope : Scopable {
         EventCollector.sendEvent(Event.Action.Search.SelectBatch(selectedId, product))
 
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
+
+    fun resetButton(check:Boolean) = EventCollector.sendEvent(Event.Action.Search.ResetButton(check))
 
     fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
@@ -99,6 +102,7 @@ interface BaseSearchScope : Scopable {
 
 class SearchScope(
     autoCompleteDashboard: AutoComplete?,
+    override val enableButton: DataSource<Boolean> = DataSource(false),
     override val productSearch: DataSource<String> = DataSource(""),
     override val isFilterOpened: DataSource<Boolean> = DataSource(false),
     override val isBatchSelected: DataSource<Boolean> = DataSource(false),

@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -39,14 +41,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,6 +92,7 @@ import com.zealsoftsol.medico.screens.search.SortSection
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 
 // TODO reuse with management
+@ExperimentalComposeUiApi
 @Composable
 fun StoresScreen(scope: StoresScope) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -94,6 +103,7 @@ fun StoresScreen(scope: StoresScope) {
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
     //Space(16.dp)
@@ -343,6 +353,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                         item,
                                         onClick = { scope.selectProduct(item) },
                                         onBuy = {
+                                            scope.resetButton(false)
                                             scope.selectBatch("", product = item)
                                             scope.buy(item)
                                         },
@@ -586,6 +597,7 @@ private fun StoreItem(
     }
 }
 
+@ExperimentalComposeUiApi
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProductItemStore(
@@ -595,19 +607,21 @@ fun ProductItemStore(
     addToCart: () -> Unit,
     scope: StoresScope.StorePreview
 ) {
-
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
     val batchSelected = scope.isBatchSelected.flow.collectAsState()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
+    val enableButton = scope.enableButton.flow.collectAsState()
 
     Column {
         Surface(
             color = Color.White,
             shape = MaterialTheme.shapes.medium,
-            onClick = onClick,
+            onClick = { },//Disabled the product item click
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            border = BorderStroke(1.dp, ConstColors.gray),
+            border = BorderStroke(1.dp, ConstColors.ltgray),
             elevation = 8.dp
         ) {
             Box {
@@ -864,7 +878,7 @@ fun ProductItemStore(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp),
-                            border = BorderStroke(1.dp, ConstColors.gray),
+                            border = BorderStroke(1.dp, ConstColors.ltgray),
                             elevation = 8.dp
                         ) {
                             Column(
@@ -873,7 +887,9 @@ fun ProductItemStore(
                                     .padding(all = 8.dp)
                             ) {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .focusRequester(focusRequester),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.Bottom,
                                 ) {
@@ -881,7 +897,23 @@ fun ProductItemStore(
                                         EditField(
                                             label = stringResource(id = R.string.qty),
                                             qty = "0",
-                                            onChange = { product.quantity = it.toDouble() },
+                                            onChange = {
+                                                product.quantity = it.toDouble()
+                                                if (product.quantity > 0)
+                                                    scope.resetButton(true)
+                                                else
+                                                    scope.resetButton(false)
+                                            },
+                                            keyboardOptions = KeyboardOptions.Default.copy(
+                                                keyboardType = KeyboardType.Number,
+                                                imeAction = ImeAction.Done
+                                            ),
+                                            keyboardActions = KeyboardActions(onDone = {
+                                                scope.resetButton(false)
+                                                scope.selectBatch("", product = product)
+                                                scope.buy(product = product)
+                                            }),
+                                            onFocus = { keyboardController?.show() },
                                             isEnabled = true,
                                         )
                                     }
@@ -890,7 +922,8 @@ fun ProductItemStore(
                                             label = stringResource(id = R.string.free),
                                             qty = "0",
                                             onChange = { },
-                                            isEnabled = false,
+                                            isEnabled = product.sellerInfo?.isPromotionActive
+                                                ?: false,
                                         )
                                     }
                                 }
@@ -909,7 +942,10 @@ fun ProductItemStore(
                                             elevation = null,
                                             onClick = {
                                                 product.quantity = 1.0
-                                                scope.selectBatch("", product = product)
+                                                scope.selectBatch(
+                                                    product.quantity.toString(),
+                                                    product = product
+                                                )
                                             },
                                             textSize = 12.sp,
                                             color = ConstColors.ltgray,
@@ -920,7 +956,7 @@ fun ProductItemStore(
                                         when (product.buyingOption) {
                                             BuyingOption.BUY -> MedicoButton(
                                                 text = stringResource(id = R.string.add_to_cart),
-                                                isEnabled = true,
+                                                isEnabled = enableButton.value,
                                                 height = 32.dp,
                                                 elevation = null,
                                                 onClick = onBuy,

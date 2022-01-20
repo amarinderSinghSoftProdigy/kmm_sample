@@ -844,9 +844,10 @@ private fun StoreHeader(
                     },
                 )
         )
-        Box(modifier = Modifier.weight(0.7f)) {
+        Box(modifier = Modifier.weight(0.75f)) {
             Surface(modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = 12.dp)
                 .background(Color.White, RoundedCornerShape(8.dp)),
                 border = BorderStroke(1.dp, ConstColors.ltgray),
                 onClick = { info.openBottomSheet() }) {
@@ -854,7 +855,6 @@ private fun StoreHeader(
                     modifier = Modifier.padding(all = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Space(8.dp)
                     Text(
                         text = info.store.tradeName,
                         color = MaterialTheme.colors.background,
@@ -863,11 +863,11 @@ private fun StoreHeader(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-
+                    Space(dp = 4.dp)
                     Image(
                         painter = painterResource(id = R.drawable.ic_verified),
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(16.dp),
                     )
                 }
 
