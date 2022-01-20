@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.ProductSearch
@@ -58,6 +59,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val productSearch: DataSource<String> = DataSource(""),
         override val isFilterOpened: DataSource<Boolean> = DataSource(false),
         override val showToast: DataSource<Boolean> = DataSource(false),
+        override val cartData: DataSource<CartData?> = DataSource(null),
         override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
         override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),

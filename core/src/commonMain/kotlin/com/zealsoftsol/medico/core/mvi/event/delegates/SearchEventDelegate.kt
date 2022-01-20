@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
@@ -50,7 +51,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
         is Event.Action.Search.AddToCart -> updateBatchSelection(event.product)
-        is Event.Action.Search.showToast -> showToast(event.msg)
+        is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
         is Event.Action.Search.ShowDetails -> select(event.item)
     }
 
@@ -65,9 +66,10 @@ internal class SearchEventDelegate(
         }
     }
 
-    private fun showToast(msg: String) {
+    private fun showToast(msg: String, cartData: CartData?) {
         navigator.withScope<StoresScope.StorePreview> {
             it.showToast.value = msg == "success"
+            it.cartData.value = cartData
         }
     }
 

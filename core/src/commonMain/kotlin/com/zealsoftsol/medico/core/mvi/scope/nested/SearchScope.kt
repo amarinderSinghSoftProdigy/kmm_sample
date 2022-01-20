@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
@@ -21,6 +22,7 @@ interface BaseSearchScope : Scopable {
     val isFilterOpened: DataSource<Boolean>
     val isBatchSelected: DataSource<Boolean>
     val showToast: DataSource<Boolean>
+    val cartData: DataSource<CartData?>
     val checkedProduct: DataSource<ProductSearch?>
     val filtersManufactures: DataSource<List<Facet>>
     val filters: DataSource<List<Filter>>
@@ -102,6 +104,7 @@ class SearchScope(
     override val isBatchSelected: DataSource<Boolean> = DataSource(false),
     override val showToast: DataSource<Boolean> = DataSource(false),
     override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
+    override val cartData: DataSource<CartData?> = DataSource(null),
     override val filtersManufactures: DataSource<List<Facet>> = DataSource(emptyList()),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),

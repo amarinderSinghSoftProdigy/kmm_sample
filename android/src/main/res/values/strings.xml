@@ -329,6 +329,7 @@
     <string name="connections">Connections</string>
     <string name="offers">Offers</string>
     <string name="batchs">Batchs</string>
+    <string name="added_to_cart">added to the cart with</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -180,6 +181,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     }*/
 
     val showToast = scope.showToast.flow.collectAsState()
+    val cartData = scope.cartData.flow.collectAsState()
     Surface(
         color = Color.White,
         modifier = Modifier
@@ -379,7 +381,17 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     }
 
     if (showToast.value) {
-        showToastGlobal(msg = "Item added into the cart")
+        val cartItem = cartData.value?.sellerCarts?.get(0)?.items?.get(0)
+        showToastGlobal(
+            msg = cartItem?.productName +" "+
+                    stringResource(id = R.string.added_to_cart) +" "+
+                    stringResource(id = R.string.qty) +
+                    " : " +
+                    cartItem?.quantity?.formatted + " + " +
+                    stringResource(id = R.string.free) +" "+
+                    cartItem?.freeQuantity?.formatted
+        )
+        EventCollector.sendEvent(Event.Action.Search.showToast("", null))
     }
 }
 
