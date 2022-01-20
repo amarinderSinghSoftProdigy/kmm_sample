@@ -381,14 +381,15 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     }
 
     if (showToast.value) {
-        val cartItem = cartData.value?.sellerCarts?.get(0)?.items?.get(0)
+        val entries = cartData.value?.sellerCarts?.get(0)?.items
+        val cartItem = entries?.get(entries.size - 1)
         showToastGlobal(
-            msg = cartItem?.productName +" "+
-                    stringResource(id = R.string.added_to_cart) +" "+
+            msg = cartItem?.productName + " " +
+                    stringResource(id = R.string.added_to_cart) + " " +
                     stringResource(id = R.string.qty) +
                     " : " +
                     cartItem?.quantity?.formatted + " + " +
-                    stringResource(id = R.string.free) +" "+
+                    stringResource(id = R.string.free) + " " +
                     cartItem?.freeQuantity?.formatted
         )
         EventCollector.sendEvent(Event.Action.Search.showToast("", null))
