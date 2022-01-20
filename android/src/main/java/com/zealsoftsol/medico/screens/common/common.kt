@@ -127,6 +127,7 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
+    txtColor: Color = Color.White,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
     border: BorderStroke? = null,
@@ -156,6 +157,7 @@ fun MedicoButton(
             fontSize = textSize,
             fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),
+            color = txtColor
         )
     }
 }
@@ -600,7 +602,7 @@ fun EditField(
                 )
             }
 
-            val style = textStyle?: TextStyle(
+            val style = textStyle ?: TextStyle(
                 color = color,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.W700,
@@ -649,9 +651,9 @@ fun EditField(
             )
         }
         Space(4.dp)
-        if(showThinDivider){
+        if (showThinDivider) {
             Divider()
-        }else{
+        } else {
             Canvas(
                 modifier = Modifier
                     .height((1.5).dp)

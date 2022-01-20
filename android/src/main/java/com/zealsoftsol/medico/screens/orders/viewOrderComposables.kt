@@ -258,8 +258,15 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         entry = it,
                         isChecked = it in checkedEntries.value,
                         onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = { scope.selectEntry(scope.canEdit,
-                            declineReasons.value, entries.value, index) },
+                        onClick = {
+                            scope.selectEntry(
+                                taxType = order.value.info.taxType!!,
+                                retailerName = b2bData.value.tradeName,
+                                canEditOrderEntry = scope.canEdit,
+                                declineReason = declineReasons.value, entry = entries.value,
+                                index = index
+                            )
+                        },
                     )
                 }
                 Space(8.dp)

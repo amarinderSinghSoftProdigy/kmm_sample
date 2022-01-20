@@ -18,6 +18,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
@@ -107,6 +108,8 @@ class ViewOrderScope(
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
 
     fun selectEntry(
+        taxType: TaxType,
+        retailerName: String,
         canEditOrderEntry: Boolean,
         declineReason: List<DeclineReason>,
         entry: List<OrderEntry>,
@@ -114,11 +117,13 @@ class ViewOrderScope(
     ) =
         EventCollector.sendEvent(
             Event.Action.Orders.SelectEntry(
-                canEditOrderEntry,
-                order.value.info.id,
-                declineReason,
-                entry,
-                index
+                taxType = taxType,
+                retailerName = retailerName,
+                canEditOrderEntry = canEditOrderEntry,
+                orderId = order.value.info.id,
+                declineReason = declineReason,
+                entry = entry,
+                index = index
             )
         )
 

@@ -60,6 +60,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Space
@@ -94,6 +95,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val batchNo = scope.batch.flow.collectAsState().value
     val discount = scope.discount.flow.collectAsState().value
     val canEditOrderEntry = scope.canEditOrderEntry
+    val taxType = scope.taxType
     val context = LocalContext.current
 
     Box(
@@ -133,7 +135,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     Text(
                         text = "${stringResource(id = R.string.line_item)} ${selectedIndex + 1}",
                         color = ConstColors.green,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W600
                     )
 
@@ -155,7 +157,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 Text(
                     text = orderEntry.productName,
                     color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -164,7 +166,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 Text(
                     text = orderEntry.manufacturerName,
                     color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -176,7 +178,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = stringResource(id = R.string.hsn_code),
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -184,7 +186,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = stringResource(id = R.string.batch_no),
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -195,7 +197,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     append(":")
                                 },
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -204,7 +206,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = stringResource(id = R.string.expiry),
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -214,7 +216,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = stringResource(id = R.string.requested_qty),
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -226,7 +228,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.hsnCode,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -235,7 +237,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.batchNo,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -244,7 +246,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.price.formatted,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -254,7 +256,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 Text(
                                     text = it,
                                     color = Color.Black,
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontWeight = FontWeight.W700
@@ -264,7 +266,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.requestedQty.formatted,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -279,7 +281,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = stringResource(id = R.string.status),
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -288,7 +290,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = "",
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -300,7 +302,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     append(":")
                                 },
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -311,7 +313,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     append(":")
                                 },
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -322,7 +324,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     append("%:")
                                 },
                                 color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -336,8 +338,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.status.toString(),
                                 color = if (orderEntry.status == OrderEntry.Status.ACCEPTED)
-                                    Color.Green else Color.Red,
-                                fontSize = 14.sp,
+                                    ConstColors.green else Color.Red,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -346,7 +348,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = "",
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -355,7 +357,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.mrp.formatted,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -364,7 +366,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.freeQty.formatted,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -373,7 +375,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Text(
                                 text = orderEntry.discount.formatted,
                                 color = Color.Black,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontWeight = FontWeight.W700
@@ -389,7 +391,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         Text(
                             text = stringResource(id = R.string.hsn_code),
                             color = ConstColors.gray,
-                            fontSize = 14.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.W500,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -451,7 +453,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 Text(
                                     text = stringResource(id = R.string.batch_no),
                                     color = ConstColors.gray,
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.W500,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -485,7 +487,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = stringResource(id = R.string.ptr),
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -516,7 +518,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = stringResource(id = R.string.mrp),
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -547,7 +549,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = stringResource(id = R.string.qty),
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -577,7 +579,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = stringResource(id = R.string.free),
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -627,7 +629,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = stringResource(id = R.string.expiry),
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -636,7 +638,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = expiryDate,
                                         color = Color.Black,
-                                        fontSize = 14.sp,
+                                        fontSize = 18.sp,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         fontWeight = FontWeight.W700
@@ -660,7 +662,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     Text(
                                         text = "${stringResource(id = R.string.discount)}%",
                                         color = ConstColors.gray,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
@@ -679,7 +681,118 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
             }
-            Space(20.dp)
+            Space(30.dp)
+            if(taxType == TaxType.SGST){
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .width(maxWidth)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.cgst))
+                                append(":")
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+
+                        Text(
+                            text = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                            maxLines = 1,
+                            textAlign = TextAlign.End,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+                Space(5.dp)
+                Divider()
+                Space(10.dp)
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .width(maxWidth)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Text(
+                            buildAnnotatedString {
+                                append(stringResource(id = R.string.sgst))
+                                append(":")
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+
+                        Text(
+                            text = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                            maxLines = 1,
+                            textAlign = TextAlign.End,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        )
+
+                    }
+                }
+                Space(5.dp)
+                Divider()
+                Space(10.dp)
+            }else{
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .width(maxWidth)
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        Text(
+                            buildAnnotatedString {
+                                append(stringResource(id = R.string.igst))
+                                append(":")
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Text(
+                            text = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W700,
+                            maxLines = 1,
+                            textAlign = TextAlign.End,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+                Space(5.dp)
+                Divider()
+                Space(10.dp)
+            }
+
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier
@@ -693,8 +806,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             append(":")
                         },
                         color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.W700,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -702,115 +815,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     Text(
                         text = orderEntry.totalAmount.formatted,
                         color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        textAlign = TextAlign.End,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-            Space(5.dp)
-            Divider()
-            Space(10.dp)
-            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .width(maxWidth)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.cgst))
-                            append(":")
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        textAlign = TextAlign.End,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-            Space(5.dp)
-            Divider()
-            Space(10.dp)
-            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .width(maxWidth)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Text(
-                        buildAnnotatedString {
-                            append(stringResource(id = R.string.sgst))
-                            append(":")
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        textAlign = TextAlign.End,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
-
-                }
-            }
-            Space(5.dp)
-            Divider()
-            Space(10.dp)
-            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .width(maxWidth)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Text(
-                        buildAnnotatedString {
-                            append(stringResource(id = R.string.igst))
-                            append(":")
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    Text(
-                        text = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.W800,
                         maxLines = 1,
                         textAlign = TextAlign.End,
                         overflow = TextOverflow.Ellipsis,
@@ -837,7 +843,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         },
                         color = ConstColors.gray,
                         contentColor = Color.White,
-                        isEnabled = true
+                        isEnabled = true,
+                        txtColor = ConstColors.red
                     )
 
                     MedicoButton(
@@ -887,7 +894,7 @@ fun OpenHsnScreen(
             Text(
                 text = stringResource(id = R.string.search_hsn_code),
                 color = ConstColors.gray,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.W500,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -1046,7 +1053,7 @@ private fun HsnCodeSheet(
                     Text(
                         text = stringResource(id = R.string.hsn_code),
                         color = ConstColors.green,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W600,
                         modifier = Modifier
                             .padding(start = 10.dp)
@@ -1054,7 +1061,7 @@ private fun HsnCodeSheet(
                     Text(
                         text = stringResource(id = R.string.rate),
                         color = ConstColors.green,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W600,
                         modifier = Modifier
                             .padding(start = 10.dp)
@@ -1062,7 +1069,7 @@ private fun HsnCodeSheet(
                     Text(
                         text = stringResource(id = R.string.effective_date),
                         color = ConstColors.green,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W600,
                         modifier = Modifier
                             .padding(end = 10.dp)
@@ -1106,6 +1113,7 @@ private fun HsnCodeSheet(
                     onClick = {
                         scope.updateHsnCode(selectedHsnCode.value)
                         scope.manageBottomSheetVisibility(false)
+                        scope.saveEntry()
                     })
             }
         }
@@ -1139,7 +1147,7 @@ private fun SingleHsnItem(item: SearchDataItem, onCheckedChange: ((Boolean) -> U
                 Text(
                     text = item.hsncode,
                     color = Color.Black,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.W600,
                     modifier = Modifier.padding(start = 5.dp)
                 )
@@ -1148,7 +1156,7 @@ private fun SingleHsnItem(item: SearchDataItem, onCheckedChange: ((Boolean) -> U
             Text(
                 text = item.rate.formattedValue,
                 color = Color.Black,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.W600
             )
             Box(
@@ -1203,19 +1211,18 @@ private fun WarningProductNotAvailable(
                 )
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(45.dp),
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        text = stringResource(id = R.string.unavailable_warning),
+                        text = "${scope.retailerName} ${stringResource(id = R.string.unavailable_warning)}",
                         color = Color.Black,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W600,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .padding(start = 10.dp)
+                            .padding(10.dp)
                     )
                 }
 
@@ -1224,6 +1231,17 @@ private fun WarningProductNotAvailable(
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
                 ) {
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(10.dp)
+                            .height(40.dp),
+                        text = stringResource(id = R.string.cancel),
+                        onClick = {
+                            scope.manageWarningBottomSheetVisibility(false)
+                        },
+                        isEnabled = true
+                    )
 
                     MedicoButton(
                         modifier = Modifier
@@ -1237,18 +1255,6 @@ private fun WarningProductNotAvailable(
                         },
                         color = ConstColors.gray,
                         contentColor = Color.White,
-                        isEnabled = true
-                    )
-
-                    MedicoButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.cancel),
-                        onClick = {
-                            scope.manageWarningBottomSheetVisibility(false)
-                        },
                         isEnabled = true
                     )
                 }
@@ -1267,14 +1273,15 @@ fun EditText(
 
     val textStyle = TextStyle(
         color = Color.Black,
-        fontSize = 16.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.W600,
         textAlign = TextAlign.End,
     )
 
     BasicTextField(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(end = 10.dp),
         value = value,
         onValueChange = {
             onChange(it)
@@ -1364,7 +1371,7 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
                                 Text(
                                     text = item.name,
                                     color = Color.Black,
-                                    fontSize = 14.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.W500,
                                 )
                             }

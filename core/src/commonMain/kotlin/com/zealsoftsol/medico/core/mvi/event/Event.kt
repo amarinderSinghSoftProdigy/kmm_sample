@@ -25,6 +25,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -215,6 +216,8 @@ sealed class Event {
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
             data class SelectEntry(
+                val taxType: TaxType,
+                val retailerName: String,
                 val canEditOrderEntry: Boolean,
                 val orderId: String,
                 val declineReason: List<DeclineReason>,

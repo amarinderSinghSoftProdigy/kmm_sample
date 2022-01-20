@@ -49,7 +49,7 @@ data class OrderEntry(
 ) {
 
     enum class Status {
-        ACCEPTED, REJECTED;
+        ACCEPTED, REJECTED, DECLINED;
     }
 }
 
@@ -108,6 +108,7 @@ data class OrderInfo(
     val status: OrderStatus,
     val paymentMethod: PaymentMethod,
     val total: Total,
+    val taxType: TaxType? = null,
 )
 
 enum class OrderStatus(val stringValue: String) {

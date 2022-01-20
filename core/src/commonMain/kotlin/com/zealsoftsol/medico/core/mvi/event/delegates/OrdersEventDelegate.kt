@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.TaxType
 
 internal class OrdersEventDelegate(
     navigator: Navigator,
@@ -41,6 +42,8 @@ internal class OrdersEventDelegate(
             event.fromNotification,
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(
+            event.taxType,
+            event.retailerName,
             event.canEditOrderEntry,
             event.orderId,
             event.declineReason,
@@ -156,6 +159,8 @@ internal class OrdersEventDelegate(
     }
 
     private fun selectEntry(
+        taxType: TaxType,
+        retailerName: String,
         canEditOrderEntry: Boolean,
         orderId: String,
         declineReason: List<DeclineReason>,
@@ -165,8 +170,13 @@ internal class OrdersEventDelegate(
         navigator.withScope<ViewOrderScope> {
             navigator.setScope(
                 OrderHsnEditScope(
-                    canEditOrderEntry, orderId, declineReason,
-                    orderEntry as MutableList<OrderEntry>, index
+                    taxType = taxType,
+                    retailerName = retailerName,
+                    canEditOrderEntry = canEditOrderEntry,
+                    orderID = orderId,
+                    declineReason = declineReason,
+                    orderEntries = orderEntry as MutableList<OrderEntry>,
+                    index = index
                 )
             )
         }

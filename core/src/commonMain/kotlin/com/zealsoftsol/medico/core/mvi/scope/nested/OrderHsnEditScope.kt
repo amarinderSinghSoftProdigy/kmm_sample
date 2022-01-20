@@ -11,8 +11,11 @@ import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
+import com.zealsoftsol.medico.data.TaxType
 
 class OrderHsnEditScope(
+    val taxType: TaxType,
+    val retailerName: String,
     val canEditOrderEntry: Boolean,
     private val orderID: String,
     val declineReason: List<DeclineReason>,
