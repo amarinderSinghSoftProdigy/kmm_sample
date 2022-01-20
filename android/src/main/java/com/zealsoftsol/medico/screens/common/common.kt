@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.common
 
+import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -65,6 +67,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -606,6 +609,7 @@ fun EditField(
     isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val color = when {
         isError -> ConstColors.red
@@ -663,6 +667,7 @@ fun EditField(
                     }
                 },
                 keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,
@@ -684,4 +689,20 @@ fun EditField(
             drawRect(color)
         }
     }
+}
+
+@Composable
+fun showToastGlobal(msg: String) {
+    val context = LocalContext.current
+    Column(
+        content = {
+            Toast.makeText(
+                context,
+                msg,
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
 }

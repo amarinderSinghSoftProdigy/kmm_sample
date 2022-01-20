@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
@@ -86,7 +87,8 @@ internal class CartEventDelegate(
                 quantity,
                 freeQuantity,
             )
-        }.onSuccess {
+        }.onSuccess { body ->
+            EventCollector.sendEvent(Event.Action.Search.showToast("success", cartData = body))
 //            navigator.setScope(
 //                CartScope(
 //                    items = ReadOnlyDataSource(cartRepo.entries),
