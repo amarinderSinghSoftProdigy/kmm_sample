@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -22,9 +21,7 @@ class OrderHsnEditScope(
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
-    }
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackIcon
 
     init {
         getHsnCodes(true)

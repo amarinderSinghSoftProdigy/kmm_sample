@@ -238,16 +238,23 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
                         //display search bar with product logo
                         is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
+                        is TabBarInfo.OnlyBackIcon -> {
+                            OnlyBackIconHeader(scope, info)
+                        }
                     }
                 }
             }
         },
         content = {
             val childScope = scope.childScope.flow.collectAsState()
+            var padding = 56
+            if (childScope.value is OrderHsnEditScope) {// no bottom padding while editing order entries
+                padding = 0
+            }
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),
-                modifier = Modifier.padding(bottom = 56.dp)
+                modifier = Modifier.padding(bottom = padding.dp)
             ) {
                 when (it) {
                     is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
@@ -358,6 +365,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
+            val childScope = scope.childScope.flow.collectAsState()
+
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
                 if (mUserType == UserType.STOCKIST) {
                     mBottomNavItems = listOf(
@@ -377,12 +386,37 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     )
                 }
             }
-            if (mUserType != null)
-                BottomNavigationBar(mBottomNavItems, scope)
+            if (mUserType != null) {
+                if (childScope.value !is OrderHsnEditScope) {
+                    BottomNavigationBar(mBottomNavItems)
+                }
+            }
         }
     )
 }
 
+/**
+ * use this as header when only back icon is required on header and nothing else
+ */
+@Composable
+private fun OnlyBackIconHeader(scope: TabBarScope, info: TabBarInfo.OnlyBackIcon) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
+    }
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -577,7 +611,7 @@ private fun RowScope.SearchTabBar(
         if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
-        }else{
+        } else {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = 0
         }
@@ -814,7 +848,7 @@ private fun NoIconHeader(
  * composable for bottom navgation item
  */
 @Composable
-fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) {
+fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
     if (mUserType != null) {
         Surface(
             elevation = 5.dp, color = Color.White
@@ -823,7 +857,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) 
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(height.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

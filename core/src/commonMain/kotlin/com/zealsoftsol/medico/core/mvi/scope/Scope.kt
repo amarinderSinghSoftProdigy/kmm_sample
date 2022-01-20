@@ -126,6 +126,10 @@ sealed class TabBarInfo {
         fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
         fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search(null))
     }
+
+    object OnlyBackIcon:TabBarInfo(){
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
 }
 
 internal object StartScope : Scope.Host()
