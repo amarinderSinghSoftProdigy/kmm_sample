@@ -382,7 +382,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
                 Space(20.dp)
-                if (canEditOrderEntry){ //only allow changing hsn code if order is editable
+                if (canEditOrderEntry) { //only allow changing hsn code if order is editable
                     Divider()
                     Space(10.dp)
                     Column {
@@ -1336,6 +1336,8 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
                         .fillMaxWidth(),
                     textAlign = TextAlign.Start
                 )
+
+
                 LazyColumn(
                     contentPadding = PaddingValues(start = 3.dp),
                     modifier = Modifier
@@ -1348,18 +1350,24 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
                         key = { index, _ -> index },
                         itemContent = { _, item ->
                             Divider()
-                            Text(
-                                text = item.name,
-                                color = Color.Black,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
+                            Column(
                                 modifier = Modifier
-                                    .padding(10.dp)
+                                    .height(40.dp)
+                                    .fillMaxWidth()
                                     .clickable {
                                         scope.updateDeclineReason(item.code)
                                         scope.manageDeclineBottomSheetVisibility(false)
-                                    }
-                            )
+                                    },
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = item.name,
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W500,
+                                )
+                            }
                         },
                     )
                 }
