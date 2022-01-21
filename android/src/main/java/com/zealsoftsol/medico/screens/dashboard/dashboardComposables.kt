@@ -47,6 +47,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -131,10 +133,7 @@ private fun ShowRetailerAndHospitalDashboard(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Space(dp = 16.dp)
-            LazyRow(
-                contentPadding = PaddingValues(start = 3.dp),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) {
+            LazyRow {
                 dashboard.value?.brands?.let {
                     itemsIndexed(
                         items = it,
@@ -198,6 +197,61 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
         )
     }
     Space(12.dp)
+}
+
+/**
+ * ui item for brands listing
+ */
+
+@Composable
+private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
+    Column(
+        modifier = Modifier
+            .width(120.dp)
+            .padding(end = 8.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .height(80.dp)
+                .width(120.dp),
+            elevation = 3.dp,
+            shape = RoundedCornerShape(5.dp),
+            color = Color.White,
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(120.dp),
+            ) {
+                CoilImageBrands(
+                    src = "",
+                    contentScale = ContentScale.Crop,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    height = 80.dp,
+                    width = 120.dp,
+                )
+                if (item.count > 0) {
+                    RedCounter(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(all = 4.dp),
+                        count = item.count,
+                    )
+                }
+            }
+        }
+        Space(8.dp)
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = item.productName,
+            color = MaterialTheme.colors.background,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
+        Space(8.dp)
+    }
 }
 
 /**
@@ -306,6 +360,28 @@ private fun ShowStockistDashBoard(
 
             Space(16.dp)
             Text(
+                text = stringResource(id = R.string.your_brands),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Space(dp = 8.dp)
+
+            LazyRow {
+                dashboard.value?.brands?.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { _, item -> item.searchTerm },
+                        itemContent = { _, item ->
+                            BrandsItem(item, scope)
+                        },
+                    )
+                }
+            }
+
+
+            Space(16.dp)
+            Text(
                 text = stringResource(id = R.string.inventory),
                 color = ConstColors.lightBlue,
                 fontSize = 12.sp,
@@ -397,7 +473,7 @@ private fun ShowStockistDashBoard(
                 fontWeight = FontWeight.Bold,
             )
             Space(8.dp)
-            FoldableItem(
+            /*FoldableItem(
                 expanded = soldExpanded.value,
                 headerBackground = Color.White,
                 headerMinHeight = 62.dp,
@@ -467,9 +543,20 @@ private fun ShowStockistDashBoard(
                         }
                     }
                 },
-            )
+            )*/
 
-            Space(16.dp)
+            LazyRow {
+                dash?.productInfo?.mostSold?.let {
+                    itemsIndexed(
+                        items = it,
+                        itemContent = { _, item ->
+                            BrandsImageItem(item, scope)
+                        },
+                    )
+                }
+            }
+
+            Space(8.dp)
             Text(
                 text = stringResource(id = R.string.most_searched),
                 color = ConstColors.lightBlue,
@@ -478,7 +565,7 @@ private fun ShowStockistDashBoard(
             )
             Space(8.dp)
             val searchExpanded = remember { mutableStateOf(false) }
-            FoldableItem(
+            /*FoldableItem(
                 expanded = searchExpanded.value,
                 headerBackground = Color.White,
                 headerMinHeight = 62.dp,
@@ -548,7 +635,24 @@ private fun ShowStockistDashBoard(
                         }
                     }
                 },
+            )*/
+
+            dash?.productInfo?.mostSearched?.let {
+                LazyRow {
+                    itemsIndexed(
+                        items = it,
+                        itemContent = { _, item ->
+                            BrandsImageItem(item, scope)
+                        },
+                    )
+                }
+            } ?: Text(
+                text = stringResource(id = R.string.no_products),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
             )
+
         }
         Space(dp = 16.dp)
     }
@@ -670,6 +774,7 @@ private fun RowScope.SectionButton(
         enabled = isClickable,
         onClick = onClick,
     ) {
+
         Box(
             modifier = Modifier
                 .padding(10.dp)
@@ -691,7 +796,40 @@ private fun RowScope.SectionButton(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+
                         Box(
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp),
+                        ) {
+
+                            Box(
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(50.dp),
+                                contentAlignment = Alignment.BottomCenter
+                            ) {
+
+                                Icon(
+                                    painter = icon,
+                                    tint = MaterialTheme.colors.background,//ConstColors.gray.copy(alpha = .5f),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(36.dp),
+                                )
+                            }
+                            if (counter != null)
+                                RedCounter(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(all = 4.dp),
+                                    count = counter,
+                                )
+
+                        }
+
+
+                        /*Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
@@ -706,36 +844,31 @@ private fun RowScope.SectionButton(
                             )
                             Box(
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(bottom = 8.dp, start = 8.dp),
+                                    .align(Alignment.TopEnd),
                                 contentAlignment = Alignment.TopEnd
                             ) {
                                 Surface(
                                     shape = CircleShape,
                                     color = ConstColors.red,
+                                    modifier = Modifier.size(25.dp)
                                 ) {
                                     if (counter != null) {
                                         Text(
-                                            modifier = Modifier.padding(
-                                                start = 8.dp,
-                                                end = 8.dp,
-                                                top = 4.dp,
-                                                bottom = 4.dp
-                                            ),
+                                            modifier = Modifier.padding(start = 7.dp, top = 3.dp),
                                             text = counter.toString(),
                                             color = Color.White,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.W700,
                                         )
-                                    } /*else {
+                                    } *//*else {
                                 ShimmerItem(padding = PaddingValues(end = 48.dp, top = 8.dp))
-                            }*/
+                            }*//*
 
                                 }
                             }
 
                         }
-
+*/
                         Space(dp = 4.dp)
                         Text(
                             text = text,

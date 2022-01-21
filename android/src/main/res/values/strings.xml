@@ -330,6 +330,8 @@
     <string name="offers">Offers</string>
     <string name="batchs">Batchs</string>
     <string name="added_to_cart">added to the cart with</string>
+    <string name="your_brands">Your Brands</string>
+    <string name="no_products">No products found!</string>
     <!--error codes-->
 
     <string name="E0000">Error</string>
