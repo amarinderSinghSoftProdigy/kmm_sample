@@ -78,7 +78,8 @@ fun SettingsScreen(scope: SettingsScope) {
 
             Text(
                 text = if (userType == UserType.STOCKIST) {
-                    (user.details as User.Details.DrugLicense).tradeName
+                    //(user.details as User.Details.DrugLicense).tradeName
+                    user.fullName()
                 } else {
                     user.fullName()
                 },

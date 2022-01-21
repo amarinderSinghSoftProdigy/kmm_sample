@@ -207,6 +207,7 @@ sealed class Event {
             object GetContactUs : Help()
             object GetTandC : Help()
             object GetHelp : Help()
+            data class ChangeTab(val index:String) : Help()
         }
 
         sealed class Orders : Action() {
