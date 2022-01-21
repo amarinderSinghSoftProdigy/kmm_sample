@@ -40,6 +40,10 @@ internal class OrdersHsnEventDelegate(
             spid = event.spid,
             reasonCode = event.reasonCode
         )
+        is Event.Action.OrderHsn.AcceptOrderEntry -> acceptOrderEntry(
+            orderEntryId = event.orderEntryId,
+            spid = event.spid,
+        )
     }
 
     /**
@@ -121,6 +125,28 @@ internal class OrdersHsnEventDelegate(
                     orderEntryId = orderEntryId,
                     spid = spid,
                     reasonCode = reasonCode
+                )
+            }.onSuccess { body ->
+                it.updateOrderEntriesFromServer(body.entries)
+                it.changeAlertScope(true)
+            }.onError {
+                log(it.body)
+            }
+        }
+    }
+
+    /**
+     * accept an order entry
+     */
+    private suspend fun acceptOrderEntry(
+        orderEntryId: String,
+        spid: String,
+    ){
+        navigator.withScope<OrderHsnEditScope> {
+            withProgress {
+                networkOrdersScope.acceptEntry(
+                    orderEntryId = orderEntryId,
+                    spid = spid,
                 )
             }.onSuccess { body ->
                 it.updateOrderEntriesFromServer(body.entries)

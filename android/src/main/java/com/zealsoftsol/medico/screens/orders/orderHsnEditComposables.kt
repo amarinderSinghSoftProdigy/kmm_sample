@@ -829,23 +829,40 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             Space(5.dp)
             Divider()
             Space(10.dp)
-            if (canEditOrderEntry) // only allow changing status if order entry is editable i.e New
+            if (canEditOrderEntry) { // only allow changing status if order entry is editable i.e New
                 Row(modifier = Modifier.fillMaxSize()) {
 
-                    MedicoButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.not_available),
-                        onClick = {
-                            scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
-                        },
-                        color = ConstColors.gray,
-                        contentColor = Color.White,
-                        isEnabled = true,
-                        txtColor = ConstColors.red
-                    )
+                    //once order is rejected show save entry option
+                    if(orderEntry.status == OrderEntry.Status.REJECTED || orderEntry.status == OrderEntry.Status.DECLINED){
+                        MedicoButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(10.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.accept),
+                            onClick = {
+                                scope.acceptEntry()
+                            },
+                            color = ConstColors.green,
+                            contentColor = Color.White,
+                            isEnabled = true,
+                        )
+                    }else{
+                        MedicoButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(10.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.not_available),
+                            onClick = {
+                                scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
+                            },
+                            color = ConstColors.gray,
+                            contentColor = Color.White,
+                            isEnabled = true,
+                            txtColor = ConstColors.red
+                        )
+                    }
 
                     MedicoButton(
                         modifier = Modifier
@@ -857,6 +874,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         isEnabled = mrp != 0.0 && price != 0.0 // only allow submit if mrp and proce is entered
                     )
                 }
+            }
             Space(10.dp)
         }
         if (openHsnBottomSheet)

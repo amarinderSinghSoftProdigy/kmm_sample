@@ -293,6 +293,8 @@ interface NetworkScope {
         suspend fun saveNewOrder(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
 
         suspend fun rejectEntry(orderEntryId: String, spid: String, reasonCode: String): BodyResponse<OrderResponse>
+
+        suspend fun acceptEntry(orderEntryId: String, spid: String): BodyResponse<OrderResponse>
     }
 
 }

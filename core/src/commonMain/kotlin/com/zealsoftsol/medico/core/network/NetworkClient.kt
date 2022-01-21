@@ -870,6 +870,14 @@ class NetworkClient(
             }
         }
 
+    override suspend fun acceptEntry(orderEntryId: String, spid: String) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/accept") {
+                withMainToken()
+                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid))
+            }
+        }
+
 
 
     // Utils

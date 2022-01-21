@@ -336,6 +336,11 @@ sealed class Event {
                 val spid: String,
                 val reasonCode: String
             ) : OrderHsn()
+
+            data class AcceptOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+            ) : OrderHsn()
         }
 
         sealed class Inventory : Action() {

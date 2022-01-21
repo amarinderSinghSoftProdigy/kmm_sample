@@ -185,6 +185,18 @@ class OrderHsnEditScope(
     }
 
     /**
+     * accept an order entry
+     */
+    fun acceptEntry() {
+        EventCollector.sendEvent(
+            Event.Action.OrderHsn.AcceptOrderEntry(
+                orderEntryId = orderEntry.value.id,
+                spid = orderEntry.value.spid,
+            )
+        )
+    }
+
+    /**
      * submit data to server
      */
     fun saveEntry() {
