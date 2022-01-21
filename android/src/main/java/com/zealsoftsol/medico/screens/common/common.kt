@@ -692,7 +692,7 @@ fun EditField(
 }
 
 @Composable
-fun showToastGlobal(msg: String) {
+fun ShowToastGlobal(msg: String) {
     val context = LocalContext.current
     Column(
         content = {

@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
@@ -29,6 +32,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -44,8 +48,10 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
+import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @ExperimentalComposeUiApi
@@ -64,7 +70,10 @@ fun HelpScreens(scope: HelpScope) {
 fun HelpScreen(scope: HelpScope) {
     val activity = LocalContext.current as MainActivity
     Box(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(bottom = 50.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 50.dp),
         contentAlignment = Alignment.Center,
     ) {
         Surface(
@@ -73,8 +82,11 @@ fun HelpScreen(scope: HelpScope) {
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
-                    modifier = Modifier.background(ConstColors.lightBlue).fillMaxWidth()
-                        .height(50.dp).padding(horizontal = 10.dp),
+                    modifier = Modifier
+                        .background(ConstColors.lightBlue)
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -108,7 +120,10 @@ fun HelpScreen(scope: HelpScope) {
                 Divider()
                 Space(12.dp)
                 Row(
-                    modifier = Modifier.height(50.dp).fillMaxWidth().padding(horizontal = 20.dp),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -141,7 +156,10 @@ fun HelpScreen(scope: HelpScope) {
                     }
                 }
                 Row(
-                    modifier = Modifier.height(50.dp).fillMaxWidth().padding(horizontal = 20.dp),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -171,7 +189,8 @@ fun HelpScreen(scope: HelpScope) {
                 Divider()
                 Space(12.dp)
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(50.dp)
                         .clickable { activity.openUrl(scope.helpData.tosUrl) }
                         .padding(horizontal = 20.dp),
@@ -200,7 +219,8 @@ fun HelpScreen(scope: HelpScope) {
                     )
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(50.dp)
                         .clickable { activity.openUrl(scope.helpData.privacyPolicyUrl) }
                         .padding(horizontal = 20.dp),
@@ -251,7 +271,7 @@ fun TermsConditionsPrivacyPolicyScreen(scope: HelpScope.TandC) {
                     .fillMaxWidth()
                     .padding(all = 12.dp)
             ) {
-               //var isActive = true
+                //var isActive = true
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -289,10 +309,29 @@ fun TermsConditionsPrivacyPolicyScreen(scope: HelpScope.TandC) {
                         }
                     }
                 }
-                if (loadUrl.value == "tos") {
-                    loadWebUrl(url = scope.helpData.tosUrl, activity = activity)
-                } else {
+
+                Space(dp = 8.dp)
+                var textValue = stringResource(id = R.string.tandc_text)
+                if (loadUrl.value != "tos") {
+                    textValue = stringResource(id = R.string.privacy_policy_text)
+                }/* else {
                     loadWebUrl(url = scope.helpData.privacyPolicyUrl, activity = activity)
+                }*/
+
+                /*InputField(
+                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    hint = "",
+                    text = textValue,
+                    onValueChange = { }
+                )*/
+                val scrollState = rememberScrollState()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                ) {
+                    Text(text = textValue, fontSize = 12.sp, color = MaterialTheme.colors.background)
                 }
             }
         }
