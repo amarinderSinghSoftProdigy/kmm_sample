@@ -193,14 +193,14 @@ fun SettingsScreen(scope: SettingsScope) {
             }
             Separator(thickness = 0.5f)
             AccountContentItem(
-                altRoute = Event.Action.Help.GetHelp,
+                altRoute = Event.Action.Help.GetTandC,
                 drawableResourceId = R.drawable.ic_terms_cond,
                 stringResourceId = R.string.tc_privacy_policy,
                 scope = scope
             )
             Separator(thickness = 0.5f)
             AccountContentItem(
-                altRoute = Event.Action.Help.GetHelp,
+                altRoute = Event.Action.Help.GetContactUs,
                 drawableResourceId = R.drawable.ic_customer_care_acc,
                 stringResourceId = R.string.customer_care,
                 scope = scope

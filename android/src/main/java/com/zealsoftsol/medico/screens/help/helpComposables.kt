@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -38,6 +39,18 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.Space
+
+@ExperimentalComposeUiApi
+@Composable
+fun HelpScreens(scope: HelpScope) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        when (scope) {
+            is HelpScope.ContactUs -> ContactUsScreen(scope)
+            is HelpScope.TandC -> TermsConditionsPrivacyPolicyScreen(scope)
+        }
+    }
+}
+
 
 @Composable
 fun HelpScreen(scope: HelpScope) {

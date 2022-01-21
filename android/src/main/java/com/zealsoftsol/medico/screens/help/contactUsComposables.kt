@@ -40,41 +40,54 @@ import com.zealsoftsol.medico.screens.common.Space
 @Composable
 fun ContactUsScreen(scope: HelpScope) {
     val activity = LocalContext.current as MainActivity
+    Space(dp = 16.dp)
     Box(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(bottom = 50.dp),
-        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 50.dp),
+        contentAlignment = Alignment.TopStart,
     ) {
-        Surface(
-            color = Color.White,
-            shape = MaterialTheme.shapes.large,
-        ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.background(ConstColors.lightBlue).fillMaxWidth()
-                        .height(50.dp).padding(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Space(10.dp)
+
+        Column {
+            Surface(
+                color = Color.White,
+                shape = MaterialTheme.shapes.large,
+                border = BorderStroke(1.dp, ConstColors.lightGreen)
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            /*Space(10.dp)
                         Icon(
                             painter = painterResource(id = R.drawable.ic_help),
                             contentDescription = null,
                             tint = Color.White,
-                        )
-                        Space(10.dp)
-                        Text(
-                            text = stringResource(id = R.string.connect_with_us),
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
+                        )*/
+                            Space(10.dp)
+                            Text(
+                                text = stringResource(id = R.string.connect_with_us),
+                                color = MaterialTheme.colors.background,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600,
+                            )
+                        }
+                        MedicoSmallButton(
+                            text = stringResource(R.string.call_now),
+                            onClick = { activity.openDialer(scope.helpData.contactUs.customerCarePhoneNumber) },
                         )
                     }
-                    MedicoSmallButton(
-                        text = stringResource(R.string.call_now),
-                        onClick = { activity.openDialer(scope.helpData.contactUs.customerCarePhoneNumber) },
-                    )
+
                 }
+            }
+
+            Column {
                 Text(
                     text = stringResource(id = R.string.contact_info),
                     color = MaterialTheme.colors.background,
@@ -85,7 +98,10 @@ fun ContactUsScreen(scope: HelpScope) {
                 Divider()
                 Space(12.dp)
                 Row(
-                    modifier = Modifier.height(50.dp).fillMaxWidth().padding(horizontal = 20.dp),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -118,7 +134,10 @@ fun ContactUsScreen(scope: HelpScope) {
                     }
                 }
                 Row(
-                    modifier = Modifier.height(50.dp).fillMaxWidth().padding(horizontal = 20.dp),
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

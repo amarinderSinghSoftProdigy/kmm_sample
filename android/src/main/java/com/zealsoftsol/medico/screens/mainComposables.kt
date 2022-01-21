@@ -124,6 +124,7 @@ import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.help.HelpScreen
+import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.help.TermsConditionsPrivacyPolicyScreen
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
@@ -330,8 +331,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     }
                     is CartPreviewScope -> CartPreviewScreen(it)
                     is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
-                    //is HelpScope ->  HelpScreen(it)
-                    is HelpScope -> TermsConditionsPrivacyPolicyScreen(it)
+                    is HelpScope ->  HelpScreens(it)
+                    //is HelpScope -> TermsConditionsPrivacyPolicyScreen(it)
                     is OrdersScope -> {
                         OrdersScreen(it, scope.isInProgress)
                         manageBottomNavState(BottomNavKey.PO)

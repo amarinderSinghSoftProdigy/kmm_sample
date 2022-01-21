@@ -6,8 +6,20 @@ import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.HelpType
 
-class HelpScope(val helpData: HelpData) : Scope.Child.TabBar() {
+open class HelpScope(val helpData: HelpData) : Scope.Child.TabBar() {
     override val isRoot: Boolean = false
+
+    class TandC(helpData: HelpData) : HelpScope(helpData) {
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+            return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+        }
+    }
+
+    class ContactUs(helpData: HelpData) : HelpScope(helpData) {
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
+            return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+        }
+    }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
         return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
