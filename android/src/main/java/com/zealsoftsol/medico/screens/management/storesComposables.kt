@@ -617,7 +617,7 @@ fun ProductItemStore(
         Surface(
             color = Color.White,
             shape = MaterialTheme.shapes.medium,
-            onClick = { },//Disabled the product item click
+            onClick = { },//onClick,//Disabled the product item click
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
