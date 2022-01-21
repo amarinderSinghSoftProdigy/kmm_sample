@@ -304,7 +304,7 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) 
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        onClick = onClick,
+        onClick = {},//onClick, Disabled the PDP option
         indication = YellowOutlineIndication,
         modifier = Modifier
             .fillMaxWidth()
