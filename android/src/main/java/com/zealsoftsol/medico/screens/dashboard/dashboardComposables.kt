@@ -242,14 +242,18 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
             }
         }
         Space(8.dp)
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = item.productName,
-            color = MaterialTheme.colors.background,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1
-        )
+        if (!item.isSkeletonItem) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                text = item.productName,
+                color = MaterialTheme.colors.background,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+        } else {
+            ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+        }
         Space(8.dp)
     }
 }
@@ -358,7 +362,7 @@ private fun ShowStockistDashBoard(
                 }
             }
 
-            Space(16.dp)
+            /*Space(16.dp)
             Text(
                 text = stringResource(id = R.string.your_brands),
                 color = ConstColors.lightBlue,
@@ -377,7 +381,7 @@ private fun ShowStockistDashBoard(
                         },
                     )
                 }
-            }
+            }*/
 
 
             Space(16.dp)
@@ -545,8 +549,8 @@ private fun ShowStockistDashBoard(
                 },
             )*/
 
-            LazyRow {
-                dash?.productInfo?.mostSold?.let {
+            dash?.productInfo?.mostSold?.let {
+                LazyRow {
                     itemsIndexed(
                         items = it,
                         itemContent = { _, item ->
@@ -554,7 +558,8 @@ private fun ShowStockistDashBoard(
                         },
                     )
                 }
-            }
+            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+
 
             Space(8.dp)
             Text(
@@ -646,12 +651,13 @@ private fun ShowStockistDashBoard(
                         },
                     )
                 }
-            } ?: Text(
+            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+            /*Text(
                 text = stringResource(id = R.string.no_products),
                 color = ConstColors.lightBlue,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-            )
+            )*/
 
         }
         Space(dp = 16.dp)
