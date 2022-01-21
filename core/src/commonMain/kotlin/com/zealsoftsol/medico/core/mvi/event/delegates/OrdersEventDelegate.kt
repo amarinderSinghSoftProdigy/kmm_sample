@@ -60,6 +60,7 @@ internal class OrdersEventDelegate(
             event.expiry
         )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
+        is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {
@@ -98,12 +99,27 @@ internal class OrdersEventDelegate(
                 setScope(
                     ViewOrderScope(
                         canEdit = type == OrderType.PURCHASE_ORDER,
-                        DataSource(body.order),
-                        DataSource(body.unitData.data),
-                        DataSource(body.entries),
-                        DataSource(body.declineReasons)
+                        orderId = orderId,
+                        typeInfo = type,
+                        order = DataSource(body.order),
+                        b2bData = DataSource(body.unitData.data),
+                        entries = DataSource(body.entries),
+                        declineReason = DataSource(body.declineReasons)
                     )
                 )
+            }.onError(navigator)
+        }
+    }
+
+    private suspend fun getOrderDetail(orderId: String, type: OrderType) {
+        navigator.withScope<ViewOrderScope> {
+            withProgress {
+                networkOrdersScope.getOrder(type, userRepo.requireUser().unitCode, orderId)
+            }.onSuccess { body ->
+                it.b2bData = DataSource(body.unitData.data)
+                it.declineReason = DataSource(body.declineReasons)
+                it.order = DataSource(body.order)
+                it.entries = DataSource(body.entries)
             }.onError(navigator)
         }
     }
@@ -222,7 +238,7 @@ internal class OrdersEventDelegate(
             withProgress {
                 networkOrdersScope.saveNewOrderQty(
                     OrderNewQtyRequest(
-                        orderId = it.order.value.info.id,
+                        orderId = it.order.value?.info?.id!!,
                         orderEntryId = orderEntry.id,
                         unitCode = userRepo.requireUser().unitCode,
                         servedQty = qty,
@@ -246,18 +262,23 @@ internal class OrdersEventDelegate(
             } else {
                 it.notifications.value = null
                 withProgress {
-                    networkOrdersScope.confirmOrder(
-                        ConfirmOrderRequest(
-                            orderId = it.order.value.info.id,
-                            sellerUnitCode = userRepo.requireUser().unitCode,
-                            acceptedEntries = it.acceptedEntries.map { it.id },
+                    it.order.value?.info?.id?.let { id ->
+                        networkOrdersScope.confirmOrder(
+                            ConfirmOrderRequest(
+                                orderId = id,
+                                sellerUnitCode = userRepo.requireUser().unitCode,
+                                acceptedEntries = it.acceptedEntries.map { it.id },
+                            )
                         )
-                    )
-                }.onSuccess { _ ->
-                    dropScope(updateDataSource = false)
-                    dropScope(updateDataSource = false)
-                    setScope(OrderPlacedScope(it.order.value))
-                }.onError(navigator)
+                    }
+
+                }?.onSuccess { _ ->
+                    it.order.value?.let {
+                        dropScope(updateDataSource = false)
+                        dropScope(updateDataSource = false)
+                        setScope(OrderPlacedScope(it))
+                    }
+                }?.onError(navigator)
             }
         }
     }

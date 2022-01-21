@@ -155,6 +155,9 @@ import kotlinx.coroutines.launch
 private var mBottomNavItems: List<BottomNavigationItem>? = null
 private var mUserType: UserType? = null
 
+//this will be used in ViewOrderComposable to update data only once when the screen is opened
+private var shouldUpdateOrderData = false
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
@@ -334,7 +337,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         OrdersScreen(it, scope.isInProgress)
                         manageBottomNavState(BottomNavKey.PO)
                     }
-                    is ViewOrderScope -> ViewOrderScreen(it)
+                    is ViewOrderScope -> {
+                        ViewOrderScreen(it, shouldUpdateOrderData)
+                        shouldUpdateOrderData = false
+                    }
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
                     is InvoicesScope -> InvoicesScreen(it)
                     is ViewInvoiceScope -> ViewInvoiceScreen(it)
@@ -400,6 +406,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
  */
 @Composable
 private fun OnlyBackIconHeader(scope: TabBarScope, info: TabBarInfo.OnlyBackIcon) {
+    val childScope = scope.childScope.flow.collectAsState()
+
     Row(modifier = Modifier.fillMaxWidth()) {
         Icon(
             imageVector = info.icon.toLocalIcon(),
@@ -411,6 +419,9 @@ private fun OnlyBackIconHeader(scope: TabBarScope, info: TabBarInfo.OnlyBackIcon
                 .clickable(
                     indication = null,
                     onClick = {
+                        if (childScope.value is OrderHsnEditScope) {
+                            shouldUpdateOrderData = true
+                        }
                         scope.goBack()
                     },
                 )

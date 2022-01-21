@@ -120,7 +120,9 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
             }
         }
         Column {
-            OrderTotal(order.value.info.total.formattedPrice)
+            order.value?.info?.total?.formattedPrice?.let {
+                OrderTotal(it)
+            }
             Space(16.dp)
             val actions = scope.actions.flow.collectAsState()
             Row(modifier = Modifier.fillMaxWidth()) {

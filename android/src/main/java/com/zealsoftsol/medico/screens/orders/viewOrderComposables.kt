@@ -48,232 +48,243 @@ import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
+
 @Composable
-fun ViewOrderScreen(scope: ViewOrderScope) {
+fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
+
+    if(callUpdateAPI){
+        scope.updateData()
+    }
+
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Column {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .background(Color.White)
-                    .padding(horizontal = 16.dp),
-            ) {
-                Space(10.dp)
-                FoldableItem(
-                    expanded = false,
-                    header = { isExpanded ->
-                        Space(12.dp)
-                        Row(
-                            modifier = Modifier.weight(.8f),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_retailer),
-                                contentDescription = null,
-                                tint = ConstColors.lightBlue,
-                            )
-                            Space(8.dp)
-                            Text(
-                                text = order.value.tradeName,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W700,
-                                fontSize = 15.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        Row(
-                            modifier = Modifier
-                                .weight(.2f)
-                                .padding(end = 12.dp),
-                            horizontalArrangement = Arrangement.End,
-                        ) {
-                            Icon(
-                                imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                tint = ConstColors.gray,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                    },
-                    childItems = listOf(order.value.info),
-                    item = { value, _ ->
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                text = b2bData.value.addressData.address,
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W500,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(8.dp)
+    order.value?.let { orderTaxValue ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .background(Color.White)
+                        .padding(horizontal = 16.dp),
+                ) {
+                    Space(10.dp)
+                    FoldableItem(
+                        expanded = false,
+                        header = { isExpanded ->
+                            Space(12.dp)
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.weight(.8f),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                GeoLocation(
-                                    location = b2bData.value.addressData.fullAddress(),
-                                    textSize = 12.sp,
-                                    tint = MaterialTheme.colors.background
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_retailer),
+                                    contentDescription = null,
+                                    tint = ConstColors.lightBlue,
                                 )
                                 Space(8.dp)
-                                ClickableText(
-                                    text = AnnotatedString(b2bData.value.phoneNumber),
-                                    style = TextStyle(
-                                        color = MaterialTheme.colors.background,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.W400,
-                                    ),
-                                    onClick = { activity.openDialer(b2bData.value.phoneNumber) },
-                                )
-                            }
-                            Space(8.dp)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
                                 Text(
-                                    text = b2bData.value.gstin ?: b2bData.value.panNumber,
+                                    text = orderTaxValue.tradeName,
                                     color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W400,
-                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 15.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
-                                Space(8.dp)
-                                if (b2bData.value.gstin != null) {
-                                    Text(
-                                        text = b2bData.value.panNumber,
-                                        color = MaterialTheme.colors.background,
-                                        fontWeight = FontWeight.W400,
-                                        fontSize = 12.sp,
-                                    )
-                                }
                             }
-                            Space(8.dp)
-                            Text(
-                                text = "${stringResource(id = R.string.dl_one)}: ${b2bData.value.drugLicenseNo1}",
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 12.sp,
-                            )
-                            Space(8.dp)
-                            Text(
-                                text = "${stringResource(id = R.string.dl_two)}: ${b2bData.value.drugLicenseNo2}",
-                                color = MaterialTheme.colors.background,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 12.sp,
+                            Row(
+                                modifier = Modifier
+                                    .weight(.2f)
+                                    .padding(end = 12.dp),
+                                horizontalArrangement = Arrangement.End,
+                            ) {
+                                Icon(
+                                    imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                                    tint = ConstColors.gray,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                )
+                            }
+                        },
+                        childItems = listOf(orderTaxValue.info),
+                        item = { value, _ ->
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                b2bData.value?.let { b2bDataValue ->
+                                        Text(
+                                            text = b2bDataValue.addressData.address,
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W500,
+                                            fontSize = 12.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(8.dp)
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            GeoLocation(
+                                                location = b2bDataValue.addressData.fullAddress(),
+                                                textSize = 12.sp,
+                                                tint = MaterialTheme.colors.background
+                                            )
+                                            Space(8.dp)
+                                            ClickableText(
+                                                text = AnnotatedString(b2bDataValue.phoneNumber),
+                                                style = TextStyle(
+                                                    color = MaterialTheme.colors.background,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.W400,
+                                                ),
+                                                onClick = { activity.openDialer(b2bDataValue.phoneNumber) },
+                                            )
+                                        }
+                                        Space(8.dp)
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                        ) {
+                                            Text(
+                                                text = b2bDataValue.gstin ?: b2bDataValue.panNumber,
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W400,
+                                                fontSize = 12.sp,
+                                            )
+                                            Space(8.dp)
+                                            if (b2bDataValue.gstin != null) {
+                                                Text(
+                                                    text = b2bDataValue.panNumber,
+                                                    color = MaterialTheme.colors.background,
+                                                    fontWeight = FontWeight.W400,
+                                                    fontSize = 12.sp,
+                                                )
+                                            }
+                                        }
+                                        Space(8.dp)
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_one)}: ${b2bDataValue.drugLicenseNo1}",
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W400,
+                                            fontSize = 12.sp,
+                                        )
+                                        Space(8.dp)
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_two)}: ${b2bDataValue.drugLicenseNo2}",
+                                            color = MaterialTheme.colors.background,
+                                            fontWeight = FontWeight.W400,
+                                            fontSize = 12.sp,
+                                        )
+                                    }
+                                }
+                        }
+                    )
+                    Space(8.dp)
+                    OrdersStatus(orderTaxValue.info.status)
+                    Space(8.dp)
+                }
+                Space(8.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Column {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.order_no))
+                                append(" ")
+                                val startIndex = length
+                                append(orderTaxValue.info.id)
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W700),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 15.sp,
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.type))
+                                append(": ")
+                                val startIndex = length
+                                append(orderTaxValue.info.paymentMethod.serverValue)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W700
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 15.sp,
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = orderTaxValue.info.date,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 14.sp,
+                        )
+                        Space(4.dp)
+                        Text(
+                            text = orderTaxValue.info.time,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W500,
+                            fontSize = 14.sp,
+                        )
+                    }
+                }
+                Space(8.dp)
+                Divider(Modifier.padding(horizontal = 16.dp))
+                val entries = scope.entries.flow.collectAsState()
+                val declineReasons = scope.declineReason.flow.collectAsState()
+                val checkedEntries = scope.checkedEntries.flow.collectAsState()
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    b2bData.value?.let { b2BDataValue ->
+                        Space(8.dp)
+                        entries.value.forEachIndexed { index, it ->
+                            OrderEntryItem(
+                                canEdit = scope.canEdit,
+                                entry = it,
+                                isChecked = it in checkedEntries.value,
+                                onChecked = { _ -> scope.toggleCheck(it) },
+                                onClick = {
+                                    scope.selectEntry(
+                                        taxType = orderTaxValue.info.taxType!!,
+                                        retailerName = b2BDataValue.tradeName,
+                                        canEditOrderEntry = scope.canEdit,
+                                        declineReason = declineReasons.value, entry = entries.value,
+                                        index = index
+                                    )
+                                },
                             )
                         }
+                        Space(8.dp)
                     }
-                )
-                Space(8.dp)
-                OrdersStatus(order.value.info.status)
-                Space(8.dp)
-            }
-            Space(8.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Column {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.order_no))
-                            append(" ")
-                            val startIndex = length
-                            append(order.value.info.id)
-                            addStyle(
-                                SpanStyle(fontWeight = FontWeight.W700),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 15.sp,
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.type))
-                            append(": ")
-                            val startIndex = length
-                            append(order.value.info.paymentMethod.serverValue)
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W700
-                                ),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 15.sp,
-                    )
-                }
-                Column {
-                    Text(
-                        text = order.value.info.date,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 14.sp,
-                    )
-                    Space(4.dp)
-                    Text(
-                        text = order.value.info.time,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 14.sp,
-                    )
                 }
             }
-            Space(8.dp)
-            Divider(Modifier.padding(horizontal = 16.dp))
-            val entries = scope.entries.flow.collectAsState()
-            val declineReasons = scope.declineReason.flow.collectAsState()
-            val checkedEntries = scope.checkedEntries.flow.collectAsState()
-            Column(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                Space(8.dp)
-                entries.value.forEachIndexed { index, it ->
-                    OrderEntryItem(
-                        canEdit = scope.canEdit,
-                        entry = it,
-                        isChecked = it in checkedEntries.value,
-                        onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = {
-                            scope.selectEntry(
-                                taxType = order.value.info.taxType!!,
-                                retailerName = b2bData.value.tradeName,
-                                canEditOrderEntry = scope.canEdit,
-                                declineReason = declineReasons.value, entry = entries.value,
-                                index = index
-                            )
-                        },
-                    )
-                }
-                Space(8.dp)
-            }
-        }
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            OrderTotal(order.value.info.total.formattedPrice)
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                OrderTotal(orderTaxValue.info.total.formattedPrice)
 //            Space(16.dp)
 //            if (scope.canEdit) {
 //                val actions = scope.actions.flow.collectAsState()
@@ -293,7 +304,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
 //                    }
 //                }
 //            }
-            Space(10.dp)
+                Space(10.dp)
+            }
         }
     }
 }

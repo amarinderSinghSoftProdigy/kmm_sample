@@ -96,16 +96,32 @@ class OrdersScope(
 }
 
 class ViewOrderScope(
+    val orderId: String,
+    val typeInfo: OrderType,
     override val canEdit: Boolean,
-    override val order: DataSource<OrderTax>,
-    val b2bData: DataSource<B2BData>,
-    val entries: DataSource<List<OrderEntry>>,
-    val declineReason: DataSource<List<DeclineReason>>,
+    override var order: DataSource<OrderTax?>,
+    var b2bData: DataSource<B2BData?>,
+    var entries: DataSource<List<OrderEntry>>,
+    var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
+
+    /**
+     * get the details of selected order
+     */
+
+    fun updateData()
+    {
+        EventCollector.sendEvent(
+            Event.Action.Orders.GetOrderDetails(
+                orderId,
+                typeInfo
+            )
+        )
+    }
 
     fun selectEntry(
         taxType: TaxType,
@@ -114,18 +130,22 @@ class ViewOrderScope(
         declineReason: List<DeclineReason>,
         entry: List<OrderEntry>,
         index: Int
-    ) =
-        EventCollector.sendEvent(
-            Event.Action.Orders.SelectEntry(
-                taxType = taxType,
-                retailerName = retailerName,
-                canEditOrderEntry = canEditOrderEntry,
-                orderId = order.value.info.id,
-                declineReason = declineReason,
-                entry = entry,
-                index = index
+    ) {
+        order.value?.info?.id?.let {
+            EventCollector.sendEvent(
+                Event.Action.Orders.SelectEntry(
+                    taxType = taxType,
+                    retailerName = retailerName,
+                    canEditOrderEntry = canEditOrderEntry,
+                    orderId = it,
+                    declineReason = declineReason,
+                    entry = entry,
+                    index = index
+                )
             )
-        )
+        }
+    }
+
 
     fun acceptAction(action: Action) =
         EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(action, false))
@@ -172,7 +192,7 @@ class ViewOrderScope(
 }
 
 class ConfirmOrderScope(
-    override val order: DataSource<OrderTax>,
+    override val order: DataSource<OrderTax?>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
@@ -235,7 +255,7 @@ class ConfirmOrderScope(
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = false
         override val title: String? = null
-        override val body: String? = "sure_confirm_order"
+        override val body: String = "sure_confirm_order"
 
         fun confirm() =
             EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true))
@@ -248,7 +268,7 @@ class OrderPlacedScope(val order: OrderTax) : Scope.Child.TabBar() {
 }
 
 interface SelectableOrderEntry : Scopable {
-    val order: DataSource<OrderTax>
+    val order: DataSource<OrderTax?>
     val checkedEntries: DataSource<List<OrderEntry>>
     val canEdit: Boolean
 

@@ -235,6 +235,9 @@ sealed class Event {
             ) : Orders()
 
             data class Confirm(val fromNotification: Boolean) : Orders()
+
+            data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
+
         }
 
         sealed class Invoices : Action() {
