@@ -112,11 +112,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     change.consumeAllChanges()
                     swipeEventChangedJob?.cancel()
                     swipeEventChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                        delay(500)
+                        delay(300)
                         val (x, _) = dragAmount
                         when {
                             x > 0 -> {
-                                if (x > 25) { //swipe direction is right, show left element
+                                if (x > 20) { //swipe direction is right, show left element
                                     if (swipeIndex.value > 0) {
                                         scope.updateSelectedIndex(swipeIndex.value - 1)
                                         swipeIndex.value = swipeIndex.value - 1
@@ -125,7 +125,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                             }
                             x < 0 -> {
-                                if (x < -25) { //swipe direction is left, show right element
+                                if (x < -20) { //swipe direction is left, show right element
                                     if (swipeIndex.value < scope.orderEntries.size - 1) {
                                         scope.updateSelectedIndex(swipeIndex.value + 1)
                                         swipeIndex.value = swipeIndex.value + 1
