@@ -848,7 +848,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                     Text(
                         text = orderEntry.totalAmount.formatted,
-                        color = Color.Black,
+                        color = Color.Blue,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.W800,
                         maxLines = 1,
@@ -891,10 +891,9 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             onClick = {
                                 scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
                             },
-                            color = ConstColors.gray,
+                            color = ConstColors.red,
                             contentColor = Color.White,
                             isEnabled = true,
-                            txtColor = ConstColors.red
                         )
                     }
 
