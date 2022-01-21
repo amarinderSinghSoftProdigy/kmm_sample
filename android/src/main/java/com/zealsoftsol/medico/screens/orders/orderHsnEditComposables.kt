@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -44,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -82,6 +85,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
     val orderEntry = scope.orderEntry.flow.collectAsState().value
     val selectedIndex = scope.selectedIndex.flow.collectAsState().value
+    val swipeIndex = remember { mutableStateOf(0) }
     val openHsnBottomSheet = scope.showHsnBottomSheet.flow.collectAsState().value
     val openWarningBottomSheet = scope.showWarningBottomSheet.flow.collectAsState().value
     val openDeclineReasonBottomSheet =
@@ -97,11 +101,41 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val canEditOrderEntry = scope.canEditOrderEntry
     val taxType = scope.taxType
     val context = LocalContext.current
+    var swipeEventChangedJob: Job? = null
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    change.consumeAllChanges()
+                    swipeEventChangedJob?.cancel()
+                    swipeEventChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                        delay(500)
+                        val (x, _) = dragAmount
+                        when {
+                            x > 0 -> {
+                                if (x > 25) { //swipe direction is right, show left element
+                                    if (swipeIndex.value > 0) {
+                                        scope.updateSelectedIndex(swipeIndex.value - 1)
+                                        swipeIndex.value = swipeIndex.value - 1
+                                    }
+                                }
+
+                            }
+                            x < 0 -> {
+                                if (x < -25) { //swipe direction is left, show right element
+                                    if (swipeIndex.value < scope.orderEntries.size - 1) {
+                                        scope.updateSelectedIndex(swipeIndex.value + 1)
+                                        swipeIndex.value = swipeIndex.value + 1
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
     ) {
         Column(
@@ -682,7 +716,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 }
             }
             Space(30.dp)
-            if(taxType == TaxType.SGST){
+            if (taxType == TaxType.SGST) {
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
@@ -754,7 +788,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 Space(5.dp)
                 Divider()
                 Space(10.dp)
-            }else{
+            } else {
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
@@ -833,7 +867,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 Row(modifier = Modifier.fillMaxSize()) {
 
                     //once order is rejected show save entry option
-                    if(orderEntry.status == OrderEntry.Status.REJECTED || orderEntry.status == OrderEntry.Status.DECLINED){
+                    if (orderEntry.status == OrderEntry.Status.REJECTED || orderEntry.status == OrderEntry.Status.DECLINED) {
                         MedicoButton(
                             modifier = Modifier
                                 .weight(1f)
@@ -847,7 +881,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             contentColor = Color.White,
                             isEnabled = true,
                         )
-                    }else{
+                    } else {
                         MedicoButton(
                             modifier = Modifier
                                 .weight(1f)
