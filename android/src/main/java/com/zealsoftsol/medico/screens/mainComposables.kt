@@ -124,6 +124,8 @@ import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
 import com.zealsoftsol.medico.screens.help.HelpScreen
+import com.zealsoftsol.medico.screens.help.HelpScreens
+import com.zealsoftsol.medico.screens.help.TermsConditionsPrivacyPolicyScreen
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
 import com.zealsoftsol.medico.screens.instore.InStoreOrderPlacedScreen
@@ -245,6 +247,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         //display search bar with product logo
                         is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                         is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
+                        is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                     }
                 }
             }
@@ -329,7 +332,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     }
                     is CartPreviewScope -> CartPreviewScreen(it)
                     is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
-                    is HelpScope -> HelpScreen(it)
+                    is HelpScope -> HelpScreens(it)
+                    //is HelpScope -> TermsConditionsPrivacyPolicyScreen(it)
                     is OrdersScope -> {
                         OrdersScreen(it, scope.isInProgress)
                         manageBottomNavState(BottomNavKey.PO)
@@ -972,6 +976,37 @@ private fun StoreHeader(
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = 0
         }
+    }
+}
+
+/**
+ * display header data for instore seller details
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun OnlyBackHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.OnlyBackHeader,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val keyboard = LocalSoftwareKeyboardController.current
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
     }
 }
 

@@ -80,7 +80,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.showToastGlobal
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
@@ -394,7 +394,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     if (showToast.value) {
         val entries = cartData.value?.sellerCarts?.get(0)?.items
         val cartItem = entries?.get(entries.size - 1)
-        showToastGlobal(
+        ShowToastGlobal(
             msg = cartItem?.productName + " " +
                     stringResource(id = R.string.added_to_cart) + " " +
                     stringResource(id = R.string.qty) +
@@ -638,7 +638,7 @@ fun ProductItemStore(
 
                     Row {
                         CoilImage(
-                            src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                            src = CdnUrlProvider.urlFor(product.imageCode!!, CdnUrlProvider.Size.Px123),
                             size = 70.dp,
                             onError = { ItemPlaceholder() },
                             onLoading = { ItemPlaceholder() },

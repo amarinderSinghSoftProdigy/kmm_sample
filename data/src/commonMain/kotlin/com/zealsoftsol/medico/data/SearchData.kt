@@ -49,6 +49,9 @@ data class ProductSearch(
     val sellerInfo: SellerInfo? = null,
     val manufacturerId: String? = null,
     var quantity: Double = 1.0,
+    var vendorProductId: String? = null,
+    var vendorMnfrId: String? = null,
+    var imageCode: String? = null
 )
 
 @Serializable
@@ -87,7 +90,8 @@ data class SellerInfo(
                     date = 0,
                     formattedDate = "",
                     color = "",
-                    ""),
+                    ""
+                ),
                 formattedStatus = "",
                 status = StockStatus.OUT_OF_STOCK,
             ),

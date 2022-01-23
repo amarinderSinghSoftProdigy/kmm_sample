@@ -204,7 +204,10 @@ sealed class Event {
         sealed class Help : Action() {
             override val typeClazz: KClass<*> = Help::class
 
+            object GetContactUs : Help()
+            object GetTandC : Help()
             object GetHelp : Help()
+            data class ChangeTab(val index:String) : Help()
         }
 
         sealed class Orders : Action() {

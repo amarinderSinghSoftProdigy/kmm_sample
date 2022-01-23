@@ -131,6 +131,12 @@ sealed class TabBarInfo {
         fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search())
     }
 
+    data class OnlyBackHeader(
+        val title: String
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
+
     data class StoreTitle(
         val store: Store, val notificationItemsCount: ReadOnlyDataSource<Int>,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null

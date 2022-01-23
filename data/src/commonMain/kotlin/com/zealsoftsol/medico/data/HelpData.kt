@@ -3,6 +3,12 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+enum class HelpType {
+    TERMS_AND_CONDITIONS(),
+    PRIVACY_POLICY();
+}
+
+
 @Serializable
 data class HelpData(
     val contactUs: ContactUs,
