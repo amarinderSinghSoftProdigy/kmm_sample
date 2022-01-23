@@ -323,7 +323,7 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) 
             ) {
                 Row {
                     CoilImage(
-                        src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                        src = CdnUrlProvider.urlFor(product.imageCode!!, CdnUrlProvider.Size.Px123),
                         size = 80.dp,
                         onError = { ItemPlaceholder() },
                         onLoading = { ItemPlaceholder() },

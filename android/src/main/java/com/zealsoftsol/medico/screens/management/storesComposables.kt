@@ -638,7 +638,7 @@ fun ProductItemStore(
 
                     Row {
                         CoilImage(
-                            src = CdnUrlProvider.urlFor(product.code, CdnUrlProvider.Size.Px123),
+                            src = CdnUrlProvider.urlFor(product.imageCode!!, CdnUrlProvider.Size.Px123),
                             size = 70.dp,
                             onError = { ItemPlaceholder() },
                             onLoading = { ItemPlaceholder() },

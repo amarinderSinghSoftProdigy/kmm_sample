@@ -50,7 +50,8 @@ data class ProductSearch(
     val manufacturerId: String? = null,
     var quantity: Double = 1.0,
     var vendorProductId: String? = null,
-    var vendorMnfrId: String? = null
+    var vendorMnfrId: String? = null,
+    var imageCode: String? = null
 )
 
 @Serializable

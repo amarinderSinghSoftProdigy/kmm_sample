@@ -88,16 +88,6 @@ fun SettingsScreen(scope: SettingsScope) {
                 fontSize = 16.sp
             )
 
-            ClickableText(
-                text = AnnotatedString(user.phoneNumber),
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                ),
-                onClick = { activity.openDialer(user.phoneNumber) },
-                modifier = Modifier.padding(start = 115.dp, top = 170.dp)
-            )
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -384,6 +374,8 @@ fun GstinDetailsComposable(details: User.Details.DrugLicense) {
         ReadOnlyField(details.tradeName, R.string.trade_name)
         Space(12.dp)
         ReadOnlyField(details.gstin, R.string.gstin)
+        Space(12.dp)
+        ReadOnlyField(details.pan, R.string.pan_number)
         Space(12.dp)
         ReadOnlyField(details.license1, R.string.drug_license_1)
         Space(12.dp)

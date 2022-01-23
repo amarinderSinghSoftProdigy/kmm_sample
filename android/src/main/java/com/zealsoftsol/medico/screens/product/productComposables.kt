@@ -61,7 +61,7 @@ fun ProductScreen(scope: ProductInfoScope) {
         Space(28.dp)
         Row(modifier = Modifier.fillMaxWidth()) {
             CoilImage(
-                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                src = CdnUrlProvider.urlFor(scope.product.imageCode!!, CdnUrlProvider.Size.Px123),
                 size = 123.dp,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },
