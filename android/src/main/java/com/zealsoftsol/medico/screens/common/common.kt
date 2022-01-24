@@ -754,3 +754,27 @@ fun EditFieldCustom(
         }
     }
 }
+
+/**
+ * @param scope current scope to get the current and updated state of views
+ */
+
+@Composable
+fun ShowAlert(onClick: () -> Unit) {
+    MaterialTheme {
+
+        AlertDialog(
+            onDismissRequest = onClick,
+            text = {
+                Text(stringResource(id = R.string.update_successfull))
+            },
+            confirmButton = {
+                Button(
+                    onClick = onClick
+                ) {
+                    Text(stringResource(id = R.string.okay))
+                }
+            }
+        )
+    }
+}

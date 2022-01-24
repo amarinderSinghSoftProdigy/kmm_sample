@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -237,6 +238,11 @@ sealed class Event {
             data class Confirm(val fromNotification: Boolean) : Orders()
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
+
+
+            data class ActionOnOrders(
+                val orderData: ConfirmOrderRequest
+            ) : Orders()
 
         }
 

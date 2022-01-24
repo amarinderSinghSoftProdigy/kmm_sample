@@ -109,6 +109,7 @@ data class OrderInfo(
     val paymentMethod: PaymentMethod,
     val total: Total,
     val taxType: TaxType? = null,
+    val discount: FormattedData<Double>? = null
 )
 
 enum class OrderStatus(val stringValue: String) {
@@ -136,8 +137,9 @@ data class OrderNewQtyRequest(
 @Serializable
 data class ConfirmOrderRequest(
     val orderId: String,
-    val sellerUnitCode: String,
+    var sellerUnitCode: String? = null,
     val acceptedEntries: List<String>,
+    val reasonCode: String? = null,
 )
 
 @Serializable

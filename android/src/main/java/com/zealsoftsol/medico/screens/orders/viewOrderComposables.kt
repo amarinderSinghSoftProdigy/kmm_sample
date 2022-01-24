@@ -1,14 +1,22 @@
 package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
@@ -18,13 +26,11 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,6 +40,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,246 +52,309 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
 
 @Composable
 fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
 
-    if(callUpdateAPI){
+    if (callUpdateAPI) {
         scope.updateData()
     }
 
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
+    val openDeclineReasonBottomSheet = scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
+    val entries = scope.entries.flow.collectAsState()
+    val declineReasons = scope.declineReason.flow.collectAsState()
+    val checkedEntries = scope.checkedEntries.flow.collectAsState()
+    val openDialog = scope.showAlert.flow.collectAsState()
 
-    order.value?.let { orderTaxValue ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(horizontal = 16.dp),
-                ) {
-                    Space(10.dp)
-                    FoldableItem(
-                        expanded = false,
-                        header = { isExpanded ->
-                            Space(12.dp)
-                            Row(
-                                modifier = Modifier.weight(.8f),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_retailer),
-                                    contentDescription = null,
-                                    tint = ConstColors.lightBlue,
-                                )
-                                Space(8.dp)
-                                Text(
-                                    text = orderTaxValue.tradeName,
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W700,
-                                    fontSize = 15.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .weight(.2f)
-                                    .padding(end = 12.dp),
-                                horizontalArrangement = Arrangement.End,
-                            ) {
-                                Icon(
-                                    imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                    tint = ConstColors.gray,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                )
-                            }
-                        },
-                        childItems = listOf(orderTaxValue.info),
-                        item = { value, _ ->
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                b2bData.value?.let { b2bDataValue ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        order.value?.let { orderTaxValue ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                if (openDialog.value)
+                    ShowAlert { scope.changeAlertScope(false) }
+                Column {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp),
+                    ) {
+                        Space(10.dp)
+                        Surface(
+                            elevation = 5.dp, shape = MaterialTheme.shapes.medium,
+                        ) {
+                            FoldableItem(
+                                headerBackground = Color.White,
+                                expanded = false,
+                                header = {
+                                    Space(12.dp)
+                                    Row(
+                                        modifier = Modifier
+                                            .weight(.8f)
+                                            .height(35.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_retailer),
+                                            contentDescription = null,
+                                            tint = ConstColors.green,
+                                        )
+                                        Space(8.dp)
                                         Text(
-                                            text = b2bDataValue.addressData.address,
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W500,
-                                            fontSize = 12.sp,
+                                            text = orderTaxValue.tradeName,
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W800,
+                                            fontSize = 16.sp,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                         )
-                                        Space(8.dp)
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                        ) {
-                                            GeoLocation(
-                                                location = b2bDataValue.addressData.fullAddress(),
-                                                textSize = 12.sp,
-                                                tint = MaterialTheme.colors.background
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .weight(.2f)
+                                            .padding(end = 12.dp),
+                                        horizontalArrangement = Arrangement.End,
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(14.dp)
+                                                .rotate(90f),
+                                        )
+                                    }
+                                },
+                                childItems = listOf(orderTaxValue.info),
+                                item = { _, _ ->
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                    ) {
+                                        b2bData.value?.let { b2bDataValue ->
+                                            Text(
+                                                text = b2bDataValue.addressData.address,
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W500,
+                                                fontSize = 12.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
                                             )
                                             Space(8.dp)
-                                            ClickableText(
-                                                text = AnnotatedString(b2bDataValue.phoneNumber),
-                                                style = TextStyle(
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                            ) {
+                                                GeoLocation(
+                                                    location = b2bDataValue.addressData.fullAddress(),
+                                                    textSize = 12.sp,
+                                                    tint = MaterialTheme.colors.background
+                                                )
+                                                Space(8.dp)
+                                                ClickableText(
+                                                    text = AnnotatedString(b2bDataValue.phoneNumber),
+                                                    style = TextStyle(
+                                                        color = MaterialTheme.colors.background,
+                                                        fontSize = 12.sp,
+                                                        fontWeight = FontWeight.W400,
+                                                    ),
+                                                    onClick = { activity.openDialer(b2bDataValue.phoneNumber) },
+                                                )
+                                            }
+                                            Space(8.dp)
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                            ) {
+                                                Text(
+                                                    text = b2bDataValue.gstin
+                                                        ?: b2bDataValue.panNumber,
                                                     color = MaterialTheme.colors.background,
-                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.W400,
-                                                ),
-                                                onClick = { activity.openDialer(b2bDataValue.phoneNumber) },
-                                            )
-                                        }
-                                        Space(8.dp)
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                        ) {
+                                                    fontSize = 12.sp,
+                                                )
+                                                Space(8.dp)
+                                                if (b2bDataValue.gstin != null) {
+                                                    Text(
+                                                        text = b2bDataValue.panNumber,
+                                                        color = MaterialTheme.colors.background,
+                                                        fontWeight = FontWeight.W400,
+                                                        fontSize = 12.sp,
+                                                    )
+                                                }
+                                            }
+                                            Space(8.dp)
                                             Text(
-                                                text = b2bDataValue.gstin ?: b2bDataValue.panNumber,
+                                                text = "${stringResource(id = R.string.dl_one)}: ${b2bDataValue.drugLicenseNo1}",
                                                 color = MaterialTheme.colors.background,
                                                 fontWeight = FontWeight.W400,
                                                 fontSize = 12.sp,
                                             )
                                             Space(8.dp)
-                                            if (b2bDataValue.gstin != null) {
-                                                Text(
-                                                    text = b2bDataValue.panNumber,
-                                                    color = MaterialTheme.colors.background,
-                                                    fontWeight = FontWeight.W400,
-                                                    fontSize = 12.sp,
-                                                )
-                                            }
+                                            Text(
+                                                text = "${stringResource(id = R.string.dl_two)}: ${b2bDataValue.drugLicenseNo2}",
+                                                color = MaterialTheme.colors.background,
+                                                fontWeight = FontWeight.W400,
+                                                fontSize = 12.sp,
+                                            )
                                         }
-                                        Space(8.dp)
-                                        Text(
-                                            text = "${stringResource(id = R.string.dl_one)}: ${b2bDataValue.drugLicenseNo1}",
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W400,
-                                            fontSize = 12.sp,
-                                        )
-                                        Space(8.dp)
-                                        Text(
-                                            text = "${stringResource(id = R.string.dl_two)}: ${b2bDataValue.drugLicenseNo2}",
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W400,
-                                            fontSize = 12.sp,
-                                        )
                                     }
                                 }
-                        }
-                    )
-                    Space(8.dp)
-                    OrdersStatus(orderTaxValue.info.status)
-                    Space(8.dp)
-                }
-                Space(8.dp)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Column {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.order_no))
-                                append(" ")
-                                val startIndex = length
-                                append(orderTaxValue.info.id)
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W700),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 15.sp,
-                        )
-                        Space(4.dp)
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.type))
-                                append(": ")
-                                val startIndex = length
-                                append(orderTaxValue.info.paymentMethod.serverValue)
-                                addStyle(
-                                    SpanStyle(
-                                        color = ConstColors.lightBlue,
-                                        fontWeight = FontWeight.W700
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 15.sp,
-                        )
-                    }
-                    Column {
-                        Text(
-                            text = orderTaxValue.info.date,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 14.sp,
-                        )
-                        Space(4.dp)
-                        Text(
-                            text = orderTaxValue.info.time,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 14.sp,
-                        )
-                    }
-                }
-                Space(8.dp)
-                Divider(Modifier.padding(horizontal = 16.dp))
-                val entries = scope.entries.flow.collectAsState()
-                val declineReasons = scope.declineReason.flow.collectAsState()
-                val checkedEntries = scope.checkedEntries.flow.collectAsState()
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    b2bData.value?.let { b2BDataValue ->
-                        Space(8.dp)
-                        entries.value.forEachIndexed { index, it ->
-                            OrderEntryItem(
-                                canEdit = scope.canEdit,
-                                entry = it,
-                                isChecked = it in checkedEntries.value,
-                                onChecked = { _ -> scope.toggleCheck(it) },
-                                onClick = {
-                                    scope.selectEntry(
-                                        taxType = orderTaxValue.info.taxType!!,
-                                        retailerName = b2BDataValue.tradeName,
-                                        canEditOrderEntry = scope.canEdit,
-                                        declineReason = declineReasons.value, entry = entries.value,
-                                        index = index
-                                    )
-                                },
                             )
                         }
                         Space(8.dp)
                     }
+                    Space(8.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Column {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.order_no))
+                                    append(" ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.id)
+                                    addStyle(
+                                        SpanStyle(fontWeight = FontWeight.W600),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.type))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.paymentMethod.serverValue)
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.green,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.status))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.status.toString())
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = orderTaxValue.info.date,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Text(
+                                text = orderTaxValue.info.time,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.discount))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.discount?.formatted ?: "")
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                        }
+                    }
+                    Space(8.dp)
+                    Divider(Modifier.padding(horizontal = 16.dp))
+
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        b2bData.value?.let { b2BDataValue ->
+                            Space(16.dp)
+                            entries.value.forEachIndexed { index, it ->
+                                OrderEntryItem(
+                                    canEdit = scope.canEdit,
+                                    entry = it,
+                                    isChecked = it in checkedEntries.value,
+                                    onChecked = { _ -> scope.toggleCheck(it) },
+                                    onClick = {
+                                        scope.selectEntry(
+                                            taxType = orderTaxValue.info.taxType!!,
+                                            retailerName = b2BDataValue.tradeName,
+                                            canEditOrderEntry = scope.canEdit,
+                                            declineReason = declineReasons.value,
+                                            entry = entries.value,
+                                            index = index
+                                        )
+                                    },
+                                )
+                                Space(8.dp)
+                            }
+                            Space(8.dp)
+                        }
+                    }
                 }
-            }
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                OrderTotal(orderTaxValue.info.total.formattedPrice)
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    OrderTotal(orderTaxValue.info.total.formattedPrice)
 //            Space(16.dp)
 //            if (scope.canEdit) {
 //                val actions = scope.actions.flow.collectAsState()
@@ -304,9 +374,39 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
 //                    }
 //                }
 //            }
-                Space(10.dp)
+                    Space(10.dp)
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(10.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.decline_all),
+                            onClick = {
+                                scope.manageDeclineBottomSheetVisibility(true)
+                            },
+                            color = ConstColors.red,
+                            contentColor = Color.White,
+                            isEnabled = true,
+                        )
+
+                        MedicoButton(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(10.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.accept_all),
+                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL)},
+                            isEnabled = true,
+                            txtColor = MaterialTheme.colors.background,
+                        )
+                    }
+                    Space(10.dp)
+                }
             }
         }
+        if (openDeclineReasonBottomSheet)
+            DeclineReasonBottomSheet(scope)
     }
 }
 
@@ -320,6 +420,7 @@ fun OrderEntryItem(
     onClick: () -> Unit,
 ) {
     Surface(
+        elevation = 5.dp,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
@@ -351,7 +452,9 @@ fun OrderEntryItem(
 //                Space(8.dp)
 //            }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(modifier = Modifier.weight(.6f)) {
@@ -363,18 +466,18 @@ fun OrderEntryItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Space(4.dp)
+                    Space(8.dp)
                     Text(
                         text = buildAnnotatedString {
-                            append(stringResource(id = R.string.price))
+                            append(stringResource(id = R.string.ptr))
                             append(": ")
                             val startIndex = length
                             append(entry.price.formatted)
                             val nextIndex = length
                             addStyle(
                                 SpanStyle(
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W500
                                 ),
                                 startIndex,
                                 length,
@@ -383,21 +486,23 @@ fun OrderEntryItem(
                             addStyle(
                                 SpanStyle(
                                     color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W600
+                                    fontWeight = FontWeight.W500
                                 ),
                                 nextIndex,
                                 length,
                             )
                         },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
                 Column(
-                    modifier = Modifier.weight(.4f),
+                    modifier = Modifier
+                        .weight(.35f)
+                        .padding(end = 10.dp),
                     horizontalAlignment = Alignment.End,
                 ) {
                     Text(
@@ -408,20 +513,20 @@ fun OrderEntryItem(
                             append(entry.servedQty.formatted)
                             addStyle(
                                 SpanStyle(
-                                    color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W600
+                                    color = ConstColors.green,
+                                    fontWeight = FontWeight.W500
                                 ),
                                 startIndex,
                                 length,
                             )
                         },
-                        color = ConstColors.gray,
-                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Space(4.dp)
+                    Space(8.dp)
                     when (entry.buyingOption) {
                         BuyingOption.BUY -> {
                             Text(
@@ -432,15 +537,15 @@ fun OrderEntryItem(
                                     append(entry.totalAmount.formatted)
                                     addStyle(
                                         SpanStyle(
-                                            color = MaterialTheme.colors.background,
-                                            fontWeight = FontWeight.W600
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W500
                                         ),
                                         startIndex,
                                         length,
                                     )
                                 },
-                                color = ConstColors.gray,
-                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -450,8 +555,8 @@ fun OrderEntryItem(
                             Text(
                                 text = stringResource(id = R.string.quoted),
                                 color = MaterialTheme.colors.background,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W700,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W500,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -459,6 +564,104 @@ fun OrderEntryItem(
                     }
 
                 }
+                Image(
+                    modifier = Modifier
+                        .weight(.05f),
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                    contentDescription = null
+                )
+            }
+
+        }
+    }
+}
+
+
+@Composable
+fun DeclineReasonBottomSheet(scope: ViewOrderScope) {
+    val declineReason = scope.declineReason.flow.collectAsState().value
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.Black.copy(alpha = 0.5f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(indication = NoOpIndication) {
+                    scope.manageDeclineBottomSheetVisibility(false)
+                })
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(indication = null) { /* intercept touches */ }
+                .align(Alignment.BottomCenter),
+            color = Color.White,
+            elevation = 8.dp,
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(color = Color.White),
+                horizontalAlignment = Alignment.End
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .padding(end = 12.dp)
+                        .clickable {
+                            scope.manageDeclineBottomSheetVisibility(false)
+                        }
+                )
+                Divider()
+                Text(
+                    text = stringResource(id = R.string.decline_reason),
+                    color = Color.Black,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+
+
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 3.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(0.dp, 380.dp) //mention max height here
+                        .fillMaxWidth(),
+                ) {
+                    itemsIndexed(
+                        items = declineReason,
+                        key = { index, _ -> index },
+                        itemContent = { _, item ->
+                            Divider()
+                            Column(
+                                modifier = Modifier
+                                    .height(40.dp)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        scope.updateDeclineReason(item.code)
+                                        scope.manageDeclineBottomSheetVisibility(false)
+                                    },
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = item.name,
+                                    color = Color.Black,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W500,
+                                )
+                            }
+                        },
+                    )
+                }
+                Divider()
+                Space(10.dp)
             }
         }
     }

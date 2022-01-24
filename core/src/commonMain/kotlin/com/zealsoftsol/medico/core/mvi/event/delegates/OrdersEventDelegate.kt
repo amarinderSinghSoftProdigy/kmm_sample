@@ -61,6 +61,27 @@ internal class OrdersEventDelegate(
         )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
+        is Event.Action.Orders.ActionOnOrders -> takeActionOnOrderEntries(event.orderData)
+    }
+
+    /**
+     * accept or reject multiple order entries at once
+     * @param orderData - API request data
+     * if selected items list is empty then all entries will be rejected by API else all will be accepted
+     */
+    private suspend fun takeActionOnOrderEntries(
+        orderData: ConfirmOrderRequest
+    ) {
+        orderData.sellerUnitCode = userRepo.requireUser().unitCode
+        navigator.withScope<ViewOrderScope> {
+            withProgress {
+                networkOrdersScope.takeActionOnOrderEntries(orderData)
+            }.onSuccess { body ->
+                it.order = DataSource(body.order)
+                it.entries = DataSource(body.entries)
+                it.changeAlertScope(true)
+            }.onError(navigator)
+        }
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {

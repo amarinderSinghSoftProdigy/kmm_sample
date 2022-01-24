@@ -26,8 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -66,6 +64,7 @@ import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import kotlinx.coroutines.CoroutineScope
@@ -102,6 +101,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val taxType = scope.taxType
     val context = LocalContext.current
     var swipeEventChangedJob: Job? = null
+    val openDialog = scope.showAlert.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -112,11 +112,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     change.consumeAllChanges()
                     swipeEventChangedJob?.cancel()
                     swipeEventChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                        delay(300)
+                        delay(200)
                         val (x, _) = dragAmount
                         when {
                             x > 0 -> {
-                                if (x > 20) { //swipe direction is right, show left element
+                                if (x > 15) { //swipe direction is right, show left element
                                     if (swipeIndex.value > 0) {
                                         scope.updateSelectedIndex(swipeIndex.value - 1)
                                         swipeIndex.value = swipeIndex.value - 1
@@ -125,7 +125,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                             }
                             x < 0 -> {
-                                if (x < -20) { //swipe direction is left, show right element
+                                if (x < -15) { //swipe direction is left, show right element
                                     if (swipeIndex.value < scope.orderEntries.size - 1) {
                                         scope.updateSelectedIndex(swipeIndex.value + 1)
                                         swipeIndex.value = swipeIndex.value + 1
@@ -144,7 +144,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            ShowAlert(scope)
+            if (openDialog.value)
+                ShowAlert { scope.changeAlertScope(false) }
             //only display line items when there are multiple order entries
             if (scope.orderEntries.isNotEmpty()) {
                 Row(
@@ -966,40 +967,6 @@ fun HsnErrorText() {
     )
 }
 
-
-/**
- * @param scope current scope to get the current and updated state of views
- */
-
-@Composable
-fun ShowAlert(scope: OrderHsnEditScope) {
-    MaterialTheme {
-        val openDialog = scope.showAlert.flow.collectAsState()
-
-        if (openDialog.value) {
-
-            AlertDialog(
-                onDismissRequest = {
-                    scope.changeAlertScope(false)
-                },
-                text = {
-                    Text(stringResource(id = R.string.update_successfull))
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            scope.changeAlertScope(false)
-                        }) {
-                        Text(stringResource(id = R.string.okay))
-                    }
-                }
-            )
-        }
-
-    }
-}
-
-
 /**
  * Bottom sheet for displaying HSN codes for purchase orders
  */
@@ -1358,7 +1325,7 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
             modifier = Modifier
                 .fillMaxSize()
                 .clickable(indication = NoOpIndication) {
-                    scope.manageBottomSheetVisibility(false)
+                    scope.manageDeclineBottomSheetVisibility(false)
                 })
         Surface(
             modifier = Modifier

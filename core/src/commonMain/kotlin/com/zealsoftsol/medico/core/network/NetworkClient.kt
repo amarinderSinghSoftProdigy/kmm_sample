@@ -878,7 +878,13 @@ class NetworkClient(
             }
         }
 
-
+    override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/accept") {
+                withMainToken()
+                jsonBody(orderData)
+            }
+        }
 
     // Utils
 

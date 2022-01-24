@@ -251,7 +251,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         content = {
             val childScope = scope.childScope.flow.collectAsState()
             var padding = 56
-            if (childScope.value is OrderHsnEditScope) {// no bottom padding while editing order entries
+            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope) {// no bottom padding while editing order entries
                 padding = 0
             }
             Crossfade(
@@ -393,7 +393,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                 }
             }
             if (mUserType != null) {
-                if (childScope.value !is OrderHsnEditScope) {
+                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
                     BottomNavigationBar(mBottomNavItems)
                 }
             }

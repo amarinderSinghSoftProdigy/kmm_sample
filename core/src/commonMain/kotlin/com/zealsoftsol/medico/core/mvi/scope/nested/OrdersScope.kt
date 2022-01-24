@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.Order
@@ -108,6 +109,9 @@ class ViewOrderScope(
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
+    var showDeclineReasonsBottomSheet = DataSource(false)
+    private val selectedDeclineReason = DataSource("")
+    val showAlert: DataSource<Boolean> = DataSource(false)
 
     /**
      * get the details of selected order
@@ -121,6 +125,46 @@ class ViewOrderScope(
                 typeInfo
             )
         )
+    }
+
+    /**
+     * update the scope of alert dialog
+     */
+    fun changeAlertScope(enable: Boolean) {
+        this.showAlert.value = enable
+    }
+
+    /**
+     * manage decline bottom sheet  visibility
+     */
+    fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
+        this.showDeclineReasonsBottomSheet.value = openSheet
+    }
+
+    /**
+     * update the reason selected for decliening the order entry
+     */
+    fun updateDeclineReason(reason: String) {
+        this.selectedDeclineReason.value = reason
+        takeActionOnOrderEntries(Action.REJECT_ALL)
+    }
+
+    /**
+     * take action on order entries
+     */
+    fun takeActionOnOrderEntries(action: Action){
+
+        val orderData: ConfirmOrderRequest = if (action == Action.ACCEPT_ALL){
+            val listOfAcceptedEntries: MutableList<String> = emptyList<String>().toMutableList()
+            entries.value.forEach {
+                listOfAcceptedEntries.add(it.id)
+            }
+            ConfirmOrderRequest(orderId = orderId, acceptedEntries = listOfAcceptedEntries)
+        }else{
+            ConfirmOrderRequest(orderId = orderId, acceptedEntries = emptyList(), reasonCode = selectedDeclineReason.value)
+        }
+
+        EventCollector.sendEvent(Event.Action.Orders.ActionOnOrders(orderData))
     }
 
     fun selectEntry(

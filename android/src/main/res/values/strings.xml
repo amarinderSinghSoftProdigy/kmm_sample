@@ -335,6 +335,7 @@
     <string name="sub_total">Subtotal</string>
     <string name="unavailable_warning">will be notified that this product is not available.\n Are you sure?</string>
     <string name="decline_reason">Reason for declining order</string>
+    <string name="decline_all">Decline All</string>
 
     <!--error codes-->
 

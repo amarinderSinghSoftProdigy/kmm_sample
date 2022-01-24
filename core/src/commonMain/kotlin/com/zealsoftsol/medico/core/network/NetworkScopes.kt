@@ -229,6 +229,10 @@ interface NetworkScope {
             unitCode: String,
             invoiceId: String
         ): BodyResponse<InvoiceResponse>
+
+        suspend fun takeActionOnOrderEntries(
+            orderData: ConfirmOrderRequest
+        ): BodyResponse<OrderResponse>
     }
 
     interface Help : NetworkScope {
