@@ -20,6 +20,24 @@ sealed class BottomSheet {
         val isSeasonBoy: Boolean,
     ) : BottomSheet() {
 
+        fun uploadProfile(base64: String, fileType: FileType): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType))
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
+                false
+            }
+        }
+
+        fun uploadTradeProfile(base64: String, fileType: FileType): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType))
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
+                false
+            }
+        }
+
         fun uploadAadhaar(base64: String): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
                 EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
@@ -134,7 +152,8 @@ sealed class BottomSheet {
     }
 
 
-    data class BatchViewProduct(val product: ProductSearch,val scope: BaseSearchScope) : BottomSheet() {
+    data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
+        BottomSheet() {
 
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(

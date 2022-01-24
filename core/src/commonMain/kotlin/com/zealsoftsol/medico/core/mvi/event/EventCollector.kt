@@ -17,6 +17,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
@@ -135,7 +136,8 @@ class EventCollector(
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
-        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo)
+        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo),
+        Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo)
     )
 
     init {

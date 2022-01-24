@@ -82,6 +82,13 @@ sealed class Event {
             object ConfirmCreateRetailer : Registration()
         }
 
+        sealed class Profile : Action() {
+            override val typeClazz: KClass<*> = Profile::class
+            data class UploadUserProfile(val asBase64: String, val fileType: FileType) : Profile()
+            object UploadFileTooBig : Profile()
+            object ShowUploadBottomSheet : Profile()
+        }
+
         sealed class Search : Action() {
             override val typeClazz: KClass<*> = Search::class
 
@@ -97,16 +104,18 @@ sealed class Event {
                 }
             }
 
-            data class SearchAutoComplete(val value: String, val sellerUnitCode: String?= null) : Search()
+            data class SearchAutoComplete(val value: String, val sellerUnitCode: String? = null) :
+                Search()
+
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SelectSortOption(val option: SortOption?) : Search()
-            data class SelectBatch(val option: String?,val product: ProductSearch) : Search()
+            data class SelectBatch(val option: String?, val product: ProductSearch) : Search()
             data class ViewAllItems(val value: String) : Search()
             data class AddToCart(val product: ProductSearch) : Search()
-            data class showToast(val msg:String,val cartData:CartData?) : Search()
+            data class showToast(val msg: String, val cartData: CartData?) : Search()
             data class ShowDetails(val item: EntityInfo) : Search()
             data class ResetButton(val item: Boolean) : Search()
             object LoadMoreProducts : Search()
@@ -207,7 +216,7 @@ sealed class Event {
             object GetContactUs : Help()
             object GetTandC : Help()
             object GetHelp : Help()
-            data class ChangeTab(val index:String) : Help()
+            data class ChangeTab(val index: String) : Help()
         }
 
         sealed class Orders : Action() {
