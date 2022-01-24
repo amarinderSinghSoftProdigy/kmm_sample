@@ -45,7 +45,8 @@ data class OrderEntry(
     val discount: FormattedData<Double>,
     val cgstTax: Tax,
     val sgstTax: Tax,
-    val igstTax: Tax
+    val igstTax: Tax,
+    val reason: String,
 ) {
 
     enum class Status {

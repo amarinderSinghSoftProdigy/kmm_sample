@@ -1,6 +1,6 @@
 package com.zealsoftsol.medico.screens.orders
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,7 +70,8 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val activity = LocalContext.current as MainActivity
-    val openDeclineReasonBottomSheet = scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
+    val openDeclineReasonBottomSheet =
+        scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
     val entries = scope.entries.flow.collectAsState()
     val declineReasons = scope.declineReason.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
@@ -396,7 +397,7 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                                 .padding(10.dp)
                                 .height(40.dp),
                             text = stringResource(id = R.string.accept_all),
-                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL)},
+                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL) },
                             isEnabled = true,
                             txtColor = MaterialTheme.colors.background,
                         )
@@ -427,21 +428,11 @@ fun OrderEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = when {
-            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
-                2.dp,
-                ConstColors.gray.copy(alpha = 0.5f),
-            )
-            entry.status == OrderEntry.Status.REJECTED -> BorderStroke(
-                2.dp,
-                ConstColors.red,
-            )
-            else -> null
-        },
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-        ) {
+        Column {
+            Row(
+                modifier = Modifier.padding(8.dp),
+            ) {
 //            if (canEdit) {
 //                Checkbox(
 //                    checked = isChecked,
@@ -451,128 +442,151 @@ fun OrderEntryItem(
 //                )
 //                Space(8.dp)
 //            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, bottom = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(.6f)) {
-                    Text(
-                        text = entry.productName,
-                        color = MaterialTheme.colors.background,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W600,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Space(8.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(": ")
-                            val startIndex = length
-                            append(entry.price.formatted)
-                            val nextIndex = length
-                            addStyle(
-                                SpanStyle(
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                startIndex,
-                                length,
-                            )
-                            append("*")
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.lightBlue,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                nextIndex,
-                                length,
-                            )
-                        },
-                        color = Color.Gray,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Column(
+                Row(
                     modifier = Modifier
-                        .weight(.35f)
-                        .padding(end = 10.dp),
-                    horizontalAlignment = Alignment.End,
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    Column(modifier = Modifier.weight(.6f)) {
+                        Text(
+                            text = entry.productName,
+                            color = MaterialTheme.colors.background,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W600,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(8.dp)
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.ptr))
+                                append(": ")
+                                val startIndex = length
+                                append(entry.price.formatted)
+                                val nextIndex = length
+                                addStyle(
+                                    SpanStyle(
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W500
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                                append("*")
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W500
+                                    ),
+                                    nextIndex,
+                                    length,
+                                )
+                            },
+                            color = Color.Gray,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(.35f)
+                            .padding(end = 10.dp),
+                        horizontalAlignment = Alignment.End,
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.qty))
+                                append(": ")
+                                val startIndex = length
+                                append(entry.servedQty.formatted)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.green,
+                                        fontWeight = FontWeight.W500
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = Color.Gray,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(8.dp)
+                        when (entry.buyingOption) {
+                            BuyingOption.BUY -> {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.subtotal))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(entry.totalAmount.formatted)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.W500
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                            BuyingOption.QUOTE -> {
+                                Text(
+                                    text = stringResource(id = R.string.quoted),
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+
+                    }
+                    Image(
+                        modifier = Modifier
+                            .weight(.05f),
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null
+                    )
+                }
+
+            }
+            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
+                Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp), onDraw = {
+                            drawCircle(color = Color.Red)
+                        }
+                    )
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.qty))
-                            append(": ")
-                            val startIndex = length
-                            append(entry.servedQty.formatted)
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.green,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = Color.Gray,
-                        fontSize = 16.sp,
+                        modifier = Modifier.padding(start = 5.dp),
+                        text = entry.reason,
+                        color = Color.Black,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Space(8.dp)
-                    when (entry.buyingOption) {
-                        BuyingOption.BUY -> {
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.subtotal))
-                                    append(": ")
-                                    val startIndex = length
-                                    append(entry.totalAmount.formatted)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W500
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = Color.Gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        BuyingOption.QUOTE -> {
-                            Text(
-                                text = stringResource(id = R.string.quoted),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-
                 }
-                Image(
-                    modifier = Modifier
-                        .weight(.05f),
-                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = null
-                )
-            }
 
+            }
         }
+
     }
 }
 
