@@ -769,12 +769,13 @@ fun ProductItemStore(
                     }
 
                     val sliderList = ArrayList<String>()
+                    product.manufacturer.let { sliderList.add(it) }
                     if (product.drugFormName.isNotEmpty())
                         sliderList.add(product.drugFormName)
+                    product.standardUnit?.let { sliderList.add(it) }
                     if (product.compositions.isNotEmpty())
                         sliderList.addAll(product.compositions)
-                    product.marginPercent?.let { sliderList.add(it) }
-                    product.standardUnit?.let { sliderList.add(it) }
+                    product.sellerInfo?.priceInfo?.marginPercent?.let { sliderList.add("Margin: ".plus(it)) }
                     LazyRow(
                         state = rememberLazyListState(),
                         contentPadding = PaddingValues(top = 6.dp),
