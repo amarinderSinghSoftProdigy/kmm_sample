@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.management
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,7 +67,6 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
-import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
@@ -315,7 +313,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             }
         }*/
 
-                filters.value.forEach { filter ->
+                filtersManufactures.value.forEach { filter ->
                     if (filter.queryId == "manufacturers") {
                         //scope.selectFilter(filter, Option.ViewMore)
                         HorizontalFilterSection(
@@ -325,8 +323,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                 scope.searchFilter(filter, it)
                             },
                             onOptionClick = { scope.selectFilter(filter, it) },
-                            onFilterClear = { scope.clearFilter(filter) },
-                            filter.queryId
+                            onFilterClear = { scope.clearFilter(filter) }
                         )
                     }
                 }
@@ -617,7 +614,7 @@ fun ProductItemStore(
         Surface(
             color = Color.White,
             shape = MaterialTheme.shapes.medium,
-            onClick = { },//onClick,//Disabled the product item click
+            onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -638,7 +635,10 @@ fun ProductItemStore(
 
                     Row {
                         CoilImage(
-                            src = CdnUrlProvider.urlFor(product.imageCode!!, CdnUrlProvider.Size.Px123),
+                            src = CdnUrlProvider.urlFor(
+                                product.imageCode!!,
+                                CdnUrlProvider.Size.Px123
+                            ),
                             size = 70.dp,
                             onError = { ItemPlaceholder() },
                             onLoading = { ItemPlaceholder() },
@@ -759,8 +759,10 @@ fun ProductItemStore(
                     }
 
                     val sliderList = ArrayList<String>()
-                    sliderList.add(product.drugFormName)
-                    sliderList.addAll(product.compositions)
+                    if (product.drugFormName.isNotEmpty())
+                        sliderList.add(product.drugFormName)
+                    if (product.compositions.isNotEmpty())
+                        sliderList.addAll(product.compositions)
                     product.marginPercent?.let { sliderList.add(it) }
                     product.standardUnit?.let { sliderList.add(it) }
                     LazyRow(

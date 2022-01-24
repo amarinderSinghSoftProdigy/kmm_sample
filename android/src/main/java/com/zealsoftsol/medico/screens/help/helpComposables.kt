@@ -315,7 +315,6 @@ fun TermsConditionsPrivacyPolicyScreen(scope: HelpScope.TandC) {
                 val scrollState = rememberScrollState()
                 when(loadUrl.value){
                     "tos" -> {
-
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()

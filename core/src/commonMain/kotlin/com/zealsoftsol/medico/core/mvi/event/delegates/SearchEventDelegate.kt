@@ -330,7 +330,7 @@ internal class SearchEventDelegate(
                 pagination,
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)
-                filtersManufactures.value = body.facets
+                filtersManufactures.value = body.facets.toManufactureFilter()
                 filters.value = body.facets.toFilter()
                 products.value = if (!addPage) body.products else products.value + body.products
                 sortOptions.value = body.sortOptions
@@ -371,6 +371,26 @@ internal class SearchEventDelegate(
                 name = facet.displayName,
                 queryId = facet.queryId,
                 options = if (facet.values.size > MAX_OPTIONS) options + Option.ViewMore else options,
+            )
+        }
+    }
+
+    private inline fun List<Facet>.toManufactureFilter(): List<Filter> {
+        return map { facet ->
+            val options = facet.values.mapIndexed { index, v ->
+                Option.StringValue(
+                    id = v.id,
+                    value = v.value,
+                    isSelected = activeFilters[facet.queryId]
+                        ?.takeIf { v.value == it.value }?.isSelected
+                        ?: false,
+                    isVisible = true,
+                )
+            }
+            Filter(
+                name = facet.displayName,
+                queryId = facet.queryId,
+                options = options,
             )
         }
     }

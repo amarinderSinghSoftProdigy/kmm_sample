@@ -33,7 +33,6 @@ data class ProductBuyResponse(
     @SerialName("productData")
     val product: ProductSearch,
     val sellerInfo: List<SellerInfo>,
-    val type: String,
 )
 
 @Serializable
