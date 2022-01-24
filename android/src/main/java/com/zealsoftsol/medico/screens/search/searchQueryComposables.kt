@@ -304,7 +304,7 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) 
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
-        onClick = {},//onClick, Disabled the PDP option
+        onClick = onClick,
         indication = YellowOutlineIndication,
         modifier = Modifier
             .fillMaxWidth()
@@ -657,8 +657,7 @@ fun HorizontalFilterSection(
     options: List<Option>,
     searchOption: SearchOption? = null,
     onOptionClick: (Option) -> Unit,
-    onFilterClear: () -> Unit,
-    url:String
+    onFilterClear: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -674,10 +673,8 @@ fun HorizontalFilterSection(
                     items = options,
                     itemContent = { value ->
                         RoundChip(
-                            value,
-                            { onOptionClick(value) },
-                            searchOption = url
-                        )
+                            value
+                        ) { onOptionClick(value) }
                     }
                 )
             }
@@ -778,10 +775,8 @@ fun ChipString(option: String, onClick: () -> Unit) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun RoundChip(
-    option: Option, onClick: () -> Unit,
-    searchOption: String? = null
+    option: Option, onClick: () -> Unit
 ) {
-
     when (option) {
         is Option.StringValue -> {
             if (option.isVisible) {
@@ -792,6 +787,12 @@ private fun RoundChip(
                         onClick = onClick,
                         modifier = Modifier.padding(4.dp),
                         elevation = 8.dp,
+                        border = if (option.isSelected) BorderStroke(
+                            1.dp,
+                            ConstColors.yellow
+                        ) else BorderStroke(
+                            1.dp, Color.White
+                        )
                     ) {
                         Row(
                             modifier = Modifier
@@ -812,9 +813,8 @@ private fun RoundChip(
                                 )
                             }*/
                             CoilImage(
-                                src = CdnUrlProvider.urlFor(
-                                    searchOption ?: "",
-                                    CdnUrlProvider.Size.Px123
+                                src = CdnUrlProvider.urlForM(
+                                    option.id ?: ""
                                 ),
                                 size = 80.dp,
                                 onError = { ItemPlaceholder() },
@@ -844,7 +844,7 @@ private fun RoundChip(
                     ) {
                         Text(
                             color = if (option.isSelected) MaterialTheme.colors.background else ConstColors.gray,
-                            fontWeight = FontWeight.Bold/*if (option.isSelected) FontWeight.W600 else FontWeight.Normal*/,
+                            fontWeight = if (option.isSelected) FontWeight.W600 else FontWeight.Normal,
                             text = option.value,
                             fontSize = 12.sp,
                             modifier = Modifier.width(60.dp),

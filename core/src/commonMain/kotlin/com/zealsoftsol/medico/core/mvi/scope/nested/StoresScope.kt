@@ -63,7 +63,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
         override val isBatchSelected: DataSource<Boolean> = DataSource(false),
         override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
-        override val filtersManufactures: DataSource<List<Facet>> = DataSource(emptyList()),
+        override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
         override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
         override val products: DataSource<List<ProductSearch>> = DataSource(emptyList()),
         override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
