@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -39,11 +41,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -88,6 +89,7 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.screens.search.SearchOption
 import com.zealsoftsol.medico.screens.search.SortSection
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
+import kotlinx.coroutines.launch
 
 // TODO reuse with management
 @ExperimentalComposeUiApi
@@ -313,20 +315,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             }
         }*/
 
-                filtersManufactures.value.forEach { filter ->
-                    if (filter.queryId == "manufacturers") {
-                        //scope.selectFilter(filter, Option.ViewMore)
-                        HorizontalFilterSection(
-                            name = filter.name,
-                            options = filter.options,
-                            searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                scope.searchFilter(filter, it)
-                            },
-                            onOptionClick = { scope.selectFilter(filter, it) },
-                            onFilterClear = { scope.clearFilter(filter) }
-                        )
-                    }
-                }
                 //Space(8.dp)
 
                 if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
@@ -338,7 +326,25 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     )
                 } else {
                     if (autoComplete.value.isEmpty()) {
+                        filtersManufactures.value.forEach { filter ->
+                            if (filter.queryId == "manufacturers") {
+                                //scope.selectFilter(filter, Option.ViewMore)
+                                HorizontalFilterSection(
+                                    name = filter.name,
+                                    options = filter.options,
+                                    searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                        scope.searchFilter(filter, it)
+                                    },
+                                    onOptionClick = { scope.selectFilter(filter, it) },
+                                    onFilterClear = { scope.clearFilter(filter) }
+                                )
+                            }
+                        }
+
+                        val listState = rememberLazyListState()
+
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(top = 8.dp)
                         ) {
@@ -354,8 +360,10 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             scope.selectBatch("", product = item)
                                             scope.buy(item)
                                         },
-                                        addToCart = { scope.addToCart(item) },
-                                        scope
+                                        addToCart = {
+                                            scope.addToCart(item)
+                                        },
+                                        scope = scope, index = index, state = listState
                                     )
                                     if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                         scope.loadMoreProducts()
@@ -602,10 +610,12 @@ fun ProductItemStore(
     onClick: () -> Unit,
     onBuy: () -> Unit,
     addToCart: () -> Unit,
-    scope: StoresScope.StorePreview
+    scope: StoresScope.StorePreview,
+    index: Int = 0,
+    state: LazyListState? = null
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
     val batchSelected = scope.isBatchSelected.flow.collectAsState()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
@@ -871,7 +881,8 @@ fun ProductItemStore(
 
 
 
-                    if (batchSelected.value && selectedProduct.value?.id == product.id)
+                    if (batchSelected.value && selectedProduct.value?.id == product.id) {
+                        //keyboardController?.show()
                         Surface(
                             color = Color.White,
                             shape = MaterialTheme.shapes.medium,
@@ -890,8 +901,8 @@ fun ProductItemStore(
                             ) {
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .focusRequester(focusRequester),
+                                        .fillMaxWidth(),
+                                    /*.focusRequester(focusRequester)*/
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.Bottom,
                                 ) {
@@ -915,7 +926,12 @@ fun ProductItemStore(
                                                 scope.selectBatch("", product = product)
                                                 scope.buy(product = product)
                                             }),
-                                            onFocus = { keyboardController?.show() },
+                                            onFocus = {
+                                                coroutineScope.launch {
+                                                    state?.animateScrollToItem(index = index)
+                                                }
+                                                keyboardController?.show()
+                                            },
                                             isEnabled = true,
                                         )
                                     }
@@ -987,6 +1003,7 @@ fun ProductItemStore(
                                 }
                             }
                         }
+                    }
 
                 }
 
