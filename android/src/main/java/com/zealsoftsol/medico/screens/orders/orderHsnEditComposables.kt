@@ -228,7 +228,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             Space(10.dp)
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.price))
+                                    append(stringResource(id = R.string.ptr))
                                     append(":")
                                 },
                                 color = ConstColors.gray,
@@ -520,7 +520,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.ptr),
+                                        text = "${stringResource(id = R.string.ptr)}:",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -551,7 +551,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.mrp),
+                                        text = "${stringResource(id = R.string.mrp)}:",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -582,7 +582,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.qty),
+                                        text = "${stringResource(id = R.string.qty)}:",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -612,7 +612,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = stringResource(id = R.string.free),
+                                        text = "${stringResource(id = R.string.free)}:",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -695,7 +695,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.discount)}%",
+                                        text = "${stringResource(id = R.string.discount)}%:",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
