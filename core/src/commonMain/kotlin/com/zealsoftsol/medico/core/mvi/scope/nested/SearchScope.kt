@@ -25,7 +25,7 @@ interface BaseSearchScope : Scopable {
     val showToast: DataSource<Boolean>
     val cartData: DataSource<CartData?>
     val checkedProduct: DataSource<ProductSearch?>
-    val filtersManufactures: DataSource<List<Facet>>
+    val filtersManufactures: DataSource<List<Filter>>
     val filters: DataSource<List<Filter>>
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
@@ -109,7 +109,7 @@ class SearchScope(
     override val showToast: DataSource<Boolean> = DataSource(false),
     override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
     override val cartData: DataSource<CartData?> = DataSource(null),
-    override val filtersManufactures: DataSource<List<Facet>> = DataSource(emptyList()),
+    override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),

@@ -28,6 +28,7 @@ data class Facet(
 data class Value(
     val count: Int,
     val value: String,
+    val id: String,
 )
 
 @Serializable
@@ -181,7 +182,8 @@ sealed class Option {
     data class StringValue(
         val value: String,
         val isSelected: Boolean,
-        val isVisible: Boolean = true
+        val isVisible: Boolean = true,
+        val id: String = ""
     ) : Option()
 
     object ViewMore : Option()
