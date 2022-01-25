@@ -25,9 +25,20 @@ fun ItemPlaceholder() {
 }
 
 @Composable
+fun Placeholder(id: Int) {
+    Image(
+        painter = painterResource(id),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+    )
+}
+
+@Composable
 fun UserLogoPlaceholder(fullName: String) {
     Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.primary, CircleShape)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.primary, CircleShape)
     ) {
         Text(
             text = fullName.split(" ").take(2).map { it.first().toString() }

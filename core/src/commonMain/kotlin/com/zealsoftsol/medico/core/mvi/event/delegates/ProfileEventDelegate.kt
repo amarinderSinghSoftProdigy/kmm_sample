@@ -32,10 +32,11 @@ internal class ProfileEventDelegate(
             }
             result.onSuccess { _ ->
                 val data = result.getBodyOrNull()
-                println("response" + data)
+                it.profileData.value = data
             }.onError(navigator)
         }
     }
+
     private suspend fun uploadDocument(event: Event.Action.Profile) {
         navigator.withScope<CommonScope.UploadDocument> {
             val isSuccess = withProgress {

@@ -332,7 +332,7 @@ class UserRepo(
     }
 
     suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
-        return profileImageScope.getProfileImageData(requireUser().unitCode)
+        return profileImageScope.getProfileImageData()
     }
 
     private fun clearUserData() {

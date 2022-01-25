@@ -850,11 +850,10 @@ class NetworkClient(
         }
     }
 
-    override suspend fun getProfileImageData(unitCode: String) =
+    override suspend fun getProfileImageData() =
         simpleRequest {
-            client.get<BodyResponse<ProfileImageData>>("${baseUrl.url}/b2bapp/myaccount") {
+            client.get<BodyResponse<ProfileImageData>>("${baseUrl.url}/b2bapp/profiles") {
                 withMainToken()
-                jsonBody(mapOf("b2bUnitCode" to unitCode))
             }
         }
     // Utils
