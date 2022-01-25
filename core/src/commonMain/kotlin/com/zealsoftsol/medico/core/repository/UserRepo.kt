@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -49,6 +50,7 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
+    private val profileImageScope: NetworkScope.ProfileImage,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -102,7 +104,7 @@ class UserRepo(
                     else -> User.Details.DrugLicense(
                         it.tradeName,
                         it.gstin!!,
-                        it.panNumber?:"",
+                        it.panNumber ?: "",
                         it.drugLicenseNo1!!,
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl
@@ -310,7 +312,27 @@ class UserRepo(
         language: String,
         phoneNumber: String,
     ): AnyResponse {
-        return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
+        return whatsappPreferenceScope.saveWhatsappPreferences(
+            language,
+            phoneNumber,
+            requireUser().unitCode
+        )
+    }
+
+
+    suspend fun uploadProfileImage(
+        fileString: String,
+        mimeType: String,
+        type: String,
+    ): AnyResponse {
+        return profileImageScope.saveProfileImageData(
+            fileString = fileString,
+            mimeType = mimeType, type
+        )
+    }
+
+    suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
+        return profileImageScope.getProfileImageData(requireUser().unitCode)
     }
 
     private fun clearUserData() {

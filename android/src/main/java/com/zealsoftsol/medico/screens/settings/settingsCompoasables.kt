@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -63,7 +64,9 @@ fun SettingsScreen(scope: SettingsScope) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Surface() {
+        Surface(onClick = {
+            EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("tradeProfile"))
+        }) {
             Image(
                 painter = painterResource(id = R.drawable.ic_acc_place), contentDescription = null,
                 contentScale = ContentScale.FillBounds,
@@ -78,8 +81,9 @@ fun SettingsScreen(scope: SettingsScope) {
                 .padding(start = 16.dp, top = 100.dp)
                 .height(90.dp)
                 .width(90.dp),
+            shape = CircleShape,
             onClick = {
-                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet)
+                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("userProfile"))
             },
         ) {
             Image(

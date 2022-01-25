@@ -84,9 +84,10 @@ sealed class Event {
 
         sealed class Profile : Action() {
             override val typeClazz: KClass<*> = Profile::class
-            data class UploadUserProfile(val asBase64: String, val fileType: FileType) : Profile()
+            data class UploadUserProfile(val asBase64: String, val fileType: FileType,val type:String) : Profile()
             object UploadFileTooBig : Profile()
-            object ShowUploadBottomSheet : Profile()
+            object GetProfileData : Profile()
+            data class ShowUploadBottomSheet(val type:String) : Profile()
         }
 
         sealed class Search : Action() {

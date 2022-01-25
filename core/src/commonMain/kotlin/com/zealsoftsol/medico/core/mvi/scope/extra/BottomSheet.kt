@@ -20,24 +20,6 @@ sealed class BottomSheet {
         val isSeasonBoy: Boolean,
     ) : BottomSheet() {
 
-        fun uploadProfile(base64: String, fileType: FileType): Boolean {
-            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
-                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType))
-            } else {
-                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
-                false
-            }
-        }
-
-        fun uploadTradeProfile(base64: String, fileType: FileType): Boolean {
-            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
-                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType))
-            } else {
-                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
-                false
-            }
-        }
-
         fun uploadAadhaar(base64: String): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
                 EventCollector.sendEvent(Event.Action.Registration.UploadAadhaar(base64))
@@ -57,6 +39,29 @@ sealed class BottomSheet {
                 )
             } else {
                 EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
+    class UploadProfileData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+        val isSeasonBoy: Boolean,
+    ) : BottomSheet() {
+
+        fun uploadProfile(base64: String, fileType: FileType,type:String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType,type))
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
                 false
             }
         }

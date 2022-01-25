@@ -4,14 +4,13 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.extra.AadhaarDataComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.ErrorCode
 
 internal class ProfileEventDelegate(
@@ -21,26 +20,34 @@ internal class ProfileEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.Profile) = when (event) {
         is Event.Action.Profile.UploadUserProfile -> uploadDocument(event)
-        is Event.Action.Profile.ShowUploadBottomSheet -> showUploadBottomSheet()
+        is Event.Action.Profile.ShowUploadBottomSheet -> showUploadBottomSheet(event.type)
         is Event.Action.Profile.UploadFileTooBig -> uploadFileTooBig()
+        is Event.Action.Profile.GetProfileData -> getProfileData()
     }
 
+    private suspend fun getProfileData() {
+        navigator.withScope<SettingsScope> {
+            val result = withProgress {
+                userRepo.getProfileImageData()
+            }
+            result.onSuccess { _ ->
+                val data = result.getBodyOrNull()
+                println("response" + data)
+            }.onError(navigator)
+        }
+    }
     private suspend fun uploadDocument(event: Event.Action.Profile) {
         navigator.withScope<CommonScope.UploadDocument> {
-            var storageKey: String? = null
             val isSuccess = withProgress {
                 when (event) {
                     is Event.Action.Profile.UploadUserProfile -> {
-                        val userReg =
-                            (it as? SignUpScope.LegalDocuments.DrugLicense)?.registrationStep1
-                        userRepo.uploadDrugLicense(
+                        userRepo.uploadProfileImage(
                             fileString = event.asBase64,
-                            phoneNumber = userReg?.phoneNumber
-                                ?: userRepo.requireUser().phoneNumber,
-                            email = userReg?.email ?: userRepo.requireUser().email,
                             mimeType = event.fileType.mimeType,
+                            type = event.type
                         ).onSuccess { body ->
-                            storageKey = body.key
+                            //Log.e("response", " "+body)
+                            println("response" + body)
                         }.onError(navigator)
                             .isSuccess
                     }
@@ -50,19 +57,7 @@ internal class ProfileEventDelegate(
             }
             if (isSuccess) {
                 when (it) {
-                    is SignUpScope.LegalDocuments -> {
-                        when (it) {
-                            is SignUpScope.LegalDocuments.DrugLicense -> {
-                                it.storageKey = storageKey
-                            }
-                            is SignUpScope.LegalDocuments.Aadhaar -> {
-                                it.aadhaarFile =
-                                    (event as Event.Action.Registration.UploadAadhaar).aadhaarAsBase64
-                            }
-                        }
-                        //startOtp(it.registrationStep1.phoneNumber)
-                    }
-                    is LimitedAccessScope -> {
+                    is Event.Action.Profile -> {
                         userRepo.loadUserFromServer().onError(navigator)
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
@@ -71,10 +66,11 @@ internal class ProfileEventDelegate(
         }
     }
 
-    private fun showUploadBottomSheet() {
+    private fun showUploadBottomSheet(type: String) {
         navigator.withScope<CommonScope.UploadDocument> {
             val scope = scope.value
-            scope.bottomSheet.value = BottomSheet.UploadDocuments(
+            scope.bottomSheet.value = BottomSheet.UploadProfileData(
+                type,
                 it.supportedFileTypes,
                 it.isSeasonBoy,
             )

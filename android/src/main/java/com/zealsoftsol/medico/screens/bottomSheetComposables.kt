@@ -118,6 +118,16 @@ fun Scope.Host.showBottomSheet(
                     onDismiss = { dismissBottomSheet() },
                 )
             }
+            is BottomSheet.UploadProfileData -> {
+                DocumentUploadBottomSheet(
+                    supportedFileTypes = bs.supportedFileTypes,
+                    useCamera = !bs.isSeasonBoy,
+                    activity = activity,
+                    coroutineScope = coroutineScope,
+                    onFileReady = { bs.handleProfileUpload(it, bs.type) },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
                 entityInfo = bs.entityInfo,
                 isForSeasonBoy = bs.isSeasonBoy,

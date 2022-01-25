@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
+import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -117,7 +118,8 @@ class NetworkClient(
     NetworkScope.Orders,
     NetworkScope.Config,
     NetworkScope.InStore,
-    NetworkScope.WhatsappStore {
+    NetworkScope.WhatsappStore,
+    NetworkScope.ProfileImage {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -836,6 +838,25 @@ class NetworkClient(
             }
         }
 
+
+    override suspend fun saveProfileImageData(
+        fileString: String,
+        mimeType: String,
+        type: String
+    ) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/document/add/profile") {
+            withTempToken(TempToken.REGISTRATION)
+            jsonBody(mapOf("file" to fileString, "type" to type, "mimeType" to mimeType))
+        }
+    }
+
+    override suspend fun getProfileImageData(unitCode: String) =
+        simpleRequest {
+            client.get<BodyResponse<ProfileImageData>>("${baseUrl.url}/b2bapp/myaccount") {
+                withMainToken()
+                jsonBody(mapOf("b2bUnitCode" to unitCode))
+            }
+        }
     // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {

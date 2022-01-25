@@ -16,6 +16,10 @@ sealed class SettingsScope(
     private val showBackIcon: Boolean
 ) : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
+    init {
+        //sendEvent(action = Event.Action.Profile.GetProfileData)
+    }
+
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         if (showBackIcon)
             (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
