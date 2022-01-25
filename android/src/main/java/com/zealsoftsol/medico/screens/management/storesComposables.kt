@@ -316,6 +316,24 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         }*/
 
                 //Space(8.dp)
+                if ((products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) || autoComplete.value.isEmpty()) {
+                    filtersManufactures.value.forEach { filter ->
+                        if (filter.queryId == "manufacturers") {
+                            //scope.selectFilter(filter, Option.ViewMore)
+                            HorizontalFilterSection(
+                                name = filter.name,
+                                options = filter.options,
+                                /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                     scope.searchFilter(filter, it)
+                                 },*/
+                                onOptionClick = { scope.selectFilter(filter, it) },
+                                onFilterClear = { scope.clearFilter(filter) }
+                            )
+                        }
+                    }
+                }
+
+
 
                 if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
                     NoRecords(
@@ -326,21 +344,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     )
                 } else {
                     if (autoComplete.value.isEmpty()) {
-                        filtersManufactures.value.forEach { filter ->
-                            if (filter.queryId == "manufacturers") {
-                                //scope.selectFilter(filter, Option.ViewMore)
-                                HorizontalFilterSection(
-                                    name = filter.name,
-                                    options = filter.options,
-                                    searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                        scope.searchFilter(filter, it)
-                                    },
-                                    onOptionClick = { scope.selectFilter(filter, it) },
-                                    onFilterClear = { scope.clearFilter(filter) }
-                                )
-                            }
-                        }
-
                         val listState = rememberLazyListState()
 
                         LazyColumn(
@@ -775,7 +778,13 @@ fun ProductItemStore(
                     product.standardUnit?.let { sliderList.add(it) }
                     if (product.compositions.isNotEmpty())
                         sliderList.addAll(product.compositions)
-                    product.sellerInfo?.priceInfo?.marginPercent?.let { sliderList.add("Margin: ".plus(it)) }
+                    product.sellerInfo?.priceInfo?.marginPercent?.let {
+                        sliderList.add(
+                            "Margin: ".plus(
+                                it
+                            )
+                        )
+                    }
                     LazyRow(
                         state = rememberLazyListState(),
                         contentPadding = PaddingValues(top = 6.dp),
@@ -819,7 +828,9 @@ fun ProductItemStore(
                                 when (product.buyingOption) {
                                     BuyingOption.BUY -> MedicoButton(
                                         text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = true,
+                                        isEnabled = product.stockInfo?.availableQty.let {
+                                            (it ?: 0) > 0
+                                        },
                                         height = 32.dp,
                                         elevation = null,
                                         onClick = addToCart,
@@ -913,9 +924,14 @@ fun ProductItemStore(
                                             qty = "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
-                                                if (product.quantity > 0)
-                                                    scope.resetButton(true)
-                                                else
+                                                if (product.quantity > 0) {
+                                                    if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
+                                                            ?: 0)
+                                                    )
+                                                        scope.resetButton(false)
+                                                    else
+                                                        scope.resetButton(true)
+                                                } else
                                                     scope.resetButton(false)
                                             },
                                             keyboardOptions = KeyboardOptions.Default.copy(

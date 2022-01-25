@@ -297,7 +297,7 @@ internal class SearchEventDelegate(
     }
 
     private fun reset() {
-        searchJob?.cancel()
+        //searchJob?.cancel()
         activeFilters.clear()
 //        it.calculateActiveFilterNames()
     }
