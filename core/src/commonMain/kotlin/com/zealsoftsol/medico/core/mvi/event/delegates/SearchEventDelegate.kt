@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -82,6 +81,7 @@ internal class SearchEventDelegate(
     }
 
     private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {
+        reset()
         navigator.withScope<BaseSearchScope> {
             it.pagination.reset()
             if (search != null) it.productSearch.value = search
@@ -211,7 +211,7 @@ internal class SearchEventDelegate(
                     it.search(
                         addPage = false,
                         withDelay = false,
-                        withProgress = false,
+                        withProgress = true,
                     )
                 }
             }
@@ -297,7 +297,7 @@ internal class SearchEventDelegate(
     }
 
     private fun reset() {
-        searchJob?.cancel()
+        //searchJob?.cancel()
         activeFilters.clear()
 //        it.calculateActiveFilterNames()
     }

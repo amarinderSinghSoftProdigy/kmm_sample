@@ -75,14 +75,14 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         override val pagination: Pagination = Pagination()
         override val unitCode: String = store.sellerUnitCode
-        override val supportsAutoComplete: Boolean = false
+        override val supportsAutoComplete: Boolean = true
 
         init {
             startSearch()
         }
 
-        fun startSearch(){
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        fun startSearch() {
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true,search = ""))
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
