@@ -224,6 +224,9 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         withAutoComplete = true,
                         scope.store.sellerUnitCode
                     )
+                    if (value.isEmpty()) {
+                        scope.startSearch()
+                    }
                 },
             )
             scope.storage.save("focus", false)
@@ -316,7 +319,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
         }*/
 
                 //Space(8.dp)
-                if ((products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) || autoComplete.value.isEmpty()) {
+                if (autoComplete.value.isEmpty()) {
                     filtersManufactures.value.forEach { filter ->
                         if (filter.queryId == "manufacturers") {
                             //scope.selectFilter(filter, Option.ViewMore)
@@ -327,7 +330,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                      scope.searchFilter(filter, it)
                                  },*/
                                 onOptionClick = { scope.selectFilter(filter, it) },
-                                onFilterClear = { scope.clearFilter(filter) }
+                                onFilterClear = { scope.clearFilter(null) }
                             )
                         }
                     }
