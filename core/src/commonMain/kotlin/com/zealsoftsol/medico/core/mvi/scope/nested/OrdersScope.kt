@@ -15,6 +15,9 @@ import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTax
@@ -105,6 +108,46 @@ class ViewOrderScope(
     var entries: DataSource<List<OrderEntry>>,
     var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        val b2bData = b2bData.value
+        b2bData?.let {
+            val address = GeoData(
+                location = "${it.addressData.district} ${it.addressData.pincode}",
+                city = it.addressData.city,
+                pincode = it.addressData.pincode.toString(),
+                distance = 0.0,
+                formattedDistance = "",
+                addressLine = it.addressData.address,
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = it.tradeName,
+                phoneNumber = it.phoneNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = it.drugLicenseNo1,
+                drugLicenseNo2 = it.drugLicenseNo2,
+                gstin = it.gstin,
+                isVerified = true,
+                panNumber = it.panNumber,
+                subscriptionData = null,
+                unitCode = ""
+            )
+
+            return TabBarInfo.StoreTitle(
+                storeName = it.tradeName,
+                showNotifications = false,
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item)
+            )
+        }
+
+        return TabBarInfo.OnlyBackHeader("")
+
+    }
 
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)

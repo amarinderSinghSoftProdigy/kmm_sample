@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
@@ -20,6 +21,7 @@ import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
@@ -62,6 +64,18 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
         is Event.Action.Orders.ActionOnOrders -> takeActionOnOrderEntries(event.orderData)
+        is Event.Action.Orders.ShowDetailsOfRetailer ->  showDetails(event.item)
+    }
+
+    private fun showDetails(item: EntityInfo) {
+        navigator.withScope<ViewOrderScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
     }
 
     /**

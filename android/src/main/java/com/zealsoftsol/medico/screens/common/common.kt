@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.common
 
+import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -507,6 +509,37 @@ fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier, size: TextUnit) {
+    Row(modifier = modifier) {
+        Text(
+            text = "${stringResource(id = label)}:",
+            fontSize = size,
+            color = ConstColors.gray,
+        )
+        Space(4.dp)
+        Text(
+            text = data,
+            fontSize = size,
+            fontWeight = FontWeight.W600,
+            color = MaterialTheme.colors.background,
+        )
+    }
+}
+
+@Composable
+fun SingleTextLabel(
+    data: String,
+    color: Color = MaterialTheme.colors.background
+) {
+    Text(
+        text = data,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W600,
+        color = color,
+    )
+}
+
+@Composable
 fun Dropdown(
     rememberChooseKey: Any?,
     value: String?,
@@ -578,7 +611,8 @@ fun EditField(
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
     showThinDivider: Boolean = false,
-    textStyle: TextStyle? = null
+    textStyle: TextStyle? = null,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val color = when {
         isError -> ConstColors.red
@@ -675,6 +709,7 @@ fun EditFieldCustom(
     isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val color = when {
         isError -> ConstColors.red
@@ -732,6 +767,7 @@ fun EditFieldCustom(
                     }
                 },
                 keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
                 maxLines = 1,
                 singleLine = true,
                 readOnly = !isEnabled,
@@ -777,4 +813,20 @@ fun ShowAlert(onClick: () -> Unit) {
             }
         )
     }
+}
+
+@Composable
+fun ShowToastGlobal(msg: String) {
+    val context = LocalContext.current
+    Column(
+        content = {
+            Toast.makeText(
+                context,
+                msg,
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
 }

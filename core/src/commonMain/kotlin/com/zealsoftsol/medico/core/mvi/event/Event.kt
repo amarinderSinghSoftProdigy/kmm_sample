@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
@@ -99,12 +100,18 @@ sealed class Event {
                 }
             }
 
-            data class SearchAutoComplete(val value: String) : Search()
+            data class SearchAutoComplete(val value: String, val sellerUnitCode: String?= null) : Search()
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SelectSortOption(val option: SortOption?) : Search()
+            data class SelectBatch(val option: String?,val product: ProductSearch) : Search()
+            data class ViewAllItems(val value: String) : Search()
+            data class AddToCart(val product: ProductSearch) : Search()
+            data class showToast(val msg:String,val cartData:CartData?) : Search()
+            data class ShowDetails(val item: EntityInfo) : Search()
+            data class ResetButton(val item: Boolean) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -158,6 +165,8 @@ sealed class Event {
             data class Select(val item: Store) : Stores()
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
+            data class ShowDetails(val item: EntityInfo) : Stores()
+
         }
 
         sealed class Cart : Action() {
@@ -200,7 +209,10 @@ sealed class Event {
         sealed class Help : Action() {
             override val typeClazz: KClass<*> = Help::class
 
+            object GetContactUs : Help()
+            object GetTandC : Help()
             object GetHelp : Help()
+            data class ChangeTab(val index:String) : Help()
         }
 
         sealed class Orders : Action() {
@@ -243,6 +255,8 @@ sealed class Event {
             data class ActionOnOrders(
                 val orderData: ConfirmOrderRequest
             ) : Orders()
+
+            data class ShowDetailsOfRetailer(val item: EntityInfo) : Orders()
 
         }
 
@@ -351,7 +365,6 @@ sealed class Event {
                 val spid: String,
             ) : OrderHsn()
         }
-
         sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 

@@ -118,7 +118,7 @@ object Config {
     }
 
     object Version {
-        var code: Int = -1
+        var code: Int = 1
         var name: String = "na"
 
         fun parseConfig() {

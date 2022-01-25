@@ -37,6 +37,8 @@ data class GeoData(
     val addressLine: String
 ) {
 
+    fun fullLocationCityAddress() = "$location $city"
+    fun cityAddress() = "$city"
     fun fullAddress() = "$city $pincode"
     fun full() = "$location, $landmark, $city, $pincode "
 }

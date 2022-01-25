@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -117,7 +120,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
-import com.zealsoftsol.medico.screens.help.HelpScreen
+import com.zealsoftsol.medico.screens.help.HelpScreens
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
 import com.zealsoftsol.medico.screens.instore.InStoreOrderPlacedScreen
@@ -158,6 +161,7 @@ private var mUserType: UserType? = null
 //this will be used in ViewOrderComposable to update data only once when the screen is opened
 private var shouldUpdateOrderData = false
 
+@ExperimentalMaterialApi
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
@@ -241,9 +245,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
                         //display search bar with product logo
                         is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
-                        is TabBarInfo.OnlyBackIcon -> {
-                            OnlyBackIconHeader(scope, info)
-                        }
+                        is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
+                        is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                     }
                 }
             }
@@ -332,7 +335,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     }
                     is CartPreviewScope -> CartPreviewScreen(it)
                     is CartOrderCompletedScope -> CartOrderCompletedScreen(it)
-                    is HelpScope -> HelpScreen(it)
+                    is HelpScope -> HelpScreens(it)
+                    //is HelpScope -> TermsConditionsPrivacyPolicyScreen(it)
                     is OrdersScope -> {
                         OrdersScreen(it, scope.isInProgress)
                         manageBottomNavState(BottomNavKey.PO)
@@ -401,33 +405,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     )
 }
 
-/**
- * use this as header when only back icon is required on header and nothing else
- */
-@Composable
-private fun OnlyBackIconHeader(scope: TabBarScope, info: TabBarInfo.OnlyBackIcon) {
-    val childScope = scope.childScope.flow.collectAsState()
-
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Icon(
-            imageVector = info.icon.toLocalIcon(),
-            contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .fillMaxHeight()
-                .padding(16.dp)
-                .clickable(
-                    indication = null,
-                    onClick = {
-                        if (childScope.value is OrderHsnEditScope) {
-                            shouldUpdateOrderData = true
-                        }
-                        scope.goBack()
-                    },
-                )
-        )
-    }
-}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -618,14 +595,14 @@ private fun RowScope.SearchTabBar(
         }
 
 
-        val cartCount = info.cartItemsCount?.flow?.collectAsState()
+        /*val cartCount = info.cartItemsCount?.flow?.collectAsState()
         if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
         } else {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = 0
-        }
+        }*/
     }
 }
 
@@ -845,18 +822,153 @@ private fun NoIconHeader(
     }
 
     val cartCount = info.cartItemsCount?.flow?.collectAsState()
-    if (cartCount != null && cartCount.value > 0) {
-        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
-        cart?.cartCount?.value = cartCount.value
-    } else {
-        val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
-        cart?.cartCount?.value = 0
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+}
+
+/**
+ * display header data for instore seller details
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun StoreHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.StoreTitle,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(start = 16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
+        Box(modifier = Modifier.weight(0.75f)) {
+            Surface(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp)
+                .background(Color.White, RoundedCornerShape(8.dp)),
+                border = BorderStroke(1.dp, ConstColors.ltgray),
+                onClick = { info.openBottomSheet() }) {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = info.storeName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(dp = 4.dp)
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_verified),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .weight(0.15f)
+                .clickable(indication = null) { info.goToNotifications() }
+                .padding(10.dp),
+        ) {
+            if (info.showNotifications) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_bell),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .align(Alignment.Center),
+                    colorFilter = ColorFilter.tint(
+                        Color(0xFF003657)
+                    )
+                )
+                val notificationCount = info.notificationItemsCount?.flow?.collectAsState()
+                if (notificationCount?.value != null && notificationCount.value > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 6.dp, end = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Canvas(modifier = Modifier.size(5.dp)) {
+                            drawCircle(Color.Red)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    val cartCount = info.cartItemsCount?.flow?.collectAsState()
+    if (cartCount != null) {
+        if (cartCount.value > 0) {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = cartCount.value
+        } else {
+            val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
+            cart?.cartCount?.value = 0
+        }
+    }
+}
+
+/**
+ * use this as header when only back icon is required on header and nothing else
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun OnlyBackHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.OnlyBackHeader,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = info.icon.toLocalIcon(),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .fillMaxHeight()
+                .padding(16.dp)
+                .clickable(
+                    indication = null,
+                    onClick = {
+                        scope.goBack()
+                    },
+                )
+        )
     }
 }
 
 
 /**
- * composable for bottom navgation item
+ * composable for bottom navigation item
  */
 @Composable
 fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {

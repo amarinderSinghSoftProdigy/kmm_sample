@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -30,7 +32,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -92,29 +94,30 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                 showSearchOverlay.value = false
             },
             elevation = 0.dp,
-            horizontalPadding = 16.dp,
+            horizontalPadding = 18.dp,
         ) {
             val (icon, text) = when (scope) {
                 is ManagementScope.User.Stockist -> R.drawable.ic_stockist to R.string.stockists_search
-                is ManagementScope.User.Retailer -> R.drawable.ic_retailer to R.string.retailers_search
+                is ManagementScope.User.Retailer -> R.drawable.ic_retailer_search to R.string.retailers_search
                 is ManagementScope.User.SeasonBoy -> R.drawable.ic_season_boy to R.string.season_boys_search
                 is ManagementScope.User.Hospital -> R.drawable.ic_hospital to R.string.hospitals_search
             }
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = ConstColors.lightBlue,
+                tint = ConstColors.lightGreen,
                 modifier = Modifier.size(24.dp),
             )
             Space(16.dp)
             Text(
                 text = stringResource(id = text),
                 fontWeight = FontWeight.W700,
-                color = MaterialTheme.colors.background,
+                color = ConstColors.txtGrey,
+                fontSize = 12.sp
             )
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    painter = painterResource(id = R.drawable.ic_filter),
                     contentDescription = null,
                     tint = ConstColors.gray,
                     modifier = Modifier.size(24.dp),
@@ -166,7 +169,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                 }
                 val isActive = activeTab.value == it
                 boxMod = if (isActive) {
-                    boxMod.background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                    boxMod.background(ConstColors.lightGreen, MaterialTheme.shapes.medium)
                 } else {
                     boxMod
                 }
@@ -187,7 +190,7 @@ private fun EntityManagementScreen(scope: ManagementScope.User, isInProgress: Da
                             text = totalItems.value.toString(),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W700,
-                            color = ConstColors.yellow,
+                            color = if (isActive) Color.White else MaterialTheme.colors.background,
                         )
                     }
                 }
@@ -241,13 +244,13 @@ private fun NonSeasonBoyItem(
 ) {
     BaseManagementItem(onClick) {
         Column(
-            modifier = Modifier.widthIn(max = maxWidth * 0.65f),
+            modifier = Modifier.widthIn(max = maxWidth),
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 BoxWithConstraints {
                     Text(
                         text = entityInfo.tradeName,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.W600,
                         color = MaterialTheme.colors.background,
                         modifier = Modifier.widthIn(max = maxWidth - 22.dp)
@@ -262,41 +265,83 @@ private fun NonSeasonBoyItem(
                     )
                 }
             }
-            Space(4.dp)
             Text(
-                text = entityInfo.geoData.landmark,
-                fontSize = 14.sp,
+                text = entityInfo.geoData.fullLocationCityAddress(),
+                fontSize = 12.sp,
                 fontWeight = FontWeight.W500,
                 color = ConstColors.gray,
             )
             Space(4.dp)
-            GeoLocation(entityInfo.geoData.fullAddress())
-        }
-        Column(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(start = maxWidth * 0.65f),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            entityInfo.subscriptionData?.let {
-                Text(
-                    text = it.status.serverValue,
-                    color = when (it.status) {
-                        SubscriptionStatus.SUBSCRIBED -> ConstColors.green
-                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
-                        SubscriptionStatus.REJECTED -> ConstColors.red
-                    },
-                    fontWeight = FontWeight.W500,
-                )
-            } ?: Space(4.dp)
-            Text(
-                text = entityInfo.geoData.formattedDistance,
+            Divider(thickness = 0.5.dp)
+            Space(4.dp)
+            /*Text(
+                text = entityInfo.geoData.landmark,
                 fontSize = 12.sp,
+                fontWeight = FontWeight.W500,
                 color = ConstColors.gray,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
             )
+            Space(4.dp)*/
+            //GeoLocation(entityInfo.geoData.fullAddress())
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                    Box(modifier = Modifier.width(maxWidth / 2)) {
+                        entityInfo.subscriptionData?.let {
+                            Row {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_connected),
+                                    contentDescription = null,
+                                    tint = when (it.status) {
+                                        SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                        SubscriptionStatus.REJECTED -> ConstColors.red
+                                    },
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Space(dp = 4.dp)
+                                Text(
+                                    text = it.status.serverValue,
+                                    fontSize = 12.sp,
+                                    color = when (it.status) {
+                                        SubscriptionStatus.SUBSCRIBED -> ConstColors.lightGreen
+                                        SubscriptionStatus.PENDING -> ConstColors.lightBlue
+                                        SubscriptionStatus.REJECTED -> ConstColors.red
+                                    },
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+                        } ?: Space(4.dp)
+                    }
+
+
+                    Box(
+                        modifier = Modifier
+                            .width(maxWidth / 2)
+                            .align(Alignment.BottomEnd),
+                        contentAlignment = Alignment.BottomEnd,
+                    ) {
+                        Row {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_location),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                                tint = ConstColors.orange
+                            )
+                            Space(4.dp)
+                            Text(
+                                text = entityInfo.geoData.formattedDistance,
+                                fontSize = 12.sp,
+                                color = ConstColors.gray,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -361,6 +406,7 @@ fun BaseManagementItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
+        border = BorderStroke(2.dp, ConstColors.separator)
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -392,6 +438,30 @@ fun GeoLocation(
             fontSize = textSize,
             fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
             color = tint,
+        )
+    }
+}
+
+@Composable
+fun GeoLocationSheet(
+    location: String,
+    isBold: Boolean = false,
+    textSize: TextUnit = 14.sp,
+    painter: Painter = painterResource(id = R.drawable.ic_bulding),
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            painter = painter,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = ConstColors.lightGreen
+        )
+        Space(4.dp)
+        Text(
+            text = location,
+            fontSize = textSize,
+            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+            color = MaterialTheme.colors.background,
         )
     }
 }

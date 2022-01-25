@@ -28,6 +28,7 @@ data class Facet(
 data class Value(
     val count: Int,
     val value: String,
+    val id: String,
 )
 
 @Serializable
@@ -37,6 +38,7 @@ data class ProductSearch(
     val formattedMrp: String,
     val formattedPrice: String? = null,
     val id: String,
+    val drugFormName: String,
     val manufacturer: String,
     val marginPercent: String? = null,
     val name: String,
@@ -46,6 +48,11 @@ data class ProductSearch(
     val uomName: String,
     val standardUnit: String? = null,
     val sellerInfo: SellerInfo? = null,
+    val manufacturerId: String? = null,
+    var quantity: Double = 1.0,
+    var vendorProductId: String? = null,
+    var vendorMnfrId: String? = null,
+    var imageCode: String? = null
 )
 
 @Serializable
@@ -84,6 +91,7 @@ data class SellerInfo(
                     date = 0,
                     formattedDate = "",
                     color = "",
+                    ""
                 ),
                 formattedStatus = "",
                 status = StockStatus.OUT_OF_STOCK,
@@ -141,6 +149,7 @@ data class Expiry(
     val formattedDate: String,
     @SerialName("hexCode")
     val color: String,
+    val monthsToExpire: String,
 )
 
 enum class StockStatus {
@@ -173,7 +182,8 @@ sealed class Option {
     data class StringValue(
         val value: String,
         val isSelected: Boolean,
-        val isVisible: Boolean = true
+        val isVisible: Boolean = true,
+        val id: String = ""
     ) : Option()
 
     object ViewMore : Option()

@@ -24,7 +24,7 @@ class OrderHsnEditScope(
     val showAlert: DataSource<Boolean> = DataSource(false)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<SearchDataItem> {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackIcon
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
     init {
         getHsnCodes(true)

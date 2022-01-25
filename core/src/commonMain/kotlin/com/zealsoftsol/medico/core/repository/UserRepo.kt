@@ -102,6 +102,7 @@ class UserRepo(
                     else -> User.Details.DrugLicense(
                         it.tradeName,
                         it.gstin!!,
+                        it.panNumber?:"",
                         it.drugLicenseNo1!!,
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl

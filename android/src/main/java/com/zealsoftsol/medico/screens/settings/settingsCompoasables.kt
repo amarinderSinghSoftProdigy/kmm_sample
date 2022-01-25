@@ -78,23 +78,14 @@ fun SettingsScreen(scope: SettingsScope) {
 
             Text(
                 text = if (userType == UserType.STOCKIST) {
-                    (user.details as User.Details.DrugLicense).tradeName
+                    //(user.details as User.Details.DrugLicense).tradeName
+                    user.fullName()
                 } else {
                     user.fullName()
                 },
                 color = Color.Black,
                 modifier = Modifier.padding(start = 115.dp, top = 155.dp),
                 fontSize = 16.sp
-            )
-
-            ClickableText(
-                text = AnnotatedString(user.phoneNumber),
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                ),
-                onClick = { activity.openDialer(user.phoneNumber) },
-                modifier = Modifier.padding(start = 115.dp, top = 170.dp)
             )
 
         Column(
@@ -193,14 +184,14 @@ fun SettingsScreen(scope: SettingsScope) {
             }
             Separator(thickness = 0.5f)
             AccountContentItem(
-                altRoute = Event.Action.Help.GetHelp,
+                altRoute = Event.Action.Help.GetTandC,
                 drawableResourceId = R.drawable.ic_terms_cond,
                 stringResourceId = R.string.tc_privacy_policy,
                 scope = scope
             )
             Separator(thickness = 0.5f)
             AccountContentItem(
-                altRoute = Event.Action.Help.GetHelp,
+                altRoute = Event.Action.Help.GetContactUs,
                 drawableResourceId = R.drawable.ic_customer_care_acc,
                 stringResourceId = R.string.customer_care,
                 scope = scope
@@ -383,6 +374,8 @@ fun GstinDetailsComposable(details: User.Details.DrugLicense) {
         ReadOnlyField(details.tradeName, R.string.trade_name)
         Space(12.dp)
         ReadOnlyField(details.gstin, R.string.gstin)
+        Space(12.dp)
+        ReadOnlyField(details.pan, R.string.pan_number)
         Space(12.dp)
         ReadOnlyField(details.license1, R.string.drug_license_1)
         Space(12.dp)

@@ -24,6 +24,7 @@ data class User(
         data class DrugLicense(
             val tradeName: String,
             val gstin: String,
+            val pan: String,
             val license1: String,
             val license2: String,
             val url: String?,
