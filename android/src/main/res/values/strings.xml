@@ -220,7 +220,7 @@
     <string name="qty">Qty</string>
     <string name="qr_code">QR Code</string>
     <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
-    <string name="ptr">Ptr</string>
+    <string name="ptr">PTR</string>
     <string name="free">Free</string>
     <string name="subtotal">ST</string>
     <string name="order_total">Order Total:</string>
