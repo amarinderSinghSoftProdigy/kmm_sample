@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
@@ -57,6 +60,7 @@ import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.management.GeoLocation
 
 
@@ -333,6 +337,7 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                             Space(16.dp)
                             entries.value.forEachIndexed { index, it ->
                                 OrderEntryItem(
+                                    showDetails = true,
                                     canEdit = scope.canEdit,
                                     entry = it,
                                     isChecked = it in checkedEntries.value,
@@ -356,53 +361,53 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                 }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     OrderTotal(orderTaxValue.info.total.formattedPrice)
-//            Space(16.dp)
-//            if (scope.canEdit) {
-//                val actions = scope.actions.flow.collectAsState()
-//                Row(modifier = Modifier.fillMaxWidth()) {
-//                    actions.value.forEachIndexed { index, action ->
-//                        MedicoButton(
-//                            modifier = Modifier.weight(action.weight),
-//                            text = stringResourceByName(action.stringId),
-//                            isEnabled = true,
-//                            color = Color(action.bgColorHex.toColorInt()),
-//                            contentColor = Color(action.textColorHex.toColorInt()),
-//                            onClick = { scope.acceptAction(action) },
-//                        )
-//                        if (index != actions.value.lastIndex) {
-//                            Space(16.dp)
-//                        }
-//                    }
-//                }
-//            }
-                    Space(10.dp)
-                    Row(modifier = Modifier.fillMaxWidth()) {
+            Space(16.dp)
+            if (scope.canEdit) {
+                val actions = scope.actions.flow.collectAsState()
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    actions.value.forEachIndexed { index, action ->
                         MedicoButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(10.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.decline_all),
-                            onClick = {
-                                scope.manageDeclineBottomSheetVisibility(true)
-                            },
-                            color = ConstColors.red,
-                            contentColor = Color.White,
+                            modifier = Modifier.weight(action.weight),
+                            text = stringResourceByName(action.stringId),
                             isEnabled = true,
+                            color = Color(action.bgColorHex.toColorInt()),
+                            contentColor = Color(action.textColorHex.toColorInt()),
+                            onClick = { scope.acceptAction(action) },
                         )
-
-                        MedicoButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(10.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.accept_all),
-                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL) },
-                            isEnabled = true,
-                            txtColor = MaterialTheme.colors.background,
-                        )
+                        if (index != actions.value.lastIndex) {
+                            Space(16.dp)
+                        }
                     }
+                }
+            }
                     Space(10.dp)
+//                    Row(modifier = Modifier.fillMaxWidth()) {
+//                        MedicoButton(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .padding(10.dp)
+//                                .height(40.dp),
+//                            text = stringResource(id = R.string.decline_all),
+//                            onClick = {
+//                                scope.manageDeclineBottomSheetVisibility(true)
+//                            },
+//                            color = ConstColors.red,
+//                            contentColor = Color.White,
+//                            isEnabled = true,
+//                        )
+//
+//                        MedicoButton(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .padding(10.dp)
+//                                .height(40.dp),
+//                            text = stringResource(id = R.string.accept_all),
+//                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL) },
+//                            isEnabled = true,
+//                            txtColor = MaterialTheme.colors.background,
+//                        )
+//                    }
+//                    Space(10.dp)
                 }
             }
         }
@@ -419,6 +424,7 @@ fun OrderEntryItem(
     entry: OrderEntry,
     onChecked: ((Boolean) -> Unit)? = null,
     onClick: () -> Unit,
+    showDetails: Boolean = false
 ) {
     Surface(
         elevation = 5.dp,
@@ -433,15 +439,15 @@ fun OrderEntryItem(
             Row(
                 modifier = Modifier.padding(8.dp),
             ) {
-//            if (canEdit) {
-//                Checkbox(
-//                    checked = isChecked,
-//                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-//                    onCheckedChange = onChecked,
-//                    modifier = Modifier.align(Alignment.CenterVertically),
-//                )
-//                Space(8.dp)
-//            }
+            if (canEdit) {
+                Checkbox(
+                    checked = isChecked,
+                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                    onCheckedChange = onChecked,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                )
+                Space(8.dp)
+            }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -555,17 +561,19 @@ fun OrderEntryItem(
                         }
 
                     }
-                    Image(
-                        modifier = Modifier
-                            .weight(.05f),
-                        painter = painterResource(id = R.drawable.ic_arrow_right),
-                        contentDescription = null
-                    )
+                    if(showDetails){
+                        Image(
+                            modifier = Modifier
+                                .weight(.05f),
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            contentDescription = null
+                        )
+                    }
                 }
 
             }
             if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
-                Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, bottom = 8.dp),
+                Row(modifier = Modifier.fillMaxWidth().padding(start = 40.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                     Canvas(
                         modifier = Modifier
