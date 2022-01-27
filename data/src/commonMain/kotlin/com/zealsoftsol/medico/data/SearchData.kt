@@ -50,6 +50,7 @@ data class ProductSearch(
     val sellerInfo: SellerInfo? = null,
     val manufacturerId: String? = null,
     var quantity: Double = 1.0,
+    var freeQuantity: Double = 0.0,
     var vendorProductId: String? = null,
     var vendorMnfrId: String? = null,
     var imageCode: String? = null

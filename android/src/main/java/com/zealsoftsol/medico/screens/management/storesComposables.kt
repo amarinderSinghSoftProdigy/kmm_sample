@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -368,6 +370,9 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             scope.buy(item)
                                         },
                                         addToCart = {
+                                            if (item.sellerInfo?.cartInfo != null) {
+                                                scope.resetButton(true)
+                                            }
                                             scope.addToCart(item)
                                         },
                                         scope = scope, index = index, state = listState
@@ -775,6 +780,7 @@ fun ProductItemStore(
                         }
                     }
 
+                    val cartInfo = product.sellerInfo?.cartInfo
                     val sliderList = ArrayList<String>()
                     product.manufacturer.let { sliderList.add(it) }
                     if (product.drugFormName.isNotEmpty())
@@ -815,82 +821,61 @@ fun ProductItemStore(
                                 fontSize = 14.sp,
                             )
                         }*/
-                        Box(modifier = Modifier.width(120.dp)) {
+                        Box {
+                            if (cartInfo != null) {
+                                product.quantity = cartInfo.quantity.value
+                                product.freeQuantity = cartInfo.freeQuantity.value
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.qty).uppercase(),
+                                        fontSize = 12.sp,
+                                        color = ConstColors.gray,
+                                    )
+                                    Space(6.dp)
+                                    Text(
+                                        text = cartInfo.quantity.formatted,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W700,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    Space(6.dp)
+                                    Text(
+                                        text = "+${cartInfo.freeQuantity.formatted}",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.W700,
+                                        color = ConstColors.lightBlue,
+                                        modifier = Modifier
+                                            .background(
+                                                ConstColors.lightBlue.copy(alpha = 0.05f),
+                                                RoundedCornerShape(4.dp)
+                                            )
+                                            .border(
+                                                1.dp,
+                                                ConstColors.lightBlue,
+                                                RoundedCornerShape(4.dp)
+                                            )
+                                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                                    )
+                                }
+                            }
+
                             /*MedicoButton(
-                                text = stringResource(id = R.string.batch),
-                                isEnabled = true,
-                                height = 32.dp,
-                                elevation = null,
-                                onClick = onBuy,
-                                textSize = 12.sp,
-                                color = ConstColors.lightGreen,
-                                contentColor = Color.White
-                            )*/
+                                    text = stringResource(id = R.string.batch),
+                                    isEnabled = true,
+                                    height = 32.dp,
+                                    elevation = null,
+                                    onClick = onBuy,
+                                    textSize = 12.sp,
+                                    color = ConstColors.lightGreen,
+                                    contentColor = Color.White
+                                )*/
                         }
                         if (!batchSelected.value) {
-                            Box(modifier = Modifier.width(120.dp)) {
-                                when (product.buyingOption) {
-                                    BuyingOption.BUY -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = product.stockInfo?.availableQty.let {
-                                            (it ?: 0) > 0
-                                        },
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = addToCart,
-                                        textSize = 12.sp
-                                    )
-                                    BuyingOption.QUOTE -> MedicoButton(
-                                        text = stringResource(id = R.string.get_quote),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        color = ConstColors.yellow.copy(alpha = .1f),
-                                        border = BorderStroke(2.dp, ConstColors.yellow),
-                                        onClick = onBuy,
-                                        textSize = 12.sp
-                                    )
-                                    null -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = false,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = {},
-                                        textSize = 12.sp
-                                    )
-                                }
-                            }
+                            ShowButton(product, addToCart, onBuy)
                         } else if (selectedProduct.value?.id != product.id) {
-                            Box(modifier = Modifier.width(120.dp)) {
-                                when (product.buyingOption) {
-                                    BuyingOption.BUY -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = addToCart,
-                                        textSize = 12.sp
-                                    )
-                                    BuyingOption.QUOTE -> MedicoButton(
-                                        text = stringResource(id = R.string.get_quote),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        color = ConstColors.yellow.copy(alpha = .1f),
-                                        border = BorderStroke(2.dp, ConstColors.yellow),
-                                        onClick = onBuy,
-                                        textSize = 12.sp
-                                    )
-                                    null -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = false,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = {},
-                                        textSize = 12.sp
-                                    )
-                                }
-                            }
+                            ShowButton(product, addToCart, onBuy)
                         }
 
                     }
@@ -925,7 +910,7 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.qty),
-                                            qty = "0",
+                                            qty = cartInfo?.quantity?.formatted ?: "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
                                                 if (product.quantity > 0) {
@@ -959,8 +944,19 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.free),
-                                            qty = "0",
-                                            onChange = { },
+                                            qty = cartInfo?.freeQuantity?.formatted ?: "0",
+                                            onChange = {
+                                                product.freeQuantity = it.toDouble()
+                                                /* if (product.quantity > 0) {
+                                                     if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
+                                                             ?: 0)
+                                                     )
+                                                         scope.resetButton(false)
+                                                     else
+                                                         scope.resetButton(true)
+                                                 } else
+                                                     scope.resetButton(false)*/
+                                            },
                                             isEnabled = product.sellerInfo?.isPromotionActive
                                                 ?: false,
                                         )
@@ -994,12 +990,20 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         when (product.buyingOption) {
                                             BuyingOption.BUY -> MedicoButton(
-                                                text = stringResource(id = R.string.add_to_cart),
+                                                text = if (cartInfo != null) {
+                                                    stringResource(id = R.string.update)
+                                                } else stringResource(id = R.string.add_to_cart),
                                                 isEnabled = enableButton.value,
                                                 height = 32.dp,
                                                 elevation = null,
                                                 onClick = onBuy,
-                                                textSize = 12.sp
+                                                textSize = 12.sp,
+                                                color = if (cartInfo != null) {
+                                                    ConstColors.lightBlue
+                                                } else ConstColors.yellow,
+                                                contentColor = if (cartInfo != null) {
+                                                    Color.White
+                                                } else MaterialTheme.colors.background
                                             )
                                             BuyingOption.QUOTE -> MedicoButton(
                                                 text = stringResource(id = R.string.get_quote),
@@ -1070,6 +1074,52 @@ fun ProductItemStore(
             }
         }
 
+    }
+}
+
+@Composable
+fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit) {
+    Box(modifier = Modifier.width(120.dp)) {
+        val cartInfo = product.sellerInfo?.cartInfo
+        when (product.buyingOption) {
+            BuyingOption.BUY -> MedicoButton(
+                text = if (cartInfo != null) {
+                    stringResource(id = R.string.update)
+                } else stringResource(id = R.string.add_to_cart),
+                isEnabled = product.stockInfo?.availableQty.let {
+                    (it ?: 0) > 0
+                },
+                height = 32.dp,
+                elevation = null,
+                onClick = addToCart,
+                textSize = 12.sp,
+                color = if (cartInfo != null) {
+                    ConstColors.lightBlue
+                } else ConstColors.yellow,
+                contentColor = if (cartInfo != null) {
+                    Color.White
+                } else MaterialTheme.colors.background
+
+            )
+            BuyingOption.QUOTE -> MedicoButton(
+                text = stringResource(id = R.string.get_quote),
+                isEnabled = true,
+                height = 32.dp,
+                elevation = null,
+                color = ConstColors.yellow.copy(alpha = .1f),
+                border = BorderStroke(2.dp, ConstColors.yellow),
+                onClick = onBuy,
+                textSize = 12.sp
+            )
+            null -> MedicoButton(
+                text = stringResource(id = R.string.add_to_cart),
+                isEnabled = false,
+                height = 32.dp,
+                elevation = null,
+                onClick = {},
+                textSize = 12.sp
+            )
+        }
     }
 }
 

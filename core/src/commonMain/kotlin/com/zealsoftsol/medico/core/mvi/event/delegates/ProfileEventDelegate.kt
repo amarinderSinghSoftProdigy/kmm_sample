@@ -43,6 +43,7 @@ internal class ProfileEventDelegate(
                 when (event) {
                     is Event.Action.Profile.UploadUserProfile -> {
                         userRepo.uploadProfileImage(
+                            size=event.size,
                             fileString = event.asBase64,
                             mimeType = event.fileType.mimeType,
                             type = event.type

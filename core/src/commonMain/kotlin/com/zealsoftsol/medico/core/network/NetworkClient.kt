@@ -57,6 +57,7 @@ import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -845,10 +846,19 @@ class NetworkClient(
 
 
     override suspend fun saveProfileImageData(
-        fileString: File,
-        mimeType: String,
+        profileImageData: ProfileImageUpload,
         type: String
     ) = simpleRequest {
+        client.post<AnyResponse>("${baseUrl.url}/document/add/profile") {
+            withMainToken()
+            jsonBody(profileImageData)
+            url {
+                parameters.append("documentType", type)
+            }
+        }
+    }
+
+    /*simpleRequest {
         client.submitFormWithBinaryData<AnyResponse>(
             url = "${baseUrl.url}/document/add/profile?documentType=" + type,
             formData = formData {
@@ -856,11 +866,8 @@ class NetworkClient(
                     append(HttpHeaders.ContentDisposition, "filename=${fileString.name}")
                 })
             }
-
         )
-
-
-        /*client.submitFormWithBinaryData<AnyResponse>("${baseUrl.url}/document/add/profile") {
+        client.submitFormWithBinaryData<AnyResponse>("${baseUrl.url}/document/add/profile") {
             withMainToken()
             multipartBody(fileString)
             url {
@@ -868,7 +875,6 @@ class NetworkClient(
             }
             //jsonBody(mapOf("multiPartFile" to fileString, "documentType" to type, "mimeType" to mimeType))
         }*/
-    }
 
 
     override suspend fun getProfileImageData() =
@@ -941,27 +947,6 @@ class NetworkClient(
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {
         contentType(ContentType.parse("application/json"))
         this.body = body
-    }
-
-    private inline fun HttpRequestBuilder.multipartBody(bodyString: String) {
-        contentType(ContentType.parse("multipart/form-data"))
-        this.body = MultiPartFormDataContent(
-            formData {
-                // Regular form parameter
-                //append("file", bodyString,ContentType. fromFileExtension(".jpeg"))
-                /* bodyString.encodeToByteArray() {
-                 this.appendInput(
-                     headers = Headers.build {
-                         append(
-                             HttpHeaders.ContentDisposition,
-                             "filename=${it.name}"
-                         )
-                     },
-                     size = it.length()
-                 ) { buildPacket { writeFully(it.value.readBytes()) } }
-             }*/
-            }
-        )
     }
 
     private suspend inline fun <T, V> fullRequest(

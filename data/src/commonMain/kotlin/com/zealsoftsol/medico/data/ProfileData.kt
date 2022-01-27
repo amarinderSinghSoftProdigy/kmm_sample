@@ -11,8 +11,9 @@ data class ProfileImageData(
 
 @Serializable
 data class ProfileImageUpload(
-    @SerialName("documentType")
-    val documentType: String,
-    val fileString: String,
+    val name: String,
+    val size: String,
     val mimeType: String,
+    val documentType: String,
+    val documentData: String
 )

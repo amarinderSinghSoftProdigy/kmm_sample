@@ -324,13 +324,19 @@ class UserRepo(
 
 
     suspend fun uploadProfileImage(
-        fileString: File,
+        fileString: String,
         mimeType: String,
         type: String,
+        size: String,
     ): AnyResponse {
         return profileImageScope.saveProfileImageData(
-            fileString = fileString,
-            mimeType = mimeType, type
+            ProfileImageUpload(
+                size = size,
+                name = type,
+                mimeType = mimeType,
+                documentType = type,
+                documentData = fileString,
+            ), type
         )
     }
 

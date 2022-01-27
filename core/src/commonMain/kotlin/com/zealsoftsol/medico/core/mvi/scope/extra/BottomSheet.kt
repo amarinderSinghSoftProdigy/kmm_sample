@@ -59,13 +59,14 @@ sealed class BottomSheet {
         val isSeasonBoy: Boolean,
     ) : BottomSheet() {
 
-        fun uploadProfile(base64: String, file: File, fileType: FileType, type: String): Boolean {
+        fun uploadProfile(base64: String, fileType: FileType, type: String): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
                 EventCollector.sendEvent(
                     Event.Action.Profile.UploadUserProfile(
-                        file,
-                        fileType,
-                        type
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
                     )
                 )
             } else {

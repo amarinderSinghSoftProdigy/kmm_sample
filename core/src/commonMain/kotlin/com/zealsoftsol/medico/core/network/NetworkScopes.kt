@@ -290,8 +290,7 @@ interface NetworkScope {
     interface ProfileImage : NetworkScope {
         suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
         suspend fun saveProfileImageData(
-            fileString: File,
-            mimeType: String, type: String
+            profileImageData: ProfileImageUpload, type: String
         ): AnyResponse
     }
 
