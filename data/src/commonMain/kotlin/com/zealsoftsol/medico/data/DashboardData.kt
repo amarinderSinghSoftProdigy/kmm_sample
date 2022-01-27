@@ -14,7 +14,13 @@ data class DashboardData(
     val productInfo: RecentProductInfo? = null,
     val stockStatusData: StockStatusData? = null,
     val brands: List<BrandsData> = emptyList(),
-    val categories: List<BrandsData> = emptyList()
+    val categories: List<BrandsData> = emptyList(),
+    val banners: List<BannerData> = emptyList()
+)
+
+@Serializable
+data class BannerData(
+    val cdnUrl: String, val name: String? = null
 )
 
 @Serializable
