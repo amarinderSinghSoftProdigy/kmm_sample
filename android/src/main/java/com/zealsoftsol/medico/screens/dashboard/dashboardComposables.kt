@@ -32,8 +32,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -47,11 +45,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -62,11 +57,9 @@ import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.ProductSold
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 @Composable
@@ -99,6 +92,23 @@ private fun ShowRetailerAndHospitalDashboard(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            Space(dp = 16.dp)
+            LazyRow {
+                dashboard.value?.brands?.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { _, item -> item.searchTerm },
+                        itemContent = { _, item ->
+                            BannerItem(
+                                item, scope, modifier = Modifier
+                                    .fillParentMaxWidth()
+                                    .height(180.dp)
+                                    .padding(horizontal = 16.dp)
+                            )
+                        },
+                    )
+                }
+            }
             Space(dp = 16.dp)
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -133,7 +143,9 @@ private fun ShowRetailerAndHospitalDashboard(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Space(dp = 16.dp)
-            LazyRow {
+            LazyRow(
+                modifier = Modifier.padding(horizontal = 14.dp)
+            ) {
                 dashboard.value?.brands?.let {
                     itemsIndexed(
                         items = it,
@@ -169,6 +181,33 @@ private fun ShowRetailerAndHospitalDashboard(
 }
 
 /**
+ * UI for items in Banner on top
+ */
+@Composable
+private fun BannerItem(item: BrandsData, scope: DashboardScope, modifier: Modifier) {
+    Card(
+        modifier = modifier
+            .selectable(
+                selected = true,
+                onClick = {
+                    //send parameters for search based on category
+                }),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(5.dp),
+        backgroundColor = Color.White,
+    ) {
+        CoilImageBrands(
+            src = item.imageUrl,
+            contentScale = ContentScale.Crop,
+            onError = { ItemPlaceholder() },
+            onLoading = { ItemPlaceholder() },
+            height = 200.dp,
+        )
+    }
+    Space(12.dp)
+}
+
+/**
  * ui item for brands listing
  */
 @Composable
@@ -177,6 +216,7 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
         modifier = Modifier
             .height(90.dp)
             .width(150.dp)
+            .padding(start = 2.dp)
             .selectable(
                 selected = true,
                 onClick = {
