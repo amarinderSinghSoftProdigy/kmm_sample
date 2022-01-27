@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -43,15 +41,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.ProductSold
@@ -87,6 +91,7 @@ private fun ShowRetailerAndHospitalDashboard(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -94,10 +99,10 @@ private fun ShowRetailerAndHospitalDashboard(
         ) {
             Space(dp = 16.dp)
             LazyRow {
-                dashboard.value?.brands?.let {
+                dashboard.value?.banners?.let {
                     itemsIndexed(
                         items = it,
-                        key = { _, item -> item.searchTerm },
+                        key = { pos, _ -> pos },
                         itemContent = { _, item ->
                             BannerItem(
                                 item, scope, modifier = Modifier
@@ -165,13 +170,14 @@ private fun ShowRetailerAndHospitalDashboard(
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             Space(dp = 16.dp)
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(2),
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
+
+            FlowRow(
+                mainAxisSize = SizeMode.Expand, mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
             ) {
                 dashboard.value?.categories?.let {
-                    items(it.size) { index ->
-                        CategoriesItem(it[index], scope)
+                    it.forEachIndexed { index, _ ->
+                        CategoriesItem(it[index], scope, modifier = Modifier.width(itemSize))
                     }
                 }
             }
@@ -184,7 +190,7 @@ private fun ShowRetailerAndHospitalDashboard(
  * UI for items in Banner on top
  */
 @Composable
-private fun BannerItem(item: BrandsData, scope: DashboardScope, modifier: Modifier) {
+private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifier) {
     Card(
         modifier = modifier
             .selectable(
@@ -197,7 +203,7 @@ private fun BannerItem(item: BrandsData, scope: DashboardScope, modifier: Modifi
         backgroundColor = Color.White,
     ) {
         CoilImageBrands(
-            src = item.imageUrl,
+            src = item.cdnUrl,
             contentScale = ContentScale.Crop,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
@@ -302,9 +308,9 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
  * ui item for categories listing
  */
 @Composable
-private fun CategoriesItem(item: BrandsData, scope: DashboardScope) {
+private fun CategoriesItem(item: BrandsData, scope: DashboardScope,modifier: Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .height(215.dp)
             .selectable(
                 selected = true,
