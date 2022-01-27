@@ -20,6 +20,7 @@ import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -41,6 +42,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
+import java.io.File
+
 
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
@@ -321,7 +324,7 @@ class UserRepo(
 
 
     suspend fun uploadProfileImage(
-        fileString: String,
+        fileString: File,
         mimeType: String,
         type: String,
     ): AnyResponse {

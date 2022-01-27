@@ -89,14 +89,19 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.*
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
+import java.nio.file.Files
+import java.io.File
+import java.nio.file.Paths
 
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
@@ -840,15 +845,31 @@ class NetworkClient(
 
 
     override suspend fun saveProfileImageData(
-        fileString: String,
+        fileString: File,
         mimeType: String,
         type: String
     ) = simpleRequest {
-        client.post<AnyResponse>("${baseUrl.url}/document/add/profile") {
-            withTempToken(TempToken.REGISTRATION)
-            jsonBody(mapOf("file" to fileString, "type" to type, "mimeType" to mimeType))
-        }
+        client.submitFormWithBinaryData<AnyResponse>(
+            url = "${baseUrl.url}/document/add/profile?documentType=" + type,
+            formData = formData {
+                append("document", Files.readAllBytes(Paths.get(fileString.path)), Headers.build {
+                    append(HttpHeaders.ContentDisposition, "filename=${fileString.name}")
+                })
+            }
+
+        )
+
+
+        /*client.submitFormWithBinaryData<AnyResponse>("${baseUrl.url}/document/add/profile") {
+            withMainToken()
+            multipartBody(fileString)
+            url {
+                parameters.append("documentType", type)
+            }
+            //jsonBody(mapOf("multiPartFile" to fileString, "documentType" to type, "mimeType" to mimeType))
+        }*/
     }
+
 
     override suspend fun getProfileImageData() =
         simpleRequest {
@@ -856,7 +877,7 @@ class NetworkClient(
                 withMainToken()
             }
         }
-    // Utils
+// Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
@@ -920,6 +941,27 @@ class NetworkClient(
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {
         contentType(ContentType.parse("application/json"))
         this.body = body
+    }
+
+    private inline fun HttpRequestBuilder.multipartBody(bodyString: String) {
+        contentType(ContentType.parse("multipart/form-data"))
+        this.body = MultiPartFormDataContent(
+            formData {
+                // Regular form parameter
+                //append("file", bodyString,ContentType. fromFileExtension(".jpeg"))
+                /* bodyString.encodeToByteArray() {
+                 this.appendInput(
+                     headers = Headers.build {
+                         append(
+                             HttpHeaders.ContentDisposition,
+                             "filename=${it.name}"
+                         )
+                     },
+                     size = it.length()
+                 ) { buildPacket { writeFully(it.value.readBytes()) } }
+             }*/
+            }
+        )
     }
 
     private suspend inline fun <T, V> fullRequest(

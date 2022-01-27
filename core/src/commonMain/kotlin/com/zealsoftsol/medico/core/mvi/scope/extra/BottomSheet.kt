@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.extra
 
+import android.util.Base64
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -12,6 +13,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
+import java.io.File
 
 sealed class BottomSheet {
 
@@ -57,9 +59,15 @@ sealed class BottomSheet {
         val isSeasonBoy: Boolean,
     ) : BottomSheet() {
 
-        fun uploadProfile(base64: String, fileType: FileType,type:String): Boolean {
+        fun uploadProfile(base64: String, file: File, fileType: FileType, type: String): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
-                EventCollector.sendEvent(Event.Action.Profile.UploadUserProfile(base64, fileType,type))
+                EventCollector.sendEvent(
+                    Event.Action.Profile.UploadUserProfile(
+                        file,
+                        fileType,
+                        type
+                    )
+                )
             } else {
                 EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
                 false

@@ -75,7 +75,7 @@ fun SettingsScreen(scope: SettingsScope) {
                 .fillMaxWidth()
                 .height(150.dp),
             onClick = {
-                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("tradeProfile"))
+                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("TRADE_PROFILE"))
             }) {
             profileData.value?.tradeProfile?.let {
                 CoilImage(
@@ -99,12 +99,12 @@ fun SettingsScreen(scope: SettingsScope) {
 
         Surface(
             modifier = Modifier
-                .padding(start = 16.dp, top = 100.dp)
+                .padding(start = 16.dp, top = 105.dp)
                 .height(90.dp)
                 .width(90.dp),
             shape = CircleShape,
             onClick = {
-                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("userProfile"))
+                EventCollector.sendEvent(Event.Action.Profile.ShowUploadBottomSheet("USER_PROFILE_PIC"))
             },
         ) {
             profileData.value?.userProfile?.let {

@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -629,7 +630,7 @@ fun ProductItemStore(
     Column {
         Surface(
             color = Color.White,
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.large,
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -1048,15 +1049,21 @@ fun ProductItemStore(
                 ) {
                     Box(
                         modifier = Modifier
-                            .width(100.dp)
-                            .background(ConstColors.red),
-                        contentAlignment = Alignment.CenterEnd
+                            .width(110.dp),
+                        contentAlignment = Alignment.Center
                     ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_offer_back),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                        )
                         Text(
                             text = product.sellerInfo?.promotionData?.displayLabel ?: "",
                             color = Color.White,
-                            fontWeight = FontWeight.W300,
-                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
                         )
                     }
                 }

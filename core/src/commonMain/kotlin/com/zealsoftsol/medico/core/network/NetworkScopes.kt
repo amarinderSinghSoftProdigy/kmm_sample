@@ -43,6 +43,7 @@ import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -61,6 +62,8 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
+import java.io.File
+
 
 interface NetworkScope {
 
@@ -287,7 +290,7 @@ interface NetworkScope {
     interface ProfileImage : NetworkScope {
         suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
         suspend fun saveProfileImageData(
-            fileString: String,
+            fileString: File,
             mimeType: String, type: String
         ): AnyResponse
     }
