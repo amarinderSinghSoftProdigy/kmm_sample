@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +33,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -65,6 +67,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShimmerItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
+import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreen(scope: DashboardScope) {
@@ -87,6 +90,8 @@ private fun ShowRetailerAndHospitalDashboard(
     dashboard: State<DashboardData?>,
     scope: DashboardScope
 ) {
+    val lazyListState = rememberLazyListState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -98,7 +103,7 @@ private fun ShowRetailerAndHospitalDashboard(
                 .fillMaxSize()
         ) {
             Space(dp = 16.dp)
-            LazyRow {
+            LazyRow(state = lazyListState) {
                 dashboard.value?.banners?.let {
                     itemsIndexed(
                         items = it,
@@ -114,6 +119,22 @@ private fun ShowRetailerAndHospitalDashboard(
                     )
                 }
             }
+            //auto rotate banner after every 3 seconds
+            dashboard.value?.banners?.let {
+                LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                    delay(3000) // wait for 3 seconds.
+                    // increasing the position and check the limit
+                    var newPosition = lazyListState.firstVisibleItemIndex + 1
+                    if (newPosition > it.size - 1) newPosition = 0
+                    // scrolling to the new position.
+                    if (newPosition == 0) {
+                        lazyListState.scrollToItem(newPosition)
+                    } else {
+                        lazyListState.animateScrollToItem(newPosition)
+                    }
+                }
+            }
+
             Space(dp = 16.dp)
             Row(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -173,7 +194,8 @@ private fun ShowRetailerAndHospitalDashboard(
             val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 8.dp
 
             FlowRow(
-                mainAxisSize = SizeMode.Expand, mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                mainAxisSize = SizeMode.Expand,
+                mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
             ) {
                 dashboard.value?.categories?.let {
                     it.forEachIndexed { index, _ ->
@@ -183,7 +205,6 @@ private fun ShowRetailerAndHospitalDashboard(
             }
         }
     }
-
 }
 
 /**
@@ -308,7 +329,7 @@ private fun BrandsImageItem(item: ProductSold, scope: DashboardScope) {
  * ui item for categories listing
  */
 @Composable
-private fun CategoriesItem(item: BrandsData, scope: DashboardScope,modifier: Modifier) {
+private fun CategoriesItem(item: BrandsData, scope: DashboardScope, modifier: Modifier) {
     Card(
         modifier = modifier
             .height(215.dp)
