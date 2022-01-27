@@ -103,6 +103,7 @@ dependencies {
     implementation(Deps.Firebase.messaging)
     implementation("io.karn:notify:1.4.0")
     implementation("joda-time:joda-time:2.10.5")
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.20.0")
 
     // for lint
     implementation("androidx.fragment:fragment-ktx:1.3.4")
