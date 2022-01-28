@@ -30,7 +30,7 @@ internal class SearchEventDelegate(
     private val networkSearchScope: NetworkScope.Search,
 ) : EventDelegate<Event.Action.Search>(navigator) {
 
-    private val activeFilters = hashMapOf<String, Option.StringValue>()
+    private var activeFilters = hashMapOf<String, Option.StringValue>()
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
@@ -208,10 +208,19 @@ internal class SearchEventDelegate(
                             f
                         }
                     }
+
+                    //when offers switch is on in stores orders
+                    val extraFilters = mutableMapOf<String, Option.StringValue>()
+                    if (filter.queryId == "offers") {
+                        extraFilters["offers"] = option
+                        activeFilters =
+                            (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
+                    }
                     it.search(
                         addPage = false,
                         withDelay = false,
                         withProgress = true,
+                        extraFilters = extraFilters
                     )
                 }
             }
@@ -242,6 +251,12 @@ internal class SearchEventDelegate(
                     else -> f
                 }
             }
+
+            //remove offers key if offers switch is off in stores products
+            if (filter?.queryId == "offers") {
+                activeFilters.remove("offers")
+            }
+
             if (filter == null) {
                 activeFilters.clear()
                 it.calculateActiveFilterNames()
