@@ -329,7 +329,7 @@
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
     <string name="search_hsn_code">Search HSN Code</string>
-    <string name="hsn_code">HSN Code:</string>
+    <string name="hsn_code">HSN Code</string>
     <string name="hsn_code_error">*HSN Code not available for the product.</string>
     <string name="rate">Rate</string>
     <string name="effective_date">Effective Date</string>
@@ -343,6 +343,11 @@
     <string name="added_to_cart">added to the cart with</string>
     <string name="your_brands">Your Brands</string>
     <string name="no_products">No products found!</string>
+    <string name="please_add">Please add all required values (Hsn code, ptr and qty)</string>
+
+
+    <!-- Temrs and Cond -->
+
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>
     <string name="tandc_line_3"><![CDATA[Medicostores.com website is made available by medicostores.com private Ltd, (“Medicostores.com”) with its registered office located at F No 108, D No 8–3–945, Sri Nilayam Estates Nagarjuna Nagar Colony Ameerpet Hyderabad, Telangana, 500073, India. medicostores.com is a platform which brings together licensed Stockists/Wholesalers referred to as “Sellers” and Retailers, Hospitals & Season Boys/Sales Persons referred to as “Buyers”. The Services of the platform are available through the website https://medicostores.com (hereinafter referred to as “Site”). The services provided by Medicostores.com are subject to the following Terms and Conditions (the “Terms”).]]></string>
@@ -434,6 +439,7 @@
     <string name="pp_line_9">Cookies</string>
     <string name="pp_line_10">Cookies are files with small amount of data that is commonly used an anonymous unique identifier. These are sent to your browser from the website that your visit and are stored on your computer’s hard drive.</string>
     <string name="pp_line_11">Our website uses these “cookies” to collection information and to improve our Service. You have the option to either accept or refuse these cookies, and know when a cookie is being sent to your computer. If you choose to refuse our cookies, you may not be able to use some portions of our Service.</string>
+
 
     <!--error codes-->
 

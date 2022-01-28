@@ -362,25 +362,25 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                 }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     OrderTotal(orderTaxValue.info.total.formattedPrice)
-            Space(16.dp)
-            if (scope.canEdit) {
-                val actions = scope.actions.flow.collectAsState()
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    actions.value.forEachIndexed { index, action ->
-                        MedicoButton(
-                            modifier = Modifier.weight(action.weight),
-                            text = stringResourceByName(action.stringId),
-                            isEnabled = true,
-                            color = Color(action.bgColorHex.toColorInt()),
-                            contentColor = Color(action.textColorHex.toColorInt()),
-                            onClick = { scope.acceptAction(action) },
-                        )
-                        if (index != actions.value.lastIndex) {
-                            Space(16.dp)
+                    Space(16.dp)
+                    if (scope.canEdit) {
+                        val actions = scope.actions.flow.collectAsState()
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            actions.value.forEachIndexed { index, action ->
+                                MedicoButton(
+                                    modifier = Modifier.weight(action.weight),
+                                    text = stringResourceByName(action.stringId),
+                                    isEnabled = true,
+                                    color = Color(action.bgColorHex.toColorInt()),
+                                    contentColor = Color(action.textColorHex.toColorInt()),
+                                    onClick = { scope.acceptAction(action) },
+                                )
+                                if (index != actions.value.lastIndex) {
+                                    Space(16.dp)
+                                }
+                            }
                         }
                     }
-                }
-            }
                     Space(10.dp)
 //                    Row(modifier = Modifier.fillMaxWidth()) {
 //                        MedicoButton(
@@ -451,15 +451,15 @@ fun OrderEntryItem(
             Row(
                 modifier = Modifier.padding(8.dp),
             ) {
-            if (canEdit) {
-                Checkbox(
-                    checked = isChecked,
-                    colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                    onCheckedChange = onChecked,
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                )
-                Space(8.dp)
-            }
+                if (canEdit) {
+                    Checkbox(
+                        checked = isChecked,
+                        colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                        onCheckedChange = onChecked,
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                    )
+                    Space(8.dp)
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -573,7 +573,7 @@ fun OrderEntryItem(
                         }
 
                     }
-                    if(showDetails){
+                    if (showDetails) {
                         Image(
                             modifier = Modifier
                                 .weight(.05f),
@@ -584,9 +584,13 @@ fun OrderEntryItem(
                 }
 
             }
-            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
-                Row(modifier = Modifier.fillMaxWidth().padding(start = 40.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
+            if (entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 40.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Canvas(
                         modifier = Modifier
                             .size(8.dp), onDraw = {
@@ -594,13 +598,11 @@ fun OrderEntryItem(
                         }
                     )
                     Text(
-                        modifier = Modifier.padding(start = 5.dp),
-                        text = entry.reason,
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                        text = stringResource(id = R.string.please_add),
                         color = Color.Black,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.W500,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
                 }
 
@@ -609,7 +611,6 @@ fun OrderEntryItem(
 
     }
 }
-
 
 @Composable
 fun DeclineReasonBottomSheet(scope: ViewOrderScope) {

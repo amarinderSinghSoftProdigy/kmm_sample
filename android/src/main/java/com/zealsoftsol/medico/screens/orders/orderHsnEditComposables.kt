@@ -242,7 +242,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                         Column(modifier = Modifier.weight(1f)) {
                             Space(10.dp)
                             Text(
-                                text = stringResource(id = R.string.hsn_code),
+                                text = "${stringResource(id = R.string.hsn_code)}:",
                                 color = ConstColors.gray,
                                 fontSize = 16.sp,
                                 maxLines = 1,
@@ -455,7 +455,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     Space(10.dp)
                     Column {
                         Text(
-                            text = stringResource(id = R.string.hsn_code),
+                            text = "${stringResource(id = R.string.hsn_code)}:",
                             color = ConstColors.gray,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.W500,
@@ -1100,7 +1100,7 @@ private fun HsnCodeSheet(
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Text(
-                        text = stringResource(id = R.string.hsn_code),
+                        text = "${stringResource(id = R.string.hsn_code)}:",
                         color = ConstColors.green,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W600,
