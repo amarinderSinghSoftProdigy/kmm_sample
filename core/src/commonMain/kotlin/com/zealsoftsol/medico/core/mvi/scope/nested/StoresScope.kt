@@ -85,6 +85,10 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true,search = ""))
         }
 
+        fun startSearchWithNoLoader() {
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        }
+
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.StoreTitle(
                 store = store,

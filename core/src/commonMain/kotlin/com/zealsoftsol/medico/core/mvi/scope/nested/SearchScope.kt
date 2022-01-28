@@ -41,8 +41,8 @@ interface BaseSearchScope : Scopable {
     val supportsAutoComplete: Boolean
     val pagination: Pagination
 
-    fun selectBatch(selectedId: String, product: ProductSearch) =
-        EventCollector.sendEvent(Event.Action.Search.SelectBatch(selectedId, product))
+    fun selectBatch(check: Boolean, product: ProductSearch) =
+        EventCollector.sendEvent(Event.Action.Search.SelectBatch(check, product))
 
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
 

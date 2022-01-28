@@ -73,6 +73,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartInfo
+import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -113,93 +115,13 @@ fun StoresScreen(scope: StoresScope) {
 @ExperimentalComposeUiApi
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
-    //Space(16.dp)
-    /*Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .background(Color.White, RoundedCornerShape(8.dp)),
-    ) {
-
-        FoldableItem(
-            expanded = false,
-            headerMinHeight = 40.dp,
-            header = { isExpanded ->
-                Space(8.dp)
-                Row(
-                    modifier = Modifier.weight(.8f),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Space(8.dp)
-                    Text(
-                        text = scope.store.tradeName,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .weight(.1f)
-                        .padding(end = 4.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        tint = ConstColors.gray,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            },
-            childItems = listOf(""),
-            item = { value, _ ->
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = scope.store.fullAddress(),
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Space(8.dp)
-                }
-            }
-        )
-
-        *//*Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
-        ) {
-            Text(
-                text = scope.store.tradeName,
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W600,
-                fontSize = 14.sp
-            )
-            Space(4.dp)
-            Text(
-                text = scope.store.fullAddress(),
-                fontSize = 12.sp,
-                color = ConstColors.gray
-            )
-            //GeoLocation(scope.store.fullAddress(),textSize = 12.sp)
-            //Space(16.dp)
-            //DataWithLabel(R.string.gstin_num, scope.store.gstin)
-            //Space(16.dp)
-        }*//*
-    }*/
-
     val showToast = scope.showToast.flow.collectAsState()
     val cartData = scope.cartData.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
+    val batchSelected = scope.isBatchSelected.flow.collectAsState()
+
+    val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
+    val cartItem = entries?.get(entries.size - 1)
 
     Surface(
         color = Color.White,
@@ -219,7 +141,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
-            val options =  Option.StringValue(
+            val options = Option.StringValue(
                 id = "offers",
                 value = true.toString(),
                 isSelected = true,
@@ -324,41 +246,11 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                             )
                         }
                     }
-                    /* Box(
-                         modifier = Modifier
-                             .width(maxWidth / 2 - 8.dp)
-                             .align(Alignment.CenterEnd)
-                             .clickable(onClick = {
-                                 scope.selectFilter(
-                                     filters.value[0],
-                                     Option.ViewMore
-                                 )
-                             }),
-                         contentAlignment = Alignment.BottomEnd,
-                     ) {
-                         Row {
-                             Icon(
-                                 painter = painterResource(id = R.drawable.ic_eye),
-                                 contentDescription = null,
-                                 tint = ConstColors.lightBlue,
-                                 modifier = Modifier.size(16.dp)
-                             )
-                             Space(8.dp)
-                             Text(
-                                 text = stringResource(id = R.string.view_all),
-                                 fontSize = 12.sp,
-                                 fontWeight = FontWeight.W700,
-                                 color = ConstColors.lightBlue,
-                                 textAlign = TextAlign.Center,
-                             )
-                         }
-                     }*/
                 }
 
                 if (autoComplete.value.isEmpty()) {
                     filtersManufactures.value.forEach { filter ->
                         if (filter.queryId == "manufacturers") {
-                            //scope.selectFilter(filter, Option.ViewMore)
                             Box(modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)) {
                                 HorizontalFilterSection(
                                     name = filter.name,
@@ -400,8 +292,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                         item,
                                         onClick = { scope.selectProduct(item) },
                                         onBuy = {
-                                            scope.resetButton(false)
-                                            scope.selectBatch("", product = item)
+                                            //scope.resetButton(false)
+                                            scope.selectBatch(false, product = item)
                                             scope.buy(item)
                                         },
                                         addToCart = {
@@ -410,7 +302,9 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             }
                                             scope.addToCart(item)
                                         },
-                                        scope = scope, index = index, state = listState
+                                        scope = scope, index = index, state = listState,
+                                        cartItem = cartItem,
+                                        batchSelected.value
                                     )
                                     if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                         scope.loadMoreProducts()
@@ -444,18 +338,18 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     }
 
     if (showToast.value) {
-        val entries = cartData.value?.sellerCarts?.get(0)?.items
-        val cartItem = entries?.get(entries.size - 1)
-        ShowToastGlobal(
-            msg = cartItem?.productName + " " +
-                    stringResource(id = R.string.added_to_cart) + " " +
-                    stringResource(id = R.string.qty) +
-                    " : " +
-                    cartItem?.quantity?.formatted + " + " +
-                    stringResource(id = R.string.free) + " " +
-                    cartItem?.freeQuantity?.formatted
-        )
+        if (cartItem != null)
+            ShowToastGlobal(
+                msg = cartItem.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        cartItem.quantity.formatted + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        cartItem.freeQuantity.formatted
+            )
         EventCollector.sendEvent(Event.Action.Search.showToast("", null))
+        //scope.startSearchWithNoLoader()
     }
 }
 
@@ -659,13 +553,22 @@ fun ProductItemStore(
     addToCart: () -> Unit,
     scope: StoresScope.StorePreview,
     index: Int = 0,
-    state: LazyListState? = null
+    state: LazyListState? = null,
+    cartItem: CartItem? = null,
+    batchSelected: Boolean? = false
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
-    val batchSelected = scope.isBatchSelected.flow.collectAsState()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
+    if (cartItem != null) {
+        if (product.sellerInfo?.spid != null && product.sellerInfo?.spid == cartItem.id.spid)
+            product.sellerInfo?.cartInfo = CartInfo(
+                quantity = cartItem.quantity,
+                freeQuantity = cartItem.freeQuantity
+            )
+    }
+
 
     Column {
         Surface(
@@ -714,12 +617,6 @@ fun ProductItemStore(
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
-                                /* Icon(
-                                     painter = painterResource(id = R.drawable.ic_favorite),
-                                     contentDescription = null,
-                                     tint = ConstColors.gray,
-                                     modifier = Modifier.size(16.dp),
-                                 )*/
                             }
                             Space(4.dp)
                             Row(
@@ -745,12 +642,6 @@ fun ProductItemStore(
                                         fontWeight = FontWeight.W500,
                                         fontSize = 12.sp,
                                     )
-                                    /*Space(4.dp)
-                                    Text(
-                                        text = product.code,
-                                        color = ConstColors.gray,
-                                        fontSize = 12.sp,
-                                    )*/
                                     product.stockInfo?.let {
                                         Space(4.dp)
                                         Text(
@@ -792,26 +683,6 @@ fun ProductItemStore(
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.W500
                                     )
-                                    /*Space(4.dp)
-                                    product.marginPercent?.let {
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                append("Margin: ")
-                                                val startIndex = length
-                                                append(it)
-                                                addStyle(
-                                                    SpanStyle(
-                                                        color = ConstColors.lightBlue,
-                                                        fontWeight = FontWeight.W800
-                                                    ),
-                                                    startIndex,
-                                                    length,
-                                                )
-                                            },
-                                            color = ConstColors.gray,
-                                            fontSize = 12.sp,
-                                        )
-                                    }*/
                                 }
                             }
                         }
@@ -847,17 +718,6 @@ fun ProductItemStore(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom,
                     ) {
-                        /*Column {
-                            BoxWithConstraints {
-                                Divider(modifier = Modifier.width(maxWidth / 2))
-                            }
-                            Space(4.dp)
-                            Text(
-                                text = product.uomName,
-                                color = ConstColors.lightBlue,
-                                fontSize = 14.sp,
-                            )
-                        }*/
                         Box {
                             if (cartInfo != null) {
                                 product.quantity = cartInfo.quantity.value
@@ -897,19 +757,9 @@ fun ProductItemStore(
                                     )
                                 }
                             }
-
-                            /*MedicoButton(
-                                    text = stringResource(id = R.string.batch),
-                                    isEnabled = true,
-                                    height = 32.dp,
-                                    elevation = null,
-                                    onClick = onBuy,
-                                    textSize = 12.sp,
-                                    color = ConstColors.lightGreen,
-                                    contentColor = Color.White
-                                )*/
                         }
-                        if (!batchSelected.value) {
+
+                        if (batchSelected == false) {
                             ShowButton(product, addToCart, onBuy)
                         } else if (selectedProduct.value?.id != product.id) {
                             ShowButton(product, addToCart, onBuy)
@@ -919,8 +769,7 @@ fun ProductItemStore(
 
 
 
-                    if (batchSelected.value && selectedProduct.value?.id == product.id) {
-                        //keyboardController?.show()
+                    if (batchSelected == true && selectedProduct.value?.id == product.id) {
                         Surface(
                             color = Color.White,
                             shape = MaterialTheme.shapes.medium,
@@ -966,8 +815,9 @@ fun ProductItemStore(
                                             ),
                                             keyboardActions = KeyboardActions(onDone = {
                                                 scope.resetButton(false)
-                                                scope.selectBatch("", product = product)
+                                                scope.selectBatch(false, product = product)
                                                 scope.buy(product = product)
+                                                keyboardController?.hide()
                                             }),
                                             onFocus = {
                                                 coroutineScope.launch {
@@ -984,15 +834,6 @@ fun ProductItemStore(
                                             qty = cartInfo?.freeQuantity?.formatted ?: "0",
                                             onChange = {
                                                 product.freeQuantity = it.toDouble()
-                                                /* if (product.quantity > 0) {
-                                                     if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
-                                                             ?: 0)
-                                                     )
-                                                         scope.resetButton(false)
-                                                     else
-                                                         scope.resetButton(true)
-                                                 } else
-                                                     scope.resetButton(false)*/
                                             },
                                             isEnabled = product.sellerInfo?.isPromotionActive
                                                 ?: false,
@@ -1015,7 +856,7 @@ fun ProductItemStore(
                                             onClick = {
                                                 product.quantity = 1.0
                                                 scope.selectBatch(
-                                                    product.quantity.toString(),
+                                                    false,
                                                     product = product
                                                 )
                                             },

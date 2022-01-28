@@ -700,7 +700,7 @@ private fun BatchViewProductBottomSheet(
                             BatchItem(
                                 value
                             ) {
-                                scope.selectBatch(index.toString(), product = product)
+                                scope.selectBatch(false, product = product)
                                 onDismiss()
                             }
                         },

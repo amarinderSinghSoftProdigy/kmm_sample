@@ -65,7 +65,7 @@ data class SellerInfo(
     val spid: String,
     val stockInfo: StockInfo?,
     val priceInfo: PriceInfo?,
-    val cartInfo: CartInfo? = null,
+    var cartInfo: CartInfo? = null,
     val isPromotionActive: Boolean,
     val promotionData: PromotionData? = null,
 ) : WithTradeName {
