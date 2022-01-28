@@ -12,6 +12,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileResponseData
 
 internal class ProfileEventDelegate(
     navigator: Navigator,
@@ -38,33 +40,33 @@ internal class ProfileEventDelegate(
     }
 
     private suspend fun uploadDocument(event: Event.Action.Profile) {
-        navigator.withScope<CommonScope.UploadDocument> {
-            val isSuccess = withProgress {
+        navigator.withScope<SettingsScope> {
+            val result = withProgress {
                 when (event) {
                     is Event.Action.Profile.UploadUserProfile -> {
                         userRepo.uploadProfileImage(
-                            size=event.size,
+                            size = event.size,
                             fileString = event.asBase64,
                             mimeType = event.fileType.mimeType,
                             type = event.type
-                        ).onSuccess { body ->
-                            //Log.e("response", " "+body)
-                            println("response" + body)
-                        }.onError(navigator)
-                            .isSuccess
+                        )
                     }
                     else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
                 }
 
             }
-            if (isSuccess) {
-                when (it) {
-                    is Event.Action.Profile -> {
-                        userRepo.loadUserFromServer().onError(navigator)
+            result.onSuccess { body ->
+                when (body.documentType) {
+                    "USER_PROFILE_PIC" -> {
+                        it.profileData.value =
+                            it.profileData.value?.copy(userProfile = body.cdnUrl)
                     }
-                    else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
+                    "TRADE_PROFILE" -> {
+                        it.profileData.value =
+                            it.profileData.value?.copy(tradeProfile = body.cdnUrl)
+                    }
                 }
-            }
+            }.onError(navigator)
         }
     }
 

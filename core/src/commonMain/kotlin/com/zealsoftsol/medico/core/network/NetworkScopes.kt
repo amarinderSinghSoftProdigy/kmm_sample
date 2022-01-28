@@ -44,6 +44,7 @@ import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -291,7 +292,7 @@ interface NetworkScope {
         suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
         suspend fun saveProfileImageData(
             profileImageData: ProfileImageUpload, type: String
-        ): AnyResponse
+        ): BodyResponse<ProfileResponseData>
     }
 
 }

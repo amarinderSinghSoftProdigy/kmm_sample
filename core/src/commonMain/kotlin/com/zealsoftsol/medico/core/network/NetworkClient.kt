@@ -58,6 +58,7 @@ import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -849,12 +850,12 @@ class NetworkClient(
         profileImageData: ProfileImageUpload,
         type: String
     ) = simpleRequest {
-        client.post<AnyResponse>("${baseUrl.url}/document/add/profile") {
+        client.post<BodyResponse<ProfileResponseData>>("${baseUrl.url}/document/user/profile") {
             withMainToken()
             jsonBody(profileImageData)
-            url {
+            /*url {
                 parameters.append("documentType", type)
-            }
+            }*/
         }
     }
 

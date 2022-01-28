@@ -674,8 +674,8 @@ fun ProductItemStore(
                                 Text(
                                     text = product.name,
                                     color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600,
-                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W800,
+                                    fontSize = 13.sp,
                                 )
                                 /* Icon(
                                      painter = painterResource(id = R.drawable.ic_favorite),

@@ -17,3 +17,10 @@ data class ProfileImageUpload(
     val documentType: String,
     val documentData: String
 )
+
+@Serializable
+data class ProfileResponseData(
+    val id: String = "",
+    val documentType: String = "",
+    val cdnUrl: String = ""
+)

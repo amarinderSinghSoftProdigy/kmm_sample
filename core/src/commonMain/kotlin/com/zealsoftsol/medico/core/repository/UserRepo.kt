@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -328,7 +329,7 @@ class UserRepo(
         mimeType: String,
         type: String,
         size: String,
-    ): AnyResponse {
+    ): BodyResponse<ProfileResponseData> {
         return profileImageScope.saveProfileImageData(
             ProfileImageUpload(
                 size = size,
