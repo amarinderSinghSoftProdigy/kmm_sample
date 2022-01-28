@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -30,11 +31,14 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -149,45 +153,72 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             //only display line items when there are multiple order entries
             if (scope.orderEntries.isNotEmpty()) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (selectedIndex > 0) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_frwd_circle),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .rotate(180f)
-                                .clickable {
-                                    scope.updateSelectedIndex(selectedIndex - 1)
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clickable(
+                                indication = null,
+                                onClick = {
+                                    scope.goBack()
                                 }
-                        )
-                    } else {
-                        Box {}
-                    }
-
-                    Text(
-                        text = "${stringResource(id = R.string.line_item)} ${selectedIndex + 1}",
-                        color = ConstColors.green,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W600
+                            )
                     )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (selectedIndex > 0) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_frwd_circle),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .rotate(180f)
+                                    .clickable {
+                                        scope.updateSelectedIndex(selectedIndex - 1)
+                                    }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                            ) {}
+                        }
 
-                    if (selectedIndex < scope.orderEntries.size - 1) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_frwd_circle),
-                            contentDescription = null,
-                            modifier = Modifier.clickable {
-                                scope.updateSelectedIndex(selectedIndex + 1)
-                            }
+                        Text(
+                            text = "${stringResource(id = R.string.line_item)} ${selectedIndex + 1}",
+                            color = ConstColors.green,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier.padding(horizontal = 10.dp)
                         )
-                    } else {
-                        Box {}
+
+                        if (selectedIndex < scope.orderEntries.size - 1) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_frwd_circle),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .clickable {
+                                        scope.updateSelectedIndex(selectedIndex + 1)
+                                    }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                            ) {}
+                        }
                     }
+
                 }
             }
-            Space(16.dp)
+            Divider(color = ConstColors.lightBlue, modifier = Modifier.padding(vertical = 16.dp), thickness = 0.5.dp, startIndent = 0.dp)
             Column {
                 Text(
                     text = orderEntry.productName,

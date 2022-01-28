@@ -169,6 +169,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val notificationList = rememberLazyListState()
     val searchList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
+    val childScope = scope.childScope.flow.collectAsState()
 
     //assign user type if it is not null or if it has changed. This is being used to draw bottom navigation items
     if (navigation.value?.user?.flow?.value?.type != null && mUserType != navigation.value?.user?.flow?.value?.type) {
@@ -180,79 +181,80 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            val tabBarInfo = scope.tabBar.flow.collectAsState()
-            TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    when (val info = tabBarInfo.value) {
-                        is TabBarInfo.Simple -> SimpleTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.Search -> SearchTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
-                        is TabBarInfo.NewDesignLogo -> {
-                            val keyboard = LocalSoftwareKeyboardController.current
-                            Icon(
-                                imageVector = info.icon.toLocalIcon(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        onClick = {
-                                            when (info.icon) {
-                                                ScopeIcon.BACK -> scope.goBack()
-                                                ScopeIcon.HAMBURGER -> {
-                                                    keyboard?.hide()
-                                                    coroutineScope.launch { scaffoldState.drawerState.open() }
+            if (childScope.value !is OrderHsnEditScope) { //don't show top bar for OrderEditHsnScreen
+                val tabBarInfo = scope.tabBar.flow.collectAsState()
+                TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        when (val info = tabBarInfo.value) {
+                            is TabBarInfo.Simple -> SimpleTabBar(
+                                scope,
+                                info,
+                                scaffoldState,
+                                coroutineScope
+                            )
+                            is TabBarInfo.Search -> SearchTabBar(
+                                scope,
+                                info,
+                                scaffoldState,
+                                coroutineScope
+                            )
+                            is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
+                            is TabBarInfo.NewDesignLogo -> {
+                                val keyboard = LocalSoftwareKeyboardController.current
+                                Icon(
+                                    imageVector = info.icon.toLocalIcon(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .fillMaxHeight()
+                                        .padding(16.dp)
+                                        .clickable(
+                                            indication = null,
+                                            onClick = {
+                                                when (info.icon) {
+                                                    ScopeIcon.BACK -> scope.goBack()
+                                                    ScopeIcon.HAMBURGER -> {
+                                                        keyboard?.hide()
+                                                        coroutineScope.launch { scaffoldState.drawerState.open() }
+                                                    }
                                                 }
-                                            }
-                                        },
-                                    )
-                            )
-                            Space(4.dp)
-                            Image(
-                                painter = painterResource(id = R.drawable.medico_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp),
-                            )
+                                            },
+                                        )
+                                )
+                                Space(4.dp)
+                                Image(
+                                    painter = painterResource(id = R.drawable.medico_logo),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(vertical = 16.dp),
+                                )
+                            }
+                            is TabBarInfo.NewDesignTitle -> {
+                                Text(
+                                    text = info.title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = MaterialTheme.colors.background,
+                                    modifier = Modifier
+                                        .weight(0.7f)
+                                        .align(Alignment.CenterVertically)
+                                        .padding(start = 16.dp),
+                                )
+                            }
+                            //display header in instore section from side menu when a retailer is selected
+                            is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                            //display search bar with product logo
+                            is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
+                            is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
+                            is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                         }
-                        is TabBarInfo.NewDesignTitle -> {
-                            Text(
-                                text = info.title,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.W600,
-                                color = MaterialTheme.colors.background,
-                                modifier = Modifier
-                                    .weight(0.7f)
-                                    .align(Alignment.CenterVertically)
-                                    .padding(start = 16.dp),
-                            )
-                        }
-                        //display header in instore section from side menu when a retailer is selected
-                        is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
-                        //display search bar with product logo
-                        is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
-                        is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
-                        is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                     }
                 }
             }
         },
         content = {
-            val childScope = scope.childScope.flow.collectAsState()
             var padding = 56
             if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope) {// no bottom padding while editing order entries
                 padding = 0
