@@ -5,15 +5,10 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.data.ErrorCode
-import com.zealsoftsol.medico.data.ProfileImageData
-import com.zealsoftsol.medico.data.ProfileResponseData
 
 internal class ProfileEventDelegate(
     navigator: Navigator,

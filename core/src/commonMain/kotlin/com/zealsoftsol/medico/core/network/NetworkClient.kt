@@ -853,29 +853,8 @@ class NetworkClient(
         client.post<BodyResponse<ProfileResponseData>>("${baseUrl.url}/document/user/profile") {
             withMainToken()
             jsonBody(profileImageData)
-            /*url {
-                parameters.append("documentType", type)
-            }*/
         }
     }
-
-    /*simpleRequest {
-        client.submitFormWithBinaryData<AnyResponse>(
-            url = "${baseUrl.url}/document/add/profile?documentType=" + type,
-            formData = formData {
-                append("document", Files.readAllBytes(Paths.get(fileString.path)), Headers.build {
-                    append(HttpHeaders.ContentDisposition, "filename=${fileString.name}")
-                })
-            }
-        )
-        client.submitFormWithBinaryData<AnyResponse>("${baseUrl.url}/document/add/profile") {
-            withMainToken()
-            multipartBody(fileString)
-            url {
-                parameters.append("documentType", type)
-            }
-            //jsonBody(mapOf("multiPartFile" to fileString, "documentType" to type, "mimeType" to mimeType))
-        }*/
 
 
     override suspend fun getProfileImageData() =
