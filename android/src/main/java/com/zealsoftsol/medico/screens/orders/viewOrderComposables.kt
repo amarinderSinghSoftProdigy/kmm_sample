@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.orders
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -434,6 +435,17 @@ fun OrderEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
+        border = when {
+            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
+                1.dp,
+                ConstColors.gray.copy(alpha = 0.5f),
+            )
+            entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED -> BorderStroke(
+                1.dp,
+                ConstColors.red,
+            )
+            else -> null
+        },
     ) {
         Column {
             Row(
