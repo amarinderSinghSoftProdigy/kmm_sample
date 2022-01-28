@@ -34,6 +34,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,6 +73,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
@@ -194,6 +199,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
     val showToast = scope.showToast.flow.collectAsState()
     val cartData = scope.cartData.flow.collectAsState()
+    val switchEnabled = remember { mutableStateOf(false) }
+
     Surface(
         color = Color.White,
         modifier = Modifier
@@ -212,6 +219,14 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
+            val options =  Option.StringValue(
+                id = "offers",
+                value = true.toString(),
+                isSelected = true,
+                isVisible = true,
+            )
+            val offersFilter = Filter(name = "Offers", queryId = "offers", options = emptyList())
+
             BasicSearchBar(
                 input = search.value,
                 hint = R.string.search_products,
@@ -267,79 +282,100 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     Space(8.dp)
                 }
             } else {
-                //Space(4.dp)
-                /*BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Box(
-                modifier = Modifier.width(maxWidth / 2 - 8.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.red,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = R.string.offers),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W700,
-                        color = ConstColors.red,
-                        textAlign = TextAlign.Center,
-                    )
+                Space(16.dp)
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.width(maxWidth / 2 - 8.dp),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                tint = ConstColors.red,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.offers),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                                color = ConstColors.red,
+                                textAlign = TextAlign.Center,
+                            )
+                            Space(8.dp)
+                            Switch(
+                                checked = switchEnabled.value, onCheckedChange = {
+                                    switchEnabled.value = it
+                                    if (it) {
+                                        scope.selectFilter(offersFilter, options)
+                                    } else {
+                                        scope.clearFilter(offersFilter)
+                                    }
+                                }, colors = SwitchDefaults.colors(
+                                    checkedThumbColor = ConstColors.green
+                                )
+                            )
+                        }
+                    }
+                    /* Box(
+                         modifier = Modifier
+                             .width(maxWidth / 2 - 8.dp)
+                             .align(Alignment.CenterEnd)
+                             .clickable(onClick = {
+                                 scope.selectFilter(
+                                     filters.value[0],
+                                     Option.ViewMore
+                                 )
+                             }),
+                         contentAlignment = Alignment.BottomEnd,
+                     ) {
+                         Row {
+                             Icon(
+                                 painter = painterResource(id = R.drawable.ic_eye),
+                                 contentDescription = null,
+                                 tint = ConstColors.lightBlue,
+                                 modifier = Modifier.size(16.dp)
+                             )
+                             Space(8.dp)
+                             Text(
+                                 text = stringResource(id = R.string.view_all),
+                                 fontSize = 12.sp,
+                                 fontWeight = FontWeight.W700,
+                                 color = ConstColors.lightBlue,
+                                 textAlign = TextAlign.Center,
+                             )
+                         }
+                     }*/
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .width(maxWidth / 2 - 8.dp)
-                    .align(Alignment.CenterEnd)
-                    .clickable(onClick = { scope.selectFilter(filters.value[0], Option.ViewMore) }),
-                contentAlignment = Alignment.BottomEnd,
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = R.string.view_all),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W700,
-                        color = ConstColors.lightBlue,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-        }*/
 
-                //Space(8.dp)
                 if (autoComplete.value.isEmpty()) {
                     filtersManufactures.value.forEach { filter ->
                         if (filter.queryId == "manufacturers") {
                             //scope.selectFilter(filter, Option.ViewMore)
-                            HorizontalFilterSection(
-                                name = filter.name,
-                                options = filter.options,
-                                /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                     scope.searchFilter(filter, it)
-                                 },*/
-                                onOptionClick = { scope.selectFilter(filter, it) },
-                                onFilterClear = { scope.clearFilter(null) }
-                            )
+                            Box(modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)) {
+                                HorizontalFilterSection(
+                                    name = filter.name,
+                                    options = filter.options,
+                                    /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                         scope.searchFilter(filter, it)
+                                     },*/
+                                    onOptionClick = { scope.selectFilter(filter, it) },
+                                    onFilterClear = { scope.clearFilter(null) }
+                                )
+                            }
                         }
                     }
                 }
 
 
-
+                //list of products
                 if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
                     NoRecords(
                         icon = R.drawable.ic_missing_stores,
