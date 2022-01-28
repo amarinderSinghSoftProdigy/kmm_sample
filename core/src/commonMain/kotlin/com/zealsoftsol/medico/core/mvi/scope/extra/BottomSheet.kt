@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.extra
 
+import android.util.Base64
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -12,6 +13,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
+import java.io.File
 
 sealed class BottomSheet {
 
@@ -39,6 +41,36 @@ sealed class BottomSheet {
                 )
             } else {
                 EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
+    class UploadProfileData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+        val isSeasonBoy: Boolean,
+    ) : BottomSheet() {
+
+        fun uploadProfile(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Profile.UploadUserProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
                 false
             }
         }
@@ -134,7 +166,8 @@ sealed class BottomSheet {
     }
 
 
-    data class BatchViewProduct(val product: ProductSearch,val scope: BaseSearchScope) : BottomSheet() {
+    data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
+        BottomSheet() {
 
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(

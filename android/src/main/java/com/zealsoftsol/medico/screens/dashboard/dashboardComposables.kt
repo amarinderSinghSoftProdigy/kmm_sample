@@ -256,7 +256,7 @@ private fun BrandsItem(item: BrandsData, scope: DashboardScope) {
     ) {
         CoilImageBrands(
             src = item.imageUrl,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillBounds,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
             height = 90.dp,

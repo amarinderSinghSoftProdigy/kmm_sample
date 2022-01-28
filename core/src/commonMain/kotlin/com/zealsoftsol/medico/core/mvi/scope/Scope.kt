@@ -167,7 +167,8 @@ sealed class TabBarInfo {
                 isVerified = true,
                 panNumber = store.panNumber,
                 subscriptionData = null,
-                unitCode = store.sellerUnitCode
+                unitCode = store.sellerUnitCode,
+                tradeNameUrl = store.tradeNameUrl
             )
             EventCollector.sendEvent(Event.Action.Search.ShowDetails(item))
         }

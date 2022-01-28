@@ -13,12 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,17 +47,24 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
+import com.zealsoftsol.medico.utils.PermissionCheckUI
+import com.zealsoftsol.medico.utils.PermissionViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SettingsScreen(scope: SettingsScope) {
+fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
     val activity = LocalContext.current as MainActivity
     val user = scope.mUser
     val userType = user.type
-
+    val profileData = scope.profileData.flow.collectAsState()
+    val permissionViewModel = PermissionViewModel()
+    PermissionCheckUI(scaffoldState, permissionViewModel)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -59,34 +72,60 @@ fun SettingsScreen(scope: SettingsScope) {
             .verticalScroll(rememberScrollState())
     ) {
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_acc_place), contentDescription = null,
-            contentScale = ContentScale.FillBounds,
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
-        )
+                .height(150.dp),
+            onClick = {
+                permissionViewModel.setPerformLocationAction(true, "TRADE_PROFILE")
+            }) {
+            profileData.value?.tradeProfile?.let {
+                CoilImage(
+                    src = it,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    onError = { Placeholder(R.drawable.ic_acc_place) },
+                    onLoading = { Placeholder(R.drawable.ic_acc_place) },
+                    isCrossFadeEnabled = false
+                )
+            }
+        }
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_user_placeholder),
-            contentDescription = null,
+        Surface(
             modifier = Modifier
-                .padding(start = 16.dp, top = 100.dp)
+                .padding(start = 16.dp, top = 105.dp)
                 .height(90.dp)
-                .width(90.dp)
-        )
+                .width(90.dp),
+            shape = CircleShape,
+            onClick = {
+                permissionViewModel.setPerformLocationAction(true, "USER_PROFILE_PIC")
+            },
+        ) {
+            profileData.value?.userProfile?.let {
+                CoilImage(
+                    src = it,
+                    modifier = Modifier
+                        .height(90.dp)
+                        .width(90.dp),
+                    onError = { Placeholder(R.drawable.ic_user_placeholder) },
+                    onLoading = { Placeholder(R.drawable.ic_user_placeholder) },
+                    isCrossFadeEnabled = false
+                )
+            }
+        }
 
-            Text(
-                text = if (userType == UserType.STOCKIST) {
-                    //(user.details as User.Details.DrugLicense).tradeName
-                    user.fullName()
-                } else {
-                    user.fullName()
-                },
-                color = Color.Black,
-                modifier = Modifier.padding(start = 115.dp, top = 155.dp),
-                fontSize = 16.sp
-            )
+        Text(
+            text = if (userType == UserType.STOCKIST) {
+                //(user.details as User.Details.DrugLicense).tradeName
+                user.fullName()
+            } else {
+                user.fullName()
+            },
+            color = Color.Black,
+            modifier = Modifier.padding(start = 115.dp, top = 155.dp),
+            fontSize = 16.sp
+        )
 
         Column(
             modifier = Modifier
@@ -381,4 +420,10 @@ fun GstinDetailsComposable(details: User.Details.DrugLicense) {
         Space(12.dp)
         ReadOnlyField(details.license2, R.string.drug_license_2)
     }
+}
+
+@ExperimentalComposeApi
+@Composable
+fun CheckPermission() {
+
 }

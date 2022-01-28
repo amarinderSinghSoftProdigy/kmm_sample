@@ -1,8 +1,9 @@
 package com.zealsoftsol.medico.screens.management
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +34,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -55,6 +59,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +73,10 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartInfo
+import com.zealsoftsol.medico.data.CartItem
+import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
@@ -77,9 +86,9 @@ import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import com.zealsoftsol.medico.screens.common.ShowToastGlobal
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.ChipString
 import com.zealsoftsol.medico.screens.search.FilterSection
@@ -106,92 +115,14 @@ fun StoresScreen(scope: StoresScope) {
 @ExperimentalComposeUiApi
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
-    //Space(16.dp)
-    /*Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .background(Color.White, RoundedCornerShape(8.dp)),
-    ) {
-
-        FoldableItem(
-            expanded = false,
-            headerMinHeight = 40.dp,
-            header = { isExpanded ->
-                Space(8.dp)
-                Row(
-                    modifier = Modifier.weight(.8f),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Space(8.dp)
-                    Text(
-                        text = scope.store.tradeName,
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .weight(.1f)
-                        .padding(end = 4.dp),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Icon(
-                        imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                        tint = ConstColors.gray,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            },
-            childItems = listOf(""),
-            item = { value, _ ->
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = scope.store.fullAddress(),
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Space(8.dp)
-                }
-            }
-        )
-
-        *//*Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 16.dp)
-        ) {
-            Text(
-                text = scope.store.tradeName,
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W600,
-                fontSize = 14.sp
-            )
-            Space(4.dp)
-            Text(
-                text = scope.store.fullAddress(),
-                fontSize = 12.sp,
-                color = ConstColors.gray
-            )
-            //GeoLocation(scope.store.fullAddress(),textSize = 12.sp)
-            //Space(16.dp)
-            //DataWithLabel(R.string.gstin_num, scope.store.gstin)
-            //Space(16.dp)
-        }*//*
-    }*/
-
     val showToast = scope.showToast.flow.collectAsState()
     val cartData = scope.cartData.flow.collectAsState()
+    val switchEnabled = remember { mutableStateOf(false) }
+    val batchSelected = scope.isBatchSelected.flow.collectAsState()
+
+    val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
+    val cartItem = entries?.get(entries.size - 1)
+
     Surface(
         color = Color.White,
         modifier = Modifier
@@ -210,6 +141,14 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
             val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
             val autoComplete = scope.autoComplete.flow.collectAsState()
+            val options = Option.StringValue(
+                id = "offers",
+                value = true.toString(),
+                isSelected = true,
+                isVisible = true,
+            )
+            val offersFilter = Filter(name = "Offers", queryId = "offers", options = emptyList())
+
             BasicSearchBar(
                 input = search.value,
                 hint = R.string.search_products,
@@ -265,79 +204,70 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                     Space(8.dp)
                 }
             } else {
-                //Space(4.dp)
-                /*BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Box(
-                modifier = Modifier.width(maxWidth / 2 - 8.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.red,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = R.string.offers),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W700,
-                        color = ConstColors.red,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .width(maxWidth / 2 - 8.dp)
-                    .align(Alignment.CenterEnd)
-                    .clickable(onClick = { scope.selectFilter(filters.value[0], Option.ViewMore) }),
-                contentAlignment = Alignment.BottomEnd,
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = R.string.view_all),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W700,
-                        color = ConstColors.lightBlue,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-        }*/
-
-                //Space(8.dp)
-                if (autoComplete.value.isEmpty()) {
-                    filtersManufactures.value.forEach { filter ->
-                        if (filter.queryId == "manufacturers") {
-                            //scope.selectFilter(filter, Option.ViewMore)
-                            HorizontalFilterSection(
-                                name = filter.name,
-                                options = filter.options,
-                                /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                     scope.searchFilter(filter, it)
-                                 },*/
-                                onOptionClick = { scope.selectFilter(filter, it) },
-                                onFilterClear = { scope.clearFilter(null) }
+                Space(16.dp)
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.width(maxWidth / 2 - 8.dp),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                tint = ConstColors.red,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = R.string.offers),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W700,
+                                color = ConstColors.red,
+                                textAlign = TextAlign.Center,
+                            )
+                            Space(8.dp)
+                            Switch(
+                                checked = switchEnabled.value, onCheckedChange = {
+                                    switchEnabled.value = it
+                                    if (it) {
+                                        scope.selectFilter(offersFilter, options)
+                                    } else {
+                                        scope.clearFilter(offersFilter)
+                                    }
+                                }, colors = SwitchDefaults.colors(
+                                    checkedThumbColor = ConstColors.green
+                                )
                             )
                         }
                     }
                 }
 
+                if (autoComplete.value.isEmpty()) {
+                    filtersManufactures.value.forEach { filter ->
+                        if (filter.queryId == "manufacturers") {
+                            Box(modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)) {
+                                HorizontalFilterSection(
+                                    name = filter.name,
+                                    options = filter.options,
+                                    /*searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                         scope.searchFilter(filter, it)
+                                     },*/
+                                    onOptionClick = { scope.selectFilter(filter, it) },
+                                    onFilterClear = { scope.clearFilter(null) }
+                                )
+                            }
+                        }
+                    }
+                }
 
 
+                //list of products
                 if (products.value.isEmpty() && scope.products.updateCount > 0 && autoComplete.value.isEmpty()) {
                     NoRecords(
                         icon = R.drawable.ic_missing_stores,
@@ -362,14 +292,19 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                         item,
                                         onClick = { scope.selectProduct(item) },
                                         onBuy = {
-                                            scope.resetButton(false)
-                                            scope.selectBatch("", product = item)
+                                            //scope.resetButton(false)
+                                            scope.selectBatch(false, product = item)
                                             scope.buy(item)
                                         },
                                         addToCart = {
+                                            if (item.sellerInfo?.cartInfo != null) {
+                                                scope.resetButton(true)
+                                            }
                                             scope.addToCart(item)
                                         },
-                                        scope = scope, index = index, state = listState
+                                        scope = scope, index = index, state = listState,
+                                        cartItem = cartItem,
+                                        batchSelected.value
                                     )
                                     if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                         scope.loadMoreProducts()
@@ -403,18 +338,18 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
     }
 
     if (showToast.value) {
-        val entries = cartData.value?.sellerCarts?.get(0)?.items
-        val cartItem = entries?.get(entries.size - 1)
-        ShowToastGlobal(
-            msg = cartItem?.productName + " " +
-                    stringResource(id = R.string.added_to_cart) + " " +
-                    stringResource(id = R.string.qty) +
-                    " : " +
-                    cartItem?.quantity?.formatted + " + " +
-                    stringResource(id = R.string.free) + " " +
-                    cartItem?.freeQuantity?.formatted
-        )
+        if (cartItem != null)
+            ShowToastGlobal(
+                msg = cartItem.productName + " " +
+                        stringResource(id = R.string.added_to_cart) + " " +
+                        stringResource(id = R.string.qty) +
+                        " : " +
+                        cartItem.quantity.formatted + " + " +
+                        stringResource(id = R.string.free) + " " +
+                        cartItem.freeQuantity.formatted
+            )
         EventCollector.sendEvent(Event.Action.Search.showToast("", null))
+        //scope.startSearchWithNoLoader()
     }
 }
 
@@ -618,18 +553,27 @@ fun ProductItemStore(
     addToCart: () -> Unit,
     scope: StoresScope.StorePreview,
     index: Int = 0,
-    state: LazyListState? = null
+    state: LazyListState? = null,
+    cartItem: CartItem? = null,
+    batchSelected: Boolean? = false
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
-    val batchSelected = scope.isBatchSelected.flow.collectAsState()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
+    if (cartItem != null) {
+        if (product.sellerInfo?.spid != null && product.sellerInfo?.spid == cartItem.id.spid)
+            product.sellerInfo?.cartInfo = CartInfo(
+                quantity = cartItem.quantity,
+                freeQuantity = cartItem.freeQuantity
+            )
+    }
+
 
     Column {
         Surface(
             color = Color.White,
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.large,
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -668,15 +612,11 @@ fun ProductItemStore(
                                 Text(
                                     text = product.name,
                                     color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600,
-                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W800,
+                                    fontSize = 16.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
-                                /* Icon(
-                                     painter = painterResource(id = R.drawable.ic_favorite),
-                                     contentDescription = null,
-                                     tint = ConstColors.gray,
-                                     modifier = Modifier.size(16.dp),
-                                 )*/
                             }
                             Space(4.dp)
                             Row(
@@ -702,12 +642,6 @@ fun ProductItemStore(
                                         fontWeight = FontWeight.W500,
                                         fontSize = 12.sp,
                                     )
-                                    /*Space(4.dp)
-                                    Text(
-                                        text = product.code,
-                                        color = ConstColors.gray,
-                                        fontSize = 12.sp,
-                                    )*/
                                     product.stockInfo?.let {
                                         Space(4.dp)
                                         Text(
@@ -749,31 +683,12 @@ fun ProductItemStore(
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.W500
                                     )
-                                    /*Space(4.dp)
-                                    product.marginPercent?.let {
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                append("Margin: ")
-                                                val startIndex = length
-                                                append(it)
-                                                addStyle(
-                                                    SpanStyle(
-                                                        color = ConstColors.lightBlue,
-                                                        fontWeight = FontWeight.W800
-                                                    ),
-                                                    startIndex,
-                                                    length,
-                                                )
-                                            },
-                                            color = ConstColors.gray,
-                                            fontSize = 12.sp,
-                                        )
-                                    }*/
                                 }
                             }
                         }
                     }
 
+                    val cartInfo = product.sellerInfo?.cartInfo
                     val sliderList = ArrayList<String>()
                     product.manufacturer.let { sliderList.add(it) }
                     if (product.drugFormName.isNotEmpty())
@@ -803,101 +718,58 @@ fun ProductItemStore(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom,
                     ) {
-                        /*Column {
-                            BoxWithConstraints {
-                                Divider(modifier = Modifier.width(maxWidth / 2))
+                        Box {
+                            if (cartInfo != null) {
+                                product.quantity = cartInfo.quantity.value
+                                product.freeQuantity = cartInfo.freeQuantity.value
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.qty).uppercase(),
+                                        fontSize = 12.sp,
+                                        color = ConstColors.gray,
+                                    )
+                                    Space(6.dp)
+                                    Text(
+                                        text = cartInfo.quantity.formatted,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W700,
+                                        color = MaterialTheme.colors.background,
+                                    )
+                                    Space(6.dp)
+                                    Text(
+                                        text = "+${cartInfo.freeQuantity.formatted}",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.W700,
+                                        color = ConstColors.lightBlue,
+                                        modifier = Modifier
+                                            .background(
+                                                ConstColors.lightBlue.copy(alpha = 0.05f),
+                                                RoundedCornerShape(4.dp)
+                                            )
+                                            .border(
+                                                1.dp,
+                                                ConstColors.lightBlue,
+                                                RoundedCornerShape(4.dp)
+                                            )
+                                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                                    )
+                                }
                             }
-                            Space(4.dp)
-                            Text(
-                                text = product.uomName,
-                                color = ConstColors.lightBlue,
-                                fontSize = 14.sp,
-                            )
-                        }*/
-                        Box(modifier = Modifier.width(120.dp)) {
-                            /*MedicoButton(
-                                text = stringResource(id = R.string.batch),
-                                isEnabled = true,
-                                height = 32.dp,
-                                elevation = null,
-                                onClick = onBuy,
-                                textSize = 12.sp,
-                                color = ConstColors.lightGreen,
-                                contentColor = Color.White
-                            )*/
                         }
-                        if (!batchSelected.value) {
-                            Box(modifier = Modifier.width(120.dp)) {
-                                when (product.buyingOption) {
-                                    BuyingOption.BUY -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = product.stockInfo?.availableQty.let {
-                                            (it ?: 0) > 0
-                                        },
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = addToCart,
-                                        textSize = 12.sp
-                                    )
-                                    BuyingOption.QUOTE -> MedicoButton(
-                                        text = stringResource(id = R.string.get_quote),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        color = ConstColors.yellow.copy(alpha = .1f),
-                                        border = BorderStroke(2.dp, ConstColors.yellow),
-                                        onClick = onBuy,
-                                        textSize = 12.sp
-                                    )
-                                    null -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = false,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = {},
-                                        textSize = 12.sp
-                                    )
-                                }
-                            }
+
+                        if (batchSelected == false) {
+                            ShowButton(product, addToCart, onBuy)
                         } else if (selectedProduct.value?.id != product.id) {
-                            Box(modifier = Modifier.width(120.dp)) {
-                                when (product.buyingOption) {
-                                    BuyingOption.BUY -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = addToCart,
-                                        textSize = 12.sp
-                                    )
-                                    BuyingOption.QUOTE -> MedicoButton(
-                                        text = stringResource(id = R.string.get_quote),
-                                        isEnabled = true,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        color = ConstColors.yellow.copy(alpha = .1f),
-                                        border = BorderStroke(2.dp, ConstColors.yellow),
-                                        onClick = onBuy,
-                                        textSize = 12.sp
-                                    )
-                                    null -> MedicoButton(
-                                        text = stringResource(id = R.string.add_to_cart),
-                                        isEnabled = false,
-                                        height = 32.dp,
-                                        elevation = null,
-                                        onClick = {},
-                                        textSize = 12.sp
-                                    )
-                                }
-                            }
+                            ShowButton(product, addToCart, onBuy)
                         }
 
                     }
 
 
 
-                    if (batchSelected.value && selectedProduct.value?.id == product.id) {
-                        //keyboardController?.show()
+                    if (batchSelected == true && selectedProduct.value?.id == product.id) {
                         Surface(
                             color = Color.White,
                             shape = MaterialTheme.shapes.medium,
@@ -924,7 +796,7 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.qty),
-                                            qty = "0",
+                                            qty = cartInfo?.quantity?.formatted ?: "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
                                                 if (product.quantity > 0) {
@@ -943,8 +815,9 @@ fun ProductItemStore(
                                             ),
                                             keyboardActions = KeyboardActions(onDone = {
                                                 scope.resetButton(false)
-                                                scope.selectBatch("", product = product)
+                                                scope.selectBatch(false, product = product)
                                                 scope.buy(product = product)
+                                                keyboardController?.hide()
                                             }),
                                             onFocus = {
                                                 coroutineScope.launch {
@@ -958,8 +831,10 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.free),
-                                            qty = "0",
-                                            onChange = { },
+                                            qty = cartInfo?.freeQuantity?.formatted ?: "0",
+                                            onChange = {
+                                                product.freeQuantity = it.toDouble()
+                                            },
                                             isEnabled = product.sellerInfo?.isPromotionActive
                                                 ?: false,
                                         )
@@ -981,7 +856,7 @@ fun ProductItemStore(
                                             onClick = {
                                                 product.quantity = 1.0
                                                 scope.selectBatch(
-                                                    product.quantity.toString(),
+                                                    false,
                                                     product = product
                                                 )
                                             },
@@ -993,12 +868,20 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         when (product.buyingOption) {
                                             BuyingOption.BUY -> MedicoButton(
-                                                text = stringResource(id = R.string.add_to_cart),
+                                                text = if (cartInfo != null) {
+                                                    stringResource(id = R.string.update)
+                                                } else stringResource(id = R.string.add_to_cart),
                                                 isEnabled = enableButton.value,
                                                 height = 32.dp,
                                                 elevation = null,
                                                 onClick = onBuy,
-                                                textSize = 12.sp
+                                                textSize = 12.sp,
+                                                color = if (cartInfo != null) {
+                                                    ConstColors.lightBlue
+                                                } else ConstColors.yellow,
+                                                contentColor = if (cartInfo != null) {
+                                                    Color.White
+                                                } else MaterialTheme.colors.background
                                             )
                                             BuyingOption.QUOTE -> MedicoButton(
                                                 text = stringResource(id = R.string.get_quote),
@@ -1048,21 +931,73 @@ fun ProductItemStore(
                 ) {
                     Box(
                         modifier = Modifier
-                            .width(100.dp)
-                            .background(ConstColors.red),
-                        contentAlignment = Alignment.CenterEnd
+                            .width(110.dp),
+                        contentAlignment = Alignment.Center
                     ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_offer_back),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                        )
                         Text(
                             text = product.sellerInfo?.promotionData?.displayLabel ?: "",
                             color = Color.White,
-                            fontWeight = FontWeight.W300,
-                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
                         )
                     }
                 }
             }
         }
 
+    }
+}
+
+@Composable
+fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit) {
+    Box(modifier = Modifier.width(120.dp)) {
+        val cartInfo = product.sellerInfo?.cartInfo
+        when (product.buyingOption) {
+            BuyingOption.BUY -> MedicoButton(
+                text = if (cartInfo != null) {
+                    stringResource(id = R.string.update)
+                } else stringResource(id = R.string.add_to_cart),
+                isEnabled = product.stockInfo?.availableQty.let {
+                    (it ?: 0) > 0
+                },
+                height = 32.dp,
+                elevation = null,
+                onClick = addToCart,
+                textSize = 12.sp,
+                color = if (cartInfo != null) {
+                    ConstColors.lightBlue
+                } else ConstColors.yellow,
+                contentColor = if (cartInfo != null) {
+                    Color.White
+                } else MaterialTheme.colors.background
+
+            )
+            BuyingOption.QUOTE -> MedicoButton(
+                text = stringResource(id = R.string.get_quote),
+                isEnabled = true,
+                height = 32.dp,
+                elevation = null,
+                color = ConstColors.yellow.copy(alpha = .1f),
+                border = BorderStroke(2.dp, ConstColors.yellow),
+                onClick = onBuy,
+                textSize = 12.sp
+            )
+            null -> MedicoButton(
+                text = stringResource(id = R.string.add_to_cart),
+                isEnabled = false,
+                height = 32.dp,
+                elevation = null,
+                onClick = {},
+                textSize = 12.sp
+            )
+        }
     }
 }
 

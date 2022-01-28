@@ -56,6 +56,9 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -88,14 +91,19 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.forms.*
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
+import java.nio.file.Files
+import java.io.File
+import java.nio.file.Paths
 
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
@@ -117,7 +125,8 @@ class NetworkClient(
     NetworkScope.Orders,
     NetworkScope.Config,
     NetworkScope.InStore,
-    NetworkScope.WhatsappStore {
+    NetworkScope.WhatsappStore,
+    NetworkScope.ProfileImage {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -836,7 +845,25 @@ class NetworkClient(
             }
         }
 
-    // Utils
+
+    override suspend fun saveProfileImageData(
+        profileImageData: ProfileImageUpload,
+        type: String
+    ) = simpleRequest {
+        client.post<BodyResponse<ProfileResponseData>>("${baseUrl.url}/document/user/profile") {
+            withMainToken()
+            jsonBody(profileImageData)
+        }
+    }
+
+
+    override suspend fun getProfileImageData() =
+        simpleRequest {
+            client.get<BodyResponse<ProfileImageData>>("${baseUrl.url}/b2bapp/profiles") {
+                withMainToken()
+            }
+        }
+// Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->

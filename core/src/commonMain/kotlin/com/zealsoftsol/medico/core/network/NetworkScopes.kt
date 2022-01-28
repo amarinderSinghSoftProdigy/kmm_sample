@@ -42,6 +42,9 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -60,6 +63,8 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
+import java.io.File
+
 
 interface NetworkScope {
 
@@ -276,7 +281,18 @@ interface NetworkScope {
 
     interface WhatsappStore : NetworkScope {
         suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
-        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
+        suspend fun saveWhatsappPreferences(
+            language: String,
+            phoneNumber: String,
+            unitCode: String
+        ): AnyResponse
+    }
+
+    interface ProfileImage : NetworkScope {
+        suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
+        suspend fun saveProfileImageData(
+            profileImageData: ProfileImageUpload, type: String
+        ): BodyResponse<ProfileResponseData>
     }
 
 }

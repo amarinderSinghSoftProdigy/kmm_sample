@@ -19,6 +19,9 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -40,6 +43,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
+import java.io.File
+
 
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
@@ -49,6 +54,7 @@ class UserRepo(
     private val networkNotificationScope: NetworkScope.Notification,
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
+    private val profileImageScope: NetworkScope.ProfileImage,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -102,7 +108,7 @@ class UserRepo(
                     else -> User.Details.DrugLicense(
                         it.tradeName,
                         it.gstin!!,
-                        it.panNumber?:"",
+                        it.panNumber ?: "",
                         it.drugLicenseNo1!!,
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl
@@ -310,7 +316,33 @@ class UserRepo(
         language: String,
         phoneNumber: String,
     ): AnyResponse {
-        return whatsappPreferenceScope.saveWhatsappPreferences(language, phoneNumber, requireUser().unitCode)
+        return whatsappPreferenceScope.saveWhatsappPreferences(
+            language,
+            phoneNumber,
+            requireUser().unitCode
+        )
+    }
+
+
+    suspend fun uploadProfileImage(
+        fileString: String,
+        mimeType: String,
+        type: String,
+        size: String,
+    ): BodyResponse<ProfileResponseData> {
+        return profileImageScope.saveProfileImageData(
+            ProfileImageUpload(
+                size = size,
+                name = type,
+                mimeType = mimeType,
+                documentType = type,
+                documentData = fileString,
+            ), type
+        )
+    }
+
+    suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
+        return profileImageScope.getProfileImageData()
     }
 
     private fun clearUserData() {
