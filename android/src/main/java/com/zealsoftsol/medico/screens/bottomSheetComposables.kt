@@ -87,6 +87,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
@@ -1690,14 +1691,23 @@ private fun PreviewItemBottomSheet(
 
                 Space(dp = 16.dp)
                 Column {
-                    Image(
+                    CoilImage(
+                        src = entityInfo.tradeNameUrl.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
+                        onError = { Placeholder(R.drawable.ic_acc_place) },
+                        onLoading = { Placeholder(R.drawable.ic_acc_place) },
+                        isCrossFadeEnabled = false
+                    )
+                    /*Image(
                         painter = painterResource(id = R.drawable.ic_acc_place),
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                    )
+                    )*/
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (isForSeasonBoy) {
