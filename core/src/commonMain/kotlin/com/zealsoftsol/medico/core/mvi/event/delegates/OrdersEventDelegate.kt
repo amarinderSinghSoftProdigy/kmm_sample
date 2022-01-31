@@ -169,6 +169,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = emptyList(),
                             rejectedEntries = it.entries.value,
+                            declineReason = it.declineReason,
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.RejectAll(action)
@@ -182,6 +183,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.entries.value,
                             rejectedEntries = emptyList(),
+                            declineReason = it.declineReason
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)
@@ -195,6 +197,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.checkedEntries.value,
                             rejectedEntries = it.entries.value - it.checkedEntries.value,
+                            declineReason = it.declineReason
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)

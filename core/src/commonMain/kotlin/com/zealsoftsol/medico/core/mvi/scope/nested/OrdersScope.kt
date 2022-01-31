@@ -12,7 +12,6 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
@@ -152,8 +151,6 @@ class ViewOrderScope(
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
-    var showDeclineReasonsBottomSheet = DataSource(false)
-    private val selectedDeclineReason = DataSource("")
     val showAlert: DataSource<Boolean> = DataSource(false)
 
     /**
@@ -177,24 +174,9 @@ class ViewOrderScope(
         this.showAlert.value = enable
     }
 
-    /**
-     * manage decline bottom sheet  visibility
-     */
-    fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
-        this.showDeclineReasonsBottomSheet.value = openSheet
-    }
-
-    /**
-     * update the reason selected for decliening the order entry
-     */
-    fun updateDeclineReason(reason: String) {
-        this.selectedDeclineReason.value = reason
-        takeActionOnOrderEntries(Action.REJECT_ALL)
-    }
-
-    /**
+ /*   *//**
      * take action on order entries
-     */
+     *//*
     fun takeActionOnOrderEntries(action: Action){
 
         val orderData: ConfirmOrderRequest = if (action == Action.ACCEPT_ALL){
@@ -208,7 +190,7 @@ class ViewOrderScope(
         }
 
         EventCollector.sendEvent(Event.Action.Orders.ActionOnOrders(orderData))
-    }
+    }*/
 
     fun selectEntry(
         taxType: TaxType,
@@ -283,7 +265,8 @@ class ConfirmOrderScope(
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
-) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+    var declineReason: DataSource<List<DeclineReason>>,
+    ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)
@@ -291,6 +274,8 @@ class ConfirmOrderScope(
     val tabs = listOf(Tab.ACCEPTED, Tab.REJECTED)
     val activeTab = DataSource(Tab.ACCEPTED)
     override val canEdit: Boolean = true
+    var showDeclineReasonsBottomSheet = DataSource(false)
+    private val selectedDeclineReason = DataSource("")
 
     fun acceptAction(action: Action) {
         when (action) {
@@ -320,6 +305,21 @@ class ConfirmOrderScope(
             Tab.REJECTED -> rejectedEntries
         }
         actions.value = listOf(Action.CONFIRM)
+    }
+
+    /**
+     * manage decline bottom sheet  visibility
+     */
+    fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
+        this.showDeclineReasonsBottomSheet.value = openSheet
+    }
+
+    /**
+     * update the reason selected for decliening the order entry
+     */
+    fun updateDeclineReason(reason: String) {
+        this.selectedDeclineReason.value = reason
+//        takeActionOnOrderEntries(ViewOrderScope.Action.REJECT_ALL)
     }
 
     enum class Action(
