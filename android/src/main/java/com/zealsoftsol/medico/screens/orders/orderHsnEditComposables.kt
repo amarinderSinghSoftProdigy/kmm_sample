@@ -149,7 +149,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 .verticalScroll(rememberScrollState())
         ) {
             if (openDialog.value)
-                ShowAlert { scope.changeAlertScope(false) }
+                ShowAlert(stringResource(id = R.string.update_successfull)) {
+                    scope.changeAlertScope(
+                        false
+                    )
+                }
             //only display line items when there are multiple order entries
             if (scope.orderEntries.isNotEmpty()) {
                 Row(

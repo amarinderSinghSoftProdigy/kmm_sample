@@ -344,9 +344,10 @@
     <string name="your_brands">Your Brands</string>
     <string name="no_products">No products found!</string>
     <string name="please_add">Please add all required values (Hsn code, ptr and qty)</string>
+    <string name="warning_order_entry_validation">Please enter all required details for selected orders (i.e HSN code, Ptr and Qty)</string>
 
 
-    <!-- Temrs and Cond -->
+    <!-- Termrs and Cond -->
 
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>

@@ -796,13 +796,13 @@ fun EditFieldCustom(
  */
 
 @Composable
-fun ShowAlert(onClick: () -> Unit) {
+fun ShowAlert(message: String, onClick: () -> Unit) {
     MaterialTheme {
 
         AlertDialog(
             onDismissRequest = onClick,
             text = {
-                Text(stringResource(id = R.string.update_successfull))
+                Text(message)
             },
             confirmButton = {
                 Button(

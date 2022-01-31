@@ -377,7 +377,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
-            val childScope = scope.childScope.flow.collectAsState()
 
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
                 if (mUserType == UserType.STOCKIST) {

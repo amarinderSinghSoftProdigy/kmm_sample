@@ -68,7 +68,7 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
         Space(12.dp)
         LanguagePicker(scope)
         if (openDialog.value)
-            ShowAlert { scope.changeAlertScope(false) }
+            ShowAlert(stringResource(id = R.string.update_successfull)) { scope.changeAlertScope(false) }
         Space(20.dp)
         Text(
             text = stringResource(id = R.string.phone_number),

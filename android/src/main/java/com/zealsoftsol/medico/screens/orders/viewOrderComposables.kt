@@ -95,7 +95,11 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 if (openDialog.value)
-                    ShowAlert { scope.changeAlertScope(false) }
+                    ShowAlert(stringResource(id = R.string.warning_order_entry_validation)) {
+                        scope.changeAlertScope(
+                            false
+                        )
+                    }
                 Column {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -373,7 +377,33 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                                     isEnabled = true,
                                     color = Color(action.bgColorHex.toColorInt()),
                                     contentColor = Color(action.textColorHex.toColorInt()),
-                                    onClick = { scope.acceptAction(action) },
+                                    onClick = {
+                                        when (action) {
+                                            ViewOrderScope.Action.ACCEPT_ALL -> run { // only accept to allow forward is all
+                                                                                     // required values are filled
+                                                for (entry in entries.value) {
+                                                    if (checkOrderEntryValidation(entry)) {
+                                                        scope.changeAlertScope(true)
+                                                        return@run
+                                                    }
+                                                }
+                                                scope.acceptAction(action)
+                                            }
+                                            ViewOrderScope.Action.REJECT_ALL -> {
+                                                scope.acceptAction(action)
+                                            }
+                                            ViewOrderScope.Action.ACCEPT -> run { // only accept to allow forward is all required
+                                                                             // values are filled for checked items
+                                                for (entry in checkedEntries.value) {
+                                                    if (checkOrderEntryValidation(entry)) {
+                                                        scope.changeAlertScope(true)
+                                                        return@run
+                                                    }
+                                                }
+                                                scope.acceptAction(action)
+                                            }
+                                        }
+                                    },
                                 )
                                 if (index != actions.value.lastIndex) {
                                     Space(16.dp)
@@ -382,33 +412,6 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                         }
                     }
                     Space(10.dp)
-//                    Row(modifier = Modifier.fillMaxWidth()) {
-//                        MedicoButton(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .padding(10.dp)
-//                                .height(40.dp),
-//                            text = stringResource(id = R.string.decline_all),
-//                            onClick = {
-//                                scope.manageDeclineBottomSheetVisibility(true)
-//                            },
-//                            color = ConstColors.red,
-//                            contentColor = Color.White,
-//                            isEnabled = true,
-//                        )
-//
-//                        MedicoButton(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .padding(10.dp)
-//                                .height(40.dp),
-//                            text = stringResource(id = R.string.accept_all),
-//                            onClick = { scope.takeActionOnOrderEntries(ViewOrderScope.Action.ACCEPT_ALL) },
-//                            isEnabled = true,
-//                            txtColor = MaterialTheme.colors.background,
-//                        )
-//                    }
-//                    Space(10.dp)
                 }
             }
         }
@@ -584,7 +587,7 @@ fun OrderEntryItem(
                 }
 
             }
-            if (entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0) {
+            if (checkOrderEntryValidation(entry)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -700,4 +703,12 @@ fun DeclineReasonBottomSheet(scope: ViewOrderScope) {
             }
         }
     }
+}
+
+/**
+ * check if order entry contains any entry that is required for acceptance but is emtpty
+ */
+
+fun checkOrderEntryValidation(entry: OrderEntry): Boolean {
+    return (entry.hsnCode.isEmpty() || entry.price.value == 0.0 || entry.servedQty.value == 0.0)
 }
