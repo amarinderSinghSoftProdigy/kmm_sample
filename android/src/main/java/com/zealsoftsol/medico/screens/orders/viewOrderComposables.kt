@@ -10,32 +10,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,20 +44,16 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.cart.OrderTotal
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
-import com.zealsoftsol.medico.screens.management.GeoLocation
 
 
 @Composable
-fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
+fun ViewOrderScreen(scope: ViewOrderScope) {
 
-    if (callUpdateAPI) {
-        scope.updateData()
-    }
+    remember { scope.updateData() }
 
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
@@ -91,136 +82,6 @@ fun ViewOrderScreen(scope: ViewOrderScope, callUpdateAPI: Boolean) {
                         )
                     }
                 Column {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .background(Color.White)
-                            .padding(horizontal = 16.dp),
-                    ) {
-                        Space(10.dp)
-                        Surface(
-                            elevation = 5.dp, shape = MaterialTheme.shapes.medium,
-                        ) {
-                            FoldableItem(
-                                headerBackground = Color.White,
-                                expanded = false,
-                                header = {
-                                    Space(12.dp)
-                                    Row(
-                                        modifier = Modifier
-                                            .weight(.8f)
-                                            .height(35.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_retailer),
-                                            contentDescription = null,
-                                            tint = ConstColors.green,
-                                        )
-                                        Space(8.dp)
-                                        Text(
-                                            text = orderTaxValue.tradeName,
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W800,
-                                            fontSize = 16.sp,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .weight(.2f)
-                                            .padding(end = 12.dp),
-                                        horizontalArrangement = Arrangement.End,
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_arrow_right),
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .size(14.dp)
-                                                .rotate(90f),
-                                        )
-                                    }
-                                },
-                                childItems = listOf(orderTaxValue.info),
-                                item = { _, _ ->
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.SpaceBetween,
-                                    ) {
-                                        b2bData.value?.let { b2bDataValue ->
-                                            Text(
-                                                text = b2bDataValue.addressData.address,
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W500,
-                                                fontSize = 12.sp,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                            )
-                                            Space(8.dp)
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                            ) {
-                                                GeoLocation(
-                                                    location = b2bDataValue.addressData.fullAddress(),
-                                                    textSize = 12.sp,
-                                                    tint = MaterialTheme.colors.background
-                                                )
-                                                Space(8.dp)
-                                                ClickableText(
-                                                    text = AnnotatedString(b2bDataValue.phoneNumber),
-                                                    style = TextStyle(
-                                                        color = MaterialTheme.colors.background,
-                                                        fontSize = 12.sp,
-                                                        fontWeight = FontWeight.W400,
-                                                    ),
-                                                    onClick = { activity.openDialer(b2bDataValue.phoneNumber) },
-                                                )
-                                            }
-                                            Space(8.dp)
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                            ) {
-                                                Text(
-                                                    text = b2bDataValue.gstin
-                                                        ?: b2bDataValue.panNumber,
-                                                    color = MaterialTheme.colors.background,
-                                                    fontWeight = FontWeight.W400,
-                                                    fontSize = 12.sp,
-                                                )
-                                                Space(8.dp)
-                                                if (b2bDataValue.gstin != null) {
-                                                    Text(
-                                                        text = b2bDataValue.panNumber,
-                                                        color = MaterialTheme.colors.background,
-                                                        fontWeight = FontWeight.W400,
-                                                        fontSize = 12.sp,
-                                                    )
-                                                }
-                                            }
-                                            Space(8.dp)
-                                            Text(
-                                                text = "${stringResource(id = R.string.dl_one)}: ${b2bDataValue.drugLicenseNo1}",
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W400,
-                                                fontSize = 12.sp,
-                                            )
-                                            Space(8.dp)
-                                            Text(
-                                                text = "${stringResource(id = R.string.dl_two)}: ${b2bDataValue.drugLicenseNo2}",
-                                                color = MaterialTheme.colors.background,
-                                                fontWeight = FontWeight.W400,
-                                                fontSize = 12.sp,
-                                            )
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                        Space(8.dp)
-                    }
                     Space(8.dp)
                     Row(
                         modifier = Modifier

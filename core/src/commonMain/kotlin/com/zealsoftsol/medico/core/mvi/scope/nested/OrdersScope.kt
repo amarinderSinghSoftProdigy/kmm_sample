@@ -157,15 +157,13 @@ class ViewOrderScope(
      * get the details of selected order
      */
 
-    fun updateData()
-    {
+    fun updateData() =
         EventCollector.sendEvent(
             Event.Action.Orders.GetOrderDetails(
                 orderId,
                 typeInfo
             )
         )
-    }
 
     /**
      * update the scope of alert dialog
@@ -248,7 +246,7 @@ class ConfirmOrderScope(
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
     var declineReason: DataSource<List<DeclineReason>>,
-    ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)
@@ -266,7 +264,8 @@ class ConfirmOrderScope(
                 rejectedEntries = rejectedEntries + checkedEntries.value
                 acceptedEntries = acceptedEntries - checkedEntries.value
                 refreshEntries()
-                selectedDeclineReason.value = "" // empty the decline reason as new entries are added to decline list
+                selectedDeclineReason.value =
+                    "" // empty the decline reason as new entries are added to decline list
             }
             Action.ACCEPT -> {
                 acceptedEntries = acceptedEntries + checkedEntries.value
@@ -276,7 +275,7 @@ class ConfirmOrderScope(
             Action.CONFIRM -> {
                 if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
                     manageDeclineBottomSheetVisibility(true)
-                }else{
+                } else {
                     // all parameters met here , implement new API
 //                    EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
                 }
