@@ -40,6 +40,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
@@ -50,114 +51,143 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
     val activeTab = scope.activeTab.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
-    val openDeclineReasonBottomSheet = scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
+    val openDeclineReasonBottomSheet =
+        scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
+    val openDialog = scope.showAlert.flow.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(
-                rememberScrollState()
-            ),
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Column {
-            Space(20.dp)
-            Text(
-                text = stringResource(id = R.string.action_confirmation),
-                color = MaterialTheme.colors.background,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.W700,
-            )
-            Space(15.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(41.dp)
-                    .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
-            ) {
-                scope.tabs.forEach {
-                    var boxMod = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                    boxMod = if (scope.tabs.size == 1) {
-                        boxMod
-                    } else {
-                        boxMod
-                            .padding(5.dp)
-                            .clickable { scope.selectTab(it) }
-                    }
-                    val isActive = activeTab.value == it
-                    boxMod = if (isActive) {
-                        boxMod.background(
-                            Color(activeTab.value.bgColorHex.toColorInt()),
-                            MaterialTheme.shapes.medium
-                        )
-                    } else {
-                        boxMod
-                    }
-                    Row(
-                        modifier = boxMod,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = stringResourceByName(it.stringId),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                            color = if (isActive) Color.White else MaterialTheme.colors.background,
-                        )
-                        if (isActive && entries.value.isNotEmpty()) {
-                            Space(6.dp)
-                            Text(
-                                text = entries.value.size.toString(),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W700,
-                                color = ConstColors.yellow,
+    Box{
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .background(Color.White)
+                .verticalScroll(
+                    rememberScrollState()
+                ),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column {
+                Space(20.dp)
+                Text(
+                    text = stringResource(id = R.string.action_confirmation),
+                    color = MaterialTheme.colors.background,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W700,
+                )
+                Space(15.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(41.dp)
+                        .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
+                ) {
+                    scope.tabs.forEach {
+                        var boxMod = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                        boxMod = if (scope.tabs.size == 1) {
+                            boxMod
+                        } else {
+                            boxMod
+                                .padding(5.dp)
+                                .clickable { scope.selectTab(it) }
+                        }
+                        val isActive = activeTab.value == it
+                        boxMod = if (isActive) {
+                            boxMod.background(
+                                Color(activeTab.value.bgColorHex.toColorInt()),
+                                MaterialTheme.shapes.medium
                             )
+                        } else {
+                            boxMod
+                        }
+                        Row(
+                            modifier = boxMod,
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResourceByName(it.stringId),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                color = if (isActive) Color.White else MaterialTheme.colors.background,
+                            )
+                            if (isActive && entries.value.isNotEmpty()) {
+                                Space(6.dp)
+                                Text(
+                                    text = entries.value.size.toString(),
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = ConstColors.yellow,
+                                )
+                            }
                         }
                     }
                 }
+                Column {
+                    Space(8.dp)
+                    entries.value.forEach {
+                        OrderEntryItem(
+                            canEdit = true,
+                            entry = it,
+                            isChecked = it in checkedEntries.value,
+                            onChecked = { _ -> scope.toggleCheck(it) },
+                            onClick = { },
+                        )
+                    }
+                    Space(8.dp)
+                }
             }
             Column {
-                Space(8.dp)
-                entries.value.forEach {
-                    OrderEntryItem(
-                        canEdit = true,
-                        entry = it,
-                        isChecked = it in checkedEntries.value,
-                        onChecked = { _ -> scope.toggleCheck(it) },
-                        onClick = { },
-                    )
+                order.value?.info?.total?.formattedPrice?.let {
+                    OrderTotal(it)
                 }
-                Space(8.dp)
-            }
-        }
-        Column {
-            order.value?.info?.total?.formattedPrice?.let {
-                OrderTotal(it)
-            }
-            Space(16.dp)
-            val actions = scope.actions.flow.collectAsState()
-            Row(modifier = Modifier.fillMaxWidth()) {
-                actions.value.forEachIndexed { index, action ->
-                    MedicoButton(
-                        modifier = Modifier.weight(action.weight),
-                        text = stringResourceByName(action.stringId),
-                        isEnabled = true,
-                        color = Color(action.bgColorHex.toColorInt()),
-                        contentColor = Color(action.textColorHex.toColorInt()),
-                        onClick = { scope.acceptAction(action) },
-                    )
-                    if (index != actions.value.lastIndex) {
-                        Space(16.dp)
+                Space(16.dp)
+                val actions = scope.actions.flow.collectAsState()
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    actions.value.forEachIndexed { index, action ->
+                        MedicoButton(
+                            modifier = Modifier.weight(action.weight),
+                            text = stringResourceByName(action.stringId),
+                            isEnabled = true,
+                            color = Color(action.bgColorHex.toColorInt()),
+                            contentColor = Color(action.textColorHex.toColorInt()),
+                            onClick = {
+                                when (action) {
+                                    ConfirmOrderScope.Action.ACCEPT -> run {
+                                        for (entry in checkedEntries.value) {
+                                            if (checkOrderEntryValidation(entry)) {
+                                                scope.changeAlertScope(true)
+                                                return@run
+                                            }
+                                        }
+                                        scope.acceptAction(action)
+                                    }
+                                    ConfirmOrderScope.Action.REJECT -> {
+                                        scope.acceptAction(action)
+                                    }
+                                    ConfirmOrderScope.Action.CONFIRM -> {
+                                        scope.acceptAction(action)
+                                    }
+                                }
+                            },
+                        )
+                        if (index != actions.value.lastIndex) {
+                            Space(16.dp)
+                        }
                     }
                 }
+                Space(10.dp)
             }
-            Space(10.dp)
         }
         if (openDeclineReasonBottomSheet)
             DeclineReasonBottomSheet(scope)
+        if (openDialog.value)
+            ShowAlert(stringResource(id = R.string.warning_order_entry_validation)) {
+                scope.changeAlertScope(
+                    false
+                )
+            }
     }
 }
 

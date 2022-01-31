@@ -174,24 +174,6 @@ class ViewOrderScope(
         this.showAlert.value = enable
     }
 
- /*   *//**
-     * take action on order entries
-     *//*
-    fun takeActionOnOrderEntries(action: Action){
-
-        val orderData: ConfirmOrderRequest = if (action == Action.ACCEPT_ALL){
-            val listOfAcceptedEntries: MutableList<String> = emptyList<String>().toMutableList()
-            entries.value.forEach {
-                listOfAcceptedEntries.add(it.id)
-            }
-            ConfirmOrderRequest(orderId = orderId, acceptedEntries = listOfAcceptedEntries)
-        }else{
-            ConfirmOrderRequest(orderId = orderId, acceptedEntries = emptyList(), reasonCode = selectedDeclineReason.value)
-        }
-
-        EventCollector.sendEvent(Event.Action.Orders.ActionOnOrders(orderData))
-    }*/
-
     fun selectEntry(
         taxType: TaxType,
         retailerName: String,
@@ -276,6 +258,7 @@ class ConfirmOrderScope(
     override val canEdit: Boolean = true
     var showDeclineReasonsBottomSheet = DataSource(false)
     private val selectedDeclineReason = DataSource("")
+    val showAlert: DataSource<Boolean> = DataSource(false)
 
     fun acceptAction(action: Action) {
         when (action) {
@@ -283,13 +266,21 @@ class ConfirmOrderScope(
                 rejectedEntries = rejectedEntries + checkedEntries.value
                 acceptedEntries = acceptedEntries - checkedEntries.value
                 refreshEntries()
+                selectedDeclineReason.value = "" // empty the decline reason as new entries are added to decline list
             }
             Action.ACCEPT -> {
                 acceptedEntries = acceptedEntries + checkedEntries.value
                 rejectedEntries = rejectedEntries - checkedEntries.value
                 refreshEntries()
             }
-            Action.CONFIRM -> EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
+            Action.CONFIRM -> {
+                if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
+                    manageDeclineBottomSheetVisibility(true)
+                }else{
+                    // all parameters met here , implement new API
+//                    EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
+                }
+            }
         }
     }
 
@@ -308,6 +299,13 @@ class ConfirmOrderScope(
     }
 
     /**
+     * update the scope of alert dialog
+     */
+    fun changeAlertScope(enable: Boolean) {
+        this.showAlert.value = enable
+    }
+
+    /**
      * manage decline bottom sheet  visibility
      */
     fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
@@ -319,7 +317,6 @@ class ConfirmOrderScope(
      */
     fun updateDeclineReason(reason: String) {
         this.selectedDeclineReason.value = reason
-//        takeActionOnOrderEntries(ViewOrderScope.Action.REJECT_ALL)
     }
 
     enum class Action(
