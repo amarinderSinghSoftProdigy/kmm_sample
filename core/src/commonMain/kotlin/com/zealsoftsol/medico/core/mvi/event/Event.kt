@@ -28,7 +28,6 @@ import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
-import java.io.File
 
 sealed class Event {
     abstract val typeClazz: KClass<*>

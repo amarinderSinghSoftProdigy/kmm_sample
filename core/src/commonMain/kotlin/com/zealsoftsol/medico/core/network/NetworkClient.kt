@@ -91,19 +91,13 @@ import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.*
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
-import java.nio.file.Files
-import java.io.File
-import java.nio.file.Paths
 
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,

@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.core.mvi.scope.extra
 
-import android.util.Base64
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -13,7 +12,6 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
-import java.io.File
 
 sealed class BottomSheet {
 
