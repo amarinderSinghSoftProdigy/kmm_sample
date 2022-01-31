@@ -79,31 +79,17 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.forms.*
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.features.logging.*
+import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
-import java.nio.file.Files
-import java.io.File
-import java.nio.file.Paths
 
 class NetworkClient(
     engine: HttpClientEngineFactory<*>,
@@ -126,7 +112,8 @@ class NetworkClient(
     NetworkScope.Config,
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
-    NetworkScope.ProfileImage {
+    NetworkScope.ProfileImage,
+    NetworkScope.Offers {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -863,6 +850,14 @@ class NetworkClient(
                 withMainToken()
             }
         }
+
+    override suspend fun getOffersData(): BodyResponse<AnyResponse> = simpleRequest {
+        client.get("${baseUrl.url}/b2bapp/promotions?page=0&pageSize=12") {
+            withMainToken()
+        }
+    }
+
+
 // Utils
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {

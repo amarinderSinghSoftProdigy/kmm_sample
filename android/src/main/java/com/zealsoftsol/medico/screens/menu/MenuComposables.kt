@@ -93,6 +93,13 @@ fun MenuScreen(scope: MenuScope) {
                 RetailerAndHospitalMenu(scope)
             }
             Separator(thickness = 1f)
+
+            AccountContentItem(
+                route = Event.Transition.Offers,
+                drawableResourceId = R.drawable.ic_menu_invoice,
+                stringResourceId = R.string.deal_offer,
+                scope = scope
+            )
         }
     }
 }

@@ -43,7 +43,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
-import java.io.File
 
 
 class UserRepo(
@@ -55,6 +54,7 @@ class UserRepo(
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val profileImageScope: NetworkScope.ProfileImage,
+    private val networkOffersScope: NetworkScope.Offers,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -343,6 +343,10 @@ class UserRepo(
 
     suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
         return profileImageScope.getProfileImageData()
+    }
+
+    suspend fun getOffersData(): BodyResponse<AnyResponse> {
+        return networkOffersScope.getOffersData()
     }
 
     private fun clearUserData() {

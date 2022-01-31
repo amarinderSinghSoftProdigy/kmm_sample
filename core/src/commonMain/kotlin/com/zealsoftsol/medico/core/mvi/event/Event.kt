@@ -28,7 +28,6 @@ import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
-import java.io.File
 
 sealed class Event {
     abstract val typeClazz: KClass<*>
@@ -85,10 +84,17 @@ sealed class Event {
 
         sealed class Profile : Action() {
             override val typeClazz: KClass<*> = Profile::class
-            data class UploadUserProfile(val size: String,val asBase64: String, val fileType: FileType,val type:String) : Profile()
+
+            data class UploadUserProfile(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : Profile()
+
             object UploadFileTooBig : Profile()
             object GetProfileData : Profile()
-            data class ShowUploadBottomSheet(val type:String) : Profile()
+            data class ShowUploadBottomSheet(val type: String) : Profile()
         }
 
         sealed class Search : Action() {
@@ -322,6 +328,12 @@ sealed class Event {
             object GetPreference : WhatsAppPreference()
         }
 
+        sealed class Offers : Action() {
+            override val typeClazz: KClass<*> = Offers::class
+
+            object GetOffers : Offers()
+        }
+
         sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
@@ -359,6 +371,7 @@ sealed class Event {
         object Orders : Transition()
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
+        object Offers : Transition()
         object PoInvoices : Transition()
         object InStore : Transition()
         object InStoreUsers : Transition()

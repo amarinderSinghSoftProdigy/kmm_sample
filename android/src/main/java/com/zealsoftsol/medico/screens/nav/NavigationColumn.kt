@@ -160,6 +160,7 @@ fun NavigationOption.iconAndText(): Pair<Painter, String> = when (this) {
     NavigationOption.Retailers -> painterResource(id = R.drawable.ic_retailer)
     NavigationOption.Hospitals -> painterResource(id = R.drawable.ic_hospital)
 //    NavigationOption.SeasonBoys -> painterResource(id = R.drawable.ic_season_boy)
+    NavigationOption.Offers -> painterResource(id = R.drawable.ic_invoice)
     NavigationOption.MyInvoices -> painterResource(id = R.drawable.ic_invoice)
     NavigationOption.PoInvoices -> painterResource(id = R.drawable.ic_invoice)
     NavigationOption.Help -> rememberVectorPainter(Icons.Filled.Help)

@@ -63,7 +63,6 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
-import java.io.File
 
 
 interface NetworkScope {
@@ -293,6 +292,10 @@ interface NetworkScope {
         suspend fun saveProfileImageData(
             profileImageData: ProfileImageUpload, type: String
         ): BodyResponse<ProfileResponseData>
+    }
+
+    interface Offers : NetworkScope {
+        suspend fun getOffersData(): BodyResponse<AnyResponse>
     }
 
 }
