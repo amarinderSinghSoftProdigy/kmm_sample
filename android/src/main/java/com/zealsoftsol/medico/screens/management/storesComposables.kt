@@ -78,6 +78,7 @@ import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -167,6 +168,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         scope.startSearch()
                     }
                 },
+                isSearchCross = true
             )
             scope.storage.save("focus", false)
             if (showFilter.value) {
@@ -796,7 +798,7 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.qty),
-                                            qty = cartInfo?.quantity?.formatted ?: "0",
+                                            qty = cartInfo?.quantity?.value?.toString() ?: "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
                                                 if (product.quantity > 0) {
@@ -831,12 +833,14 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.free),
-                                            qty = cartInfo?.freeQuantity?.formatted ?: "0",
-                                            onChange = {
-                                                product.freeQuantity = it.toDouble()
-                                            },
-                                            isEnabled = product.sellerInfo?.isPromotionActive
-                                                ?: false,
+                                            qty = if (product.sellerInfo?.isPromotionActive == true) {
+                                                checkOffer(
+                                                    product.sellerInfo?.promotionData,
+                                                    product.quantity
+                                                ).toString()
+                                            } else "0",//product.freeQuantity.toString(),
+                                            onChange = { product.freeQuantity = it.toDouble() },
+                                            isEnabled = false,
                                         )
                                     }
                                 }
@@ -1001,5 +1005,20 @@ fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit)
     }
 }
 
-
+fun checkOffer(data: PromotionData?, qty: Double): Double {
+    return if (data != null) {
+        var check = qty / data.buy.value
+        val sub = check.toString()
+        val split = sub.replace(",", ".").split(".")
+        val beforeDot = split[0]
+        val afterDot = split.getOrNull(1)
+        if (afterDot?.length ?: 0 > 2) {
+            check = (beforeDot +"."+ afterDot?.substring(0, 2)).toDouble()
+        }
+        //Log.e("qty and % ", " " + qty + " " + check)
+        check * data.free.value
+    } else {
+        0.0
+    }
+}
 
