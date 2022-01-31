@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.management
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,6 +79,7 @@ import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -167,6 +169,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         scope.startSearch()
                     }
                 },
+                isSearchCross = true
             )
             scope.storage.save("focus", false)
             if (showFilter.value) {
@@ -796,9 +799,16 @@ fun ProductItemStore(
                                     Box(modifier = Modifier.width(120.dp)) {
                                         EditField(
                                             label = stringResource(id = R.string.qty),
-                                            qty = cartInfo?.quantity?.formatted ?: "0",
+                                            qty = cartInfo?.quantity?.value?.toString() ?: "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
+                                                product.freeQuantity =
+                                                    if (product.sellerInfo?.isPromotionActive == true) {
+                                                        checkOffer(
+                                                            product.sellerInfo?.promotionData,
+                                                            product.quantity
+                                                        )
+                                                    } else 0.0
                                                 if (product.quantity > 0) {
                                                     if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
                                                             ?: 0)
@@ -829,15 +839,41 @@ fun ProductItemStore(
                                         )
                                     }
                                     Box(modifier = Modifier.width(120.dp)) {
-                                        EditField(
-                                            label = stringResource(id = R.string.free),
-                                            qty = cartInfo?.freeQuantity?.formatted ?: "0",
-                                            onChange = {
-                                                product.freeQuantity = it.toDouble()
-                                            },
-                                            isEnabled = product.sellerInfo?.isPromotionActive
-                                                ?: false,
-                                        )
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(bottom = 4.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.free).uppercase(),
+                                                    color = ConstColors.gray,
+                                                    fontSize = 12.sp,
+                                                )
+                                                Text(
+                                                    text = if (product.sellerInfo?.isPromotionActive == true)
+                                                        product.freeQuantity.toString() else "0",
+                                                    color = MaterialTheme.colors.background,
+                                                    fontWeight = FontWeight.W700,
+                                                    fontSize = 20.sp,
+                                                )
+                                            }
+
+                                            Divider(
+                                                color = MaterialTheme.colors.background,
+                                                thickness = 1.5.dp
+                                            )
+                                        }
+
+                                        /*EditField(
+                                                label = stringResource(id = R.string.free),
+                                                qty = if (product.sellerInfo?.isPromotionActive == true)
+                                                    product.freeQuantity.toString() else "0",
+                                                onChange = { },
+                                                isEnabled = false,
+                                            )*/
                                     }
                                 }
                                 Space(dp = 8.dp)
@@ -1001,5 +1037,20 @@ fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit)
     }
 }
 
-
+fun checkOffer(data: PromotionData?, qty: Double): Double {
+    return if (data != null) {
+        var check = qty / data.buy.value
+        val sub = check.toString()
+        val split = sub.replace(",", ".").split(".")
+        val beforeDot = split[0]
+        val afterDot = split.getOrNull(1)
+        if (afterDot?.length ?: 0 > 2) {
+            check = (beforeDot + "." + afterDot?.substring(0, 2)).toDouble()
+        }
+        Log.e("qty and % ", " " + qty + " " + (check * data.free.value).toString())
+        check * data.free.value
+    } else {
+        0.0
+    }
+}
 
