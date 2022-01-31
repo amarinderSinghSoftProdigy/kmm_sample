@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.management
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -1039,16 +1038,23 @@ fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit)
 
 fun checkOffer(data: PromotionData?, qty: Double): Double {
     return if (data != null) {
-        var check = qty / data.buy.value
-        val sub = check.toString()
-        val split = sub.replace(",", ".").split(".")
+        val split = qty.toString().split(".")
         val beforeDot = split[0]
         val afterDot = split.getOrNull(1)
-        if (afterDot?.length ?: 0 > 2) {
-            check = (beforeDot + "." + afterDot?.substring(0, 2)).toDouble()
+        val modAfter = if (afterDot != null && afterDot.toDouble() > 5) ".5" else ".0"
+        val check = beforeDot.toDouble() / data.buy.value
+        val split1 = check.toString().split(".")
+        val beforeDot1 = split1[0]
+        val afterDot1 = split1[1]
+        return if (check >= 1.0 && afterDot1.toDouble() >= 5 && modAfter == ".5") {
+            ("$beforeDot1$modAfter").toDouble()
+        } else if (check >= 1.0) {
+            beforeDot1.toDouble()
+        } else if (check >= 0.5 && modAfter == ".5") {
+            0.5
+        } else {
+            0.0
         }
-        Log.e("qty and % ", " " + qty + " " + (check * data.free.value).toString())
-        check * data.free.value
     } else {
         0.0
     }
