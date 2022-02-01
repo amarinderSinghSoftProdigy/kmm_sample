@@ -856,7 +856,7 @@ class NetworkClient(
         unitCode: String,
         search: String,
         pagination: Pagination
-    ): BodyResponse<PaginatedData<OfferData>> = simpleRequest {
+    ): BodyResponse<OfferData> = simpleRequest {
         client.get("${baseUrl.url}/promotions") {
             withMainToken()
             withB2bCodeToken(unitCode)

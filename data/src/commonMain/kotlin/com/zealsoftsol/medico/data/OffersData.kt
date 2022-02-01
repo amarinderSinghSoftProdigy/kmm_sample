@@ -16,7 +16,7 @@ data class OfferData(
     val promotions: List<Promotions>,
 
     @SerialName("totalResults")
-    val totalResults: String,
+    val totalResults: Int,
 )
 
 @Serializable
@@ -59,22 +59,22 @@ data class PromotionStatusData(
 )
 
 @Serializable
-class Promotions {
-    val endDate: FormattedData<Double>? = null
-    val free: FormattedData<Double>? = null
-    val startDate: FormattedData<Double>? = null
-    val buy: FormattedData<Double>? = null
-    val productDiscount: FormattedData<Double>? = null
-    val manufacturerCode: String? = null
-    val manufacturerName: String? = null
-    val offer: String? = null
-    val productCode: String? = null
-    val productName: String? = null
-    val promoCode: String? = null
-    val promoStatus: String? = null
-    val status: String? = null
-    val active: Boolean? = null
-    val promotionCategory: PromotionCategory? = null
-    val promotionTypeData: PromotionType? = null
-    val customerPageData: CustomerPageData? = null
-}
+class Promotions(
+    val endDate: FormattedData<Double>,
+    val free: FormattedData<Double>,
+    val startDate: FormattedData<Double>,
+    val buy: FormattedData<Double>,
+    val productDiscount: FormattedData<Double>,
+    val manufacturerCode: String,
+    val manufacturerName: String,
+    val offer: String,
+    val productCode: String,
+    val productName: String,
+    val promoCode: String,
+    val promoStatus: String,
+    val status: String,
+    val active: Boolean,
+    val promotionCategory: PromotionCategory,
+    val promotionTypeData: PromotionType,
+    val customerPageData: CustomerPageData
+)

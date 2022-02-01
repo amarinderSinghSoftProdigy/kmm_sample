@@ -143,7 +143,6 @@ class EventCollector(
         Event.Action.Offers::class to OffersEventDelegate(
             navigator,
             userRepo,
-            LoadHelper(navigator, loadHelperScope),
             offersNetworkScope
         )
     )

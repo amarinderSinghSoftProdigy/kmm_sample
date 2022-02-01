@@ -93,7 +93,8 @@ sealed class BottomSheet {
     }
 
     class UpdateOfferStatus(
-        val info: PromotionType?
+        val info: PromotionType?,
+        val name:String
     ) : BottomSheet() {
         fun update() =
             EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info))

@@ -45,6 +45,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.Manufacturer
+import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
@@ -53,7 +54,10 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @Composable
 fun OffersScreen(scope: OffersScope) {
-    val items = scope.items.flow.collectAsState()
+    val offers = scope.items.flow.collectAsState()
+    val manufacturer = scope.manufacturer.flow.collectAsState()
+    val statuses = scope.statuses.flow.collectAsState()
+    //val offers = scope.items.flow.collectAsState()
     Column {
 
         Row(modifier = Modifier.padding(12.dp)) {
@@ -65,62 +69,18 @@ fun OffersScreen(scope: OffersScope) {
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(all = 8.dp)
-                        .height(72.dp),
+                        .padding(all = 8.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
+                    LazyColumn {
+                        itemsIndexed(
+                            items = statuses.value,
+                            itemContent = { _, item ->
+                                StatusItem(item)
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 4.dp)
-                            .background(
-                                ConstColors.lightGreen,
-                                RoundedCornerShape(5.dp)
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.running),
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W800,
-                            modifier = Modifier.padding(all = 4.dp),
-                        )
-                        Text(
-                            text = "5",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W800,
-                            modifier = Modifier.padding(all = 4.dp),
+                            },
                         )
                     }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(all = 4.dp)
-                            .background(
-                                ConstColors.red,
-                                RoundedCornerShape(5.dp)
-                            ),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.ended),
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W800,
-                            modifier = Modifier.padding(all = 4.dp),
-                        )
-                        Text(
-                            text = "5",
-                            color = Color.White,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W800,
-                            modifier = Modifier.padding(all = 4.dp),
-                        )
-                    }
-
                 }
             }
 
@@ -167,34 +127,27 @@ fun OffersScreen(scope: OffersScope) {
         list.add(Manufacturer("", 1, ""))
         list.add(Manufacturer("", 1, ""))
         LazyRow(modifier = Modifier.padding(start = 16.dp)) {
-            list.let {
-                itemsIndexed(
-                    items = it,
-                    itemContent = { _, item ->
-                        ManufacturerItem(item, scope)
-                    },
-                )
-            }
+            itemsIndexed(
+                items = manufacturer.value,
+                itemContent = { _, item ->
+                    ManufacturerItem(item, scope)
+                },
+            )
         }
         Space(dp = 8.dp)
 
         Divider(thickness = 0.5.dp)
         Space(dp = 8.dp)
-
-        val list1 = ArrayList<Promotions>()
-        list1.add(Promotions())
-        list1.add(Promotions())
-        list1.add(Promotions())
-        list1.add(Promotions())
         LazyColumn {
-            list1.let {
-                itemsIndexed(
-                    items = it,
-                    itemContent = { _, item ->
-                        OfferItem(item, scope)
-                    },
-                )
-            }
+            itemsIndexed(
+                items = offers.value,
+                itemContent = { index, item ->
+                    OfferItem(item, scope)
+                    if (index == offers.value.lastIndex && scope.pagination.canLoadMore()) {
+                        scope.loadMoreProducts()
+                    }
+                },
+            )
         }
     }
 }
@@ -240,13 +193,13 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
             Row {
                 Column {
                     Text(
-                        text = item.productName ?: "pName",
+                        text = item.productName,
                         fontSize = 14.sp,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        text = item.manufacturerName ?: "mName",
+                        text = item.manufacturerName,
                         fontSize = 12.sp,
                         color = ConstColors.gray
                     )
@@ -258,18 +211,18 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        text = stringResource(id = R.string.running),
+                        text = if (item.active) stringResource(id = R.string.running) else "",
                         fontSize = 12.sp,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.Bold
                     )
                     Space(dp = 4.dp)
                     Switch(
-                        checked = true, onCheckedChange = {
+                        checked = item.active, onCheckedChange = {
                             switchEnabled.value = it
                             if (!it) {
                                 item.promotionTypeData.let {
-                                    scope.showBottomSheet(it)
+                                    scope.showBottomSheet(it, item.productName)
                                 }
                             }
                         }, colors = SwitchDefaults.colors(
@@ -293,7 +246,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     backgroundColor = ConstColors.red,
                 ) {
                     Text(
-                        text = item.offer ?: "offer",
+                        text = item.offer,
                         fontSize = 12.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -306,7 +259,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     )
                 }
                 Text(
-                    text = item.offer ?: "valid till",
+                    text = item.promotionTypeData.name,
                     fontSize = 12.sp,
                     color = MaterialTheme.colors.background
                 )
@@ -368,5 +321,38 @@ private fun SectionButton(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun StatusItem(item: PromotionStatusData) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 4.dp)
+            .background(
+                when (item.status) {
+                    "Ended" -> ConstColors.red
+                    "Running" -> ConstColors.lightGreen
+                    else -> ConstColors.ltgray
+                },
+                RoundedCornerShape(5.dp)
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = item.status,
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W800,
+            modifier = Modifier.padding(all = 4.dp),
+        )
+        Text(
+            text = item.total.toString(),
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W800,
+            modifier = Modifier.padding(all = 4.dp),
+        )
     }
 }

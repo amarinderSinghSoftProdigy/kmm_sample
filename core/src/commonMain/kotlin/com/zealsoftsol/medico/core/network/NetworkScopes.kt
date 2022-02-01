@@ -300,7 +300,7 @@ interface NetworkScope {
             unitCode: String,
             search: String,
             pagination: Pagination
-        ): BodyResponse<PaginatedData<OfferData>>
+        ): BodyResponse<OfferData>
 
         suspend fun updateOffer(
             unitCode: String,

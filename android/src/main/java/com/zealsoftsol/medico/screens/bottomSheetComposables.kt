@@ -139,6 +139,7 @@ fun Scope.Host.showBottomSheet(
             )
             is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
                 info = bs.info,
+                name = bs.name,
                 onSubscribe = { bs.update() },
                 onDismiss = { dismissBottomSheet() },
             )
@@ -1787,7 +1788,8 @@ private fun PreviewItemBottomSheet(
 @Composable
 private fun UpdateOfferItemBottomSheet(
     info: PromotionType?,
-    onSubscribe: (() -> Unit)?,
+    name: String,
+    onSubscribe: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
@@ -1826,28 +1828,37 @@ private fun UpdateOfferItemBottomSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
+                        .padding(all = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = stringResource(id = R.string.are_you_sure_offer), fontSize = 12.sp)
                     Text(
-                        text = info?.name + "?",
+                        text = "$name?",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
+                Space(dp = 16.dp)
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                     Surface(
                         modifier = Modifier.weight(0.3f),
                         color = ConstColors.yellow,
                         shape = MaterialTheme.shapes.large,
-                        onClick = onDismiss,
+                        onClick = onSubscribe,
                         elevation = 8.dp
                     ) {
-                        Text(text = "Ok")
+                        Box(
+                            modifier = Modifier.padding(all = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "Ok")
+                        }
                     }
 
+                    Space(dp = 16.dp)
                     Surface(
                         modifier = Modifier.weight(0.3f),
                         color = ConstColors.gray,
@@ -1855,7 +1866,12 @@ private fun UpdateOfferItemBottomSheet(
                         onClick = onDismiss,
                         elevation = 8.dp
                     ) {
-                        Text(text = "Cancel")
+                        Box(
+                            modifier = Modifier.padding(all = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "Cancel")
+                        }
 
                     }
                 }

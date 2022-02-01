@@ -331,8 +331,14 @@ sealed class Event {
 
         sealed class Offers : Action() {
             override val typeClazz: KClass<*> = Offers::class
-            data class ShowBottomSheet(val promotionType: PromotionType?) : Offers()
-            object GetOffers : Offers()
+
+            data class ShowBottomSheet(val promotionType: PromotionType?,val name:String) : Offers()
+            object LoadMoreProducts : Offers()
+            data class GetOffers(
+                val search: String? = null,
+                val query: HashMap<String, String> = hashMapOf(),
+            ) : Offers()
+
             data class UpdateOffer(val promotionType: PromotionType?) : Offers()
         }
 
