@@ -1842,7 +1842,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     }
                 }
                 Space(4.dp)
-                Divider(thickness = 0.3.dp)
+                /*Divider(thickness = 0.3.dp)
                 Space(4.dp)
                 Row {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -1862,7 +1862,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             )
                         }
                     }
-                }
+                }*/
             }
 
             if (onSubscribe != null) {
@@ -1950,7 +1950,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             Box(modifier = Modifier.width(maxWidth / 2)) {
                                 entityInfo.gstin?.let {
                                     SingleTextLabel(data = it)
-                                    //DataWithLabel(label = R.string.gstin_num, data = it)
                                 }
                             }
                             Box(
@@ -1962,7 +1961,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
 
                                 entityInfo.panNumber?.let {
                                     SingleTextLabel(data = it)
-                                    //DataWithLabel(label = R.string.pan_number, data = it)
                                 }
                             }
                         }
@@ -2053,7 +2051,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colors.background,
                                         )
-                                        //DataWithLabel(label = R.string.pan_number, data = it)
                                     }
                                 }
                             }
@@ -2067,7 +2064,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colors.background,
                                         )
-                                        //DataWithLabel(label = R.string.gstin_num, data = it)
                                     }
                                 }
                                 Box(
@@ -2082,7 +2078,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colors.background,
                                         )
-                                        //DataWithLabel(label = R.string.pan_number, data = it)
                                     }
                                 }
                             }
