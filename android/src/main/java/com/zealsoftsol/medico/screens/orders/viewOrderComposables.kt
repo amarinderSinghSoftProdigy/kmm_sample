@@ -116,6 +116,28 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.status))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.status.toString())
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+
+                            Space(5.dp)
+
                             Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
                                     scope.showEditDiscountOption(false)
@@ -149,27 +171,6 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                         .height(10.dp)
                                 )
                             }
-
-                            Space(5.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.status))
-                                    append(": ")
-                                    val startIndex = length
-                                    append(orderTaxValue.info.status.toString())
-                                    addStyle(
-                                        SpanStyle(
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W600
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = Color.Black,
-                                fontWeight = FontWeight.W600,
-                                fontSize = 16.sp,
-                            )
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
@@ -628,7 +629,7 @@ fun OrderEntryItem(
                             modifier = Modifier.padding(start = 5.dp, end = 5.dp),
                             text = stringResource(id = R.string.please_add),
                             color = Color.Black,
-                            fontSize = 15.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.W500,
                         )
                     }

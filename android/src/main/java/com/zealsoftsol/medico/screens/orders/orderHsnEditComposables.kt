@@ -561,7 +561,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.ptr)}:",
+                                        text = "${stringResource(id = R.string.ptr)}: ${stringResource(id = R.string.inr_symbol)}",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -592,7 +592,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.mrp)}:",
+                                        text = "${stringResource(id = R.string.mrp)}: ${stringResource(id = R.string.inr_symbol)}",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
