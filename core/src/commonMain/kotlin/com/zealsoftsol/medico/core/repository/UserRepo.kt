@@ -54,7 +54,7 @@ class UserRepo(
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val profileImageScope: NetworkScope.ProfileImage,
-    private val networkOffersScope: NetworkScope.Offers,
+    private val networkOffersScope: NetworkScope.OffersStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -343,10 +343,6 @@ class UserRepo(
 
     suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
         return profileImageScope.getProfileImageData()
-    }
-
-    suspend fun getOffersData(): BodyResponse<AnyResponse> {
-        return networkOffersScope.getOffersData()
     }
 
     private fun clearUserData() {

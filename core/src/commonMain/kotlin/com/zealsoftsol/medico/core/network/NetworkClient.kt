@@ -43,6 +43,7 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.OfferData
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -113,7 +114,7 @@ class NetworkClient(
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
     NetworkScope.ProfileImage,
-    NetworkScope.Offers {
+    NetworkScope.OffersStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -851,9 +852,21 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getOffersData(): BodyResponse<AnyResponse> = simpleRequest {
-        client.get("${baseUrl.url}/b2bapp/promotions?page=0&pageSize=12") {
+    override suspend fun getOffersData(
+        unitCode: String,
+        search: String,
+        pagination: Pagination
+    ): BodyResponse<PaginatedData<OfferData>> = simpleRequest {
+        client.get("${baseUrl.url}/promotions") {
             withMainToken()
+            url {
+                parameters.apply {
+                    //append("search", "")
+                    //append("manufacturers", "")
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
         }
     }
 

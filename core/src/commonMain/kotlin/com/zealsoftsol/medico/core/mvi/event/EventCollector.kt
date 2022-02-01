@@ -60,6 +60,7 @@ class EventCollector(
     ordersNetworkScope: NetworkScope.Orders,
     inStoreNetworkScope: NetworkScope.InStore,
     whatsappNetworkScope: NetworkScope.WhatsappStore,
+    offersNetworkScope: NetworkScope.OffersStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -139,7 +140,12 @@ class EventCollector(
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
         Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo),
         Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo),
-        Event.Action.Offers::class to OffersEventDelegate(navigator, userRepo)
+        Event.Action.Offers::class to OffersEventDelegate(
+            navigator,
+            userRepo,
+            LoadHelper(navigator, loadHelperScope),
+            offersNetworkScope
+        )
     )
 
     init {

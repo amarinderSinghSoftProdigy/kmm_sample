@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.OfferData
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -294,8 +295,12 @@ interface NetworkScope {
         ): BodyResponse<ProfileResponseData>
     }
 
-    interface Offers : NetworkScope {
-        suspend fun getOffersData(): BodyResponse<AnyResponse>
+    interface OffersStore : NetworkScope {
+        suspend fun getOffersData(
+            unitCode: String,
+            search: String,
+            pagination: Pagination
+        ): BodyResponse<PaginatedData<OfferData>>
     }
 
 }
