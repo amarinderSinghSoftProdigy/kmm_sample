@@ -2,16 +2,17 @@ package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.OfferData
+import com.zealsoftsol.medico.data.PromotionType
 
 class OffersScope(
-    val string: String
+    val title: String
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack, Loadable<OfferData> {
 
     override val items: DataSource<List<OfferData>> = DataSource(emptyList())
@@ -20,11 +21,11 @@ class OffersScope(
     override val pagination: Pagination = Pagination()
 
     init {
-        //EventCollector.sendEvent(getCurrentOffers())
+        EventCollector.sendEvent(getCurrentOffers())
     }
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(""))
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.OnlyBackHeader(title)
     }
 
     /**
@@ -32,5 +33,9 @@ class OffersScope(
      */
     private fun getCurrentOffers() =
         Event.Action.Offers.GetOffers
+
+    //Open the dialog for update status
+    fun showBottomSheet(promotion: PromotionType?) =
+        EventCollector.sendEvent( Event.Action.Offers.ShowBottomSheet(promotion))
 
 }

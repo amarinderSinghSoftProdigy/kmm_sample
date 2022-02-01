@@ -989,7 +989,6 @@ private fun OnlyBackHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val keyboard = LocalSoftwareKeyboardController.current
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
@@ -1004,6 +1003,15 @@ private fun OnlyBackHeader(
                     },
                 )
         )
+        if (info.title.isNotEmpty())
+            Text(
+                text = stringResourceByName(info.title),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
     }
 }
 

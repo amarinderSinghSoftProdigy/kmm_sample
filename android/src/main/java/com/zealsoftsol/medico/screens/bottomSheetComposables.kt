@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +74,7 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -137,6 +137,12 @@ fun Scope.Host.showBottomSheet(
                 } else null,
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
+                info = bs.info,
+                onSubscribe = { bs.update() },
+                onDismiss = { dismissBottomSheet() },
+            )
+
             is BottomSheet.ModifyOrderEntry -> {
                 ModifyOrderEntryBottomSheet(
                     bs,
@@ -1771,6 +1777,89 @@ private fun PreviewItemBottomSheet(
                         NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun UpdateOfferItemBottomSheet(
+    info: PromotionType?,
+    onSubscribe: (() -> Unit)?,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = stringResource(id = R.string.are_you_sure_offer), fontSize = 12.sp)
+                    Text(
+                        text = info?.name + "?",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Surface(
+                        modifier = Modifier.weight(0.3f),
+                        color = ConstColors.yellow,
+                        shape = MaterialTheme.shapes.large,
+                        onClick = onDismiss,
+                        elevation = 8.dp
+                    ) {
+                        Text(text = "Ok")
+                    }
+
+                    Surface(
+                        modifier = Modifier.weight(0.3f),
+                        color = ConstColors.gray,
+                        shape = MaterialTheme.shapes.large,
+                        onClick = onDismiss,
+                        elevation = 8.dp
+                    ) {
+                        Text(text = "Cancel")
+
+                    }
+                }
+
             }
         }
     }

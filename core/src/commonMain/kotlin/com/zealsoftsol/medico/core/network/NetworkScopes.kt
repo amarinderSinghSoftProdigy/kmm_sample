@@ -301,6 +301,11 @@ interface NetworkScope {
             search: String,
             pagination: Pagination
         ): BodyResponse<PaginatedData<OfferData>>
+
+        suspend fun updateOffer(
+            unitCode: String,
+            promoCode: String
+        ): AnyResponse
     }
 
 }

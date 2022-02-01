@@ -132,7 +132,7 @@ sealed class TabBarInfo {
     }
 
     data class OnlyBackHeader(
-        val title: String
+        val title: String //pass the string resource id
     ) : TabBarInfo() {
         override val icon: ScopeIcon = ScopeIcon.BACK
     }

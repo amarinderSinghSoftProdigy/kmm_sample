@@ -265,12 +265,12 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     )
                     Space(dp = 4.dp)
                     Switch(
-                        checked = false, onCheckedChange = {
+                        checked = true, onCheckedChange = {
                             switchEnabled.value = it
-                            if (it) {
-                                // scope.selectFilter(offersFilter, options)
-                            } else {
-                                // scope.clearFilter(offersFilter)
+                            if (!it) {
+                                item.promotionTypeData.let {
+                                    scope.showBottomSheet(it)
+                                }
                             }
                         }, colors = SwitchDefaults.colors(
                             checkedThumbColor = ConstColors.green
