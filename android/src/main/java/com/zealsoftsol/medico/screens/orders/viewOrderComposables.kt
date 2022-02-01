@@ -4,12 +4,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -26,12 +28,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +45,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
@@ -59,6 +64,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     val declineReasons = scope.declineReason.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
+    val openPaymentView = scope.showPaymentTypeOption.flow.collectAsState()
+    val openEditDiscountView = scope.showEditDiscountOption.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -104,25 +111,39 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.type))
-                                    append(": ")
-                                    val startIndex = length
-                                    append(orderTaxValue.info.paymentMethod.serverValue)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = ConstColors.green,
-                                            fontWeight = FontWeight.W600
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = Color.Black,
-                                fontWeight = FontWeight.W600,
-                                fontSize = 16.sp,
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable{
+                                scope.showPaymentOptions(!openPaymentView.value)
+                            }) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.type))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.paymentMethod.serverValue)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.green,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(start = 5.dp)
+                                        .rotate(90f)
+                                        .height(10.dp)
+                                )
+                            }
+
                             Space(5.dp)
                             Text(
                                 text = buildAnnotatedString {
@@ -181,8 +202,13 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         }
                     }
                     Space(8.dp)
-                    Divider(Modifier.padding(horizontal = 16.dp))
+                    if (openPaymentView.value) {
+                        ShowPaymentDropDown(scope = scope)
+                    }
+                    if (openEditDiscountView.value) {
 
+                    }
+                    Divider(Modifier.padding(horizontal = 16.dp))
                     Column(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     ) {
@@ -228,7 +254,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     onClick = {
                                         when (action) {
                                             ViewOrderScope.Action.ACCEPT_ALL -> run { // only accept to allow forward is all
-                                                                                     // required values are filled
+                                                // required values are filled
                                                 for (entry in entries.value) {
                                                     if (checkOrderEntryValidation(entry)) {
                                                         scope.changeAlertScope(true)
@@ -241,7 +267,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                                 scope.acceptAction(action)
                                             }
                                             ViewOrderScope.Action.ACCEPT -> run { // only accept to allow forward is all required
-                                                                             // values are filled for checked items
+                                                // values are filled for checked items
                                                 for (entry in checkedEntries.value) {
                                                     if (checkOrderEntryValidation(entry)) {
                                                         scope.changeAlertScope(true)
@@ -262,6 +288,51 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     Space(10.dp)
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ShowPaymentDropDown(
+    scope: ViewOrderScope
+) {
+    Surface(
+        elevation = 5.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+    ) {
+        Column {
+            Text(
+                text = stringResource(id = R.string.cash),
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(10.dp).fillMaxWidth().clickable{
+                    scope.updatePaymentMethod(PaymentMethod.CASH)
+                    scope.showPaymentOptions(false)
+                }
+            )
+            Divider()
+            Text(
+                text = stringResource(id = R.string.credit),
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(10.dp).fillMaxWidth().clickable{
+                    scope.updatePaymentMethod(PaymentMethod.CREDIT)
+                    scope.showPaymentOptions(false)
+                }
+            )
         }
     }
 }

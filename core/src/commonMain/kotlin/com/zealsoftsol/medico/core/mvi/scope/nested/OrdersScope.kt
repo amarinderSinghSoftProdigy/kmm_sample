@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
@@ -152,6 +153,9 @@ class ViewOrderScope(
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
     val showAlert: DataSource<Boolean> = DataSource(false)
+    val showPaymentTypeOption : DataSource<Boolean> = DataSource(false)
+    val showEditDiscountOption : DataSource<Boolean> = DataSource(false)
+    val paymentType: DataSource<String> = DataSource("")
 
     /**
      * get the details of selected order
@@ -168,8 +172,29 @@ class ViewOrderScope(
     /**
      * update the scope of alert dialog
      */
+    fun showPaymentOptions(enable: Boolean) {
+        this.showPaymentTypeOption.value = enable
+    }
+
+    /**
+     * update the scope of alert dialog
+     */
+    fun showEditDiscountOption(enable: Boolean) {
+        this.showEditDiscountOption.value = enable
+    }
+
+    /**
+     * update the scope of alert dialog
+     */
     fun changeAlertScope(enable: Boolean) {
         this.showAlert.value = enable
+    }
+
+    /**
+     * update the payment type selected by user
+     */
+    fun updatePaymentMethod(paymentMethod: PaymentMethod){
+        this.paymentType.value = paymentMethod.toString()
     }
 
     fun selectEntry(
