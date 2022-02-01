@@ -633,7 +633,7 @@ class NetworkClient(
 
     override suspend fun confirmOrder(request: ConfirmOrderRequest) =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/orders/po/entries/accept") {
+            client.post<AnyResponse>("${baseUrl.url}/orders/tax/po/entries/accept") {
                 withMainToken()
                 jsonBody(request)
             }
@@ -880,7 +880,7 @@ class NetworkClient(
 
     override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
         simpleRequest {
-            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/accept") {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/confirm") {
                 withMainToken()
                 jsonBody(orderData)
             }

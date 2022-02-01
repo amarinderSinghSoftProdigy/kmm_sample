@@ -61,10 +61,9 @@ internal class OrdersEventDelegate(
             event.batch,
             event.expiry
         )
-        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
+        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
-        is Event.Action.Orders.ActionOnOrders -> takeActionOnOrderEntries(event.orderData)
-        is Event.Action.Orders.ShowDetailsOfRetailer ->  showDetails(event.item)
+        is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item)
     }
 
     private fun showDetails(item: EntityInfo) {
@@ -75,26 +74,6 @@ internal class OrdersEventDelegate(
                 isSeasonBoy = false,
                 canSubscribe = false,
             )
-        }
-    }
-
-    /**
-     * accept or reject multiple order entries at once
-     * @param orderData - API request data
-     * if selected items list is empty then all entries will be rejected by API else all will be accepted
-     */
-    private suspend fun takeActionOnOrderEntries(
-        orderData: ConfirmOrderRequest
-    ) {
-        orderData.sellerUnitCode = userRepo.requireUser().unitCode
-        navigator.withScope<ViewOrderScope> {
-            withProgress {
-                networkOrdersScope.takeActionOnOrderEntries(orderData)
-            }.onSuccess { body ->
-                it.order = DataSource(body.order)
-                it.entries = DataSource(body.entries)
-                it.changeAlertScope(true)
-            }.onError(navigator)
         }
     }
 
@@ -293,19 +272,20 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private suspend fun confirmOrder(fromNotification: Boolean) {
+    private suspend fun confirmOrder(fromNotification: Boolean, reasonCode: String) {
         navigator.withScope<ConfirmOrderScope> {
             if (!fromNotification) {
-                it.notifications.value = ConfirmOrderScope.AreYouSure
+                it.notifications.value = ConfirmOrderScope.AreYouSure(reasonCode)
             } else {
                 it.notifications.value = null
                 withProgress {
                     it.order.value?.info?.id?.let { id ->
-                        networkOrdersScope.confirmOrder(
+                        networkOrdersScope.takeActionOnOrderEntries(
                             ConfirmOrderRequest(
                                 orderId = id,
                                 sellerUnitCode = userRepo.requireUser().unitCode,
                                 acceptedEntries = it.acceptedEntries.map { it.id },
+                                reasonCode = reasonCode
                             )
                         )
                     }

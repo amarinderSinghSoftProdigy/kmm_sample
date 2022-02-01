@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -247,14 +246,9 @@ sealed class Event {
                 val expiry: String,
             ) : Orders()
 
-            data class Confirm(val fromNotification: Boolean) : Orders()
+            data class Confirm(val fromNotification: Boolean,val reasonCode: String) : Orders()
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
-
-
-            data class ActionOnOrders(
-                val orderData: ConfirmOrderRequest
-            ) : Orders()
 
             data class ShowDetailsOfRetailer(val item: EntityInfo) : Orders()
 

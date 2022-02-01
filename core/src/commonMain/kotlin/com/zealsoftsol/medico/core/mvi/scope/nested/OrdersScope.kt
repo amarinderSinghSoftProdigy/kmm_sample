@@ -276,8 +276,10 @@ class ConfirmOrderScope(
                 if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
                     manageDeclineBottomSheetVisibility(true)
                 } else {
-                    // all parameters met here , implement new API
-//                    EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
+                    if(rejectedEntries.isEmpty()){
+                        selectedDeclineReason.value = ""
+                    }
+                    EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false, selectedDeclineReason.value))
                 }
             }
         }
@@ -334,14 +336,14 @@ class ConfirmOrderScope(
         ACCEPTED("accepted", "#0084D4");
     }
 
-    object AreYouSure : ScopeNotification {
+    data class AreYouSure(val reasonCode: String = "") : ScopeNotification {
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = false
         override val title: String? = null
         override val body: String = "sure_confirm_order"
 
         fun confirm() =
-            EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true))
+            EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true, reasonCode))
     }
 }
 

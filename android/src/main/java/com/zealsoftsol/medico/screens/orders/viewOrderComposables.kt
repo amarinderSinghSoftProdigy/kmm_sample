@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -38,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
-import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.BuyingOption
@@ -57,7 +55,6 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
 
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
-    val activity = LocalContext.current as MainActivity
     val entries = scope.entries.flow.collectAsState()
     val declineReasons = scope.declineReason.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
@@ -306,7 +303,7 @@ fun OrderEntryItem(
                 if (canEdit) {
                     Checkbox(
                         checked = isChecked,
-                        colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                        colors = CheckboxDefaults.colors(checkedColor = ConstColors.green),
                         onCheckedChange = onChecked,
                         modifier = Modifier.align(Alignment.CenterVertically),
                     )
@@ -436,28 +433,30 @@ fun OrderEntryItem(
                 }
 
             }
-            if (checkOrderEntryValidation(entry)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 40.dp, bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Canvas(
+            if (canEdit) {
+                if (checkOrderEntryValidation(entry)) {
+                    Row(
                         modifier = Modifier
-                            .size(8.dp), onDraw = {
-                            drawCircle(color = Color.Red)
-                        }
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
-                        text = stringResource(id = R.string.please_add),
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W500,
-                    )
-                }
+                            .fillMaxWidth()
+                            .padding(start = 40.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Canvas(
+                            modifier = Modifier
+                                .size(8.dp), onDraw = {
+                                drawCircle(color = Color.Red)
+                            }
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                            text = stringResource(id = R.string.please_add),
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W500,
+                        )
+                    }
 
+                }
             }
         }
 
