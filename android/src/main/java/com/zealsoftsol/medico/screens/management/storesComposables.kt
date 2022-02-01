@@ -563,6 +563,8 @@ fun ProductItemStore(
     val coroutineScope = rememberCoroutineScope()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
+    val freeQty = scope.freeQty.flow.collectAsState()
+    val id = scope.productId.flow.collectAsState()
     if (cartItem != null) {
         if (product.sellerInfo?.spid != null && product.sellerInfo?.spid == cartItem.id.spid)
             product.sellerInfo?.cartInfo = CartInfo(
@@ -801,13 +803,15 @@ fun ProductItemStore(
                                             qty = cartInfo?.quantity?.value?.toString() ?: "0",
                                             onChange = {
                                                 product.quantity = it.toDouble()
-                                                product.freeQuantity =
-                                                    if (product.sellerInfo?.isPromotionActive == true) {
-                                                        checkOffer(
-                                                            product.sellerInfo?.promotionData,
-                                                            product.quantity
-                                                        )
-                                                    } else 0.0
+                                                if (product.sellerInfo?.isPromotionActive == true) {
+                                                    product.freeQuantity = checkOffer(
+                                                        product.sellerInfo?.promotionData,
+                                                        product.quantity
+                                                    )
+                                                    /*scope.updateFree(
+                                                        product.freeQuantity, product.id
+                                                    )*/
+                                                }
                                                 if (product.quantity > 0) {
                                                     if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
                                                             ?: 0)
@@ -1041,16 +1045,17 @@ fun checkOffer(data: PromotionData?, qty: Double): Double {
         val split = qty.toString().split(".")
         val beforeDot = split[0]
         val afterDot = split.getOrNull(1)
-        val modAfter = if (afterDot != null && afterDot.toDouble() > 5) ".5" else ".0"
+        val modAfter = if (afterDot != null && afterDot.toDouble() >= 5) ".5" else ".0"
         val check = beforeDot.toDouble() / data.buy.value
         val split1 = check.toString().split(".")
         val beforeDot1 = split1[0]
-        val afterDot1 = split1[1]
-        return if (check >= 1.0 && afterDot1.toDouble() >= 5 && modAfter == ".5") {
+        var afterDot1 = split1[1]
+        afterDot1 = afterDot1.substring(0, 1)
+        return if (check >= 1.0 && afterDot1.toDouble() == 5.0 && modAfter == ".5") {
             ("$beforeDot1$modAfter").toDouble()
-        } else if (check >= 1.0) {
+        } else if (check >= 1.0 && modAfter == ".0") {
             beforeDot1.toDouble()
-        } else if (check >= 0.5 && modAfter == ".5") {
+        } else if (afterDot1.toDouble() == 4.0 && modAfter == ".5") {
             0.5
         } else {
             0.0
