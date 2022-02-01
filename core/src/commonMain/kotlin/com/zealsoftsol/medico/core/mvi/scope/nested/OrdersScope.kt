@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
@@ -140,7 +141,7 @@ class ViewOrderScope(
             return TabBarInfo.StoreTitle(
                 storeName = it.tradeName,
                 showNotifications = false,
-                event = Event.Action.Orders.ShowDetailsOfRetailer(item)
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
             )
         }
 
@@ -152,6 +153,10 @@ class ViewOrderScope(
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
     val showAlert: DataSource<Boolean> = DataSource(false)
+    val showPaymentTypeOption : DataSource<Boolean> = DataSource(false)
+    val showEditDiscountOption : DataSource<Boolean> = DataSource(false)
+    private val paymentType: DataSource<String> = DataSource("")
+    private val discountValue : DataSource<Double> = DataSource(0.0)
 
     /**
      * get the details of selected order
@@ -166,10 +171,45 @@ class ViewOrderScope(
         )
 
     /**
+     * update the scope of payment option dialog
+     */
+    fun showPaymentOptions(enable: Boolean) {
+        this.showPaymentTypeOption.value = enable
+    }
+
+    /**
+     * update the scope of edit discount dialog
+     */
+    fun showEditDiscountOption(enable: Boolean) {
+        this.showEditDiscountOption.value = enable
+    }
+
+    /**
      * update the scope of alert dialog
      */
     fun changeAlertScope(enable: Boolean) {
         this.showAlert.value = enable
+    }
+
+    /**
+     * update the payment type selected by user
+     */
+    fun updatePaymentMethod(paymentMethod: PaymentMethod){
+        this.paymentType.value = paymentMethod.toString()
+    }
+
+    /**
+     * update the discount entered by user
+     */
+    fun updateDiscountValue(discount: String){
+        this.discountValue.value = discount.toDouble()
+    }
+
+    /**
+     * submit discount value to server
+     */
+    fun submitDiscountValue(){
+        //implement API call event
     }
 
     fun selectEntry(
@@ -241,12 +281,55 @@ class ViewOrderScope(
 }
 
 class ConfirmOrderScope(
+    var b2bData: DataSource<B2BData?>,
     override val order: DataSource<OrderTax?>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
     var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+
+    //pass on the seller info to be displayed on header
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        val b2bData = b2bData.value
+        b2bData?.let {
+            val address = GeoData(
+                location = "${it.addressData.district} ${it.addressData.pincode}",
+                city = it.addressData.city,
+                pincode = it.addressData.pincode.toString(),
+                distance = 0.0,
+                formattedDistance = "",
+                addressLine = it.addressData.address,
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = it.tradeName,
+                phoneNumber = it.phoneNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = it.drugLicenseNo1,
+                drugLicenseNo2 = it.drugLicenseNo2,
+                gstin = it.gstin,
+                isVerified = true,
+                panNumber = it.panNumber,
+                subscriptionData = null,
+                unitCode = ""
+            )
+
+            return TabBarInfo.StoreTitle(
+                storeName = it.tradeName,
+                showNotifications = false,
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+            )
+        }
+
+        return TabBarInfo.OnlyBackHeader("")
+
+    }
+
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)

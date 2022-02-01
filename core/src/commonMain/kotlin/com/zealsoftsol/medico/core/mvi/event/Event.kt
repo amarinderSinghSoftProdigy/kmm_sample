@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -260,7 +261,7 @@ sealed class Event {
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
 
-            data class ShowDetailsOfRetailer(val item: EntityInfo) : Orders()
+            data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
 
         }
 

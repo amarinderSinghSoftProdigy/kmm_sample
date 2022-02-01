@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
@@ -63,18 +64,30 @@ internal class OrdersEventDelegate(
         )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
-        is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item)
+        is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
     }
 
-    private fun showDetails(item: EntityInfo) {
-        navigator.withScope<ViewOrderScope> {
-            val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
-                item,
-                isSeasonBoy = false,
-                canSubscribe = false,
-            )
+    private fun showDetails(item: EntityInfo, scp: Scope) {
+        if(scp is ViewOrderScope){
+            navigator.withScope<ViewOrderScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    item,
+                    isSeasonBoy = false,
+                    canSubscribe = false,
+                )
+            }
+        }else if(scp is ConfirmOrderScope) {
+            navigator.withScope<ConfirmOrderScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    item,
+                    isSeasonBoy = false,
+                    canSubscribe = false,
+                )
+            }
         }
+
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {
@@ -145,6 +158,7 @@ internal class OrdersEventDelegate(
                     if (fromNotification) {
                         it.dismissNotification()
                         ConfirmOrderScope(
+                            b2bData = it.b2bData,
                             order = it.order,
                             acceptedEntries = emptyList(),
                             rejectedEntries = it.entries.value,
@@ -159,6 +173,7 @@ internal class OrdersEventDelegate(
                     if (fromNotification || it.entries.value.none { it.buyingOption == BuyingOption.QUOTE }) {
                         it.dismissNotification()
                         ConfirmOrderScope(
+                            b2bData = it.b2bData,
                             order = it.order,
                             acceptedEntries = it.entries.value,
                             rejectedEntries = emptyList(),
@@ -173,6 +188,7 @@ internal class OrdersEventDelegate(
                     if (fromNotification || it.checkedEntries.value.none { it.buyingOption == BuyingOption.QUOTE }) {
                         it.dismissNotification()
                         ConfirmOrderScope(
+                            b2bData = it.b2bData,
                             order = it.order,
                             acceptedEntries = it.checkedEntries.value,
                             rejectedEntries = it.entries.value - it.checkedEntries.value,

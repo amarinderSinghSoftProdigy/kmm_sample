@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
@@ -222,7 +223,12 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                 }
             }
-            Divider(color = ConstColors.lightBlue, modifier = Modifier.padding(vertical = 16.dp), thickness = 0.5.dp, startIndent = 0.dp)
+            Divider(
+                color = ConstColors.lightBlue,
+                modifier = Modifier.padding(vertical = 16.dp),
+                thickness = 0.5.dp,
+                startIndent = 0.dp
+            )
             Column {
                 Text(
                     text = orderEntry.productName,
@@ -555,7 +561,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.ptr)}:",
+                                        text = "${stringResource(id = R.string.ptr)}: ${stringResource(id = R.string.inr_symbol)}",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -565,7 +571,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = price.toString(), onChange = {
-                                            scope.updatePtr(it.toDouble())
+                                                scope.updatePtr(it.toDouble())
                                         }
                                     )
 
@@ -586,7 +592,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.mrp)}:",
+                                        text = "${stringResource(id = R.string.mrp)}: ${stringResource(id = R.string.inr_symbol)}",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -1078,13 +1084,16 @@ private fun HsnCodeSheet(
                         ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         onValueChange = {
-                            searchTerm.value = it
 
-                            queryTextChangedJob?.cancel()
+                            if (it.isDigitsOnly()) {
+                                searchTerm.value = it
 
-                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                delay(500)
-                                scope.search(it)
+                                queryTextChangedJob?.cancel()
+
+                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                    delay(500)
+                                    scope.search(it)
+                                }
                             }
                         },
                         label = {
@@ -1092,7 +1101,9 @@ private fun HsnCodeSheet(
                                 stringResource(id = R.string.search_hsn_code),
                                 color = Color.Black
                             )
-                        }
+                        },
+                        maxLines = 1
+
                     )
                 }
                 Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
