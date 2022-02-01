@@ -55,7 +55,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
         scope.showDeclineReasonsBottomSheet.flow.collectAsState().value
     val openDialog = scope.showAlert.flow.collectAsState()
 
-    Box{
+    Box {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -149,6 +149,7 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                         MedicoButton(
                             modifier = Modifier.weight(action.weight),
                             text = stringResourceByName(action.stringId),
+                            txtColor = if (action.stringId == ConfirmOrderScope.Action.CONFIRM.stringId) MaterialTheme.colors.background else Color.White,
                             isEnabled = true,
                             color = Color(action.bgColorHex.toColorInt()),
                             contentColor = Color(action.textColorHex.toColorInt()),

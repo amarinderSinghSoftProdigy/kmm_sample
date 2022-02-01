@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
@@ -33,8 +35,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -73,6 +77,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
             .background(Color.White)
     ) {
         order.value?.let { orderTaxValue ->
+            scope.updateDiscountValue(orderTaxValue.info.discount?.value.toString())
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -112,9 +117,10 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                             )
                             Space(5.dp)
                             Row(verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable{
-                                scope.showPaymentOptions(!openPaymentView.value)
-                            }) {
+                                modifier = Modifier.clickable {
+                                    scope.showEditDiscountOption(false)
+                                    scope.showPaymentOptions(!openPaymentView.value)
+                                }) {
                                 Text(
                                     text = buildAnnotatedString {
                                         append(stringResource(id = R.string.type))
@@ -185,7 +191,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     append(stringResource(id = R.string.discount))
                                     append(": ")
                                     val startIndex = length
-                                    append(orderTaxValue.info.discount?.formatted ?: "")
+                                    append(orderTaxValue.info.discount?.formatted ?: "0.0")
                                     addStyle(
                                         SpanStyle(
                                             color = Color.Black,
@@ -198,6 +204,10 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 color = Color.Black,
                                 fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
+                                modifier = Modifier.clickable {
+                                    scope.showPaymentOptions(false)
+                                    scope.showEditDiscountOption(!openEditDiscountView.value)
+                                }
                             )
                         }
                     }
@@ -206,7 +216,11 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                         ShowPaymentDropDown(scope = scope)
                     }
                     if (openEditDiscountView.value) {
+                        ShowEditDiscountDropDown(scope = scope,
+                            value = orderTaxValue.info.discount?.value.toString(),
+                            onChange = {
 
+                            })
                     }
                     Divider(Modifier.padding(horizontal = 16.dp))
                     Column(
@@ -249,6 +263,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     modifier = Modifier.weight(action.weight),
                                     text = stringResourceByName(action.stringId),
                                     isEnabled = true,
+                                    txtColor = if (action.stringId == ViewOrderScope.Action.REJECT_ALL.stringId ) Color.White else MaterialTheme.colors.background,
                                     color = Color(action.bgColorHex.toColorInt()),
                                     contentColor = Color(action.textColorHex.toColorInt()),
                                     onClick = {
@@ -314,10 +329,13 @@ fun ShowPaymentDropDown(
                 maxLines = 1,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(10.dp).fillMaxWidth().clickable{
-                    scope.updatePaymentMethod(PaymentMethod.CASH)
-                    scope.showPaymentOptions(false)
-                }
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        scope.updatePaymentMethod(PaymentMethod.CASH)
+                        scope.showPaymentOptions(false)
+                    }
             )
             Divider()
             Text(
@@ -328,14 +346,102 @@ fun ShowPaymentDropDown(
                 maxLines = 1,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(10.dp).fillMaxWidth().clickable{
-                    scope.updatePaymentMethod(PaymentMethod.CREDIT)
-                    scope.showPaymentOptions(false)
-                }
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        scope.updatePaymentMethod(PaymentMethod.CREDIT)
+                        scope.showPaymentOptions(false)
+                    }
             )
         }
     }
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ShowEditDiscountDropDown(
+    scope: ViewOrderScope,
+    onChange: (String) -> Unit,
+    value: String,
+) {
+    Surface(
+        elevation = 5.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White,
+    ) {
+        val textStyle = TextStyle(
+            color = Color.Black,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.W600,
+            textAlign = TextAlign.Start,
+        )
+
+        Column {
+            Text(
+                text = stringResource(id = R.string.edit_discount),
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500,
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        scope.updatePaymentMethod(PaymentMethod.CASH)
+                    }
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Column(
+                    modifier = Modifier.weight(4f)
+                ) {
+                    BasicTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
+                        value = value,
+                        onValueChange = {
+                            onChange(it)
+                        },
+                        maxLines = 1,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        enabled = true,
+                        textStyle = textStyle
+                    )
+                    Divider(modifier = Modifier.padding(start = 16.dp), thickness = 1.dp)
+                }
+
+                Box(modifier = Modifier.weight(3f)) {}
+
+                MedicoButton(
+                    modifier = Modifier
+                        .weight(3f)
+                        .height(45.dp)
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 10.dp),
+                    text = stringResource(id = R.string.save),
+                    isEnabled = true,
+                    txtColor = Color.Black
+                ) {
+                    scope.showEditDiscountOption(false)
+                    scope.submitDiscountValue()
+                }
+            }
+
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
