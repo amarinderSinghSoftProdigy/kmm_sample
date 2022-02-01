@@ -571,7 +571,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = price.toString(), onChange = {
-                                            scope.updatePtr(it.toDouble())
+                                                scope.updatePtr(it.toDouble())
                                         }
                                     )
 
@@ -1348,8 +1348,7 @@ fun EditText(
             .padding(end = 10.dp),
         value = value,
         onValueChange = {
-            if (it.isDigitsOnly())
-                onChange(it)
+            onChange(it)
         },
         maxLines = 1,
         singleLine = true,
