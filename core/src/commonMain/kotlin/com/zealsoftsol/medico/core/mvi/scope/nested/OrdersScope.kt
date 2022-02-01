@@ -140,7 +140,7 @@ class ViewOrderScope(
             return TabBarInfo.StoreTitle(
                 storeName = it.tradeName,
                 showNotifications = false,
-                event = Event.Action.Orders.ShowDetailsOfRetailer(item)
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
             )
         }
 
@@ -241,12 +241,55 @@ class ViewOrderScope(
 }
 
 class ConfirmOrderScope(
+    var b2bData: DataSource<B2BData?>,
     override val order: DataSource<OrderTax?>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
     var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+
+    //pass on the seller info to be displayed on header
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        val b2bData = b2bData.value
+        b2bData?.let {
+            val address = GeoData(
+                location = "${it.addressData.district} ${it.addressData.pincode}",
+                city = it.addressData.city,
+                pincode = it.addressData.pincode.toString(),
+                distance = 0.0,
+                formattedDistance = "",
+                addressLine = it.addressData.address,
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = it.tradeName,
+                phoneNumber = it.phoneNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = it.drugLicenseNo1,
+                drugLicenseNo2 = it.drugLicenseNo2,
+                gstin = it.gstin,
+                isVerified = true,
+                panNumber = it.panNumber,
+                subscriptionData = null,
+                unitCode = ""
+            )
+
+            return TabBarInfo.StoreTitle(
+                storeName = it.tradeName,
+                showNotifications = false,
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+            )
+        }
+
+        return TabBarInfo.OnlyBackHeader("")
+
+    }
+
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)
