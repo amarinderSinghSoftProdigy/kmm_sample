@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
@@ -19,10 +20,13 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.TaxType
 
 internal class OrdersEventDelegate(
     navigator: Navigator,
@@ -39,7 +43,15 @@ internal class OrdersEventDelegate(
             event.action,
             event.fromNotification,
         )
-        is Event.Action.Orders.SelectEntry -> selectEntry(event.entry)
+        is Event.Action.Orders.SelectEntry -> selectEntry(
+            event.taxType,
+            event.retailerName,
+            event.canEditOrderEntry,
+            event.orderId,
+            event.declineReason,
+            event.entry,
+            event.index
+        )
         is Event.Action.Orders.ToggleCheckEntry -> toggleCheckEntry(event.entry)
         is Event.Action.Orders.SaveEntryQty -> saveEntryQty(
             event.entry,
@@ -49,7 +61,20 @@ internal class OrdersEventDelegate(
             event.batch,
             event.expiry
         )
-        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification)
+        is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
+        is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
+        is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item)
+    }
+
+    private fun showDetails(item: EntityInfo) {
+        navigator.withScope<ViewOrderScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
     }
 
     private suspend fun loadOrders(isFirstLoad: Boolean) {
@@ -88,11 +113,27 @@ internal class OrdersEventDelegate(
                 setScope(
                     ViewOrderScope(
                         canEdit = type == OrderType.PURCHASE_ORDER,
-                        DataSource(body.order),
-                        DataSource(body.unitData.data),
-                        DataSource(body.entries)
+                        orderId = orderId,
+                        typeInfo = type,
+                        order = DataSource(body.order),
+                        b2bData = DataSource(body.unitData.data),
+                        entries = DataSource(body.entries),
+                        declineReason = DataSource(body.declineReasons)
                     )
                 )
+            }.onError(navigator)
+        }
+    }
+
+    private suspend fun getOrderDetail(orderId: String, type: OrderType) {
+        navigator.withScope<ViewOrderScope> {
+            withProgress {
+                networkOrdersScope.getOrder(type, userRepo.requireUser().unitCode, orderId)
+            }.onSuccess { body ->
+                it.b2bData = DataSource(body.unitData.data)
+                it.declineReason = DataSource(body.declineReasons)
+                it.order = DataSource(body.order)
+                it.entries = DataSource(body.entries)
             }.onError(navigator)
         }
     }
@@ -107,6 +148,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = emptyList(),
                             rejectedEntries = it.entries.value,
+                            declineReason = it.declineReason,
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.RejectAll(action)
@@ -120,6 +162,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.entries.value,
                             rejectedEntries = emptyList(),
+                            declineReason = it.declineReason
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)
@@ -133,6 +176,7 @@ internal class OrdersEventDelegate(
                             order = it.order,
                             acceptedEntries = it.checkedEntries.value,
                             rejectedEntries = it.entries.value - it.checkedEntries.value,
+                            declineReason = it.declineReason
                         )
                     } else {
                         it.notifications.value = ViewOrderScope.ServeQuotedProduct(action)
@@ -147,12 +191,26 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private fun selectEntry(orderEntry: OrderEntry) {
+    private fun selectEntry(
+        taxType: TaxType,
+        retailerName: String,
+        canEditOrderEntry: Boolean,
+        orderId: String,
+        declineReason: List<DeclineReason>,
+        orderEntry: List<OrderEntry>,
+        index: Int
+    ) {
         navigator.withScope<ViewOrderScope> {
-            navigator.scope.value.bottomSheet.value = BottomSheet.ModifyOrderEntry(
-                orderEntry,
-                isChecked = DataSource(orderEntry in it.checkedEntries.value),
-                canEdit = it.canEdit,
+            navigator.setScope(
+                OrderHsnEditScope(
+                    taxType = taxType,
+                    retailerName = retailerName,
+                    canEditOrderEntry = canEditOrderEntry,
+                    orderID = orderId,
+                    declineReason = declineReason,
+                    orderEntries = orderEntry as MutableList<OrderEntry>,
+                    index = index
+                )
             )
         }
     }
@@ -197,7 +255,7 @@ internal class OrdersEventDelegate(
             withProgress {
                 networkOrdersScope.saveNewOrderQty(
                     OrderNewQtyRequest(
-                        orderId = it.order.value.info.id,
+                        orderId = it.order.value?.info?.id!!,
                         orderEntryId = orderEntry.id,
                         unitCode = userRepo.requireUser().unitCode,
                         servedQty = qty,
@@ -214,25 +272,31 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private suspend fun confirmOrder(fromNotification: Boolean) {
+    private suspend fun confirmOrder(fromNotification: Boolean, reasonCode: String) {
         navigator.withScope<ConfirmOrderScope> {
             if (!fromNotification) {
-                it.notifications.value = ConfirmOrderScope.AreYouSure
+                it.notifications.value = ConfirmOrderScope.AreYouSure(reasonCode)
             } else {
                 it.notifications.value = null
                 withProgress {
-                    networkOrdersScope.confirmOrder(
-                        ConfirmOrderRequest(
-                            orderId = it.order.value.info.id,
-                            sellerUnitCode = userRepo.requireUser().unitCode,
-                            acceptedEntries = it.acceptedEntries.map { it.id },
+                    it.order.value?.info?.id?.let { id ->
+                        networkOrdersScope.takeActionOnOrderEntries(
+                            ConfirmOrderRequest(
+                                orderId = id,
+                                sellerUnitCode = userRepo.requireUser().unitCode,
+                                acceptedEntries = it.acceptedEntries.map { it.id },
+                                reasonCode = reasonCode
+                            )
                         )
-                    )
-                }.onSuccess { _ ->
-                    dropScope(updateDataSource = false)
-                    dropScope(updateDataSource = false)
-                    setScope(OrderPlacedScope(it.order.value))
-                }.onError(navigator)
+                    }
+
+                }?.onSuccess { _ ->
+                    it.order.value?.let {
+                        dropScope(updateDataSource = false)
+                        dropScope(updateDataSource = false)
+                        setScope(OrderPlacedScope(it))
+                    }
+                }?.onError(navigator)
             }
         }
     }

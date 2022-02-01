@@ -46,6 +46,7 @@ import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -63,7 +64,6 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
-import java.io.File
 
 
 interface NetworkScope {
@@ -233,6 +233,10 @@ interface NetworkScope {
             unitCode: String,
             invoiceId: String
         ): BodyResponse<InvoiceResponse>
+
+        suspend fun takeActionOnOrderEntries(
+            orderData: ConfirmOrderRequest
+        ): BodyResponse<OrderResponse>
     }
 
     interface Help : NetworkScope {
@@ -286,6 +290,23 @@ interface NetworkScope {
             phoneNumber: String,
             unitCode: String
         ): AnyResponse
+    }
+
+    interface OrderHsnEditStore : NetworkScope {
+        suspend fun getHsnCodes(
+            search: String,
+            pagination: Pagination
+        ): BodyResponse<PaginatedData<SearchDataItem>>
+
+        suspend fun saveNewOrder(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
+
+        suspend fun rejectEntry(
+            orderEntryId: String,
+            spid: String,
+            reasonCode: String
+        ): BodyResponse<OrderResponse>
+
+        suspend fun acceptEntry(orderEntryId: String, spid: String): BodyResponse<OrderResponse>
     }
 
     interface ProfileImage : NetworkScope {

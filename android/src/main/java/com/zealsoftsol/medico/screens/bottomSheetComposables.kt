@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -1610,6 +1609,7 @@ private fun ModifyOrderEntryBottomSheet(
     }
 }
 
+
 @Composable
 private fun DocumentUploadBottomSheet(
     supportedFileTypes: Array<FileType>,
@@ -1675,7 +1675,6 @@ private fun PreviewItemBottomSheet(
                         color = Color.Black.copy(alpha = 0.12f),
                         onClick = onDismiss,
                         modifier = Modifier
-                            //.align(Alignment.TopEnd)
                             .size(24.dp),
                     ) {
 
@@ -1733,25 +1732,12 @@ private fun PreviewItemBottomSheet(
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                 )
-                                /*Space(6.dp)
-                                Text(
-                                    text = stringResource(id = R.string.verified),
-                                    color = Color(0xFF00C37D),
-                                    fontWeight = FontWeight.W600,
-                                    fontSize = 12.sp,
-                                )*/
                             }
                         }
                     }
                     Space(4.dp)
                     entityInfo.phoneNumber?.let {
                         Row {
-                            /*Text(
-                                text = "${stringResource(id = R.string.phone_number)}:",
-                                fontSize = 14.sp,
-                                color = ConstColors.gray,
-                            )
-                            Space(4.dp)*/
                             ClickableText(
                                 text = AnnotatedString(it),
                                 style = TextStyle(
@@ -1763,7 +1749,6 @@ private fun PreviewItemBottomSheet(
                             )
                         }
                     }
-                    //Space(4.dp)
                     if (isForSeasonBoy) {
                         Space(8.dp)
                         SeasonBoyPreviewItem(entityInfo)
@@ -1808,7 +1793,6 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
-    // val activity = LocalContext.current as MainActivity
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -1818,16 +1802,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         color = Color.White,
         border = BorderStroke(2.dp, ConstColors.separator)
     ) {
-        /* Column {
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                 CoilImage(
-                     src = "",
-                     size = 123.dp,
-                     onError = { UserLogoPlaceholder(entityInfo.tradeName) },
-                     onLoading = { UserLogoPlaceholder(entityInfo.tradeName) },
-                 )
-                 Space(24.dp)*/
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1891,18 +1865,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                 }
             }
 
-
-            /*Text(
-                text = stringResource(id = R.string.see_on_the_map),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = ConstColors.lightBlue,
-                modifier = Modifier.clickable {
-                    entityInfo.geoData.destination?.let {
-                        activity.openMaps(it.latitude, it.longitude)
-                    }
-                },
-            )*/
             if (onSubscribe != null) {
                 Space(4.dp)
                 Box(
@@ -1916,9 +1878,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     )
                 }
             }
-            //}
-            // }
-            //Space(24.dp)
 
         }
     }
@@ -2054,7 +2013,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colors.background,
                             )
-                            //DataWithLabel(label = R.string.gstin_num, data = it)
                         }
                         entityInfo.panNumber?.let {
                             Text(
@@ -2062,56 +2020,74 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colors.background,
                             )
-                            //DataWithLabel(label = R.string.pan_number, data = it)
                         }
                     }
-                    /*entityInfo.gstin?.let {
-                        DataWithLabel(label = R.string.gstin_num, data = it)
-                    }
-                    entityInfo.panNumber?.let {
-                        DataWithLabel(label = R.string.pan_number, data = it)
-                    }*/
                     DataWithLabel(
                         label = R.string.orders,
                         data = data.orders.toString()
                     )
                 }
                 else -> {
-                    Row {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.gstin?.let {
-                                    Text(
-                                        text = it,
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colors.background,
-                                    )
-                                    //DataWithLabel(label = R.string.gstin_num, data = it)
+                    Column{
+                        Row {
+                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                Box(modifier = Modifier.width(maxWidth / 2)) {
+                                    entityInfo.gstin?.let {
+                                        Text(
+                                            text = it,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                        //DataWithLabel(label = R.string.gstin_num, data = it)
+                                    }
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .width(maxWidth / 2)
+                                        .align(Alignment.BottomEnd),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    entityInfo.panNumber?.let {
+                                        Text(
+                                            text = it,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                        //DataWithLabel(label = R.string.pan_number, data = it)
+                                    }
                                 }
                             }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2)
-                                    .align(Alignment.BottomEnd),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                entityInfo.panNumber?.let {
-                                    Text(
-                                        text = it,
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colors.background,
-                                    )
-                                    //DataWithLabel(label = R.string.pan_number, data = it)
+                        }
+                        Row {
+                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                Box(modifier = Modifier.width(maxWidth / 2)) {
+                                    entityInfo.drugLicenseNo1?.let {
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_one)}:${it}",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                        //DataWithLabel(label = R.string.gstin_num, data = it)
+                                    }
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .width(maxWidth / 2)
+                                        .align(Alignment.BottomEnd),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    entityInfo.drugLicenseNo2?.let {
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_two)}:${it}",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                        //DataWithLabel(label = R.string.pan_number, data = it)
+                                    }
                                 }
                             }
                         }
                     }
-                    /*entityInfo.gstin?.let {
-                        DataWithLabel(label = R.string.gstin_num, data = it)
-                    }
-                    entityInfo.panNumber?.let {
-                        DataWithLabel(label = R.string.pan_number, data = it)
-                    }*/
                 }
             }
         }

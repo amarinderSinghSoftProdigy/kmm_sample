@@ -222,7 +222,7 @@
     <string name="qty">Qty</string>
     <string name="qr_code">QR Code</string>
     <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
-    <string name="ptr">Ptr</string>
+    <string name="ptr">PTR</string>
     <string name="free">Free</string>
     <string name="subtotal">ST</string>
     <string name="order_total">Order Total:</string>
@@ -308,11 +308,11 @@
     <string name="whatsapp_preference">Whatsapp Preference</string>
     <string name="preferred_language">Please choose your preferred language </string>
     <string name="update_successfull">Updated Successfully</string>
-    <string name ="our_brands">Brands</string>
+    <string name="our_brands">Brands</string>
     <string name="our_categories">Categories</string>
-    <string name ="inventory">Inventory</string>
-    <string name ="online">Online</string>
-    <string name ="offline">Offline</string>
+    <string name="inventory">Inventory</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
     <string name="my_account">My Account</string>
@@ -328,11 +328,27 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="search_hsn_code">Search HSN Code</string>
+    <string name="hsn_code">HSN Code</string>
+    <string name="hsn_code_error">*HSN Code not available for the product.</string>
+    <string name="rate">Rate</string>
+    <string name="effective_date">Effective Date</string>
+    <string name="line_item">Line Item</string>
+    <string name="sub_total">Subtotal</string>
+    <string name="unavailable_warning">will be notified that this product is not available.\n Are you sure?</string>
+    <string name="decline_reason">Reason for declining order</string>
+    <string name="decline_all">Decline All</string>
     <string name="offers">Offers</string>
     <string name="batchs">Batchs</string>
     <string name="added_to_cart">added to the cart with</string>
     <string name="your_brands">Your Brands</string>
     <string name="no_products">No products found!</string>
+    <string name="please_add">Please add all required values (Hsn code, ptr and qty)</string>
+    <string name="warning_order_entry_validation">Please enter all required details for selected orders (i.e HSN code, Ptr and Qty)</string>
+
+
+    <!-- Termrs and Cond -->
+
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>
     <string name="tandc_line_3"><![CDATA[Medicostores.com website is made available by medicostores.com private Ltd, (“Medicostores.com”) with its registered office located at F No 108, D No 8–3–945, Sri Nilayam Estates Nagarjuna Nagar Colony Ameerpet Hyderabad, Telangana, 500073, India. medicostores.com is a platform which brings together licensed Stockists/Wholesalers referred to as “Sellers” and Retailers, Hospitals & Season Boys/Sales Persons referred to as “Buyers”. The Services of the platform are available through the website https://medicostores.com (hereinafter referred to as “Site”). The services provided by Medicostores.com are subject to the following Terms and Conditions (the “Terms”).]]></string>
@@ -424,6 +440,7 @@
     <string name="pp_line_9">Cookies</string>
     <string name="pp_line_10">Cookies are files with small amount of data that is commonly used an anonymous unique identifier. These are sent to your browser from the website that your visit and are stored on your computer’s hard drive.</string>
     <string name="pp_line_11">Our website uses these “cookies” to collection information and to improve our Service. You have the option to either accept or refuse these cookies, and know when a cookie is being sent to your computer. If you choose to refuse our cookies, you may not be able to use some portions of our Service.</string>
+
 
     <!--error codes-->
 
