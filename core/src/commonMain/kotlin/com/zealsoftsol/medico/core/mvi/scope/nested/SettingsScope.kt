@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -8,12 +9,21 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
+import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(
-    private val titleId: String, val mUser: User, val unreadNotifications: ReadOnlyDataSource<Int>,
-    private val showBackIcon: Boolean
-) : Scope.Child.TabBar() {
+    private val titleId: String,
+    val mUser: User,
+    val unreadNotifications: ReadOnlyDataSource<Int>,
+    private val showBackIcon: Boolean,
+    val profileData: DataSource<ProfileImageData?> = DataSource(null)
+) : Scope.Child.TabBar(), CommonScope.UploadDocument {
+
+    init {
+        sendEvent(action = Event.Action.Profile.GetProfileData)
+    }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         if (showBackIcon)
@@ -67,6 +77,8 @@ sealed class SettingsScope(
                     )
             }
         }
+
+        override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
     }
 
     class Profile(val user: User) : Child.TabBar(),

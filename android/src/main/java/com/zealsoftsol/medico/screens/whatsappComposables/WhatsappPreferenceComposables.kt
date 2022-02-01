@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
@@ -90,10 +91,13 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
+            maxLines = 1,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                if (it.length < 11) // only 10 chars allowed for phone number
-                    scope.changePhoneNumber(it)
+                if (it.isDigitsOnly()) {
+                    if (it.length < 11) // only 10 chars allowed for phone number
+                        scope.changePhoneNumber(it)
+                }
             },
         )
         Space(20.dp)

@@ -317,7 +317,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is ProductInfoScope -> ProductScreen(it)
                     is BuyProductScope<*> -> BuyProductScreen(it as BuyProductScope<WithTradeName>)
                     is SettingsScope -> {
-                        SettingsScreen(it)
+                        SettingsScreen(it, scaffoldState)
                         if (mUserType != UserType.STOCKIST) // this will not change bottom nave when user type is stockist
                             manageBottomNavState(BottomNavKey.SETTINGS)
                     }

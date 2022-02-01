@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.compatDispatcher
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
-import com.zealsoftsol.medico.core.mvi.event.delegates.*
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
@@ -19,6 +18,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
@@ -144,7 +144,8 @@ class EventCollector(
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
-        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo)
+        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo),
+        Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo)
     )
 
     init {

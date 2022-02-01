@@ -916,7 +916,8 @@ fun BasicSearchBar(
     elevation: Dp = 2.dp,
     horizontalPadding: Dp = 8.dp,
     isSearchFocused: Boolean = false,
-    onSearch: (String, Boolean) -> Unit
+    onSearch: (String, Boolean) -> Unit,
+    isSearchCross: Boolean = false
 ) {
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         if (icon != null) {
@@ -944,9 +945,9 @@ fun BasicSearchBar(
             val focusRequester = FocusRequester()
             if (isSearchFocused) SideEffect { focusRequester.requestFocus() }
             BasicTextField(
-                value = input,
+                value = input.uppercase(),
                 cursorBrush = SolidColor(ConstColors.lightBlue),
-                onValueChange = { onSearch(it, false) },
+                onValueChange = { onSearch(it.replace("+","").replace("*",""), false) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions { onSearch(input, true) },
@@ -973,32 +974,52 @@ fun BasicSearchBar(
                     }
                 }
                 is SearchBarEnd.Filter -> {
-                    val boxMod = if (searchBarEnd.isHighlighted) {
-                        Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
-                    } else {
-                        Modifier
-                    }
-                    Box(
-                        modifier = boxMod
-                            .align(Alignment.CenterEnd)
-                            .clickable(indication = null, onClick = searchBarEnd.onClick)
-                            .padding(2.dp)
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        if (searchBarEnd.isHighlighted) {
-                            Canvas(
+                        if (input.isNotEmpty() && isSearchCross) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = ConstColors.gray,
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(6.dp)
-                            ) {
-                                drawCircle(Color.Red)
-                            }
+                                    .size(24.dp)
+                                    .clickable(
+                                        indication = null,
+                                        onClick = { onSearch("", false) }
+                                    )
+                            )
                         }
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_filter),
-                            contentDescription = null,
-                            tint = if (searchBarEnd.isHighlighted) MaterialTheme.colors.background else ConstColors.gray,
-                            modifier = Modifier.padding(3.dp)
-                        )
+
+                        val boxMod = if (searchBarEnd.isHighlighted) {
+                            Modifier.background(ConstColors.yellow, MaterialTheme.shapes.small)
+                        } else {
+                            Modifier
+                        }
+                        Box(
+                            modifier = boxMod
+                                .clickable(indication = null, onClick = searchBarEnd.onClick)
+                                .padding(2.dp)
+                        ) {
+                            if (searchBarEnd.isHighlighted) {
+                                Canvas(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(6.dp)
+                                ) {
+                                    drawCircle(Color.Red)
+                                }
+                            }
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_filter),
+                                contentDescription = null,
+                                tint = if (searchBarEnd.isHighlighted) MaterialTheme.colors.background else ConstColors.gray,
+                                modifier = Modifier.padding(3.dp)
+                            )
+                        }
                     }
                 }
             }

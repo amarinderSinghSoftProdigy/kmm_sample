@@ -48,6 +48,7 @@ enum class FileType(val mimeType: String, val isMandatory: Boolean) {
     companion object Utils {
         fun forDrugLicense() = arrayOf(PDF, PNG, JPEG, JPG)
         fun forAadhaar() = arrayOf(ZIP, XZIP)
+        fun forProfile() = arrayOf(PNG, JPEG, JPG)
 
         fun fromExtension(ext: String): FileType {
             return when (ext) {

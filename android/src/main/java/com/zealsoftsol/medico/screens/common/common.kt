@@ -1,5 +1,9 @@
 package com.zealsoftsol.medico.screens.common
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
@@ -76,6 +80,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
@@ -830,3 +836,20 @@ fun ShowToastGlobal(msg: String) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
 }
+
+fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
+    return (ContextCompat.checkSelfPermission(context, permission)
+            == PackageManager.PERMISSION_GRANTED)
+}
+
+fun shouldShowPermissionRationale(context: Context, permission: String): Boolean {
+    val activity = context as Activity?
+    if (activity == null)
+        Log.d("Permission", "Activity is null")
+
+    return ActivityCompat.shouldShowRequestPermissionRationale(
+        activity!!,
+        permission
+    )
+}
+

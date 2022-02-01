@@ -49,7 +49,8 @@ data class ProductSearch(
     val standardUnit: String? = null,
     val sellerInfo: SellerInfo? = null,
     val manufacturerId: String? = null,
-    var quantity: Double = 1.0,
+    var quantity: Double = 0.0,
+    var freeQuantity: Double = 0.0,
     var vendorProductId: String? = null,
     var vendorMnfrId: String? = null,
     var imageCode: String? = null
@@ -64,7 +65,7 @@ data class SellerInfo(
     val spid: String,
     val stockInfo: StockInfo?,
     val priceInfo: PriceInfo?,
-    val cartInfo: CartInfo? = null,
+    var cartInfo: CartInfo? = null,
     val isPromotionActive: Boolean,
     val promotionData: PromotionData? = null,
 ) : WithTradeName {

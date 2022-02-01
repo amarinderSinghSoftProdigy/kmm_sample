@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -87,6 +86,7 @@ import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
@@ -115,6 +115,16 @@ fun Scope.Host.showBottomSheet(
                     activity = activity,
                     coroutineScope = coroutineScope,
                     onFileReady = { bs.handleFileUpload(it) },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
+            is BottomSheet.UploadProfileData -> {
+                DocumentUploadBottomSheet(
+                    supportedFileTypes = bs.supportedFileTypes,
+                    useCamera = !bs.isSeasonBoy,
+                    activity = activity,
+                    coroutineScope = coroutineScope,
+                    onFileReady = { bs.handleProfileUpload(it, bs.type) },
                     onDismiss = { dismissBottomSheet() },
                 )
             }
@@ -690,7 +700,7 @@ private fun BatchViewProductBottomSheet(
                             BatchItem(
                                 value
                             ) {
-                                scope.selectBatch(index.toString(), product = product)
+                                scope.selectBatch(false, product = product)
                                 onDismiss()
                             }
                         },
@@ -1680,14 +1690,23 @@ private fun PreviewItemBottomSheet(
 
                 Space(dp = 16.dp)
                 Column {
-                    Image(
+                    CoilImage(
+                        src = entityInfo.tradeNameUrl.toString(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
+                        onError = { Placeholder(R.drawable.ic_acc_place) },
+                        onLoading = { Placeholder(R.drawable.ic_acc_place) },
+                        isCrossFadeEnabled = false
+                    )
+                    /*Image(
                         painter = painterResource(id = R.drawable.ic_acc_place),
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                    )
+                    )*/
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (isForSeasonBoy) {

@@ -145,6 +145,9 @@ fun startKodein(
     bind<NetworkScope.OrderHsnEditStore>() with singleton {
         instance<NetworkClient>()
     }
+    bind<NetworkScope.ProfileImage>() with singleton {
+        instance<NetworkClient>()
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -157,7 +160,8 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
-            )
+            instance(),
+        )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
     bind<CartRepo>() with singleton { CartRepo(instance()) }

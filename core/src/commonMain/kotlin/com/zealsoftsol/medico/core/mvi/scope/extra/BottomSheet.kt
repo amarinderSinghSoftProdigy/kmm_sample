@@ -51,6 +51,36 @@ sealed class BottomSheet {
         }
     }
 
+    class UploadProfileData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+        val isSeasonBoy: Boolean,
+    ) : BottomSheet() {
+
+        fun uploadProfile(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Profile.UploadUserProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
     class PreviewManagementItem(
         val entityInfo: EntityInfo,
         val isSeasonBoy: Boolean,
@@ -134,7 +164,8 @@ sealed class BottomSheet {
     }
 
 
-    data class BatchViewProduct(val product: ProductSearch,val scope: BaseSearchScope) : BottomSheet() {
+    data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
+        BottomSheet() {
 
         fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
             EventCollector.sendEvent(
