@@ -118,8 +118,10 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                             Space(5.dp)
                             Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
-                                    scope.showEditDiscountOption(false)
-                                    scope.showPaymentOptions(!openPaymentView.value)
+                                    if(scope.canEdit){
+                                        scope.showEditDiscountOption(false)
+                                        scope.showPaymentOptions(!openPaymentView.value)
+                                    }
                                 }) {
                                 Text(
                                     text = buildAnnotatedString {
@@ -140,14 +142,16 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
                                 )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(start = 5.dp)
-                                        .rotate(90f)
-                                        .height(10.dp)
-                                )
+                                if(scope.canEdit){
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(start = 5.dp)
+                                            .rotate(90f)
+                                            .height(10.dp)
+                                    )
+                                }
                             }
 
                             Space(5.dp)
@@ -205,8 +209,10 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                                 modifier = Modifier.clickable {
-                                    scope.showPaymentOptions(false)
-                                    scope.showEditDiscountOption(!openEditDiscountView.value)
+                                    if(scope.canEdit){
+                                        scope.showPaymentOptions(false)
+                                        scope.showEditDiscountOption(!openEditDiscountView.value)
+                                    }
                                 }
                             )
                         }
@@ -236,14 +242,16 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     isChecked = it in checkedEntries.value,
                                     onChecked = { _ -> scope.toggleCheck(it) },
                                     onClick = {
-                                        scope.selectEntry(
-                                            taxType = orderTaxValue.info.taxType!!,
-                                            retailerName = b2BDataValue.tradeName,
-                                            canEditOrderEntry = scope.canEdit,
-                                            declineReason = declineReasons.value,
-                                            entry = entries.value,
-                                            index = index
-                                        )
+                                        if (scope.canEdit) {
+                                            scope.selectEntry(
+                                                taxType = orderTaxValue.info.taxType!!,
+                                                retailerName = b2BDataValue.tradeName,
+                                                canEditOrderEntry = scope.canEdit,
+                                                declineReason = declineReasons.value,
+                                                entry = entries.value,
+                                                index = index
+                                            )
+                                        }
                                     },
                                 )
                                 Space(8.dp)
@@ -263,7 +271,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     modifier = Modifier.weight(action.weight),
                                     text = stringResourceByName(action.stringId),
                                     isEnabled = true,
-                                    txtColor = if (action.stringId == ViewOrderScope.Action.REJECT_ALL.stringId ) Color.White else MaterialTheme.colors.background,
+                                    txtColor = if (action.stringId == ViewOrderScope.Action.REJECT_ALL.stringId) Color.White else MaterialTheme.colors.background,
                                     color = Color(action.bgColorHex.toColorInt()),
                                     contentColor = Color(action.textColorHex.toColorInt()),
                                     onClick = {
@@ -599,13 +607,15 @@ fun OrderEntryItem(
                         }
 
                     }
-                    if (showDetails) {
-                        Image(
-                            modifier = Modifier
-                                .weight(.05f),
-                            painter = painterResource(id = R.drawable.ic_arrow_right),
-                            contentDescription = null
-                        )
+                    if (canEdit) {
+                        if (showDetails) {
+                            Image(
+                                modifier = Modifier
+                                    .weight(.05f),
+                                painter = painterResource(id = R.drawable.ic_arrow_right),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
 
