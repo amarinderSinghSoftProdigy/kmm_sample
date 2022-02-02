@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -85,8 +84,8 @@ fun OffersScreen(scope: OffersScope) {
                 }
             }
 
-            Space(dp = 16.dp)
-            SectionButton(
+            //Space(dp = 16.dp)
+           /* SectionButton(
                 modifier = Modifier.weight(0.35f),
                 icon = painterResource(id = R.drawable.ic_offer),
                 text = stringResource(id = R.string.create_offer),
@@ -95,7 +94,7 @@ fun OffersScreen(scope: OffersScope) {
                 counterSupported = false
             ) {
 
-            }
+            }*/
         }
         BasicSearchBar(
             input = search.value,
@@ -341,7 +340,7 @@ fun StatusItem(item: PromotionStatusData) {
                 when (item.status) {
                     "Ended" -> ConstColors.red
                     "Running" -> ConstColors.lightGreen
-                    else -> ConstColors.ltgray
+                    else -> ConstColors.txtGrey
                 },
                 RoundedCornerShape(5.dp)
             ),
