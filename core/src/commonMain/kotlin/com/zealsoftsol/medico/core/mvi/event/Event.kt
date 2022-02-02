@@ -22,7 +22,6 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -332,14 +331,16 @@ sealed class Event {
         sealed class Offers : Action() {
             override val typeClazz: KClass<*> = Offers::class
 
-            data class ShowBottomSheet(val promotionType: PromotionType?,val name:String) : Offers()
+            data class ShowBottomSheet(val promotionType: String, val name: String,val active:Boolean) :
+                Offers()
+
             object LoadMoreProducts : Offers()
             data class GetOffers(
                 val search: String? = null,
-                val query: HashMap<String, String> = hashMapOf(),
+                val query: ArrayList<String> = ArrayList(),
             ) : Offers()
 
-            data class UpdateOffer(val promotionType: PromotionType?) : Offers()
+            data class UpdateOffer(val promotionType: String,val active:Boolean) : Offers()
         }
 
         sealed class Inventory : Action() {

@@ -59,6 +59,12 @@ data class PromotionStatusData(
 )
 
 @Serializable
+data class PromotionUpdateRequest(
+    val promoCode: String,
+    val active: Boolean,
+)
+
+@Serializable
 class Promotions(
     val endDate: FormattedData<Double>,
     val free: FormattedData<Double>,

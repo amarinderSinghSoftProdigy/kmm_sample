@@ -74,7 +74,6 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -140,7 +139,11 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
                 info = bs.info,
                 name = bs.name,
-                onSubscribe = { bs.update() },
+                active = bs.active,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.update()
+                },
                 onDismiss = { dismissBottomSheet() },
             )
 
@@ -1787,8 +1790,9 @@ private fun PreviewItemBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun UpdateOfferItemBottomSheet(
-    info: PromotionType?,
+    info: String?,
     name: String,
+    active: Boolean,
     onSubscribe: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -1832,7 +1836,11 @@ private fun UpdateOfferItemBottomSheet(
                         .align(Alignment.CenterHorizontally),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = stringResource(id = R.string.are_you_sure_offer), fontSize = 12.sp)
+                    Text(
+                        text = if (!active) stringResource(id = R.string.stop_offer_message) else stringResource(
+                            id = R.string.start_offer_message
+                        ), fontSize = 12.sp
+                    )
                     Text(
                         text = "$name?",
                         fontSize = 13.sp,
@@ -1844,33 +1852,42 @@ private fun UpdateOfferItemBottomSheet(
 
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                     Surface(
-                        modifier = Modifier.weight(0.3f),
-                        color = ConstColors.yellow,
-                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.weight(0.4f),
+                        shape = MaterialTheme.shapes.medium,
+                        color=ConstColors.txtGrey,
                         onClick = onSubscribe,
                         elevation = 8.dp
                     ) {
                         Box(
-                            modifier = Modifier.padding(all = 12.dp),
+                            modifier = Modifier
+                                .padding(all = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = "Ok")
+                            Text(
+                                text = stringResource(id = R.string.okay),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                            )
                         }
                     }
 
                     Space(dp = 16.dp)
                     Surface(
-                        modifier = Modifier.weight(0.3f),
-                        color = ConstColors.gray,
+                        modifier = Modifier.weight(0.4f),
+                        color = ConstColors.yellow,
                         shape = MaterialTheme.shapes.large,
                         onClick = onDismiss,
                         elevation = 8.dp
                     ) {
                         Box(
-                            modifier = Modifier.padding(all = 12.dp),
+                            modifier = Modifier.padding(all = 8.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = "Cancel")
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background
+                            )
                         }
 
                     }

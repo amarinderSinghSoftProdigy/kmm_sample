@@ -9,12 +9,13 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.PromotionStatusData
-import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
 
 class OffersScope(
     val title: String
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
+    val productSearch: DataSource<String> = DataSource("")
+    val manufacturerSearch: DataSource<ArrayList<String>> = DataSource(ArrayList())
     val statuses: DataSource<List<PromotionStatusData>> = DataSource(emptyList())
     val manufacturer: DataSource<List<Manufacturer>> = DataSource(emptyList())
     val items: DataSource<List<Promotions>> = DataSource(emptyList())
@@ -34,11 +35,25 @@ class OffersScope(
         EventCollector.sendEvent(Event.Action.Offers.LoadMoreProducts)
 
     fun startSearch() {
+        reset()
         EventCollector.sendEvent(Event.Action.Offers.GetOffers())
     }
 
+    fun reset() {
+        productSearch.value = ""
+        manufacturerSearch.value = ArrayList()
+    }
+
+    fun startSearch(search: String) {
+        EventCollector.sendEvent(Event.Action.Offers.GetOffers(search = search))
+    }
+
+    fun startSearch(query: ArrayList<String>) {
+        EventCollector.sendEvent(Event.Action.Offers.GetOffers(query = query))
+    }
+
     //Open the dialog for update status
-    fun showBottomSheet(promotion: PromotionType?,name:String) =
-        EventCollector.sendEvent(Event.Action.Offers.ShowBottomSheet(promotion,name))
+    fun showBottomSheet(promotion: String, name: String, active: Boolean) =
+        EventCollector.sendEvent(Event.Action.Offers.ShowBottomSheet(promotion, name, active))
 
 }

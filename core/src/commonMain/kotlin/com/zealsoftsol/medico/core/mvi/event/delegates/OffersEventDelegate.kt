@@ -10,7 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.data.PromotionType
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,21 +24,28 @@ internal class OffersEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Offers) = when (event) {
-        is Event.Action.Offers.ShowBottomSheet -> showBottomSheet(event.promotionType,event.name)
+        is Event.Action.Offers.ShowBottomSheet -> showBottomSheet(
+            event.promotionType,
+            event.name,
+            event.active
+        )
         is Event.Action.Offers.GetOffers -> getOffers(event.search, event.query)
-        is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType)
+        is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType, event.active)
         is Event.Action.Offers.LoadMoreProducts -> loadMoreProducts()
     }
 
-    private suspend fun getOffers(search: String?, query: Map<String, String>) {
+    private suspend fun getOffers(search: String?, query: ArrayList<String>) {
         navigator.withScope<OffersScope> {
             it.pagination.reset()
-            //if (search != null) it.productSearch.value = search
+            it.productSearch.value = search ?: ""
+            if (!query.isNullOrEmpty()) it.manufacturerSearch.value = query
+            val isWildcardSearch = search.isNullOrBlank()
             it.search(
                 addPage = false,
                 withDelay = false,
-                withProgress = true,
-                extraFilters = "",
+                withProgress = isWildcardSearch,
+                extraFilters = search,
+                manufacturers = query
             )
         }
     }
@@ -51,26 +58,34 @@ internal class OffersEventDelegate(
                     addPage = true,
                     withDelay = false,
                     withProgress = true,
-                    ""
+                    "",
+                    ArrayList()
                 )
             }
         }
     }
 
 
-    private suspend fun updateOffer(promotionType: PromotionType?) {
+    private suspend fun updateOffer(promotionType: String, active: Boolean) {
         val user = userRepo.requireUser()
         networkOffersScope.updateOffer(
-            user.unitCode, promotionType?.code ?: ""
-        ).onSuccess { body ->
+            unitCode = user.unitCode,
+            PromotionUpdateRequest(promoCode = promotionType, active = active)
+        ).onSuccess {
+            navigator.withScope<OffersScope> {
+                getOffers(
+                    it.productSearch.value,
+                    it.manufacturerSearch.value
+                )
+            }
         }.onError(navigator)
     }
 
-    private fun showBottomSheet(promotionType: PromotionType?,name:String) {
+    private fun showBottomSheet(promotionType: String, name: String, active: Boolean) {
         navigator.withScope<OffersScope> {
             val hostScope = scope.value
             hostScope.bottomSheet.value = BottomSheet.UpdateOfferStatus(
-                promotionType,name
+                promotionType, name, active
             )
         }
 
@@ -80,14 +95,16 @@ internal class OffersEventDelegate(
         addPage: Boolean,
         withDelay: Boolean,
         withProgress: Boolean,
-        extraFilters: String,
+        extraFilters: String? = "",
+        manufacturers: ArrayList<String>?,
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
             val user = userRepo.requireUser()
             networkOffersScope.getOffersData(
-                search = extraFilters,
                 unitCode = user.unitCode,
+                search = extraFilters,
+                manufacturer = manufacturers,
                 pagination = pagination,
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)

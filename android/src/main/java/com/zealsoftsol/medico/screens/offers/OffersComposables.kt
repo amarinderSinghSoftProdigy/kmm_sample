@@ -28,8 +28,6 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,18 +47,21 @@ import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @Composable
 fun OffersScreen(scope: OffersScope) {
+    val search = scope.productSearch.flow.collectAsState()
     val offers = scope.items.flow.collectAsState()
     val manufacturer = scope.manufacturer.flow.collectAsState()
     val statuses = scope.statuses.flow.collectAsState()
-    //val offers = scope.items.flow.collectAsState()
     Column {
-
-        Row(modifier = Modifier.padding(12.dp)) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Surface(
                 modifier = Modifier.weight(0.65f),
                 shape = MaterialTheme.shapes.large,
@@ -96,18 +97,17 @@ fun OffersScreen(scope: OffersScope) {
 
             }
         }
-
         BasicSearchBar(
-            input = "",
+            input = search.value,
             hint = R.string.search_by_product,
             icon = null,
             horizontalPadding = 16.dp,
             onIconClick = null,
             isSearchFocused = false,
             onSearch = { value, _ ->
-
+                scope.startSearch(search = value)
             },
-            isSearchCross = true
+            isSearchCross = false
         )
         Space(dp = 16.dp)
         Divider(thickness = 0.5.dp)
@@ -120,12 +120,6 @@ fun OffersScreen(scope: OffersScope) {
             fontWeight = FontWeight.W600,
         )
         Space(dp = 8.dp)
-
-        val list = ArrayList<Manufacturer>()
-        list.add(Manufacturer("", 1, ""))
-        list.add(Manufacturer("", 1, ""))
-        list.add(Manufacturer("", 1, ""))
-        list.add(Manufacturer("", 1, ""))
         LazyRow(modifier = Modifier.padding(start = 16.dp)) {
             itemsIndexed(
                 items = manufacturer.value,
@@ -134,20 +128,28 @@ fun OffersScreen(scope: OffersScope) {
                 },
             )
         }
-        Space(dp = 8.dp)
-
+        Space(dp = 12.dp)
         Divider(thickness = 0.5.dp)
         Space(dp = 8.dp)
-        LazyColumn {
-            itemsIndexed(
-                items = offers.value,
-                itemContent = { index, item ->
-                    OfferItem(item, scope)
-                    if (index == offers.value.lastIndex && scope.pagination.canLoadMore()) {
-                        scope.loadMoreProducts()
-                    }
-                },
+        if (offers.value.isEmpty()) {
+            NoRecordsWithoutHome(
+                icon = R.drawable.ic_missing_stores,
+                text = R.string.missing_offers,
+                subtitle = "",
+                onHome = { scope.startSearch() },
             )
+        } else {
+            LazyColumn {
+                itemsIndexed(
+                    items = offers.value,
+                    itemContent = { index, item ->
+                        OfferItem(item, scope)
+                        if (index == offers.value.lastIndex && scope.pagination.canLoadMore()) {
+                            scope.loadMoreProducts()
+                        }
+                    },
+                )
+            }
         }
     }
 }
@@ -157,6 +159,7 @@ fun OffersScreen(scope: OffersScope) {
  */
 @Composable
 fun ManufacturerItem(item: Manufacturer, scope: OffersScope) {
+    val manufacturer = scope.manufacturerSearch.flow.collectAsState()
     Card(
         modifier = Modifier
             .height(90.dp)
@@ -164,11 +167,20 @@ fun ManufacturerItem(item: Manufacturer, scope: OffersScope) {
             .selectable(
                 selected = true,
                 onClick = {
-                    //scope.startBrandSearch(item.searchTerm, item.field)
+                    val list = manufacturer.value
+                    if (list.contains(item.code)) {
+                        list.remove(item.code)
+                    } else {
+                        list.add(item.code)
+                    }
+                    scope.startSearch(query = list)
                 }),
         elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
+        border = if (manufacturer.value.contains(item.code)) {
+            BorderStroke(1.dp, ConstColors.yellow)
+        } else BorderStroke(1.dp, Color.White)
     ) {
         CoilImageBrands(
             src = CdnUrlProvider.urlForM(item.code),
@@ -189,7 +201,6 @@ fun ManufacturerItem(item: Manufacturer, scope: OffersScope) {
 fun OfferItem(item: Promotions, scope: OffersScope) {
     Column {
         Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)) {
-            val switchEnabled = remember { mutableStateOf(false) }
             Row {
                 Column {
                     Text(
@@ -219,12 +230,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     Space(dp = 4.dp)
                     Switch(
                         checked = item.active, onCheckedChange = {
-                            switchEnabled.value = it
-                            if (!it) {
-                                item.promotionTypeData.let {
-                                    scope.showBottomSheet(it, item.productName)
-                                }
-                            }
+                            scope.showBottomSheet(item.promoCode, item.productName, it)
                         }, colors = SwitchDefaults.colors(
                             checkedThumbColor = ConstColors.green
                         )
@@ -259,7 +265,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                     )
                 }
                 Text(
-                    text = item.promotionTypeData.name,
+                    text = "",
                     fontSize = 12.sp,
                     color = MaterialTheme.colors.background
                 )

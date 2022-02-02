@@ -430,6 +430,7 @@
     <string name="create_offer">Create Offer</string>
     <string name="running">Running</string>
     <string name="search_by_product">Search By Product</string>
+    <string name="missing_offers">No offers found!!</string>
 
     <!--error codes-->
 
@@ -487,6 +488,7 @@
     <string name="E0055">Customer already registered, please check again</string>
     <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
     <string name="ended">Ended</string>
-    <string name="are_you_sure_offer">Do you want to stop the offer on</string>
+    <string name="stop_offer_message">Do you want to stop the offer on</string>
+    <string name="start_offer_message">Do you want to start the offer on</string>
 
 </resources>

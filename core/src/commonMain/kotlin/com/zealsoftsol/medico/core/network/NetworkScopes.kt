@@ -46,6 +46,7 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
@@ -298,14 +299,15 @@ interface NetworkScope {
     interface OffersStore : NetworkScope {
         suspend fun getOffersData(
             unitCode: String,
-            search: String,
+            search: String?,
+            manufacturer: ArrayList<String>?,
             pagination: Pagination
         ): BodyResponse<OfferData>
 
         suspend fun updateOffer(
             unitCode: String,
-            promoCode: String
-        ): AnyResponse
+            request: PromotionUpdateRequest
+        ): BodyResponse<String>
     }
 
 }

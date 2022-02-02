@@ -10,7 +10,6 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -93,11 +92,12 @@ sealed class BottomSheet {
     }
 
     class UpdateOfferStatus(
-        val info: PromotionType?,
-        val name:String
+        val info: String,
+        val name: String,
+        val active: Boolean
     ) : BottomSheet() {
         fun update() =
-            EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info))
+            EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
     }
 
     class ModifyOrderEntry(

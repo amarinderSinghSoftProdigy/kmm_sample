@@ -60,6 +60,7 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchResponse
@@ -854,7 +855,8 @@ class NetworkClient(
 
     override suspend fun getOffersData(
         unitCode: String,
-        search: String,
+        search: String?,
+        manufacturer: ArrayList<String>?,
         pagination: Pagination
     ): BodyResponse<OfferData> = simpleRequest {
         client.get("${baseUrl.url}/promotions") {
@@ -862,10 +864,12 @@ class NetworkClient(
             withB2bCodeToken(unitCode)
             url {
                 parameters.apply {
-                    //append("search", "")
-                    //append("manufacturers", "")
                     append("page", pagination.nextPage().toString())
                     append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                    manufacturer?.forEach {
+                        append("manufacturers", it)
+                    }
                 }
             }
         }
@@ -874,12 +878,12 @@ class NetworkClient(
 
     override suspend fun updateOffer(
         unitCode: String,
-        promoCode: String,
-    ): AnyResponse = simpleRequest {
-        client.get("${baseUrl.url}/promotions/update") {
+        request: PromotionUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/promotions/update") {
             withMainToken()
             withB2bCodeToken(unitCode)
-            jsonBody(mapOf("promoCode" to promoCode, "active" to true))
+            jsonBody(request)
         }
     }
 
