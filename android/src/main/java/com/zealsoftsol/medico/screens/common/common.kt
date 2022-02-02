@@ -88,7 +88,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
-import java.util.Locale
+import java.util.*
 
 @Composable
 fun TabBar(
