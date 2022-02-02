@@ -231,7 +231,7 @@ fun StockistMenu(scope: MenuScope) {
     Separator(thickness = 0.5f)
     AccountContentItem(
         route = Event.Transition.Offers,
-        drawableResourceId = R.drawable.ic_menu_invoice,
+        drawableResourceId = R.drawable.ic_offer,
         stringResourceId = R.string.deal_offer,
         scope = scope
     )

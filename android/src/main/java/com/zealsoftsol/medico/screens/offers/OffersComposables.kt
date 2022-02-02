@@ -88,7 +88,7 @@ fun OffersScreen(scope: OffersScope) {
             Space(dp = 16.dp)
             SectionButton(
                 modifier = Modifier.weight(0.35f),
-                icon = painterResource(id = R.drawable.ic_retailer),
+                icon = painterResource(id = R.drawable.ic_offer),
                 text = stringResource(id = R.string.create_offer),
                 isClickable = false,
                 counter = 0,
@@ -317,6 +317,7 @@ private fun SectionButton(
                         modifier = Modifier
                             .size(35.dp)
                             .align(Alignment.Center),
+                        tint = MaterialTheme.colors.background
                     )
                 }
                 Text(
