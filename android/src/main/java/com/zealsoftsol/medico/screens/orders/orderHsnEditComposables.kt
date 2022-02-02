@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
@@ -44,17 +45,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,6 +88,7 @@ import org.joda.time.DateTime
  * show the view to update phone number and language for user
  */
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
@@ -107,6 +112,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val context = LocalContext.current
     var swipeEventChangedJob: Job? = null
     val openDialog = scope.showAlert.flow.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
@@ -545,7 +551,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     },
                                     maxLines = 1,
                                     singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default,
+                                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                                     enabled = true,
                                     textStyle = TextStyle(
                                         color = Color.Black,
@@ -1022,6 +1029,7 @@ fun HsnErrorText() {
 /**
  * Bottom sheet for displaying HSN codes for purchase orders
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun HsnCodeSheet(
     scope: OrderHsnEditScope,
@@ -1031,6 +1039,7 @@ private fun HsnCodeSheet(
     val selectedHsnCode = remember { mutableStateOf("") }
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
@@ -1093,7 +1102,8 @@ private fun HsnCodeSheet(
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent
                         ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,keyboardType = KeyboardType.Number),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                         onValueChange = {
 
                             if (it.isDigitsOnly()) {
@@ -1181,6 +1191,7 @@ private fun HsnCodeSheet(
 
                 MedicoButton(text = stringResource(id = R.string.select),
                     isEnabled = selectedHsnCode.value.isNotEmpty(),
+                    txtColor = MaterialTheme.colors.background,
                     modifier = Modifier
                         .padding(10.dp)
                         .width(100.dp)
@@ -1338,6 +1349,7 @@ private fun WarningProductNotAvailable(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditText(
     canEdit: Boolean,
@@ -1345,6 +1357,7 @@ fun EditText(
     onChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val textStyle = TextStyle(
         color = Color.Black,
@@ -1365,7 +1378,8 @@ fun EditText(
         },
         maxLines = 1,
         singleLine = true,
-        keyboardOptions = keyboardOptions,
+        keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         enabled = canEdit,
         textStyle = textStyle
     )
