@@ -129,6 +129,7 @@ sealed class Event {
             data class showToast(val msg: String, val cartData: CartData?) : Search()
             data class ShowDetails(val item: EntityInfo) : Search()
             data class ResetButton(val item: Boolean) : Search()
+            data class UpdateFree(val qty:Double,val id:String) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()

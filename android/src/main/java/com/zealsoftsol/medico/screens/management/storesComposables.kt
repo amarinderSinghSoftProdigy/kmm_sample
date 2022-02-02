@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens.management
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -50,16 +50,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -84,7 +88,6 @@ import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoRecords
@@ -295,7 +298,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                         item,
                                         onClick = { scope.selectProduct(item) },
                                         onBuy = {
-                                            //scope.resetButton(false)
+                                            scope.resetButton(false)
                                             scope.selectBatch(false, product = item)
                                             scope.buy(item)
                                         },
@@ -564,6 +567,8 @@ fun ProductItemStore(
     val coroutineScope = rememberCoroutineScope()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
+    val freeQty = scope.freeQty.flow.collectAsState()
+    val id = scope.productId.flow.collectAsState()
     if (cartItem != null) {
         if (product.sellerInfo?.spid != null && product.sellerInfo?.spid == cartItem.id.spid)
             product.sellerInfo?.cartInfo = CartInfo(
@@ -797,46 +802,106 @@ fun ProductItemStore(
                                     verticalAlignment = Alignment.Bottom,
                                 ) {
                                     Box(modifier = Modifier.width(120.dp)) {
-                                        EditField(
-                                            label = stringResource(id = R.string.qty),
-                                            qty = cartInfo?.quantity?.value?.toString() ?: "0",
-                                            onChange = {
-                                                product.quantity = it.toDouble()
-                                                product.freeQuantity =
-                                                    if (product.sellerInfo?.isPromotionActive == true) {
-                                                        checkOffer(
-                                                            product.sellerInfo?.promotionData,
-                                                            product.quantity
-                                                        )
-                                                    } else 0.0
-                                                if (product.quantity > 0) {
-                                                    if (product.quantity > (selectedProduct.value?.stockInfo?.availableQty
-                                                            ?: 0)
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(bottom = 4.dp),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.qty).uppercase(),
+                                                    color = ConstColors.gray,
+                                                    fontSize = 12.sp,
+                                                )
+
+                                                val wasQty = remember {
+                                                    mutableStateOf(
+                                                        if (product.quantity.toString().split(".")
+                                                                .lastOrNull() == "0"
+                                                        ) product.quantity.toString().split(".")
+                                                            .first() else product.quantity.toString()
                                                     )
-                                                        scope.resetButton(false)
-                                                    else
-                                                        scope.resetButton(true)
-                                                } else
-                                                    scope.resetButton(false)
-                                            },
-                                            keyboardOptions = KeyboardOptions.Default.copy(
-                                                keyboardType = KeyboardType.Number,
-                                                imeAction = ImeAction.Done
-                                            ),
-                                            keyboardActions = KeyboardActions(onDone = {
-                                                scope.resetButton(false)
-                                                scope.selectBatch(false, product = product)
-                                                scope.buy(product = product)
-                                                keyboardController?.hide()
-                                            }),
-                                            onFocus = {
-                                                coroutineScope.launch {
-                                                    state?.animateScrollToItem(index = index)
                                                 }
-                                                keyboardController?.show()
-                                            },
-                                            isEnabled = true,
-                                        )
+
+                                                BasicTextField(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .onFocusEvent {
+                                                            if (it.isFocused) coroutineScope.launch {
+                                                                state?.animateScrollToItem(index = index)
+                                                            }
+                                                        },
+                                                    value = TextFieldValue(
+                                                        wasQty.value,
+                                                        selection = TextRange(wasQty.value.length)
+                                                    ),
+                                                    onValueChange = {
+                                                        val split =
+                                                            it.text.replace(",", ".").split(".")
+                                                        val beforeDot = split[0]
+                                                        val afterDot = split.getOrNull(1)
+                                                        var modBefore =
+                                                            beforeDot.toIntOrNull() ?: 0
+                                                        val modAfter = when (afterDot?.length) {
+                                                            0 -> "."
+                                                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                                                1
+                                                            ).toIntOrNull()) {
+                                                                0 -> ".0"
+                                                                in 1..4 -> ".0"
+                                                                5 -> ".5"
+                                                                in 6..9 -> {
+                                                                    modBefore++
+                                                                    ".0"
+                                                                }
+                                                                null -> ""
+                                                                else -> throw UnsupportedOperationException(
+                                                                    "cant be that"
+                                                                )
+                                                            }
+                                                            null -> ""
+                                                            else -> throw UnsupportedOperationException(
+                                                                "cant be that"
+                                                            )
+                                                        }
+                                                        wasQty.value = "$modBefore$modAfter"
+
+                                                        onChange(
+                                                            qty = "$modBefore$modAfter",
+                                                            selectedProduct = selectedProduct.value,
+                                                            product = product,
+                                                            scope = scope
+                                                        )
+                                                    },
+                                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                                        keyboardType = KeyboardType.Number,
+                                                        imeAction = ImeAction.Done
+                                                    ),
+                                                    maxLines = 1,
+                                                    singleLine = true,
+                                                    readOnly = false,
+                                                    enabled = true,
+                                                    keyboardActions = KeyboardActions(onDone = {
+                                                        scope.resetButton(false)
+                                                        scope.selectBatch(false, product = product)
+                                                        scope.buy(product = product)
+                                                        keyboardController?.hide()
+                                                    }),
+                                                    textStyle = TextStyle(
+                                                        color = MaterialTheme.colors.background,
+                                                        fontSize = 20.sp,
+                                                        fontWeight = FontWeight.W700,
+                                                        textAlign = TextAlign.End,
+                                                    )
+                                                )
+                                            }
+                                            Divider(
+                                                color = MaterialTheme.colors.background,
+                                                thickness = 1.5.dp
+                                            )
+                                        }
                                     }
                                     Box(modifier = Modifier.width(120.dp)) {
                                         Column {
@@ -898,7 +963,7 @@ fun ProductItemStore(
                                             },
                                             textSize = 12.sp,
                                             color = ConstColors.ltgray,
-                                            contentColor = MaterialTheme.colors.background
+                                            txtColor = MaterialTheme.colors.background
                                         )
                                     }
                                     Box(modifier = Modifier.width(120.dp)) {
@@ -915,7 +980,7 @@ fun ProductItemStore(
                                                 color = if (cartInfo != null) {
                                                     ConstColors.lightBlue
                                                 } else ConstColors.yellow,
-                                                contentColor = if (cartInfo != null) {
+                                                txtColor = if (cartInfo != null) {
                                                     Color.White
                                                 } else MaterialTheme.colors.background
                                             )
@@ -991,6 +1056,30 @@ fun ProductItemStore(
     }
 }
 
+fun onChange(
+    product: ProductSearch,
+    scope: StoresScope.StorePreview,
+    qty: String,
+    selectedProduct: ProductSearch?
+) {
+    product.quantity = qty.toDouble()
+    if (product.sellerInfo?.isPromotionActive == true) {
+        product.freeQuantity = checkOffer(
+            product.sellerInfo?.promotionData,
+            product.quantity
+        )
+    }
+    if (product.quantity > 0) {
+        if (product.quantity > (selectedProduct?.stockInfo?.availableQty
+                ?: 0)
+        )
+            scope.resetButton(false)
+        else
+            scope.resetButton(true)
+    } else
+        scope.resetButton(false)
+}
+
 @Composable
 fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit) {
     Box(modifier = Modifier.width(120.dp)) {
@@ -1010,7 +1099,7 @@ fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit)
                 color = if (cartInfo != null) {
                     ConstColors.lightBlue
                 } else ConstColors.yellow,
-                contentColor = if (cartInfo != null) {
+                txtColor = if (cartInfo != null) {
                     Color.White
                 } else MaterialTheme.colors.background
 
@@ -1039,16 +1128,24 @@ fun ShowButton(product: ProductSearch, addToCart: () -> Unit, onBuy: () -> Unit)
 
 fun checkOffer(data: PromotionData?, qty: Double): Double {
     return if (data != null) {
-        var check = qty / data.buy.value
-        val sub = check.toString()
-        val split = sub.replace(",", ".").split(".")
+        val split = qty.toString().split(".")
         val beforeDot = split[0]
         val afterDot = split.getOrNull(1)
-        if (afterDot?.length ?: 0 > 2) {
-            check = (beforeDot + "." + afterDot?.substring(0, 2)).toDouble()
+        val modAfter = if (afterDot != null && afterDot.toDouble() >= 5) ".5" else ".0"
+        val check = beforeDot.toDouble() / data.buy.value
+        val split1 = check.toString().split(".")
+        val beforeDot1 = split1[0]
+        var afterDot1 = split1[1]
+        afterDot1 = afterDot1.substring(0, 1)
+        return if (check >= 1.0 && afterDot1.toDouble() == 4.0 && modAfter == ".5") {
+            ("$beforeDot1$modAfter").toDouble()
+        } else if (check >= 1.0 && modAfter == ".0") {
+            beforeDot1.toDouble()
+        } else if (afterDot1.toDouble() == 4.0 && modAfter == ".5") {
+            0.5
+        } else {
+            0.0
         }
-        Log.e("qty and % ", " " + qty + " " + (check * data.free.value).toString())
-        check * data.free.value
     } else {
         0.0
     }

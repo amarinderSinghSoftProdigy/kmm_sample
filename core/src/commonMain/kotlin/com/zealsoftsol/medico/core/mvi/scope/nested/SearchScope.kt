@@ -31,6 +31,8 @@ interface BaseSearchScope : Scopable {
     val sortOptions: DataSource<List<SortOption>>
     val selectedSortOption: DataSource<SortOption?>
     val activeFilterIds: DataSource<List<String>>
+    val freeQty: DataSource<Double>
+    val productId: DataSource<String>
 
     // store search if present
     val unitCode: String?
@@ -44,7 +46,11 @@ interface BaseSearchScope : Scopable {
 
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
 
-    fun resetButton(check:Boolean) = EventCollector.sendEvent(Event.Action.Search.ResetButton(check))
+    fun resetButton(check: Boolean) =
+        EventCollector.sendEvent(Event.Action.Search.ResetButton(check))
+
+    fun updateFree(qty: Double, id: String) =
+        EventCollector.sendEvent(Event.Action.Search.UpdateFree(qty, id))
 
     fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
@@ -115,6 +121,8 @@ class SearchScope(
     override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
     override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
     override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
+    override val freeQty: DataSource<Double> = DataSource(0.0),
+    override val productId: DataSource<String> = DataSource(""),
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null

@@ -72,6 +72,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
         override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
         override val enableButton: DataSource<Boolean> = DataSource(false),
+        override val freeQty: DataSource<Double> = DataSource(0.0),
+        override val productId: DataSource<String> = DataSource(""),
     ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
