@@ -87,10 +87,17 @@ sealed class Event {
 
         sealed class Profile : Action() {
             override val typeClazz: KClass<*> = Profile::class
-            data class UploadUserProfile(val size: String,val asBase64: String, val fileType: FileType,val type:String) : Profile()
+
+            data class UploadUserProfile(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : Profile()
+
             object UploadFileTooBig : Profile()
             object GetProfileData : Profile()
-            data class ShowUploadBottomSheet(val type:String) : Profile()
+            data class ShowUploadBottomSheet(val type: String) : Profile()
         }
 
         sealed class Search : Action() {
@@ -375,6 +382,21 @@ sealed class Event {
                 val spid: String,
             ) : OrderHsn()
         }
+        sealed class Offers : Action() {
+            override val typeClazz: KClass<*> = Offers::class
+
+            data class ShowBottomSheet(val promotionType: String, val name: String,val active:Boolean) :
+                Offers()
+
+            object LoadMoreProducts : Offers()
+            data class GetOffers(
+                val search: String? = null,
+                val query: ArrayList<String> = ArrayList(),
+            ) : Offers()
+
+            data class UpdateOffer(val promotionType: String,val active:Boolean) : Offers()
+        }
+
         sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
@@ -412,6 +434,7 @@ sealed class Event {
         object Orders : Transition()
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
+        object Offers : Transition()
         object PoInvoices : Transition()
         object InStore : Transition()
         object InStoreUsers : Transition()
