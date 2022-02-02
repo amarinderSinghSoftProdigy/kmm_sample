@@ -535,13 +535,24 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     overflow = TextOverflow.Ellipsis,
                                 )
 
-                                EditText(
-                                    canEditOrderEntry,
+                                BasicTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(end = 10.dp),
                                     value = batchNo,
-                                    onChange = {
+                                    onValueChange = {
                                         scope.updateBatch(it)
                                     },
+                                    maxLines = 1,
+                                    singleLine = true,
                                     keyboardOptions = KeyboardOptions.Default,
+                                    enabled = true,
+                                    textStyle = TextStyle(
+                                        color = Color.Black,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.W600,
+                                        textAlign = TextAlign.End,
+                                    )
                                 )
                             }
                             Space(5.dp)
@@ -571,7 +582,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = price.toString(), onChange = {
-                                                scope.updatePtr(it.toDouble())
+                                            scope.updatePtr(it.toDouble())
                                         }
                                     )
 
@@ -1348,7 +1359,9 @@ fun EditText(
             .padding(end = 10.dp),
         value = value,
         onValueChange = {
-            onChange(it)
+            if (it.toDoubleOrNull() != null) {
+                onChange(it)
+            }
         },
         maxLines = 1,
         singleLine = true,
