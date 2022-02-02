@@ -43,6 +43,7 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.OfferData
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -59,6 +60,7 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -122,8 +124,9 @@ class NetworkClient(
     NetworkScope.Config,
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
-    NetworkScope.OrderHsnEditStore,
-    NetworkScope.ProfileImage {
+    NetworkScope.ProfileImage,
+    NetworkScope.OffersStore,
+    NetworkScope.OrderHsnEditStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -949,7 +952,47 @@ class NetworkClient(
                 withMainToken()
             }
         }
-// Utils
+
+    override suspend fun getOffersData(
+        unitCode: String,
+        search: String?,
+        manufacturer: ArrayList<String>?,
+        pagination: Pagination
+    ): BodyResponse<OfferData> = simpleRequest {
+        client.get("${baseUrl.url}/promotions") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                    manufacturer?.forEach {
+                        append("manufacturers", it)
+                    }
+                }
+            }
+        }
+    }
+
+
+    override suspend fun updateOffer(
+        unitCode: String,
+        request: PromotionUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/promotions/update") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+
+    // Utils
+
+    private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
+        applyHeader(finalToken)
+    }
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
@@ -1008,6 +1051,10 @@ class NetworkClient(
 
     private inline fun HttpRequestBuilder.applyHeader(tokenInfo: TokenInfo) {
         header("Authorization", "Bearer ${tokenInfo.token}")
+    }
+
+    private inline fun HttpRequestBuilder.applyHeader(tokenInfo: String) {
+        header("x-tenant-id", tokenInfo)
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {

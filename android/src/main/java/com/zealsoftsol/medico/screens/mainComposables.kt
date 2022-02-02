@@ -83,6 +83,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
@@ -135,6 +136,7 @@ import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.menu.MenuScreen
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
+import com.zealsoftsol.medico.screens.offers.OffersScreen
 import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
 import com.zealsoftsol.medico.screens.orders.OrderHsnEditScreen
 import com.zealsoftsol.medico.screens.orders.OrderPlacedScreen
@@ -355,6 +357,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InStoreCartScope -> InStoreCartScreen(it)
                     is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
                     is WhatsappPreferenceScope -> WhatsappPreference(it)
+                    is OffersScope -> OffersScreen(it)
                     is OrderHsnEditScope -> OrderHsnEditScreen(it)
                     is InventoryScope -> InventoryMainComposable(it)
                     is SettingsScope.Profile -> ProfileComposable(it.user)
@@ -958,6 +961,15 @@ private fun OnlyBackHeader(
                     },
                 )
         )
+        if (info.title.isNotEmpty())
+            Text(
+                text = stringResourceByName(info.title),
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
     }
 }
 

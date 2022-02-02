@@ -92,7 +92,7 @@ fun MenuScreen(scope: MenuScope) {
             } else {
                 RetailerAndHospitalMenu(scope)
             }
-            Separator(thickness = 1f)
+            //Separator(thickness = 1f)
         }
     }
 }
@@ -226,6 +226,13 @@ fun StockistMenu(scope: MenuScope) {
         route = Event.Transition.MyInvoices,
         drawableResourceId = R.drawable.ic_menu_invoice,
         stringResourceId = R.string.your_invoices,
+        scope = scope
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.Offers,
+        drawableResourceId = R.drawable.ic_offer,
+        stringResourceId = R.string.deal_offer,
         scope = scope
     )
 }

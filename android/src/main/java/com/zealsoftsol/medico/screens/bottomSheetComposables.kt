@@ -136,6 +136,17 @@ fun Scope.Host.showBottomSheet(
                 } else null,
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
+                info = bs.info,
+                name = bs.name,
+                active = bs.active,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.update()
+                },
+                onDismiss = { dismissBottomSheet() },
+            )
+
             is BottomSheet.ModifyOrderEntry -> {
                 ModifyOrderEntryBottomSheet(
                     bs,
@@ -1756,6 +1767,118 @@ private fun PreviewItemBottomSheet(
                         NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun UpdateOfferItemBottomSheet(
+    info: String?,
+    name: String,
+    active: Boolean,
+    onSubscribe: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (!active) stringResource(id = R.string.stop_offer_message) else stringResource(
+                            id = R.string.start_offer_message
+                        ), fontSize = 12.sp
+                    )
+                    Text(
+                        text = "$name?",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Space(dp = 16.dp)
+
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Surface(
+                        modifier = Modifier.weight(0.4f),
+                        shape = MaterialTheme.shapes.medium,
+                        color=ConstColors.txtGrey,
+                        onClick = onSubscribe,
+                        elevation = 8.dp
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(all = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.okay),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+                        }
+                    }
+
+                    Space(dp = 16.dp)
+                    Surface(
+                        modifier = Modifier.weight(0.4f),
+                        color = ConstColors.yellow,
+                        shape = MaterialTheme.shapes.large,
+                        onClick = onDismiss,
+                        elevation = 8.dp
+                    ) {
+                        Box(
+                            modifier = Modifier.padding(all = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colors.background
+                            )
+                        }
+
+                    }
+                }
+
             }
         }
     }

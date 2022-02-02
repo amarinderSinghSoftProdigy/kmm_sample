@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
@@ -139,7 +140,10 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All(notificationRepo.getUnreadMessagesDataSource(), cartRepo.getEntriesCountDataSource())
+                    StoresScope.All(
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
+                    )
                 )
                 is Event.Transition.Cart -> setScope(
                     CartScope(
@@ -167,6 +171,9 @@ internal class TransitionEventDelegate(
                         isPoInvoice = false,
                         notificationRepo.getUnreadMessagesDataSource()
                     )
+                )
+                is Event.Transition.Offers -> setScope(
+                    OffersScope("deal_offer")
                 )
                 is Event.Transition.PoInvoices -> setScope(
                     InvoicesScope(

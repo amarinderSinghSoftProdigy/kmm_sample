@@ -91,6 +91,15 @@ sealed class BottomSheet {
             EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
     }
 
+    class UpdateOfferStatus(
+        val info: String,
+        val name: String,
+        val active: Boolean
+    ) : BottomSheet() {
+        fun update() =
+            EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
+    }
+
     class ModifyOrderEntry(
         val orderEntry: OrderEntry,
         val canEdit: Boolean,

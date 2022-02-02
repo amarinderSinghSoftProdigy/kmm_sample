@@ -54,6 +54,7 @@ class UserRepo(
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val profileImageScope: NetworkScope.ProfileImage,
+    private val networkOffersScope: NetworkScope.OffersStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
