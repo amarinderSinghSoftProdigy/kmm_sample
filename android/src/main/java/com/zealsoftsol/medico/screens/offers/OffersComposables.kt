@@ -83,24 +83,23 @@ fun OffersScreen(scope: OffersScope) {
                     }
                 }
             }
-
             //Space(dp = 16.dp)
-           /* SectionButton(
-                modifier = Modifier.weight(0.35f),
-                icon = painterResource(id = R.drawable.ic_offer),
-                text = stringResource(id = R.string.create_offer),
-                isClickable = false,
-                counter = 0,
-                counterSupported = false
-            ) {
+            /* SectionButton(
+                 modifier = Modifier.weight(0.35f),
+                 icon = painterResource(id = R.drawable.ic_offer),
+                 text = stringResource(id = R.string.create_offer),
+                 isClickable = false,
+                 counter = 0,
+                 counterSupported = false
+             ) {
 
-            }*/
+             }*/
         }
         BasicSearchBar(
             input = search.value,
             hint = R.string.search_by_product,
             icon = null,
-            horizontalPadding = 16.dp,
+            horizontalPadding = 8.dp,
             onIconClick = null,
             isSearchFocused = false,
             onSearch = { value, _ ->
@@ -115,7 +114,7 @@ fun OffersScreen(scope: OffersScope) {
             modifier = Modifier.padding(start = 16.dp),
             text = stringResource(id = R.string.manufacturers),
             color = ConstColors.lightBlue,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.W600,
         )
         Space(dp = 8.dp)
@@ -204,13 +203,13 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                 Column {
                     Text(
                         text = item.productName,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = item.manufacturerName,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = ConstColors.gray
                     )
                 }
@@ -222,7 +221,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                 ) {
                     Text(
                         text = if (item.active) stringResource(id = R.string.running) else "",
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.Bold
                     )
@@ -252,7 +251,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                 ) {
                     Text(
                         text = item.offer,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(
@@ -265,7 +264,7 @@ fun OfferItem(item: Promotions, scope: OffersScope) {
                 }
                 Text(
                     text = "",
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colors.background
                 )
             }
@@ -322,7 +321,7 @@ private fun SectionButton(
                 Text(
                     text = text,
                     color = MaterialTheme.colors.background,
-                    fontSize = 12.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.W600,
                 )
             }
@@ -349,14 +348,14 @@ fun StatusItem(item: PromotionStatusData) {
         Text(
             text = item.status,
             color = Color.White,
-            fontSize = 12.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.W800,
             modifier = Modifier.padding(all = 4.dp),
         )
         Text(
             text = item.total.toString(),
             color = Color.White,
-            fontSize = 12.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.W800,
             modifier = Modifier.padding(all = 4.dp),
         )
