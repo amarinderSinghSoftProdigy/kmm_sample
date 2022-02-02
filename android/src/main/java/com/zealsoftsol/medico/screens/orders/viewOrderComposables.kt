@@ -74,6 +74,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     val openDialog = scope.showAlert.flow.collectAsState()
     val openPaymentView = scope.showPaymentTypeOption.flow.collectAsState()
     val openEditDiscountView = scope.showEditDiscountOption.flow.collectAsState()
+    val paymentMethod = scope.paymentType.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -82,6 +83,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     ) {
         order.value?.let { orderTaxValue ->
             scope.updateDiscountValue(orderTaxValue.info.discount?.value.toString())
+            if (paymentMethod.value.isEmpty())
+                scope.updatePaymentMethod(orderTaxValue.info.paymentMethod)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -144,7 +147,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
 
                             Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
-                                    if(scope.canEdit){
+                                    if (scope.canEdit) {
                                         scope.showEditDiscountOption(false)
                                         scope.showPaymentOptions(!openPaymentView.value)
                                     }
@@ -154,7 +157,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                         append(stringResource(id = R.string.type))
                                         append(": ")
                                         val startIndex = length
-                                        append(orderTaxValue.info.paymentMethod.serverValue)
+                                        append(paymentMethod.value)
                                         addStyle(
                                             SpanStyle(
                                                 color = ConstColors.green,
@@ -168,7 +171,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
                                 )
-                                if(scope.canEdit){
+                                if (scope.canEdit) {
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_arrow_right),
                                         contentDescription = null,
@@ -214,7 +217,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                                 modifier = Modifier.clickable {
-                                    if(scope.canEdit){
+                                    if (scope.canEdit) {
                                         scope.showPaymentOptions(false)
                                         scope.showEditDiscountOption(!openEditDiscountView.value)
                                     }
@@ -228,9 +231,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     }
                     if (openEditDiscountView.value) {
                         ShowEditDiscountDropDown(scope = scope,
-                            value = orderTaxValue.info.discount?.value.toString(),
                             onChange = {
-
+                                scope.updateDiscountValue(it)
                             })
                     }
                     Divider(Modifier.padding(horizontal = 16.dp))
@@ -346,7 +348,7 @@ fun ShowPaymentDropDown(
                     .padding(10.dp)
                     .fillMaxWidth()
                     .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CASH)
+                        scope.submitPaymentValue(PaymentMethod.CASH)
                         scope.showPaymentOptions(false)
                     }
             )
@@ -363,7 +365,7 @@ fun ShowPaymentDropDown(
                     .padding(10.dp)
                     .fillMaxWidth()
                     .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CREDIT)
+                        scope.submitPaymentValue(PaymentMethod.CREDIT)
                         scope.showPaymentOptions(false)
                     }
             )
@@ -376,9 +378,9 @@ fun ShowPaymentDropDown(
 fun ShowEditDiscountDropDown(
     scope: ViewOrderScope,
     onChange: (String) -> Unit,
-    value: String,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val discountValue = scope.discountValue.flow.collectAsState()
 
     Surface(
         elevation = 5.dp,
@@ -407,9 +409,6 @@ fun ShowEditDiscountDropDown(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
-                    .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CASH)
-                    }
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -423,13 +422,19 @@ fun ShowEditDiscountDropDown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp),
-                        value = value,
+                        value = discountValue.value.toString(),
                         onValueChange = {
-                            onChange(it)
+                            if (it.toDoubleOrNull() != null && it.length < 6) {
+                                if (it.toDouble() <= 100)
+                                    onChange(it)
+                            }
                         },
                         maxLines = 1,
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Number
+                        ),
                         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                         enabled = true,
                         textStyle = textStyle

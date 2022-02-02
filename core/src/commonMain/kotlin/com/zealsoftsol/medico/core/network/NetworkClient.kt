@@ -123,7 +123,7 @@ class NetworkClient(
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
     NetworkScope.OrderHsnEditStore,
-    NetworkScope.ProfileImage{
+    NetworkScope.ProfileImage {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -842,7 +842,7 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getHsnCodes(search: String,pagination: Pagination) =  simpleRequest {
+    override suspend fun getHsnCodes(search: String, pagination: Pagination) = simpleRequest {
         client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
             withMainToken()
             url {
@@ -870,7 +870,13 @@ class NetworkClient(
         simpleRequest {
             client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/reject") {
                 withMainToken()
-                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid, "reasonCode" to reasonCode))
+                jsonBody(
+                    mapOf(
+                        "orderEntryId" to orderEntryId,
+                        "spid" to spid,
+                        "reasonCode" to reasonCode
+                    )
+                )
             }
         }
 
@@ -889,6 +895,40 @@ class NetworkClient(
                 jsonBody(orderData)
             }
         }
+
+    override suspend fun changePaymentMethod(
+        unitCode: String,
+        orderId: String,
+        type: String
+    ): AnyResponse = simpleRequest {
+        client.post("${baseUrl.url}/orders/tax/po/type/edit") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "type" to type
+                )
+            )
+        }
+    }
+
+    override suspend fun editDiscount(
+        unitCode: String,
+        orderId: String,
+        discount: Double
+    ): BodyResponse<OrderResponse> = simpleRequest {
+        client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/discount/add") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "discount" to discount.toString()
+                )
+            )
+        }
+    }
 
     // Utils
 

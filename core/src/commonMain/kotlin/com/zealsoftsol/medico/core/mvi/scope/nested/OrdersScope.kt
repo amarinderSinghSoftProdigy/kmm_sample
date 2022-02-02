@@ -155,8 +155,8 @@ class ViewOrderScope(
     val showAlert: DataSource<Boolean> = DataSource(false)
     val showPaymentTypeOption : DataSource<Boolean> = DataSource(false)
     val showEditDiscountOption : DataSource<Boolean> = DataSource(false)
-    private val paymentType: DataSource<String> = DataSource("")
-    private val discountValue : DataSource<Double> = DataSource(0.0)
+    val paymentType: DataSource<String> = DataSource("")
+    val discountValue : DataSource<Double> = DataSource(0.0)
 
     /**
      * get the details of selected order
@@ -195,7 +195,7 @@ class ViewOrderScope(
      * update the payment type selected by user
      */
     fun updatePaymentMethod(paymentMethod: PaymentMethod){
-        this.paymentType.value = paymentMethod.toString()
+        this.paymentType.value = paymentMethod.serverValue
     }
 
     /**
@@ -209,7 +209,14 @@ class ViewOrderScope(
      * submit discount value to server
      */
     fun submitDiscountValue(){
-        //implement API call event
+        EventCollector.sendEvent(Event.Action.Orders.EditDiscount(orderId, this.discountValue.value))
+    }
+
+    /**
+     * submit payment type value to server
+     */
+    fun submitPaymentValue(value: PaymentMethod) {
+        EventCollector.sendEvent(Event.Action.Orders.ChangePaymentMethod(orderId, value.serverValue))
     }
 
     fun selectEntry(

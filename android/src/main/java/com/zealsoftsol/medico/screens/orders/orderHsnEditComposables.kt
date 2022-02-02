@@ -579,7 +579,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.ptr)}: ${stringResource(id = R.string.inr_symbol)}",
+                                        text = "${stringResource(id = R.string.ptr)}: ${
+                                            stringResource(
+                                                id = R.string.inr_symbol
+                                            )
+                                        }",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -610,7 +614,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "${stringResource(id = R.string.mrp)}: ${stringResource(id = R.string.inr_symbol)}",
+                                        text = "${stringResource(id = R.string.mrp)}: ${
+                                            stringResource(
+                                                id = R.string.inr_symbol
+                                            )
+                                        }",
                                         color = ConstColors.gray,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W500,
@@ -764,7 +772,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = discount.toString(), onChange = {
-                                            scope.updateDiscount(it.toDouble())
+                                            if (it.toDouble() <= 100)
+                                                scope.updateDiscount(it.toDouble())
                                         }
                                     )
                                 }
@@ -1102,7 +1111,10 @@ private fun HsnCodeSheet(
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent
                         ),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done,keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Number
+                        ),
                         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                         onValueChange = {
 
