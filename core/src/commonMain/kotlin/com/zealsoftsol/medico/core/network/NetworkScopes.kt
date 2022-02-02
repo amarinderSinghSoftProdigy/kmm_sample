@@ -239,6 +239,18 @@ interface NetworkScope {
         suspend fun takeActionOnOrderEntries(
             orderData: ConfirmOrderRequest
         ): BodyResponse<OrderResponse>
+
+        suspend fun changePaymentMethod(
+            unitCode: String,
+            orderId: String,
+            type: String
+        ): AnyResponse
+
+        suspend fun editDiscount(
+            unitCode: String,
+            orderId: String,
+            discount: Double
+        ): BodyResponse<OrderResponse>
     }
 
     interface Help : NetworkScope {

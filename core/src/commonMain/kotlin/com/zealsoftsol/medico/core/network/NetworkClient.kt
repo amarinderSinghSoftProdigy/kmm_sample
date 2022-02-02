@@ -82,14 +82,23 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.logging.DEFAULT
+import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.Logging
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
@@ -836,7 +845,7 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getHsnCodes(search: String,pagination: Pagination) =  simpleRequest {
+    override suspend fun getHsnCodes(search: String, pagination: Pagination) = simpleRequest {
         client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
             withMainToken()
             url {
@@ -864,7 +873,13 @@ class NetworkClient(
         simpleRequest {
             client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/reject") {
                 withMainToken()
-                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid, "reasonCode" to reasonCode))
+                jsonBody(
+                    mapOf(
+                        "orderEntryId" to orderEntryId,
+                        "spid" to spid,
+                        "reasonCode" to reasonCode
+                    )
+                )
             }
         }
 
@@ -883,6 +898,40 @@ class NetworkClient(
                 jsonBody(orderData)
             }
         }
+
+    override suspend fun changePaymentMethod(
+        unitCode: String,
+        orderId: String,
+        type: String
+    ): AnyResponse = simpleRequest {
+        client.post("${baseUrl.url}/orders/tax/po/type/edit") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "type" to type
+                )
+            )
+        }
+    }
+
+    override suspend fun editDiscount(
+        unitCode: String,
+        orderId: String,
+        discount: Double
+    ): BodyResponse<OrderResponse> = simpleRequest {
+        client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/discount/add") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "discount" to discount.toString()
+                )
+            )
+        }
+    }
 
     // Utils
 
