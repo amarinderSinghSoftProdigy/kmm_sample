@@ -142,6 +142,9 @@ fun startKodein(
     bind<NetworkScope.WhatsappStore>() with singleton {
         instance<NetworkClient>()
     }
+    bind<NetworkScope.OrderHsnEditStore>() with singleton {
+        instance<NetworkClient>()
+    }
     bind<NetworkScope.ProfileImage>() with singleton {
         instance<NetworkClient>()
     }

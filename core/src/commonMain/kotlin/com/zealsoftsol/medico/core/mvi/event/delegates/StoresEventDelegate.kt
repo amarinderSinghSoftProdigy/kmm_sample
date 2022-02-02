@@ -2,6 +2,7 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
@@ -11,6 +12,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Store
 
 internal class StoresEventDelegate(
@@ -26,6 +28,18 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Load -> loadStores(event.isFirstLoad)
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
+        is Event.Action.Stores.ShowDetails -> openDetails(event.item)
+    }
+
+    private fun openDetails(item: EntityInfo) {
+        navigator.withScope<StoresScope.StorePreview> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
     }
 
     private suspend fun loadStores(isFirstLoad: Boolean) {

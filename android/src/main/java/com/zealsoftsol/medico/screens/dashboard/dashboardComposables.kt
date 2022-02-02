@@ -225,7 +225,7 @@ private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifi
     ) {
         CoilImageBrands(
             src = item.cdnUrl,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillBounds,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
             height = 200.dp,

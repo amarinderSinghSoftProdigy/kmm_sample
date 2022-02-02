@@ -63,6 +63,7 @@ import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -81,14 +82,23 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.*
-import io.ktor.client.engine.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.logging.DEFAULT
+import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.Logging
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.invoke
 import kotlinx.serialization.json.Json
@@ -116,6 +126,7 @@ class NetworkClient(
     NetworkScope.WhatsappStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore {
+    NetworkScope.OrderHsnEditStore, {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -617,7 +628,7 @@ class NetworkClient(
         unitCode: String,
         orderId: String
     ) = simpleRequest {
-        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
+        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax${type.path}$orderId") {
             withMainToken()
             url {
                 parameters.apply {
@@ -629,7 +640,7 @@ class NetworkClient(
 
     override suspend fun confirmOrder(request: ConfirmOrderRequest) =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/orders/po/entries/accept") {
+            client.post<AnyResponse>("${baseUrl.url}/orders/tax/po/entries/accept") {
                 withMainToken()
                 jsonBody(request)
             }
@@ -834,6 +845,55 @@ class NetworkClient(
             }
         }
 
+    override suspend fun getHsnCodes(search: String,pagination: Pagination) =  simpleRequest {
+        client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun saveNewOrder(request: OrderNewQtyRequest) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/save") {
+                withMainToken()
+                jsonBody(request)
+            }
+
+        }
+
+    override suspend fun rejectEntry(orderEntryId: String, spid: String, reasonCode: String) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/reject") {
+                withMainToken()
+                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid, "reasonCode" to reasonCode))
+            }
+        }
+
+    override suspend fun acceptEntry(orderEntryId: String, spid: String) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/accept") {
+                withMainToken()
+                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid))
+            }
+        }
+
+    override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/confirm") {
+                withMainToken()
+                jsonBody(orderData)
+            }
+        }
+
+    // Utils
 
     override suspend fun saveProfileImageData(
         profileImageData: ProfileImageUpload,

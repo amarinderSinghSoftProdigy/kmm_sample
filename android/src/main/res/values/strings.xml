@@ -222,7 +222,7 @@
     <string name="qty">Qty</string>
     <string name="qr_code">QR Code</string>
     <string name="qr_hint">Scan this qr code with any qr code scanner app</string>
-    <string name="ptr">Ptr</string>
+    <string name="ptr">PTR</string>
     <string name="free">Free</string>
     <string name="subtotal">ST</string>
     <string name="order_total">Order Total:</string>
@@ -308,11 +308,11 @@
     <string name="whatsapp_preference">Whatsapp Preference</string>
     <string name="preferred_language">Please choose your preferred language </string>
     <string name="update_successfull">Updated Successfully</string>
-    <string name ="our_brands">Brands</string>
+    <string name="our_brands">Brands</string>
     <string name="our_categories">Categories</string>
-    <string name ="inventory">Inventory</string>
-    <string name ="online">Online</string>
-    <string name ="offline">Offline</string>
+    <string name="inventory">Inventory</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
     <string name="my_account">My Account</string>
@@ -328,11 +328,29 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="search_hsn_code">Search HSN Code</string>
+    <string name="hsn_code">HSN Code</string>
+    <string name="hsn_code_error">*HSN Code not available for the product.</string>
+    <string name="rate">Rate</string>
+    <string name="effective_date">Effective Date</string>
+    <string name="line_item">Line Item</string>
+    <string name="sub_total">Subtotal</string>
+    <string name="unavailable_warning">will be notified that this product is not available.\n Are you sure?</string>
+    <string name="decline_reason">Reason for declining order</string>
+    <string name="decline_all">Decline All</string>
     <string name="offers">Offers</string>
     <string name="batchs">Batchs</string>
     <string name="added_to_cart">added to the cart with</string>
     <string name="your_brands">Your Brands</string>
     <string name="no_products">No products found!</string>
+    <string name="please_add">HSN Code or PTR missing, please enter them</string>
+    <string name="warning_order_entry_validation">Please enter all required details for selected orders (i.e HSN code, PTR and Qty)</string>
+    <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
+    <string name="edit_discount">Edit Discount</string>
+    <string name="inr_symbol">₹</string>
+
+    <!-- Termrs and Cond -->
+
     <string name="tandc_line_1">Terms &amp; Conditions</string>
     <string name="tandc_line_2">Please Read These Terms Carefully Before Using this Service</string>
     <string name="tandc_line_3"><![CDATA[Medicostores.com website is made available by medicostores.com private Ltd, (“Medicostores.com”) with its registered office located at F No 108, D No 8–3–945, Sri Nilayam Estates Nagarjuna Nagar Colony Ameerpet Hyderabad, Telangana, 500073, India. medicostores.com is a platform which brings together licensed Stockists/Wholesalers referred to as “Sellers” and Retailers, Hospitals & Season Boys/Sales Persons referred to as “Buyers”. The Services of the platform are available through the website https://medicostores.com (hereinafter referred to as “Site”). The services provided by Medicostores.com are subject to the following Terms and Conditions (the “Terms”).]]></string>
@@ -431,6 +449,10 @@
     <string name="running">Running</string>
     <string name="search_by_product">Search By Product</string>
     <string name="missing_offers">No offers found!!</string>
+    <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
+    <string name="ended">Ended</string>
+    <string name="stop_offer_message">Do you want to stop the offer on</string>
+    <string name="start_offer_message">Do you want to start the offer on</string>
 
     <!--error codes-->
 
@@ -486,9 +508,5 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
-    <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
-    <string name="ended">Ended</string>
-    <string name="stop_offer_message">Do you want to stop the offer on</string>
-    <string name="start_offer_message">Do you want to start the offer on</string>
 
 </resources>

@@ -40,21 +40,44 @@ data class OrderEntry(
     val spid: String,
     val standardUnit: String,
     val totalAmount: FormattedData<Double>,
+    val hsnCode: String,
+    val manufacturerName: String,
+    val discount: FormattedData<Double>,
+    val cgstTax: Tax,
+    val sgstTax: Tax,
+    val igstTax: Tax,
+    val reason: String,
 ) {
 
     enum class Status {
-        ACCEPTED, REJECTED;
+        ACCEPTED, REJECTED, DECLINED;
     }
 }
+
+
+@Serializable
+data class OrderTax(
+    @SerialName("orderTaxInfo")
+    val info: OrderInfo,
+    val tradeName: String,
+    @SerialName("sbRetailerTradeName")
+    val seasonBoyRetailerName: String? = null,
+)
 
 @Serializable
 data class OrderResponse(
     @SerialName("orderEntries")
     val entries: List<OrderEntry>,
-    val order: Order,
+    @SerialName("orderTax")
+    val order: OrderTax,
     @SerialName("unitInfoData")
     val unitData: UnitData,
+    val declineReasons: List<DeclineReason>,
+    val isDeliveryAvailable: Boolean
 )
+
+@Serializable
+data class DeclineReason(val code: String, val name: String)
 
 @Serializable
 data class UnitData(
@@ -86,6 +109,8 @@ data class OrderInfo(
     val status: OrderStatus,
     val paymentMethod: PaymentMethod,
     val total: Total,
+    val taxType: TaxType? = null,
+    val discount: FormattedData<Double>? = null
 )
 
 enum class OrderStatus(val stringValue: String) {
@@ -105,13 +130,17 @@ data class OrderNewQtyRequest(
     val price: Double,
     val batchNo: String,
     val expiryDate: String,
+    val discount: Double? = null,
+    val mrp: Double? = null,
+    val hsnCode: String? = null
 )
 
 @Serializable
 data class ConfirmOrderRequest(
     val orderId: String,
-    val sellerUnitCode: String,
+    var sellerUnitCode: String? = null,
     val acceptedEntries: List<String>,
+    val reasonCode: String? = null,
 )
 
 @Serializable
