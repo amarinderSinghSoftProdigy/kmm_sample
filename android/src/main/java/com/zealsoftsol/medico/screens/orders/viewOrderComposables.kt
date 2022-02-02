@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
@@ -29,15 +30,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,6 +74,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     val openDialog = scope.showAlert.flow.collectAsState()
     val openPaymentView = scope.showPaymentTypeOption.flow.collectAsState()
     val openEditDiscountView = scope.showEditDiscountOption.flow.collectAsState()
+    val paymentMethod = scope.paymentType.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -78,6 +83,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
     ) {
         order.value?.let { orderTaxValue ->
             scope.updateDiscountValue(orderTaxValue.info.discount?.value.toString())
+            if (paymentMethod.value.isEmpty())
+                scope.updatePaymentMethod(orderTaxValue.info.paymentMethod)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -140,15 +147,17 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
 
                             Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
-                                    scope.showEditDiscountOption(false)
-                                    scope.showPaymentOptions(!openPaymentView.value)
+                                    if (scope.canEdit) {
+                                        scope.showEditDiscountOption(false)
+                                        scope.showPaymentOptions(!openPaymentView.value)
+                                    }
                                 }) {
                                 Text(
                                     text = buildAnnotatedString {
                                         append(stringResource(id = R.string.type))
                                         append(": ")
                                         val startIndex = length
-                                        append(orderTaxValue.info.paymentMethod.serverValue)
+                                        append(paymentMethod.value)
                                         addStyle(
                                             SpanStyle(
                                                 color = ConstColors.green,
@@ -162,14 +171,16 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
                                 )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_arrow_right),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(start = 5.dp)
-                                        .rotate(90f)
-                                        .height(10.dp)
-                                )
+                                if (scope.canEdit) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(start = 5.dp)
+                                            .rotate(90f)
+                                            .height(10.dp)
+                                    )
+                                }
                             }
                         }
                         Column(horizontalAlignment = Alignment.End) {
@@ -206,8 +217,10 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                                 modifier = Modifier.clickable {
-                                    scope.showPaymentOptions(false)
-                                    scope.showEditDiscountOption(!openEditDiscountView.value)
+                                    if (scope.canEdit) {
+                                        scope.showPaymentOptions(false)
+                                        scope.showEditDiscountOption(!openEditDiscountView.value)
+                                    }
                                 }
                             )
                         }
@@ -218,9 +231,8 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                     }
                     if (openEditDiscountView.value) {
                         ShowEditDiscountDropDown(scope = scope,
-                            value = orderTaxValue.info.discount?.value.toString(),
                             onChange = {
-
+                                scope.updateDiscountValue(it)
                             })
                     }
                     Divider(Modifier.padding(horizontal = 16.dp))
@@ -237,14 +249,16 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     isChecked = it in checkedEntries.value,
                                     onChecked = { _ -> scope.toggleCheck(it) },
                                     onClick = {
-                                        scope.selectEntry(
-                                            taxType = orderTaxValue.info.taxType!!,
-                                            retailerName = b2BDataValue.tradeName,
-                                            canEditOrderEntry = scope.canEdit,
-                                            declineReason = declineReasons.value,
-                                            entry = entries.value,
-                                            index = index
-                                        )
+                                        if (scope.canEdit) {
+                                            scope.selectEntry(
+                                                taxType = orderTaxValue.info.taxType!!,
+                                                retailerName = b2BDataValue.tradeName,
+                                                canEditOrderEntry = scope.canEdit,
+                                                declineReason = declineReasons.value,
+                                                entry = entries.value,
+                                                index = index
+                                            )
+                                        }
                                     },
                                 )
                                 Space(8.dp)
@@ -264,7 +278,7 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     modifier = Modifier.weight(action.weight),
                                     text = stringResourceByName(action.stringId),
                                     isEnabled = true,
-                                    txtColor = if (action.stringId == ViewOrderScope.Action.REJECT_ALL.stringId ) Color.White else MaterialTheme.colors.background,
+                                    txtColor = if (action.stringId == ViewOrderScope.Action.REJECT_ALL.stringId) Color.White else MaterialTheme.colors.background,
                                     color = Color(action.bgColorHex.toColorInt()),
                                     contentColor = Color(action.textColorHex.toColorInt()),
                                     onClick = {
@@ -334,7 +348,7 @@ fun ShowPaymentDropDown(
                     .padding(10.dp)
                     .fillMaxWidth()
                     .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CASH)
+                        scope.submitPaymentValue(PaymentMethod.CASH)
                         scope.showPaymentOptions(false)
                     }
             )
@@ -351,7 +365,7 @@ fun ShowPaymentDropDown(
                     .padding(10.dp)
                     .fillMaxWidth()
                     .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CREDIT)
+                        scope.submitPaymentValue(PaymentMethod.CREDIT)
                         scope.showPaymentOptions(false)
                     }
             )
@@ -359,13 +373,15 @@ fun ShowPaymentDropDown(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ShowEditDiscountDropDown(
     scope: ViewOrderScope,
     onChange: (String) -> Unit,
-    value: String,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val discountValue = scope.discountValue.flow.collectAsState()
+
     Surface(
         elevation = 5.dp,
         modifier = Modifier
@@ -393,9 +409,6 @@ fun ShowEditDiscountDropDown(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
-                    .clickable {
-                        scope.updatePaymentMethod(PaymentMethod.CASH)
-                    }
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -409,13 +422,20 @@ fun ShowEditDiscountDropDown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp),
-                        value = value,
+                        value = discountValue.value.toString(),
                         onValueChange = {
-                            onChange(it)
+                            if (it.toDoubleOrNull() != null && it.length < 6) {
+                                if (it.toDouble() <= 100)
+                                    onChange(it)
+                            }
                         },
                         maxLines = 1,
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Number
+                        ),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
                         enabled = true,
                         textStyle = textStyle
                     )
@@ -600,13 +620,15 @@ fun OrderEntryItem(
                         }
 
                     }
-                    if (showDetails) {
-                        Image(
-                            modifier = Modifier
-                                .weight(.05f),
-                            painter = painterResource(id = R.drawable.ic_arrow_right),
-                            contentDescription = null
-                        )
+                    if (canEdit) {
+                        if (showDetails) {
+                            Image(
+                                modifier = Modifier
+                                    .weight(.05f),
+                                painter = painterResource(id = R.drawable.ic_arrow_right),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
 

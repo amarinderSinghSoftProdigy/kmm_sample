@@ -65,10 +65,38 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
         is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
+        is Event.Action.Orders.EditDiscount -> editDiscount(event.orderId, event.discount)
+        is Event.Action.Orders.ChangePaymentMethod -> changePaymentMethod(event.orderId, event.type)
+    }
+
+    private suspend fun editDiscount(orderId: String, discount: Double) {
+        navigator.withScope<ViewOrderScope> {
+            withProgress {
+                networkOrdersScope.editDiscount(
+                    unitCode = userRepo.requireUser().unitCode,
+                    orderId = orderId,
+                    discount = discount
+                )
+            }.onSuccess { body ->
+                it.order = DataSource(body.order)
+                it.entries = DataSource(body.entries)
+            }.onError(navigator)
+        }
+    }
+
+    private suspend fun changePaymentMethod(orderId: String, type: String) {
+        navigator.withScope<ViewOrderScope> {
+            withProgress {
+                networkOrdersScope.changePaymentMethod(orderId = orderId, unitCode = userRepo.requireUser().unitCode,
+                    type = type)
+            }.onSuccess {_->
+                it.paymentType.value = type
+            }.onError(navigator)
+        }
     }
 
     private fun showDetails(item: EntityInfo, scp: Scope) {
-        if(scp is ViewOrderScope){
+        if (scp is ViewOrderScope) {
             navigator.withScope<ViewOrderScope> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
@@ -77,7 +105,7 @@ internal class OrdersEventDelegate(
                     canSubscribe = false,
                 )
             }
-        }else if(scp is ConfirmOrderScope) {
+        } else if (scp is ConfirmOrderScope) {
             navigator.withScope<ConfirmOrderScope> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(

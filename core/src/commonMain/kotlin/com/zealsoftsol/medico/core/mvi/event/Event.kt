@@ -264,6 +264,10 @@ sealed class Event {
 
             data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
 
+            data class EditDiscount(val orderId: String, val discount: Double): Orders()
+
+            data class ChangePaymentMethod(val orderId: String, val type: String): Orders()
+
         }
 
         sealed class Invoices : Action() {

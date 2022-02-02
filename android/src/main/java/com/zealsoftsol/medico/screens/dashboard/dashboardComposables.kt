@@ -228,7 +228,7 @@ private fun BannerItem(item: BannerData, scope: DashboardScope, modifier: Modifi
             contentScale = ContentScale.FillBounds,
             onError = { ItemPlaceholder() },
             onLoading = { ItemPlaceholder() },
-            height = 200.dp,
+            height = 180.dp,
         )
     }
     Space(12.dp)
