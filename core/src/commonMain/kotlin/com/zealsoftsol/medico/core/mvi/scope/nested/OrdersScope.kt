@@ -13,13 +13,20 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.DateRange
+import com.zealsoftsol.medico.data.DeclineReason
+import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTax
 import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.PaymentMethod
+import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
-) : Scope.Child.TabBar(),Loadable<Order> {
+) : Scope.Child.TabBar(), Loadable<Order> {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
         TabBarInfo.NoIconTitle("", unreadNotifications)
@@ -93,18 +100,141 @@ class OrdersScope(
 }
 
 class ViewOrderScope(
+    val orderId: String,
+    val typeInfo: OrderType,
     override val canEdit: Boolean,
-    override val order: DataSource<Order>,
-    val b2bData: DataSource<B2BData>,
-    val entries: DataSource<List<OrderEntry>>,
+    override var order: DataSource<OrderTax?>,
+    var b2bData: DataSource<B2BData?>,
+    var entries: DataSource<List<OrderEntry>>,
+    var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        val b2bData = b2bData.value
+        b2bData?.let {
+            val address = GeoData(
+                location = "${it.addressData.district} ${it.addressData.pincode}",
+                city = it.addressData.city,
+                pincode = it.addressData.pincode.toString(),
+                distance = 0.0,
+                formattedDistance = "",
+                addressLine = it.addressData.address,
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = it.tradeName,
+                phoneNumber = it.phoneNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = it.drugLicenseNo1,
+                drugLicenseNo2 = it.drugLicenseNo2,
+                gstin = it.gstin,
+                isVerified = true,
+                panNumber = it.panNumber,
+                subscriptionData = null,
+                unitCode = ""
+            )
+
+            return TabBarInfo.StoreTitle(
+                storeName = it.tradeName,
+                showNotifications = false,
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+            )
+        }
+
+        return TabBarInfo.OnlyBackHeader("")
+
+    }
 
     override val checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
+    val showAlert: DataSource<Boolean> = DataSource(false)
+    val showPaymentTypeOption : DataSource<Boolean> = DataSource(false)
+    val showEditDiscountOption : DataSource<Boolean> = DataSource(false)
+    private val paymentType: DataSource<String> = DataSource("")
+    private val discountValue : DataSource<Double> = DataSource(0.0)
 
-    fun selectEntry(entry: OrderEntry) =
-        EventCollector.sendEvent(Event.Action.Orders.SelectEntry(entry))
+    /**
+     * get the details of selected order
+     */
+
+    fun updateData() =
+        EventCollector.sendEvent(
+            Event.Action.Orders.GetOrderDetails(
+                orderId,
+                typeInfo
+            )
+        )
+
+    /**
+     * update the scope of payment option dialog
+     */
+    fun showPaymentOptions(enable: Boolean) {
+        this.showPaymentTypeOption.value = enable
+    }
+
+    /**
+     * update the scope of edit discount dialog
+     */
+    fun showEditDiscountOption(enable: Boolean) {
+        this.showEditDiscountOption.value = enable
+    }
+
+    /**
+     * update the scope of alert dialog
+     */
+    fun changeAlertScope(enable: Boolean) {
+        this.showAlert.value = enable
+    }
+
+    /**
+     * update the payment type selected by user
+     */
+    fun updatePaymentMethod(paymentMethod: PaymentMethod){
+        this.paymentType.value = paymentMethod.toString()
+    }
+
+    /**
+     * update the discount entered by user
+     */
+    fun updateDiscountValue(discount: String){
+        this.discountValue.value = discount.toDouble()
+    }
+
+    /**
+     * submit discount value to server
+     */
+    fun submitDiscountValue(){
+        //implement API call event
+    }
+
+    fun selectEntry(
+        taxType: TaxType,
+        retailerName: String,
+        canEditOrderEntry: Boolean,
+        declineReason: List<DeclineReason>,
+        entry: List<OrderEntry>,
+        index: Int
+    ) {
+        order.value?.info?.id?.let {
+            EventCollector.sendEvent(
+                Event.Action.Orders.SelectEntry(
+                    taxType = taxType,
+                    retailerName = retailerName,
+                    canEditOrderEntry = canEditOrderEntry,
+                    orderId = it,
+                    declineReason = declineReason,
+                    entry = entry,
+                    index = index
+                )
+            )
+        }
+    }
+
 
     fun acceptAction(action: Action) =
         EventCollector.sendEvent(Event.Action.Orders.ViewOrderAction(action, false))
@@ -151,11 +281,55 @@ class ViewOrderScope(
 }
 
 class ConfirmOrderScope(
-    override val order: DataSource<Order>,
+    var b2bData: DataSource<B2BData?>,
+    override val order: DataSource<OrderTax?>,
     internal var acceptedEntries: List<OrderEntry>,
     internal var rejectedEntries: List<OrderEntry>,
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
+    var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
+
+    //pass on the seller info to be displayed on header
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        val b2bData = b2bData.value
+        b2bData?.let {
+            val address = GeoData(
+                location = "${it.addressData.district} ${it.addressData.pincode}",
+                city = it.addressData.city,
+                pincode = it.addressData.pincode.toString(),
+                distance = 0.0,
+                formattedDistance = "",
+                addressLine = it.addressData.address,
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = it.tradeName,
+                phoneNumber = it.phoneNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = it.drugLicenseNo1,
+                drugLicenseNo2 = it.drugLicenseNo2,
+                gstin = it.gstin,
+                isVerified = true,
+                panNumber = it.panNumber,
+                subscriptionData = null,
+                unitCode = ""
+            )
+
+            return TabBarInfo.StoreTitle(
+                storeName = it.tradeName,
+                showNotifications = false,
+                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+            )
+        }
+
+        return TabBarInfo.OnlyBackHeader("")
+
+    }
+
 
     val actions = DataSource(listOf(Action.CONFIRM))
     val entries = DataSource(acceptedEntries)
@@ -163,6 +337,9 @@ class ConfirmOrderScope(
     val tabs = listOf(Tab.ACCEPTED, Tab.REJECTED)
     val activeTab = DataSource(Tab.ACCEPTED)
     override val canEdit: Boolean = true
+    var showDeclineReasonsBottomSheet = DataSource(false)
+    private val selectedDeclineReason = DataSource("")
+    val showAlert: DataSource<Boolean> = DataSource(false)
 
     fun acceptAction(action: Action) {
         when (action) {
@@ -170,13 +347,24 @@ class ConfirmOrderScope(
                 rejectedEntries = rejectedEntries + checkedEntries.value
                 acceptedEntries = acceptedEntries - checkedEntries.value
                 refreshEntries()
+                selectedDeclineReason.value =
+                    "" // empty the decline reason as new entries are added to decline list
             }
             Action.ACCEPT -> {
                 acceptedEntries = acceptedEntries + checkedEntries.value
                 rejectedEntries = rejectedEntries - checkedEntries.value
                 refreshEntries()
             }
-            Action.CONFIRM -> EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false))
+            Action.CONFIRM -> {
+                if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
+                    manageDeclineBottomSheetVisibility(true)
+                } else {
+                    if(rejectedEntries.isEmpty()){
+                        selectedDeclineReason.value = ""
+                    }
+                    EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false, selectedDeclineReason.value))
+                }
+            }
         }
     }
 
@@ -192,6 +380,27 @@ class ConfirmOrderScope(
             Tab.REJECTED -> rejectedEntries
         }
         actions.value = listOf(Action.CONFIRM)
+    }
+
+    /**
+     * update the scope of alert dialog
+     */
+    fun changeAlertScope(enable: Boolean) {
+        this.showAlert.value = enable
+    }
+
+    /**
+     * manage decline bottom sheet  visibility
+     */
+    fun manageDeclineBottomSheetVisibility(openSheet: Boolean) {
+        this.showDeclineReasonsBottomSheet.value = openSheet
+    }
+
+    /**
+     * update the reason selected for decliening the order entry
+     */
+    fun updateDeclineReason(reason: String) {
+        this.selectedDeclineReason.value = reason
     }
 
     enum class Action(
@@ -210,24 +419,24 @@ class ConfirmOrderScope(
         ACCEPTED("accepted", "#0084D4");
     }
 
-    object AreYouSure : ScopeNotification {
+    data class AreYouSure(val reasonCode: String = "") : ScopeNotification {
         override val isSimple: Boolean = false
         override val isDismissible: Boolean = false
         override val title: String? = null
-        override val body: String? = "sure_confirm_order"
+        override val body: String = "sure_confirm_order"
 
         fun confirm() =
-            EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true))
+            EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = true, reasonCode))
     }
 }
 
-class OrderPlacedScope(val order: Order) : Scope.Child.TabBar() {
+class OrderPlacedScope(val order: OrderTax) : Scope.Child.TabBar() {
 
     override fun goHome() = EventCollector.sendEvent(Event.Transition.Back)
 }
 
 interface SelectableOrderEntry : Scopable {
-    val order: DataSource<Order>
+    val order: DataSource<OrderTax?>
     val checkedEntries: DataSource<List<OrderEntry>>
     val canEdit: Boolean
 

@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,8 +29,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberScaffoldState
@@ -86,6 +83,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
@@ -116,16 +114,13 @@ import com.zealsoftsol.medico.screens.auth.WelcomeScreen
 import com.zealsoftsol.medico.screens.cart.CartOrderCompletedScreen
 import com.zealsoftsol.medico.screens.cart.CartPreviewScreen
 import com.zealsoftsol.medico.screens.cart.CartScreen
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TabBar
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.showNotificationAlert
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.dashboard.DashboardScreen
-import com.zealsoftsol.medico.screens.help.HelpScreen
 import com.zealsoftsol.medico.screens.help.HelpScreens
-import com.zealsoftsol.medico.screens.help.TermsConditionsPrivacyPolicyScreen
 import com.zealsoftsol.medico.screens.instore.InStoreAddUserScreen
 import com.zealsoftsol.medico.screens.instore.InStoreCartScreen
 import com.zealsoftsol.medico.screens.instore.InStoreOrderPlacedScreen
@@ -141,6 +136,7 @@ import com.zealsoftsol.medico.screens.management.StoresScreen
 import com.zealsoftsol.medico.screens.menu.MenuScreen
 import com.zealsoftsol.medico.screens.notification.NotificationScreen
 import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
+import com.zealsoftsol.medico.screens.orders.OrderHsnEditScreen
 import com.zealsoftsol.medico.screens.orders.OrderPlacedScreen
 import com.zealsoftsol.medico.screens.orders.OrdersScreen
 import com.zealsoftsol.medico.screens.orders.ViewOrderScreen
@@ -170,6 +166,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
     val notificationList = rememberLazyListState()
     val searchList = rememberLazyListState()
     val navigation = scope.navigationSection.flow.collectAsState()
+    val childScope = scope.childScope.flow.collectAsState()
 
     //assign user type if it is not null or if it has changed. This is being used to draw bottom navigation items
     if (navigation.value?.user?.flow?.value?.type != null && mUserType != navigation.value?.user?.flow?.value?.type) {
@@ -181,83 +178,88 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            val tabBarInfo = scope.tabBar.flow.collectAsState()
-            TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    when (val info = tabBarInfo.value) {
-                        is TabBarInfo.Simple -> SimpleTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.Search -> SearchTabBar(
-                            scope,
-                            info,
-                            scaffoldState,
-                            coroutineScope
-                        )
-                        is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
-                        is TabBarInfo.NewDesignLogo -> {
-                            val keyboard = LocalSoftwareKeyboardController.current
-                            Icon(
-                                imageVector = info.icon.toLocalIcon(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .align(Alignment.CenterVertically)
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .clickable(
-                                        indication = null,
-                                        onClick = {
-                                            when (info.icon) {
-                                                ScopeIcon.BACK -> scope.goBack()
-                                                ScopeIcon.HAMBURGER -> {
-                                                    keyboard?.hide()
-                                                    coroutineScope.launch { scaffoldState.drawerState.open() }
+            if (childScope.value !is OrderHsnEditScope) { //don't show top bar for OrderEditHsnScreen
+                val tabBarInfo = scope.tabBar.flow.collectAsState()
+                TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        when (val info = tabBarInfo.value) {
+                            is TabBarInfo.Simple -> SimpleTabBar(
+                                scope,
+                                info,
+                                scaffoldState,
+                                coroutineScope
+                            )
+                            is TabBarInfo.Search -> SearchTabBar(
+                                scope,
+                                info,
+                                scaffoldState,
+                                coroutineScope
+                            )
+                            is TabBarInfo.ActiveSearch -> ActiveSearchTabBar(scope, info)
+                            is TabBarInfo.NewDesignLogo -> {
+                                val keyboard = LocalSoftwareKeyboardController.current
+                                Icon(
+                                    imageVector = info.icon.toLocalIcon(),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .fillMaxHeight()
+                                        .padding(16.dp)
+                                        .clickable(
+                                            indication = null,
+                                            onClick = {
+                                                when (info.icon) {
+                                                    ScopeIcon.BACK -> scope.goBack()
+                                                    ScopeIcon.HAMBURGER -> {
+                                                        keyboard?.hide()
+                                                        coroutineScope.launch { scaffoldState.drawerState.open() }
+                                                    }
                                                 }
-                                            }
-                                        },
-                                    )
-                            )
-                            Space(4.dp)
-                            Image(
-                                painter = painterResource(id = R.drawable.medico_logo),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(vertical = 16.dp),
-                            )
+                                            },
+                                        )
+                                )
+                                Space(4.dp)
+                                Image(
+                                    painter = painterResource(id = R.drawable.medico_logo),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(vertical = 16.dp),
+                                )
+                            }
+                            is TabBarInfo.NewDesignTitle -> {
+                                Text(
+                                    text = info.title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = MaterialTheme.colors.background,
+                                    modifier = Modifier
+                                        .weight(0.7f)
+                                        .align(Alignment.CenterVertically)
+                                        .padding(start = 16.dp),
+                                )
+                            }
+                            //display header in instore section from side menu when a retailer is selected
+                            is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
+                            //display search bar with product logo
+                            is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
+                            is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
+                            is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                         }
-                        is TabBarInfo.NewDesignTitle -> {
-                            Text(
-                                text = info.title,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.W600,
-                                color = MaterialTheme.colors.background,
-                                modifier = Modifier
-                                    .weight(0.7f)
-                                    .align(Alignment.CenterVertically)
-                                    .padding(start = 16.dp),
-                            )
-                        }
-                        //display header in instore section from side menu when a retailer is selected
-                        is TabBarInfo.InStoreProductTitle -> InStoreHeaderData(info, scope)
-                        //display search bar with product logo
-                        is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
-                        is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
-                        is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
                     }
                 }
             }
         },
         content = {
-            val childScope = scope.childScope.flow.collectAsState()
+            var padding = 56
+            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope) {// no bottom padding while editing order entries
+                padding = 0
+            }
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),
-                modifier = Modifier.padding(bottom = 56.dp)
+                modifier = Modifier.padding(bottom = padding.dp)
             ) {
                 when (it) {
                     is OtpScope.PhoneNumberInput -> AuthPhoneNumberInputScreen(it)
@@ -353,6 +355,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is InStoreCartScope -> InStoreCartScreen(it)
                     is InStoreOrderPlacedScope -> InStoreOrderPlacedScreen(it)
                     is WhatsappPreferenceScope -> WhatsappPreference(it)
+                    is OrderHsnEditScope -> OrderHsnEditScreen(it)
                     is InventoryScope -> InventoryMainComposable(it)
                     is SettingsScope.Profile -> ProfileComposable(it.user)
                     is SettingsScope.Address -> AddressComposable(it.user.addressData)
@@ -368,6 +371,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
+
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
                 if (mUserType == UserType.STOCKIST) {
                     mBottomNavItems = listOf(
@@ -387,8 +391,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     )
                 }
             }
-            if (mUserType != null)
-                BottomNavigationBar(mBottomNavItems, scope)
+            if (mUserType != null) {
+                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
+                    BottomNavigationBar(mBottomNavItems)
+                }
+            }
         }
     )
 }
@@ -587,7 +594,7 @@ private fun RowScope.SearchTabBar(
         if (cartCount != null && cartCount.value > 0) {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = cartCount.value
-        }else{
+        } else {
             val cart = mBottomNavItems?.find { it.key == BottomNavKey.CART }
             cart?.cartCount?.value = 0
         }*/
@@ -860,7 +867,7 @@ private fun StoreHeader(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = info.store.tradeName,
+                        text = info.storeName,
                         color = MaterialTheme.colors.background,
                         fontWeight = FontWeight.W700,
                         fontSize = 12.sp,
@@ -874,58 +881,6 @@ private fun StoreHeader(
                         modifier = Modifier.size(16.dp),
                     )
                 }
-
-                /* FoldableItem(
-                     expanded = false,
-                     headerMinHeight = 40.dp,
-                     header = { isExpanded ->
-                         Space(8.dp)
-                         Row(
-                             modifier = Modifier.weight(.8f),
-                             verticalAlignment = Alignment.CenterVertically,
-                         ) {
-                             Space(8.dp)
-                             Text(
-                                 text = info.store.tradeName,
-                                 color = MaterialTheme.colors.background,
-                                 fontWeight = FontWeight.W700,
-                                 fontSize = 12.sp,
-                                 maxLines = 1,
-                                 overflow = TextOverflow.Ellipsis,
-                             )
-                         }
-                         Row(
-                             modifier = Modifier
-                                 .weight(.1f)
-                                 .padding(end = 4.dp),
-                             horizontalArrangement = Arrangement.End,
-                         ) {
-                             Icon(
-                                 imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                 tint = ConstColors.gray,
-                                 contentDescription = null,
-                                 modifier = Modifier.size(24.dp),
-                             )
-                         }
-                     },
-                     childItems = listOf(""),
-                     item = { value, _ ->
-                         Column(
-                             modifier = Modifier.fillMaxWidth(),
-                             verticalArrangement = Arrangement.SpaceBetween,
-                         ) {
-                             Text(
-                                 text = info.store.fullAddress(),
-                                 color = MaterialTheme.colors.background,
-                                 fontWeight = FontWeight.W500,
-                                 fontSize = 12.sp,
-                                 maxLines = 1,
-                                 overflow = TextOverflow.Ellipsis,
-                             )
-                             Space(8.dp)
-                         }
-                     }
-                 )*/
             }
         }
 
@@ -935,33 +890,30 @@ private fun StoreHeader(
                 .clickable(indication = null) { info.goToNotifications() }
                 .padding(10.dp),
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_bell),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(6.dp)
-                    .align(Alignment.Center),
-                colorFilter = ColorFilter.tint(
-                    Color(0xFF003657)
-                )
-            )
-            val cartItems = info.cartItemsCount?.flow?.collectAsState()
-            if (cartItems?.value != null && cartItems.value > 0) {
-                Box(
+            if (info.showNotifications) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_bell),
+                    contentDescription = null,
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(top = 6.dp, end = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Canvas(modifier = Modifier.size(5.dp)) {
-                        drawCircle(Color.Red)
+                        .padding(6.dp)
+                        .align(Alignment.Center),
+                    colorFilter = ColorFilter.tint(
+                        Color(0xFF003657)
+                    )
+                )
+                val notificationCount = info.notificationItemsCount?.flow?.collectAsState()
+                if (notificationCount?.value != null && notificationCount.value > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 6.dp, end = 6.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Canvas(modifier = Modifier.size(5.dp)) {
+                            drawCircle(Color.Red)
+                        }
                     }
-                    /* Text(
-                        text = cartItems.value.toString(),
-                        color = ConstColors.red,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 10.sp,
-                    )*/
                 }
             }
         }
@@ -980,7 +932,7 @@ private fun StoreHeader(
 }
 
 /**
- * display header data for instore seller details
+ * use this as header when only back icon is required on header and nothing else
  */
 @ExperimentalMaterialApi
 @OptIn(ExperimentalComposeUiApi::class)
@@ -992,7 +944,6 @@ private fun OnlyBackHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val keyboard = LocalSoftwareKeyboardController.current
         Icon(
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
@@ -1012,10 +963,10 @@ private fun OnlyBackHeader(
 
 
 /**
- * composable for bottom navgation item
+ * composable for bottom navigation item
  */
 @Composable
-fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) {
+fun BottomNavigationBar(items: List<BottomNavigationItem>?, height: Int = 56) {
     if (mUserType != null) {
         Surface(
             elevation = 5.dp, color = Color.White
@@ -1024,7 +975,7 @@ fun BottomNavigationBar(items: List<BottomNavigationItem>?, scope: TabBarScope) 
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(height.dp),
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

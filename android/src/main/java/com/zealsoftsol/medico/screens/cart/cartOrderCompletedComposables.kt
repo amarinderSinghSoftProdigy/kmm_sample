@@ -293,15 +293,15 @@ fun OrderTotal(price: String) {
             Text(
                 text = stringResource(id = R.string.order_total),
                 color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W500,
-                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                fontSize = 22.sp,
             )
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = price,
                     color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
+                    fontSize = 22.sp,
                 )
                 Space(4.dp)
                 Text(

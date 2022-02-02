@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.nested.HelpScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 

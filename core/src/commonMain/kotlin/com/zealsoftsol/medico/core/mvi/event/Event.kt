@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -8,6 +9,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -25,6 +27,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -173,6 +176,8 @@ sealed class Event {
             data class Select(val item: Store) : Stores()
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
+            data class ShowDetails(val item: EntityInfo) : Stores()
+
         }
 
         sealed class Cart : Action() {
@@ -234,7 +239,16 @@ sealed class Event {
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
-            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(
+                val taxType: TaxType,
+                val retailerName: String,
+                val canEditOrderEntry: Boolean,
+                val orderId: String,
+                val declineReason: List<DeclineReason>,
+                val entry: List<OrderEntry>,
+                val index: Int
+            ) : Orders()
+
             data class SaveEntryQty(
                 val entry: OrderEntry,
                 val quantity: Double,
@@ -244,7 +258,12 @@ sealed class Event {
                 val expiry: String,
             ) : Orders()
 
-            data class Confirm(val fromNotification: Boolean) : Orders()
+            data class Confirm(val fromNotification: Boolean,val reasonCode: String) : Orders()
+
+            data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
+
+            data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
+
         }
 
         sealed class Invoices : Action() {
@@ -316,12 +335,42 @@ sealed class Event {
             data class SavePreference(
                 val language: String,
                 val phoneNumber: String,
-            ) :
-                WhatsAppPreference()
+            ) : WhatsAppPreference()
 
             object GetPreference : WhatsAppPreference()
         }
 
+        sealed class OrderHsn : Action() {
+            override val typeClazz: KClass<*> = OrderHsn::class
+
+            data class Load(val isFirstLoad: Boolean) : OrderHsn()
+
+            data class Search(val value: String) : OrderHsn()
+
+            data class SaveOrderEntry(
+                val orderId: String,
+                val orderEntryId: String,
+                val servedQty: Double,
+                val freeQty: Double,
+                val price: Double,
+                val batchNo: String,
+                val expiryDate: String,
+                val mrp: Double,
+                val discount: Double,
+                val hsnCode: String,
+            ) : OrderHsn()
+
+            data class RejectOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+                val reasonCode: String
+            ) : OrderHsn()
+
+            data class AcceptOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+            ) : OrderHsn()
+        }
         sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
