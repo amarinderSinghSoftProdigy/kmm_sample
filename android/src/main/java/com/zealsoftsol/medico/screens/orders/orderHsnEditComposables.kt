@@ -553,7 +553,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                                     keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                                    enabled = true,
+                                    enabled = canEditOrderEntry,
                                     textStyle = TextStyle(
                                         color = Color.Black,
                                         fontSize = 18.sp,
