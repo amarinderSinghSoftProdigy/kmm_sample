@@ -442,7 +442,10 @@
 "E0046" = "Invalid current password, please enter valid password again!!";
 "E0047" = "Something went wrong!! Please try, change password again after sometime";
 "E0048" = "Invalid (Qty + FreeQty), Please correct to nearest number";
-
+"E0053" = "Invoice not found, please try after sometime.";
+"E0054" = "QRCode can\'t be generated, try after sometime.";
+"E0055" = "Customer already registered, please check again";
+"permission_message" = "In order to perform the action, we require the camera and files permission to be granted.";
 
 //InStore
 "instore" = "In-Store";
@@ -452,5 +455,9 @@
 "instore_order" = "In Store Order";
 "search_tradename_mobile_no" = "Search Tradename or Mobile No";
 "new_customer" = "New Customer";
-
+"customer_details" = "Customer Details";
+"payment_type" = "Payment type";
+"reset" = "Reset";
+"add_customer" = "Add Customer";
+"amount" = "Amount";
 

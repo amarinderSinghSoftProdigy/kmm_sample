@@ -150,7 +150,9 @@ private struct _CustomizedNavigationBar: View {
                     ActiveSearchTabBar(searchBarInfo: searchBarInfo) {
                         handleGoBack()
                     }
-                    
+                case let instoreUserBarInfo as TabBarInfo.InStoreProductTitle:
+                    InStoreProductTitleBar(instoreUserBarInfo: instoreUserBarInfo,
+                                           getScopeButton: getScopeButton)
                 default:
                     EmptyView()
                 }
@@ -379,6 +381,71 @@ private struct _CustomizedNavigationBar: View {
             
             self.search = SwiftDataSource(dataSource: searchBarInfo.search)
             self.activeFilterIds = SwiftDataSource(dataSource: searchBarInfo.activeFilterIds)
+        }
+    }
+    
+    //MARK: InStore Product Title Bar
+    private struct InStoreProductTitleBar<Content: View>: View {
+        
+        let instoreUserBarInfo: TabBarInfo.InStoreProductTitle
+        let getScopeButton: (ScopeIcon) -> Content
+                
+        var body: some View {
+            
+            HStack {
+                getScopeButton(instoreUserBarInfo.icon)
+                .padding([.leading, .trailing], 6)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(instoreUserBarInfo.title).medicoText(textWeight: .bold)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(1)
+                    HStack {
+                        locationView
+                        Spacer()
+                        Button(action: {
+                            makePhoneCall()
+                        }, label: {
+                            phoneView
+                        })
+                    }
+                }
+                .padding(.bottom, 10)
+            }
+        }
+        
+        var locationView: some View {
+            HStack(spacing: 5) {
+                Image("LocationPin")
+                    .renderingMode(.template)
+                    .foregroundColor(appColor: .darkBlue)
+                    .frame(width: 8, height: 8, alignment: .center)
+                Text(instoreUserBarInfo.address)
+                    .medicoText(textWeight: .bold, fontSize: 12)
+            }
+        }
+        
+        var phoneView: some View {
+            HStack(spacing: 5) {
+                Image("Phone")
+                    .renderingMode(.template)
+                    .foregroundColor(appColor: .darkBlue)
+                    .frame(width: 8, height: 8, alignment: .center)
+                Text(instoreUserBarInfo.phone)
+                    .medicoText(textWeight: .bold, fontSize: 12)
+            }
+        }
+        
+        func makePhoneCall() {
+            let telephone = "tel://"
+            let formattedString = telephone + instoreUserBarInfo.phone
+            guard let url = URL(string: formattedString) else { return }
+            UIApplication.shared.open(url)
+        }
+        
+        init(instoreUserBarInfo: TabBarInfo.InStoreProductTitle,
+             getScopeButton: @escaping (ScopeIcon) -> Content) {
+            self.instoreUserBarInfo = instoreUserBarInfo
+            self.getScopeButton = getScopeButton
         }
     }
 }

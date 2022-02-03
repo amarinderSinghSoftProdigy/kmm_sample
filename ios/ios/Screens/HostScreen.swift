@@ -197,6 +197,12 @@ struct TabBarScreen: View {
             case let scope as InStoreUsersScope:
                 InStoreUsers(scope: scope)
                 
+            case let scope as InStoreAddUserScope:
+                InStoreCreateUser(scope: scope)
+                
+            case let scope as InStoreProductsScope:
+                InStoreProducts(scope: scope)
+                
             default:
                 EmptyView()
             }

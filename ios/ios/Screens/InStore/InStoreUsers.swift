@@ -15,7 +15,8 @@ struct InStoreUsers: View {
     
     @State private var expandedItems = [String: Bool]()
     @State private var selectedItem = String()
-    
+    private var instoreUser: DataInStoreUser? = nil
+
     @ObservedObject var items: SwiftDataSource<NSArray>
     @ObservedObject var totalItems: SwiftDataSource<KotlinInt>
     @ObservedObject var searchText: SwiftDataSource<NSString>
@@ -24,7 +25,7 @@ struct InStoreUsers: View {
     //MARK: Main View
     var body: some View {
         
-        return VStack {
+        VStack {
             
             SearchBar(placeholderLocalizationKey: "search_tradename_mobile_no",
                       searchText: searchText.value,
@@ -58,9 +59,9 @@ struct InStoreUsers: View {
             
             
             InstoreOrderBottom(enableContinue: !selectedItem.isEmpty, onClickAdd: {
-                
+                scope.goToInStoreCreateUser()
             }, onClickContinue: {
-                
+                selectUser()
             }).padding(20)
         }
     }
@@ -73,6 +74,15 @@ struct InStoreUsers: View {
         self.totalItems = SwiftDataSource(dataSource: scope.totalItems)
     }
     
+    //MARK: Select User
+    private func selectUser() {
+        if let users = self.items.value as? [DataInStoreUser] {
+            if let selectedUser = users.filter({ $0.mobileNumber == selectedItem }).first {
+                scope.selectItem(item: selectedUser)
+            }
+        }
+    }
+
     
     //MARK: Expandable InStore View
     struct ExpandableInStoreView: View {
@@ -83,8 +93,8 @@ struct InStoreUsers: View {
         let seller: DataInStoreUser
         
         var body: some View {
-            let expanded = Binding(get: { expandedItems[seller.gstin] == true },
-                                   set: { expandedItems[seller.gstin] = $0 })
+            let expanded = Binding(get: { expandedItems[seller.mobileNumber] == true },
+                                   set: { expandedItems[seller.mobileNumber] = $0 })
             InstoreCustomerView(seller: seller, expanded: expanded, selectedItem: $selectedItem)
         }
     }
@@ -101,8 +111,8 @@ struct InStoreUsers: View {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
                     HStack(spacing: 10) {
-                        RadioButton(checked: selectedItem == seller.gstin) {
-                            self.selectedItem = seller.gstin
+                        RadioButton(checked: selectedItem == seller.mobileNumber) {
+                            self.selectedItem = seller.mobileNumber
                         }
                         Text(seller.tradeName)
                             .medicoText(textWeight: expanded ? .semiBold : .regular, fontSize: 14, color: .darkBlue, multilineTextAlignment: .leading)
@@ -152,7 +162,7 @@ struct InStoreUsers: View {
             var body: some View {
                 HStack {
                     Text(title).medicoText(textWeight: .semiBold, fontSize: 12)
-                    Text(title).medicoText(textWeight: .medium, fontSize: 12)
+                    Text(number).medicoText(textWeight: .medium, fontSize: 12)
                 }
             }
         }
@@ -162,7 +172,7 @@ struct InStoreUsers: View {
             var body: some View {
                 HStack {
                     HStack {
-                        Text("Status: ").medicoText(textWeight: .semiBold, fontSize: 12)
+                        LocalizedText(localizationKey: "status", textWeight: .semiBold, fontSize: 12, color: .darkBlue)
                         Text(status).medicoText(textWeight: .semiBold)
                             .autocapitalization(.words)
                     }.padding(6)

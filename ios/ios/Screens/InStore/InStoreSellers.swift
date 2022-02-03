@@ -71,7 +71,6 @@ struct InStoreSellers: View {
         self.searchText = SwiftDataSource(dataSource: scope.searchText)
         self.items = SwiftDataSource(dataSource: scope.items)
         self.totalItems = SwiftDataSource(dataSource: scope.totalItems)
-        self.totalItems = SwiftDataSource(dataSource: scope.totalItems)
     }
     
     private struct InStoreSellerView: View {

@@ -112,6 +112,8 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
 		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
+		CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */; };
+		CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */; };
 		CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellers.swift */; };
 		CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsers.swift */; };
 /* End PBXBuildFile section */
@@ -255,6 +257,8 @@
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
+		CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCreateUser.swift; sourceTree = "<group>"; };
+		CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProducts.swift; sourceTree = "<group>"; };
 		CED29AC927A90FE20076A63B /* InStoreSellers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellers.swift; sourceTree = "<group>"; };
 		CED29ACB27A952500076A63B /* InStoreUsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -800,6 +804,8 @@
 			children = (
 				CED29AC927A90FE20076A63B /* InStoreSellers.swift */,
 				CED29ACB27A952500076A63B /* InStoreUsers.swift */,
+				CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */,
+				CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */,
 			);
 			path = InStore;
 			sourceTree = "<group>";
@@ -1065,6 +1071,7 @@
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
 				CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */,
+				CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
@@ -1074,6 +1081,7 @@
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
 				33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */,
+				CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,
