@@ -112,6 +112,8 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
 		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
+		CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellers.swift */; };
+		CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -253,6 +255,8 @@
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
+		CED29AC927A90FE20076A63B /* InStoreSellers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellers.swift; sourceTree = "<group>"; };
+		CED29ACB27A952500076A63B /* InStoreUsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -493,9 +497,10 @@
 		337C0A35256D423D00C3F0A5 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
+				CED29AC827A90FB70076A63B /* InStore */,
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				33377B1A2632D48A00B619F9 /* Cart */,
-				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333D3266262EBAAE0075E1D3 /* Help */,
 				330D8C4F266A0F6B005D46DB /* Invoices */,
@@ -758,10 +763,10 @@
 			isa = PBXGroup;
 			children = (
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
+				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				33B1B80725642192005215A3 /* Extensions */,
 				332F7DF9258B39BD00C5BF6B /* KotlinSources */,
 				337C0A36256D426900C3F0A5 /* Resources */,
-				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				337C0A35256D423D00C3F0A5 /* Screens */,
 				33CA67C725AEF81300148A27 /* Services */,
 				33016394255999F200835961 /* Utils */,
@@ -788,6 +793,15 @@
 				A4D04C257EEAE918940525D2 /* Pods_Medico_MedicoUITests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CED29AC827A90FB70076A63B /* InStore */ = {
+			isa = PBXGroup;
+			children = (
+				CED29AC927A90FE20076A63B /* InStoreSellers.swift */,
+				CED29ACB27A952500076A63B /* InStoreUsers.swift */,
+			);
+			path = InStore;
 			sourceTree = "<group>";
 		};
 		F5E94E8000B79EC32F9C20E2 /* Pods */ = {
@@ -1000,6 +1014,7 @@
 			files = (
 				33ED9E9C2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift in Sources */,
 				33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */,
+				CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */,
 				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */,
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
@@ -1049,6 +1064,7 @@
 				33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */,
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
+				CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,

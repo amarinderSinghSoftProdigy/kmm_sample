@@ -134,7 +134,7 @@ private struct _CustomizedNavigationBar: View {
     
     var body: some View {
         guard let info = navigationBarInfo.value else { return AnyView(EmptyView()) }
-        
+        print("INFO: \(info)")
         return AnyView(
             Group {
                 switch info {
@@ -264,11 +264,11 @@ private struct _CustomizedNavigationBar: View {
             self.getScopeButton = getScopeButton
             
             let cartData = CartData()
-            if let cartItemsCount = simpleBarInfo.cartItemsCount {
+            /*if let cartItemsCount = simpleBarInfo.cartItemsCount {
                 SwiftDataSource(dataSource: cartItemsCount).onValueDidSet = {
                     cartData.cartItemsCount = $0
                 }
-            }
+            }*/
             self.cartData = cartData
         }
         
@@ -329,7 +329,7 @@ private struct _CustomizedNavigationBar: View {
             self.searchBarInfo = searchBarInfo
             self.getScopeButton = getScopeButton
             
-            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount)
+            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount!)
         }
     }
     

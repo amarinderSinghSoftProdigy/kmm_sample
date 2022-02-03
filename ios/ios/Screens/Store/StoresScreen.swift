@@ -146,7 +146,8 @@ private struct StorePreviewScreen: View {
                       trailingButton: SearchBar.SearchBarButton(button: .filter(isHighlighted: isFilterApplied,
                                                                                 { scope.toggleFilter() })),
                       onTextChange: { newValue, _ in scope.searchProduct(input: newValue,
-                                                                         withAutoComplete: false) })
+                                                                         withAutoComplete: false,
+                                                                         sellerUnitCode: scope.unitCode) })
             
             self.productsSearchView
         }

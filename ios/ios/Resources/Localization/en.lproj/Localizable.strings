@@ -442,3 +442,15 @@
 "E0046" = "Invalid current password, please enter valid password again!!";
 "E0047" = "Something went wrong!! Please try, change password again after sometime";
 "E0048" = "Invalid (Qty + FreeQty), Please correct to nearest number";
+
+
+//InStore
+"instore" = "In-Store";
+"items:" = "Items:";
+"instore_orders" = "In-Store Orders";
+"empty_instore_orders" = "No Instore Orders";
+"instore_order" = "In Store Order";
+"search_tradename_mobile_no" = "Search Tradename or Mobile No";
+"new_customer" = "New Customer";
+
+
