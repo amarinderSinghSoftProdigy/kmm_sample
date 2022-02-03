@@ -592,8 +592,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = price.toString(), onChange = {
-                                            scope.updatePtr(it.toDouble())
+                                        value = price, onChange = {
+                                            scope.updatePtr(it)
                                         }
                                     )
 
@@ -627,8 +627,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = mrp.toString(), onChange = {
-                                            scope.updateMrp(it.toDouble())
+                                        value = mrp, onChange = {
+                                            scope.updateMrp(it)
                                         }
                                     )
                                 }
@@ -658,8 +658,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = servedQty.toString(), onChange = {
-                                            scope.updateQuantity(it.toDouble())
+                                        value = servedQty, onChange = {
+                                            scope.updateQuantity(it)
                                         }
                                     )
                                 }
@@ -688,8 +688,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = freeQty.toString(), onChange = {
-                                            scope.updateFreeQuantity(it.toDouble())
+                                        value = freeQty, onChange = {
+                                            scope.updateFreeQuantity(it)
                                         }
                                     )
                                 }
@@ -771,9 +771,9 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = discount.toString(), onChange = {
+                                        value = discount, onChange = {
                                             if (it.toDouble() <= 100)
-                                                scope.updateDiscount(it.toDouble())
+                                                scope.updateDiscount(it)
                                         }
                                     )
                                 }
@@ -974,7 +974,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             .height(40.dp),
                         text = stringResource(id = R.string.save),
                         onClick = { scope.saveEntry() },
-                        isEnabled = mrp != 0.0 && price != 0.0 // only allow submit if mrp and proce is entered
+                        isEnabled = mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
                     )
                 }
             }
@@ -1387,6 +1387,8 @@ fun EditText(
         onValueChange = {
             if (it.toDoubleOrNull() != null) {
                 onChange(it)
+            }else{
+                onChange("0")
             }
         },
         maxLines = 1,

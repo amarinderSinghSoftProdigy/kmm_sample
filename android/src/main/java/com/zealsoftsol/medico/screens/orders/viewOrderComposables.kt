@@ -426,6 +426,8 @@ fun ShowEditDiscountDropDown(
                             if (it.toDoubleOrNull() != null && it.length < 6) {
                                 if (it.toDouble() <= 100)
                                     onChange(it)
+                            }else{
+                                onChange("0")
                             }
                         },
                         maxLines = 1,

@@ -51,13 +51,13 @@ class OrderHsnEditScope(
     /**
      * values to be sent to server when order is accepted
      */
-    val quantity = DataSource(orderEntry.value.servedQty.value)
-    val freeQuantity = DataSource(orderEntry.value.freeQty.value)
-    val ptr = DataSource(orderEntry.value.price.value)
+    val quantity = DataSource(orderEntry.value.servedQty.value.toString())
+    val freeQuantity = DataSource(orderEntry.value.freeQty.value.toString())
+    val ptr = DataSource(orderEntry.value.price.value.toString())
     val batch = DataSource(orderEntry.value.batchNo)
     val expiry = DataSource(orderEntry.value.expiryDate?.formatted ?: "")
-    val discount = DataSource(orderEntry.value.discount.value)
-    val mrp = DataSource(orderEntry.value.mrp.value)
+    val discount = DataSource(orderEntry.value.discount.value.toString())
+    val mrp = DataSource(orderEntry.value.mrp.value.toString())
     val selectedHsnCode = DataSource(orderEntry.value.hsnCode)
 
     /**
@@ -67,13 +67,13 @@ class OrderHsnEditScope(
         this.selectedIndex.value = currentIndex
         orderEntry.value = orderEntries[currentIndex]
         selectedHsnCode.value = orderEntry.value.hsnCode
-        quantity.value = orderEntry.value.servedQty.value
-        freeQuantity.value = orderEntry.value.freeQty.value
-        ptr.value = orderEntry.value.price.value
+        quantity.value = orderEntry.value.servedQty.value.toString()
+        freeQuantity.value = orderEntry.value.freeQty.value.toString()
+        ptr.value = orderEntry.value.price.value.toString()
         batch.value = orderEntry.value.batchNo
         expiry.value = orderEntry.value.expiryDate?.formatted ?: ""
-        mrp.value = orderEntry.value.mrp.value
-        discount.value = orderEntry.value.discount.value
+        mrp.value = orderEntry.value.mrp.value.toString()
+        discount.value = orderEntry.value.discount.value.toString()
     }
 
 
@@ -123,15 +123,15 @@ class OrderHsnEditScope(
     /**
      * update following entries for sending the entered values to server
      */
-    fun updateQuantity(value: Double) {
+    fun updateQuantity(value: String) {
         quantity.value = value
     }
 
-    fun updateFreeQuantity(value: Double) {
+    fun updateFreeQuantity(value: String) {
         freeQuantity.value = value
     }
 
-    fun updatePtr(value: Double) {
+    fun updatePtr(value: String) {
         ptr.value = value
     }
 
@@ -148,11 +148,11 @@ class OrderHsnEditScope(
         selectedHsnCode.value = value
     }
 
-    fun updateMrp(value: Double) {
+    fun updateMrp(value: String) {
         mrp.value = value
     }
 
-    fun updateDiscount(value: Double) {
+    fun updateDiscount(value: String) {
         discount.value = value
     }
     /****************************************/
@@ -206,14 +206,14 @@ class OrderHsnEditScope(
             Event.Action.OrderHsn.SaveOrderEntry(
                 orderId = orderID,
                 orderEntryId = orderEntry.value.id,
-                servedQty = quantity.value,
-                freeQty = freeQuantity.value,
+                servedQty = quantity.value.toDouble(),
+                freeQty = freeQuantity.value.toDouble(),
                 price = ptr.value.toDouble(),
                 batchNo = batch.value,
                 expiryDate = expiry.value,
-                mrp = mrp.value,
+                mrp = mrp.value.toDouble(),
                 hsnCode = selectedHsnCode.value,
-                discount = discount.value
+                discount = discount.value.toDouble()
             )
         )
     }
