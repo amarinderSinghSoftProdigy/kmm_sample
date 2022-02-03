@@ -1052,12 +1052,12 @@ fun HsnErrorText() {
 private fun HsnCodeSheet(
     scope: OrderHsnEditScope,
 ) {
-    val items = scope.items.flow.collectAsState()
 
     val selectedHsnCode = remember { mutableStateOf("") }
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
     val keyboardController = LocalSoftwareKeyboardController.current
+    val items = scope.items.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -1182,33 +1182,34 @@ private fun HsnCodeSheet(
                     )
                 }
                 Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .heightIn(0.dp, 380.dp) //mention max height here
-                        .fillMaxWidth(),
-                ) {
-                    itemsIndexed(
-                        items = items.value,
-                        key = { index, _ -> index },
-                        itemContent = { index, item ->
-                            SingleHsnItem(item) { checked ->
-                                items.value.forEachIndexed { ind, it ->
-                                    if (checked && it.checked) {
-                                        items.value[ind].checked = false
-                                    }
-                                }
-                                items.value[index].checked = true
-                                selectedHsnCode.value = items.value[index].hsncode
-                            }
 
-                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                                scope.getHsnCodes(false)
-                            }
-                        },
-                    )
-                }
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 3.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .heightIn(0.dp, 380.dp) //mention max height here
+                            .fillMaxWidth(),
+                    ) {
+                        itemsIndexed(
+                            items = items.value,
+                            key = { index, _ -> index },
+                            itemContent = { index, item ->
+                                SingleHsnItem(item) { checked ->
+                                    items.value.forEachIndexed { ind, it ->
+                                        if (checked && it.checked) {
+                                            items.value[ind].checked = false
+                                        }
+                                    }
+                                    items.value[index].checked = true
+                                    selectedHsnCode.value = items.value[index].hsncode
+                                }
+
+                                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                    scope.getHsnCodes(false)
+                                }
+                            },
+                        )
+                    }
 
                 MedicoButton(text = stringResource(id = R.string.select),
                     isEnabled = selectedHsnCode.value.isNotEmpty(),
