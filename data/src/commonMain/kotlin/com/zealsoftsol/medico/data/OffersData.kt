@@ -20,6 +20,15 @@ data class OfferData(
 )
 
 @Serializable
+data class PromotionTypeData(
+    @SerialName("promotionCategories")
+    val promotionCategories: List<PromotionCategory>,
+
+    @SerialName("promotionTypes")
+    val promotionTypes: List<PromotionType>
+)
+
+@Serializable
 data class PromotionCategory(
     val code: String,
     val name: String
@@ -84,3 +93,35 @@ class Promotions(
     val promotionTypeData: PromotionType,
     val customerPageData: CustomerPageData
 )
+
+@Serializable
+class OfferProduct(
+    val mrp: FormattedData<Double>,
+    val ptr: FormattedData<Double>,
+    val availableQty: FormattedData<Double>,
+    val batch: String,
+    val expiryDate: String,
+    val standardUnit: String,
+    val hsnCode: String,
+    val name: String,
+    val id: String,
+    val shortName: String,
+    val code: String,
+    val manufacturerCode: String,
+    val manufacturerName: String,
+    val spid: String,
+)
+
+@Serializable
+class OfferProductRequest(
+    val promotionType: String,
+    val productCode: String,
+    val manufacturerCode: String,
+    val spid: String,
+    val buy: Double,
+    val free: Double,
+    val active: Boolean,
+    val isOfferForAllUsers: Boolean
+)
+
+

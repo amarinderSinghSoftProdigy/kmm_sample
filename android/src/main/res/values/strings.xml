@@ -348,6 +348,19 @@
     <string name="edit_discount">Edit Discount</string>
     <string name="inr_symbol">₹</string>
 
+    <string name="deal_offer">Deal/Offers</string>
+    <string name="manufacturers">Manufacturers</string>
+    <string name="create_offer">Create Offer</string>
+    <string name="running">Running</string>
+    <string name="search_by_product">Search By Product</string>
+    <string name="search_by_product_name">Search By Product Name</string>
+    <string name="missing_offers">No offers found!!</string>
+    <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
+    <string name="ended">Ended</string>
+    <string name="stop_offer_message">Do you want to stop the offer on</string>
+    <string name="start_offer_message">Do you want to start the offer on</string>
+    <string name="edit_Offer">Edit Offer</string>
+
     <!-- Termrs and Cond -->
 
     <string name="tandc_line_1">Terms &amp; Conditions</string>
@@ -442,17 +455,6 @@
     <string name="pp_line_10">Cookies are files with small amount of data that is commonly used an anonymous unique identifier. These are sent to your browser from the website that your visit and are stored on your computer’s hard drive.</string>
     <string name="pp_line_11">Our website uses these “cookies” to collection information and to improve our Service. You have the option to either accept or refuse these cookies, and know when a cookie is being sent to your computer. If you choose to refuse our cookies, you may not be able to use some portions of our Service.</string>
 
-    <string name="deal_offer">Deal/Offers</string>
-    <string name="manufacturers">Manufacturers</string>
-    <string name="create_offer">Create Offer</string>
-    <string name="running">Running</string>
-    <string name="search_by_product">Search By Product</string>
-    <string name="missing_offers">No offers found!!</string>
-    <string name="permission_message">" In order to perform the action, we require the camera and files permission to be granted."</string>
-    <string name="ended">Ended</string>
-    <string name="stop_offer_message">Do you want to stop the offer on</string>
-    <string name="start_offer_message">Do you want to start the offer on</string>
-
     <!--error codes-->
 
     <string name="E0000">Error</string>
@@ -507,5 +509,6 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
+    <string name="please_select_type">Please Select Promotion Type</string>
 
 </resources>

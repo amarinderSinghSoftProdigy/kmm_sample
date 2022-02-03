@@ -173,7 +173,10 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.Offers -> setScope(
-                    OffersScope("deal_offer")
+                    OffersScope.ViewOffers("deal_offer")
+                )
+                is Event.Transition.CreateOffers -> setScope(
+                    OffersScope.CreateOffer("create_offer")
                 )
                 is Event.Transition.PoInvoices -> setScope(
                     InvoicesScope(
