@@ -135,7 +135,7 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
-    txtColor: Color = Color.White,
+    txtColor: Color = MaterialTheme.colors.background,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
     border: BorderStroke? = null,

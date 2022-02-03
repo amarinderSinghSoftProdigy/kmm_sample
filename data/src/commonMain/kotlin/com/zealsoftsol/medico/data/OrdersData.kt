@@ -95,6 +95,7 @@ data class B2BData(
     val phoneNumber: String,
     val panNumber: String,
     val tradeName: String,
+    val tradeProfile: String = ""
 )
 
 @Serializable
