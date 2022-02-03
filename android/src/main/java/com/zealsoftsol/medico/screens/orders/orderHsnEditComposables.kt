@@ -659,7 +659,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = servedQty, onChange = {
-                                            scope.updateQuantity(it)
+                                            if (it.contains(".")) {
+                                                scope.updateQuantity(roundToNearestDecimalOf5(it))
+                                            } else {
+                                                scope.updateQuantity(it)
+                                            }
                                         }
                                     )
                                 }
@@ -689,7 +693,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
                                     EditText(canEditOrderEntry,
                                         value = freeQty, onChange = {
-                                            scope.updateFreeQuantity(it)
+                                            if (it.contains(".")) {
+                                                scope.updateFreeQuantity(roundToNearestDecimalOf5(it))
+                                            } else {
+                                                scope.updateFreeQuantity(it)
+                                            }
                                         }
                                     )
                                 }
@@ -1381,13 +1389,12 @@ fun EditText(
 
     BasicTextField(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 10.dp),
+            .fillMaxWidth(),
         value = value,
         onValueChange = {
             if (it.toDoubleOrNull() != null) {
                 onChange(it)
-            }else{
+            } else {
                 onChange("0")
             }
         },
@@ -1396,7 +1403,7 @@ fun EditText(
         keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         enabled = canEdit,
-        textStyle = textStyle
+        textStyle = textStyle,
     )
 }
 
@@ -1489,4 +1496,36 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
             }
         }
     }
+}
+
+fun roundToNearestDecimalOf5(text: String): String {
+    val split = text.replace(",", ".").split(".")
+    val beforeDot = split[0]
+    val afterDot = split.getOrNull(1)
+    var modBefore =
+        beforeDot.toIntOrNull() ?: 0
+    val modAfter = when (afterDot?.length) {
+        0 -> "."
+        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+            1
+        ).toIntOrNull()) {
+            0 -> ".0"
+            in 1..4 -> ".0"
+            5 -> ".5"
+            in 6..9 -> {
+                modBefore++
+                ".0"
+            }
+            null -> ""
+            else -> throw UnsupportedOperationException(
+                "cant be that"
+            )
+        }
+        null -> ""
+        else -> throw UnsupportedOperationException(
+            "cant be that"
+        )
+    }
+
+    return "$modBefore$modAfter"
 }

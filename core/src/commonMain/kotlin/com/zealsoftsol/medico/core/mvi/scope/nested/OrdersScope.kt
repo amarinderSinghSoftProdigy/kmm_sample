@@ -135,7 +135,8 @@ class ViewOrderScope(
                 isVerified = true,
                 panNumber = it.panNumber,
                 subscriptionData = null,
-                unitCode = ""
+                unitCode = "",
+                tradeNameUrl = it.tradeProfile
             )
 
             return TabBarInfo.StoreTitle(
@@ -323,7 +324,8 @@ class ConfirmOrderScope(
                 isVerified = true,
                 panNumber = it.panNumber,
                 subscriptionData = null,
-                unitCode = ""
+                unitCode = "",
+                tradeNameUrl = it.tradeProfile
             )
 
             return TabBarInfo.StoreTitle(
