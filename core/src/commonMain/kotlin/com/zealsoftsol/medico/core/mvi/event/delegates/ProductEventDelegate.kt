@@ -78,7 +78,7 @@ internal class ProductEventDelegate(
                             product.buyingOption!!,
                             CartIdentifier(spid),
                             product.quantity,
-                            0.0,
+                            product.freeQuantity,
                         )
                     )
                     return
