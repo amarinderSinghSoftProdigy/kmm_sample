@@ -27,7 +27,8 @@ class OrderHsnEditScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
     init {
-        getHsnCodes(true)
+        if (canEditOrderEntry)
+            getHsnCodes(true)
     }
 
     val selectedIndex = DataSource(index)

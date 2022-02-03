@@ -960,6 +960,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             onClick = {
                                 scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
                             },
+                            txtColor = Color.White,
                             color = ConstColors.red,
                             contentColor = Color.White,
                             isEnabled = true,
