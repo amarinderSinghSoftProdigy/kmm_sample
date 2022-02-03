@@ -64,7 +64,8 @@ import com.zealsoftsol.medico.screens.common.stringResourceByName
 @Composable
 fun ViewOrderScreen(scope: ViewOrderScope) {
 
-    remember { scope.updateData() }
+    if (scope.canEdit)
+        remember { scope.updateData() }
 
     val order = scope.order.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
@@ -249,16 +250,14 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                     isChecked = it in checkedEntries.value,
                                     onChecked = { _ -> scope.toggleCheck(it) },
                                     onClick = {
-                                        if (scope.canEdit) {
-                                            scope.selectEntry(
-                                                taxType = orderTaxValue.info.taxType!!,
-                                                retailerName = b2BDataValue.tradeName,
-                                                canEditOrderEntry = scope.canEdit,
-                                                declineReason = declineReasons.value,
-                                                entry = entries.value,
-                                                index = index
-                                            )
-                                        }
+                                        scope.selectEntry(
+                                            taxType = orderTaxValue.info.taxType!!,
+                                            retailerName = b2BDataValue.tradeName,
+                                            canEditOrderEntry = scope.canEdit,
+                                            declineReason = declineReasons.value,
+                                            entry = entries.value,
+                                            index = index
+                                        )
                                     },
                                 )
                                 Space(8.dp)
@@ -427,6 +426,8 @@ fun ShowEditDiscountDropDown(
                             if (it.toDoubleOrNull() != null && it.length < 6) {
                                 if (it.toDouble() <= 100)
                                     onChange(it)
+                            }else{
+                                onChange("0")
                             }
                         },
                         maxLines = 1,

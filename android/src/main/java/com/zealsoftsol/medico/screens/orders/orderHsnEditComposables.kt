@@ -553,7 +553,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                                     keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                                    enabled = true,
+                                    enabled = canEditOrderEntry,
                                     textStyle = TextStyle(
                                         color = Color.Black,
                                         fontSize = 18.sp,
@@ -592,8 +592,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = price.toString(), onChange = {
-                                            scope.updatePtr(it.toDouble())
+                                        value = price, onChange = {
+                                            scope.updatePtr(it)
                                         }
                                     )
 
@@ -627,8 +627,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = mrp.toString(), onChange = {
-                                            scope.updateMrp(it.toDouble())
+                                        value = mrp, onChange = {
+                                            scope.updateMrp(it)
                                         }
                                     )
                                 }
@@ -658,8 +658,12 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = servedQty.toString(), onChange = {
-                                            scope.updateQuantity(it.toDouble())
+                                        value = servedQty, onChange = {
+                                            if (it.contains(".")) {
+                                                scope.updateQuantity(roundToNearestDecimalOf5(it))
+                                            } else {
+                                                scope.updateQuantity(it)
+                                            }
                                         }
                                     )
                                 }
@@ -688,8 +692,12 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = freeQty.toString(), onChange = {
-                                            scope.updateFreeQuantity(it.toDouble())
+                                        value = freeQty, onChange = {
+                                            if (it.contains(".")) {
+                                                scope.updateFreeQuantity(roundToNearestDecimalOf5(it))
+                                            } else {
+                                                scope.updateFreeQuantity(it)
+                                            }
                                         }
                                     )
                                 }
@@ -771,9 +779,9 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     )
 
                                     EditText(canEditOrderEntry,
-                                        value = discount.toString(), onChange = {
+                                        value = discount, onChange = {
                                             if (it.toDouble() <= 100)
-                                                scope.updateDiscount(it.toDouble())
+                                                scope.updateDiscount(it)
                                         }
                                     )
                                 }
@@ -960,6 +968,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             onClick = {
                                 scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
                             },
+                            txtColor = Color.White,
                             color = ConstColors.red,
                             contentColor = Color.White,
                             isEnabled = true,
@@ -973,7 +982,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             .height(40.dp),
                         text = stringResource(id = R.string.save),
                         onClick = { scope.saveEntry() },
-                        isEnabled = mrp != 0.0 && price != 0.0 // only allow submit if mrp and proce is entered
+                        isEnabled = mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
                     )
                 }
             }
@@ -1043,12 +1052,12 @@ fun HsnErrorText() {
 private fun HsnCodeSheet(
     scope: OrderHsnEditScope,
 ) {
-    val items = scope.items.flow.collectAsState()
 
     val selectedHsnCode = remember { mutableStateOf("") }
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
     val keyboardController = LocalSoftwareKeyboardController.current
+    val items = scope.items.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -1173,33 +1182,34 @@ private fun HsnCodeSheet(
                     )
                 }
                 Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .heightIn(0.dp, 380.dp) //mention max height here
-                        .fillMaxWidth(),
-                ) {
-                    itemsIndexed(
-                        items = items.value,
-                        key = { index, _ -> index },
-                        itemContent = { index, item ->
-                            SingleHsnItem(item) { checked ->
-                                items.value.forEachIndexed { ind, it ->
-                                    if (checked && it.checked) {
-                                        items.value[ind].checked = false
-                                    }
-                                }
-                                items.value[index].checked = true
-                                selectedHsnCode.value = items.value[index].hsncode
-                            }
 
-                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                                scope.getHsnCodes(false)
-                            }
-                        },
-                    )
-                }
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 3.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .heightIn(0.dp, 380.dp) //mention max height here
+                            .fillMaxWidth(),
+                    ) {
+                        itemsIndexed(
+                            items = items.value,
+                            key = { index, _ -> index },
+                            itemContent = { index, item ->
+                                SingleHsnItem(item) { checked ->
+                                    items.value.forEachIndexed { ind, it ->
+                                        if (checked && it.checked) {
+                                            items.value[ind].checked = false
+                                        }
+                                    }
+                                    items.value[index].checked = true
+                                    selectedHsnCode.value = items.value[index].hsncode
+                                }
+
+                                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                    scope.getHsnCodes(false)
+                                }
+                            },
+                        )
+                    }
 
                 MedicoButton(text = stringResource(id = R.string.select),
                     isEnabled = selectedHsnCode.value.isNotEmpty(),
@@ -1380,12 +1390,13 @@ fun EditText(
 
     BasicTextField(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 10.dp),
+            .fillMaxWidth(),
         value = value,
         onValueChange = {
             if (it.toDoubleOrNull() != null) {
                 onChange(it)
+            } else {
+                onChange("0")
             }
         },
         maxLines = 1,
@@ -1393,7 +1404,7 @@ fun EditText(
         keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
         enabled = canEdit,
-        textStyle = textStyle
+        textStyle = textStyle,
     )
 }
 
@@ -1486,4 +1497,36 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
             }
         }
     }
+}
+
+fun roundToNearestDecimalOf5(text: String): String {
+    val split = text.replace(",", ".").split(".")
+    val beforeDot = split[0]
+    val afterDot = split.getOrNull(1)
+    var modBefore =
+        beforeDot.toIntOrNull() ?: 0
+    val modAfter = when (afterDot?.length) {
+        0 -> "."
+        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+            1
+        ).toIntOrNull()) {
+            0 -> ".0"
+            in 1..4 -> ".0"
+            5 -> ".5"
+            in 6..9 -> {
+                modBefore++
+                ".0"
+            }
+            null -> ""
+            else -> throw UnsupportedOperationException(
+                "cant be that"
+            )
+        }
+        null -> ""
+        else -> throw UnsupportedOperationException(
+            "cant be that"
+        )
+    }
+
+    return "$modBefore$modAfter"
 }
