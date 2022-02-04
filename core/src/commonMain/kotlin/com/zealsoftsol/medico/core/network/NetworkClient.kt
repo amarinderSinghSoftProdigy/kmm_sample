@@ -44,6 +44,8 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.OfferData
+import com.zealsoftsol.medico.data.OfferProduct
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -60,6 +62,7 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
@@ -82,21 +85,21 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
@@ -953,6 +956,7 @@ class NetworkClient(
             }
         }
 
+    //View offers/Update offers methods
     override suspend fun getOffersData(
         unitCode: String,
         search: String?,
@@ -981,6 +985,56 @@ class NetworkClient(
         request: PromotionUpdateRequest
     ) = simpleRequest {
         client.post<BodyResponse<String>>("${baseUrl.url}/promotions/update") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+    //Create offer methods
+    override suspend fun getPromotionTypes(
+        unitCode: String
+    ) = simpleRequest {
+        client.get<BodyResponse<PromotionTypeData>>("${baseUrl.url}/promotions/types") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+        }
+    }
+
+    override suspend fun autocompleteOffers(
+        input: String,
+        unitCode: String
+    ) = simpleRequest {
+        val path = "/search/promotions/suggest"
+        client.get<BodyResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("b2bUnitCode", unitCode)
+                parameters.append("suggest", input)
+            }
+        }
+    }
+
+    override suspend fun getAutocompleteItem(
+        input: String,
+        unitCode: String
+    ) = simpleRequest {
+        val path = "/search/promotions/suggest/search"
+        client.get<BodyResponse<OfferProduct>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("search", input)
+                parameters.append("b2bUnitCode", unitCode)
+            }
+        }
+    }
+
+    override suspend fun saveOffer(
+        unitCode: String,
+        request: OfferProductRequest
+    ) = simpleRequest {
+        val path = "/promotions/submit"
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
             withMainToken()
             withB2bCodeToken(unitCode)
             jsonBody(request)

@@ -33,6 +33,8 @@ import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.OfferData
+import com.zealsoftsol.medico.data.OfferProduct
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -46,6 +48,7 @@ import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -331,6 +334,7 @@ interface NetworkScope {
     }
 
     interface OffersStore : NetworkScope {
+        //VIew offer methods
         suspend fun getOffersData(
             unitCode: String,
             search: String?,
@@ -341,6 +345,26 @@ interface NetworkScope {
         suspend fun updateOffer(
             unitCode: String,
             request: PromotionUpdateRequest
+        ): BodyResponse<String>
+
+        //Create offer methods
+        suspend fun getPromotionTypes(
+            unitCode: String,
+        ): BodyResponse<PromotionTypeData>
+
+        suspend fun autocompleteOffers(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<List<AutoComplete>>
+
+        suspend fun getAutocompleteItem(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<OfferProduct>
+
+        suspend fun saveOffer(
+            unitCode: String,
+            request: OfferProductRequest
         ): BodyResponse<String>
     }
 

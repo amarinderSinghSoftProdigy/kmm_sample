@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -19,6 +20,7 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
@@ -129,7 +131,7 @@ sealed class Event {
             data class showToast(val msg: String, val cartData: CartData?) : Search()
             data class ShowDetails(val item: EntityInfo) : Search()
             data class ResetButton(val item: Boolean) : Search()
-            data class UpdateFree(val qty:Double,val id:String) : Search()
+            data class UpdateFree(val qty: Double, val id: String) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -265,15 +267,15 @@ sealed class Event {
                 val expiry: String,
             ) : Orders()
 
-            data class Confirm(val fromNotification: Boolean,val reasonCode: String) : Orders()
+            data class Confirm(val fromNotification: Boolean, val reasonCode: String) : Orders()
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
 
             data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
 
-            data class EditDiscount(val orderId: String, val discount: Double): Orders()
+            data class EditDiscount(val orderId: String, val discount: Double) : Orders()
 
-            data class ChangePaymentMethod(val orderId: String, val type: String): Orders()
+            data class ChangePaymentMethod(val orderId: String, val type: String) : Orders()
 
         }
 
@@ -382,19 +384,30 @@ sealed class Event {
                 val spid: String,
             ) : OrderHsn()
         }
+
         sealed class Offers : Action() {
             override val typeClazz: KClass<*> = Offers::class
 
-            data class ShowBottomSheet(val promotionType: String, val name: String,val active:Boolean) :
+            data class ShowBottomSheet(
+                val promotionType: String,
+                val name: String,
+                val active: Boolean
+            ) :
                 Offers()
 
+            object Refresh : Offers()
             object LoadMoreProducts : Offers()
+            object OpenCreateOffer : Offers()
             data class GetOffers(
                 val search: String? = null,
                 val query: ArrayList<String> = ArrayList(),
             ) : Offers()
 
-            data class UpdateOffer(val promotionType: String,val active:Boolean) : Offers()
+            data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
+            object GetTypes : Offers()
+            data class SearchAutoComplete(val value: String) : Offers()
+            data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
+            data class SaveOffer(val request: OfferProductRequest) : Offers()
         }
 
         sealed class Inventory : Action() {
@@ -435,6 +448,7 @@ sealed class Event {
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
         object Offers : Transition()
+        object CreateOffers : Transition()
         object PoInvoices : Transition()
         object InStore : Transition()
         object InStoreUsers : Transition()

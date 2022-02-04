@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,11 +52,12 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @Composable
-fun OffersScreen(scope: OffersScope) {
+fun OffersScreen(scope: OffersScope.ViewOffers) {
     val search = scope.productSearch.flow.collectAsState()
     val offers = scope.items.flow.collectAsState()
     val manufacturer = scope.manufacturer.flow.collectAsState()
     val statuses = scope.statuses.flow.collectAsState()
+    val refresh = scope.refresh.flow.collectAsState()
     Column {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -83,17 +85,14 @@ fun OffersScreen(scope: OffersScope) {
                     }
                 }
             }
-            //Space(dp = 16.dp)
-            /* SectionButton(
-                 modifier = Modifier.weight(0.35f),
-                 icon = painterResource(id = R.drawable.ic_offer),
-                 text = stringResource(id = R.string.create_offer),
-                 isClickable = false,
-                 counter = 0,
-                 counterSupported = false
-             ) {
-
-             }*/
+            Space(dp = 16.dp)
+            SectionButton(
+                modifier = Modifier.weight(0.35f),
+                icon = painterResource(id = R.drawable.ic_offer),
+                text = stringResource(id = R.string.create_offer),
+            ) {
+                scope.openCreateOffer()
+            }
         }
         BasicSearchBar(
             input = search.value,
@@ -156,7 +155,7 @@ fun OffersScreen(scope: OffersScope) {
  * ui item for manufaturer listing
  */
 @Composable
-fun ManufacturerItem(item: Manufacturer, scope: OffersScope) {
+fun ManufacturerItem(item: Manufacturer, scope: OffersScope.ViewOffers) {
     val manufacturer = scope.manufacturerSearch.flow.collectAsState()
     Card(
         modifier = Modifier
@@ -196,7 +195,7 @@ fun ManufacturerItem(item: Manufacturer, scope: OffersScope) {
  * ui item for offer listing
  */
 @Composable
-fun OfferItem(item: Promotions, scope: OffersScope) {
+fun OfferItem(item: Promotions, scope: OffersScope.ViewOffers) {
     Column {
         Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)) {
             Row {
@@ -281,16 +280,13 @@ private fun SectionButton(
     modifier: Modifier,
     icon: Painter,
     text: String,
-    isClickable: Boolean,
-    counter: Int?,
-    counterSupported: Boolean,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
         color = ConstColors.yellow,
-        enabled = isClickable,
+        enabled = true,
         onClick = onClick,
     ) {
 
@@ -321,7 +317,7 @@ private fun SectionButton(
                 Text(
                     text = text,
                     color = MaterialTheme.colors.background,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.W600,
                 )
             }
