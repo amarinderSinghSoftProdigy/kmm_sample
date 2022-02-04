@@ -41,6 +41,7 @@ internal class OffersEventDelegate(
         is Event.Action.Offers.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Offers.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Offers.SaveOffer -> saveOffer(event.request)
+        is Event.Action.Offers.Refresh -> refresh()
     }
 
     private suspend fun getOffers(search: String?, query: ArrayList<String>) {
@@ -188,15 +189,19 @@ internal class OffersEventDelegate(
                 it.productSearch.value = ""
                 it.autoComplete.value = emptyList()
                 val user = userRepo.requireUser()
-                setHostProgress(true)
                 networkOffersScope.saveOffer(
                     unitCode = user.unitCode, request = request
                 ).onSuccess { body ->
-                    setHostProgress(false)
                     it.dialogMessage.value = body
                     it.showAlert.value = true
                 }
             }.onError(navigator)
+        }
+    }
+
+    private fun refresh() {
+        navigator.withScope<OffersScope.ViewOffers> {
+            it.startSearch()
         }
     }
 }

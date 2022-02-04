@@ -82,12 +82,13 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
         Space(dp = 12.dp)
         if (openDialog.value)
             ShowAlert(
-                if (dialogMessage.value.toString().isNotEmpty())
-                    dialogMessage.value.toString()
+                if (dialogMessage.value.isNotEmpty())
+                    dialogMessage.value
                 else stringResource(id = R.string.offer_successfull)
             ) {
                 scope.changeAlertScope(false)
                 scope.goBack()
+                scope.refresh()
             }
 
         Row(

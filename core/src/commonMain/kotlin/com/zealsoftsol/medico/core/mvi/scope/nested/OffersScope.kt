@@ -16,6 +16,9 @@ import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
 
 sealed class OffersScope : Scope.Child.TabBar() {
+
+    val refresh: DataSource<Boolean> = DataSource(false)
+
     class ViewOffers(
         private val title: String
     ) : OffersScope(), CommonScope.CanGoBack {
@@ -45,6 +48,10 @@ sealed class OffersScope : Scope.Child.TabBar() {
         fun startSearch() {
             reset()
             EventCollector.sendEvent(Event.Action.Offers.GetOffers())
+        }
+
+        fun stopRefresh() {
+            refresh.value = false
         }
 
         fun reset() {
@@ -88,7 +95,12 @@ sealed class OffersScope : Scope.Child.TabBar() {
         }
 
         fun changeAlertScope(enable: Boolean) {
-            this.showAlert.value = enable
+            refresh.value = true
+            showAlert.value = enable
+        }
+
+        fun refresh() {
+            EventCollector.sendEvent(Event.Action.Offers.Refresh)
         }
 
         fun startSearch() {

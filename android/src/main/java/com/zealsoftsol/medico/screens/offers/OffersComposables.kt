@@ -57,6 +57,7 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     val offers = scope.items.flow.collectAsState()
     val manufacturer = scope.manufacturer.flow.collectAsState()
     val statuses = scope.statuses.flow.collectAsState()
+    val refresh = scope.refresh.flow.collectAsState()
     Column {
         Row(
             modifier = Modifier.padding(12.dp),
