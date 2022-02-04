@@ -47,11 +47,9 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.OfferProductRequest
-import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.management.checkOffer
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 
@@ -64,7 +62,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
     val activeTab = scope.activeTab.flow.collectAsState()
     val autoComplete = scope.autoComplete.flow.collectAsState()
     val selectedProduct = scope.selectedProduct.flow.collectAsState()
-    val saveClicked = scope.saveClicked.flow.collectAsState()
+    val activeIndex = scope.activeType.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val dialogMessage = scope.dialogMessage.flow.collectAsState()
     val requestData = scope.requestData.flow.collectAsState()
@@ -88,7 +86,6 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
             ) {
                 scope.changeAlertScope(false)
                 scope.goBack()
-                scope.refresh()
             }
 
         Row(
@@ -206,19 +203,39 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                     ) {
                         Box(modifier = Modifier.width(120.dp)) {
                             EditField(
-                                label = stringResource(id = R.string.qty),
-                                qty = (requestData.value?.buy ?: 0.0).toString(),
-                                onChange = { request.buy = it.toDouble() },
-                                isEnabled = saveClicked.value,
+                                label = if (activeIndex.value == 0) stringResource(id = R.string.qty) else stringResource(
+                                    id = R.string.discount
+                                ),
+                                qty = if (activeIndex.value == 0) {
+                                    (requestData.value?.buy ?: 0.0).toString()
+                                } else {
+                                    (requestData.value?.discount ?: 0.0).toString()
+                                },
+                                onChange = {
+                                    if (activeIndex.value == 0) {
+                                        request.discount = 0.0
+                                        request.buy = it.toDouble()
+                                    } else {
+                                        request.buy = 0.0
+                                        request.discount = it.toDouble()
+                                    }
+                                },
+                                isEnabled = true,//saveClicked.value,
                             )
                         }
-                        Box(modifier = Modifier.width(120.dp)) {
-                            EditField(
-                                label = stringResource(id = R.string.free),
-                                qty = (requestData.value?.free ?: 0.0).toString(),
-                                onChange = { request.free = it.toDouble() },
-                                isEnabled = saveClicked.value,
-                            )
+
+                        if (activeIndex.value == 0) {
+                            Box(modifier = Modifier.width(120.dp)) {
+                                EditField(
+                                    label = stringResource(id = R.string.free),
+                                    qty = (requestData.value?.free ?: 0.0).toString(),
+                                    onChange = { request.free = it.toDouble() },
+                                    isEnabled = true,//saveClicked.value,
+                                )
+                            }
+                        } else {
+                            request.buy = 0.0
+                            request.free = 0.0
                         }
                     }
                     Space(dp = 12.dp)
@@ -235,8 +252,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                         text = stringResource(id = R.string.stop),
                                         color = ConstColors.red,
                                         fontSize = 14.sp,
-                                        fontWeight = if (requestData.value?.active == false
-                                        ) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
                                     )
                                     Text(
                                         text = "/",
@@ -247,8 +263,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                         text = stringResource(id = R.string.start),
                                         color = ConstColors.lightGreen,
                                         fontSize = 14.sp,
-                                        fontWeight = if (requestData.value?.active == true
-                                        ) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
                                     )
                                 }
                                 Space(dp = 4.dp)
@@ -256,8 +271,8 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                     checked = switchEnabled.value,
                                     onCheckedChange = {
                                         switchEnabled.value = it
-                                        request.active = it
-                                        scope.saveData(request = request)
+                                        /*request.active = it
+                                        scope.saveData(request = request)*/
                                     },
                                     colors = SwitchDefaults.colors(
                                         checkedThumbColor = ConstColors.green,
@@ -269,19 +284,21 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             MedicoButton(
-                                text = if (saveClicked.value) stringResource(id = R.string.save) else stringResource(
+                                text = /*if (saveClicked.value) stringResource(id = R.string.save) else*/
+                                stringResource(
                                     id = R.string.confirm
                                 ),
                                 isEnabled = true,
                                 height = 35.dp,
                                 elevation = null,
                                 onClick = {
-                                    if (saveClicked.value) {
+                                    /*if (saveClicked.value) {
                                         scope.saveData()
                                         scope.saveData(request = request)
-                                    } else {
-                                        scope.saveOffer(request = request, product = product)
-                                    }
+                                    } else {*/
+                                    request.active = switchEnabled.value
+                                    scope.saveOffer(request = request, product = product)
+                                    //}
                                 },
                                 textSize = 14.sp,
                                 color = ConstColors.yellow,
@@ -290,7 +307,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         }
                     }
 
-                    if (!saveClicked.value) {
+                    if (false) {//!saveClicked.value) {
                         Space(dp = 8.dp)
                         Surface(
                             onClick = { scope.saveData() },
@@ -374,26 +391,6 @@ private fun AutoCompleteItem(
     }
 }
 
-fun onChange(
-    product: ProductSearch?,
-    qty: String,
-    selectedProduct: ProductSearch?
-) {
-    product?.quantity = qty.toDouble()
-    if (product?.sellerInfo?.isPromotionActive == true) {
-        product.freeQuantity = checkOffer(
-            product.sellerInfo?.promotionData,
-            product.quantity
-        )
-    }
-    if (product?.quantity!! > 0) {
-        if (product.quantity > (selectedProduct?.stockInfo?.availableQty
-                ?: 0)
-        ) {
-
-        }
-    }
-}
 
 /**
  * @param scope current scope to get the current and updated state of views
