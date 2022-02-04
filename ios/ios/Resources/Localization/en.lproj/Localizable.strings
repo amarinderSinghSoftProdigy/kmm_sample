@@ -452,6 +452,8 @@
 "items:" = "Items:";
 "instore_orders" = "In-Store Orders";
 "empty_instore_orders" = "No Instore Orders";
+"empty_instore_users" = "No Instore Users";
+"empty_instore_products" = "No Instore Products";
 "instore_order" = "In Store Order";
 "search_tradename_mobile_no" = "Search Tradename or Mobile No";
 "new_customer" = "New Customer";
@@ -460,4 +462,6 @@
 "reset" = "Reset";
 "add_customer" = "Add Customer";
 "amount" = "Amount";
+"search_by_product" = "Search By Product";
+"no_available_offer" = "No Available Offer";
 

@@ -21,7 +21,10 @@ struct BaseScopeView: View {
     let scope: Scope.Host
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        
+        print("Bottom Sheet: \(scope.bottomSheet)")
+        
+        return ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 .hideKeyboardOnTap()
             
@@ -248,7 +251,10 @@ struct BottomSheetView: View {
                 Color.clear
                     .modifier(ViewItemTaxBottomSheet(bottomSheet: viewItemTaxSheet,
                                                          onBottomSheetDismiss: dismissBottomSheet))
-                        
+            case let inStoreProductSheet as BottomSheet.InStoreViewProduct:
+                Color.clear
+                    .modifier(InStoreViewProductBottomSheet(bottomSheet: inStoreProductSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
             default:
                 Color.clear
             }

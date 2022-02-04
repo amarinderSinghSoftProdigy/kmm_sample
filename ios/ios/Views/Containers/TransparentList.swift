@@ -164,6 +164,7 @@ class ListScrollData: ObservableObject {
         case notifications
         case stores
         case instoreOrders
+        case instoreProducts
         case allStockists
         case yourStockists
         case yourRetailers

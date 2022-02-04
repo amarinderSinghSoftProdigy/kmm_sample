@@ -54,7 +54,7 @@ struct InStoreUsers: View {
                 
             } else {
                 InStoreEmptyListView(imageName: "EmptyInstoreOrders",
-                                     titleLocalizationKey: "empty_instore_orders")
+                                     titleLocalizationKey: "empty_instore_users")
             }
             
             
@@ -170,7 +170,7 @@ struct InStoreUsers: View {
         private struct StatusView: View {
             let status: String
             var body: some View {
-                HStack {
+                HStack(spacing: 2) {
                     HStack {
                         LocalizedText(localizationKey: "status", textWeight: .semiBold, fontSize: 12, color: .darkBlue)
                         Text(status).medicoText(textWeight: .semiBold)

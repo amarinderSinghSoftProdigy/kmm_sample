@@ -114,6 +114,7 @@
 		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
 		CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */; };
 		CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */; };
+		CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */; };
 		CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellers.swift */; };
 		CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsers.swift */; };
 /* End PBXBuildFile section */
@@ -259,6 +260,7 @@
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
 		CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCreateUser.swift; sourceTree = "<group>"; };
 		CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProducts.swift; sourceTree = "<group>"; };
+		CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreViewProductBottomSheet.swift; sourceTree = "<group>"; };
 		CED29AC927A90FE20076A63B /* InStoreSellers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellers.swift; sourceTree = "<group>"; };
 		CED29ACB27A952500076A63B /* InStoreUsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -648,6 +650,7 @@
 				33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */,
 				9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */,
 				9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */,
+				CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -1054,6 +1057,7 @@
 				33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */,
 				3373ED66265FB99700118DD9 /* DatePicker.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
+				CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				33DE40C32664CB83001EB277 /* ConfirmOrderScreen.swift in Sources */,
