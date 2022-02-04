@@ -113,15 +113,19 @@ class OfferProduct(
 )
 
 @Serializable
-class OfferProductRequest(
-    val promotionType: String,
-    val productCode: String,
-    val manufacturerCode: String,
-    val spid: String,
-    val buy: Double,
-    val free: Double,
-    val active: Boolean,
-    val isOfferForAllUsers: Boolean
-)
-
+class OfferProductRequest {
+    var promotionType: String? = null
+    var productCode: String? = null
+    var manufacturerCode: String? = null
+    var spid: String? = null
+    var buy: Double = 0.0
+    var free: Double = 0.0
+    var active: Boolean = false
+    var isOfferForAllUsers: Boolean = true
+    var connectedUsers: ArrayList<String>? = null
+    var discount: Double? = null
+    var stock: Double? = null
+    var startDate: String? = null
+    var endDate: String? = null
+}
 

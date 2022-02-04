@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.OfferProduct
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
@@ -68,13 +69,15 @@ sealed class OffersScope : Scope.Child.TabBar() {
     class CreateOffer(
         private val title: String
     ) : OffersScope(), CommonScope.CanGoBack {
-        var saveClicked: DataSource<Boolean> = DataSource(true)
-        var activeTab: DataSource<String> = DataSource("")
+        val saveClicked: DataSource<Boolean> = DataSource(true)
+        val activeTab: DataSource<String> = DataSource("")
         val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         val selectedProduct: DataSource<OfferProduct?> = DataSource(null)
         val productSearch: DataSource<String> = DataSource("")
+        val dialogMessage: DataSource<String> = DataSource("")
         val promoTypes: DataSource<List<PromotionType>> = DataSource(emptyList())
         val showAlert: DataSource<Boolean> = DataSource(false)
+        val requestData: DataSource<OfferProductRequest?> = DataSource(null)
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title)
@@ -105,6 +108,23 @@ sealed class OffersScope : Scope.Child.TabBar() {
 
         fun saveData() {
             saveClicked.value = !saveClicked.value
+        }
+
+        fun saveData(request: OfferProductRequest) {
+            requestData.value = request
+        }
+
+        fun saveOffer(request: OfferProductRequest, product: OfferProduct?) {
+            request.manufacturerCode = product?.manufacturerCode
+            request.productCode = product?.code
+            request.spid = product?.spid
+            request.isOfferForAllUsers = true
+            request.connectedUsers = ArrayList()
+            request.discount = 0.0
+            request.stock = 0.0
+            request.startDate = ""
+            request.endDate = ""
+            EventCollector.sendEvent(Event.Action.Offers.SaveOffer(request))
         }
     }
 }

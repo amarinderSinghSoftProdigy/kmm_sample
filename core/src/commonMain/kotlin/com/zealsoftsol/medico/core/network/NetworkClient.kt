@@ -996,7 +996,7 @@ class NetworkClient(
         input: String,
         unitCode: String
     ) = simpleRequest {
-        val path = "/promotions/suggest"
+        val path = "/search/promotions/suggest"
         client.get<BodyResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
             withMainToken()
             url {
@@ -1010,7 +1010,7 @@ class NetworkClient(
         input: String,
         unitCode: String
     ) = simpleRequest {
-        val path = "/promotions/suggest/search"
+        val path = "/search/promotions/suggest/search"
         client.get<BodyResponse<OfferProduct>>("${baseUrl.url}$path") {
             withMainToken()
             url {
@@ -1025,7 +1025,7 @@ class NetworkClient(
         request: OfferProductRequest
     ) = simpleRequest {
         val path = "/promotions/submit"
-        client.post<BodyResponse<OfferProduct>>("${baseUrl.url}$path") {
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
             withMainToken()
             withB2bCodeToken(unitCode)
             jsonBody(request)

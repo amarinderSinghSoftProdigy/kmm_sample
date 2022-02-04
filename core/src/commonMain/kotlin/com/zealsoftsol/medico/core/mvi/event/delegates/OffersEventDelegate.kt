@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
+import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -161,9 +162,6 @@ internal class OffersEventDelegate(
                 networkOffersScope.autocompleteOffers(value, user.unitCode)
                     .onSuccess { body ->
                         it.autoComplete.value = body
-                        if (value.isNotEmpty() && body.isEmpty()) {
-                            //it.products.value = emptyList()
-                        }
                     }.onError(navigator)
             }
         }
@@ -171,27 +169,33 @@ internal class OffersEventDelegate(
 
     private suspend fun selectAutocomplete(autoComplete: AutoComplete) {
         navigator.withScope<OffersScope.CreateOffer> {
-            it.productSearch.value = autoComplete.suggestion
-            it.autoComplete.value = emptyList()
-
-            val user = userRepo.requireUser()
-            networkOffersScope.getAutocompleteItem(
-                unitCode = user.unitCode, input = autoComplete.suggestion
-            ).onSuccess { body ->
-                it.selectedProduct.value = body
+            withProgress {
+                it.productSearch.value = ""
+                it.autoComplete.value = emptyList()
+                val user = userRepo.requireUser()
+                networkOffersScope.getAutocompleteItem(
+                    unitCode = user.unitCode, input = autoComplete.suggestion
+                ).onSuccess { body ->
+                    it.selectedProduct.value = body
+                }
             }.onError(navigator)
         }
     }
 
     private suspend fun saveOffer(request: OfferProductRequest) {
         navigator.withScope<OffersScope.CreateOffer> {
-            it.productSearch.value = ""
-            it.autoComplete.value = emptyList()
-            val user = userRepo.requireUser()
-            networkOffersScope.saveOffer(
-                unitCode = user.unitCode, request = request
-            ).onSuccess { body ->
-
+            withProgress {
+                it.productSearch.value = ""
+                it.autoComplete.value = emptyList()
+                val user = userRepo.requireUser()
+                setHostProgress(true)
+                networkOffersScope.saveOffer(
+                    unitCode = user.unitCode, request = request
+                ).onSuccess { body ->
+                    setHostProgress(false)
+                    it.dialogMessage.value = body
+                    it.showAlert.value = true
+                }
             }.onError(navigator)
         }
     }

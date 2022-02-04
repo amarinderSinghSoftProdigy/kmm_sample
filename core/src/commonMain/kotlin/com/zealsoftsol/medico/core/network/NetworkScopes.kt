@@ -365,7 +365,7 @@ interface NetworkScope {
         suspend fun saveOffer(
             unitCode: String,
             request: OfferProductRequest
-        ): BodyResponse<OfferProduct>
+        ): BodyResponse<String>
     }
 
 }

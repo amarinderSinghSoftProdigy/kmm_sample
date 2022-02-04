@@ -25,9 +25,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +46,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoButton
@@ -61,6 +66,9 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
     val selectedProduct = scope.selectedProduct.flow.collectAsState()
     val saveClicked = scope.saveClicked.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
+    val dialogMessage = scope.dialogMessage.flow.collectAsState()
+    val requestData = scope.requestData.flow.collectAsState()
+    val request = OfferProductRequest()
 
     Column(modifier = Modifier.padding(all = 16.dp)) {
 
@@ -73,8 +81,13 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
 
         Space(dp = 12.dp)
         if (openDialog.value)
-            ShowAlert(stringResource(id = R.string.update_successfull)) {
+            ShowAlert(
+                if (dialogMessage.value.toString().isNotEmpty())
+                    dialogMessage.value.toString()
+                else stringResource(id = R.string.offer_successfull)
+            ) {
                 scope.changeAlertScope(false)
+                scope.goBack()
             }
 
         Row(
@@ -96,6 +109,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                 }
                 val isActive = activeTab.value == it.name
                 boxMod = if (isActive) {
+                    request.promotionType = it.code
                     boxMod.background(ConstColors.lightGreen, MaterialTheme.shapes.large)
                 } else {
                     boxMod
@@ -110,6 +124,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W600,
                         color = if (isActive) Color.White else MaterialTheme.colors.background,
+                        modifier = Modifier.padding(all = 2.dp)
                     )
                 }
             }
@@ -165,7 +180,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(all = 8.dp)
+                        .padding(all = 16.dp)
                 ) {
                     Text(
                         text = product?.name ?: "",
@@ -173,12 +188,14 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colors.background,
                     )
+                    Space(dp = 4.dp)
                     Text(
                         text = product?.manufacturerName ?: "",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W600,
                         color = ConstColors.gray,
                     )
+                    Space(dp = 8.dp)
 
                     Row(
                         modifier = Modifier
@@ -189,45 +206,65 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         Box(modifier = Modifier.width(120.dp)) {
                             EditField(
                                 label = stringResource(id = R.string.qty),
-                                qty = "",
-                                onChange = { },
-                                onFocus = {
-
-                                },
+                                qty = (requestData.value?.buy ?: 0.0).toString(),
+                                onChange = { request.buy = it.toDouble() },
                                 isEnabled = saveClicked.value,
                             )
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             EditField(
                                 label = stringResource(id = R.string.free),
-                                qty = "",
-                                onChange = { },
-                                onFocus = {
-                                },
+                                qty = (requestData.value?.free ?: 0.0).toString(),
+                                onChange = { request.free = it.toDouble() },
                                 isEnabled = saveClicked.value,
                             )
                         }
                     }
-                    Space(dp = 8.dp)
+                    Space(dp = 12.dp)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-
+                        val switchEnabled = remember { mutableStateOf(false) }
                         Box(modifier = Modifier.width(120.dp)) {
-                            MedicoButton(
-                                text = stringResource(id = R.string.cancel),
-                                isEnabled = true,
-                                height = 32.dp,
-                                elevation = null,
-                                onClick = {
-
-                                },
-                                textSize = 12.sp,
-                                color = ConstColors.ltgray,
-                                txtColor = MaterialTheme.colors.background
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = stringResource(id = R.string.stop),
+                                        color = ConstColors.red,
+                                        fontSize = 14.sp,
+                                        fontWeight = if (requestData.value?.active == false
+                                        ) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                    Text(
+                                        text = "/",
+                                        color = MaterialTheme.colors.background,
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.start),
+                                        color = ConstColors.lightGreen,
+                                        fontSize = 14.sp,
+                                        fontWeight = if (requestData.value?.active == true
+                                        ) FontWeight.Bold else FontWeight.Normal
+                                    )
+                                }
+                                Space(dp = 4.dp)
+                                Switch(
+                                    checked = switchEnabled.value,
+                                    onCheckedChange = {
+                                        switchEnabled.value = it
+                                        request.active = it
+                                        scope.saveData(request = request)
+                                    },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = ConstColors.green,
+                                        uncheckedThumbColor = ConstColors.red,
+                                    )
+                                )
+                                Space(dp = 4.dp)
+                            }
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             MedicoButton(
@@ -235,16 +272,17 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                     id = R.string.confirm
                                 ),
                                 isEnabled = true,
-                                height = 32.dp,
+                                height = 35.dp,
                                 elevation = null,
                                 onClick = {
                                     if (saveClicked.value) {
                                         scope.saveData()
+                                        scope.saveData(request = request)
                                     } else {
-                                        scope.saveData()
+                                        scope.saveOffer(request = request, product = product)
                                     }
                                 },
-                                textSize = 12.sp,
+                                textSize = 14.sp,
                                 color = ConstColors.yellow,
                                 txtColor = MaterialTheme.colors.background
                             )
@@ -252,18 +290,22 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                     }
 
                     if (!saveClicked.value) {
+                        Space(dp = 8.dp)
                         Surface(
                             onClick = { scope.saveData() },
+                            color = Color.White
                         ) {
-                            Row {
+                            Row(modifier = Modifier.padding(top = 4.dp)) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_edit),
                                     contentDescription = null,
                                     tint = ConstColors.lightBlue,
                                 )
+                                Space(dp = 4.dp)
                                 Text(
                                     text = stringResource(id = R.string.edit_Offer),
-                                    color = ConstColors.lightBlue
+                                    color = ConstColors.lightBlue,
+                                    fontSize = 14.sp
                                 )
                             }
                         }
