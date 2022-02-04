@@ -118,10 +118,10 @@ class OfferProductRequest {
     var productCode: String? = null
     var manufacturerCode: String? = null
     var spid: String? = null
-    var buy: Double = 0.0
-    var free: Double = 0.0
-    var active: Boolean = false
-    var isOfferForAllUsers: Boolean = true
+    var buy: Double? = null
+    var free: Double? = null
+    var active: Boolean? = null
+    var isOfferForAllUsers: Boolean? = null
     var connectedUsers: ArrayList<String>? = null
     var discount: Double? = null
     var stock: Double? = null

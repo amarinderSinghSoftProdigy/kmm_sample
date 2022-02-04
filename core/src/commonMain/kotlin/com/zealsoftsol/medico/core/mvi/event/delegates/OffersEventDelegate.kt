@@ -149,8 +149,10 @@ internal class OffersEventDelegate(
         ).onSuccess { body ->
             navigator.withScope<OffersScope.CreateOffer> {
                 it.promoTypes.value = body.promotionTypes
-                if (!it.promoTypes.value.isNullOrEmpty())
+                if (!it.promoTypes.value.isNullOrEmpty()) {
                     it.activeTab.value = it.promoTypes.value[0].name
+                    it.activeType.value = 0
+                }
             }
         }.onError(navigator)
     }

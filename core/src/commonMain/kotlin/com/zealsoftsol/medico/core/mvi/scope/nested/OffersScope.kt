@@ -17,8 +17,6 @@ import com.zealsoftsol.medico.data.Promotions
 
 sealed class OffersScope : Scope.Child.TabBar() {
 
-    val refresh: DataSource<Boolean> = DataSource(false)
-
     class ViewOffers(
         private val title: String
     ) : OffersScope(), CommonScope.CanGoBack {
@@ -50,10 +48,6 @@ sealed class OffersScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Offers.GetOffers())
         }
 
-        fun stopRefresh() {
-            refresh.value = false
-        }
-
         fun reset() {
             productSearch.value = ""
             manufacturerSearch.value = ArrayList()
@@ -78,6 +72,7 @@ sealed class OffersScope : Scope.Child.TabBar() {
     ) : OffersScope(), CommonScope.CanGoBack {
         val saveClicked: DataSource<Boolean> = DataSource(true)
         val activeTab: DataSource<String> = DataSource("")
+        val activeType: DataSource<Int> = DataSource(0)
         val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
         val selectedProduct: DataSource<OfferProduct?> = DataSource(null)
         val productSearch: DataSource<String> = DataSource("")
@@ -95,12 +90,7 @@ sealed class OffersScope : Scope.Child.TabBar() {
         }
 
         fun changeAlertScope(enable: Boolean) {
-            refresh.value = true
             showAlert.value = enable
-        }
-
-        fun refresh() {
-            EventCollector.sendEvent(Event.Action.Offers.Refresh)
         }
 
         fun startSearch() {
@@ -116,6 +106,11 @@ sealed class OffersScope : Scope.Child.TabBar() {
 
         fun selectTab(name: String) {
             activeTab.value = name
+            promoTypes.value.forEachIndexed { index, value ->
+                if (activeTab.value == value.name) {
+                    activeType.value = index
+                }
+            }
         }
 
         fun saveData() {
@@ -132,7 +127,6 @@ sealed class OffersScope : Scope.Child.TabBar() {
             request.spid = product?.spid
             request.isOfferForAllUsers = true
             request.connectedUsers = ArrayList()
-            request.discount = 0.0
             request.stock = 0.0
             request.startDate = ""
             request.endDate = ""

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.offers
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,13 +53,18 @@ import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun OffersScreen(scope: OffersScope.ViewOffers) {
     val search = scope.productSearch.flow.collectAsState()
     val offers = scope.items.flow.collectAsState()
     val manufacturer = scope.manufacturer.flow.collectAsState()
     val statuses = scope.statuses.flow.collectAsState()
-    val refresh = scope.refresh.flow.collectAsState()
+    val manufacturerList = scope.manufacturerSearch.flow.collectAsState()
+
+    remember {
+        scope.startSearch()
+    }
     Column {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -79,7 +86,6 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                             items = statuses.value,
                             itemContent = { _, item ->
                                 StatusItem(item)
-
                             },
                         )
                     }
@@ -109,19 +115,30 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
         Space(dp = 16.dp)
         Divider(thickness = 0.5.dp)
         Space(dp = 8.dp)
-        Text(
-            modifier = Modifier.padding(start = 16.dp),
-            text = stringResource(id = R.string.manufacturers),
-            color = ConstColors.lightBlue,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.W600,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.padding(start = 16.dp),
+                text = stringResource(id = R.string.manufacturers),
+                color = ConstColors.lightBlue,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W600,
+            )
+            if (manufacturerList.value.size > 0) {
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    text = "( " + manufacturerList.value.size + " )",
+                    color = ConstColors.lightBlue,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+        }
         Space(dp = 8.dp)
         LazyRow(modifier = Modifier.padding(start = 16.dp)) {
             itemsIndexed(
                 items = manufacturer.value,
                 itemContent = { _, item ->
-                    ManufacturerItem(item, scope)
+                    ManufacturerItem(item, scope, manufacturerList.value)
                 },
             )
         }
@@ -155,40 +172,54 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
  * ui item for manufaturer listing
  */
 @Composable
-fun ManufacturerItem(item: Manufacturer, scope: OffersScope.ViewOffers) {
-    val manufacturer = scope.manufacturerSearch.flow.collectAsState()
-    Card(
+fun ManufacturerItem(item: Manufacturer, scope: OffersScope.ViewOffers, list: ArrayList<String>) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .height(90.dp)
-            .width(150.dp)
-            .selectable(
-                selected = true,
-                onClick = {
-                    val list = manufacturer.value
-                    if (list.contains(item.code)) {
-                        list.remove(item.code)
-                    } else {
-                        list.add(item.code)
-                    }
-                    scope.startSearch(query = list)
-                }),
-        elevation = 3.dp,
-        shape = RoundedCornerShape(5.dp),
-        backgroundColor = Color.White,
-        border = if (manufacturer.value.contains(item.code)) {
-            BorderStroke(1.dp, ConstColors.yellow)
-        } else BorderStroke(1.dp, Color.White)
+            .width(130.dp)
+            .padding(end = 12.dp)
     ) {
-        CoilImageBrands(
-            src = CdnUrlProvider.urlForM(item.code),
-            contentScale = ContentScale.FillBounds,
-            onError = { ItemPlaceholder() },
-            onLoading = { ItemPlaceholder() },
-            height = 90.dp,
-            width = 150.dp,
+        Card(
+            modifier = Modifier
+                .height(80.dp)
+                .width(130.dp)
+                .selectable(
+                    selected = true,
+                    onClick = {
+                        if (list.contains(item.code)) {
+                            list.remove(item.code)
+                        } else {
+                            list.add(item.code)
+                        }
+                        scope.startSearch(query = list)
+                    }),
+            elevation = 3.dp,
+            shape = RoundedCornerShape(5.dp),
+            backgroundColor = Color.White,
+            border = if (list.contains(item.code)) {
+                BorderStroke(1.dp, ConstColors.yellow)
+            } else BorderStroke(1.dp, Color.White)
+        ) {
+            CoilImageBrands(
+                src = CdnUrlProvider.urlForM(item.code),
+                contentScale = ContentScale.FillBounds,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
+                height = 70.dp,
+                width = 120.dp,
+            )
+        }
+        Space(8.dp)
+        Text(
+            text = item.name,
+            fontSize = 12.sp,
+            color = MaterialTheme.colors.background,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            modifier = Modifier.padding(start = 12.dp)
         )
+        Space(12.dp)
     }
-    Space(12.dp)
 }
 
 /**
