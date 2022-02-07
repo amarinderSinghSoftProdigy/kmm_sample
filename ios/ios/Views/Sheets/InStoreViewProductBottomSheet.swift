@@ -9,67 +9,81 @@
 import core
 import SwiftUI
 
-/*val type: String,
- val code: String,
- val buy: FormattedData<Double>,
- val free: FormattedData<Double>,
- val productDiscount: FormattedData<Double>,
- val displayLabel: String,
- val offerPrice: FormattedData<Double>,
- val validity: String?,
- */
-
 struct InStoreViewProductBottomSheet: ViewModifier {
     
     let bottomSheet: BottomSheet.InStoreViewProduct
     let onBottomSheetDismiss: () -> ()
+    
+    @State private var quantity: Double
+    @State private var freeQuantity: Double
     
     var product: DataInStoreProduct {
         return bottomSheet.product
     }
     
     func body(content: Content) -> some View {
+        
         let bottomSheetOpened = Binding(get: { true },
                                         set: { newValue in if !newValue { onBottomSheetDismiss() } })
-        
-        let product = bottomSheet.product
-        
+                
         return AnyView(
             BaseBottomSheetView(isOpened: bottomSheetOpened,
-                                maxHeight: 430) {
+                                maxHeight: 420) {
                 
                 VStack(alignment: .leading, spacing: 15) {
-                    
-                    inStoreProductDetailTopView
-                    
-                    InStoreAddToCartButtonView {
-                        print("Click on Add to cart")
-                    }
+                    EmptyView()
+                        .modifier(BaseSellerView(initialMode: nil,
+                                                 header: inStoreProductDetailTopView,
+                                                 horizontalPadding: 0,
+                                                 verticalPadding: 0,
+                                                 showsDivider: false,
+                                                 isReadonly: false,
+                                                 isQuoted: false,
+                                                 initialQuantity: quantity,
+                                                 initialFreeQuantity: freeQuantity,
+                                                 maxQuantity: .infinity,
+                                                 onQuantitySelect: {
+                                                    updateItemQuantity(quantity: $0, freeQuantity: $1)
+                                                 }))
                     
                     if let promotion = product.promotionData, product.isPromotionActive {
                         InStoreProductOfferView(promotion:promotion, price: product.priceInfo.price.formattedPrice)
                     } else {
                         InStoreNoOfferView()
                     }
-                 
+                    
                     inStoreProductDetailBottomView
                 }
-                .padding(15)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
                 .scrollView()
             }
+            .textFieldsModifiers()
             .edgesIgnoringSafeArea(.bottom)
+            
         )
+    }
+    
+    private func updateItemQuantity(quantity: Double?,
+                                    freeQuantity: Double?) {
+        guard let quantity = quantity,
+              let freeQuantity = freeQuantity else { return }
+        self.bottomSheet.addToCart(quantity: quantity, freeQuantity: freeQuantity)
+        self.quantity = quantity
+        self.freeQuantity = freeQuantity
     }
     
     init(bottomSheet: BottomSheet.InStoreViewProduct,
          onBottomSheetDismiss: @escaping () -> ()) {
         self.bottomSheet = bottomSheet
         self.onBottomSheetDismiss = onBottomSheetDismiss
+        self._quantity = State(initialValue: Double(truncating: bottomSheet.product.order?.quantity.value ?? 0))
+        self._freeQuantity = State(initialValue:Double(truncating: bottomSheet.product.order?.freeQty.value ?? 0))
     }
     
     var inStoreProductDetailTopView: some View {
         
-        HStack(spacing: 10) {
+        return HStack(spacing: 10) {
             
             ProductImage(medicineId: product.id,
                          size: .px123)
@@ -121,62 +135,58 @@ struct InStoreViewProductBottomSheet: ViewModifier {
         
         var body: some View {
             
-            
-            VStack(alignment: .leading, spacing: 0) {
-                
-                GeometryReader { geometry in
-                    AppColor.red.color
-                        .opacity(0)
-                        .frame(width: 8, height: geometry.size.height)
-                }
-                
-                VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
                     
-                    Text("\(promotion.displayLabel)")
+                    Text(promotion.displayLabel)
                         .medicoText(textWeight: .bold,
                                     fontSize: 16,
-                                    color: .red)
-                        .lineLimit(1)
+                                    color: AppColor.red)
                     
-                    HStack {
-                        Text("\(promotion.offerPrice.formatted)")
+                    HStack(spacing: 8) {
+                        Text(promotion.offerPrice.formatted)
                             .medicoText(textWeight: .bold,
-                                        fontSize: 16,
-                                        color: .darkBlue)
-                            .lineLimit(1)
-                        Text("\(price)")
-                            .strikethrough()
+                                        fontSize: 16)
+                        Text(promotion.offerPrice.formatted)
+                            .strikethrough(true, color: AppColor.textGrey.color)
                             .medicoText(textWeight: .medium,
                                         fontSize: 12,
-                                        color: .grey3)
-                            .lineLimit(1)
-                            
+                                        color: AppColor.textGrey)
+                        
                     }
-                    
-                    let offerValidity = "(" + "\(String(describing: promotion.validity))" + ")"
-                    Text(offerValidity)
-                        .medicoText(textWeight: .regular,
-                                    fontSize: 10,
-                                    color: .grey3)
-                        .lineLimit(1)
+                    if let validity = promotion.validity, !validity.isEmpty {
+                        Text(validity)
+                            .medicoText(textWeight: .regular,
+                                        fontSize: 8,
+                                        color: AppColor.textGrey)
+                    }
                 }
-                .padding(12)
+                Spacer()
             }
-            .strokeBorder(.red,
-                          borderOpacity: 0.5,
-                          fill: .white,
-                          cornerRadius: 8)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(AppColor.red.color, lineWidth: 1)
+            )
         }
     }
     
     private struct InStoreNoOfferView: View {
         
         var body: some View {
-            LocalizedText(localizationKey: "no_available_offer", textWeight: .bold, fontSize: 12, color: .white)
-             .frame(height: 40)
-             .frame(maxWidth: .infinity)
-             .background(appColor: .red)
-             .cornerRadius(3)
+            HStack(alignment: .center, spacing: 10) {
+                Spacer()
+                Image("NoAvailableOffer")
+                    .fixedSize()
+                    .frame(width: 25, height: 25)
+                LocalizedText(localizationKey: "no_available_offer", textWeight: .bold, fontSize: 12, color: .white)
+                    .frame(height: 40)
+                Spacer()
+            }
+            .background(appColor: .red)
+            .cornerRadius(3)
+            .frame(maxWidth: .infinity)
         }
     }
     
@@ -277,4 +287,3 @@ struct InStoreViewProductBottomSheet: ViewModifier {
         }
     }
 }
-

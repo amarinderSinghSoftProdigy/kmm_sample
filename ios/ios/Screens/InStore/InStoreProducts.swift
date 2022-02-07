@@ -9,8 +9,6 @@
 import core
 import SwiftUI
 
-//item.stockInfo.status != StockStatus.OUT_OF_STOCK,
-
 struct InStoreProducts: View {
         
     let scope: InStoreProductsScope
@@ -93,7 +91,7 @@ struct InStoreProducts: View {
                                  fontSize: 15,
                                  fontWeight: .bold,
                                  fontColor: .darkBlue) {
-                       // scope.goToInStoreCart()
+                        scope.goToInStoreCart()
                     }
                 }
                 .frame(height: 40)
@@ -117,6 +115,7 @@ struct InStoreProducts: View {
         let onSelectItem: ()->()
         
         var body: some View {
+                        
             VStack(alignment: .leading, spacing: 0) {
                 
                 VStack(alignment: .leading, spacing: 15) {
@@ -164,7 +163,7 @@ struct InStoreProducts: View {
                         GeometryReader { geometry in
                         
                             MedicoButton(localizedStringKey: "add_to_cart",
-                                         isEnabled: true,
+                                         isEnabled: product.stockInfo.status != .outOfStock,
                                          width: geometry.size.width,
                                          height: 40,
                                          cornerRadius: 24,
@@ -240,14 +239,3 @@ struct InStoreProducts: View {
         }
     }
 }
-
-
-
-/*
- countStack(title: "items", value: "999")
- Spacer()
- countStack(title: "qty", value: "999.09")
- Spacer()
- countStack(title: "free", value: "999.09")
- countStack(title: "amount", value: "₹ 1,14,674.75")
- */

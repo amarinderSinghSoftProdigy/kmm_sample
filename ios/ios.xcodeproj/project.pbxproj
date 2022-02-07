@@ -112,6 +112,7 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
 		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
+		CE3B6B2427B12E2900A19F22 /* InStoreCart.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */; };
 		CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */; };
 		CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */; };
 		CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */; };
@@ -258,6 +259,7 @@
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
+		CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCart.swift; sourceTree = "<group>"; };
 		CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCreateUser.swift; sourceTree = "<group>"; };
 		CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProducts.swift; sourceTree = "<group>"; };
 		CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreViewProductBottomSheet.swift; sourceTree = "<group>"; };
@@ -809,6 +811,7 @@
 				CED29ACB27A952500076A63B /* InStoreUsers.swift */,
 				CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */,
 				CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */,
+				CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */,
 			);
 			path = InStore;
 			sourceTree = "<group>";
@@ -1078,6 +1081,7 @@
 				CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
+				CE3B6B2427B12E2900A19F22 /* InStoreCart.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
 				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
 				33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */,

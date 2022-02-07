@@ -22,8 +22,6 @@ struct BaseScopeView: View {
     
     var body: some View {
         
-        print("Bottom Sheet: \(scope.bottomSheet)")
-        
         return ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 .hideKeyboardOnTap()
@@ -206,6 +204,9 @@ struct TabBarScreen: View {
             case let scope as InStoreProductsScope:
                 InStoreProducts(scope: scope)
                 
+            case let scope as InStoreCartScope:
+                InStoreCart(scope: scope)
+                
             default:
                 EmptyView()
             }
@@ -220,7 +221,9 @@ struct BottomSheetView: View {
     let dismissBottomSheet: () -> ()
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        print("Bottom Sheet: \(bottomSheet.value)")
+        
+        return ZStack(alignment: .topLeading) {
             switch bottomSheet.value {
 
             case let uploadBottomSheet as BottomSheet.UploadDocuments:
