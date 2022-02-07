@@ -10,6 +10,8 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionType
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -98,6 +100,46 @@ sealed class BottomSheet {
     ) : BottomSheet() {
         fun update() =
             EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
+    }
+
+    class UpdateOffer(
+        val info: Promotions,
+        val types: List<PromotionType>
+    ) : BottomSheet() {
+        fun update() =
+            EventCollector.sendEvent(Event.Action.Offers.EditOffer(info.promoCode, info.active))
+
+        val promo = DataSource(info)
+        val quantity = DataSource(info.buy.value)
+        val freeQuantity = DataSource(info.free.value)
+        val discount = DataSource(info.productDiscount.value)
+        val promotionType = DataSource(info.promotionTypeData.code)
+
+        fun updateQuantity(value: Double) {
+            quantity.value = value
+        }
+
+        fun updateFreeQuantity(value: Double) {
+            freeQuantity.value = value
+        }
+
+        fun updateDiscount(value: Double) {
+            discount.value = value
+        }
+
+        fun updatePromotionType(value: String) {
+            promotionType.value = value
+        }
+
+        fun getIndex(): Int {
+            types.forEachIndexed { index, value ->
+                if (promotionType.value == value.code) {
+                    return index
+                }
+            }
+            return 0
+        }
+
     }
 
     class ModifyOrderEntry(

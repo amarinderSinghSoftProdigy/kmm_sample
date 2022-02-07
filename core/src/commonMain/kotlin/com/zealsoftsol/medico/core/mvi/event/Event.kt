@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -395,6 +396,10 @@ sealed class Event {
             ) :
                 Offers()
 
+            data class ShowEditBottomSheet(
+                val promotion: Promotions
+            ) : Offers()
+
             object Refresh : Offers()
             object LoadMoreProducts : Offers()
             object OpenCreateOffer : Offers()
@@ -404,6 +409,7 @@ sealed class Event {
             ) : Offers()
 
             data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
+            data class EditOffer(val promotionType: String, val active: Boolean) : Offers()
             object GetTypes : Offers()
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()

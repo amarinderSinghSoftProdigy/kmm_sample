@@ -306,28 +306,6 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                             )
                         }
                     }
-
-                    if (false) {//!saveClicked.value) {
-                        Space(dp = 8.dp)
-                        Surface(
-                            onClick = { scope.saveData() },
-                            color = Color.White
-                        ) {
-                            Row(modifier = Modifier.padding(top = 4.dp)) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_edit),
-                                    contentDescription = null,
-                                    tint = ConstColors.lightBlue,
-                                )
-                                Space(dp = 4.dp)
-                                Text(
-                                    text = stringResource(id = R.string.edit_Offer),
-                                    color = ConstColors.lightBlue,
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
                 }
             }
         }

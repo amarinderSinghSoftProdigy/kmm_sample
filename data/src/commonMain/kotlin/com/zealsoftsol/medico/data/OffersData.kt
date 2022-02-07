@@ -125,7 +125,7 @@ class OfferProductRequest {
     var connectedUsers: ArrayList<String>? = null
     var discount: Double? = null
     var stock: Double? = null
-    var startDate: String? = null
-    var endDate: String? = null
+    var startDate: Long? = null
+    var endDate: Long? = null
 }
 

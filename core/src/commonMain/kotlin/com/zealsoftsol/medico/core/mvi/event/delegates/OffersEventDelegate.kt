@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
+import com.zealsoftsol.medico.data.Promotions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,10 +33,12 @@ internal class OffersEventDelegate(
             event.name,
             event.active
         )
+        is Event.Action.Offers.ShowEditBottomSheet -> showEditBottomSheet(event.promotion)
         is Event.Action.Offers.GetOffers -> getOffers(event.search, event.query)
         is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType, event.active)
         is Event.Action.Offers.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Offers.OpenCreateOffer -> loadMoreProducts()
+        is Event.Action.Offers.EditOffer -> editOffer(event.promotionType, event.active)
 
         is Event.Action.Offers.GetTypes -> getPromotionTypes()
         is Event.Action.Offers.SearchAutoComplete -> searchAutoComplete(event.value)
@@ -91,6 +94,21 @@ internal class OffersEventDelegate(
         }.onError(navigator)
     }
 
+    private suspend fun editOffer(promotionType: String, active: Boolean) {
+       /* val user = userRepo.requireUser()
+        networkOffersScope.updateOffer(
+            unitCode = user.unitCode,
+            PromotionUpdateRequest(promoCode = promotionType, active = active)
+        ).onSuccess {
+            navigator.withScope<OffersScope.ViewOffers> {
+                getOffers(
+                    it.productSearch.value,
+                    it.manufacturerSearch.value
+                )
+            }
+        }.onError(navigator)*/
+    }
+
     private fun showBottomSheet(promotionType: String, name: String, active: Boolean) {
         navigator.withScope<OffersScope> {
             val hostScope = scope.value
@@ -98,6 +116,21 @@ internal class OffersEventDelegate(
                 promotionType, name, active
             )
         }
+
+    }
+
+    private suspend fun showEditBottomSheet(promotion: Promotions) {
+        val user = userRepo.requireUser()
+        networkOffersScope.getPromotionTypes(
+            unitCode = user.unitCode,
+        ).onSuccess { body ->
+            navigator.withScope<OffersScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.UpdateOffer(
+                    promotion, body.promotionTypes
+                )
+            }
+        }.onError(navigator)
 
     }
 
