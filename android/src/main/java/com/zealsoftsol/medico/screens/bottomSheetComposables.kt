@@ -2055,18 +2055,18 @@ private fun EditOfferItemBottomSheet(
 
                                 val wasBuy = remember {
                                     mutableStateOf(
-                                        if (promo.value.buy.value.toString().split(".")
+                                        if (promo.value.buy.formatted.split(".")
                                                 .lastOrNull() == "0"
-                                        ) promo.value.buy.value.toString().split(".")
-                                            .first() else promo.value.buy.value.toString()
+                                        ) promo.value.buy.formatted.split(".")
+                                            .first() else promo.value.buy.formatted
                                     )
                                 }
                                 val wasDis = remember {
                                     mutableStateOf(
-                                        if (promo.value.productDiscount.value.toString().split(".")
+                                        if (promo.value.productDiscount.formatted.split(".")
                                                 .lastOrNull() == "0"
-                                        ) promo.value.productDiscount.value.toString().split(".")
-                                            .first() else promo.value.productDiscount.value.toString()
+                                        ) promo.value.productDiscount.formatted.split(".")
+                                            .first() else promo.value.productDiscount.formatted
                                     )
                                 }
 
