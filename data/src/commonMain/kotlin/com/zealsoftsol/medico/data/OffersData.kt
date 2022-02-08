@@ -91,7 +91,8 @@ class Promotions(
     val active: Boolean,
     val promotionCategory: PromotionCategory,
     val promotionTypeData: PromotionType,
-    val customerPageData: CustomerPageData
+    val customerPageData: CustomerPageData,
+    val spid: String
 )
 
 @Serializable
@@ -130,7 +131,7 @@ class OfferProductRequest {
 }
 
 @Serializable
-class EditOfferRequest (
+class EditOfferRequest(
     val promoCode: String,
     val request: OfferProductRequest
 )

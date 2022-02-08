@@ -112,17 +112,17 @@ sealed class BottomSheet {
             request.discount = discount.value
             request.buy = quantity.value
             request.free = freeQuantity.value
-            request.manufacturerCode = info.manufacturerCode
-            request.productCode = info.productCode
+            request.manufacturerCode = promo.value.manufacturerCode
+            request.productCode = promo.value.productCode
             request.active = active.value
-            request.spid = ""
+            request.spid = promo.value.spid
             request.isOfferForAllUsers = true
             request.connectedUsers = ArrayList()
             request.stock = 0.0
             request.startDate = 1644214031075
             request.endDate = 1675750031075
             request.promotionType = promotionType.value
-            EventCollector.sendEvent(Event.Action.Offers.EditOffer(info.promoCode, request))
+            EventCollector.sendEvent(Event.Action.Offers.EditOffer(promo.value.promoCode, request))
         }
 
         val promo = DataSource(info)
