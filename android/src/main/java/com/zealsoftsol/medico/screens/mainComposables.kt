@@ -373,7 +373,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         MenuScreen(it)
                         manageBottomNavState(BottomNavKey.MENU)
                     }
-                    is BatchesScope -> ViewBatchesScreen()
+                    is BatchesScope -> ViewBatchesScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
