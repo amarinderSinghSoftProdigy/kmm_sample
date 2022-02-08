@@ -1122,7 +1122,7 @@ class NetworkClient(
     }
 
     private inline fun HttpRequestBuilder.applyHeader(tokenInfo: String) {
-        header("x-tenant-id", tokenInfo)
+        header("X-TENANT-ID", tokenInfo)
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {
