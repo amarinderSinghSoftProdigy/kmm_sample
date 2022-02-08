@@ -363,6 +363,8 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="offer_successfull">Promotion Created Successfully</string>
+    <string name="edit">Edit</string>
+    <string name="view_batches">View Batches</string>
 
     <!-- Termrs and Cond -->
 
