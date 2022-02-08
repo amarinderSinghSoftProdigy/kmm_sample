@@ -153,6 +153,9 @@ private struct _CustomizedNavigationBar: View {
                 case let instoreUserBarInfo as TabBarInfo.InStoreProductTitle:
                     InStoreProductTitleBar(instoreUserBarInfo: instoreUserBarInfo,
                                            getScopeButton: getScopeButton)
+                case let newDesignLogo as TabBarInfo.NewDesignLogo:
+                    NewDesignLogoBar(newDesignLogo: newDesignLogo,
+                                           getScopeButton: getScopeButton)
                 default:
                     EmptyView()
                 }
@@ -266,11 +269,11 @@ private struct _CustomizedNavigationBar: View {
             self.getScopeButton = getScopeButton
             
             let cartData = CartData()
-            /*if let cartItemsCount = simpleBarInfo.cartItemsCount {
+            if let cartItemsCount = simpleBarInfo.cartItemsCount {
                 SwiftDataSource(dataSource: cartItemsCount).onValueDidSet = {
                     cartData.cartItemsCount = $0
                 }
-            }*/
+            }
             self.cartData = cartData
         }
         
@@ -330,8 +333,7 @@ private struct _CustomizedNavigationBar: View {
              getScopeButton: @escaping (ScopeIcon) -> Content) {
             self.searchBarInfo = searchBarInfo
             self.getScopeButton = getScopeButton
-            
-            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount!)
+            self.cartItemsCount = SwiftDataSource(dataSource: searchBarInfo.cartItemsCount)
         }
     }
     
@@ -384,7 +386,7 @@ private struct _CustomizedNavigationBar: View {
         }
     }
     
-    //MARK: InStore Product Title Bar
+    //MARK: InStoreProductTitleBar
     private struct InStoreProductTitleBar<Content: View>: View {
         
         let instoreUserBarInfo: TabBarInfo.InStoreProductTitle
@@ -445,6 +447,32 @@ private struct _CustomizedNavigationBar: View {
         init(instoreUserBarInfo: TabBarInfo.InStoreProductTitle,
              getScopeButton: @escaping (ScopeIcon) -> Content) {
             self.instoreUserBarInfo = instoreUserBarInfo
+            self.getScopeButton = getScopeButton
+        }
+    }
+    
+    //MARK: NewDesignLogo
+    private struct NewDesignLogoBar<Content: View>: View {
+        
+        let newDesignLogo: TabBarInfo.NewDesignLogo
+        let getScopeButton: (ScopeIcon) -> Content
+                
+        var body: some View {
+            
+            HStack {
+                getScopeButton(newDesignLogo.icon)
+                    .padding([.leading, .trailing], 6)
+                Image("medico_logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 30)
+                Spacer()
+            }
+        }
+
+        init(newDesignLogo: TabBarInfo.NewDesignLogo,
+             getScopeButton: @escaping (ScopeIcon) -> Content) {
+            self.newDesignLogo = newDesignLogo
             self.getScopeButton = getScopeButton
         }
     }

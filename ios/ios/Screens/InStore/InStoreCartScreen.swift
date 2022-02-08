@@ -9,32 +9,32 @@
 import core
 import SwiftUI
 
-
-struct InStoreCart: View {
+//MARK: Main Screen
+struct InStoreCartScreen: View {
     
     let scope: InStoreCartScope
     
     @ObservedObject var items: SwiftDataSource<NSArray>
     @ObservedObject var total: SwiftDataSource<DataTotal>
+    
+    var needsPadding: Bool {
+        if #available(iOS 15.0, *) {
+            return false
+        }
+        else {
+            return true
+        }
+    }
 
     var body: some View {
         
-        let needsPadding: Bool
-        if #available(iOS 15.0, *) {
-            needsPadding = false
-        }
-        else {
-            needsPadding = true
-        }
-        
-        
-        return VStack(spacing: 12) {
+        VStack(spacing: 0) {
             
             VStack(spacing: 0) {
                 
                 HStack(alignment: .center) {
                     
-                    InStoreCartItemsNumberView(items: items)
+                    InStoreCartNumberView(items: items)
                     
                     Button(action: {
                         scope.clearCart()
@@ -46,66 +46,74 @@ struct InStoreCart: View {
                     .frame(width: 50, height: 50)
                     .background(appColor: .red)
                     
-                }.background(appColor: .white)
+                }
+                .background(appColor: .white)
                 
                 AppColor.lightGrey.color
                     .frame(height: 1)
             }
+            .padding(.vertical, 20)
             
-            List {
-                VStack(spacing: 8) {
-                    ForEach(self.items.value as? [DataInStoreCartEntry] ?? [], id: \.self) { item in
-                        InstoreCartItemView(item: item,
-                                            isReadonly: false,
-                                            onQuantitySelect: { onQuantitySelect(item: item, quantity: $0, freeQuantity: $1) },
-                                            onRemoveItem: { scope.removeItem(item: $0) })
+            VStack {
+                
+                if (self.items.value?.count ?? 0) > 0 {
+                    List {
+                        VStack(spacing: 8) {
+                            ForEach(self.items.value as? [DataInStoreCartEntry] ?? [], id: \.self) { item in
+                                InstoreCartItemView(item: item,
+                                                    onQuantitySelect: { onQuantitySelect(item: item, quantity: $0, freeQuantity: $1) },
+                                                    onRemoveItem: { scope.removeItem(item: $0) })
+                            }
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .listRowInsets(.init())
+                        .background(appColor: .primary)
                     }
+                    .onAppear {
+                        UITableView.appearance().separatorStyle = .none
+                    }
+                    .padding(.horizontal, !needsPadding ? -16 : 0)
+                    .background(appColor: .clear)
                 }
-                .buttonStyle(PlainButtonStyle())
-                .listRowInsets(.init())
-            }
-            .onAppear {
-                UITableView.appearance().separatorStyle = .none
-            }
-            .padding(.horizontal, !needsPadding ? -16 : 0)
-            
-            Spacer()
-            
-            VStack(spacing: 12) {
                 
-                AppColor.black.color
-                    .opacity(0.27)
-                    .frame(height: 1)
+                Spacer()
                 
-                HStack(spacing: 6) {
+                VStack(spacing: 12) {
                     
-                    HStack(spacing: 4) {
-                        
-                        LocalizedText(localizationKey: "total:",
-                                      textWeight: .medium,
-                                      fontSize: 20)
-                        
-                        Text(total.value?.formattedPrice ?? "")
-                            .medicoText(textWeight: .bold,
-                                        fontSize: 20)
-                    }
-                
-                    Spacer()
+                    AppColor.black.color
+                        .opacity(0.27)
+                        .frame(height: 1)
                     
-                    MedicoButton(localizedStringKey: "complete_order",
-                                 isEnabled: true,
-                                 width: 170,
-                                 height: 48,
-                                 cornerRadius: 24,
-                                 fontSize: 15,
-                                 fontWeight: .bold) {
-                        scope.continueWithCart()
+                    HStack(spacing: 6) {
+                        
+                        HStack(spacing: 4) {
+                            
+                            LocalizedText(localizationKey: "total:",
+                                          textWeight: .medium,
+                                          fontSize: 20)
+                            
+                            Text(total.value?.formattedPrice ?? "")
+                                .medicoText(textWeight: .bold,
+                                            fontSize: 20)
+                        }
+                        
+                        Spacer()
+                        
+                        MedicoButton(localizedStringKey: "complete_order",
+                                     isEnabled: true,
+                                     width: 170,
+                                     height: 48,
+                                     cornerRadius: 24,
+                                     fontSize: 15,
+                                     fontWeight: .bold) {
+                            scope.continueWithCart()
+                        }
                     }
+                    .padding(.horizontal, 17)
                 }
-                .padding(.horizontal, 17)
+                
             }
-            
-        }.padding(.vertical, 25)
+        }
     }
     
     init(scope: InStoreCartScope) {
@@ -123,14 +131,15 @@ struct InStoreCart: View {
     }
 }
 
-struct InStoreCartItemsNumberView: View {
+//MARK: InStore Cart Number View
+struct InStoreCartNumberView: View {
     
     @ObservedObject var items: SwiftDataSource<NSArray>
 
     var body: some View {
         HStack {
             Spacer()
-            countStack(title: "items", value: "\(items.value?.count ?? 0)")
+            numberView(title: "items", value: "\(items.value?.count ?? 0)")
             Spacer()
             let qty = items.value?.reduce(0.0, { sum, element in
                 if let entry = element as? DataInStoreCartEntry  {
@@ -138,7 +147,7 @@ struct InStoreCartItemsNumberView: View {
                 }
                 return sum
             })
-            countStack(title: "qty", value: "\(qty ?? 0)")
+            numberView(title: "qty", value: "\(qty ?? 0)")
             Spacer()
             let freeQty = items.value?.reduce(0.0, { sum, element in
                 if let entry = element as? DataInStoreCartEntry  {
@@ -146,7 +155,7 @@ struct InStoreCartItemsNumberView: View {
                 }
                 return sum
             })
-            countStack(title: "free", value: "\(freeQty ?? 0)")
+            numberView(title: "free", value: "\(freeQty ?? 0)")
             Spacer()
         }
     }
@@ -155,7 +164,7 @@ struct InStoreCartItemsNumberView: View {
         self.items = items
     }
     
-    func countStack(title: String, value: String) -> some View {
+    func numberView(title: String, value: String) -> some View {
         VStack(alignment: .center, spacing: 5) {
             LocalizedText(localizationKey: title, textWeight: .regular, fontSize: 12, color: .darkBlue)
             Text(value).medicoText(textWeight: .semiBold, fontSize: 12, color: .darkBlue)
@@ -163,13 +172,10 @@ struct InStoreCartItemsNumberView: View {
     }
 }
 
-
+//MARK: InStore Cart Item View
 struct InstoreCartItemView: View {
     
     let item: DataInStoreCartEntry
-    
-    let isReadonly: Bool
-    
     let onQuantitySelect: ((Double?, Double?) -> Void)?
     let onRemoveItem: ((DataInStoreCartEntry) -> ())?
 
@@ -192,14 +198,13 @@ struct InstoreCartItemView: View {
                                  initialFreeQuantity: Double(truncating: item.freeQty.value ?? 0),
                                  maxQuantity: .infinity,
                                  onQuantitySelect: { onQuantitySelect?($0, $1) }))
+        .padding(.bottom, 8)
     }
     
     init(item: DataInStoreCartEntry,
-         isReadonly: Bool = false,
          onQuantitySelect: ((Double?, Double?) -> Void)? = nil,
          onRemoveItem: ((DataInStoreCartEntry) -> ())? = nil) {
         self.item = item
-        self.isReadonly = isReadonly
         self.onQuantitySelect = onQuantitySelect
         self.onRemoveItem = onRemoveItem
     }
@@ -228,7 +233,7 @@ struct InstoreCartItemView: View {
             Spacer()
 
             if let onRemoveItem = self.onRemoveItem {
-                RemoveButton(onRemove: { onRemoveItem(item) })
+                RemoveButton(onTapRemove: { onRemoveItem(item) })
             }
         }
     }
@@ -246,23 +251,26 @@ struct InstoreCartItemView: View {
                             fontSize: 16)
         }
     }
-}
-
-private struct RemoveButton: View {
-    let onRemove: () -> Void
     
-    var body: some View {
-        Button(action: { onRemove() }) {
-            Image(systemName: "xmark")
-                .resizable()
-                .frame(width: 11, height: 11)
-                .font(Font.system(size: 14, weight: .medium))
-                .foregroundColor(.red)
-                .padding(7)
-                .background(
-                    Circle()
-                        .foregroundColor(appColor: .lightPink)
-                )
+    private struct RemoveButton: View {
+        
+        let onTapRemove: () -> Void
+        
+        var body: some View {
+            Button(action: onTapRemove) {
+                Image(systemName: "xmark")
+                    .resizable()
+                    .frame(width: 11, height: 11)
+                    .font(Font.system(size: 14, weight: .medium))
+                    .foregroundColor(.red)
+                    .padding(7)
+                    .background(
+                        Circle()
+                            .foregroundColor(appColor: .lightPink)
+                    )
+            }
         }
     }
+
 }
+

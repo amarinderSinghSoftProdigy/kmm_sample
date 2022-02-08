@@ -9,9 +9,11 @@
 import core
 import SwiftUI
 
-struct InStoreCreateUser: View {
+//MARK: Main Screen
+struct InStoreAddUserScreen: View {
     
     let scope: InStoreAddUserScope
+    
     @ObservedObject var registration: SwiftDataSource<DataInStoreUserRegistration>
     @ObservedObject var locationData: SwiftDataSource<DataLocationData>
     @ObservedObject var canGoNext: SwiftDataSource<KotlinBoolean>
@@ -36,13 +38,12 @@ struct InStoreCreateUser: View {
         .padding(20)
         .textFieldsModifiers()
         .notificationAlertSender(withHandler: scope)
-        .screenLogger(withScreenName: "InStoreCreateUser",
-                      withScreenClass: InStoreCreateUser.self)
+        .screenLogger(withScreenName: "InStoreAddUserScreen",
+                      withScreenClass: InStoreAddUserScreen.self)
     }
     
     init(scope: InStoreAddUserScope) {
         self.scope = scope
-       // self.notification = SwiftDataSource(dataSource: scope.notifications)
         self.registration = SwiftDataSource(dataSource: scope.registration)
         self.locationData = SwiftDataSource(dataSource: scope.locationData)
         self.canGoNext = SwiftDataSource(dataSource: scope.canGoNext)
@@ -62,7 +63,8 @@ struct InStoreCreateUser: View {
             personalInfoFields()
             drugLicenseFields()
             locationFields()
-        }.scrollView()
+        }
+        .scrollView()
     }
     
     //MARK: Personal Info View
@@ -204,99 +206,47 @@ struct InStoreCreateUser: View {
         }
         return options
     }
-    
-    //MARK: Bottom Action View
-    private struct BottomActionView: View {
-                
-        var enableAddCustomer: Bool
-        var onClickReset: ()->Void
-        var onClickAddCustomer: ()->Void
-        
-        var body: some View {
-            GeometryReader { geometry in
-                HStack(spacing: geometry.size.width * 0.05) {
-                    
-                    MedicoButton(localizedStringKey: "reset",
-                                 isEnabled: true,
-                                 cornerRadius: 24,
-                                 fontSize: 15,
-                                 fontWeight: .bold,
-                                 fontColor: .lightBlue,
-                                 buttonColor: .clear) {
-                        self.onClickReset()
-                    }
-                    .strokeBorder(.lightBlue,
-                                  borderOpacity: 0.5,
-                                  fill: .clear,
-                                  lineWidth: 2,
-                                  cornerRadius: 24)
-                    .frame(width: geometry.size.width * 0.35)
-                    
-                    MedicoButton(localizedStringKey: "add_customer",
-                                 isEnabled: enableAddCustomer,
-                                 cornerRadius: 24,
-                                 fontSize: 15,
-                                 fontWeight: .bold,
-                                 fontColor: .white,
-                                 buttonColor: .lightBlue) {
-                        self.onClickAddCustomer()
-                    }
-                    .frame(width: geometry.size.width * 0.60)
-                }
-            }.frame( height: 50, alignment: .bottom)
-        }
-    }
 }
 
-
-struct InStoreBottomButtonsModifier: ViewModifier {
+//MARK: Bottom Action View
+private struct BottomActionView: View {
+            
+    var enableAddCustomer: Bool
+    var onClickReset: ()->Void
+    var onClickAddCustomer: ()->Void
     
-    var enableAddUser: Bool
-    var onClickReset: ()->()
-    var onClickAddUser: ()->()
-    
-    init(enableAddUser: Bool,
-         addUserAction: @escaping (() -> ()),
-         resetAction: @escaping (() -> ())) {
-        self.enableAddUser = enableAddUser
-        self.onClickReset = resetAction
-        self.onClickAddUser = addUserAction
-    }
-    
-    func body(content: Content) -> some View {
-        VStack {
-            content
-            GeometryReader { geometry in
-                HStack(spacing: geometry.size.width * 0.05) {
-                    
-                    MedicoButton(localizedStringKey: "reset",
-                                 isEnabled: true,
-                                 cornerRadius: 24,
-                                 fontSize: 15,
-                                 fontWeight: .bold,
-                                 fontColor: .lightBlue,
-                                 buttonColor: .clear) {
-                        self.onClickReset()
-                    }
-                    .strokeBorder(.lightBlue,
-                                  borderOpacity: 0.5,
-                                  fill: .clear,
-                                  lineWidth: 2,
-                                  cornerRadius: 24)
-                    .frame(width: geometry.size.width * 0.35)
-                    
-                    MedicoButton(localizedStringKey: "add_customer",
-                                 isEnabled: enableAddUser,
-                                 cornerRadius: 24,
-                                 fontSize: 15,
-                                 fontWeight: .bold,
-                                 fontColor: .white,
-                                 buttonColor: .lightBlue) {
-                        self.onClickAddUser()
-                    }
-                    .frame(width: geometry.size.width * 0.60)
-                }
-            }.frame( height: 50, alignment: .bottom)
+    var body: some View {
+        GeometryReader { geometry in
+            HStack {
+                
+                MedicoButton(localizedStringKey: "reset",
+                             isEnabled: true,
+                             cornerRadius: 24,
+                             fontSize: 15,
+                             fontWeight: .bold,
+                             fontColor: .lightBlue,
+                             buttonColor: .clear,
+                             action: onClickReset)
+                .strokeBorder(.lightBlue,
+                              borderOpacity: 0.5,
+                              fill: .clear,
+                              lineWidth: 2,
+                              cornerRadius: 24)
+                .frame(width: geometry.size.width * 0.35)
+                
+                Spacer()
+                
+                MedicoButton(localizedStringKey: "add_customer",
+                             isEnabled: enableAddCustomer,
+                             cornerRadius: 24,
+                             fontSize: 15,
+                             fontWeight: .bold,
+                             fontColor: .white,
+                             buttonColor: .lightBlue,
+                             action: onClickAddCustomer)
+                .frame(width: geometry.size.width * 0.60)
+            }
         }
+        .frame( height: 50, alignment: .bottom)
     }
 }

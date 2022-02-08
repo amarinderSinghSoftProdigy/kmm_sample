@@ -148,7 +148,7 @@ struct TabBarScreen: View {
                 
             case let scope as DashboardScope:
                 DashboardScreen(scope: scope)
-                
+
             case let scope as NotificationScope.All:
                 NotificationsScreen(scope: scope)
                 
@@ -193,20 +193,23 @@ struct TabBarScreen: View {
                 OrderPlacedScreen(scope: scope)
                 
             case let scope as InStoreSellerScope:
-                InStoreSellers(scope: scope)
+                InStoreSellersScreen(scope: scope)
                 
             case let scope as InStoreUsersScope:
-                InStoreUsers(scope: scope)
+                InStoreUsersScreen(scope: scope)
                 
             case let scope as InStoreAddUserScope:
-                InStoreCreateUser(scope: scope)
+                InStoreAddUserScreen(scope: scope)
                 
             case let scope as InStoreProductsScope:
-                InStoreProducts(scope: scope)
+                InStoreProductsScreen(scope: scope)
                 
             case let scope as InStoreCartScope:
-                InStoreCart(scope: scope)
+                InStoreCartScreen(scope: scope)
                 
+            case let scope as InStoreOrderPlacedScope:
+                InStoreOrderSuccessScreen(scope: scope)
+
             default:
                 EmptyView()
             }

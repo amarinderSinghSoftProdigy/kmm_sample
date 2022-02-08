@@ -112,12 +112,13 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
 		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
-		CE3B6B2427B12E2900A19F22 /* InStoreCart.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */; };
-		CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */; };
-		CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */; };
+		CE3B6B2427B12E2900A19F22 /* InStoreCartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */; };
+		CE9EEA8C27ABA85000B6FAFC /* InStoreAddUserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */; };
+		CE9EEA8E27ABFEF700B6FAFC /* InStoreProductsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */; };
+		CEB9737127B25B9400B5153D /* InStoreOrderSuccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */; };
 		CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */; };
-		CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellers.swift */; };
-		CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsers.swift */; };
+		CED29ACA27A90FE20076A63B /* InStoreSellersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */; };
+		CED29ACC27A952500076A63B /* InStoreUsersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -259,12 +260,13 @@
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
-		CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCart.swift; sourceTree = "<group>"; };
-		CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCreateUser.swift; sourceTree = "<group>"; };
-		CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProducts.swift; sourceTree = "<group>"; };
+		CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCartScreen.swift; sourceTree = "<group>"; };
+		CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreAddUserScreen.swift; sourceTree = "<group>"; };
+		CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProductsScreen.swift; sourceTree = "<group>"; };
+		CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreOrderSuccessScreen.swift; sourceTree = "<group>"; };
 		CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreViewProductBottomSheet.swift; sourceTree = "<group>"; };
-		CED29AC927A90FE20076A63B /* InStoreSellers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellers.swift; sourceTree = "<group>"; };
-		CED29ACB27A952500076A63B /* InStoreUsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsers.swift; sourceTree = "<group>"; };
+		CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellersScreen.swift; sourceTree = "<group>"; };
+		CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsersScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -807,11 +809,12 @@
 		CED29AC827A90FB70076A63B /* InStore */ = {
 			isa = PBXGroup;
 			children = (
-				CED29AC927A90FE20076A63B /* InStoreSellers.swift */,
-				CED29ACB27A952500076A63B /* InStoreUsers.swift */,
-				CE9EEA8B27ABA85000B6FAFC /* InStoreCreateUser.swift */,
-				CE9EEA8D27ABFEF600B6FAFC /* InStoreProducts.swift */,
-				CE3B6B2327B12E2900A19F22 /* InStoreCart.swift */,
+				CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */,
+				CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */,
+				CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */,
+				CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */,
+				CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */,
+				CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */,
 			);
 			path = InStore;
 			sourceTree = "<group>";
@@ -869,7 +872,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1220;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Zeal Software Solutions";
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -1026,7 +1029,7 @@
 			files = (
 				33ED9E9C2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift in Sources */,
 				33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */,
-				CED29ACA27A90FE20076A63B /* InStoreSellers.swift in Sources */,
+				CED29ACA27A90FE20076A63B /* InStoreSellersScreen.swift in Sources */,
 				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */,
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
@@ -1077,19 +1080,20 @@
 				33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */,
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
-				CED29ACC27A952500076A63B /* InStoreUsers.swift in Sources */,
-				CE9EEA8E27ABFEF700B6FAFC /* InStoreProducts.swift in Sources */,
+				CED29ACC27A952500076A63B /* InStoreUsersScreen.swift in Sources */,
+				CE9EEA8E27ABFEF700B6FAFC /* InStoreProductsScreen.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
-				CE3B6B2427B12E2900A19F22 /* InStoreCart.swift in Sources */,
+				CE3B6B2427B12E2900A19F22 /* InStoreCartScreen.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
 				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
 				33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */,
 				333D3268262EBABF0075E1D3 /* HelpScreen.swift in Sources */,
+				CEB9737127B25B9400B5153D /* InStoreOrderSuccessScreen.swift in Sources */,
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
 				33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */,
-				CE9EEA8C27ABA85000B6FAFC /* InStoreCreateUser.swift in Sources */,
+				CE9EEA8C27ABA85000B6FAFC /* InStoreAddUserScreen.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,
@@ -1168,6 +1172,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1264,6 +1269,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1360,6 +1366,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1450,6 +1457,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1540,6 +1548,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1601,6 +1610,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
