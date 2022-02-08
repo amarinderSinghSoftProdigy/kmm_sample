@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.core.mvi.scope.nested
+package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -106,6 +106,10 @@ class OrderHsnEditScope(
         this.showDeclineReasonsBottomSheet.value = openSheet
     }
 
+    /**
+     *  move to batches screen
+     */
+    fun moveToBatchesScreen() = EventCollector.sendEvent(Event.Transition.Batches)
 
     /**
      * get Hsn codes from server

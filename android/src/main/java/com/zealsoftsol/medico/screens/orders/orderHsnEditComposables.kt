@@ -68,7 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
@@ -496,7 +496,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                     .padding(vertical = 10.dp)
                                     .height(40.dp)
                                     .clickable {
-                                        //move to batches screen
+                                        scope.moveToBatchesScreen()
                                     },
                                 shape = MaterialTheme.shapes.medium,
                                 color = ConstColors.lightGrey,
@@ -506,7 +506,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 ),
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(10.dp),
+                                    modifier = Modifier
+                                        .padding(10.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.End
                                 ) {

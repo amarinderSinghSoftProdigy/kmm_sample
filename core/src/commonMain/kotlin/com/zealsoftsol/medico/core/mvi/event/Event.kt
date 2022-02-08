@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -462,6 +461,7 @@ sealed class Event {
 
         object Inventory : Transition()
         object Menu : Transition()
+        object Batches: Transition()
 
     }
 }
