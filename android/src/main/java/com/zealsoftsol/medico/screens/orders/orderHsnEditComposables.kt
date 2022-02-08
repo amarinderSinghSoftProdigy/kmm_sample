@@ -159,13 +159,14 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = null,
                         modifier = Modifier
-                            .padding(left = 10.dp)
+                            .padding(start = 10.dp)
                             .clickable(
                                 indication = null,
                                 onClick = {
