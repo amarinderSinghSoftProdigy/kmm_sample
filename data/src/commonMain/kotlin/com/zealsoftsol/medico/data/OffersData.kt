@@ -129,3 +129,9 @@ class OfferProductRequest {
     var endDate: Long? = null
 }
 
+@Serializable
+class EditOfferRequest (
+    val promoCode: String,
+    val request: OfferProductRequest
+)
+

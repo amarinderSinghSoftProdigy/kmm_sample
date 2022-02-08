@@ -366,6 +366,11 @@ interface NetworkScope {
             unitCode: String,
             request: OfferProductRequest
         ): BodyResponse<String>
+
+        suspend fun editOffer(
+            unitCode: String,
+            promoCode: String,request: OfferProductRequest
+        ): BodyResponse<String>
     }
 
 }

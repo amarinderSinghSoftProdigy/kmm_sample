@@ -252,7 +252,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                         text = stringResource(id = R.string.stop),
                                         color = ConstColors.red,
                                         fontSize = 14.sp,
-                                        fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (!switchEnabled.value) FontWeight.Bold else FontWeight.Normal
                                     )
                                     Text(
                                         text = "/",
@@ -271,8 +271,6 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                     checked = switchEnabled.value,
                                     onCheckedChange = {
                                         switchEnabled.value = it
-                                        /*request.active = it
-                                        scope.saveData(request = request)*/
                                     },
                                     colors = SwitchDefaults.colors(
                                         checkedThumbColor = ConstColors.green,
@@ -284,21 +282,15 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             MedicoButton(
-                                text = /*if (saveClicked.value) stringResource(id = R.string.save) else*/
-                                stringResource(
+                                text = stringResource(
                                     id = R.string.confirm
                                 ),
                                 isEnabled = true,
                                 height = 35.dp,
                                 elevation = null,
                                 onClick = {
-                                    /*if (saveClicked.value) {
-                                        scope.saveData()
-                                        scope.saveData(request = request)
-                                    } else {*/
                                     request.active = switchEnabled.value
                                     scope.saveOffer(request = request, product = product)
-                                    //}
                                 },
                                 textSize = 14.sp,
                                 color = ConstColors.yellow,

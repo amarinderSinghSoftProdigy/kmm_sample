@@ -1922,7 +1922,7 @@ private fun EditOfferItemBottomSheet(
         val promo = info.promo.flow.collectAsState()
         val types = info.types
         val type = info.promotionType.flow.collectAsState()
-        val request = OfferProductRequest()
+        val active = info.active.flow.collectAsState()
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -2118,8 +2118,10 @@ private fun EditOfferItemBottomSheet(
                                         }
                                         if (activeIndex == 0) {
                                             wasBuy.value = "$modBefore$modAfter"
+                                            info.updateQuantity(wasBuy.value.toDouble())
                                         } else {
                                             wasDis.value = "$modBefore$modAfter"
+                                            info.updateDiscount(wasDis.value.toDouble())
                                         }
                                     },
                                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -2148,13 +2150,13 @@ private fun EditOfferItemBottomSheet(
                                 EditField(
                                     label = stringResource(id = R.string.free),
                                     qty = promo.value.free.formatted,
-                                    onChange = { request.free = it.toDouble() },
+                                    onChange = { info.updateFreeQuantity(it.toDouble()) },
                                     isEnabled = true,
                                 )
                             }
                         } else {
-                            request.buy = 0.0
-                            request.free = 0.0
+                            info.updateFreeQuantity(0.0)
+                            info.updateQuantity(0.0)
                         }
                     }
                 }
@@ -2165,7 +2167,7 @@ private fun EditOfferItemBottomSheet(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    val switchEnabled = remember { mutableStateOf(false) }
+                    val switchEnabled = remember { mutableStateOf(active.value) }
                     Box(modifier = Modifier.width(120.dp)) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2173,7 +2175,7 @@ private fun EditOfferItemBottomSheet(
                                     text = stringResource(id = R.string.stop),
                                     color = ConstColors.red,
                                     fontSize = 14.sp,
-                                    fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
+                                    fontWeight = if (!switchEnabled.value) FontWeight.Bold else FontWeight.Normal
                                 )
                                 Text(
                                     text = "/",
@@ -2192,6 +2194,7 @@ private fun EditOfferItemBottomSheet(
                                 checked = switchEnabled.value,
                                 onCheckedChange = {
                                     switchEnabled.value = it
+                                    info.updateActive(it)
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = ConstColors.green,

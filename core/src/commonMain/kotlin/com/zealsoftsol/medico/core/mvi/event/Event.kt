@@ -400,7 +400,6 @@ sealed class Event {
                 val promotion: Promotions
             ) : Offers()
 
-            object Refresh : Offers()
             object LoadMoreProducts : Offers()
             object OpenCreateOffer : Offers()
             data class GetOffers(
@@ -409,7 +408,7 @@ sealed class Event {
             ) : Offers()
 
             data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
-            data class EditOffer(val promotionType: String, val active: Boolean) : Offers()
+            data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
             object GetTypes : Offers()
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()

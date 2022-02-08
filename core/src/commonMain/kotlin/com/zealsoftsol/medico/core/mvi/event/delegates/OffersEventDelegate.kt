@@ -38,13 +38,12 @@ internal class OffersEventDelegate(
         is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType, event.active)
         is Event.Action.Offers.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Offers.OpenCreateOffer -> loadMoreProducts()
-        is Event.Action.Offers.EditOffer -> editOffer(event.promotionType, event.active)
+        is Event.Action.Offers.EditOffer -> editOffer(event.promoCode, event.request)
 
         is Event.Action.Offers.GetTypes -> getPromotionTypes()
         is Event.Action.Offers.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Offers.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Offers.SaveOffer -> saveOffer(event.request)
-        is Event.Action.Offers.Refresh -> refresh()
     }
 
     private suspend fun getOffers(search: String?, query: ArrayList<String>) {
@@ -94,20 +93,6 @@ internal class OffersEventDelegate(
         }.onError(navigator)
     }
 
-    private suspend fun editOffer(promotionType: String, active: Boolean) {
-       /* val user = userRepo.requireUser()
-        networkOffersScope.updateOffer(
-            unitCode = user.unitCode,
-            PromotionUpdateRequest(promoCode = promotionType, active = active)
-        ).onSuccess {
-            navigator.withScope<OffersScope.ViewOffers> {
-                getOffers(
-                    it.productSearch.value,
-                    it.manufacturerSearch.value
-                )
-            }
-        }.onError(navigator)*/
-    }
 
     private fun showBottomSheet(promotionType: String, name: String, active: Boolean) {
         navigator.withScope<OffersScope> {
@@ -234,9 +219,17 @@ internal class OffersEventDelegate(
         }
     }
 
-    private fun refresh() {
-        navigator.withScope<OffersScope.ViewOffers> {
-            it.startSearch()
-        }
+    private suspend fun editOffer(promoCode: String, request: OfferProductRequest) {
+        val user = userRepo.requireUser()
+        networkOffersScope.editOffer(
+            unitCode = user.unitCode, promoCode, request
+        ).onSuccess {
+            navigator.withScope<OffersScope.ViewOffers> {
+                getOffers(
+                    it.productSearch.value,
+                    it.manufacturerSearch.value
+                )
+            }
+        }.onError(navigator)
     }
 }

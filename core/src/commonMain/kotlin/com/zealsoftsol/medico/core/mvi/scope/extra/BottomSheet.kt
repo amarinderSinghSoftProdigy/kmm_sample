@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.PromotionType
@@ -106,10 +107,26 @@ sealed class BottomSheet {
         val info: Promotions,
         val types: List<PromotionType>
     ) : BottomSheet() {
-        fun update() =
-            EventCollector.sendEvent(Event.Action.Offers.EditOffer(info.promoCode, info.active))
+        fun update() {
+            val request = OfferProductRequest()
+            request.discount = discount.value
+            request.buy = quantity.value
+            request.free = freeQuantity.value
+            request.manufacturerCode = info.manufacturerCode
+            request.productCode = info.productCode
+            request.active = active.value
+            request.spid = ""
+            request.isOfferForAllUsers = true
+            request.connectedUsers = ArrayList()
+            request.stock = 0.0
+            request.startDate = 1644214031075
+            request.endDate = 1675750031075
+            request.promotionType = promotionType.value
+            EventCollector.sendEvent(Event.Action.Offers.EditOffer(info.promoCode, request))
+        }
 
         val promo = DataSource(info)
+        val active = DataSource(info.active)
         val quantity = DataSource(info.buy.value)
         val freeQuantity = DataSource(info.free.value)
         val discount = DataSource(info.productDiscount.value)
@@ -117,6 +134,10 @@ sealed class BottomSheet {
 
         fun updateQuantity(value: Double) {
             quantity.value = value
+        }
+
+        fun updateActive(value: Boolean) {
+            active.value = value
         }
 
         fun updateFreeQuantity(value: Double) {
