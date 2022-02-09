@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
@@ -389,6 +390,9 @@ sealed class Event {
                 val orderEntryId: String,
                 val spid: String,
             ) : OrderHsn()
+
+            object GetBatches : OrderHsn()
+
         }
 
         sealed class Offers : Action() {
@@ -468,7 +472,10 @@ sealed class Event {
 
         object Inventory : Transition()
         object Menu : Transition()
-        data class Batches(val spid: String) : Transition()
+        data class Batches(
+            val spid: String,
+            val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>
+        ) : Transition()
 
     }
 }

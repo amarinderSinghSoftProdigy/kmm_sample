@@ -114,6 +114,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     var swipeEventChangedJob: Job? = null
     val openDialog = scope.showAlert.flow.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val batchData = scope.batchData.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -487,47 +488,54 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 }
                             }
                         }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            Surface(
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                                    .height(40.dp)
-                                    .clickable {
-                                        scope.moveToBatchesScreen()
-                                    },
-                                shape = MaterialTheme.shapes.medium,
-                                color = ConstColors.lightGrey,
-                                border = BorderStroke(
-                                    1.dp,
-                                    ConstColors.gray,
-                                ),
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .padding(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.view_batches),
-                                        color = ConstColors.gray,
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
+                        if(canEditOrderEntry){
+                            if (batchData.value != null && batchData.value!!.isNotEmpty()) {
+                                batchData.value?.get(0)?.let {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .padding(vertical = 10.dp)
+                                                .height(40.dp)
+                                                .clickable {
+                                                    scope.moveToBatchesScreen()
+                                                },
+                                            shape = MaterialTheme.shapes.medium,
+                                            color = ConstColors.lightGrey,
+                                            border = BorderStroke(
+                                                1.dp,
+                                                ConstColors.gray,
+                                            ),
+                                        ) {
+                                            Row(
+                                                modifier = Modifier
+                                                    .padding(10.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.End
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.view_batches),
+                                                    color = ConstColors.gray,
+                                                    fontSize = 15.sp,
+                                                    fontWeight = FontWeight.W500,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
 
-                                    Image(
-                                        modifier = Modifier.padding(horizontal = 5.dp),
-                                        painter = painterResource(id = R.drawable.ic_eye),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(color = ConstColors.green)
-                                    )
+                                                Image(
+                                                    modifier = Modifier.padding(horizontal = 5.dp),
+                                                    painter = painterResource(id = R.drawable.ic_eye),
+                                                    contentDescription = null,
+                                                    colorFilter = ColorFilter.tint(color = ConstColors.green)
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
+
                         }
                     }
                 }

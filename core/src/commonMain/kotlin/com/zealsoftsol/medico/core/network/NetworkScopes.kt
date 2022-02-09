@@ -325,6 +325,11 @@ interface NetworkScope {
         ): BodyResponse<OrderResponse>
 
         suspend fun acceptEntry(orderEntryId: String, spid: String): BodyResponse<OrderResponse>
+
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
     }
 
     interface ProfileImage : NetworkScope {
@@ -367,12 +372,5 @@ interface NetworkScope {
             unitCode: String,
             request: OfferProductRequest
         ): BodyResponse<String>
-    }
-
-    interface Batches : NetworkScope {
-        suspend fun getBatches(
-            unitCode: String,
-            spid: String
-        ): BodyResponse<BatchesData>
     }
 }

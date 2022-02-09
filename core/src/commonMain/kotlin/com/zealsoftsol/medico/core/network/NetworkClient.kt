@@ -86,21 +86,21 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
@@ -130,8 +130,7 @@ class NetworkClient(
     NetworkScope.WhatsappStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore,
-    NetworkScope.OrderHsnEditStore,
-    NetworkScope.Batches {
+    NetworkScope.OrderHsnEditStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()

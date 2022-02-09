@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -27,8 +28,14 @@ class OrderHsnEditScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
     init {
-        if (canEditOrderEntry)
+        if (canEditOrderEntry) {
             getHsnCodes(true)
+            getBatchesData()
+        }
+    }
+
+    private fun getBatchesData() {
+        EventCollector.sendEvent(Event.Action.OrderHsn.GetBatches)
     }
 
     val selectedIndex = DataSource(index)
@@ -39,6 +46,7 @@ class OrderHsnEditScope(
     var showWarningBottomSheet = DataSource(false)
     var showDeclineReasonsBottomSheet = DataSource(false)
     private val selectedDeclineReason = DataSource("")
+    val batchData: DataSource<List<Batches>?> = DataSource(emptyList())
 
     /**
      * values used for pagination
@@ -110,7 +118,7 @@ class OrderHsnEditScope(
      *  move to batches screen
      */
     fun moveToBatchesScreen() =
-        EventCollector.sendEvent(Event.Transition.Batches(orderEntry.value.spid))
+        EventCollector.sendEvent(Event.Transition.Batches(orderEntry.value.spid, batchData))
 
     /**
      * get Hsn codes from server
