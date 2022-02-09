@@ -28,15 +28,17 @@ struct InStoreAddUserScreen: View {
                 .medicoText(textWeight: .semiBold,
                             fontSize: 20,
                             multilineTextAlignment: .leading)
-            VStack {
-                createUserForm
-                Spacer()
-            }
             
+            VStack(spacing: 10) {
+                personalInfoFields()
+                drugLicenseFields()
+                locationFields()
+            }
+            .scrollView()
+                        
             BottomActionView(enableAddCustomer: canGoNext.value != false, onClickReset: reset, onClickAddCustomer: createUser)
         }
         .padding(20)
-        .textFieldsModifiers()
         .notificationAlertSender(withHandler: scope)
         .screenLogger(withScreenName: "InStoreAddUserScreen",
                       withScreenClass: InStoreAddUserScreen.self)
@@ -58,18 +60,9 @@ struct InStoreAddUserScreen: View {
         scope.reset()
     }
     
-    var createUserForm: some View {
-        VStack(spacing: 20) {
-            personalInfoFields()
-            drugLicenseFields()
-            locationFields()
-        }
-        .scrollView()
-    }
-    
     //MARK: Personal Info View
     private func personalInfoFields() -> some View {
-        VStack {
+        Group {
             PickerSelector(placeholder: "payment_type",
                            chosenElement: self.registration.value?.paymentMethod.serverValue ?? "",
                            data: getPaymentMethodOptions(),
@@ -118,7 +111,7 @@ struct InStoreAddUserScreen: View {
     
     //MARK:  DrugLicense Info View
     private func drugLicenseFields() -> some View {
-        VStack {
+        Group {
             let drugLicenseNo1 = self.registration.value?.drugLicenseNo1
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "drug_license_No1",
                                          text: drugLicenseNo1,
@@ -141,7 +134,7 @@ struct InStoreAddUserScreen: View {
     
     //MARK: Location Info View
     private func locationFields() -> some View {
-        VStack {
+        Group {
             let pincode = self.registration.value?.pincode
             FloatingPlaceholderTextField(placeholderLocalizedStringKey: "pincode",
                                          text: pincode,
@@ -247,6 +240,6 @@ private struct BottomActionView: View {
                 .frame(width: geometry.size.width * 0.60)
             }
         }
-        .frame( height: 50, alignment: .bottom)
+        .frame(height: 50, alignment: .bottom)
     }
 }

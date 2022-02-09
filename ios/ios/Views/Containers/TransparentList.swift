@@ -50,7 +50,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
                                 self.pagination.canLoadMore() &&
                                 self.isInProgress.value == false {
                                 self.loadItems()
-
+                                
                                 if let listName = self.listName {
                                     self.scrollData.lists[listName]?.elementToScrollTo = index
                                 }
@@ -63,6 +63,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
                             
                             self.onTapGesture(element)
                         }
+                        .modifier(TableViewSeparatorModifier())
                 }
             }
             .onAppear {
@@ -72,6 +73,7 @@ struct TransparentList<Content: View, T: Hashable>: View {
                 UITableViewCell.appearance().backgroundColor = UIColor.clear
                 
                 UITableView.appearance().contentInset.top = !needsPadding ? -35 : 0
+                UITableView.appearance().separatorStyle = .none
             }
             .introspectTableView { (tableView) in
                 if let listName = self.listName,
@@ -173,5 +175,15 @@ class ListScrollData: ObservableObject {
         
         case orders
         case invoices
+    }
+}
+
+
+struct TableViewSeparatorModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 15.0, *) {
+            content.listRowSeparator(.hidden)
+        }
     }
 }

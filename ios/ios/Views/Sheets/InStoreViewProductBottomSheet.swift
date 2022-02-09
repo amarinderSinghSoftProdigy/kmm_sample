@@ -8,6 +8,7 @@
 
 import core
 import SwiftUI
+import Combine
 
 struct InStoreViewProductBottomSheet: ViewModifier {
     
@@ -16,7 +17,8 @@ struct InStoreViewProductBottomSheet: ViewModifier {
     
     @State private var quantity: Double
     @State private var freeQuantity: Double
-    
+    @State private var keyboardHeight: CGFloat = 0
+
     var product: DataInStoreProduct {
         return bottomSheet.product
     }
@@ -56,11 +58,12 @@ struct InStoreViewProductBottomSheet: ViewModifier {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
+                .padding(.bottom, keyboardHeight)
+                .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
                 .scrollView()
             }
             .textFieldsModifiers()
             .edgesIgnoringSafeArea(.bottom)
-            
         )
     }
     

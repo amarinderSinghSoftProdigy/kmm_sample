@@ -68,15 +68,16 @@ struct InStoreCartScreen: View {
                         .buttonStyle(PlainButtonStyle())
                         .listRowInsets(.init())
                         .background(appColor: .primary)
+                        .modifier(TableViewSeparatorModifier())
                     }
                     .onAppear {
                         UITableView.appearance().separatorStyle = .none
                     }
                     .padding(.horizontal, !needsPadding ? -16 : 0)
                     .background(appColor: .clear)
-                }
-                
-                Spacer()
+                    
+                    Spacer()
+                }                
                 
                 VStack(spacing: 12) {
                     
@@ -111,7 +112,7 @@ struct InStoreCartScreen: View {
                     }
                     .padding(.horizontal, 17)
                 }
-                
+                .padding(.bottom, 20)
             }
         }
     }

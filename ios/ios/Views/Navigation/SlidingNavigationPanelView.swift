@@ -229,7 +229,7 @@ extension NavigationOption {
             return "Dashboard"
             
         case .InStore():
-            return "Settings"
+            return "InStore"
             
         case .LogOut():
             return "Exit"
