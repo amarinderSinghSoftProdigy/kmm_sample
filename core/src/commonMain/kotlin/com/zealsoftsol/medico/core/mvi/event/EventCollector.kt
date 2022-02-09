@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
@@ -63,6 +64,7 @@ class EventCollector(
     whatsappNetworkScope: NetworkScope.WhatsappStore,
     offersNetworkScope: NetworkScope.OffersStore,
     orderHsnScope: NetworkScope.OrderHsnEditStore,
+    batchesNetworkScope: NetworkScope.Batches,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -87,6 +89,7 @@ class EventCollector(
         Event.Action.ResetPassword::class to PasswordEventDelegate(navigator, userRepo),
         Event.Action.Registration::class to RegistrationEventDelegate(navigator, userRepo),
         Event.Action.Search::class to SearchEventDelegate(navigator, userRepo, searchNetworkScope),
+        Event.Action.Batches::class to BatchesEventDelegate(navigator, userRepo, batchesNetworkScope),
         Event.Action.Product::class to ProductEventDelegate(
             navigator,
             userRepo,

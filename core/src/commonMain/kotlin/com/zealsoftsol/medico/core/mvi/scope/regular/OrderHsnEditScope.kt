@@ -109,7 +109,8 @@ class OrderHsnEditScope(
     /**
      *  move to batches screen
      */
-    fun moveToBatchesScreen() = EventCollector.sendEvent(Event.Transition.Batches)
+    fun moveToBatchesScreen() =
+        EventCollector.sendEvent(Event.Transition.Batches(orderEntry.value.spid))
 
     /**
      * get Hsn codes from server

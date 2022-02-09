@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -129,7 +130,8 @@ class NetworkClient(
     NetworkScope.WhatsappStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore,
-    NetworkScope.OrderHsnEditStore {
+    NetworkScope.OrderHsnEditStore,
+    NetworkScope.Batches {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -1041,7 +1043,18 @@ class NetworkClient(
         }
     }
 
-
+    override suspend fun getBatches(
+        unitCode: String,
+        spid: String
+    ) = simpleRequest {
+        client.get<BodyResponse<BatchesData>>("${baseUrl.url}/inventory/view/batches") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.append("spid", spid)
+            }
+        }
+    }
     // Utils
 
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {

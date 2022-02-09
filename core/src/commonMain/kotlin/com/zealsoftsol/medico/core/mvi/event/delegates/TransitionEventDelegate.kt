@@ -207,7 +207,7 @@ internal class TransitionEventDelegate(
                         notificationRepo.getUnreadMessagesDataSource()
                     )
                 )
-                is Event.Transition.Batches -> setScope(BatchesScope())
+                is Event.Transition.Batches -> setScope(BatchesScope(event.spid))
             }
         }
     }

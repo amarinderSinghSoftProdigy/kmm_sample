@@ -352,6 +352,13 @@ sealed class Event {
             object GetPreference : WhatsAppPreference()
         }
 
+
+        sealed class Batches : Action() {
+            override val typeClazz: KClass<*> = Batches::class
+
+            object GetBatches : Batches()
+        }
+
         sealed class OrderHsn : Action() {
             override val typeClazz: KClass<*> = OrderHsn::class
 
@@ -461,7 +468,7 @@ sealed class Event {
 
         object Inventory : Transition()
         object Menu : Transition()
-        object Batches: Transition()
+        data class Batches(val spid: String) : Transition()
 
     }
 }

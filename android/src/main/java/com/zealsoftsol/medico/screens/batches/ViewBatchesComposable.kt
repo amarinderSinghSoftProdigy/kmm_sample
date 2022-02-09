@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -21,6 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,13 +37,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 
 
 @Composable
 fun ViewBatchesScreen(scope: BatchesScope) {
+    val batchData = scope.batchData.flow.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,7 +68,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                 .padding(16.dp)
         ) {
             Text(
-                text = "Citrizine",
+                text = if (batchData.value.isNotEmpty()) batchData.value[0].productName else "",
                 color = Color.Black,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W600
@@ -73,7 +81,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Cipla Ltd",
+                    text = if (batchData.value.isNotEmpty()) batchData.value[0].manufacturerName else "",
                     color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500
@@ -83,13 +91,25 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(id = R.string.in_stock),
+                        text = if (batchData.value.isNotEmpty()) {
+                            if (batchData.value[0].totalStock.value > 0) {
+                                stringResource(id = R.string.in_stock)
+                            } else {
+                                stringResource(id = R.string.out_stock)
+                            }
+                        } else "",
                         color = Color.Black,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500
                     )
                     CommonRoundedText(
-                        text = "999.9",
+                        text = if (batchData.value.isNotEmpty()) {
+                            if (batchData.value[0].totalStock.value > 0) {
+                                batchData.value[0].totalStock.formatted
+                            } else {
+                                "0.0"
+                            }
+                        } else "0.0",
                         modifier = Modifier.padding(start = 5.dp),
                         backgroundColor = Color.White,
                         borderColor = ConstColors.green,
@@ -127,19 +147,23 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                 }
             }
 
-            /*LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)) {
-                batchesList.value?.brands?.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { pos, item -> pos },
-                        itemContent = { _, item ->
-                            BatchesItem(item, scope)
-                        },
-                    )
+            if (batchData.value.isNotEmpty() && batchData.value[0].batches.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    batchData.value[0].batches.let {
+                        itemsIndexed(
+                            items = it,
+                            key = { pos, item -> pos },
+                            itemContent = { _, item ->
+                                BatchesItem(item, scope)
+                            },
+                        )
+                    }
                 }
-            }*/
+            }
         }
     }
 }
@@ -148,7 +172,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
  * BatchItem
  */
 @Composable
-fun BatchesItem(scope: BatchesScope) {
+fun BatchesItem(item: Batch, scope: BatchesScope) {
     Card(
         modifier = Modifier
             .selectable(
@@ -176,10 +200,7 @@ fun BatchesItem(scope: BatchesScope) {
                     )
 
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = item.ptr.formatted,
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
@@ -191,7 +212,7 @@ fun BatchesItem(scope: BatchesScope) {
                 Row {
                     Text(
                         text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
+                            append(stringResource(id = R.string.in_stock))
                             append(":")
                         },
                         color = ConstColors.gray,
@@ -201,10 +222,7 @@ fun BatchesItem(scope: BatchesScope) {
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = item.stock.formatted,
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
@@ -215,10 +233,7 @@ fun BatchesItem(scope: BatchesScope) {
 
                 Row {
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = stringResource(id = R.string.batch_no),
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
@@ -226,10 +241,7 @@ fun BatchesItem(scope: BatchesScope) {
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = item.batchNo,
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
@@ -243,7 +255,7 @@ fun BatchesItem(scope: BatchesScope) {
                 Row {
                     Text(
                         text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
+                            append(stringResource(id = R.string.mrp))
                             append(":")
                         },
                         color = ConstColors.gray,
@@ -254,10 +266,7 @@ fun BatchesItem(scope: BatchesScope) {
                     )
 
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = item.mrp.formatted,
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
@@ -269,7 +278,7 @@ fun BatchesItem(scope: BatchesScope) {
                 Row {
                     Text(
                         text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
+                            append(stringResource(id = R.string.expiry_))
                             append(":")
                         },
                         color = ConstColors.gray,
@@ -279,10 +288,7 @@ fun BatchesItem(scope: BatchesScope) {
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.ptr))
-                            append(":")
-                        },
+                        text = item.expiryDate,
                         color = ConstColors.gray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W500,
