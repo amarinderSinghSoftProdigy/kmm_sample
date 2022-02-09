@@ -1092,14 +1092,13 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     }
                 }
             }
-
-            if (openHsnBottomSheet)
-                HsnCodeSheet(scope)
-            if (openWarningBottomSheet)
-                WarningProductNotAvailable(scope)
-            if (openDeclineReasonBottomSheet)
-                DeclineReasonBottomSheet(scope)
         }
+        if (openHsnBottomSheet)
+            HsnCodeSheet(scope)
+        if (openWarningBottomSheet)
+            WarningProductNotAvailable(scope)
+        if (openDeclineReasonBottomSheet)
+            DeclineReasonBottomSheet(scope)
     }
 
 }

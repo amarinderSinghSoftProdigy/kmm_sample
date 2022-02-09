@@ -29,7 +29,6 @@ class OrderHsnEditScope(
 
     init {
         if (canEditOrderEntry) {
-            getHsnCodes(true)
             getBatchesData()
         }
     }
@@ -94,6 +93,10 @@ class OrderHsnEditScope(
         if (!openSheet) {
             if (searchText.value.isNotEmpty()) {
                 searchText.value = ""
+                getHsnCodes(true)
+            }
+        }else{
+            if(items.value.isEmpty()){
                 getHsnCodes(true)
             }
         }
