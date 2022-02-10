@@ -40,11 +40,13 @@ import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlert
 
 
 @Composable
 fun ViewBatchesScreen(scope: BatchesScope) {
     val batchData = scope.batchData.flow.collectAsState()
+    val showAlert = scope.showSuccessAlert.flow.collectAsState()
 
     if (batchData.value != null && batchData.value!!.isNotEmpty()) {
         batchData.value?.get(0)?.let {
@@ -125,8 +127,13 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                 }
             }
         }
-
     }
+
+    if(showAlert.value)
+        ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+            scope.updateSuccessAlertVisibility(false)
+            scope.goBack()
+        }
 }
 
 /**
@@ -321,6 +328,8 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                 hsnCode = item.hsncode,
                                 qty = item.stock.value.toString()
                             )
+
+                            scope.updateSuccessAlertVisibility(true)
                         }
                     }
                 }

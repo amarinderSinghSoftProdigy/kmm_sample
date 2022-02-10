@@ -15,6 +15,11 @@ class BatchesScope(
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
+    val showSuccessAlert = DataSource(false)
+
+    fun updateSuccessAlertVisibility(showAlert: Boolean){
+        this.showSuccessAlert.value = showAlert
+    }
     /**
      * update selected batch by user
      */
