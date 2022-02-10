@@ -66,6 +66,7 @@ class OrderHsnEditScope(
     val discount = DataSource(orderEntry.value.discount.value.toString())
     val mrp = DataSource(orderEntry.value.mrp.value.toString())
     val selectedHsnCode = DataSource(orderEntry.value.hsnCode)
+    val selectedBatchData = DataSource(SelectedBatchData())
 
     /**
      * Update this whenever user switches the line index so that you get correct data for order entries
@@ -83,6 +84,18 @@ class OrderHsnEditScope(
         discount.value = orderEntry.value.discount.value.toString()
     }
 
+    /**
+     * collect data of batch selcted by user
+     */
+    data class SelectedBatchData(
+        val quantity: String = "",
+        val ptr: String = "",
+        val mrp: String = "",
+        val selectedHsnCode: String = "",
+        val expiry: String = "",
+        val batch: String = ""
+    )
+
 
     /**
      * update whether to show hsn bottom sheet or not
@@ -95,8 +108,8 @@ class OrderHsnEditScope(
                 searchText.value = ""
                 getHsnCodes(true)
             }
-        }else{
-            if(items.value.isEmpty()){
+        } else {
+            if (items.value.isEmpty()) {
                 getHsnCodes(true)
             }
         }
@@ -121,7 +134,9 @@ class OrderHsnEditScope(
      *  move to batches screen
      */
     fun moveToBatchesScreen() =
-        EventCollector.sendEvent(Event.Transition.Batches(orderEntry.value.spid, batchData))
+        EventCollector.sendEvent(
+            Event.Transition.Batches(orderEntry.value.spid, batchData, selectedBatchData)
+        )
 
     /**
      * get Hsn codes from server

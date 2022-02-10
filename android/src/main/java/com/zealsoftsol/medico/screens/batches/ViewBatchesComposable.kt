@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
@@ -137,11 +136,6 @@ fun ViewBatchesScreen(scope: BatchesScope) {
 fun BatchesItem(item: Batch, scope: BatchesScope) {
     Surface(
         modifier = Modifier
-            .selectable(
-                selected = true,
-                onClick = {
-                    //send parameters for search based on category
-                })
             .background(Color.White),
         shape = RoundedCornerShape(5.dp),
         elevation = 5.dp,
@@ -319,7 +313,14 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                 .height(35.dp)
                                 .padding(start = 40.dp, end = 0.dp)
                         ) {
-
+                            scope.updateData(
+                                batchNo = item.batchNo,
+                                expiry = item.expiryDate,
+                                mrp = item.mrp.value.toString(),
+                                price = item.ptr.value.toString(),
+                                hsnCode = item.hsncode,
+                                qty = item.stock.value.toString()
+                            )
                         }
                     }
                 }

@@ -115,6 +115,25 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val openDialog = scope.showAlert.flow.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val batchData = scope.batchData.flow.collectAsState()
+    val selectedBatchData = scope.selectedBatchData.flow.collectAsState()
+
+    /**
+     * update editable data is user has selected a batch from ViewBatchComposable
+     */
+    selectedBatchData.value.let {
+        if(it.batch.isNotEmpty())
+            scope.updateBatch(it.batch)
+        if(it.expiry.isNotEmpty())
+            scope.updateExpiry(it.expiry)
+        if(it.mrp.isNotEmpty())
+            scope.updateMrp(it.mrp)
+        if(it.ptr.isNotEmpty())
+            scope.updatePtr(it.ptr)
+        if(it.quantity.isNotEmpty())
+            scope.updateQuantity(it.quantity)
+        if(it.selectedHsnCode.isNotEmpty())
+            scope.updateHsnCode(it.selectedHsnCode)
+    }
 
     Box(
         modifier = Modifier
