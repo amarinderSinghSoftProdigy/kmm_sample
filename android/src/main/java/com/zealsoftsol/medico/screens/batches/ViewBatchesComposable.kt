@@ -56,7 +56,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                     .background(Color.White)
             ) {
                 CoilImage(
-                    src = CdnUrlProvider.urlForM(it.productCode),
+                    src = CdnUrlProvider.urlFor(it.productCode),
                     onError = {
                         ItemPlaceholder()
                     },
@@ -171,7 +171,7 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                 .fillMaxWidth(),
                         )
                         Text(
-                            text = item.promotionData.promoCode,
+                            text = "${item.promotionData.buy}+${item.promotionData.free}",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,

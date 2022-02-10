@@ -508,7 +508,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                             }
                         }
                         if(canEditOrderEntry){
-                            if (batchData.value != null && batchData.value!!.isNotEmpty()) {
+                            if (batchData.value != null && batchData.value!!.isNotEmpty() && batchData.value?.get(0)?.batches!!.isNotEmpty()) {
                                 batchData.value?.get(0)?.let {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
