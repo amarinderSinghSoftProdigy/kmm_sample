@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -48,7 +47,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -75,7 +73,6 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
-import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
@@ -84,10 +81,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
-import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.ProductSearch
-import com.zealsoftsol.medico.data.PromotionType
-import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
 import com.zealsoftsol.medico.data.SubscriptionStatus
@@ -96,7 +90,6 @@ import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
-import com.zealsoftsol.medico.screens.common.EditFieldCustom
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -110,10 +103,8 @@ import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
-import com.zealsoftsol.medico.screens.management.onChange
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
-import com.zealsoftsol.medico.screens.search.YellowOutlineIndication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -1851,11 +1842,11 @@ private fun UpdateOfferItemBottomSheet(
                     Text(
                         text = if (!active) stringResource(id = R.string.stop_offer_message) else stringResource(
                             id = R.string.start_offer_message
-                        ), fontSize = 12.sp
+                        ), fontSize = 14.sp
                     )
                     Text(
                         text = "$name?",
-                        fontSize = 13.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -1877,7 +1868,7 @@ private fun UpdateOfferItemBottomSheet(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.okay),
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color = MaterialTheme.colors.background,
                             )
                         }
@@ -1897,7 +1888,7 @@ private fun UpdateOfferItemBottomSheet(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.cancel),
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color = MaterialTheme.colors.background
                             )
                         }

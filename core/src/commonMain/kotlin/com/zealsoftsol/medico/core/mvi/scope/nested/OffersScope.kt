@@ -92,6 +92,13 @@ sealed class OffersScope : Scope.Child.TabBar() {
             startSearch()
         }
 
+        //Open the dialog for update status
+        fun showBottomSheet(promotion: String, name: String, active: Boolean) =
+            EventCollector.sendEvent(Event.Action.Offers.ShowBottomSheet(promotion, name, active))
+
+        fun showEditBottomSheet(promotion: Promotions) =
+            EventCollector.sendEvent(Event.Action.Offers.ShowEditBottomSheet(promotion))
+
         fun changeAlertScope(enable: Boolean) {
             showAlert.value = enable
         }

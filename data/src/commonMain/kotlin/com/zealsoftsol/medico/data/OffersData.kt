@@ -111,6 +111,7 @@ class OfferProduct(
     val manufacturerCode: String,
     val manufacturerName: String,
     val spid: String,
+    val promotionData: List<Promotions>,
 )
 
 @Serializable
