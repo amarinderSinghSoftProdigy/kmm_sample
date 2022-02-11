@@ -120,19 +120,21 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     /**
      * update editable data is user has selected a batch from ViewBatchComposable
      */
-    selectedBatchData.value.let {
-        if(it.batch.isNotEmpty())
-            scope.updateBatch(it.batch)
-        if(it.expiry.isNotEmpty())
-            scope.updateExpiry(it.expiry)
-        if(it.mrp.isNotEmpty())
-            scope.updateMrp(it.mrp)
-        if(it.ptr.isNotEmpty())
-            scope.updatePtr(it.ptr)
-        if(it.quantity.isNotEmpty())
-            scope.updateQuantity(it.quantity)
-        if(it.selectedHsnCode.isNotEmpty())
-            scope.updateHsnCode(it.selectedHsnCode)
+    remember{
+        selectedBatchData.value.let {
+            if(it.batch.isNotEmpty())
+                scope.updateBatch(it.batch)
+            if(it.expiry.isNotEmpty())
+                scope.updateExpiry(it.expiry)
+            if(it.mrp.isNotEmpty())
+                scope.updateMrp(it.mrp)
+            if(it.ptr.isNotEmpty())
+                scope.updatePtr(it.ptr)
+            if(it.quantity.isNotEmpty())
+                scope.updateQuantity(it.quantity)
+            if(it.selectedHsnCode.isNotEmpty())
+                scope.updateHsnCode(it.selectedHsnCode)
+        }
     }
 
     Box(

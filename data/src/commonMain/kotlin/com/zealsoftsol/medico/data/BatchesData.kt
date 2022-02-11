@@ -39,5 +39,6 @@ data class BatchPromotionData(
     val productDiscount: String,
     val free: String,
     val buy: String,
-    val connectedUsers: List<String>
+    val connectedUsers: List<String>,
+    val displayOffer: String
 )

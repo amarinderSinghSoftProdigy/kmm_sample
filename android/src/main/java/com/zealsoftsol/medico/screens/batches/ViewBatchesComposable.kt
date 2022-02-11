@@ -171,7 +171,7 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                 .fillMaxWidth(),
                         )
                         Text(
-                            text = "${item.promotionData.buy}+${item.promotionData.free}",
+                            text = "${item.promotionData.displayOffer} ${stringResource(id = R.string.offer)}",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
