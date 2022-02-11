@@ -1,9 +1,10 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
@@ -353,6 +354,13 @@ sealed class Event {
             object GetPreference : WhatsAppPreference()
         }
 
+
+        sealed class Batches : Action() {
+            override val typeClazz: KClass<*> = Batches::class
+
+            object GetBatches : Batches()
+        }
+
         sealed class OrderHsn : Action() {
             override val typeClazz: KClass<*> = OrderHsn::class
 
@@ -383,6 +391,9 @@ sealed class Event {
                 val orderEntryId: String,
                 val spid: String,
             ) : OrderHsn()
+
+            object GetBatches : OrderHsn()
+
         }
 
         sealed class Offers : Action() {
@@ -462,6 +473,11 @@ sealed class Event {
 
         object Inventory : Transition()
         object Menu : Transition()
+        data class Batches(
+            val spid: String,
+            val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>,
+            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>
+        ) : Transition()
 
     }
 }

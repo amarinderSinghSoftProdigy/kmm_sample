@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -324,6 +325,11 @@ interface NetworkScope {
         ): BodyResponse<OrderResponse>
 
         suspend fun acceptEntry(orderEntryId: String, spid: String): BodyResponse<OrderResponse>
+
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
     }
 
     interface ProfileImage : NetworkScope {
@@ -367,5 +373,4 @@ interface NetworkScope {
             request: OfferProductRequest
         ): BodyResponse<String>
     }
-
 }
