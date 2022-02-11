@@ -1856,27 +1856,6 @@ private fun UpdateOfferItemBottomSheet(
                 Row(horizontalArrangement = Arrangement.SpaceBetween) {
                     Surface(
                         modifier = Modifier.weight(0.4f),
-                        shape = MaterialTheme.shapes.medium,
-                        color = ConstColors.txtGrey,
-                        onClick = onSubscribe,
-                        elevation = 8.dp
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .padding(all = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.okay),
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colors.background,
-                            )
-                        }
-                    }
-
-                    Space(dp = 16.dp)
-                    Surface(
-                        modifier = Modifier.weight(0.4f),
                         color = ConstColors.yellow,
                         shape = MaterialTheme.shapes.large,
                         onClick = onDismiss,
@@ -1893,6 +1872,26 @@ private fun UpdateOfferItemBottomSheet(
                             )
                         }
 
+                    }
+                    Space(dp = 16.dp)
+                    Surface(
+                        modifier = Modifier.weight(0.4f),
+                        shape = MaterialTheme.shapes.medium,
+                        color = ConstColors.txtGrey,
+                        onClick = onSubscribe,
+                        elevation = 8.dp
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(all = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.okay),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+                        }
                     }
                 }
 
