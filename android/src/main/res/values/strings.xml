@@ -363,6 +363,8 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="offer_successfull">Promotion Created Successfully</string>
+    <string name="password_requirement">1 Uppercase, 1 Lowercase, 1 numeric, min 8 characters</string>
+    <string name="max_30_chars">Maximum 30 chars</string>
 
     <!-- Termrs and Cond -->
 

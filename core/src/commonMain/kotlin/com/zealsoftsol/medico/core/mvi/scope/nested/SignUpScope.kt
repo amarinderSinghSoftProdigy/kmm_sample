@@ -28,6 +28,8 @@ import com.zealsoftsol.medico.data.UserValidation3
 sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
+    val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4, 5)
+
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
@@ -113,6 +115,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         fun changePassword(password: String) {
+
             trimInput(password, registration.value.password) {
                 registration.value = registration.value.copy(password = it)
                 checkCanGoNext()
@@ -126,6 +129,15 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             }
         }
 
+        fun isAllPresent(str: String): Boolean {
+            val regex = ("^(?=.*[a-z])(?=."
+                    + "*[A-Z])(?=.*\\d)"
+                    + "(?=.*[-+_!@#$%^&*., ?]).+$")
+
+            val p = regex.toRegex()
+            return p.matches(str) && str.length >= 8
+        }
+
         /**
          * Transition to [AddressData] if successful
          */
@@ -137,13 +149,13 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
                 firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()
                         && phoneNumber.isNotEmpty() && password.isNotEmpty()
                         && verifyPassword.isNotEmpty() && verifyPassword == password
-                        && isPhoneValid && isTermsAccepted.value
+                        && isPhoneValid && isTermsAccepted.value && isAllPresent(password)
             }
         }
     }
 
     class AddressData(
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         override val locationData: DataSource<LocationData?>,
         override val registration: DataSource<UserRegistration2>,
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
@@ -168,7 +180,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
 
     sealed class Details(
         titleId: String,
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
     ) : SignUpScope(titleId) {
 
@@ -238,7 +250,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
      * Should be handled as a root scope with minor differences in child scopes
      */
     sealed class LegalDocuments(
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
         internal val registrationStep3: UserRegistration3,
     ) : SignUpScope("legal_documents"),

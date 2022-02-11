@@ -14,14 +14,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -80,7 +83,8 @@ import com.zealsoftsol.medico.data.UserType as DataUserType
 fun AuthUserType(scope: SignUpScope.SelectUserType) {
     val selectedType = scope.userType.flow.collectAsState()
     BasicAuthSignUpScreenWithButton(
-        progress = 0.2,
+        userType = "",
+        progress = 1.0,//0.2,
         baseScope = scope,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -101,7 +105,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     isSelected = selectedType.value == DataUserType.STOCKIST,
                     onClick = { scope.chooseUserType(DataUserType.STOCKIST) },
                 )
-                Spacer(modifier = Modifier.size(18.dp))
+                Space(18.dp)
                 UserType(
                     iconRes = R.drawable.ic_retailer,
                     textRes = R.string.retailer,
@@ -109,7 +113,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     onClick = { scope.chooseUserType(DataUserType.RETAILER) },
                 )
             }
-            Spacer(modifier = Modifier.size(18.dp))
+            Space(18.dp)
             Row {
                 UserType(
                     iconRes = R.drawable.ic_hospital,
@@ -117,13 +121,13 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
                     isSelected = selectedType.value == DataUserType.HOSPITAL,
                     onClick = { scope.chooseUserType(DataUserType.HOSPITAL) },
                 )
-//                Spacer(modifier = Modifier.size(18.dp))
-//                UserType(
-//                    iconRes = R.drawable.ic_season_boy,
-//                    textRes = R.string.season_boy,
-//                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
-//                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
-//                )
+                /*Space(18.dp)
+                UserType(
+                    iconRes = R.drawable.ic_season_boy,
+                    textRes = R.string.season_boy,
+                    isSelected = selectedType.value == DataUserType.SEASON_BOY,
+                    onClick = { *//*scope.chooseUserType(DataUserType.SEASON_BOY)*//* },
+                )*/
             }
         }
     )
@@ -138,9 +142,12 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
 
     val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
     val isLastNameError = registration.value.lastName.any { !it.isLetter() }
+    val password =
+        if (registration.value.password.isNotEmpty()) scope.isAllPresent(registration.value.password) else true
 
     BasicAuthSignUpScreenWithButton(
-        progress = 0.4,
+        userType = registration.value.userType,
+        progress = 2.0,//0.4,
         scrollState = scrollState,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
@@ -198,7 +205,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 scope.setPhoneNumberValid(isValid)
             }
             Space(dp = 12.dp)
-            InputWithError(errorText = validation.value?.password) {
+            InputWithError(errorText = if (!password) stringResource(id = R.string.password_requirement) else null) {
                 val rectHolder = RectHolder()
                 PasswordFormatInputField(
                     modifier = Modifier.scrollOnFocus(rectHolder, scrollState, coroutineScope),
@@ -272,8 +279,11 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val locationData = scope.locationData.flow.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val lengthValid =
+        if (registration.value.landmark.isNotEmpty()) registration.value.landmark.length < 30 else false
     BasicAuthSignUpScreenWithButton(
-        progress = 0.6,
+        userType = scope.registrationStep1.userType,
+        progress = 3.0,//0.6,
         baseScope = scope,
         scrollState = scrollState,
         buttonText = stringResource(id = R.string.next),
@@ -298,7 +308,11 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                 )
             }
             Space(dp = 12.dp)
-            InputWithError(errorText = userValidation.value?.landmark) {
+            InputWithError(
+                errorText = if (lengthValid) stringResource(
+                    id = R.string.max_30_chars
+                ) else null
+            ) {
                 InputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.landmark),
@@ -345,7 +359,8 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     BasicAuthSignUpScreenWithButton(
-        progress = 0.8,
+        userType = scope.registrationStep1.userType,
+        progress = 4.0,//0.8,
         baseScope = scope,
         scrollState = scrollState,
         buttonText = stringResource(id = R.string.next),
@@ -426,7 +441,8 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
 @Composable
 fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
     BasicAuthSignUpScreenWithButton(
-        progress = 0.8,
+        userType = scope.registrationStep1.userType,
+        progress = 4.0,//0.8,
         baseScope = scope,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.addAadhaar() },
@@ -443,7 +459,8 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
     BasicAuthSignUpScreenWithButton(
-        progress = 1.0,
+        userType = scope.registrationStep1.userType,
+        progress = 5.0,//1.0,
         baseScope = scope,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -598,6 +615,7 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
 
 @Composable
 private fun BasicAuthSignUpScreenWithButton(
+    userType: String,
     progress: Double,
     baseScope: SignUpScope,
     scrollState: ScrollState = rememberScrollState(),
@@ -614,30 +632,66 @@ private fun BasicAuthSignUpScreenWithButton(
             .fillMaxSize()
             .background(MaterialTheme.colors.primary)
     ) {
-        Box(
+        /*Box(
             modifier = Modifier
-                .background(ConstColors.yellow)
+                .background(ConstColors.yellow, MaterialTheme.shapes.small)
                 .size((LocalConfiguration.current.screenWidthDp * progress).dp, 4.dp)
-        )
+        )*/
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
         val padding = 16.dp
-        Column(
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(
-                    PaddingValues(
-                        top = padding,
-                        start = padding,
-                        end = padding,
-                        bottom = padding + 60.dp
+        Column {
+            Box(
+                modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 16.dp)
+            ) {
+                LazyRow {
+                    itemsIndexed(
+                        items = baseScope.inputProgress,
+                        itemContent = { index, item ->
+                            ProgressItem(count = item, progress)
+                        },
                     )
-                ),
-            verticalArrangement = verticalArrangement,
-            horizontalAlignment = horizontalAlignment,
-        ) {
-            body()
+                }
+            }
+            if (userType.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 16.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.user_type),
+                        fontSize = 14.sp,
+                        color = ConstColors.gray.copy(alpha = 0.5f),
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = userType,
+                        fontSize = 16.sp,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(
+                        PaddingValues(
+                            top = padding,
+                            start = padding,
+                            end = padding,
+                            bottom = padding + 60.dp
+                        )
+                    ),
+                verticalArrangement = verticalArrangement,
+                horizontalAlignment = horizontalAlignment,
+            ) {
+                body()
+            }
         }
         Column(
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -659,6 +713,43 @@ private fun BasicAuthSignUpScreenWithButton(
                         .clickable(onClick = it)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ProgressItem(count: Int, progress: Double) {
+    println("count " + count + " progress " + progress)
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .padding(all = 4.dp)
+                .background(
+                    if (count <= progress.toInt()) ConstColors.lightGreen else ConstColors.gray.copy(
+                        alpha = 0.5f
+                    ), CircleShape
+                )
+                .size(20.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = count.toString(),
+                color = Color.White,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W700,
+            )
+        }
+        if (count < 5) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        if (count <= progress.toInt()) ConstColors.lightGreen
+                        else ConstColors.gray.copy(alpha = 0.5f),
+                        MaterialTheme.shapes.small
+                    )
+                    .size(((LocalConfiguration.current.screenWidthDp.minus(120) * 0.2)).dp, 4.dp)
+            )
         }
     }
 }
