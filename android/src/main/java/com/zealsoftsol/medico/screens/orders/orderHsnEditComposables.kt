@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.orders
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -56,11 +57,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -89,6 +92,7 @@ import org.joda.time.DateTime
  * show the view to update phone number and language for user
  */
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
@@ -1515,13 +1519,20 @@ fun EditText(
         textAlign = TextAlign.End,
     )
 
+    val initSelectionIndex = value.length.takeIf { it <= value.length } ?: value.length
+
+    val textFieldValueState = TextFieldValue(
+            text = value,
+            selection = TextRange(initSelectionIndex)
+        )
+
     BasicTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = value,
+        value = textFieldValueState,
         onValueChange = {
-            if (it.toDoubleOrNull() != null) {
-                onChange(it)
+            if (it.text.toDoubleOrNull() != null) {
+                onChange(it.text)
             } else {
                 onChange("0")
             }
