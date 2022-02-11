@@ -573,16 +573,18 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     color = ConstColors.lightGrey
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            modifier = Modifier.padding(10.dp),
-                            text = stringResource(id = R.string.edit),
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontWeight = FontWeight.W600
-                        )
-                        Divider()
+                        if(canEditOrderEntry){
+                            Text(
+                                modifier = Modifier.padding(10.dp),
+                                text = stringResource(id = R.string.edit),
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.W600
+                            )
+                            Divider()
+                        }
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
