@@ -149,7 +149,7 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (!item.promotionData.promotionActive) {
+            if (item.promotionData.promotionActive) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
