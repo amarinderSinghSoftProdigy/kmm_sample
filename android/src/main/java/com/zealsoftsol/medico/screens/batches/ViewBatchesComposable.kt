@@ -51,10 +51,11 @@ fun ViewBatchesScreen(scope: BatchesScope) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(Color.White),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CoilImage(
-                    src = CdnUrlProvider.urlFor(it.productCode, CdnUrlProvider.Size.Px123),
+                    src = CdnUrlProvider.urlFor(it.productCode, CdnUrlProvider.Size.Px320),
                     onError = {
                         ItemPlaceholder()
                     },
