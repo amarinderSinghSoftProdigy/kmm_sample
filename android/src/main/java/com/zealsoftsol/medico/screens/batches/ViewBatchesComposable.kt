@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.batches
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -25,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -56,7 +54,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                     .background(Color.White)
             ) {
                 CoilImage(
-                    src = CdnUrlProvider.urlFor(it.productCode),
+                    src = CdnUrlProvider.urlFor(it.productCode, CdnUrlProvider.Size.Px123),
                     onError = {
                         ItemPlaceholder()
                     },
@@ -129,7 +127,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
         }
     }
 
-    if(showAlert.value)
+    if (showAlert.value)
         ShowAlert(message = stringResource(id = R.string.update_successfull)) {
             scope.updateSuccessAlertVisibility(false)
             scope.goBack()
@@ -151,30 +149,39 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            if (item.promotionData.promoCode != "") {
-
+            if (!item.promotionData.promotionActive) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.End),
+                        .padding(start = 5.dp, top = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End,
                 ) {
-                    Box(
+                    Text(
+                        text = "${stringResource(id = R.string.offer_deals_running)}:",
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
+                    Card(
                         modifier = Modifier
-                            .width(100.dp),
-                        contentAlignment = Alignment.Center
+                            .padding(end = 10.dp),
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(5.dp),
+                        backgroundColor = ConstColors.red,
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_offer_back),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        )
                         Text(
-                            text = "${item.promotionData.displayOffer} ${stringResource(id = R.string.offer)}",
+                            text = item.promotionData.displayOffer,
+                            fontSize = 14.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
+                            modifier = Modifier.padding(
+                                start = 12.dp,
+                                end = 12.dp,
+                                top = 4.dp,
+                                bottom = 4.dp
+                            )
                         )
                     }
                 }
