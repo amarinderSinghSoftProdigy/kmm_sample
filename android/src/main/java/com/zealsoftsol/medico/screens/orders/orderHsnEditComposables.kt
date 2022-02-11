@@ -42,6 +42,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,7 @@ import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
@@ -124,19 +126,19 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     /**
      * update editable data is user has selected a batch from ViewBatchComposable
      */
-    remember{
+    remember {
         selectedBatchData.value.let {
-            if(it.batch.isNotEmpty())
+            if (it.batch.isNotEmpty())
                 scope.updateBatch(it.batch)
-            if(it.expiry.isNotEmpty())
+            if (it.expiry.isNotEmpty())
                 scope.updateExpiry(it.expiry)
-            if(it.mrp.isNotEmpty())
+            if (it.mrp.isNotEmpty())
                 scope.updateMrp(it.mrp)
-            if(it.ptr.isNotEmpty())
+            if (it.ptr.isNotEmpty())
                 scope.updatePtr(it.ptr)
-            if(it.quantity.isNotEmpty())
+            if (it.quantity.isNotEmpty())
                 scope.updateQuantity(it.quantity)
-            if(it.selectedHsnCode.isNotEmpty())
+            if (it.selectedHsnCode.isNotEmpty())
                 scope.updateHsnCode(it.selectedHsnCode)
         }
     }
@@ -513,58 +515,19 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 }
                             }
                         }
-                        if(canEditOrderEntry){
-                            if (batchData.value != null && batchData.value!!.isNotEmpty() && batchData.value?.get(0)?.batches!!.isNotEmpty()) {
-                                batchData.value?.get(0)?.let {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.End
-                                    ) {
-                                        Surface(
-                                            modifier = Modifier
-                                                .padding(vertical = 10.dp)
-                                                .height(40.dp)
-                                                .clickable {
-                                                    scope.moveToBatchesScreen()
-                                                },
-                                            shape = MaterialTheme.shapes.medium,
-                                            color = ConstColors.lightGrey,
-                                            border = BorderStroke(
-                                                1.dp,
-                                                ConstColors.gray,
-                                            ),
-                                        ) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .padding(10.dp),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.End
-                                            ) {
-                                                Text(
-                                                    text = stringResource(id = R.string.view_batches),
-                                                    color = ConstColors.gray,
-                                                    fontSize = 15.sp,
-                                                    fontWeight = FontWeight.W500,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
-                                                )
-
-                                                Image(
-                                                    modifier = Modifier.padding(horizontal = 5.dp),
-                                                    painter = painterResource(id = R.drawable.ic_eye),
-                                                    contentDescription = null,
-                                                    colorFilter = ColorFilter.tint(color = ConstColors.green)
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
                     }
                 }
 
+                Space(20.dp)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    elevation = 5.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    color = ConstColors.lightGrey
+                ){
+                    ViewBatches(canEditOrderEntry, batchData, scope)
+                }
                 Space(20.dp)
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -573,7 +536,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     color = ConstColors.lightGrey
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        if(canEditOrderEntry){
+                        if (canEditOrderEntry) {
                             Text(
                                 modifier = Modifier.padding(10.dp),
                                 text = stringResource(id = R.string.edit),
@@ -1130,6 +1093,61 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
 
 }
 
+@Composable
+fun ViewBatches(
+    canEditOrderEntry: Boolean,
+    batchData: State<List<Batches>?>,
+    scope: OrderHsnEditScope
+) {
+    if (canEditOrderEntry) {
+        if (batchData.value != null && batchData.value!!.isNotEmpty() && batchData.value?.get(0)?.batches!!.isNotEmpty()) {
+            batchData.value?.get(0)?.let {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .height(40.dp)
+                            .clickable {
+                                scope.moveToBatchesScreen()
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        color = ConstColors.lightGrey,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.view_batches),
+                                color = Color.Black,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Image(
+                                modifier = Modifier.padding(horizontal = 5.dp),
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(color = ConstColors.green)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -1524,9 +1542,9 @@ fun EditText(
     val initSelectionIndex = value.length.takeIf { it <= value.length } ?: value.length
 
     val textFieldValueState = TextFieldValue(
-            text = value,
-            selection = TextRange(initSelectionIndex)
-        )
+        text = value,
+        selection = TextRange(initSelectionIndex)
+    )
 
     BasicTextField(
         modifier = Modifier
