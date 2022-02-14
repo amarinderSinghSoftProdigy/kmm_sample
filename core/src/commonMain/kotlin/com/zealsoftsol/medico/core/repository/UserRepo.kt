@@ -208,6 +208,10 @@ class UserRepo(
         return networkSignUpScope.signUpValidation3(userRegistration3)
     }
 
+    suspend fun upoladDocument(uploadData: ProfileImageUpload): BodyResponse<ProfileResponseData> {
+        return networkSignUpScope.uploadDocument(uploadData)
+    }
+
     @Deprecated("move to separate network scope")
     suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation> {
         return networkSignUpScope.getLocationData(pincode)

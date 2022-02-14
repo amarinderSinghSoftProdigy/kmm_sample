@@ -93,6 +93,7 @@ interface NetworkScope {
         suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation>
         suspend fun uploadAadhaar(aadhaarData: AadhaarUpload): AnyResponse
         suspend fun uploadDrugLicense(licenseData: DrugLicenseUpload): BodyResponse<StorageKeyResponse>
+        suspend fun uploadDocument(uploadData: ProfileImageUpload): BodyResponse<ProfileResponseData>
         suspend fun signUp(submitRegistration: SubmitRegistration): AnyResponse
 
         suspend fun verifyRetailerTraderDetails(userRegistration3: UserRegistration3): ValidationResponse<UserValidation3>

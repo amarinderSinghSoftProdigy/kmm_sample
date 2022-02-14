@@ -77,14 +77,7 @@ sealed class Event {
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
 
-            data class UploadTradeProfile(
-                val size: String,
-                val asBase64: String,
-                val fileType: FileType,
-                val type: String
-            ) : Registration()
-
-            data class UploadFoodLicense(
+            data class UploadDocument(
                 val size: String,
                 val asBase64: String,
                 val fileType: FileType,

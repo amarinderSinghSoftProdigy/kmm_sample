@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -83,6 +84,7 @@ import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
@@ -524,6 +526,8 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
+    val registration = scope.registrationStep4.flow.collectAsState()
+
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 5.0,//1.0,
@@ -536,7 +540,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             else
                 R.string.preview
         ),
-        onButtonClick = { },
+        onButtonClick = { scope.validate(registration.value!!) },
         /*onSkip = { scope.skip() },*/
         body = {
             val stringId = when (scope) {
@@ -573,7 +577,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 }
                 Space(dp = 16.dp)
                 Surface(
-                    onClick = { scope.showBottomSheet() },
+                    onClick = { scope.showBottomSheet("DRUG_LICENSE") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -638,77 +642,72 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                     Space(dp = 16.dp)
                 }
             }
-
-
-            /*Icon(
-                painter = painterResource(id = R.drawable.ic_upload),
-                contentDescription = null,
-                tint = ConstColors.gray,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
-            Text(
-                text = stringResource(id = stringId),
-                color = ConstColors.gray,
-                textAlign = TextAlign.Center,
-            )
-            Space(24.dp)
-            Surface(
-                shape = MaterialTheme.shapes.large,
-                color = Color.Transparent,
-                border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.available_formats),
-                        color = ConstColors.gray,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W600,
-                    )
-                    Space(10.dp)
-                    FlowRow(horizontalGap = 12.dp) {
-                        scope.supportedFileTypes.map { it.name }.forEach {
-                            Text(
-                                modifier = Modifier
-                                    .background(
-                                        color = ConstColors.gray.copy(alpha = .25f),
-                                        shape = MaterialTheme.shapes.small
-                                    )
-                                    .padding(4.dp),
-                                text = it,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                            )
-                        }
-                    }
-                    Space(10.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.max_file_size))
-                            val startIndex = length
-                            append(" ")
-                            append(stringResource(id = R.string.mb_10))
-                            addStyle(
-                                SpanStyle(
-                                    color = MaterialTheme.colors.background,
-                                    fontWeight = FontWeight.W600
-                                ),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W400,
-                    )
-                }
-            }*/
         }
     )
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AuthPreview(scope: SignUpScope.PreviewDetails) {
+    BasicAuthSignUpScreenWithButton(
+        userType = scope.registrationStep1.userType,
+        progress = 5.0,//1.0,
+        baseScope = scope,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        buttonText = stringResource(id = R.string.submit),
+        onButtonClick = { scope.submit() },
+        body = {
+            Column {
+                Text(
+                    text = stringResource(id = R.string.customer_details),
+                    fontSize = 16.sp,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W600,
+                )
+                Space(dp = 16.dp)
+                TextLabel(scope.registrationStep1.firstName)
+                TextLabel(scope.registrationStep1.lastName)
+                TextLabel(scope.registrationStep1.email)
+                TextLabel(scope.registrationStep1.phoneNumber)
+                TextLabel(scope.registrationStep1.password)
+                TextLabel(scope.registrationStep1.verifyPassword)
+                Divider()
+
+                Text(
+                    text = stringResource(id = R.string.address),
+                    fontSize = 16.sp,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W600,
+                )
+                Space(dp = 16.dp)
+                TextLabel(scope.registrationStep2.addressLine1)
+                TextLabel(scope.registrationStep2.landmark)
+                TextLabel(scope.registrationStep2.location)
+                TextLabel(scope.registrationStep2.city)
+                TextLabel(scope.registrationStep2.district)
+                TextLabel(scope.registrationStep2.state)
+                TextLabel(scope.registrationStep2.pincode)
+                Divider()
+
+                Text(
+                    text = stringResource(id = R.string.trader_details),
+                    fontSize = 16.sp,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W600,
+                )
+                Space(dp = 16.dp)
+                TextLabel(scope.registrationStep3.tradeName)
+                TextLabel(scope.registrationStep3.gstin)
+                TextLabel(scope.registrationStep3.panNumber)
+                TextLabel(scope.registrationStep3.drugLicenseNo1)
+                TextLabel(scope.registrationStep3.drugLicenseNo2)
+                TextLabel(scope.registrationStep3.foodLicenseNumber)
+            }
+        }
+    )
+}
+
 
 @Composable
 fun AadhaarInputFields(

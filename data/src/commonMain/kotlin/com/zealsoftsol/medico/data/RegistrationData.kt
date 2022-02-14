@@ -97,6 +97,16 @@ data class UserRegistration3(
 }
 
 @Serializable
+data class UserRegistration4(
+    @Required
+    var tradeProfile: ProfileResponseData? = null,
+    @Required
+    var drugLicense: ProfileResponseData? = null,
+    @Required
+    var foodLicense: ProfileResponseData? = null,
+) : UserRegistration()
+
+@Serializable
 data class UserValidation3(
     val tradeName: String? = null,
     val gstin: String? = null,

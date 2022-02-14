@@ -256,6 +256,14 @@ class NetworkClient(
             }
         }
 
+    override suspend fun uploadDocument(uploadData:ProfileImageUpload) =
+        fullRequest {
+            client.post<BodyResponse<ProfileResponseData>>("${baseUrl.url}/documents/add/profile") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(uploadData)
+            }
+        }
+
     override suspend fun getLocationData(pincode: String) =
         fullRequest {
             client.get<Response<LocationData, PincodeValidation>>("${baseUrl.url}/geo/pincode/$pincode") {

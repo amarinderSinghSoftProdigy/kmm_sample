@@ -19,10 +19,12 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
 
 internal class RegistrationEventDelegate(
@@ -35,8 +37,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
         is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
-        is Event.Action.Registration.UploadTradeProfile -> uploadDocuments(event)
-        is Event.Action.Registration.UploadFoodLicense -> uploadDocuments(event)
+        is Event.Action.Registration.UploadDocument -> uploadDocuments(event, event.type)
         is Event.Action.Registration.UploadFileTooBig -> uploadFileTooBig()
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
         is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
@@ -117,6 +118,18 @@ internal class RegistrationEventDelegate(
                     )
                 }.onError(navigator)
             }
+            is UserRegistration4 -> {
+                navigator.withScope<SignUpScope.PreviewDetails> {
+                    setScope(
+                        SignUpScope.PreviewDetails(
+                            registrationStep1 = it.registrationStep1,
+                            registrationStep2 = it.registrationStep2,
+                            registrationStep3 = it.registrationStep3,
+                            registrationStep4 = it.registrationStep4,
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -139,24 +152,19 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadDocuments(event: Event.Action.Registration) {
+    private suspend fun uploadDocuments(event: Event.Action.Registration, type: String) {
         navigator.withScope<CommonScope.UploadDocument> {
             val result = withProgress {
                 when (event) {
-                    is Event.Action.Registration.UploadTradeProfile -> {
-                        userRepo.uploadProfileImage(
-                            size = event.size,
-                            fileString = event.asBase64,
-                            mimeType = event.fileType.mimeType,
-                            type = event.type
-                        )
-                    }
-                    is Event.Action.Registration.UploadFoodLicense -> {
-                        userRepo.uploadProfileImage(
-                            size = event.size,
-                            fileString = event.asBase64,
-                            mimeType = event.fileType.mimeType,
-                            type = event.type
+                    is Event.Action.Registration.UploadDocument -> {
+                        userRepo.upoladDocument(
+                            ProfileImageUpload(
+                                documentType = type,
+                                size = event.size,
+                                documentData = event.asBase64,
+                                mimeType = event.fileType.mimeType,
+                                name = event.type
+                            )
                         )
                     }
                     else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
@@ -166,17 +174,21 @@ internal class RegistrationEventDelegate(
             result.onSuccess { body ->
                 when (it) {
                     is SignUpScope.LegalDocuments.DrugLicense -> {
-                        when (event) {
-                            is Event.Action.Registration.UploadTradeProfile -> {
-                                it.tradeProfile.value = true
+                        when (type) {
+                            "TRADE_PROFILE" -> {
+                                it.tradeProfile.value = body
                                 it.checkData()
                             }
-                            is Event.Action.Registration.UploadFoodLicense -> {
-                                it.foodLicense.value = true
+                            "DRUG_LICENSE" -> {
+                                it.foodLicense.value = body
+                                it.checkData()
+                            }
+                            "FOOD_LICENSE" -> {
+                                it.drugLicense.value = body
                                 it.checkData()
                             }
                         }
-                        startOtp(it.registrationStep1.phoneNumber)
+                        //startOtp(it.registrationStep1.phoneNumber)
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }
@@ -224,8 +236,6 @@ internal class RegistrationEventDelegate(
                         when (it) {
                             is SignUpScope.LegalDocuments.DrugLicense -> {
                                 it.storageKey = storageKey
-                                it.drugLicense.value = true
-                                it.checkData()
                             }
                             is SignUpScope.LegalDocuments.Aadhaar -> {
                                 it.aadhaarFile =
@@ -233,7 +243,7 @@ internal class RegistrationEventDelegate(
                                 it.onDataValid(true)
                             }
                         }
-                        startOtp(it.registrationStep1.phoneNumber)
+                        //startOtp(it.registrationStep1.phoneNumber)
                     }
                     is LimitedAccessScope -> {
                         userRepo.loadUserFromServer().onError(navigator)

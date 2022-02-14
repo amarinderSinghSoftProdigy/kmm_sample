@@ -109,6 +109,7 @@ import com.zealsoftsol.medico.screens.auth.AuthDetailsTraderData
 import com.zealsoftsol.medico.screens.auth.AuthLegalDocuments
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
+import com.zealsoftsol.medico.screens.auth.AuthPreview
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
@@ -296,6 +297,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is SignUpScope.LegalDocuments -> {
                         mUserType = null
                         AuthLegalDocuments(it)
+                    }
+
+                    is SignUpScope.PreviewDetails -> {
+                        mUserType = null
+                        AuthPreview(it)
                     }
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
