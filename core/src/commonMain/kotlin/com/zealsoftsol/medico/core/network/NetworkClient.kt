@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
@@ -1042,6 +1043,19 @@ class NetworkClient(
         }
     }
 
+    override suspend fun editOffer(
+        unitCode: String,
+        promoCode: String,
+        request: OfferProductRequest
+    ) = simpleRequest {
+        val path = "/promotions/edit/confirm"
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(EditOfferRequest(promoCode, request))
+        }
+    }
+
     override suspend fun getBatches(
         unitCode: String,
         spid: String
@@ -1120,7 +1134,7 @@ class NetworkClient(
     }
 
     private inline fun HttpRequestBuilder.applyHeader(tokenInfo: String) {
-        header("x-tenant-id", tokenInfo)
+        header("X-TENANT-ID", tokenInfo)
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {

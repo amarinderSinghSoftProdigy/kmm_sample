@@ -64,6 +64,9 @@ sealed class OffersScope : Scope.Child.TabBar() {
         //Open the dialog for update status
         fun showBottomSheet(promotion: String, name: String, active: Boolean) =
             EventCollector.sendEvent(Event.Action.Offers.ShowBottomSheet(promotion, name, active))
+
+        fun showEditBottomSheet(promotion: Promotions) =
+            EventCollector.sendEvent(Event.Action.Offers.ShowEditBottomSheet(promotion))
     }
 
 
@@ -88,6 +91,13 @@ sealed class OffersScope : Scope.Child.TabBar() {
         init {
             startSearch()
         }
+
+        //Open the dialog for update status
+        fun showBottomSheet(promotion: String, name: String, active: Boolean) =
+            EventCollector.sendEvent(Event.Action.Offers.ShowBottomSheet(promotion, name, active))
+
+        fun showEditBottomSheet(promotion: Promotions) =
+            EventCollector.sendEvent(Event.Action.Offers.ShowEditBottomSheet(promotion))
 
         fun changeAlertScope(enable: Boolean) {
             showAlert.value = enable
@@ -128,8 +138,8 @@ sealed class OffersScope : Scope.Child.TabBar() {
             request.isOfferForAllUsers = true
             request.connectedUsers = ArrayList()
             request.stock = 0.0
-            request.startDate = ""
-            request.endDate = ""
+            request.startDate = 1644214031075
+            request.endDate = 1675750031075
             EventCollector.sendEvent(Event.Action.Offers.SaveOffer(request))
         }
     }

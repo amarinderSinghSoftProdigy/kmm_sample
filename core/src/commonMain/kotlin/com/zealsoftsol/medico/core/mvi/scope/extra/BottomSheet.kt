@@ -3,13 +3,18 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionType
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -98,6 +103,82 @@ sealed class BottomSheet {
     ) : BottomSheet() {
         fun update() =
             EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
+    }
+
+    class UpdateOffer(
+        val scope: Scope,
+        val info: Promotions,
+        val types: List<PromotionType>
+    ) : BottomSheet() {
+        fun update() {
+            val request = OfferProductRequest()
+            request.discount = discount.value
+            request.buy = quantity.value
+            request.free = freeQuantity.value
+            request.manufacturerCode = promo.value.manufacturerCode
+            request.productCode = promo.value.productCode
+            request.active = active.value
+            request.spid = promo.value.spid
+            request.isOfferForAllUsers = true
+            request.connectedUsers = ArrayList()
+            request.stock = 0.0
+            request.startDate = 1644214031075
+            request.endDate = 1675750031075
+            request.promotionType = promotionType.value
+            if (scope is OffersScope.ViewOffers) {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditCreatedOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+
+            }
+        }
+
+        val promo = DataSource(info)
+        val active = DataSource(info.active)
+        val quantity = DataSource(info.buy.value)
+        val freeQuantity = DataSource(info.free.value)
+        val discount = DataSource(info.productDiscount.value)
+        val promotionType = DataSource(info.promotionTypeData.code)
+
+        fun updateQuantity(value: Double) {
+            quantity.value = value
+        }
+
+        fun updateActive(value: Boolean) {
+            active.value = value
+        }
+
+        fun updateFreeQuantity(value: Double) {
+            freeQuantity.value = value
+        }
+
+        fun updateDiscount(value: Double) {
+            discount.value = value
+        }
+
+        fun updatePromotionType(value: String) {
+            promotionType.value = value
+        }
+
+        fun getIndex(): Int {
+            types.forEachIndexed { index, value ->
+                if (promotionType.value == value.code) {
+                    return index
+                }
+            }
+            return 0
+        }
+
     }
 
     class ModifyOrderEntry(

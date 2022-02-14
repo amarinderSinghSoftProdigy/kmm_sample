@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -48,6 +49,7 @@ import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
+import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
 import com.zealsoftsol.medico.screens.common.Space
@@ -225,6 +227,8 @@ fun ManufacturerItem(item: Manufacturer, scope: OffersScope.ViewOffers, list: Ar
 /**
  * ui item for offer listing
  */
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OfferItem(item: Promotions, scope: OffersScope.ViewOffers) {
     Column {
@@ -266,40 +270,67 @@ fun OfferItem(item: Promotions, scope: OffersScope.ViewOffers) {
                 }
             }
             Space(dp = 4.dp)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Card(
-                    modifier = Modifier
-                        .padding(end = 10.dp)
-                        .selectable(
-                            selected = true,
-                            onClick = {
-                                //scope.startBrandSearch(item.searchTerm, item.field)
-                            }),
-                    elevation = 3.dp,
-                    shape = RoundedCornerShape(5.dp),
-                    backgroundColor = ConstColors.red,
+
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier.width(maxWidth / 2),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(
-                        text = item.offer,
-                        fontSize = 14.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(
-                            start = 12.dp,
-                            end = 12.dp,
-                            top = 4.dp,
-                            bottom = 4.dp
+                    Card(
+                        modifier = Modifier
+                            .selectable(
+                                selected = true,
+                                onClick = {
+                                    //scope.startBrandSearch(item.searchTerm, item.field)
+                                }),
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(5.dp),
+                        backgroundColor = ConstColors.red,
+                    ) {
+                        Text(
+                            text = item.offer,
+                            fontSize = 14.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(
+                                    start = 12.dp,
+                                    end = 12.dp,
+                                    top = 4.dp,
+                                    bottom = 4.dp
+                                )
                         )
-                    )
+                    }
                 }
-                Text(
-                    text = "",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colors.background
-                )
+
+                Box(
+                    modifier = Modifier.width(maxWidth / 2).align(Alignment.BottomEnd),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Surface(
+                        onClick = { scope.showEditBottomSheet(item) },
+                        color = Color.Transparent
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_edit),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue,
+                            )
+                            Space(dp = 4.dp)
+                            Text(
+                                text = stringResource(id = R.string.edit_Offer),
+                                color = ConstColors.lightBlue,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
             }
             Space(12.dp)
-
         }
         Divider()
     }

@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
+import com.zealsoftsol.medico.data.Promotions
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,16 +33,18 @@ internal class OffersEventDelegate(
             event.name,
             event.active
         )
+        is Event.Action.Offers.ShowEditBottomSheet -> showEditBottomSheet(event.promotion)
         is Event.Action.Offers.GetOffers -> getOffers(event.search, event.query)
         is Event.Action.Offers.UpdateOffer -> updateOffer(event.promotionType, event.active)
         is Event.Action.Offers.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Offers.OpenCreateOffer -> loadMoreProducts()
+        is Event.Action.Offers.EditOffer -> editOffer(event.promoCode, event.request)
 
         is Event.Action.Offers.GetTypes -> getPromotionTypes()
         is Event.Action.Offers.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Offers.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Offers.SaveOffer -> saveOffer(event.request)
-        is Event.Action.Offers.Refresh -> refresh()
+        is Event.Action.Offers.EditCreatedOffer -> saveOffer(event.request)
     }
 
     private suspend fun getOffers(search: String?, query: ArrayList<String>) {
@@ -91,6 +94,7 @@ internal class OffersEventDelegate(
         }.onError(navigator)
     }
 
+
     private fun showBottomSheet(promotionType: String, name: String, active: Boolean) {
         navigator.withScope<OffersScope> {
             val hostScope = scope.value
@@ -98,6 +102,21 @@ internal class OffersEventDelegate(
                 promotionType, name, active
             )
         }
+
+    }
+
+    private suspend fun showEditBottomSheet(promotion: Promotions) {
+        val user = userRepo.requireUser()
+        networkOffersScope.getPromotionTypes(
+            unitCode = user.unitCode,
+        ).onSuccess { body ->
+            navigator.withScope<OffersScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.UpdateOffer(
+                    it, promotion, body.promotionTypes
+                )
+            }
+        }.onError(navigator)
 
     }
 
@@ -201,9 +220,31 @@ internal class OffersEventDelegate(
         }
     }
 
-    private fun refresh() {
-        navigator.withScope<OffersScope.ViewOffers> {
-            it.startSearch()
-        }
+    private suspend fun editOffer(promoCode: String, request: OfferProductRequest) {
+        val user = userRepo.requireUser()
+        networkOffersScope.editOffer(
+            unitCode = user.unitCode, promoCode, request
+        ).onSuccess {
+            navigator.withScope<OffersScope.ViewOffers> {
+                getOffers(
+                    it.productSearch.value,
+                    it.manufacturerSearch.value
+                )
+            }
+        }.onError(navigator)
+    }
+
+    private suspend fun editCreateOffer(promoCode: String, request: OfferProductRequest) {
+        val user = userRepo.requireUser()
+        networkOffersScope.editOffer(
+            unitCode = user.unitCode, promoCode, request
+        ).onSuccess {
+            navigator.withScope<OffersScope.CreateOffer> {
+                getOffers(
+                    it.productSearch.value,
+                    arrayListOf("")
+                )
+            }
+        }.onError(navigator)
     }
 }
