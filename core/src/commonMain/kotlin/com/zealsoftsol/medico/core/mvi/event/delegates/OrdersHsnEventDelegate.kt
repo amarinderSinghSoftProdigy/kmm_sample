@@ -3,8 +3,9 @@ package com.zealsoftsol.medico.core.mvi.event.delegates
 import com.zealsoftsol.medico.core.extensions.log
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
+import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -44,6 +45,22 @@ internal class OrdersHsnEventDelegate(
             orderEntryId = event.orderEntryId,
             spid = event.spid,
         )
+        is Event.Action.OrderHsn.GetBatches -> loadBatches()
+
+    }
+
+    /**
+     * load batches data from server
+     */
+    private suspend fun loadBatches() {
+        val user = userRepo.requireUser()
+
+        navigator.withScope<OrderHsnEditScope> {
+            networkOrdersScope.getBatches(unitCode = user.unitCode, it.orderEntry.value.spid)
+                .onSuccess { body ->
+                    it.batchData.value = body.results
+                }.onError(navigator)
+        }
     }
 
     /**
@@ -141,7 +158,7 @@ internal class OrdersHsnEventDelegate(
     private suspend fun acceptOrderEntry(
         orderEntryId: String,
         spid: String,
-    ){
+    ) {
         navigator.withScope<OrderHsnEditScope> {
             withProgress {
                 networkOrdersScope.acceptEntry(

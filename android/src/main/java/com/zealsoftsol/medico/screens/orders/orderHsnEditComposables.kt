@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.orders
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -41,6 +42,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,17 +51,20 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,7 +72,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.OrderHsnEditScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
+import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
@@ -88,6 +94,7 @@ import org.joda.time.DateTime
  * show the view to update phone number and language for user
  */
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
@@ -113,6 +120,28 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     var swipeEventChangedJob: Job? = null
     val openDialog = scope.showAlert.flow.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val batchData = scope.batchData.flow.collectAsState()
+    val selectedBatchData = scope.selectedBatchData.flow.collectAsState()
+
+    /**
+     * update editable data is user has selected a batch from ViewBatchComposable
+     */
+    remember {
+        selectedBatchData.value.let {
+            if (it.batch.isNotEmpty())
+                scope.updateBatch(it.batch)
+            if (it.expiry.isNotEmpty())
+                scope.updateExpiry(it.expiry)
+            if (it.mrp.isNotEmpty())
+                scope.updateMrp(it.mrp)
+            if (it.ptr.isNotEmpty())
+                scope.updatePtr(it.ptr)
+            if (it.quantity.isNotEmpty())
+                scope.updateQuantity(it.quantity)
+            if (it.selectedHsnCode.isNotEmpty())
+                scope.updateHsnCode(it.selectedHsnCode)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -151,26 +180,21 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     ) {
         Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize(),
         ) {
-            if (openDialog.value)
-                ShowAlert(stringResource(id = R.string.update_successfull)) {
-                    scope.changeAlertScope(
-                        false
-                    )
-                }
-            //only display line items when there are multiple order entries
             if (scope.orderEntries.isNotEmpty()) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = null,
                         modifier = Modifier
+                            .padding(start = 10.dp)
                             .clickable(
                                 indication = null,
                                 onClick = {
@@ -231,762 +255,833 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             }
             Divider(
                 color = ConstColors.lightBlue,
-                modifier = Modifier.padding(vertical = 16.dp),
                 thickness = 0.5.dp,
                 startIndent = 0.dp
             )
-            Column {
-                Text(
-                    text = orderEntry.productName,
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W700,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Space(10.dp)
-                Text(
-                    text = orderEntry.manufacturerName,
-                    color = Color.Black,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W700,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Row {
-                    Row(modifier = Modifier.weight(1f)) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Space(10.dp)
-                            Text(
-                                text = "${stringResource(id = R.string.hsn_code)}:",
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = stringResource(id = R.string.batch_no),
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.ptr))
-                                    append(":")
-                                },
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = stringResource(id = R.string.expiry),
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(10.dp)
+            Column(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
 
-                            Text(
-                                text = stringResource(id = R.string.requested_qty),
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.hsnCode,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.batchNo,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.price.formatted,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            orderEntry.expiryDate?.formatted?.let {
-                                Text(
-                                    text = it,
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    fontWeight = FontWeight.W700
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    elevation = 5.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    color = ConstColors.lightGrey
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    ) {
+                        if (openDialog.value)
+                            ShowAlert(stringResource(id = R.string.update_successfull)) {
+                                scope.changeAlertScope(
+                                    false
                                 )
                             }
-                            Space(10.dp)
+                        //only display line items when there are multiple order entries
+                        Column {
                             Text(
-                                text = orderEntry.requestedQty.formatted,
+                                text = orderEntry.productName,
                                 color = Color.Black,
                                 fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                        }
-                    }
-                    Row(modifier = Modifier.weight(1f)) {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Space(10.dp)
-                            Text(
-                                text = stringResource(id = R.string.status),
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
+                                fontWeight = FontWeight.W700,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Space(10.dp)
                             Text(
-                                text = "",
+                                text = orderEntry.manufacturerName,
                                 color = Color.Black,
                                 fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.mrp))
-                                    append(":")
-                                },
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W700,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            Space(10.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.free))
-                                    append(":")
-                                },
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.discount))
-                                    append("%:")
-                                },
-                                color = ConstColors.gray,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
+                            Row {
+                                Row(modifier = Modifier.weight(1f)) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Space(10.dp)
+                                        Text(
+                                            text = "${stringResource(id = R.string.hsn_code)}:",
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = stringResource(id = R.string.batch_no),
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(stringResource(id = R.string.ptr))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = stringResource(id = R.string.expiry),
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
 
-                        Column(
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.status.toString(),
-                                color = if (orderEntry.status == OrderEntry.Status.ACCEPTED)
-                                    ConstColors.green else Color.Red,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = "",
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.mrp.formatted,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.freeQty.formatted,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                            Space(10.dp)
-                            Text(
-                                text = orderEntry.discount.formatted,
-                                color = Color.Black,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontWeight = FontWeight.W700
-                            )
-                        }
-                    }
-                }
-                Space(20.dp)
-                if (canEditOrderEntry) { //only allow changing hsn code if order is editable
-                    Divider()
-                    Space(10.dp)
-                    Column {
-                        Text(
-                            text = "${stringResource(id = R.string.hsn_code)}:",
-                            color = ConstColors.gray,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            verticalAlignment = Alignment.Bottom,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(bottom = 4.dp, end = 10.dp)
-                            ) {
-                                Text(
-                                    text = selectedHsnCode,
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    fontWeight = FontWeight.W700
-                                )
-                                Divider(color = Color.Black)
-                            }
-                            Box(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                OpenHsnScreen {
-                                    scope.manageBottomSheetVisibility(!openHsnBottomSheet)
+                                        Text(
+                                            text = stringResource(id = R.string.requested_qty),
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.hsnCode,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.batchNo,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.price.formatted,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        orderEntry.expiryDate?.formatted?.let {
+                                            Text(
+                                                text = it,
+                                                color = Color.Black,
+                                                fontSize = 16.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                fontWeight = FontWeight.W700
+                                            )
+                                        }
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.requestedQty.formatted,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                    }
+                                }
+                                Row(modifier = Modifier.weight(1f)) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                    ) {
+                                        Space(10.dp)
+                                        Text(
+                                            text = stringResource(id = R.string.status),
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = "",
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(stringResource(id = R.string.mrp))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(stringResource(id = R.string.free))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(stringResource(id = R.string.discount))
+                                                append("%:")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                    ) {
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.status.toString(),
+                                            color = if (orderEntry.status == OrderEntry.Status.ACCEPTED)
+                                                ConstColors.green else Color.Red,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = "",
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.mrp.formatted,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.freeQty.formatted,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                        Space(10.dp)
+                                        Text(
+                                            text = orderEntry.discount.formatted,
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontWeight = FontWeight.W700
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                    Space(10.dp)
-                    if (selectedHsnCode.isEmpty())
-                        HsnErrorText()
-                    Space(10.dp)
                 }
-            }
-            Divider()
-            Space(20.dp)
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Box(
-                        modifier = Modifier
-                            .width(maxWidth)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Column {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.batch_no),
-                                    color = ConstColors.gray,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
 
-                                BasicTextField(
+                Space(20.dp)
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    elevation = 5.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    color = ConstColors.lightGrey
+                ){
+                    ViewBatches(canEditOrderEntry, batchData, scope)
+                }
+                Space(20.dp)
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = 5.dp,
+                    shape = MaterialTheme.shapes.medium,
+                    color = ConstColors.lightGrey
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        if (canEditOrderEntry) {
+                            Text(
+                                modifier = Modifier.padding(10.dp),
+                                text = stringResource(id = R.string.edit),
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.W600
+                            )
+                            Divider()
+                        }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                if (canEditOrderEntry) { //only allow changing hsn code if order is editable
+                                    Space(10.dp)
+                                    Column {
+                                        Text(
+                                            text = "${stringResource(id = R.string.hsn_code)}:",
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(50.dp),
+                                            verticalAlignment = Alignment.Bottom,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Column(
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .padding(bottom = 4.dp, end = 10.dp)
+                                            ) {
+                                                Text(
+                                                    text = selectedHsnCode,
+                                                    color = Color.Black,
+                                                    fontSize = 16.sp,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    fontWeight = FontWeight.W700
+                                                )
+                                                Divider(color = Color.Black)
+                                            }
+                                            Box(
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                OpenHsnScreen {
+                                                    scope.manageBottomSheetVisibility(!openHsnBottomSheet)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Space(10.dp)
+                                    if (selectedHsnCode.isEmpty())
+                                        HsnErrorText()
+                                    Space(10.dp)
+                                }
+                                Space(20.dp)
+                                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(maxWidth)
+                                            .align(Alignment.BottomEnd)
+                                    ) {
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.batch_no),
+                                                    color = ConstColors.gray,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.W500,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+
+                                                BasicTextField(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(end = 10.dp),
+                                                    value = batchNo,
+                                                    onValueChange = {
+                                                        scope.updateBatch(it)
+                                                    },
+                                                    maxLines = 1,
+                                                    singleLine = true,
+                                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                                        imeAction = ImeAction.Done
+                                                    ),
+                                                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                                                    enabled = canEditOrderEntry,
+                                                    textStyle = TextStyle(
+                                                        color = Color.Black,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.W600,
+                                                        textAlign = TextAlign.End,
+                                                    )
+                                                )
+                                            }
+                                            Space(5.dp)
+                                            Divider()
+                                        }
+
+                                    }
+                                }
+                                Space(10.dp)
+                                Box {
+                                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.ptr)}: ${
+                                                            stringResource(
+                                                                id = R.string.inr_symbol
+                                                            )
+                                                        }",
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    EditText(canEditOrderEntry,
+                                                        value = price, onChange = {
+                                                            scope.updatePtr(it)
+                                                        }
+                                                    )
+
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .width(maxWidth / 2 - 8.dp)
+                                                .align(Alignment.BottomEnd)
+                                        ) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.mrp)}: ${
+                                                            stringResource(
+                                                                id = R.string.inr_symbol
+                                                            )
+                                                        }",
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    EditText(canEditOrderEntry,
+                                                        value = mrp, onChange = {
+                                                            scope.updateMrp(it)
+                                                        }
+                                                    )
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                    }
+                                }
+                                Space(10.dp)
+                                Box {
+                                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.qty)}:",
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    EditText(canEditOrderEntry,
+                                                        value = servedQty, onChange = {
+                                                            if (it.contains(".")) {
+                                                                scope.updateQuantity(
+                                                                    roundToNearestDecimalOf5(it)
+                                                                )
+                                                            } else {
+                                                                scope.updateQuantity(it)
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .width(maxWidth / 2 - 8.dp)
+                                                .align(Alignment.BottomEnd)
+                                        ) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.free)}:",
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    EditText(canEditOrderEntry,
+                                                        value = freeQty, onChange = {
+                                                            if (it.contains(".")) {
+                                                                scope.updateFreeQuantity(
+                                                                    roundToNearestDecimalOf5(it)
+                                                                )
+                                                            } else {
+                                                                scope.updateFreeQuantity(it)
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                    }
+                                }
+                                Space(10.dp)
+
+                                Box {
+                                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                        Box(modifier = Modifier
+                                            .width(maxWidth / 2 - 8.dp)
+                                            .align(Alignment.BottomStart)
+                                            .clickable {
+                                                if (canEditOrderEntry) { //only allow date picker if order an be edited
+                                                    val now = DateTime.now()
+                                                    val dialog = DatePickerDialog(
+                                                        context,
+                                                        { _, year, month, _ ->
+                                                            scope.updateExpiry("${month + 1}/${year}")
+                                                        },
+                                                        now.year,
+                                                        now.monthOfYear - 1,
+                                                        now.dayOfMonth,
+                                                    )
+                                                    dialog.show()
+                                                }
+                                            }) {
+
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = stringResource(id = R.string.expiry),
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    Text(
+                                                        text = expiryDate,
+                                                        color = Color.Black,
+                                                        fontSize = 18.sp,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        fontWeight = FontWeight.W700
+                                                    )
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .width(maxWidth / 2 - 8.dp)
+                                                .align(Alignment.BottomEnd)
+                                        ) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    Text(
+                                                        text = "${stringResource(id = R.string.discount)}%:",
+                                                        color = ConstColors.gray,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                    )
+
+                                                    EditText(canEditOrderEntry,
+                                                        value = discount, onChange = {
+                                                            if (it.toDouble() <= 100)
+                                                                scope.updateDiscount(it)
+                                                        }
+                                                    )
+                                                }
+                                                Space(5.dp)
+                                                Divider()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Space(30.dp)
+                            if (taxType == TaxType.SGST) {
+                                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .width(maxWidth)
+                                            .align(Alignment.BottomEnd)
+                                    ) {
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                append(stringResource(id = R.string.cgst))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+
+                                        Text(
+                                            text = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W700,
+                                            maxLines = 1,
+                                            textAlign = TextAlign.End,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxWidth()
+                                        )
+                                    }
+                                }
+                                Space(5.dp)
+                                Divider()
+                                Space(10.dp)
+                                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .width(maxWidth)
+                                            .align(Alignment.BottomEnd)
+                                    ) {
+                                        Text(
+                                            buildAnnotatedString {
+                                                append(stringResource(id = R.string.sgst))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+
+                                        Text(
+                                            text = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W700,
+                                            maxLines = 1,
+                                            textAlign = TextAlign.End,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxWidth()
+                                        )
+
+                                    }
+                                }
+                                Space(5.dp)
+                                Divider()
+                                Space(10.dp)
+                            } else {
+                                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                    Row(
+                                        modifier = Modifier
+                                            .width(maxWidth)
+                                            .align(Alignment.BottomEnd)
+                                    ) {
+                                        Text(
+                                            buildAnnotatedString {
+                                                append(stringResource(id = R.string.igst))
+                                                append(":")
+                                            },
+                                            color = ConstColors.gray,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W500,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f)
+                                        )
+
+                                        Text(
+                                            text = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
+                                            color = Color.Black,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W700,
+                                            maxLines = 1,
+                                            textAlign = TextAlign.End,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxWidth()
+                                        )
+                                    }
+                                }
+                                Space(5.dp)
+                                Divider()
+                                Space(10.dp)
+                            }
+
+                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(end = 10.dp),
-                                    value = batchNo,
-                                    onValueChange = {
-                                        scope.updateBatch(it)
-                                    },
-                                    maxLines = 1,
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                                    enabled = canEditOrderEntry,
-                                    textStyle = TextStyle(
-                                        color = Color.Black,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.W600,
-                                        textAlign = TextAlign.End,
+                                        .width(maxWidth)
+                                        .align(Alignment.BottomEnd)
+                                ) {
+
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            append(stringResource(id = R.string.sub_total))
+                                            append(":")
+                                        },
+                                        color = ConstColors.gray,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W700,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
-                                )
+
+                                    Text(
+                                        text = orderEntry.totalAmount.formatted,
+                                        color = Color.Blue,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.W800,
+                                        maxLines = 1,
+                                        textAlign = TextAlign.End,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth()
+                                    )
+                                }
                             }
                             Space(5.dp)
                             Divider()
-                        }
+                            Space(10.dp)
+                            if (canEditOrderEntry) { // only allow changing status if order entry is editable i.e New
+                                Row(modifier = Modifier.fillMaxSize()) {
 
-                    }
-                }
-                Space(10.dp)
-                Box {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(id = R.string.ptr)}: ${
-                                            stringResource(
-                                                id = R.string.inr_symbol
-                                            )
-                                        }",
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
+                                    //once order is rejected show save entry option
+                                    if (orderEntry.status == OrderEntry.Status.REJECTED || orderEntry.status == OrderEntry.Status.DECLINED) {
+                                        MedicoButton(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(10.dp)
+                                                .height(40.dp),
+                                            text = stringResource(id = R.string.accept),
+                                            onClick = {
+                                                scope.acceptEntry()
+                                            },
+                                            color = ConstColors.green,
+                                            contentColor = Color.White,
+                                            isEnabled = true,
+                                        )
+                                    } else {
+                                        MedicoButton(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(10.dp)
+                                                .height(40.dp),
+                                            text = stringResource(id = R.string.not_available),
+                                            onClick = {
+                                                scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
+                                            },
+                                            txtColor = Color.White,
+                                            color = ConstColors.red,
+                                            contentColor = Color.White,
+                                            isEnabled = true,
+                                        )
+                                    }
+
+                                    MedicoButton(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(10.dp)
+                                            .height(40.dp),
+                                        text = stringResource(id = R.string.save),
+                                        onClick = { scope.saveEntry() },
+                                        isEnabled = mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
                                     )
-
-                                    EditText(canEditOrderEntry,
-                                        value = price, onChange = {
-                                            scope.updatePtr(it)
-                                        }
-                                    )
-
                                 }
-                                Space(5.dp)
-                                Divider()
                             }
+                            Space(10.dp)
                         }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2 - 8.dp)
-                                .align(Alignment.BottomEnd)
-                        ) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(id = R.string.mrp)}: ${
-                                            stringResource(
-                                                id = R.string.inr_symbol
-                                            )
-                                        }",
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
 
-                                    EditText(canEditOrderEntry,
-                                        value = mrp, onChange = {
-                                            scope.updateMrp(it)
-                                        }
-                                    )
-                                }
-                                Space(5.dp)
-                                Divider()
-                            }
-                        }
-                    }
-                }
-                Space(10.dp)
-                Box {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 2 - 8.dp)) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(id = R.string.qty)}:",
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-
-                                    EditText(canEditOrderEntry,
-                                        value = servedQty, onChange = {
-                                            if (it.contains(".")) {
-                                                scope.updateQuantity(roundToNearestDecimalOf5(it))
-                                            } else {
-                                                scope.updateQuantity(it)
-                                            }
-                                        }
-                                    )
-                                }
-                                Space(5.dp)
-                                Divider()
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2 - 8.dp)
-                                .align(Alignment.BottomEnd)
-                        ) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(id = R.string.free)}:",
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-
-                                    EditText(canEditOrderEntry,
-                                        value = freeQty, onChange = {
-                                            if (it.contains(".")) {
-                                                scope.updateFreeQuantity(roundToNearestDecimalOf5(it))
-                                            } else {
-                                                scope.updateFreeQuantity(it)
-                                            }
-                                        }
-                                    )
-                                }
-                                Space(5.dp)
-                                Divider()
-                            }
-                        }
-                    }
-                }
-                Space(10.dp)
-
-                Box {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier
-                            .width(maxWidth / 2 - 8.dp)
-                            .align(Alignment.BottomStart)
-                            .clickable {
-                                if (canEditOrderEntry) { //only allow date picker if order an be edited
-                                    val now = DateTime.now()
-                                    val dialog = DatePickerDialog(
-                                        context,
-                                        { _, year, month, _ ->
-                                            scope.updateExpiry("${month + 1}/${year}")
-                                        },
-                                        now.year,
-                                        now.monthOfYear - 1,
-                                        now.dayOfMonth,
-                                    )
-                                    dialog.show()
-                                }
-                            }) {
-
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.expiry),
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-
-                                    Text(
-                                        text = expiryDate,
-                                        color = Color.Black,
-                                        fontSize = 18.sp,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        fontWeight = FontWeight.W700
-                                    )
-                                }
-                                Space(5.dp)
-                                Divider()
-                            }
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2 - 8.dp)
-                                .align(Alignment.BottomEnd)
-                        ) {
-                            Column {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "${stringResource(id = R.string.discount)}%:",
-                                        color = ConstColors.gray,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W500,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-
-                                    EditText(canEditOrderEntry,
-                                        value = discount, onChange = {
-                                            if (it.toDouble() <= 100)
-                                                scope.updateDiscount(it)
-                                        }
-                                    )
-                                }
-                                Space(5.dp)
-                                Divider()
-                            }
-                        }
                     }
                 }
             }
-            Space(30.dp)
-            if (taxType == TaxType.SGST) {
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .width(maxWidth)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.cgst))
-                                append(":")
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-
-                        Text(
-                            text = "${orderEntry.cgstTax.amount.formatted}(${orderEntry.cgstTax.percent.formatted})",
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W700,
-                            maxLines = 1,
-                            textAlign = TextAlign.End,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                        )
-                    }
-                }
-                Space(5.dp)
-                Divider()
-                Space(10.dp)
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .width(maxWidth)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Text(
-                            buildAnnotatedString {
-                                append(stringResource(id = R.string.sgst))
-                                append(":")
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-
-                        Text(
-                            text = "${orderEntry.sgstTax.amount.formatted}(${orderEntry.sgstTax.percent.formatted})",
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W700,
-                            maxLines = 1,
-                            textAlign = TextAlign.End,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                        )
-
-                    }
-                }
-                Space(5.dp)
-                Divider()
-                Space(10.dp)
-            } else {
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .width(maxWidth)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Text(
-                            buildAnnotatedString {
-                                append(stringResource(id = R.string.igst))
-                                append(":")
-                            },
-                            color = ConstColors.gray,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        Text(
-                            text = "${orderEntry.igstTax.amount.formatted}(${orderEntry.igstTax.percent.formatted})",
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W700,
-                            maxLines = 1,
-                            textAlign = TextAlign.End,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                        )
-                    }
-                }
-                Space(5.dp)
-                Divider()
-                Space(10.dp)
-            }
-
-            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .width(maxWidth)
-                        .align(Alignment.BottomEnd)
-                ) {
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.sub_total))
-                            append(":")
-                        },
-                        color = ConstColors.gray,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Text(
-                        text = orderEntry.totalAmount.formatted,
-                        color = Color.Blue,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.W800,
-                        maxLines = 1,
-                        textAlign = TextAlign.End,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-            Space(5.dp)
-            Divider()
-            Space(10.dp)
-            if (canEditOrderEntry) { // only allow changing status if order entry is editable i.e New
-                Row(modifier = Modifier.fillMaxSize()) {
-
-                    //once order is rejected show save entry option
-                    if (orderEntry.status == OrderEntry.Status.REJECTED || orderEntry.status == OrderEntry.Status.DECLINED) {
-                        MedicoButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(10.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.accept),
-                            onClick = {
-                                scope.acceptEntry()
-                            },
-                            color = ConstColors.green,
-                            contentColor = Color.White,
-                            isEnabled = true,
-                        )
-                    } else {
-                        MedicoButton(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(10.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.not_available),
-                            onClick = {
-                                scope.manageWarningBottomSheetVisibility(!openWarningBottomSheet)
-                            },
-                            txtColor = Color.White,
-                            color = ConstColors.red,
-                            contentColor = Color.White,
-                            isEnabled = true,
-                        )
-                    }
-
-                    MedicoButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.save),
-                        onClick = { scope.saveEntry() },
-                        isEnabled = mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
-                    )
-                }
-            }
-            Space(10.dp)
         }
         if (openHsnBottomSheet)
             HsnCodeSheet(scope)
@@ -995,6 +1090,62 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
         if (openDeclineReasonBottomSheet)
             DeclineReasonBottomSheet(scope)
     }
+
+}
+
+@Composable
+fun ViewBatches(
+    canEditOrderEntry: Boolean,
+    batchData: State<List<Batches>?>,
+    scope: OrderHsnEditScope
+) {
+    if (canEditOrderEntry) {
+        if (batchData.value != null && batchData.value!!.isNotEmpty() && batchData.value?.get(0)?.batches!!.isNotEmpty()) {
+            batchData.value?.get(0)?.let {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .height(40.dp)
+                            .clickable {
+                                scope.moveToBatchesScreen()
+                            },
+                        shape = MaterialTheme.shapes.medium,
+                        color = ConstColors.lightGrey,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.view_batches),
+                                color = Color.Black,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.W500,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
+                            Image(
+                                modifier = Modifier.padding(horizontal = 5.dp),
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(color = ConstColors.green)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
 }
 
 
@@ -1183,33 +1334,33 @@ private fun HsnCodeSheet(
                 }
                 Divider(thickness = 1.dp, color = Color.Gray.copy(alpha = 0.5f))
 
-                    LazyColumn(
-                        contentPadding = PaddingValues(start = 3.dp),
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .heightIn(0.dp, 380.dp) //mention max height here
-                            .fillMaxWidth(),
-                    ) {
-                        itemsIndexed(
-                            items = items.value,
-                            key = { index, _ -> index },
-                            itemContent = { index, item ->
-                                SingleHsnItem(item) { checked ->
-                                    items.value.forEachIndexed { ind, it ->
-                                        if (checked && it.checked) {
-                                            items.value[ind].checked = false
-                                        }
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 3.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(0.dp, 380.dp) //mention max height here
+                        .fillMaxWidth(),
+                ) {
+                    itemsIndexed(
+                        items = items.value,
+                        key = { index, _ -> index },
+                        itemContent = { index, item ->
+                            SingleHsnItem(item) { checked ->
+                                items.value.forEachIndexed { ind, it ->
+                                    if (checked && it.checked) {
+                                        items.value[ind].checked = false
                                     }
-                                    items.value[index].checked = true
-                                    selectedHsnCode.value = items.value[index].hsncode
                                 }
+                                items.value[index].checked = true
+                                selectedHsnCode.value = items.value[index].hsncode
+                            }
 
-                                if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                                    scope.getHsnCodes(false)
-                                }
-                            },
-                        )
-                    }
+                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.getHsnCodes(false)
+                            }
+                        },
+                    )
+                }
 
                 MedicoButton(text = stringResource(id = R.string.select),
                     isEnabled = selectedHsnCode.value.isNotEmpty(),
@@ -1388,13 +1539,20 @@ fun EditText(
         textAlign = TextAlign.End,
     )
 
+    val initSelectionIndex = value.length.takeIf { it <= value.length } ?: value.length
+
+    val textFieldValueState = TextFieldValue(
+        text = value,
+        selection = TextRange(initSelectionIndex)
+    )
+
     BasicTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = value,
+        value = textFieldValueState,
         onValueChange = {
-            if (it.toDoubleOrNull() != null) {
-                onChange(it)
+            if (it.text.toDoubleOrNull() != null) {
+                onChange(it.text)
             } else {
                 onChange("0")
             }
