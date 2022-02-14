@@ -4,11 +4,13 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.IntentSender
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +25,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.content.FileProvider
 import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.InstallState
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.zealsoftsol.medico.core.UiLink
@@ -54,6 +64,8 @@ class MainActivity : ComponentActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val navigator by instance<UiNavigator>()
+    private lateinit var mAppUpdateManager: AppUpdateManager
+    private val RC_APP_UPDATE = 11
 
     private var cameraCompletion: CompletableDeferred<Boolean> = CompletableDeferred()
     private val camera by lazy {
@@ -81,6 +93,7 @@ class MainActivity : ComponentActivity(), DIAware {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (BuildConfig.FLAVOR == "dev" && !BuildConfig.DEBUG) { // devRelease
             handleCrashes()
         }
@@ -119,6 +132,60 @@ class MainActivity : ComponentActivity(), DIAware {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        checkForAppUpdates()
+    }
+
+    //remove app update listener
+    override fun onStop() {
+        super.onStop()
+        mAppUpdateManager.unregisterListener(installStateUpdatedListener)
+    }
+
+    private fun checkForAppUpdates() {
+        Log.e("MainActivity","checking for updates")
+        mAppUpdateManager = AppUpdateManagerFactory.create(this)
+
+        mAppUpdateManager.registerListener(installStateUpdatedListener)
+
+        mAppUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo: AppUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE )
+            ) {
+                try {
+                    mAppUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        AppUpdateType.IMMEDIATE,
+                        this@MainActivity,
+                        RC_APP_UPDATE
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                    e.printStackTrace()
+                    Log.e("MainActivity", e.localizedMessage)
+
+                }
+            } else {
+                Log.e("MainActivity", "checkForAppUpdateAvailability: something else")
+            }
+        }
+    }
+
+    private var installStateUpdatedListener: InstallStateUpdatedListener =
+        object : InstallStateUpdatedListener {
+            override fun onStateUpdate(state: InstallState) {
+                if (state.installStatus() == InstallStatus.INSTALLED) {
+                    mAppUpdateManager.unregisterListener(this)
+                    Log.e("MainActivity", "Installed")
+                     } else {
+                    Log.e(
+                        "MainActivity",
+                        "InstallStateUpdatedListener: state: " + state.installStatus()
+                    )
+                }
+            }
+        }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
