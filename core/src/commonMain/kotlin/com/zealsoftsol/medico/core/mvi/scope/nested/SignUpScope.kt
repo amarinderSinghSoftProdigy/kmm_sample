@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
@@ -200,6 +201,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
                 Fields.PAN,
                 Fields.LICENSE1,
                 Fields.LICENSE2,
+                Fields.FOOD_LICENSE,
             )
 
             init {
@@ -242,7 +244,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         enum class Fields {
-            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE;
+            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
         }
     }
 
@@ -252,14 +254,15 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     sealed class LegalDocuments(
         val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
-        internal val registrationStep3: UserRegistration3,
+        val registrationStep3: UserRegistration3,
     ) : SignUpScope("legal_documents"),
         CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
-        init {
+        /*init {
             canGoNext.value = true
-        }
+        }*/
+
 
         fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
 
@@ -269,6 +272,19 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep3: UserRegistration3,
             internal var storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
+
+            val tradeProfile: DataSource<Boolean> = DataSource(false)
+            val drugLicense: DataSource<Boolean> = DataSource(false)
+            val foodLicense: DataSource<Boolean> = DataSource(false)
+
+            fun checkData() {
+                val isValid = drugLicense.value && tradeProfile.value || foodLicense.value
+                onDataValid(isValid)
+            }
+
+            fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
+            }
 
             override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
         }
@@ -280,6 +296,9 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             internal var aadhaarFile: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
 
+            fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
+            }
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
             override val isSeasonBoy = true
         }

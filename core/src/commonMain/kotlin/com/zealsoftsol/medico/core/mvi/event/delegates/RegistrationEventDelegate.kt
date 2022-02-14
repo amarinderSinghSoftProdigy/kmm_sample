@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -34,6 +35,8 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
         is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
+        is Event.Action.Registration.UploadTradeProfile -> uploadDocuments(event)
+        is Event.Action.Registration.UploadFoodLicense -> uploadDocuments(event)
         is Event.Action.Registration.UploadFileTooBig -> uploadFileTooBig()
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
         is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
@@ -41,6 +44,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Skip -> skipUploadDocuments()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
         is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
+        is Event.Action.Registration.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
         is Event.Action.Registration.ConfirmCreateRetailer -> confirmCreateRetailer()
     }
 
@@ -135,6 +139,51 @@ internal class RegistrationEventDelegate(
         }
     }
 
+    private suspend fun uploadDocuments(event: Event.Action.Registration) {
+        navigator.withScope<CommonScope.UploadDocument> {
+            val result = withProgress {
+                when (event) {
+                    is Event.Action.Registration.UploadTradeProfile -> {
+                        userRepo.uploadProfileImage(
+                            size = event.size,
+                            fileString = event.asBase64,
+                            mimeType = event.fileType.mimeType,
+                            type = event.type
+                        )
+                    }
+                    is Event.Action.Registration.UploadFoodLicense -> {
+                        userRepo.uploadProfileImage(
+                            size = event.size,
+                            fileString = event.asBase64,
+                            mimeType = event.fileType.mimeType,
+                            type = event.type
+                        )
+                    }
+                    else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
+                }
+
+            }
+            result.onSuccess { body ->
+                when (it) {
+                    is SignUpScope.LegalDocuments.DrugLicense -> {
+                        when (event) {
+                            is Event.Action.Registration.UploadTradeProfile -> {
+                                it.tradeProfile.value = true
+                                it.checkData()
+                            }
+                            is Event.Action.Registration.UploadFoodLicense -> {
+                                it.foodLicense.value = true
+                                it.checkData()
+                            }
+                        }
+                        startOtp(it.registrationStep1.phoneNumber)
+                    }
+                    else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
+                }
+            }.onError(navigator)
+        }
+    }
+
     private suspend fun uploadDocument(event: Event.Action.Registration) {
         navigator.withScope<CommonScope.UploadDocument> {
             var storageKey: String? = null
@@ -175,10 +224,13 @@ internal class RegistrationEventDelegate(
                         when (it) {
                             is SignUpScope.LegalDocuments.DrugLicense -> {
                                 it.storageKey = storageKey
+                                it.drugLicense.value = true
+                                it.checkData()
                             }
                             is SignUpScope.LegalDocuments.Aadhaar -> {
                                 it.aadhaarFile =
                                     (event as Event.Action.Registration.UploadAadhaar).aadhaarAsBase64
+                                it.onDataValid(true)
                             }
                         }
                         startOtp(it.registrationStep1.phoneNumber)
@@ -243,6 +295,18 @@ internal class RegistrationEventDelegate(
             scope.bottomSheet.value = BottomSheet.UploadDocuments(
                 it.supportedFileTypes,
                 it.isSeasonBoy,
+                ""
+            )
+        }
+    }
+
+    private fun showUploadBottomSheets(type: String) {
+        navigator.withScope<CommonScope.UploadDocument> {
+            val scope = scope.value
+            scope.bottomSheet.value = BottomSheet.UploadDocuments(
+                it.supportedFileTypes,
+                it.isSeasonBoy,
+                type
             )
         }
     }

@@ -16,6 +16,9 @@ interface CommonScope : Scopable {
 
         fun showBottomSheet() =
             EventCollector.sendEvent(Event.Action.Registration.ShowUploadBottomSheet)
+
+        fun showBottomSheet(type: String) =
+            EventCollector.sendEvent(Event.Action.Registration.ShowUploadBottomSheets(type))
     }
 
     interface CanGoBack : CommonScope {

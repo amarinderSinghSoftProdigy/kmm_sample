@@ -84,6 +84,10 @@ data class UserRegistration3(
     val drugLicenseNo1: String = "",
     @Required
     val drugLicenseNo2: String = "",
+
+    val foodLicenseNumber: String = "",
+
+    val foodLicense: Boolean = false,
 ) : UserRegistration() {
 
     companion object {
@@ -99,6 +103,8 @@ data class UserValidation3(
     val panNumber: String? = null,
     val drugLicenseNo1: String? = null,
     val drugLicenseNo2: String? = null,
+    val foodLicense: Boolean = false,
+    val foodLicenseNumber: String? = null,
 ) : UserValidation()
 
 @Serializable

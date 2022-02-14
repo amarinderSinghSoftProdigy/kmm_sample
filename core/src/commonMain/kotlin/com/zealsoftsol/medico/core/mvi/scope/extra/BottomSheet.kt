@@ -18,6 +18,7 @@ sealed class BottomSheet {
     class UploadDocuments(
         val supportedFileTypes: Array<FileType>,
         val isSeasonBoy: Boolean,
+        val type: String,
     ) : BottomSheet() {
 
         fun uploadAadhaar(base64: String): Boolean {
@@ -35,6 +36,36 @@ sealed class BottomSheet {
                     Event.Action.Registration.UploadDrugLicense(
                         base64,
                         fileType
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+        fun uploadTradePofile(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadTradeProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+        fun uploadFoodLicense(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadTradeProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
                     )
                 )
             } else {

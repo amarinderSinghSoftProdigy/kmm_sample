@@ -81,6 +81,7 @@ interface TraderDetailsComponent : Scopable {
                         panNumber
                     ))
                     && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
+                    && Validator.TraderDetails.isFoodLicenseValid(foodLicense,foodLicenseNumber)
         }
         onDataValid(isValid)
     }
@@ -126,5 +127,19 @@ interface TraderDetailsComponent : Scopable {
                 checkData()
             }
         }
+    }
+
+    fun changeFoodLicense(foodLicenseNo: String) {
+        if (foodLicenseNo.length <= 30) {
+            trimInput(foodLicenseNo, registration.value.foodLicenseNumber) {
+                registration.value = registration.value.copy(foodLicenseNumber = it)
+                checkData()
+            }
+        }
+    }
+
+    fun changeFoodLicenseStatus(boolean: Boolean) {
+        registration.value = registration.value.copy(foodLicense = boolean)
+        checkData()
     }
 }

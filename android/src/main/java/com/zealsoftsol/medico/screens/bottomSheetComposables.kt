@@ -114,7 +114,13 @@ fun Scope.Host.showBottomSheet(
                     useCamera = !bs.isSeasonBoy,
                     activity = activity,
                     coroutineScope = coroutineScope,
-                    onFileReady = { bs.handleFileUpload(it) },
+                    onFileReady = {
+                        if (bs.type.isEmpty()) {
+                            bs.handleFileUpload(it)
+                        } else {
+                            bs.handleUpload(it, bs.type)
+                        }
+                    },
                     onDismiss = { dismissBottomSheet() },
                 )
             }
@@ -1840,7 +1846,7 @@ private fun UpdateOfferItemBottomSheet(
                     Surface(
                         modifier = Modifier.weight(0.4f),
                         shape = MaterialTheme.shapes.medium,
-                        color=ConstColors.txtGrey,
+                        color = ConstColors.txtGrey,
                         onClick = onSubscribe,
                         elevation = 8.dp
                     ) {
@@ -2149,7 +2155,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     )
                 }
                 else -> {
-                    Column{
+                    Column {
                         Row {
                             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                                 Box(modifier = Modifier.width(maxWidth / 2)) {

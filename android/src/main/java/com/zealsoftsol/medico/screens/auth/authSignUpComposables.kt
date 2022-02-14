@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,12 +31,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +69,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.FlowRow
@@ -433,6 +440,64 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                         }
                     }
                 }
+                Space(16.dp)
+                if (it == SignUpScope.Details.Fields.FOOD_LICENSE) {
+                    Column {
+                        val switchEnabled = remember { mutableStateOf(false) }
+                        Text(
+                            text = stringResource(id = R.string.do_you_have_food_license),
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                        )
+                        Space(8.dp)
+                        Row {
+                            RadioButton(
+                                selected = switchEnabled.value,
+                                onClick = {
+                                    switchEnabled.value = true
+                                    scope.changeFoodLicenseStatus(true)
+                                },
+                                colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+                            )
+                            Space(12.dp)
+                            Text(
+                                text = stringResource(id = R.string.yes),
+                                color = Color.Black,
+                            )
+                            RadioButton(
+                                selected = !switchEnabled.value,
+                                onClick = {
+                                    switchEnabled.value = false
+                                    scope.changeFoodLicenseStatus(false)
+                                },
+                                colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+                            )
+                            Space(12.dp)
+                            Text(
+                                text = stringResource(id = R.string.no),
+                                color = Color.Black,
+                            )
+                        }
+                        Space(16.dp)
+                        if (switchEnabled.value) {
+                            InputWithError(
+                                errorText = if (!registration.value.foodLicense) {
+                                    stringResource(id = R.string.add_food_license)
+                                } else {
+                                    null
+                                }
+                            ) {
+                                InputField(
+                                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                                    hint = stringResource(id = R.string.food_license_number),
+                                    text = registration.value.foodLicenseNumber,
+                                    onValueChange = { scope.changeFoodLicense(it) },
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     )
@@ -456,6 +521,7 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
     BasicAuthSignUpScreenWithButton(
@@ -468,16 +534,113 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             id = if (scope is SignUpScope.LegalDocuments.Aadhaar)
                 R.string.upload_aadhaar
             else
-                R.string.upload_new_document
+                R.string.preview
         ),
-        onButtonClick = { scope.showBottomSheet() },
-        onSkip = { scope.skip() },
+        onButtonClick = { },
+        /*onSkip = { scope.skip() },*/
         body = {
             val stringId = when (scope) {
-                is SignUpScope.LegalDocuments.DrugLicense -> R.string.provide_drug_license_hint
+                is SignUpScope.LegalDocuments.DrugLicense -> R.string.provide_drug_license_validation
                 is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
             }
-            Icon(
+            Column {
+                Surface(
+                    onClick = { scope.showBottomSheet("TRADE_PROFILE") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    shape = MaterialTheme.shapes.large,
+                    color = Color.White,
+                    border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_upload),
+                            contentDescription = null,
+                            modifier = Modifier.height(50.dp),
+                        )
+                        Space(dp = 4.dp)
+                        Text(
+                            text = stringResource(id = R.string.upload_trade_profile),
+                            color = ConstColors.gray,
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+                Space(dp = 16.dp)
+                Surface(
+                    onClick = { scope.showBottomSheet() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    shape = MaterialTheme.shapes.large,
+                    color = Color.White,
+                    border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_upload),
+                            contentDescription = null,
+                            modifier = Modifier.height(50.dp),
+                        )
+                        Space(dp = 4.dp)
+                        Text(
+                            text = stringResource(id = R.string.upload_drug_license),
+                            color = ConstColors.gray,
+                            textAlign = TextAlign.Center,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+                Space(dp = 4.dp)
+                Text(
+                    text = stringResource(id = stringId),
+                    color = ConstColors.red,
+                    textAlign = TextAlign.Start,
+                    fontSize = 12.sp,
+                )
+                Space(dp = 16.dp)
+                if (scope.registrationStep3.foodLicense) {
+                    Surface(
+                        onClick = { scope.showBottomSheet("FOOD_LICENSE") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                        shape = MaterialTheme.shapes.large,
+                        color = Color.White,
+                        border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_upload),
+                                contentDescription = null,
+                                modifier = Modifier.height(50.dp),
+                            )
+                            Space(dp = 4.dp)
+                            Text(
+                                text = stringResource(id = R.string.upload_food_license),
+                                color = ConstColors.gray,
+                                textAlign = TextAlign.Center,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                    Space(dp = 16.dp)
+                }
+            }
+
+
+            /*Icon(
                 painter = painterResource(id = R.drawable.ic_upload),
                 contentDescription = null,
                 tint = ConstColors.gray,
@@ -542,7 +705,7 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         fontWeight = FontWeight.W400,
                     )
                 }
-            }
+            }*/
         }
     )
 }

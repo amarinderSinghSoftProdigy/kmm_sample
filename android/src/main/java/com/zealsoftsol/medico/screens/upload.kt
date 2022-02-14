@@ -18,5 +18,14 @@ inline fun BottomSheet.UploadProfileData.handleProfileUpload(file: File, type: S
     val bytes = file.readBytes()
     val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
     uploadProfile(base64, FileType.fromExtension(file.extension), type)
+}
 
+inline fun BottomSheet.UploadDocuments.handleUpload(file: File, type: String) {
+    val bytes = file.readBytes()
+    val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
+    if (type.equals("TRADE_PROFILE")) {
+        uploadTradePofile(base64, FileType.fromExtension(file.extension), type)
+    } else {
+        uploadFoodLicense(base64, FileType.fromExtension(file.extension), type)
+    }
 }

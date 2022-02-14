@@ -365,6 +365,13 @@
     <string name="offer_successfull">Promotion Created Successfully</string>
     <string name="password_requirement">1 Uppercase, 1 Lowercase, 1 numeric, min 8 characters</string>
     <string name="max_30_chars">Maximum 30 chars</string>
+    <string name="food_license_number">Food License Number</string>
+    <string name="do_you_have_food_license">Do you have Food License?</string>
+    <string name="add_food_license">Add Food License Number</string>
+    <string name="provide_drug_license_validation">Drug License 20B/21B/21C either one is Required</string>
+    <string name="upload_trade_profile">Upload Trade Photo</string>
+    <string name="upload_drug_license">Upload Drug License</string>
+    <string name="upload_food_license">Upload Food License</string>
 
     <!-- Termrs and Cond -->
 
@@ -515,5 +522,6 @@
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
     <string name="please_select_type">Please Select Promotion Type</string>
+    <string name="preview">Preview</string>
 
 </resources>
