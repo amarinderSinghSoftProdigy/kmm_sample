@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -413,6 +412,7 @@ sealed class Event {
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
             data class SaveOffer(val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
         }
 
         sealed class Inventory : Action() {

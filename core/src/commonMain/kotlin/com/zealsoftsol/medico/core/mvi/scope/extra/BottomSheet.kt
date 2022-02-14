@@ -3,7 +3,9 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -104,6 +106,7 @@ sealed class BottomSheet {
     }
 
     class UpdateOffer(
+        val scope: Scope,
         val info: Promotions,
         val types: List<PromotionType>
     ) : BottomSheet() {
@@ -122,7 +125,22 @@ sealed class BottomSheet {
             request.startDate = 1644214031075
             request.endDate = 1675750031075
             request.promotionType = promotionType.value
-            EventCollector.sendEvent(Event.Action.Offers.EditOffer(promo.value.promoCode, request))
+            if (scope is OffersScope.ViewOffers) {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditCreatedOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+
+            }
         }
 
         val promo = DataSource(info)

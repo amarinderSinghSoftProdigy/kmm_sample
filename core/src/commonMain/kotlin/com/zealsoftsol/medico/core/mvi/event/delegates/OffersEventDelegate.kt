@@ -44,6 +44,7 @@ internal class OffersEventDelegate(
         is Event.Action.Offers.SearchAutoComplete -> searchAutoComplete(event.value)
         is Event.Action.Offers.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Offers.SaveOffer -> saveOffer(event.request)
+        is Event.Action.Offers.EditCreatedOffer -> saveOffer(event.request)
     }
 
     private suspend fun getOffers(search: String?, query: ArrayList<String>) {
@@ -112,7 +113,7 @@ internal class OffersEventDelegate(
             navigator.withScope<OffersScope> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.UpdateOffer(
-                    promotion, body.promotionTypes
+                    it, promotion, body.promotionTypes
                 )
             }
         }.onError(navigator)
@@ -228,6 +229,20 @@ internal class OffersEventDelegate(
                 getOffers(
                     it.productSearch.value,
                     it.manufacturerSearch.value
+                )
+            }
+        }.onError(navigator)
+    }
+
+    private suspend fun editCreateOffer(promoCode: String, request: OfferProductRequest) {
+        val user = userRepo.requireUser()
+        networkOffersScope.editOffer(
+            unitCode = user.unitCode, promoCode, request
+        ).onSuccess {
+            navigator.withScope<OffersScope.CreateOffer> {
+                getOffers(
+                    it.productSearch.value,
+                    arrayListOf("")
                 )
             }
         }.onError(navigator)
