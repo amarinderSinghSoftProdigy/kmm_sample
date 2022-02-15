@@ -198,6 +198,10 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() },
                 scope = bs.scope
             )
+            is BottomSheet.ViewLargeImage -> ViewLargeImageBottomSheet(
+                url = bs.url,
+                onDismiss = { dismissBottomSheet() },
+            )
         }
     }
 }
@@ -2612,6 +2616,49 @@ private fun BaseBottomSheet(
             elevation = 8.dp,
         ) {
             body()
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ViewLargeImageBottomSheet(
+    url: String,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.Black.copy(alpha = 0.12f),
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(24.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = ConstColors.gray,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+            Space(16.dp)
+            CoilImage(
+                src = CdnUrlProvider.urlForActualImage(url),
+                size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+            )
         }
     }
 }

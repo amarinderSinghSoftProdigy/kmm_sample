@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
@@ -14,12 +15,14 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
+import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 
 // TODO make part of management scope
 sealed class StoresScope : Scope.Child.TabBar() {
+
 
     class All(
         private val notificationCount: ReadOnlyDataSource<Int>,
@@ -85,8 +88,11 @@ sealed class StoresScope : Scope.Child.TabBar() {
             startSearch()
         }
 
+        fun selectItem(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
+
         fun startSearch() {
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true,search = ""))
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true, search = ""))
         }
 
         fun startSearchWithNoLoader() {

@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.Store
 
 internal class StoresEventDelegate(
@@ -29,6 +30,11 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
         is Event.Action.Stores.ShowDetails -> openDetails(event.item)
+        is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item)
+    }
+
+    fun selectProductLargeImage(item: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item)
     }
 
     private fun openDetails(item: EntityInfo) {
