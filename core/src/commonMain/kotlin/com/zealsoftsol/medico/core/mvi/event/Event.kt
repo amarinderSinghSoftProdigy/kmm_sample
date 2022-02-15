@@ -31,6 +31,7 @@ import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
@@ -81,11 +82,12 @@ sealed class Event {
                 val size: String,
                 val asBase64: String,
                 val fileType: FileType,
-                val type: String
+                val type: String,
+                val registrationStep1: UserRegistration1
             ) : Registration()
 
             object UploadFileTooBig : Registration()
-            data class ShowUploadBottomSheets(val type: String) : Registration()
+            data class ShowUploadBottomSheets(val type: String, val registrationStep1: UserRegistration1) : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()

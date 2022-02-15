@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
+import com.zealsoftsol.medico.data.UserRegistration1
 
 sealed class BottomSheet {
 
@@ -19,6 +20,7 @@ sealed class BottomSheet {
         val supportedFileTypes: Array<FileType>,
         val isSeasonBoy: Boolean,
         val type: String,
+        val registrationStep1: UserRegistration1
     ) : BottomSheet() {
 
         fun uploadAadhaar(base64: String): Boolean {
@@ -45,14 +47,20 @@ sealed class BottomSheet {
         }
 
 
-        fun uploadDocument(base64: String, fileType: FileType, type: String): Boolean {
+        fun uploadDocument(
+            base64: String,
+            fileType: FileType,
+            type: String,
+            registrationStep1: UserRegistration1
+        ): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
                 EventCollector.sendEvent(
                     Event.Action.Registration.UploadDocument(
                         size = sizeInBytes(base64).toString(),
                         asBase64 = base64,
                         fileType = fileType,
-                        type = type
+                        type = type,
+                        registrationStep1
                     )
                 )
             } else {

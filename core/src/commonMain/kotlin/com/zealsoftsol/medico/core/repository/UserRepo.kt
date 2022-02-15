@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
@@ -26,6 +27,7 @@ import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -208,7 +210,7 @@ class UserRepo(
         return networkSignUpScope.signUpValidation3(userRegistration3)
     }
 
-    suspend fun upoladDocument(uploadData: ProfileImageUpload): BodyResponse<ProfileResponseData> {
+    suspend fun upoladDocument(uploadData: LicenseDocumentData): BodyResponse<UploadResponseData> {
         return networkSignUpScope.uploadDocument(uploadData)
     }
 

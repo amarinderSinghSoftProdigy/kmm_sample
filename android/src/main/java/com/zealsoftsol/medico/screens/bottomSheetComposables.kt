@@ -118,7 +118,7 @@ fun Scope.Host.showBottomSheet(
                         if (bs.type.isEmpty()) {
                             bs.handleFileUpload(it)
                         } else {
-                            bs.handleUpload(it, bs.type)
+                            bs.handleUpload(it, bs.type, bs.registrationStep1)
                         }
                     },
                     onDismiss = { dismissBottomSheet() },

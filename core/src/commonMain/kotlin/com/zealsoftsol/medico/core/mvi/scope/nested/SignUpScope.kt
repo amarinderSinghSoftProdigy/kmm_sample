@@ -18,7 +18,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
-import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -275,9 +275,9 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             internal var storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
-            val tradeProfile: DataSource<ProfileResponseData?> = DataSource(null)
-            val drugLicense: DataSource<ProfileResponseData?> = DataSource(null)
-            val foodLicense: DataSource<ProfileResponseData?> = DataSource(null)
+            val tradeProfile: DataSource<UploadResponseData?> = DataSource(null)
+            val drugLicense: DataSource<UploadResponseData?> = DataSource(null)
+            val foodLicense: DataSource<UploadResponseData?> = DataSource(null)
 
             fun checkData() {
                 val isValid =

@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -45,7 +46,10 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Skip -> skipUploadDocuments()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
         is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
-        is Event.Action.Registration.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
+        is Event.Action.Registration.ShowUploadBottomSheets -> showUploadBottomSheets(
+            event.type,
+            event.registrationStep1
+        )
         is Event.Action.Registration.ConfirmCreateRetailer -> confirmCreateRetailer()
     }
 
@@ -152,18 +156,25 @@ internal class RegistrationEventDelegate(
         }
     }
 
-    private suspend fun uploadDocuments(event: Event.Action.Registration, type: String) {
+    private suspend fun uploadDocuments(
+        event: Event.Action.Registration,
+        type: String
+    ) {
         navigator.withScope<CommonScope.UploadDocument> {
             val result = withProgress {
                 when (event) {
                     is Event.Action.Registration.UploadDocument -> {
                         userRepo.upoladDocument(
-                            ProfileImageUpload(
-                                documentType = type,
-                                size = event.size,
-                                documentData = event.asBase64,
-                                mimeType = event.fileType.mimeType,
-                                name = event.type
+                            LicenseDocumentData(
+                                event.registrationStep1.email,
+                                event.registrationStep1.phoneNumber,
+                                ProfileImageUpload(
+                                    documentType = type,
+                                    size = event.size,
+                                    documentData = event.asBase64,
+                                    mimeType = event.fileType.mimeType,
+                                    name = event.type
+                                )
                             )
                         )
                     }
@@ -305,18 +316,19 @@ internal class RegistrationEventDelegate(
             scope.bottomSheet.value = BottomSheet.UploadDocuments(
                 it.supportedFileTypes,
                 it.isSeasonBoy,
-                ""
+                "", UserRegistration1()
             )
         }
     }
 
-    private fun showUploadBottomSheets(type: String) {
+    private fun showUploadBottomSheets(type: String, registrationStep1: UserRegistration1) {
         navigator.withScope<CommonScope.UploadDocument> {
             val scope = scope.value
             scope.bottomSheet.value = BottomSheet.UploadDocuments(
                 it.supportedFileTypes,
                 it.isSeasonBoy,
-                type
+                type,
+                registrationStep1
             )
         }
     }
