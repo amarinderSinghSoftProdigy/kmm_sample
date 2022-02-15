@@ -65,7 +65,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "default"
-//            applicationIdSuffix = ".dev"
+            applicationIdSuffix = ".dev"
         }
         create("stag") {
             dimension = "default"
@@ -108,5 +108,4 @@ dependencies {
 
     // for lint
     implementation("androidx.fragment:fragment-ktx:1.3.4")
-    implementation("androidx.appcompat:appcompat:1.4.0")
 }

@@ -367,6 +367,8 @@
     <string name="view_batches">View Batches</string>
     <string name="offer">Offer</string>
     <string name="offer_deals_running">Offers/Deals running</string>
+    <string name="update_available">New Update Available!</string>
+    <string name="update_app">A new version is available to download. By downloading the latest update you will get the latest features, improvements and bug fixes for medicostores.</string>
 
     <!-- Termrs and Cond -->
 
