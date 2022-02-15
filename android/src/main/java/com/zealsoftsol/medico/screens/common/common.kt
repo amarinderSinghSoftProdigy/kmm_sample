@@ -88,6 +88,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
@@ -724,15 +725,44 @@ fun TextLabel(
                     fontSize = 14.sp,
                     color = ConstColors.gray,
                 )
-                Icon(
+                Image(
                     painter = painterResource(id = R.drawable.ic_verified),
                     contentDescription = null,
-                    tint = ConstColors.lightGreen,
                     modifier = Modifier.size(15.dp)
                 )
             }
             Space(4.dp)
             Divider(thickness = 0.5.dp)
+            Space(16.dp)
+        }
+}
+
+@Composable
+fun ImageLabel(
+    value: String
+) {
+    if (value.isNotEmpty())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CoilImage(
+                    src = value,
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(80.dp),
+                    onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                    onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                    isCrossFadeEnabled = false
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
             Space(16.dp)
         }
 }

@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -31,12 +31,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -52,13 +51,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
@@ -67,14 +65,14 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
-import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
+import com.zealsoftsol.medico.screens.common.ImageLabel
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
@@ -86,6 +84,8 @@ import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.utils.PermissionCheckUI
+import com.zealsoftsol.medico.utils.PermissionViewModel
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
@@ -145,14 +145,14 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
 @Composable
 fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val registration = scope.registration.flow.collectAsState()
-    val validation = scope.validation.flow.collectAsState()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
 
     val isFirstNameError = registration.value.firstName.any { !it.isLetter() }
     val isLastNameError = registration.value.lastName.any { !it.isLetter() }
-    val password =
-        if (registration.value.password.isNotEmpty()) scope.isAllPresent(registration.value.password) else true
+    val validEmail = scope.validEmail(registration.value.email)
+    val validPhone = scope.validPhone(registration.value.phoneNumber)
+    val password = scope.isValidPassword(registration.value.password)
 
     BasicAuthSignUpScreenWithButton(
         userType = registration.value.userType,
@@ -193,7 +193,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 )
             }
             Space(dp = 12.dp)
-            InputWithError(errorText = validation.value?.email) {
+            InputWithError(errorText = if (!validEmail) stringResource(id = R.string.email_validation) else null) {
                 InputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.email),
@@ -202,8 +202,8 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                 )
             }
             Space(dp = 12.dp)
-            InputWithError(errorText = validation.value?.phoneNumber) {
-                val isValid = PhoneFormatInputField(
+            InputWithError(errorText = if (!validPhone) stringResource(id = R.string.phone_validation) else null) {
+                PhoneFormatInputField(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
@@ -211,7 +211,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                         scope.changePhoneNumber(phoneNumber.filter { it == '+' || it.isDigit() })
                     },
                 )
-                scope.setPhoneNumberValid(isValid)
+                //scope.setPhoneNumberValid(isValid)
             }
             Space(dp = 12.dp)
             InputWithError(errorText = if (!password) stringResource(id = R.string.password_requirement) else null) {
@@ -289,7 +289,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val lengthValid =
-        if (registration.value.landmark.isNotEmpty()) registration.value.landmark.length < 30 else false
+        if (registration.value.landmark.isNotEmpty()) registration.value.landmark.length == 30 else false
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 3.0,//0.6,
@@ -382,7 +382,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                             hint = stringResource(id = R.string.trade_name),
                             text = registration.value.tradeName,
-                            onValueChange = { scope.changeTradeName(it) },
+                            onValueChange = { value -> scope.changeTradeName(value) },
                         )
                     }
                     Space(dp = 8.dp)
@@ -398,7 +398,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
-                            onValueChange = { scope.changePan(it) },
+                            onValueChange = { value -> scope.changePan(value) },
                         )
                     }
                     Space(dp = 12.dp)
@@ -412,7 +412,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
-                            onValueChange = { scope.changeGstin(it) },
+                            onValueChange = { value -> scope.changeGstin(value) },
                         )
                     }
                     Space(dp = 12.dp)
@@ -424,7 +424,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                 hint = stringResource(id = R.string.drug_license_1),
                                 text = registration.value.drugLicenseNo1,
-                                onValueChange = { scope.changeDrugLicense1(it) },
+                                onValueChange = { value -> scope.changeDrugLicense1(value) },
                             )
                         }
                     }
@@ -437,7 +437,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                 hint = stringResource(id = R.string.drug_license_2),
                                 text = registration.value.drugLicenseNo2,
-                                onValueChange = { scope.changeDrugLicense2(it) },
+                                onValueChange = { value -> scope.changeDrugLicense2(value) },
                             )
                         }
                     }
@@ -494,7 +494,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                     hint = stringResource(id = R.string.food_license_number),
                                     text = registration.value.foodLicenseNumber,
-                                    onValueChange = { scope.changeFoodLicense(it) },
+                                    onValueChange = { value -> scope.changeFoodLicense(value) },
                                 )
                             }
                         }
@@ -525,9 +525,15 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
+fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: ScaffoldState) {
     val registration = scope.registrationStep4.flow.collectAsState()
-
+    /*val permissionViewModel = PermissionViewModel()
+    PermissionCheckUI(
+        scaffoldState, permissionViewModel, Event.Action.Registration.ShowUploadBottomSheets(
+            permissionViewModel.performTypeAction.value,
+            scope.registrationStep1
+        )
+    )*/
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 5.0,//1.0,
@@ -540,16 +546,25 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
             else
                 R.string.preview
         ),
-        onButtonClick = { scope.validate(registration.value!!) },
+        onButtonClick = { scope.validate(registration.value) },
         /*onSkip = { scope.skip() },*/
         body = {
             val stringId = when (scope) {
                 is SignUpScope.LegalDocuments.DrugLicense -> R.string.provide_drug_license_validation
                 is SignUpScope.LegalDocuments.Aadhaar -> R.string.provide_aadhaar_hint
             }
+
+            val tradeCheck = registration.value.tradeProfile != null
+            val drugCheck = registration.value.drugLicense != null
+            val foodCheck = registration.value.foodLicense != null
+
+
             Column {
                 Surface(
-                    onClick = { scope.showBottomSheet("TRADE_PROFILE") },
+                    onClick = {
+                        //permissionViewModel.setPerformLocationAction(true, "TRADE_PROFILE")
+                        scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -562,22 +577,27 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_upload),
+                            painter = painterResource(id = R.drawable.ic_img_placeholder),
                             contentDescription = null,
-                            modifier = Modifier.height(50.dp),
+                            modifier = Modifier.size(50.dp),
                         )
                         Space(dp = 4.dp)
                         Text(
-                            text = stringResource(id = R.string.upload_trade_profile),
-                            color = ConstColors.gray,
+                            text = if (tradeCheck) stringResource(id = R.string.file_uploaded_successfully)
+                            else stringResource(id = R.string.upload_trade_profile),
+                            color = if (tradeCheck) MaterialTheme.colors.background else ConstColors.gray,
                             textAlign = TextAlign.Center,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            fontWeight = if (tradeCheck) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
                 Space(dp = 16.dp)
                 Surface(
-                    onClick = { scope.showBottomSheet("DRUG_LICENSE") },
+                    onClick = {
+                        //permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+                        scope.showBottomSheet("DRUG_LICENSE", scope.registrationStep1)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
@@ -590,16 +610,18 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_upload),
+                            painter = painterResource(id = R.drawable.ic_img_placeholder),
                             contentDescription = null,
-                            modifier = Modifier.height(50.dp),
+                            modifier = Modifier.size(50.dp),
                         )
                         Space(dp = 4.dp)
                         Text(
-                            text = stringResource(id = R.string.upload_drug_license),
-                            color = ConstColors.gray,
+                            text = if (drugCheck) stringResource(id = R.string.file_uploaded_successfully)
+                            else stringResource(id = R.string.upload_drug_license),
+                            color = if (drugCheck) MaterialTheme.colors.background else ConstColors.gray,
                             textAlign = TextAlign.Center,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            fontWeight = if (drugCheck) FontWeight.Bold else FontWeight.Normal
                         )
                     }
                 }
@@ -613,7 +635,13 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                 Space(dp = 16.dp)
                 if (scope.registrationStep3.foodLicense) {
                     Surface(
-                        onClick = { scope.showBottomSheet("FOOD_LICENSE") },
+                        onClick = {
+                            //permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
+                            scope.showBottomSheet(
+                                "FOOD_LICENSE",
+                                scope.registrationStep1
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(100.dp),
@@ -626,16 +654,18 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments) {
                             verticalArrangement = Arrangement.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_upload),
+                                painter = painterResource(id = R.drawable.ic_img_placeholder),
                                 contentDescription = null,
-                                modifier = Modifier.height(50.dp),
+                                modifier = Modifier.size(50.dp),
                             )
                             Space(dp = 4.dp)
                             Text(
-                                text = stringResource(id = R.string.upload_food_license),
-                                color = ConstColors.gray,
+                                text = if (foodCheck) stringResource(id = R.string.file_uploaded_successfully)
+                                else stringResource(id = R.string.upload_food_license),
+                                color = if (foodCheck) MaterialTheme.colors.background else ConstColors.gray,
                                 textAlign = TextAlign.Center,
-                                fontSize = 12.sp
+                                fontSize = 12.sp,
+                                fontWeight = if (foodCheck) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }
@@ -660,9 +690,9 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
         body = {
             Column {
                 Text(
-                    text = stringResource(id = R.string.customer_details),
+                    text = stringResource(id = R.string.customer_info),
                     fontSize = 16.sp,
-                    color = ConstColors.gray,
+                    color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W600,
                 )
                 Space(dp = 16.dp)
@@ -672,12 +702,11 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 TextLabel(scope.registrationStep1.phoneNumber)
                 TextLabel(scope.registrationStep1.password)
                 TextLabel(scope.registrationStep1.verifyPassword)
-                Divider()
-
+                Space(dp = 4.dp)
                 Text(
-                    text = stringResource(id = R.string.address),
+                    text = stringResource(id = R.string.address_info),
                     fontSize = 16.sp,
-                    color = ConstColors.gray,
+                    color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W600,
                 )
                 Space(dp = 16.dp)
@@ -688,21 +717,32 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 TextLabel(scope.registrationStep2.district)
                 TextLabel(scope.registrationStep2.state)
                 TextLabel(scope.registrationStep2.pincode)
-                Divider()
-
+                Space(dp = 4.dp)
                 Text(
                     text = stringResource(id = R.string.trader_details),
                     fontSize = 16.sp,
-                    color = ConstColors.gray,
+                    color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W600,
                 )
                 Space(dp = 16.dp)
                 TextLabel(scope.registrationStep3.tradeName)
+                if (scope.registrationStep4.tradeProfile != null) {
+                    Log.e(" data ", " " + scope.registrationStep4.tradeProfile?.cdnUrl)
+                    ImageLabel(scope.registrationStep4.tradeProfile?.cdnUrl ?: "")
+                }
                 TextLabel(scope.registrationStep3.gstin)
                 TextLabel(scope.registrationStep3.panNumber)
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
+                if (scope.registrationStep4.drugLicense != null) {
+                    Log.e(" data ", " " + scope.registrationStep4.drugLicense?.cdnUrl)
+                    ImageLabel(scope.registrationStep4.drugLicense?.cdnUrl ?: "")
+                }
                 TextLabel(scope.registrationStep3.foodLicenseNumber)
+                if (scope.registrationStep4.foodLicense != null) {
+                    Log.e(" data ", " " + scope.registrationStep4.foodLicense?.cdnUrl)
+                    ImageLabel(scope.registrationStep4.foodLicense?.cdnUrl ?: "")
+                }
             }
         }
     )
@@ -788,6 +828,7 @@ private fun BasicAuthSignUpScreenWithButton(
     buttonExtraValid: Boolean? = null,
     onSkip: (() -> Unit)? = null,
     onButtonClick: () -> Unit,
+    padding: Dp = 16.dp,
 ) {
     Box(
         modifier = Modifier
@@ -800,7 +841,6 @@ private fun BasicAuthSignUpScreenWithButton(
                 .size((LocalConfiguration.current.screenWidthDp * progress).dp, 4.dp)
         )*/
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
-        val padding = 16.dp
         Column {
             Box(
                 modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 16.dp)
@@ -808,7 +848,7 @@ private fun BasicAuthSignUpScreenWithButton(
                 LazyRow {
                     itemsIndexed(
                         items = baseScope.inputProgress,
-                        itemContent = { index, item ->
+                        itemContent = { _, item ->
                             ProgressItem(count = item, progress)
                         },
                     )
@@ -881,8 +921,6 @@ private fun BasicAuthSignUpScreenWithButton(
 
 @Composable
 fun ProgressItem(count: Int, progress: Double) {
-    println("count " + count + " progress " + progress)
-
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier

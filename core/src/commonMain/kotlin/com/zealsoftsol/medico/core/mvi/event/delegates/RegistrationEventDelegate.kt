@@ -11,7 +11,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WelcomeScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -38,7 +37,7 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
         is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
-        is Event.Action.Registration.UploadDocument -> uploadDocuments(event, event.type)
+        is Event.Action.Registration.UploadDocument -> uploadDocuments(event, event.type,event.path)
         is Event.Action.Registration.UploadFileTooBig -> uploadFileTooBig()
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
         is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
@@ -123,13 +122,13 @@ internal class RegistrationEventDelegate(
                 }.onError(navigator)
             }
             is UserRegistration4 -> {
-                navigator.withScope<SignUpScope.PreviewDetails> {
+                navigator.withScope<SignUpScope.LegalDocuments.DrugLicense> {
                     setScope(
                         SignUpScope.PreviewDetails(
                             registrationStep1 = it.registrationStep1,
                             registrationStep2 = it.registrationStep2,
                             registrationStep3 = it.registrationStep3,
-                            registrationStep4 = it.registrationStep4,
+                            registrationStep4 = it.registrationStep4.value,
                         )
                     )
                 }
@@ -158,7 +157,8 @@ internal class RegistrationEventDelegate(
 
     private suspend fun uploadDocuments(
         event: Event.Action.Registration,
-        type: String
+        type: String,
+        path: String
     ) {
         navigator.withScope<CommonScope.UploadDocument> {
             val result = withProgress {
@@ -187,15 +187,15 @@ internal class RegistrationEventDelegate(
                     is SignUpScope.LegalDocuments.DrugLicense -> {
                         when (type) {
                             "TRADE_PROFILE" -> {
-                                it.tradeProfile.value = body
+                                it.tradeProfile.value = body.copy(cdnUrl = path)
                                 it.checkData()
                             }
                             "DRUG_LICENSE" -> {
-                                it.foodLicense.value = body
+                                it.drugLicense.value = body.copy(cdnUrl = path)
                                 it.checkData()
                             }
                             "FOOD_LICENSE" -> {
-                                it.drugLicense.value = body
+                                it.foodLicense.value = body.copy(cdnUrl = path)
                                 it.checkData()
                             }
                         }

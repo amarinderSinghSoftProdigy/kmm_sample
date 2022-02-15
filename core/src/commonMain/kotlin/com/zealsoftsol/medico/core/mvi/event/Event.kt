@@ -83,6 +83,7 @@ sealed class Event {
                 val asBase64: String,
                 val fileType: FileType,
                 val type: String,
+                val path: String,
                 val registrationStep1: UserRegistration1
             ) : Registration()
 

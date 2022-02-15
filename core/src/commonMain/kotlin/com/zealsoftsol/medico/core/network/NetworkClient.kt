@@ -259,7 +259,7 @@ class NetworkClient(
         }
 
     override suspend fun uploadDocument(uploadData: LicenseDocumentData) =
-        fullRequest {
+        simpleRequest {
             client.post<BodyResponse<UploadResponseData>>("${baseUrl.url}/document/add/license") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(uploadData)

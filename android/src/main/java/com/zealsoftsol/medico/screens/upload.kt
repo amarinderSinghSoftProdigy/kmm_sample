@@ -21,8 +21,18 @@ inline fun BottomSheet.UploadProfileData.handleProfileUpload(file: File, type: S
     uploadProfile(base64, FileType.fromExtension(file.extension), type)
 }
 
-inline fun BottomSheet.UploadDocuments.handleUpload(file: File, type: String,registrationStep1: UserRegistration1) {
+inline fun BottomSheet.UploadDocuments.handleUpload(
+    file: File,
+    type: String,
+    registrationStep1: UserRegistration1
+) {
     val bytes = file.readBytes()
     val base64 = Base64.encodeToString(bytes, Base64.NO_WRAP)
-    uploadDocument(base64, FileType.fromExtension(file.extension), type,registrationStep1)
+    uploadDocument(
+        base64,
+        FileType.fromExtension(file.extension),
+        type,
+        path = file.absolutePath,
+        registrationStep1
+    )
 }

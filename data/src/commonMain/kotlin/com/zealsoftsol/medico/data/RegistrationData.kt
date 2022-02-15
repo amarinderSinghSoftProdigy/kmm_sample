@@ -125,7 +125,8 @@ data class LicenseDocumentData(
 data class UploadResponseData(
     val id: String = "",
     val documentType: String = "",
-    val cdnUrl: String = ""
+    var imageId: String = "",
+    var cdnUrl: String = ""
 )
 @Serializable
 data class SubmitRegistration(

@@ -51,6 +51,7 @@ sealed class BottomSheet {
             base64: String,
             fileType: FileType,
             type: String,
+            path: String,
             registrationStep1: UserRegistration1
         ): Boolean {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
@@ -60,6 +61,7 @@ sealed class BottomSheet {
                         asBase64 = base64,
                         fileType = fileType,
                         type = type,
+                        path = path,
                         registrationStep1
                     )
                 )

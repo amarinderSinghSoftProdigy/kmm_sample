@@ -296,7 +296,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 
                     is SignUpScope.LegalDocuments -> {
                         mUserType = null
-                        AuthLegalDocuments(it)
+                        AuthLegalDocuments(it,scaffoldState)
                     }
 
                     is SignUpScope.PreviewDetails -> {

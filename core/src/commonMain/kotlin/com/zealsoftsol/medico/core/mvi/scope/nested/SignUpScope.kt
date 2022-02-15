@@ -27,6 +27,8 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
+import android.util.Patterns
+
 
 sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
@@ -132,7 +134,27 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             }
         }
 
-        fun isAllPresent(str: String): Boolean {
+        fun validEmail(email: String): Boolean {
+            if (email.isEmpty()) {
+                return true
+            }
+            val pattern = Patterns.EMAIL_ADDRESS
+            return pattern.matcher(email).matches()
+        }
+
+        fun validPhone(phone: String): Boolean {
+            if (phone.isEmpty()) {
+                return true
+            }
+            isPhoneValid = phone.length == 10
+            return isPhoneValid
+        }
+
+
+        fun isValidPassword(str: String): Boolean {
+            if (str.isEmpty()) {
+                return true
+            }
             val regex = ("^(?=.*[a-z])(?=."
                     + "*[A-Z])(?=.*\\d)"
                     + "(?=.*[-+_!@#$%^&*., ?]).+$")
@@ -150,9 +172,10 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
                 firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()
-                        && phoneNumber.isNotEmpty() && password.isNotEmpty()
-                        && verifyPassword.isNotEmpty() && verifyPassword == password
-                        && isPhoneValid && isTermsAccepted.value && isAllPresent(password)
+                        && validEmail(email) && phoneNumber.isNotEmpty() && phoneNumber.length == 10
+                        && password.isNotEmpty() && verifyPassword.isNotEmpty()
+                        && verifyPassword == password && isPhoneValid
+                        && isTermsAccepted.value && isValidPassword(password)
             }
         }
     }
@@ -261,7 +284,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
-        val registrationStep4: DataSource<UserRegistration4?> = DataSource(null)
+        val registrationStep4: DataSource<UserRegistration4> = DataSource(UserRegistration4())
 
         fun validate(userRegistration: UserRegistration4) =
             EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
@@ -281,16 +304,17 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
 
             fun checkData() {
                 val isValid =
-                    drugLicense.value != null && tradeProfile.value != null || foodLicense.value != null
+                    drugLicense.value != null && tradeProfile.value != null && if (registrationStep3.foodLicense) foodLicense.value != null else true
                 onDataValid(isValid)
             }
 
-            fun onDataValid(isValid: Boolean) {
-                if (isValid) {
-                    registrationStep4.value?.drugLicense = drugLicense.value
-                    registrationStep4.value?.tradeProfile = tradeProfile.value
-                    registrationStep4.value?.foodLicense = foodLicense.value
-                }
+            private fun onDataValid(isValid: Boolean) {
+                val registrationStep = UserRegistration4()
+                registrationStep.drugLicense = drugLicense.value
+                registrationStep.tradeProfile = tradeProfile.value
+                if (registrationStep3.foodLicense)
+                    registrationStep.foodLicense = foodLicense.value
+                registrationStep4.value = registrationStep
                 canGoNext.value = isValid
             }
 
