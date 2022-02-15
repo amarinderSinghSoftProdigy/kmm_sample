@@ -135,7 +135,7 @@ class OrderHsnEditScope(
      */
     fun moveToBatchesScreen() =
         EventCollector.sendEvent(
-            Event.Transition.Batches(orderEntry.value.spid, batchData, selectedBatchData)
+            Event.Transition.Batches(orderEntry.value.spid, batchData, selectedBatchData, orderEntry.value.requestedQty.value)
         )
 
     /**

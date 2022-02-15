@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,12 +40,13 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
+import com.zealsoftsol.medico.screens.common.Space
 
 
 @Composable
 fun ViewBatchesScreen(scope: BatchesScope) {
     val batchData = scope.batchData.flow.collectAsState()
-    val showAlert = scope.showSuccessAlert.flow.collectAsState()
+    val showAlert = scope.showErrorAlert.flow.collectAsState()
 
     if (batchData.value != null && batchData.value!!.isNotEmpty()) {
         batchData.value?.get(0)?.let {
@@ -74,7 +76,38 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                         text = it.productName,
                         color = Color.Black,
                         fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         fontWeight = FontWeight.W600
+                    )
+                    Space(dp = 10.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.requested_qty))
+                            append(" ")
+                            val startIndex = length
+                            append(scope.requiredQty.toString())
+                            val nextIndex = length
+                            addStyle(
+                                SpanStyle(
+                                    color = ConstColors.red,
+                                    fontWeight = FontWeight.W500
+                                ),
+                                startIndex,
+                                length,
+                            )
+                            addStyle(
+                                SpanStyle(
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W500
+                                ),
+                                nextIndex,
+                                length,
+                            )
+                        },
+                        color = Color.Black,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W500
                     )
                     Row(
                         modifier = Modifier
@@ -129,9 +162,8 @@ fun ViewBatchesScreen(scope: BatchesScope) {
     }
 
     if (showAlert.value)
-        ShowAlert(message = stringResource(id = R.string.update_successfull)) {
+        ShowAlert(message = stringResource(id = R.string.qty_warning)) {
             scope.updateSuccessAlertVisibility(false)
-            scope.goBack()
         }
 }
 
@@ -336,8 +368,6 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                 hsnCode = item.hsncode,
                                 qty = item.stock.value.toString()
                             )
-
-                            scope.updateSuccessAlertVisibility(true)
                         }
                     }
                 }
