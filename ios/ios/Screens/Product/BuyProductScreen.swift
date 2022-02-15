@@ -599,6 +599,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     let promotionData: DataPromotionData?
     
     private let horizontalPadding: CGFloat
+    private let verticalPadding: CGFloat
     private let standaloneButtonsHeight: CGFloat
     private let buttonsHeight: CGFloat = 38
     
@@ -619,6 +620,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     private let isQuoted: Bool
     
     func body(content: Content) -> some View {
+                
         VStack {
             if let promotionData = promotionData {
             HStack {
@@ -663,18 +665,16 @@ struct BaseSellerView<Header: View>: ViewModifier {
         .onReceive(Just(initialQuantity)) {
             if self.mode != .confirmQuantity {
                 self.quantity = $0
-                
                 updateMode()
             }
         }
         .onReceive(Just(initialFreeQuantity)) {
             if self.mode != .confirmQuantity {
                 self.freeQuantity = $0
-                
                 updateMode()
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, verticalPadding)
         .background(appColor: .white)
         .onTapGesture {
             if self.mode != .confirmQuantity {
@@ -689,6 +689,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     init(initialMode: Mode?,
          header: Header,
          horizontalPadding: CGFloat = 16,
+         verticalPadding: CGFloat = 8,
          buttonsHeight: CGFloat = 38,
          showsDivider: Bool = true,
          addActionEnabled: Bool = true,
@@ -705,6 +706,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
         
         self.header = header
         self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
         self.standaloneButtonsHeight = buttonsHeight
         
         self.showsDivider = showsDivider
@@ -726,6 +728,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     }
     
     private var bottomPanel: some View {
+        
         Group {
             switch mode {
             case .addToCart, .select:
