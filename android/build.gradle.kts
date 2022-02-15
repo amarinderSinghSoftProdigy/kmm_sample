@@ -65,7 +65,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "default"
-            applicationIdSuffix = ".dev"
+//            applicationIdSuffix = ".dev"
         }
         create("stag") {
             dimension = "default"
@@ -104,8 +104,9 @@ dependencies {
     implementation("io.karn:notify:1.4.0")
     implementation("joda-time:joda-time:2.10.5")
     implementation ("com.google.accompanist:accompanist-flowlayout:0.20.0")
-    implementation ("com.google.android.play:core:1.10.3")
+    implementation ("com.github.TutorialsAndroid:AppXUpdater:v2.0.20")
 
     // for lint
     implementation("androidx.fragment:fragment-ktx:1.3.4")
+    implementation("androidx.appcompat:appcompat:1.4.0")
 }
