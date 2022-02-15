@@ -482,7 +482,8 @@ sealed class Event {
         data class Batches(
             val spid: String,
             val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>,
-            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>
+            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>,
+            val requiredQty: Double,
         ) : Transition()
 
     }

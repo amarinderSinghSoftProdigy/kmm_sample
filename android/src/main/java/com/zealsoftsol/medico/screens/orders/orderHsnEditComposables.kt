@@ -136,8 +136,6 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 scope.updateMrp(it.mrp)
             if (it.ptr.isNotEmpty())
                 scope.updatePtr(it.ptr)
-            if (it.quantity.isNotEmpty())
-                scope.updateQuantity(it.quantity)
             if (it.selectedHsnCode.isNotEmpty())
                 scope.updateHsnCode(it.selectedHsnCode)
         }

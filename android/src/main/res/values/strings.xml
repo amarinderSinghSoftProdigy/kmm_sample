@@ -367,6 +367,9 @@
     <string name="view_batches">View Batches</string>
     <string name="offer">Offer</string>
     <string name="offer_deals_running">Offers/Deals running</string>
+    <string name="please_select_type">Please Select Promotion Type</string>
+    <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
+    more than or equal to the requested quantity</string>
 
     <!-- Termrs and Cond -->
 
@@ -516,6 +519,5 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
-    <string name="please_select_type">Please Select Promotion Type</string>
 
 </resources>
