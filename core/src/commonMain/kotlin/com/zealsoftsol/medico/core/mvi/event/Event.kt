@@ -1,13 +1,17 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
@@ -17,14 +21,17 @@ import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
@@ -84,10 +91,17 @@ sealed class Event {
 
         sealed class Profile : Action() {
             override val typeClazz: KClass<*> = Profile::class
-            data class UploadUserProfile(val size: String,val asBase64: String, val fileType: FileType,val type:String) : Profile()
+
+            data class UploadUserProfile(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : Profile()
+
             object UploadFileTooBig : Profile()
             object GetProfileData : Profile()
-            data class ShowUploadBottomSheet(val type:String) : Profile()
+            data class ShowUploadBottomSheet(val type: String) : Profile()
         }
 
         sealed class Search : Action() {
@@ -119,6 +133,7 @@ sealed class Event {
             data class showToast(val msg: String, val cartData: CartData?) : Search()
             data class ShowDetails(val item: EntityInfo) : Search()
             data class ResetButton(val item: Boolean) : Search()
+            data class UpdateFree(val qty: Double, val id: String) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
@@ -172,6 +187,8 @@ sealed class Event {
             data class Select(val item: Store) : Stores()
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
+            data class ShowDetails(val item: EntityInfo) : Stores()
+
         }
 
         sealed class Cart : Action() {
@@ -233,7 +250,16 @@ sealed class Event {
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
-            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(
+                val taxType: TaxType,
+                val retailerName: String,
+                val canEditOrderEntry: Boolean,
+                val orderId: String,
+                val declineReason: List<DeclineReason>,
+                val entry: List<OrderEntry>,
+                val index: Int
+            ) : Orders()
+
             data class SaveEntryQty(
                 val entry: OrderEntry,
                 val quantity: Double,
@@ -243,7 +269,16 @@ sealed class Event {
                 val expiry: String,
             ) : Orders()
 
-            data class Confirm(val fromNotification: Boolean) : Orders()
+            data class Confirm(val fromNotification: Boolean, val reasonCode: String) : Orders()
+
+            data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
+
+            data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
+
+            data class EditDiscount(val orderId: String, val discount: Double) : Orders()
+
+            data class ChangePaymentMethod(val orderId: String, val type: String) : Orders()
+
         }
 
         sealed class Invoices : Action() {
@@ -315,10 +350,81 @@ sealed class Event {
             data class SavePreference(
                 val language: String,
                 val phoneNumber: String,
-            ) :
-                WhatsAppPreference()
+            ) : WhatsAppPreference()
 
             object GetPreference : WhatsAppPreference()
+        }
+
+
+        sealed class Batches : Action() {
+            override val typeClazz: KClass<*> = Batches::class
+
+            object GetBatches : Batches()
+        }
+
+        sealed class OrderHsn : Action() {
+            override val typeClazz: KClass<*> = OrderHsn::class
+
+            data class Load(val isFirstLoad: Boolean) : OrderHsn()
+
+            data class Search(val value: String) : OrderHsn()
+
+            data class SaveOrderEntry(
+                val orderId: String,
+                val orderEntryId: String,
+                val servedQty: Double,
+                val freeQty: Double,
+                val price: Double,
+                val batchNo: String,
+                val expiryDate: String,
+                val mrp: Double,
+                val discount: Double,
+                val hsnCode: String,
+            ) : OrderHsn()
+
+            data class RejectOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+                val reasonCode: String
+            ) : OrderHsn()
+
+            data class AcceptOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+            ) : OrderHsn()
+
+            object GetBatches : OrderHsn()
+
+        }
+
+        sealed class Offers : Action() {
+            override val typeClazz: KClass<*> = Offers::class
+
+            data class ShowBottomSheet(
+                val promotionType: String,
+                val name: String,
+                val active: Boolean
+            ) :
+                Offers()
+
+            data class ShowEditBottomSheet(
+                val promotion: Promotions
+            ) : Offers()
+
+            object LoadMoreProducts : Offers()
+            object OpenCreateOffer : Offers()
+            data class GetOffers(
+                val search: String? = null,
+                val query: ArrayList<String> = ArrayList(),
+            ) : Offers()
+
+            data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
+            data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
+            object GetTypes : Offers()
+            data class SearchAutoComplete(val value: String) : Offers()
+            data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
+            data class SaveOffer(val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
         }
 
         sealed class Inventory : Action() {
@@ -358,6 +464,8 @@ sealed class Event {
         object Orders : Transition()
         object PoOrdersAndHistory : Transition()
         object MyInvoices : Transition()
+        object Offers : Transition()
+        object CreateOffers : Transition()
         object PoInvoices : Transition()
         object InStore : Transition()
         object InStoreUsers : Transition()
@@ -371,6 +479,12 @@ sealed class Event {
 
         object Inventory : Transition()
         object Menu : Transition()
+        data class Batches(
+            val spid: String,
+            val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>,
+            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>,
+            val requiredQty: Double,
+        ) : Transition()
 
     }
 }

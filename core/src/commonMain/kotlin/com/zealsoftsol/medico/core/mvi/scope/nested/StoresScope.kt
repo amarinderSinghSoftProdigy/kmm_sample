@@ -10,8 +10,10 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.Facet
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -70,6 +72,8 @@ sealed class StoresScope : Scope.Child.TabBar() {
         override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
         override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
         override val enableButton: DataSource<Boolean> = DataSource(false),
+        override val freeQty: DataSource<Double> = DataSource(0.0),
+        override val productId: DataSource<String> = DataSource(""),
     ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
@@ -90,10 +94,36 @@ sealed class StoresScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+            val address = GeoData(
+                location = store.location,
+                city = store.city,
+                pincode = store.pincode,
+                distance = store.distance,
+                formattedDistance = store.formattedDistance,
+                addressLine = store.fullAddress(),
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = store.tradeName,
+                phoneNumber = store.mobileNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = store.drugLicenseNo1,
+                drugLicenseNo2 = store.drugLicenseNo2,
+                gstin = store.gstin,
+                isVerified = true,
+                panNumber = store.panNumber,
+                subscriptionData = null,
+                unitCode = store.sellerUnitCode
+            )
             return TabBarInfo.StoreTitle(
-                store = store,
+                storeName = store.tradeName,
                 notificationItemsCount = notificationCount,
-                cartItemsCount = cartItemsCount
+                cartItemsCount = cartItemsCount,
+                event = Event.Action.Stores.ShowDetails(item)
             )
         }
     }

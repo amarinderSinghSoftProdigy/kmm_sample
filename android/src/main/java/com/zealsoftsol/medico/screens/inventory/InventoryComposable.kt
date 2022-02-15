@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {

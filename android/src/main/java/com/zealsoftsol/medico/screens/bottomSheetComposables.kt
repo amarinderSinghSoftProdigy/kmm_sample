@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
@@ -31,6 +33,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -45,15 +49,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,6 +91,7 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -137,6 +145,25 @@ fun Scope.Host.showBottomSheet(
                 } else null,
                 onDismiss = { dismissBottomSheet() },
             )
+            is BottomSheet.UpdateOfferStatus -> UpdateOfferItemBottomSheet(
+                info = bs.info,
+                name = bs.name,
+                active = bs.active,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.update()
+                },
+                onDismiss = { dismissBottomSheet() },
+            )
+            is BottomSheet.UpdateOffer -> EditOfferItemBottomSheet(
+                info = bs,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.update()
+                },
+                onDismiss = { dismissBottomSheet() },
+            )
+
             is BottomSheet.ModifyOrderEntry -> {
                 ModifyOrderEntryBottomSheet(
                     bs,
@@ -1610,6 +1637,7 @@ private fun ModifyOrderEntryBottomSheet(
     }
 }
 
+
 @Composable
 private fun DocumentUploadBottomSheet(
     supportedFileTypes: Array<FileType>,
@@ -1675,7 +1703,6 @@ private fun PreviewItemBottomSheet(
                         color = Color.Black.copy(alpha = 0.12f),
                         onClick = onDismiss,
                         modifier = Modifier
-                            //.align(Alignment.TopEnd)
                             .size(24.dp),
                     ) {
 
@@ -1733,25 +1760,12 @@ private fun PreviewItemBottomSheet(
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp),
                                 )
-                                /*Space(6.dp)
-                                Text(
-                                    text = stringResource(id = R.string.verified),
-                                    color = Color(0xFF00C37D),
-                                    fontWeight = FontWeight.W600,
-                                    fontSize = 12.sp,
-                                )*/
                             }
                         }
                     }
                     Space(4.dp)
                     entityInfo.phoneNumber?.let {
                         Row {
-                            /*Text(
-                                text = "${stringResource(id = R.string.phone_number)}:",
-                                fontSize = 14.sp,
-                                color = ConstColors.gray,
-                            )
-                            Space(4.dp)*/
                             ClickableText(
                                 text = AnnotatedString(it),
                                 style = TextStyle(
@@ -1763,7 +1777,6 @@ private fun PreviewItemBottomSheet(
                             )
                         }
                     }
-                    //Space(4.dp)
                     if (isForSeasonBoy) {
                         Space(8.dp)
                         SeasonBoyPreviewItem(entityInfo)
@@ -1775,6 +1788,432 @@ private fun PreviewItemBottomSheet(
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun UpdateOfferItemBottomSheet(
+    info: String?,
+    name: String,
+    active: Boolean,
+    onSubscribe: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(all = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (!active) stringResource(id = R.string.stop_offer_message) else stringResource(
+                            id = R.string.start_offer_message
+                        ), fontSize = 14.sp
+                    )
+                    Text(
+                        text = "$name?",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Space(dp = 16.dp)
+
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Surface(
+                        modifier = Modifier.weight(0.4f),
+                        color = ConstColors.yellow,
+                        shape = MaterialTheme.shapes.large,
+                        onClick = onDismiss,
+                        elevation = 8.dp
+                    ) {
+                        Box(
+                            modifier = Modifier.padding(all = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.background
+                            )
+                        }
+
+                    }
+                    Space(dp = 16.dp)
+                    Surface(
+                        modifier = Modifier.weight(0.4f),
+                        shape = MaterialTheme.shapes.medium,
+                        color = ConstColors.txtGrey,
+                        onClick = onSubscribe,
+                        elevation = 8.dp
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(all = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.okay),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.background,
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EditOfferItemBottomSheet(
+    info: BottomSheet.UpdateOffer,
+    onSubscribe: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        val promo = info.promo.flow.collectAsState()
+        val types = info.types
+        val type = info.promotionType.flow.collectAsState()
+        val active = info.active.flow.collectAsState()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(41.dp)
+                            .background(ConstColors.ltgray, MaterialTheme.shapes.large)
+                    ) {
+                        types.forEach {
+                            var boxMod = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                            boxMod = if (types.size == 1) {
+                                boxMod
+                            } else {
+                                boxMod
+                                    .padding(1.dp)
+                                    .clickable { info.updatePromotionType(it.code) }
+                            }
+                            val isActive = type.value == it.code
+                            boxMod = if (isActive) {
+                                boxMod.background(
+                                    ConstColors.lightGreen,
+                                    MaterialTheme.shapes.large
+                                )
+                            } else {
+                                boxMod
+                            }
+                            Row(
+                                modifier = boxMod,
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = it.name,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = if (isActive) Color.White else MaterialTheme.colors.background,
+                                    modifier = Modifier.padding(all = 2.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = promo.value.productName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colors.background,
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = promo.value.manufacturerName,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = ConstColors.gray,
+                    )
+                    Space(dp = 8.dp)
+                    val activeIndex = info.getIndex()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .width(130.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .width(130.dp)
+                                    .padding(bottom = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = if (activeIndex == 0) stringResource(id = R.string.qty).uppercase() else stringResource(
+                                        id = R.string.discount
+                                    ).uppercase(),
+                                    color = ConstColors.gray,
+                                    fontSize = 12.sp,
+                                )
+
+                                val wasBuy = remember {
+                                    mutableStateOf(
+                                        if (promo.value.buy.formatted.split(".")
+                                                .lastOrNull() == "0"
+                                        ) promo.value.buy.formatted.split(".")
+                                            .first() else promo.value.buy.formatted
+                                    )
+                                }
+                                val wasDis = remember {
+                                    mutableStateOf(
+                                        if (promo.value.productDiscount.formatted.split(".")
+                                                .lastOrNull() == "0"
+                                        ) promo.value.productDiscount.formatted.split(".")
+                                            .first() else promo.value.productDiscount.formatted
+                                    )
+                                }
+
+                                BasicTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    value = TextFieldValue(
+                                        if (activeIndex == 0) {
+                                            wasBuy.value
+                                        } else {
+                                            wasDis.value
+                                        },
+                                        selection = TextRange(
+                                            (if (activeIndex == 0) {
+                                                wasBuy.value
+                                            } else {
+                                                wasDis.value
+                                            }).length
+                                        )
+                                    ),
+                                    onValueChange = {
+                                        val split =
+                                            it.text.replace(",", ".").split(".")
+                                        val beforeDot = split[0]
+                                        val afterDot = split.getOrNull(1)
+                                        var modBefore =
+                                            beforeDot.toIntOrNull() ?: 0
+                                        val modAfter = when (afterDot?.length) {
+                                            0 -> "."
+                                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                                1
+                                            ).toIntOrNull()) {
+                                                0 -> ".0"
+                                                in 1..4 -> ".0"
+                                                5 -> ".5"
+                                                in 6..9 -> {
+                                                    modBefore++
+                                                    ".0"
+                                                }
+                                                null -> ""
+                                                else -> throw UnsupportedOperationException(
+                                                    "cant be that"
+                                                )
+                                            }
+                                            null -> ""
+                                            else -> throw UnsupportedOperationException(
+                                                "cant be that"
+                                            )
+                                        }
+                                        if (activeIndex == 0) {
+                                            wasBuy.value = "$modBefore$modAfter"
+                                            info.updateQuantity(wasBuy.value.toDouble())
+                                        } else {
+                                            wasDis.value = "$modBefore$modAfter"
+                                            info.updateDiscount(wasDis.value.toDouble())
+                                        }
+                                    },
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    maxLines = 1,
+                                    singleLine = true,
+                                    readOnly = false,
+                                    enabled = true,
+                                    textStyle = TextStyle(
+                                        color = MaterialTheme.colors.background,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.W700,
+                                        textAlign = TextAlign.End,
+                                    )
+                                )
+                            }
+                            Divider(
+                                color = MaterialTheme.colors.background,
+                                thickness = 1.5.dp
+                            )
+                        }
+                        if (activeIndex == 0) {
+                            Box(modifier = Modifier.width(130.dp)) {
+                                EditField(
+                                    label = stringResource(id = R.string.free),
+                                    qty = promo.value.free.formatted,
+                                    onChange = { info.updateFreeQuantity(it.toDouble()) },
+                                    isEnabled = true,
+                                )
+                            }
+                        } else {
+                            info.updateFreeQuantity(0.0)
+                            info.updateQuantity(0.0)
+                        }
+                    }
+                }
+                Space(dp = 12.dp)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    val switchEnabled = remember { mutableStateOf(active.value) }
+                    Box(modifier = Modifier.width(120.dp)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(id = R.string.stop),
+                                    color = ConstColors.red,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (!switchEnabled.value) FontWeight.Bold else FontWeight.Normal
+                                )
+                                Text(
+                                    text = "/",
+                                    color = MaterialTheme.colors.background,
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.start),
+                                    color = ConstColors.lightGreen,
+                                    fontSize = 14.sp,
+                                    fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
+                                )
+                            }
+                            Space(dp = 4.dp)
+                            Switch(
+                                checked = switchEnabled.value,
+                                onCheckedChange = {
+                                    switchEnabled.value = it
+                                    info.updateActive(it)
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = ConstColors.green,
+                                    uncheckedThumbColor = ConstColors.red,
+                                )
+                            )
+                            Space(dp = 4.dp)
+                        }
+                    }
+
+                    Box(modifier = Modifier.width(120.dp)) {
+                        MedicoButton(
+                            text = stringResource(id = R.string.save),
+                            isEnabled = true,
+                            height = 35.dp,
+                            elevation = null,
+                            onClick = onSubscribe,
+                            textSize = 14.sp,
+                            color = ConstColors.yellow,
+                            txtColor = MaterialTheme.colors.background
+                        )
+                    }
+                }
+            }
+            Space(dp = 16.dp)
+        }
+    }
+}
+
 
 @Composable
 private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
@@ -1808,7 +2247,6 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 
 @Composable
 private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
-    // val activity = LocalContext.current as MainActivity
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -1818,16 +2256,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         color = Color.White,
         border = BorderStroke(2.dp, ConstColors.separator)
     ) {
-        /* Column {
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                 CoilImage(
-                     src = "",
-                     size = 123.dp,
-                     onError = { UserLogoPlaceholder(entityInfo.tradeName) },
-                     onLoading = { UserLogoPlaceholder(entityInfo.tradeName) },
-                 )
-                 Space(24.dp)*/
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1868,7 +2296,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     }
                 }
                 Space(4.dp)
-                Divider(thickness = 0.3.dp)
+                /*Divider(thickness = 0.3.dp)
                 Space(4.dp)
                 Row {
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -1888,21 +2316,9 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             )
                         }
                     }
-                }
+                }*/
             }
 
-
-            /*Text(
-                text = stringResource(id = R.string.see_on_the_map),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = ConstColors.lightBlue,
-                modifier = Modifier.clickable {
-                    entityInfo.geoData.destination?.let {
-                        activity.openMaps(it.latitude, it.longitude)
-                    }
-                },
-            )*/
             if (onSubscribe != null) {
                 Space(4.dp)
                 Box(
@@ -1916,9 +2332,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     )
                 }
             }
-            //}
-            // }
-            //Space(24.dp)
 
         }
     }
@@ -1991,7 +2404,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             Box(modifier = Modifier.width(maxWidth / 2)) {
                                 entityInfo.gstin?.let {
                                     SingleTextLabel(data = it)
-                                    //DataWithLabel(label = R.string.gstin_num, data = it)
                                 }
                             }
                             Box(
@@ -2003,7 +2415,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
 
                                 entityInfo.panNumber?.let {
                                     SingleTextLabel(data = it)
-                                    //DataWithLabel(label = R.string.pan_number, data = it)
                                 }
                             }
                         }
@@ -2054,7 +2465,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colors.background,
                             )
-                            //DataWithLabel(label = R.string.gstin_num, data = it)
                         }
                         entityInfo.panNumber?.let {
                             Text(
@@ -2062,56 +2472,71 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colors.background,
                             )
-                            //DataWithLabel(label = R.string.pan_number, data = it)
                         }
                     }
-                    /*entityInfo.gstin?.let {
-                        DataWithLabel(label = R.string.gstin_num, data = it)
-                    }
-                    entityInfo.panNumber?.let {
-                        DataWithLabel(label = R.string.pan_number, data = it)
-                    }*/
                     DataWithLabel(
                         label = R.string.orders,
                         data = data.orders.toString()
                     )
                 }
                 else -> {
-                    Row {
-                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                            Box(modifier = Modifier.width(maxWidth / 2)) {
-                                entityInfo.gstin?.let {
-                                    Text(
-                                        text = it,
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colors.background,
-                                    )
-                                    //DataWithLabel(label = R.string.gstin_num, data = it)
+                    Column {
+                        Row {
+                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                Box(modifier = Modifier.width(maxWidth / 2)) {
+                                    entityInfo.gstin?.let {
+                                        Text(
+                                            text = it,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                        //DataWithLabel(label = R.string.gstin_num, data = it)
+                                    }
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .width(maxWidth / 2)
+                                        .align(Alignment.BottomEnd),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    entityInfo.panNumber?.let {
+                                        Text(
+                                            text = it,
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                    }
                                 }
                             }
-                            Box(
-                                modifier = Modifier
-                                    .width(maxWidth / 2)
-                                    .align(Alignment.BottomEnd),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                entityInfo.panNumber?.let {
-                                    Text(
-                                        text = it,
-                                        fontSize = 12.sp,
-                                        color = MaterialTheme.colors.background,
-                                    )
-                                    //DataWithLabel(label = R.string.pan_number, data = it)
+                        }
+                        Row {
+                            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                                Box(modifier = Modifier.width(maxWidth / 2)) {
+                                    entityInfo.drugLicenseNo1?.let {
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_one)}:${it}",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                    }
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .width(maxWidth / 2)
+                                        .align(Alignment.BottomEnd),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    entityInfo.drugLicenseNo2?.let {
+                                        Text(
+                                            text = "${stringResource(id = R.string.dl_two)}:${it}",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colors.background,
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                    /*entityInfo.gstin?.let {
-                        DataWithLabel(label = R.string.gstin_num, data = it)
-                    }
-                    entityInfo.panNumber?.let {
-                        DataWithLabel(label = R.string.pan_number, data = it)
-                    }*/
                 }
             }
         }

@@ -53,6 +53,7 @@ internal class SearchEventDelegate(
         is Event.Action.Search.AddToCart -> updateBatchSelection(true, event.product)
         is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
         is Event.Action.Search.ShowDetails -> select(event.item)
+        is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
     }
 
     private fun select(item: EntityInfo) {
@@ -73,10 +74,10 @@ internal class SearchEventDelegate(
         }
     }
 
-    private fun addToCart(product: ProductSearch) {
-        navigator.withScope<BaseSearchScope> {
-            navigator.scope.value.bottomSheet.value =
-                BottomSheet.BatchViewProduct(product, it)
+    private fun updateQty(qty: Double, id: String) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.freeQty.value = qty
+            it.productId.value = id
         }
     }
 

@@ -71,7 +71,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -136,6 +135,7 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
+    txtColor: Color = MaterialTheme.colors.background,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
     border: BorderStroke? = null,
@@ -165,6 +165,7 @@ fun MedicoButton(
             fontSize = textSize,
             fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),
+            color = txtColor
         )
     }
 }
@@ -615,6 +616,105 @@ fun EditField(
     isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    showThinDivider: Boolean = false,
+    textStyle: TextStyle? = null,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
+) {
+    val color = when {
+        isError -> ConstColors.red
+        isEnabled -> MaterialTheme.colors.background
+        else -> ConstColors.gray.copy(alpha = 0.8f)
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = label.uppercase(),
+                fontSize = 12.sp,
+                color = ConstColors.gray,
+            )
+            Space(16.dp)
+            val wasQty = remember {
+                mutableStateOf(
+                    if (qty.split(".").lastOrNull() == "0") qty.split(".").first() else qty
+                )
+            }
+
+            val style = textStyle ?: TextStyle(
+                color = color,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                textAlign = TextAlign.End,
+            )
+
+            BasicTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusEvent { if (it.isFocused) onFocus?.invoke() },
+                value = TextFieldValue(wasQty.value, selection = TextRange(wasQty.value.length)),
+                onValueChange = {
+                    if (formattingRule) {
+                        val split = it.text.replace(",", ".").split(".")
+                        val beforeDot = split[0]
+                        val afterDot = split.getOrNull(1)
+                        var modBefore = beforeDot.toIntOrNull() ?: 0
+                        val modAfter = when (afterDot?.length) {
+                            0 -> "."
+                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(1).toIntOrNull()) {
+                                0 -> ".0"
+                                in 1..4 -> ".0"
+                                5 -> ".5"
+                                in 6..9 -> {
+                                    modBefore++
+                                    ".0"
+                                }
+                                null -> ""
+                                else -> throw UnsupportedOperationException("cant be that")
+                            }
+                            null -> ""
+                            else -> throw UnsupportedOperationException("cant be that")
+                        }
+                        wasQty.value = "$modBefore$modAfter"
+                        onChange("$modBefore$modAfter")
+                    } else {
+                        onChange(it.text)
+                    }
+                },
+                keyboardOptions = keyboardOptions,
+                maxLines = 1,
+                singleLine = true,
+                readOnly = !isEnabled,
+                enabled = isEnabled,
+                textStyle = style
+            )
+        }
+        Space(4.dp)
+        if (showThinDivider) {
+            Divider()
+        } else {
+            Canvas(
+                modifier = Modifier
+                    .height((1.5).dp)
+                    .fillMaxWidth()
+            ) {
+                drawRect(color)
+            }
+        }
+    }
+}
+
+@Composable
+fun EditFieldCustom(
+    label: String,
+    qty: String,
+    onChange: (String) -> Unit,
+    onFocus: (() -> Unit)? = null,
+    isEnabled: Boolean = true,
+    isError: Boolean = false,
+    formattingRule: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val color = when {
@@ -682,7 +782,7 @@ fun EditField(
                     color = color,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W700,
-                    textAlign = TextAlign.End,
+                    textAlign = TextAlign.Start,
                 )
             )
         }
@@ -694,6 +794,30 @@ fun EditField(
         ) {
             drawRect(color)
         }
+    }
+}
+
+/**
+ * @param scope current scope to get the current and updated state of views
+ */
+
+@Composable
+fun ShowAlert(message: String, onClick: () -> Unit) {
+    MaterialTheme {
+
+        AlertDialog(
+            onDismissRequest = onClick,
+            text = {
+                Text(message)
+            },
+            confirmButton = {
+                Button(
+                    onClick = onClick
+                ) {
+                    Text(stringResource(id = R.string.okay))
+                }
+            }
+        )
     }
 }
 

@@ -1,15 +1,12 @@
 package com.zealsoftsol.medico.utils
 
 import android.Manifest
-import android.util.Log
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import kotlinx.coroutines.launch
 import com.madhu.locationpermission.permission.PermissionUI
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event

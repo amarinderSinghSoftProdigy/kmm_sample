@@ -11,7 +11,6 @@ import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.ProfileImageData
-import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.User
 
 sealed class SettingsScope(

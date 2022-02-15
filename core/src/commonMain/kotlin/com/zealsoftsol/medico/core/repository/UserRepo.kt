@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 
+
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
     private val networkSignUpScope: NetworkScope.SignUp,
@@ -53,6 +54,7 @@ class UserRepo(
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val profileImageScope: NetworkScope.ProfileImage,
+    private val networkOffersScope: NetworkScope.OffersStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
