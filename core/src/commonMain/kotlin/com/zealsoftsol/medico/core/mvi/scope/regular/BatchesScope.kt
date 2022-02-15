@@ -9,16 +9,17 @@ import com.zealsoftsol.medico.data.Batches
 class BatchesScope(
     val spid: String,
     val batchData: DataSource<List<Batches>?> = DataSource(emptyList()),
-    var selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>
+    var selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>,
+    val requiredQty: Double,
 ) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
-    val showSuccessAlert = DataSource(false)
+    val showErrorAlert = DataSource(false)
 
     fun updateSuccessAlertVisibility(showAlert: Boolean){
-        this.showSuccessAlert.value = showAlert
+        this.showErrorAlert.value = showAlert
     }
     /**
      * update selected batch by user
@@ -31,9 +32,14 @@ class BatchesScope(
         expiry: String,
         hsnCode: String
     ) {
-        selectedBatchData.value = OrderHsnEditScope.SelectedBatchData(
-            batch = batchNo, quantity = qty,
-            ptr = price, mrp = mrp, expiry = expiry, selectedHsnCode = hsnCode
-        )
+        if(qty.toDouble() >= requiredQty){
+            selectedBatchData.value = OrderHsnEditScope.SelectedBatchData(
+                batch = batchNo, quantity = qty,
+                ptr = price, mrp = mrp, expiry = expiry, selectedHsnCode = hsnCode
+            )
+            goBack()
+        }else{
+            showErrorAlert.value = true
+        }
     }
 }

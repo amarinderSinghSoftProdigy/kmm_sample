@@ -211,7 +211,8 @@ internal class TransitionEventDelegate(
                     BatchesScope(
                         event.spid,
                         event.batchData,
-                        event.selectedBatchData
+                        event.selectedBatchData,
+                        event.requiredQty
                     )
                 )
             }

@@ -199,31 +199,43 @@ fun ViewOrderScreen(scope: ViewOrderScope) {
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.discount))
-                                    append(": ")
-                                    val startIndex = length
-                                    append(orderTaxValue.info.discount?.formatted ?: "0.0")
-                                    addStyle(
-                                        SpanStyle(
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W600
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = Color.Black,
-                                fontWeight = FontWeight.W600,
-                                fontSize = 16.sp,
+                            Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
                                     if (scope.canEdit) {
                                         scope.showPaymentOptions(false)
                                         scope.showEditDiscountOption(!openEditDiscountView.value)
                                     }
+                                }) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.discount))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.discount?.formatted ?: "0.0")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                                if (scope.canEdit) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(start = 5.dp)
+                                            .rotate(90f)
+                                            .height(10.dp)
+                                    )
                                 }
-                            )
+                            }
                         }
                     }
                     Space(8.dp)
@@ -426,7 +438,7 @@ fun ShowEditDiscountDropDown(
                             if (it.toDoubleOrNull() != null && it.length < 6) {
                                 if (it.toDouble() <= 100)
                                     onChange(it)
-                            }else{
+                            } else {
                                 onChange("0")
                             }
                         },
@@ -514,7 +526,7 @@ fun OrderEntryItem(
                         .padding(top = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column(modifier = Modifier.weight(.6f)) {
+                    Column(modifier = Modifier.weight(.55f)) {
                         Text(
                             text = entry.productName,
                             color = MaterialTheme.colors.background,
@@ -558,7 +570,7 @@ fun OrderEntryItem(
                     }
                     Column(
                         modifier = Modifier
-                            .weight(.35f)
+                            .weight(.45f)
                             .padding(end = 10.dp),
                         horizontalAlignment = Alignment.End,
                     ) {

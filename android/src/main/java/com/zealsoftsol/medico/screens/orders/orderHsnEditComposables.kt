@@ -136,8 +136,6 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                 scope.updateMrp(it.mrp)
             if (it.ptr.isNotEmpty())
                 scope.updatePtr(it.ptr)
-            if (it.quantity.isNotEmpty())
-                scope.updateQuantity(it.quantity)
             if (it.selectedHsnCode.isNotEmpty())
                 scope.updateHsnCode(it.selectedHsnCode)
         }
@@ -525,7 +523,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     elevation = 5.dp,
                     shape = MaterialTheme.shapes.medium,
                     color = ConstColors.lightGrey
-                ){
+                ) {
                     ViewBatches(canEditOrderEntry, batchData, scope)
                 }
                 Space(20.dp)
@@ -1552,7 +1550,11 @@ fun EditText(
         value = textFieldValueState,
         onValueChange = {
             if (it.text.toDoubleOrNull() != null) {
-                onChange(it.text)
+                if (it.text.length > 1 && it.text.startsWith("0")) {
+                    onChange(it.text.substring(1))
+                } else {
+                    onChange(it.text)
+                }
             } else {
                 onChange("0")
             }
