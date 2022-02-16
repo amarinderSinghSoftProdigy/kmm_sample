@@ -2671,7 +2671,7 @@ private fun ViewLargeImageBottomSheet(
                 Space(16.dp)
                 CoilImage(
                     onError = { Placeholder(R.drawable.ic_placeholder) },
-                    src = CdnUrlProvider.urlForActualImage(url),
+                    src = url,
                     size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
                     onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
                 )
