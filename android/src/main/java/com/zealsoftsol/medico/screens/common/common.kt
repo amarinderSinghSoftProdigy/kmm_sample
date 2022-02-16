@@ -748,7 +748,7 @@ fun ImageLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CoilImage(
+                CoilImageLocal(
                     src = value,
                     modifier = Modifier
                         .width(120.dp)

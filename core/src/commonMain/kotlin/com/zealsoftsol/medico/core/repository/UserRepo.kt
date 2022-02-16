@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
@@ -223,14 +224,14 @@ class UserRepo(
         userRegistration1: UserRegistration1,
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
-        storageKey: String?,
+        userRegistration4: UserRegistration4,
     ): AnyResponse {
         return networkSignUpScope.signUp(
             SubmitRegistration.nonSeasonBoy(
                 userRegistration1,
                 userRegistration2,
                 userRegistration3,
-                storageKey,
+                userRegistration4,
                 ipAddressFetcher.getIpAddress().orEmpty(),
             )
         )

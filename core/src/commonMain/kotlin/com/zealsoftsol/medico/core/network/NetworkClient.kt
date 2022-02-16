@@ -252,7 +252,7 @@ class NetworkClient(
 
     override suspend fun signUpValidation3(userRegistration3: UserRegistration3) =
         fullRequest {
-            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/registration/step3") {
+            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/registration/v2/step3") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration3)
             }

@@ -37,12 +37,17 @@ internal class RegistrationEventDelegate(
         is Event.Action.Registration.Validate -> validate(event.userRegistration)
         is Event.Action.Registration.UpdatePincode -> updatePincode(event.pincode)
         is Event.Action.Registration.UploadDrugLicense -> uploadDocument(event)
-        is Event.Action.Registration.UploadDocument -> uploadDocuments(event, event.type,event.path)
+        is Event.Action.Registration.UploadDocument -> uploadDocuments(
+            event,
+            event.type,
+            event.path
+        )
         is Event.Action.Registration.UploadFileTooBig -> uploadFileTooBig()
         is Event.Action.Registration.AddAadhaar -> addAadhaar(event.aadhaarData)
         is Event.Action.Registration.UploadAadhaar -> uploadDocument(event)
         is Event.Action.Registration.SignUp -> signUp()
         is Event.Action.Registration.Skip -> skipUploadDocuments()
+        is Event.Action.Registration.Submit -> submit()
         is Event.Action.Registration.AcceptWelcome -> acceptWelcome()
         is Event.Action.Registration.ShowUploadBottomSheet -> showUploadBottomSheet()
         is Event.Action.Registration.ShowUploadBottomSheets -> showUploadBottomSheets(
@@ -273,7 +278,7 @@ internal class RegistrationEventDelegate(
                     documents.registrationStep1,
                     documents.registrationStep2,
                     documents.registrationStep3,
-                    documents.storageKey,
+                    documents.registrationStep4.value,
                 )
                 is SignUpScope.LegalDocuments.Aadhaar -> userRepo.signUpSeasonBoy(
                     documents.registrationStep1,
@@ -340,6 +345,12 @@ internal class RegistrationEventDelegate(
 
     private fun skipUploadDocuments() {
         navigator.withScope<SignUpScope.LegalDocuments> {
+            startOtp(it.registrationStep1.phoneNumber)
+        }
+    }
+
+    private fun submit() {
+        navigator.withScope<SignUpScope.PreviewDetails> {
             startOtp(it.registrationStep1.phoneNumber)
         }
     }

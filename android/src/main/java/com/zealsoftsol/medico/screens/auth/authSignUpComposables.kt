@@ -1,7 +1,6 @@
 package com.zealsoftsol.medico.screens.auth
 
 import android.content.Intent
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -85,6 +84,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.utils.PermissionCheckUI
+import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
 import com.zealsoftsol.medico.utils.PermissionViewModel
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
@@ -365,6 +365,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
 fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registration = scope.registration.flow.collectAsState()
     val validation = scope.validation.flow.collectAsState()
+    val validFoodLicense = scope.checkFoodLicense(registration.value.foodLicenseNo)
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     BasicAuthSignUpScreenWithButton(
@@ -467,6 +468,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                 text = stringResource(id = R.string.yes),
                                 color = Color.Black,
                             )
+                            Space(16.dp)
                             RadioButton(
                                 selected = !switchEnabled.value,
                                 onClick = {
@@ -484,16 +486,17 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                         Space(16.dp)
                         if (switchEnabled.value) {
                             InputWithError(
-                                errorText = if (!registration.value.foodLicense) {
-                                    stringResource(id = R.string.add_food_license)
+                                errorText = if (validFoodLicense) {
+                                    stringResource(id = R.string.food_license_validation)
                                 } else {
                                     null
                                 }
                             ) {
                                 InputField(
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                     hint = stringResource(id = R.string.food_license_number),
-                                    text = registration.value.foodLicenseNumber,
+                                    text = registration.value.foodLicenseNo,
                                     onValueChange = { value -> scope.changeFoodLicense(value) },
                                 )
                             }
@@ -527,13 +530,8 @@ fun AuthDetailsAadhaar(scope: SignUpScope.Details.Aadhaar) {
 @Composable
 fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: ScaffoldState) {
     val registration = scope.registrationStep4.flow.collectAsState()
-    /*val permissionViewModel = PermissionViewModel()
-    PermissionCheckUI(
-        scaffoldState, permissionViewModel, Event.Action.Registration.ShowUploadBottomSheets(
-            permissionViewModel.performTypeAction.value,
-            scope.registrationStep1
-        )
-    )*/
+    val permissionViewModel = PermissionViewModel()
+    PermissionCheckUIForSignUp(scaffoldState, permissionViewModel, scope.registrationStep1)
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 5.0,//1.0,
@@ -562,8 +560,8 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
             Column {
                 Surface(
                     onClick = {
-                        //permissionViewModel.setPerformLocationAction(true, "TRADE_PROFILE")
-                        scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
+                        permissionViewModel.setPerformLocationAction(true, "TRADE_PROFILE")
+                        //scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -595,8 +593,8 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
                 Space(dp = 16.dp)
                 Surface(
                     onClick = {
-                        //permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
-                        scope.showBottomSheet("DRUG_LICENSE", scope.registrationStep1)
+                        permissionViewModel.setPerformLocationAction(true, "DRUG_LICENSE")
+                        //scope.showBottomSheet("DRUG_LICENSE", scope.registrationStep1)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -633,14 +631,14 @@ fun AuthLegalDocuments(scope: SignUpScope.LegalDocuments, scaffoldState: Scaffol
                     fontSize = 12.sp,
                 )
                 Space(dp = 16.dp)
-                if (scope.registrationStep3.foodLicense) {
+                if (scope.registrationStep3.hasFoodLicense) {
                     Surface(
                         onClick = {
-                            //permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
-                            scope.showBottomSheet(
+                            permissionViewModel.setPerformLocationAction(true, "FOOD_LICENSE")
+                            /*scope.showBottomSheet(
                                 "FOOD_LICENSE",
                                 scope.registrationStep1
-                            )
+                            )*/
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -727,7 +725,6 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 Space(dp = 16.dp)
                 TextLabel(scope.registrationStep3.tradeName)
                 if (scope.registrationStep4.tradeProfile != null) {
-                    Log.e(" data ", " " + scope.registrationStep4.tradeProfile?.cdnUrl)
                     ImageLabel(scope.registrationStep4.tradeProfile?.cdnUrl ?: "")
                 }
                 TextLabel(scope.registrationStep3.gstin)
@@ -735,12 +732,10 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
                 if (scope.registrationStep4.drugLicense != null) {
-                    Log.e(" data ", " " + scope.registrationStep4.drugLicense?.cdnUrl)
                     ImageLabel(scope.registrationStep4.drugLicense?.cdnUrl ?: "")
                 }
-                TextLabel(scope.registrationStep3.foodLicenseNumber)
+                TextLabel(scope.registrationStep3.foodLicenseNo)
                 if (scope.registrationStep4.foodLicense != null) {
-                    Log.e(" data ", " " + scope.registrationStep4.foodLicense?.cdnUrl)
                     ImageLabel(scope.registrationStep4.foodLicense?.cdnUrl ?: "")
                 }
             }

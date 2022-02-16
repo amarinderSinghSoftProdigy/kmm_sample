@@ -92,6 +92,7 @@ sealed class Event {
 
             object SignUp : Registration()
             object Skip : Registration()
+            object Submit : Registration()
             object AcceptWelcome : Registration()
             object ShowUploadBottomSheet : Registration()
 

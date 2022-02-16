@@ -230,6 +230,8 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             )
 
             init {
+                changeFoodLicenseStatus(false)
+                registration.value = registration.value.copy(state = registrationStep2.state)
                 checkData()
                 require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
                     "trader data not available for season boy"
@@ -304,7 +306,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
 
             fun checkData() {
                 val isValid =
-                    drugLicense.value != null && tradeProfile.value != null && if (registrationStep3.foodLicense) foodLicense.value != null else true
+                    drugLicense.value != null && tradeProfile.value != null && if (registrationStep3.hasFoodLicense) foodLicense.value != null else true
                 onDataValid(isValid)
             }
 
@@ -312,7 +314,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
                 val registrationStep = UserRegistration4()
                 registrationStep.drugLicense = drugLicense.value
                 registrationStep.tradeProfile = tradeProfile.value
-                if (registrationStep3.foodLicense)
+                if (registrationStep3.hasFoodLicense)
                     registrationStep.foodLicense = foodLicense.value
                 registrationStep4.value = registrationStep
                 canGoNext.value = isValid
@@ -346,9 +348,13 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         val registrationStep2: UserRegistration2,
         val registrationStep3: UserRegistration3,
         val registrationStep4: UserRegistration4,
-    ) : SignUpScope("preview") {
+    ) : SignUpScope("preview"), CommonScope.PhoneVerificationEntryPoint {
 
-        fun submit() = EventCollector.sendEvent(Event.Action.Registration.Skip)
+        init {
+            canGoNext.value = true
+        }
+
+        fun submit() = EventCollector.sendEvent(Event.Action.Registration.Submit)
     }
 }
 

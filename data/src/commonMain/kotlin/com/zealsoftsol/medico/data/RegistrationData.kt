@@ -3,7 +3,9 @@ package com.zealsoftsol.medico.data
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.Json
 
 sealed class UserRegistration
 sealed class UserValidation
@@ -85,9 +87,14 @@ data class UserRegistration3(
     @Required
     val drugLicenseNo2: String = "",
 
-    val foodLicenseNumber: String = "",
+    @Required
+    val foodLicenseNo: String = "",
 
-    val foodLicense: Boolean = false,
+    @Required
+    val hasFoodLicense: Boolean = false,
+
+    @Required
+    val state: String = "",
 ) : UserRegistration() {
 
     companion object {
@@ -128,6 +135,7 @@ data class UploadResponseData(
     var imageId: String = "",
     var cdnUrl: String = ""
 )
+
 @Serializable
 data class SubmitRegistration(
     @SerialName("customerType")
@@ -150,7 +158,7 @@ data class SubmitRegistration(
     val panNumber: String? = null,
     val drugLicenseNo1: String? = null,
     val drugLicenseNo2: String? = null,
-    val drugLicenseStorageKey: String? = null,
+    /*val drugLicenseStorageKey: String? = null,*/
     // End
     @Required
     val receiveMarketingMails: Boolean = true,
@@ -169,14 +177,29 @@ data class SubmitRegistration(
     val channel: String = "MOBILE",
     @Transient
     val isSeasonBoy: Boolean = false,
+
+    @Required
+    val hasFoodLicense: Boolean = false,
+
+    val foodLicense: String? = null,
+    val tradeProfile: String? = null,
+    val drugLicenseProfile: String? = null,
+    val foodLicenseProfile: String? = null
+
 ) {
+
+
     companion object {
+
+        private fun convertToString(data: UploadResponseData?): String {
+            return Json.encodeToString(data)
+        }
 
         fun nonSeasonBoy(
             userRegistration1: UserRegistration1,
             userRegistration2: UserRegistration2,
             userRegistration3: UserRegistration3,
-            storageKey: String?,
+            userRegistration4: UserRegistration4,
             ipAddress: String,
         ) = SubmitRegistration(
             userType = userRegistration1.userType,
@@ -191,7 +214,7 @@ data class SubmitRegistration(
             panNumber = userRegistration3.panNumber,
             drugLicenseNo1 = userRegistration3.drugLicenseNo1,
             drugLicenseNo2 = userRegistration3.drugLicenseNo2,
-            drugLicenseStorageKey = storageKey,
+            /*drugLicenseStorageKey = storageKey,*/
             pincode = userRegistration2.pincode,
             addressLine1 = userRegistration2.addressLine1,
             location = userRegistration2.location,
@@ -200,6 +223,11 @@ data class SubmitRegistration(
             district = userRegistration2.district,
             state = userRegistration2.state,
             ipAddress = ipAddress,
+            hasFoodLicense = userRegistration3.hasFoodLicense,
+            foodLicense = userRegistration3.foodLicenseNo,
+            tradeProfile = convertToString(userRegistration4.tradeProfile),
+            drugLicenseProfile = convertToString(userRegistration4.drugLicense),
+            foodLicenseProfile = convertToString(userRegistration4.foodLicense),
         )
 
         fun seasonBoy(

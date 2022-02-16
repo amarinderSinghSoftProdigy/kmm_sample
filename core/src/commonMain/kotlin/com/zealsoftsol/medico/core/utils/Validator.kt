@@ -16,7 +16,7 @@ object Validator {
 
         fun isFoodLicenseValid(foodLicense: Boolean, foodLicenseNumber: String): Boolean {
             return if (foodLicense) {
-                foodLicenseNumber.isNotEmpty()
+                foodLicenseNumber.isNotEmpty() && foodLicenseNumber.length == 14
             } else {
                 true
             }
