@@ -725,18 +725,27 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 Space(dp = 16.dp)
                 TextLabel(scope.registrationStep3.tradeName)
                 if (scope.registrationStep4.tradeProfile != null) {
-                    ImageLabel(scope.registrationStep4.tradeProfile?.cdnUrl ?: "")
+                    val url = scope.registrationStep4.tradeProfile?.cdnUrl ?: ""
+                    ImageLabel(
+                        url
+                    ) { scope.previewImage(url) }
                 }
                 TextLabel(scope.registrationStep3.gstin)
                 TextLabel(scope.registrationStep3.panNumber)
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
                 if (scope.registrationStep4.drugLicense != null) {
-                    ImageLabel(scope.registrationStep4.drugLicense?.cdnUrl ?: "")
+                    val url = scope.registrationStep4.drugLicense?.cdnUrl ?: ""
+                    ImageLabel(
+                        url
+                    ) { scope.previewImage(url) }
                 }
                 TextLabel(scope.registrationStep3.foodLicenseNo)
                 if (scope.registrationStep4.foodLicense != null) {
-                    ImageLabel(scope.registrationStep4.foodLicense?.cdnUrl ?: "")
+                    val url = scope.registrationStep4.foodLicense?.cdnUrl ?: ""
+                    ImageLabel(
+                        url
+                    ) { scope.previewImage(url) }
                 }
             }
         }

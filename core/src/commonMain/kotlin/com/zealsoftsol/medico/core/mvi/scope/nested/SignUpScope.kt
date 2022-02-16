@@ -354,6 +354,9 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             canGoNext.value = true
         }
 
+        fun previewImage(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
+
         fun submit() = EventCollector.sendEvent(Event.Action.Registration.Submit)
     }
 }

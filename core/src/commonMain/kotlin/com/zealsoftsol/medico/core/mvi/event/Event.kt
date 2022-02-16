@@ -90,7 +90,10 @@ sealed class Event {
             ) : Registration()
 
             object UploadFileTooBig : Registration()
-            data class ShowUploadBottomSheets(val type: String, val registrationStep1: UserRegistration1) : Registration()
+            data class ShowUploadBottomSheets(
+                val type: String,
+                val registrationStep1: UserRegistration1
+            ) : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
@@ -200,7 +203,7 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
             data class ShowDetails(val item: EntityInfo) : Stores()
-            data class ShowLargeImage(val item: String) : Stores()
+            data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
 
         }
 
@@ -437,7 +440,8 @@ sealed class Event {
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
             data class SaveOffer(val request: OfferProductRequest) : Offers()
-            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
+                Offers()
         }
 
         sealed class Inventory : Action() {

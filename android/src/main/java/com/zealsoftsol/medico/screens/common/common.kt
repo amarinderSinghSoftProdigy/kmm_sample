@@ -48,8 +48,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -92,6 +94,7 @@ import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
+import java.io.File
 import java.util.Locale
 
 @Composable
@@ -737,9 +740,11 @@ fun TextLabel(
         }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ImageLabel(
-    value: String
+    value: String,
+    onClick: () -> Unit
 ) {
     if (value.isNotEmpty())
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -748,15 +753,18 @@ fun ImageLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CoilImageLocal(
-                    src = value,
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(80.dp),
-                    onError = { Placeholder(R.drawable.ic_img_placeholder) },
-                    onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
-                    isCrossFadeEnabled = false
-                )
+                Surface(onClick = onClick) {
+                    val cacheFile = File(value)
+                    CoilImage(
+                        src = cacheFile,
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(80.dp),
+                        onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                        onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                        isCrossFadeEnabled = false
+                    )
+                }
                 Image(
                     painter = painterResource(id = R.drawable.ic_verified),
                     contentDescription = null,

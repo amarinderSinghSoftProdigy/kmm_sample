@@ -61,29 +61,3 @@ fun CoilImage(
         }
     }
 }
-
-@OptIn(ExperimentalCoilApi::class)
-@Composable
-fun CoilImageLocal(
-    src: Any,
-    modifier: Modifier,
-    isCrossFadeEnabled: Boolean = true,
-    onError: @Composable (() -> Unit)? = null,
-    onLoading: @Composable (() -> Unit)? = null,
-) {
-    val cacheFile = File(src.toString())
-    val painter = rememberImagePainter(cacheFile, builder = { crossfade(isCrossFadeEnabled) })
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Image(
-            contentScale = ContentScale.FillBounds,
-            painter = painter,
-            modifier = modifier,
-            contentDescription = null,
-        )
-        when (val state = painter.state) {
-            is ImagePainter.State.Loading -> onLoading?.invoke()
-            is ImagePainter.State.Success -> Unit
-            is ImagePainter.State.Error, is ImagePainter.State.Empty -> onError?.invoke()
-        }
-    }
-}

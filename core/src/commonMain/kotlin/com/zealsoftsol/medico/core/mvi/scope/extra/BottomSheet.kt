@@ -296,6 +296,6 @@ sealed class BottomSheet {
             )
     }
 
-    data class ViewLargeImage(val url: String) : BottomSheet()
+    data class ViewLargeImage(val url: String,val type:String?) : BottomSheet()
 
 }
