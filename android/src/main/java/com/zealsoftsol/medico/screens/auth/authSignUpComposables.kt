@@ -65,6 +65,7 @@ import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
 import com.zealsoftsol.medico.screens.common.InputField
+import com.zealsoftsol.medico.screens.common.InputFieldWithCounter
 import com.zealsoftsol.medico.screens.common.InputWithError
 import com.zealsoftsol.medico.screens.common.InputWithPrefix
 import com.zealsoftsol.medico.screens.common.MedicoButton
@@ -299,7 +300,8 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
             }
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.landmark) {
-                InputField(
+                InputFieldWithCounter(
+                    limit = 30,
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.landmark),
                     text = registration.value.landmark,

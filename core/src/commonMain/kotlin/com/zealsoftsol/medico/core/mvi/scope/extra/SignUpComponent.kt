@@ -46,7 +46,7 @@ interface AddressComponent : Scopable {
     }
 
     fun changeLandmark(landmark: String) {
-        if (landmark.length > 15) return
+        if (landmark.length > 30) return
         trimInput(landmark, registration.value.landmark) {
             registration.value = registration.value.copy(landmark = it)
             checkData()

@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -133,6 +135,57 @@ fun InputField(
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+@Composable
+fun InputFieldWithCounter(
+    limit: Int,
+    modifier: Modifier = Modifier,
+    hint: String,
+    text: String,
+    isValid: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = 1,
+    onValueChange: (String) -> Unit,
+) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        TextField(
+            value = text,
+            label = {
+                Text(
+                    text = hint,
+                    style = TextStyle.Default,
+                )
+            },
+            isError = !isValid,
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                cursorColor = ConstColors.lightBlue,
+                focusedLabelColor = ConstColors.lightBlue,
+                focusedIndicatorColor = ConstColors.lightBlue,
+            ),
+            onValueChange = onValueChange,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            singleLine = maxLines == 1,
+            maxLines = maxLines,
+            modifier = modifier.weight(0.8f),
+        )
+
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(0.2f),
+            text = text.length.toString() + "/" + limit.toString(),
+            color = ConstColors.gray,
+            fontSize = 12.sp
+        )
+    }
 }
 
 @Composable
