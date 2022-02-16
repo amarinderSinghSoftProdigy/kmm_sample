@@ -35,6 +35,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.ProductsData
@@ -46,12 +47,11 @@ import com.zealsoftsol.medico.utils.piechart.PieChart
 import com.zealsoftsol.medico.utils.piechart.PieChartData
 import com.zealsoftsol.medico.utils.piechart.renderer.SimpleSliceDrawer
 import com.zealsoftsol.medico.utils.piechart.simpleChartAnimation
-import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
     val manufacturersList = scope.mInventoryData.flow.collectAsState().value?.manufacturers
-    val productsList = scope.mInventoryData.flow.collectAsState().value?.productData
+    val productsList = scope.mInventoryData.flow.collectAsState().value?.productData?.results
 
     Column(
         modifier = Modifier

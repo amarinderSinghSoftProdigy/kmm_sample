@@ -8,8 +8,11 @@ data class InventoryData(
     val onlineStatusData: OnlineStatusData?,
     val stockExpiredData: StockExpiredData?,
     val manufacturers: List<ManufacturerData>?,
-    val productData: List<ProductsData>?
+    val productData: Results?,
 )
+
+@Serializable
+data class Results(val results: List<ProductsData>?)
 
 @Serializable
 data class StocksStatusData(
@@ -42,34 +45,12 @@ data class ManufacturerData(
 data class ProductsData(
     val id: String,
     val vendorProductName: String,
-    val manufacturerCode: String,
-    val variantProductCode: String,
     val vendorMnfrName: String,
-    val b2bUnit: String,
-    val batchNo: String,
-    val inventoryStatus: String,
-    val stockName: String,
-    val hsnCode: String,
-    val vendorStdUnit: String,
-    val vendorProductId: String,
-    val vendorMnfrId:String,
-    val promotionActive: Boolean,
-    val offerAllUsers: Boolean,
-    val promoTypeCode: String,
-    val promoCode: String,
-    val promoStock: Double,
-    val validFrom: Double,
-    val productDiscount: Double,
-    val validUntil: Double,
     val spid: String,
     val mrp: MrpData,
     val ptr: MrpData,
-    val pts: MrpData,
     val expiryDate: MrpData,
     val availableQty: MrpData,
-    val freeQty: MrpData,
-    val promoBuy: MrpData,
-    val promoFree: MrpData,
 )
 
 @Serializable
