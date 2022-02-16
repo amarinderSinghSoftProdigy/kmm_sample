@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
@@ -13,6 +14,7 @@ import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.Store
 
 internal class StoresEventDelegate(
@@ -29,6 +31,15 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
         is Event.Action.Stores.ShowDetails -> openDetails(event.item)
+        is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item)
+    }
+
+    fun selectProductLargeImage(item: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(
+            CdnUrlProvider.urlFor(
+                item, CdnUrlProvider.Size.Px320
+            )
+        )
     }
 
     private fun openDetails(item: EntityInfo) {
@@ -66,7 +77,13 @@ internal class StoresEventDelegate(
 
     private fun select(item: Store) {
         navigator.withScope<StoresScope.All> {
-            setScope(StoresScope.StorePreview(item, cartRepo.getEntriesCountDataSource(), notificationRepo.getUnreadMessagesDataSource()))
+            setScope(
+                StoresScope.StorePreview(
+                    item,
+                    cartRepo.getEntriesCountDataSource(),
+                    notificationRepo.getUnreadMessagesDataSource()
+                )
+            )
         }
     }
 }

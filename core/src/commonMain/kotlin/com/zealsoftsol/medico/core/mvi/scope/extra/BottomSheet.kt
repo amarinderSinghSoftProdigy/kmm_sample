@@ -253,7 +253,6 @@ sealed class BottomSheet {
             )
     }
 
-
     data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
         BottomSheet() {
 
@@ -267,4 +266,7 @@ sealed class BottomSheet {
                 )
             )
     }
+
+    data class ViewLargeImage(val url: String) : BottomSheet()
+
 }

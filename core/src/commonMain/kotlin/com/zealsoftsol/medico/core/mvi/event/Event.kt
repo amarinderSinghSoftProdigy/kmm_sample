@@ -188,6 +188,7 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
             data class ShowDetails(val item: EntityInfo) : Stores()
+            data class ShowLargeImage(val item: String) : Stores()
 
         }
 

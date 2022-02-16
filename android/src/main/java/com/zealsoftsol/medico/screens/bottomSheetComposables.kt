@@ -198,6 +198,10 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() },
                 scope = bs.scope
             )
+            is BottomSheet.ViewLargeImage -> ViewLargeImageBottomSheet(
+                url = bs.url,
+                onDismiss = { dismissBottomSheet() },
+            )
         }
     }
 }
@@ -2612,6 +2616,67 @@ private fun BaseBottomSheet(
             elevation = 8.dp,
         ) {
             body()
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ViewLargeImageBottomSheet(
+    url: String,
+    onDismiss: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.Transparent)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(indication = NoOpIndication) { onDismiss() })
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(indication = null) { /* intercept touches */ }
+                .align(Alignment.BottomCenter),
+            color = Color.Black.copy(alpha = 0.5f),
+            elevation = 8.dp,
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(32.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+                Space(16.dp)
+                CoilImage(
+                    onError = { Placeholder(R.drawable.ic_placeholder) },
+                    src = url,
+                    size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                    onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+                )
+                Space(30.dp)
+            }
         }
     }
 }
