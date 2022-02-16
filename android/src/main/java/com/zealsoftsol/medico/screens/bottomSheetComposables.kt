@@ -2627,38 +2627,56 @@ private fun ViewLargeImageBottomSheet(
     url: String,
     onDismiss: () -> Unit,
 ) {
-    BaseBottomSheet(onDismiss) {
-        Column(
-            Modifier
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.Transparent)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(indication = NoOpIndication) { onDismiss() })
+        Surface(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+                .clickable(indication = null) { /* intercept touches */ }
+                .align(Alignment.BottomCenter),
+            color = Color.Black.copy(alpha = 0.5f),
+            elevation = 8.dp,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.BottomEnd
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.Black.copy(alpha = 0.12f),
-                    onClick = onDismiss,
+                Box(
                     modifier = Modifier
-                        .size(24.dp),
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        tint = ConstColors.gray,
-                        modifier = Modifier.size(16.dp),
-                    )
+                    Surface(
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(32.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
                 }
+                Space(16.dp)
+                CoilImage(
+                    onError = { Placeholder(R.drawable.ic_placeholder) },
+                    src = CdnUrlProvider.urlForActualImage(url),
+                    size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                    onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+                )
+                Space(30.dp)
             }
-            Space(16.dp)
-            CoilImage(
-                src = CdnUrlProvider.urlForActualImage(url),
-                size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
-                onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
-            )
         }
     }
 }
