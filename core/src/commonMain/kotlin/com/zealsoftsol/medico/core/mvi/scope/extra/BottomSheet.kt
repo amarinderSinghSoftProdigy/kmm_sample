@@ -3,11 +3,18 @@ package com.zealsoftsol.medico.core.mvi.scope.extra
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.PromotionType
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 
@@ -49,6 +56,36 @@ sealed class BottomSheet {
         }
     }
 
+    class UploadProfileData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+        val isSeasonBoy: Boolean,
+    ) : BottomSheet() {
+
+        fun uploadProfile(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Profile.UploadUserProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
     class PreviewManagementItem(
         val entityInfo: EntityInfo,
         val isSeasonBoy: Boolean,
@@ -57,6 +94,91 @@ sealed class BottomSheet {
 
         fun subscribe() =
             EventCollector.sendEvent(Event.Action.Management.RequestSubscribe(entityInfo))
+    }
+
+    class UpdateOfferStatus(
+        val info: String,
+        val name: String,
+        val active: Boolean
+    ) : BottomSheet() {
+        fun update() =
+            EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
+    }
+
+    class UpdateOffer(
+        val scope: Scope,
+        val info: Promotions,
+        val types: List<PromotionType>
+    ) : BottomSheet() {
+        fun update() {
+            val request = OfferProductRequest()
+            request.discount = discount.value
+            request.buy = quantity.value
+            request.free = freeQuantity.value
+            request.manufacturerCode = promo.value.manufacturerCode
+            request.productCode = promo.value.productCode
+            request.active = active.value
+            request.spid = promo.value.spid
+            request.isOfferForAllUsers = true
+            request.connectedUsers = ArrayList()
+            request.stock = 0.0
+            request.startDate = 1644214031075
+            request.endDate = 1675750031075
+            request.promotionType = promotionType.value
+            if (scope is OffersScope.ViewOffers) {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(
+                    Event.Action.Offers.EditCreatedOffer(
+                        promo.value.promoCode,
+                        request
+                    )
+                )
+
+            }
+        }
+
+        val promo = DataSource(info)
+        val active = DataSource(info.active)
+        val quantity = DataSource(info.buy.value)
+        val freeQuantity = DataSource(info.free.value)
+        val discount = DataSource(info.productDiscount.value)
+        val promotionType = DataSource(info.promotionTypeData.code)
+
+        fun updateQuantity(value: Double) {
+            quantity.value = value
+        }
+
+        fun updateActive(value: Boolean) {
+            active.value = value
+        }
+
+        fun updateFreeQuantity(value: Double) {
+            freeQuantity.value = value
+        }
+
+        fun updateDiscount(value: Double) {
+            discount.value = value
+        }
+
+        fun updatePromotionType(value: String) {
+            promotionType.value = value
+        }
+
+        fun getIndex(): Int {
+            types.forEachIndexed { index, value ->
+                if (promotionType.value == value.code) {
+                    return index
+                }
+            }
+            return 0
+        }
+
     }
 
     class ModifyOrderEntry(
@@ -125,6 +247,21 @@ sealed class BottomSheet {
                 Event.Action.InStore.AddCartItem(
                     product.code,
                     product.spid,
+                    quantity,
+                    freeQuantity,
+                )
+            )
+    }
+
+
+    data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
+        BottomSheet() {
+
+        fun addToCart(quantity: Double, freeQuantity: Double): Boolean =
+            EventCollector.sendEvent(
+                Event.Action.InStore.AddCartItem(
+                    product.code,
+                    product.sellerInfo?.spid ?: "",
                     quantity,
                     freeQuantity,
                 )

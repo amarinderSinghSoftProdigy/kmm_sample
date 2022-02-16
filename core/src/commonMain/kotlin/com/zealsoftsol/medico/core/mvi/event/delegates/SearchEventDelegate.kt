@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -11,9 +12,12 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
+import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,7 +30,7 @@ internal class SearchEventDelegate(
     private val networkSearchScope: NetworkScope.Search,
 ) : EventDelegate<Event.Action.Search>(navigator) {
 
-    private val activeFilters = hashMapOf<String, Option.StringValue>()
+    private var activeFilters = hashMapOf<String, Option.StringValue>()
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
@@ -42,10 +46,43 @@ internal class SearchEventDelegate(
         is Event.Action.Search.SelectSortOption -> selectSortOption(event.option)
         is Event.Action.Search.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.Search.ToggleFilter -> toggleFilter()
+        is Event.Action.Search.SelectBatch -> updateBatchSelection(event.option, event.product)
+        is Event.Action.Search.ViewAllItems -> viewAllManufacturers()
         is Event.Action.Search.Reset -> reset()
+        is Event.Action.Search.ResetButton -> resetButton(event.item)
+        is Event.Action.Search.AddToCart -> updateBatchSelection(true, event.product)
+        is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
+        is Event.Action.Search.ShowDetails -> select(event.item)
+        is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
+    }
+
+    private fun select(item: EntityInfo) {
+        navigator.withScope<StoresScope.StorePreview> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                item,
+                isSeasonBoy = false,
+                canSubscribe = false,
+            )
+        }
+    }
+
+    private fun showToast(msg: String, cartData: CartData?) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.showToast.value = msg == "success"
+            it.cartData.value = cartData
+        }
+    }
+
+    private fun updateQty(qty: Double, id: String) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.freeQty.value = qty
+            it.productId.value = id
+        }
     }
 
     private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {
+        reset()
         navigator.withScope<BaseSearchScope> {
             it.pagination.reset()
             if (search != null) it.productSearch.value = search
@@ -172,10 +209,19 @@ internal class SearchEventDelegate(
                             f
                         }
                     }
+
+                    //when offers switch is on in stores orders
+                    val extraFilters = mutableMapOf<String, Option.StringValue>()
+                    if (filter.queryId == "offers") {
+                        extraFilters["offers"] = option
+                        activeFilters =
+                            (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
+                    }
                     it.search(
                         addPage = false,
                         withDelay = false,
-                        withProgress = false,
+                        withProgress = true,
+                        extraFilters = extraFilters
                     )
                 }
             }
@@ -206,6 +252,12 @@ internal class SearchEventDelegate(
                     else -> f
                 }
             }
+
+            //remove offers key if offers switch is off in stores products
+            if (filter?.queryId == "offers") {
+                activeFilters.remove("offers")
+            }
+
             if (filter == null) {
                 activeFilters.clear()
                 it.calculateActiveFilterNames()
@@ -247,10 +299,29 @@ internal class SearchEventDelegate(
         }
     }
 
-    private fun reset() {
+    private fun updateBatchSelection(check: Boolean, product: ProductSearch) {
+        navigator.withScope<BaseSearchScope> {
+            it.isBatchSelected.value = check
+            it.checkedProduct.value = product
+        }
+    }
+
+    private fun viewAllManufacturers() {
         searchJob?.cancel()
         activeFilters.clear()
 //        it.calculateActiveFilterNames()
+    }
+
+    private fun reset() {
+        //searchJob?.cancel()
+        activeFilters.clear()
+//        it.calculateActiveFilterNames()
+    }
+
+    private fun resetButton(check: Boolean) {
+        navigator.withScope<StoresScope.StorePreview> {
+            it.enableButton.value = check
+        }
     }
 
     private fun BaseSearchScope.calculateActiveFilterNames() {
@@ -275,6 +346,7 @@ internal class SearchEventDelegate(
                 pagination,
             ).onSuccess { body ->
                 pagination.setTotal(body.totalResults)
+                filtersManufactures.value = body.facets.toManufactureFilter()
                 filters.value = body.facets.toFilter()
                 products.value = if (!addPage) body.products else products.value + body.products
                 sortOptions.value = body.sortOptions
@@ -315,6 +387,26 @@ internal class SearchEventDelegate(
                 name = facet.displayName,
                 queryId = facet.queryId,
                 options = if (facet.values.size > MAX_OPTIONS) options + Option.ViewMore else options,
+            )
+        }
+    }
+
+    private inline fun List<Facet>.toManufactureFilter(): List<Filter> {
+        return map { facet ->
+            val options = facet.values.mapIndexed { index, v ->
+                Option.StringValue(
+                    id = v.id,
+                    value = v.value,
+                    isSelected = activeFilters[facet.queryId]
+                        ?.takeIf { v.value == it.value }?.isSelected
+                        ?: false,
+                    isVisible = true,
+                )
+            }
+            Filter(
+                name = facet.displayName,
+                queryId = facet.queryId,
+                options = options,
             )
         }
     }

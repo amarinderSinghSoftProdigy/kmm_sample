@@ -30,9 +30,9 @@ class DashboardScope private constructor(
         UserType.STOCKIST -> listOf(
 //            Section.NOTIFICATIONS,
 //            Section.NEW_ORDERS,
-            Section.STOCKIST_CONNECT,
             Section.RETAILER_COUNT,
             Section.HOSPITAL_COUNT,
+            Section.STOCKIST_CONNECT,
 //            Section.SEASON_BOY_COUNT
         )
         UserType.RETAILER, UserType.HOSPITAL -> listOf(
@@ -58,6 +58,13 @@ class DashboardScope private constructor(
     }
 
     /**
+     * Move to offers screens
+     */
+    fun moveToOffersScreen(){
+        EventCollector.sendEvent(Event.Transition.Offers)
+    }
+
+    /**
      * Opens search screen with params required for search based on brand
      * @param searchTerm Search term for the brand
      * @param field Which field to search (for eg - manufacturer)
@@ -80,7 +87,7 @@ class DashboardScope private constructor(
     enum class Section(val stringId: String, val event: Event?) {
         STOCKIST_COUNT("stockists", Event.Transition.Management(UserType.STOCKIST)),
         STOCKIST_ADD("add_stockist", Event.Transition.Management(UserType.STOCKIST)),
-        STOCKIST_CONNECT("connect_stockist", Event.Transition.Management(UserType.STOCKIST)),
+        STOCKIST_CONNECT("stockists", Event.Transition.Management(UserType.STOCKIST)),
         RETAILER_COUNT("retailers", Event.Transition.Management(UserType.RETAILER)),
         RETAILER_ADD("add_retailer", Event.Transition.Management(UserType.RETAILER)),
         HOSPITAL_COUNT("hospitals", Event.Transition.Management(UserType.HOSPITAL));

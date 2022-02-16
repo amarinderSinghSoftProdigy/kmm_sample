@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.core.mvi.scope.nested
+package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event

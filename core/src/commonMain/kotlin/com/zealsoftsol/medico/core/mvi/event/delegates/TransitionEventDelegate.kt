@@ -10,11 +10,11 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
@@ -22,7 +22,9 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -139,7 +141,10 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All(notificationRepo.getUnreadMessagesDataSource(), cartRepo.getEntriesCountDataSource())
+                    StoresScope.All(
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
+                    )
                 )
                 is Event.Transition.Cart -> setScope(
                     CartScope(
@@ -168,6 +173,12 @@ internal class TransitionEventDelegate(
                         notificationRepo.getUnreadMessagesDataSource()
                     )
                 )
+                is Event.Transition.Offers -> setScope(
+                    OffersScope.ViewOffers("deal_offer")
+                )
+                is Event.Transition.CreateOffers -> setScope(
+                    OffersScope.CreateOffer("create_offer")
+                )
                 is Event.Transition.PoInvoices -> setScope(
                     InvoicesScope(
                         isPoInvoice = true,
@@ -194,6 +205,14 @@ internal class TransitionEventDelegate(
                     MenuScope(
                         userRepo.requireUser(),
                         notificationRepo.getUnreadMessagesDataSource()
+                    )
+                )
+                is Event.Transition.Batches -> setScope(
+                    BatchesScope(
+                        event.spid,
+                        event.batchData,
+                        event.selectedBatchData,
+                        event.requiredQty
                     )
                 )
             }

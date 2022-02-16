@@ -22,8 +22,11 @@ data class Store(
     @SerialName("townOrCity")
     val city: String,
     val tradeName: String,
+    val tradeNameUrl: String?=null,
     @SerialName("unitGeoPoints")
     val geoPoints: GeoPoints,
+    val drugLicenseNo1: String? = null,
+    val drugLicenseNo2: String? = null
 ) {
     fun fullAddress() = "$city $pincode"
 }

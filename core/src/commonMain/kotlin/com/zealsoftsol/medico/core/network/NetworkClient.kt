@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -25,6 +26,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
@@ -44,6 +46,9 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.OfferData
+import com.zealsoftsol.medico.data.OfferProduct
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -57,8 +62,14 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionTypeData
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -119,7 +130,10 @@ class NetworkClient(
     NetworkScope.Config,
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
-    NetworkScope.InventoryStore {
+    NetworkScope.InventoryStore,
+    NetworkScope.ProfileImage,
+    NetworkScope.OffersStore,
+    NetworkScope.OrderHsnEditStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -621,7 +635,7 @@ class NetworkClient(
         unitCode: String,
         orderId: String
     ) = simpleRequest {
-        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders${type.path}$orderId") {
+        client.get<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax${type.path}$orderId") {
             withMainToken()
             url {
                 parameters.apply {
@@ -633,7 +647,7 @@ class NetworkClient(
 
     override suspend fun confirmOrder(request: ConfirmOrderRequest) =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/orders/po/entries/accept") {
+            client.post<AnyResponse>("${baseUrl.url}/orders/tax/po/entries/accept") {
                 withMainToken()
                 jsonBody(request)
             }
@@ -846,7 +860,229 @@ class NetworkClient(
             }
         }
 
+    override suspend fun getHsnCodes(search: String, pagination: Pagination) = simpleRequest {
+        client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("search", search)
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                }
+            }
+        }.also {
+            if (it.isSuccess) pagination.pageLoaded()
+        }
+    }
+
+    override suspend fun saveNewOrder(request: OrderNewQtyRequest) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/save") {
+                withMainToken()
+                jsonBody(request)
+            }
+
+        }
+
+    override suspend fun rejectEntry(orderEntryId: String, spid: String, reasonCode: String) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/reject") {
+                withMainToken()
+                jsonBody(
+                    mapOf(
+                        "orderEntryId" to orderEntryId,
+                        "spid" to spid,
+                        "reasonCode" to reasonCode
+                    )
+                )
+            }
+        }
+
+    override suspend fun acceptEntry(orderEntryId: String, spid: String) =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/entry/accept") {
+                withMainToken()
+                jsonBody(mapOf("orderEntryId" to orderEntryId, "spid" to spid))
+            }
+        }
+
+    override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
+        simpleRequest {
+            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/confirm") {
+                withMainToken()
+                jsonBody(orderData)
+            }
+        }
+
+    override suspend fun changePaymentMethod(
+        unitCode: String,
+        orderId: String,
+        type: String
+    ): AnyResponse = simpleRequest {
+        client.post("${baseUrl.url}/orders/tax/po/type/edit") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "type" to type
+                )
+            )
+        }
+    }
+
+    override suspend fun editDiscount(
+        unitCode: String,
+        orderId: String,
+        discount: Double
+    ): BodyResponse<OrderResponse> = simpleRequest {
+        client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/discount/add") {
+            withMainToken()
+            jsonBody(
+                mapOf(
+                    "b2bUnitCode" to unitCode,
+                    "orderId" to orderId,
+                    "discount" to discount.toString()
+                )
+            )
+        }
+    }
+
     // Utils
+
+    override suspend fun saveProfileImageData(
+        profileImageData: ProfileImageUpload,
+        type: String
+    ) = simpleRequest {
+        client.post<BodyResponse<ProfileResponseData>>("${baseUrl.url}/document/user/profile") {
+            withMainToken()
+            jsonBody(profileImageData)
+        }
+    }
+
+
+    override suspend fun getProfileImageData() =
+        simpleRequest {
+            client.get<BodyResponse<ProfileImageData>>("${baseUrl.url}/b2bapp/profiles") {
+                withMainToken()
+            }
+        }
+
+    //View offers/Update offers methods
+    override suspend fun getOffersData(
+        unitCode: String,
+        search: String?,
+        manufacturer: ArrayList<String>?,
+        pagination: Pagination
+    ): BodyResponse<OfferData> = simpleRequest {
+        client.get("${baseUrl.url}/promotions") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                    manufacturer?.forEach {
+                        append("manufacturers", it)
+                    }
+                }
+            }
+        }
+    }
+
+
+    override suspend fun updateOffer(
+        unitCode: String,
+        request: PromotionUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/promotions/update") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+    //Create offer methods
+    override suspend fun getPromotionTypes(
+        unitCode: String
+    ) = simpleRequest {
+        client.get<BodyResponse<PromotionTypeData>>("${baseUrl.url}/promotions/types") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+        }
+    }
+
+    override suspend fun autocompleteOffers(
+        input: String,
+        unitCode: String
+    ) = simpleRequest {
+        val path = "/search/promotions/suggest"
+        client.get<BodyResponse<List<AutoComplete>>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("b2bUnitCode", unitCode)
+                parameters.append("suggest", input)
+            }
+        }
+    }
+
+    override suspend fun getAutocompleteItem(
+        input: String,
+        unitCode: String
+    ) = simpleRequest {
+        val path = "/search/promotions/suggest/search"
+        client.get<BodyResponse<OfferProduct>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("search", input)
+                parameters.append("b2bUnitCode", unitCode)
+            }
+        }
+    }
+
+    override suspend fun saveOffer(
+        unitCode: String,
+        request: OfferProductRequest
+    ) = simpleRequest {
+        val path = "/promotions/submit"
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+    override suspend fun editOffer(
+        unitCode: String,
+        promoCode: String,
+        request: OfferProductRequest
+    ) = simpleRequest {
+        val path = "/promotions/edit/confirm"
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(EditOfferRequest(promoCode, request))
+        }
+    }
+
+    override suspend fun getBatches(
+        unitCode: String,
+        spid: String
+    ) = simpleRequest {
+        client.get<BodyResponse<BatchesData>>("${baseUrl.url}/inventory/view/batches") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.append("spid", spid)
+            }
+        }
+    }
+
+    // Utils
+    private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
+        applyHeader(finalToken)
+    }
 
     private suspend inline fun HttpRequestBuilder.withMainToken() {
         val finalToken = tokenStorage.getMainToken()?.let { _ ->
@@ -905,6 +1141,10 @@ class NetworkClient(
 
     private inline fun HttpRequestBuilder.applyHeader(tokenInfo: TokenInfo) {
         header("Authorization", "Bearer ${tokenInfo.token}")
+    }
+
+    private inline fun HttpRequestBuilder.applyHeader(tokenInfo: String) {
+        header("X-TENANT-ID", tokenInfo)
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {

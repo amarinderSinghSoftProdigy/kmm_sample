@@ -8,6 +8,86 @@
 
 import SwiftUI
 
+struct MedicoImageButton: View {
+    
+    let action: () -> ()
+    let localizedStringKey: String
+    let isEnabled: Bool
+    
+    let width: CGFloat?
+    let height: CGFloat
+    let cornerRadius: CGFloat
+    
+    let imageName: String
+    let imageColor: AppColor
+    
+    let fontSize: CGFloat
+    let fontWeight: TextWeight
+    let fontColor: AppColor
+    
+    let buttonColor: AppColor
+    let buttonColorOpacity: Double
+    
+    var body: some View {
+        let width = self.width ?? .infinity
+        Button(action: action) {
+            HStack {
+                Image(imageName)
+                    .renderingMode(.template)
+                    .foregroundColor(imageColor.color)
+                LocalizedText(localizationKey: localizedStringKey,
+                              textWeight: fontWeight,
+                              fontSize: fontSize,
+                              color: fontColor)
+            }
+            .frame(height: height)
+            .frame(maxWidth: width, maxHeight: height)
+        }
+        .testingIdentifier("\(localizedStringKey)_button")
+        .disabled(!isEnabled)
+        .frame(height: height)
+        .frame(maxWidth: width, maxHeight: height)
+        .background(RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(appColor: isEnabled ? buttonColor : .grey1)
+                        .opacity(buttonColorOpacity))
+    }
+    
+    init(localizedStringKey: String,
+         isEnabled: Bool = true,
+         width: CGFloat? = nil,
+         height: CGFloat = 50,
+         cornerRadius: CGFloat = 8,
+         fontSize: CGFloat = 17,
+         fontWeight: TextWeight = .semiBold,
+         fontColor: AppColor = .darkBlue,
+         buttonColor: AppColor = .yellow,
+         buttonColorOpacity: Double = 1,
+         imageName: String,
+         imageColor: AppColor = .darkBlue,
+         action: @escaping () -> ()) {
+        
+        self.action = action
+        self.localizedStringKey = localizedStringKey
+        
+        self.isEnabled = isEnabled
+        
+        self.width = width
+        self.height = height
+        self.cornerRadius = cornerRadius
+        
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.fontColor = fontColor
+        
+        self.buttonColor = buttonColor
+        self.buttonColorOpacity = buttonColorOpacity
+        
+        self.imageName = imageName
+        self.imageColor = imageColor
+    }
+}
+
+
 struct MedicoButton: View {
     let action: () -> ()
     let localizedStringKey: String
@@ -439,5 +519,62 @@ struct EmptyListView: View {
         self.subtitleText = subtitleText
         
         self.handleHomeTap = handleHomeTap
+    }
+}
+
+
+struct InStoreEmptyListView: View {
+    let imageName: String
+    
+    let titleLocalizationKey: String
+    
+    let subtitleText: AnyView?
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 15) {
+                Image(imageName)
+                
+                VStack(spacing: 4) {
+                    LocalizedText(localizationKey: titleLocalizationKey,
+                                  textWeight: .bold,
+                                  fontSize: 15)
+                    
+                    if let subtitleText = self.subtitleText {
+                        subtitleText
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(50)
+    }
+    
+    init(imageName: String,
+         titleLocalizationKey: String,
+         subtitleLocalizationKey: String? = nil) {
+        self.imageName = imageName
+        
+        self.titleLocalizationKey = titleLocalizationKey
+        
+        if let subtitleLocalizationKey = subtitleLocalizationKey {
+            self.subtitleText = AnyView(
+                LocalizedText(localizationKey: subtitleLocalizationKey,
+                              fontSize: 12)
+                    .opacity(0.6)
+            )
+        }
+        else {
+            self.subtitleText = nil
+        }
+    }
+    
+    init(imageName: String,
+         titleLocalizationKey: String,
+         subtitleText: AnyView) {
+        
+        self.imageName = imageName
+        self.titleLocalizationKey = titleLocalizationKey
+        self.subtitleText = subtitleText
     }
 }

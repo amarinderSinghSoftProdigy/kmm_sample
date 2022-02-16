@@ -74,7 +74,7 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
         val notificationItemsCount: ReadOnlyDataSource<Int>,
         val cartItemsCount: ReadOnlyDataSource<Int>? = null,
-        ) : TabBarInfo() {
+    ) : TabBarInfo() {
 
         override fun withBackIcon() = copy(icon = ScopeIcon.BACK)
 
@@ -125,6 +125,26 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.NO_ICON
         fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
         fun goToSearch() = EventCollector.sendEvent(Event.Transition.Search())
+    }
+
+    data class OnlyBackHeader(
+        val title: String //pass the string resource id
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
+
+    data class StoreTitle(
+        val storeName: String,
+        val notificationItemsCount: ReadOnlyDataSource<Int>? = null,
+        val cartItemsCount: ReadOnlyDataSource<Int>? = null,
+        val showNotifications: Boolean = true,
+        val event: Event,
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
+        fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
+        fun openBottomSheet() {
+            EventCollector.sendEvent(event)
+        }
     }
 }
 

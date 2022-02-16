@@ -88,7 +88,10 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
-                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                src = CdnUrlProvider.urlFor(
+                    scope.product.imageCode ?: "",
+                    CdnUrlProvider.Size.Px123
+                ),
                 size = 71.dp,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },

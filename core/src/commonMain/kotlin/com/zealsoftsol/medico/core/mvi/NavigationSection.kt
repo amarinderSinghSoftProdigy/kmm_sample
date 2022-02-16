@@ -36,6 +36,8 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object MyInvoices : NavigationOption(Event.Transition.MyInvoices, "invoices")
 
+    object Offers : NavigationOption(Event.Transition.Offers, "deal_offer")
+
     object PoInvoices : NavigationOption(Event.Transition.PoInvoices, "po_invoices")
 
     object InStore : NavigationOption(Event.Transition.InStore, "instore")

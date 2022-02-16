@@ -13,10 +13,13 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.InventoryEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OffersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
@@ -58,6 +61,8 @@ class EventCollector(
     ordersNetworkScope: NetworkScope.Orders,
     inStoreNetworkScope: NetworkScope.InStore,
     whatsappNetworkScope: NetworkScope.WhatsappStore,
+    offersNetworkScope: NetworkScope.OffersStore,
+    orderHsnScope: NetworkScope.OrderHsnEditStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -122,6 +127,12 @@ class EventCollector(
             ordersNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),
+        Event.Action.OrderHsn::class to OrdersHsnEventDelegate(
+            navigator,
+            userRepo,
+            orderHsnScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
         Event.Action.Invoices::class to InvoicesEventDelegate(
             navigator,
             userRepo,
@@ -135,7 +146,13 @@ class EventCollector(
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
-        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo)
+        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo),
+        Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo),
+        Event.Action.Offers::class to OffersEventDelegate(
+            navigator,
+            userRepo,
+            offersNetworkScope
+        )
     )
 
     init {

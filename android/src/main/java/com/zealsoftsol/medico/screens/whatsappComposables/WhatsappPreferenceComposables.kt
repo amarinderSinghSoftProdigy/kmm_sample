@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -39,10 +37,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.core.text.isDigitsOnly
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 
 /**
@@ -54,6 +54,7 @@ import com.zealsoftsol.medico.screens.common.Space
 fun WhatsappPreference(scope: WhatsappPreferenceScope) {
     val phoneNumber = scope.phoneNumber.flow.collectAsState()
     val language = scope.language.flow.collectAsState()
+    val openDialog = scope.showAlert.flow.collectAsState()
 
     Column(
         modifier = Modifier.padding(16.dp)
@@ -67,7 +68,8 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
         )
         Space(12.dp)
         LanguagePicker(scope)
-        ShowAlert(scope)
+        if (openDialog.value)
+            ShowAlert(stringResource(id = R.string.update_successfull)) { scope.changeAlertScope(false) }
         Space(20.dp)
         Text(
             text = stringResource(id = R.string.phone_number),
@@ -89,10 +91,13 @@ fun WhatsappPreference(scope: WhatsappPreferenceScope) {
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
             ),
+            maxLines = 1,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChange = {
-                if (it.length < 11) // only 10 chars allowed for phone number
-                    scope.changePhoneNumber(it)
+                if (it.isDigitsOnly()) {
+                    if (it.length < 11) // only 10 chars allowed for phone number
+                        scope.changePhoneNumber(it)
+                }
             },
         )
         Space(20.dp)
@@ -165,33 +170,5 @@ private fun LanguagePicker(scope: WhatsappPreferenceScope) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ShowAlert(scope: WhatsappPreferenceScope) {
-    MaterialTheme {
-        val openDialog = scope.showAlert.flow.collectAsState()
-
-        if (openDialog.value) {
-
-            AlertDialog(
-                onDismissRequest = {
-                    scope.changeAlertScope(false)
-                },
-                text = {
-                    Text(stringResource(id = R.string.update_successfull))
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            scope.changeAlertScope(false)
-                        }) {
-                        Text(stringResource(id = R.string.okay))
-                    }
-                }
-            )
-        }
-
     }
 }

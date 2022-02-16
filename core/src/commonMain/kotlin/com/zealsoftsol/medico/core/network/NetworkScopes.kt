@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -33,6 +34,9 @@ import com.zealsoftsol.medico.data.NotificationActionRequest
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationDetails
 import com.zealsoftsol.medico.data.NotificationFilter
+import com.zealsoftsol.medico.data.OfferData
+import com.zealsoftsol.medico.data.OfferProduct
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
@@ -43,7 +47,13 @@ import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.ProductBuyResponse
 import com.zealsoftsol.medico.data.ProductResponse
 import com.zealsoftsol.medico.data.ProductSeasonBoyRetailerSelectResponse
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
+import com.zealsoftsol.medico.data.PromotionTypeData
+import com.zealsoftsol.medico.data.PromotionUpdateRequest
 import com.zealsoftsol.medico.data.Response
+import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
@@ -61,6 +71,7 @@ import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.WhatsappData
+
 
 interface NetworkScope {
 
@@ -229,6 +240,22 @@ interface NetworkScope {
             unitCode: String,
             invoiceId: String
         ): BodyResponse<InvoiceResponse>
+
+        suspend fun takeActionOnOrderEntries(
+            orderData: ConfirmOrderRequest
+        ): BodyResponse<OrderResponse>
+
+        suspend fun changePaymentMethod(
+            unitCode: String,
+            orderId: String,
+            type: String
+        ): AnyResponse
+
+        suspend fun editDiscount(
+            unitCode: String,
+            orderId: String,
+            discount: Double
+        ): BodyResponse<OrderResponse>
     }
 
     interface Help : NetworkScope {
@@ -277,11 +304,83 @@ interface NetworkScope {
 
     interface WhatsappStore : NetworkScope {
         suspend fun getWhatsappPreferences(unitCode: String): BodyResponse<WhatsappData>
-        suspend fun saveWhatsappPreferences(language: String, phoneNumber: String, unitCode: String): AnyResponse
+        suspend fun saveWhatsappPreferences(
+            language: String,
+            phoneNumber: String,
+            unitCode: String
+        ): AnyResponse
+    }
+
+    interface OrderHsnEditStore : NetworkScope {
+        suspend fun getHsnCodes(
+            search: String,
+            pagination: Pagination
+        ): BodyResponse<PaginatedData<SearchDataItem>>
+
+        suspend fun saveNewOrder(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
+
+        suspend fun rejectEntry(
+            orderEntryId: String,
+            spid: String,
+            reasonCode: String
+        ): BodyResponse<OrderResponse>
+
+        suspend fun acceptEntry(orderEntryId: String, spid: String): BodyResponse<OrderResponse>
+
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
     }
 
     interface InventoryStore : NetworkScope{
         suspend fun getInventoryData(unitCode: String): BodyResponse<InventoryData>
     }
 
+    interface ProfileImage : NetworkScope {
+        suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
+        suspend fun saveProfileImageData(
+            profileImageData: ProfileImageUpload, type: String
+        ): BodyResponse<ProfileResponseData>
+    }
+
+    interface OffersStore : NetworkScope {
+        //VIew offer methods
+        suspend fun getOffersData(
+            unitCode: String,
+            search: String?,
+            manufacturer: ArrayList<String>?,
+            pagination: Pagination
+        ): BodyResponse<OfferData>
+
+        suspend fun updateOffer(
+            unitCode: String,
+            request: PromotionUpdateRequest
+        ): BodyResponse<String>
+
+        //Create offer methods
+        suspend fun getPromotionTypes(
+            unitCode: String,
+        ): BodyResponse<PromotionTypeData>
+
+        suspend fun autocompleteOffers(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<List<AutoComplete>>
+
+        suspend fun getAutocompleteItem(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<OfferProduct>
+
+        suspend fun saveOffer(
+            unitCode: String,
+            request: OfferProductRequest
+        ): BodyResponse<String>
+
+        suspend fun editOffer(
+            unitCode: String,
+            promoCode: String,request: OfferProductRequest
+        ): BodyResponse<String>
+    }
 }

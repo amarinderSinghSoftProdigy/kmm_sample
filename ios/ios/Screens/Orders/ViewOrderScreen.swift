@@ -269,7 +269,7 @@ struct CustomerView: View {
 
                             Spacer()
 
-                            Text(b2bData.gstin)
+                            Text(b2bData.gstin ?? "")
                         }
 
                         HStack {
