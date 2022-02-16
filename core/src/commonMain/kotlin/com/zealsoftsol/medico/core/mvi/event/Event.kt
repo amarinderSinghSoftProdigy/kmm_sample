@@ -424,13 +424,18 @@ sealed class Event {
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
             data class SaveOffer(val request: OfferProductRequest) : Offers()
-            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
+                Offers()
         }
 
         sealed class Inventory : Action() {
             override val typeClazz: KClass<*> = Inventory::class
 
-            object GetInventory : Inventory()
+            data class GetInventory(
+                val search: String? = null,
+                val manufacturer: String? = null,
+                val page: Int,
+            ) : Inventory()
         }
     }
 

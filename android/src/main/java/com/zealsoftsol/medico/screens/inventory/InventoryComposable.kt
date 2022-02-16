@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.inventory
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -42,7 +44,6 @@ import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.utils.parseDateToMmYy
 import com.zealsoftsol.medico.utils.piechart.PieChart
 import com.zealsoftsol.medico.utils.piechart.PieChartData
 import com.zealsoftsol.medico.utils.piechart.renderer.SimpleSliceDrawer
@@ -50,8 +51,10 @@ import com.zealsoftsol.medico.utils.piechart.simpleChartAnimation
 
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
-    val manufacturersList = scope.mInventoryData.flow.collectAsState().value?.manufacturers
-    val productsList = scope.mInventoryData.flow.collectAsState().value?.productData?.results
+    val manufacturersList = scope.manufacturersList.flow.collectAsState().value
+    val productsList = scope.productsList.flow.collectAsState().value
+    val totalResults = scope.totalProducts
+    val mCurrentManufacturer = scope.mCurrentManufacturerName.flow.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -92,12 +95,18 @@ fun InventoryMainComposable(scope: InventoryScope) {
             contentPadding = PaddingValues(start = 3.dp),
             modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-            manufacturersList?.let {
+            manufacturersList.let {
                 itemsIndexed(
                     items = it,
                     key = { index, _ -> index },
-                    itemContent = { _, item ->
-                        ManufacturersItem(item, scope)
+                    itemContent = { index, item ->
+                        ManufacturersItem(item, scope) {
+                            it.forEachIndexed { _, it ->
+                                it.isChecked = false
+                            }
+                            it[index].isChecked = true
+                            scope.updateManufacturer(item.name, item.code)
+                        }
                     },
                 )
             }
@@ -121,10 +130,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Cipla",
+                        text = mCurrentManufacturer,
                         color = ConstColors.green,
                         fontSize = 15.sp,
-                        fontWeight = FontWeight.W700
+                        fontWeight = FontWeight.W700,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     Row {
@@ -135,7 +146,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             modifier = Modifier.padding(end = 5.dp)
                         )
                         Text(
-                            text = "999.9",
+                            text = totalResults.toString(),
                             color = Color.Black,
                             fontSize = 12.sp,
                             modifier = Modifier
@@ -153,15 +164,16 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     contentPadding = PaddingValues(start = 3.dp),
                     modifier = Modifier.padding(horizontal = 7.dp),
                 ) {
-                    productsList?.let {
-                        itemsIndexed(
-                            items = it,
-                            key = { index, _ -> index },
-                            itemContent = { _, item ->
-                                ProductsItem(item, scope)
-                            },
-                        )
-                    }
+                    itemsIndexed(
+                        items = productsList,
+                        key = { index, _ -> index },
+                        itemContent = { index, item ->
+                            ProductsItem(item, scope)
+                            if (index == productsList.lastIndex && (productsList.size < totalResults)) {
+                                    scope.getInventory()
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -186,7 +198,9 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier.weight(1f).padding(top = 5.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 5.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -207,7 +221,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 )
 
                 Text(
-                    text = item.expiryDate.formattedValue.parseDateToMmYy(),
+                    text = item.expiryDate.formattedValue,
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
@@ -245,19 +259,26 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
  * ui item for manufacturer listing
  */
 @Composable
-private fun ManufacturersItem(item: ManufacturerData, scope: InventoryScope) {
+private fun ManufacturersItem(item: ManufacturerData, scope: InventoryScope, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .height(90.dp)
             .width(150.dp)
             .selectable(
                 selected = true,
-                onClick = {
-                    //send parameters for get products based on selected manufactured
-                }),
+                onClick = onClick
+            ),
         elevation = 3.dp,
         shape = RoundedCornerShape(5.dp),
         backgroundColor = Color.White,
+        border = if (item.isChecked) BorderStroke(
+            2.dp,
+            ConstColors.yellow.copy(alpha = 0.5f),
+        ) else
+            BorderStroke(
+                1.dp,
+                Color.White,
+            )
     ) {
         CoilImageBrands(
             src = CdnUrlProvider.urlForManufacturers(item.code),
@@ -276,7 +297,7 @@ private fun ManufacturersItem(item: ManufacturerData, scope: InventoryScope) {
  */
 @Composable
 private fun StatusView(scope: InventoryScope, modifier: Modifier) {
-    val statusData = scope.mInventoryData.flow.collectAsState().value?.onlineStatusData
+    val statusData = scope.onlineStatusData.flow.collectAsState().value
 
     Card(
         modifier = modifier,
@@ -356,7 +377,7 @@ private fun AvailabilityView(
     scope: InventoryScope,
     modifier: Modifier,
 ) {
-    val availabilityData = scope.mInventoryData.flow.collectAsState().value?.stockStatusData
+    val availabilityData = scope.stockStatusData.flow.collectAsState().value
 
     Card(
         modifier = modifier,
@@ -449,7 +470,7 @@ private fun ExpiryView(
     scope: InventoryScope,
     modifier: Modifier,
 ) {
-    val expiryData = scope.mInventoryData.flow.collectAsState().value?.stockExpiredData
+    val expiryData = scope.stockExpiredData.flow.collectAsState().value
 
     Card(
         modifier = modifier,
@@ -624,12 +645,3 @@ fun Int.divideToPercent(divideTo: Int): Float {
     return if (divideTo == 0) 0F
     else (this / divideTo.toFloat())
 }
-
-/**
- * return colour based on stock value
- */
-//fun String.returnColorBasedOnStock(): Color{
-//    return when(this){
-//
-//    }
-//}

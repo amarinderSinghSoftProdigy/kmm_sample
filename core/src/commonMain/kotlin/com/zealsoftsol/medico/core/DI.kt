@@ -164,9 +164,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
-            instance(),
-            instance(),
-            )
+        )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
     bind<CartRepo>() with singleton { CartRepo(instance()) }

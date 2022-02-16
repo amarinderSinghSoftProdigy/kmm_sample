@@ -333,8 +333,13 @@ interface NetworkScope {
         ): BodyResponse<BatchesData>
     }
 
-    interface InventoryStore : NetworkScope{
-        suspend fun getInventoryData(unitCode: String): BodyResponse<InventoryData>
+    interface InventoryStore : NetworkScope {
+        suspend fun getInventoryData(
+            unitCode: String,
+            search: String?,
+            page: Int,
+            manufacturer: String?
+        ): BodyResponse<InventoryData>
     }
 
     interface ProfileImage : NetworkScope {
@@ -380,7 +385,7 @@ interface NetworkScope {
 
         suspend fun editOffer(
             unitCode: String,
-            promoCode: String,request: OfferProductRequest
+            promoCode: String, request: OfferProductRequest
         ): BodyResponse<String>
     }
 }

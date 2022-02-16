@@ -60,7 +60,7 @@ class EventCollector(
     helpNetworkScope: NetworkScope.Help,
     ordersNetworkScope: NetworkScope.Orders,
     inStoreNetworkScope: NetworkScope.InStore,
-    whatsappNetworkScope: NetworkScope.WhatsappStore,
+    inventoryScope: NetworkScope.InventoryStore,
     offersNetworkScope: NetworkScope.OffersStore,
     orderHsnScope: NetworkScope.OrderHsnEditStore,
     private val notificationRepo: NotificationRepo,
@@ -146,7 +146,11 @@ class EventCollector(
             LoadHelper(navigator, loadHelperScope),
         ),
         Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
-        Event.Action.Inventory::class to InventoryEventDelegate(navigator, userRepo),
+        Event.Action.Inventory::class to InventoryEventDelegate(
+            navigator,
+            userRepo,
+            inventoryScope
+        ),
         Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo),
         Event.Action.Offers::class to OffersEventDelegate(
             navigator,

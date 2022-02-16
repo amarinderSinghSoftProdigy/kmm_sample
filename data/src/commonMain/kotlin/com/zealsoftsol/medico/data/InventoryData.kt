@@ -7,12 +7,10 @@ data class InventoryData(
     val stockStatusData: StocksStatusData?,
     val onlineStatusData: OnlineStatusData?,
     val stockExpiredData: StockExpiredData?,
-    val manufacturers: List<ManufacturerData>?,
-    val productData: Results?,
+    val manufacturers: List<ManufacturerData>,
+    val results: List<ProductsData>,
+    val totalResults: Int
 )
-
-@Serializable
-data class Results(val results: List<ProductsData>?)
 
 @Serializable
 data class StocksStatusData(
@@ -36,9 +34,10 @@ data class StockExpiredData(
 
 @Serializable
 data class ManufacturerData(
+    var isChecked: Boolean = false,
     val code: String,
     val name: String,
-    val count: Int
+    val count: Double
 )
 
 @Serializable

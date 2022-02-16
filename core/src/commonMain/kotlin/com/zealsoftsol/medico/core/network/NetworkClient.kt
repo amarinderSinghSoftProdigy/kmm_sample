@@ -852,13 +852,6 @@ class NetworkClient(
             }
         }
 
-    override suspend fun getInventoryData(unitCode: String) =
-        simpleRequest {
-            client.get<BodyResponse<InventoryData>>("${baseUrl.url}/inventory/view") {
-                withMainToken()
-                header("X-TENANT-ID",unitCode)
-            }
-        }
 
     override suspend fun getHsnCodes(search: String, pagination: Pagination) = simpleRequest {
         client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
@@ -1075,6 +1068,28 @@ class NetworkClient(
             withB2bCodeToken(unitCode)
             url {
                 parameters.append("spid", spid)
+            }
+        }
+    }
+
+    override suspend fun getInventoryData(
+        unitCode: String,
+        search: String?,
+        page: Int,
+        manufacturer: String?
+    ): BodyResponse<InventoryData> = simpleRequest {
+        client.get("${baseUrl.url}/inventory/view") {
+            withMainToken()
+            header("X-TENANT-ID", unitCode)
+            url {
+                parameters.apply {
+                    if (search != null)
+                        append("search", search)
+                    if (manufacturer != null)
+                        append("manufacturer", manufacturer)
+                    append("page", page.toString())
+                    append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                }
             }
         }
     }
