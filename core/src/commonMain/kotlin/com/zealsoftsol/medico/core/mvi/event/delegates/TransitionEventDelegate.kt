@@ -10,7 +10,6 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
@@ -23,7 +22,9 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.WhatsappPreferenceScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -204,6 +205,14 @@ internal class TransitionEventDelegate(
                     MenuScope(
                         userRepo.requireUser(),
                         notificationRepo.getUnreadMessagesDataSource()
+                    )
+                )
+                is Event.Transition.Batches -> setScope(
+                    BatchesScope(
+                        event.spid,
+                        event.batchData,
+                        event.selectedBatchData,
+                        event.requiredQty
                     )
                 )
             }

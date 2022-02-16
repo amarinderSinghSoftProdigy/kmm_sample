@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -47,6 +51,7 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.OfferProductRequest
+import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -252,7 +257,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                         text = stringResource(id = R.string.stop),
                                         color = ConstColors.red,
                                         fontSize = 14.sp,
-                                        fontWeight = if (switchEnabled.value) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (!switchEnabled.value) FontWeight.Bold else FontWeight.Normal
                                     )
                                     Text(
                                         text = "/",
@@ -271,8 +276,6 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                     checked = switchEnabled.value,
                                     onCheckedChange = {
                                         switchEnabled.value = it
-                                        /*request.active = it
-                                        scope.saveData(request = request)*/
                                     },
                                     colors = SwitchDefaults.colors(
                                         checkedThumbColor = ConstColors.green,
@@ -284,21 +287,15 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                         }
                         Box(modifier = Modifier.width(120.dp)) {
                             MedicoButton(
-                                text = /*if (saveClicked.value) stringResource(id = R.string.save) else*/
-                                stringResource(
+                                text = stringResource(
                                     id = R.string.confirm
                                 ),
                                 isEnabled = true,
                                 height = 35.dp,
                                 elevation = null,
                                 onClick = {
-                                    /*if (saveClicked.value) {
-                                        scope.saveData()
-                                        scope.saveData(request = request)
-                                    } else {*/
                                     request.active = switchEnabled.value
                                     scope.saveOffer(request = request, product = product)
-                                    //}
                                 },
                                 textSize = 14.sp,
                                 color = ConstColors.yellow,
@@ -306,31 +303,132 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                             )
                         }
                     }
+                }
+            }
+            Space(dp = 16.dp)
+            if(selectedProduct.value!!.promotionData.isNotEmpty()){
+                LazyColumn {
+                    itemsIndexed(
+                        items = selectedProduct.value!!.promotionData,
+                        itemContent = { index, item ->
+                            OfferItem(item, scope)
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
 
-                    if (false) {//!saveClicked.value) {
-                        Space(dp = 8.dp)
-                        Surface(
-                            onClick = { scope.saveData() },
-                            color = Color.White
+/**
+ * ui item for offer listing
+ */
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun OfferItem(item: Promotions, scope: OffersScope.CreateOffer) {
+    Column {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)) {
+            Row {
+                Column {
+                    Text(
+                        text = item.productName,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = item.manufacturerName,
+                        fontSize = 14.sp,
+                        color = ConstColors.gray
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = if (item.active) stringResource(id = R.string.running) else "",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Space(dp = 4.dp)
+                    Switch(
+                        checked = item.active, onCheckedChange = {
+                            scope.showBottomSheet(item.promoCode, item.productName, it)
+                        }, colors = SwitchDefaults.colors(
+                            checkedThumbColor = ConstColors.green
+                        )
+                    )
+                }
+            }
+            Space(dp = 4.dp)
+
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier.width(maxWidth / 2),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .selectable(
+                                selected = true,
+                                onClick = {
+                                    //scope.startBrandSearch(item.searchTerm, item.field)
+                                }),
+                        elevation = 3.dp,
+                        shape = RoundedCornerShape(5.dp),
+                        backgroundColor = ConstColors.red,
+                    ) {
+                        Text(
+                            text = item.offer,
+                            fontSize = 14.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(
+                                    start = 12.dp,
+                                    end = 12.dp,
+                                    top = 4.dp,
+                                    bottom = 4.dp
+                                )
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier.width(maxWidth / 2).align(Alignment.BottomEnd),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Surface(
+                        onClick = { scope.showEditBottomSheet(item) },
+                        color = Color.Transparent
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Row(modifier = Modifier.padding(top = 4.dp)) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_edit),
-                                    contentDescription = null,
-                                    tint = ConstColors.lightBlue,
-                                )
-                                Space(dp = 4.dp)
-                                Text(
-                                    text = stringResource(id = R.string.edit_Offer),
-                                    color = ConstColors.lightBlue,
-                                    fontSize = 14.sp
-                                )
-                            }
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_edit),
+                                contentDescription = null,
+                                tint = ConstColors.lightBlue,
+                            )
+                            Space(dp = 4.dp)
+                            Text(
+                                text = stringResource(id = R.string.edit_Offer),
+                                color = ConstColors.lightBlue,
+                                fontSize = 14.sp
+                            )
                         }
                     }
                 }
             }
+            Space(12.dp)
         }
+        Divider()
     }
 }
 

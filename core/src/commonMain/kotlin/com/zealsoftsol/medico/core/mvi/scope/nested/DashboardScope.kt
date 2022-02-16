@@ -58,6 +58,13 @@ class DashboardScope private constructor(
     }
 
     /**
+     * Move to offers screens
+     */
+    fun moveToOffersScreen(){
+        EventCollector.sendEvent(Event.Transition.Offers)
+    }
+
+    /**
      * Opens search screen with params required for search based on brand
      * @param searchTerm Search term for the brand
      * @param field Which field to search (for eg - manufacturer)

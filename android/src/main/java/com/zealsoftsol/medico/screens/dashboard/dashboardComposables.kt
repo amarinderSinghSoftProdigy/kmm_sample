@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens.dashboard
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -380,22 +381,6 @@ private fun ShowStockistDashBoard(
             .verticalScroll(rememberScrollState()),
     ) {
         Space(dp = 16.dp)
-        /*Row {
-            BigButton(
-                icon = R.drawable.ic_bell,
-                text = stringResource(id = R.string.notifications),
-                counter = unreadNotifications.value,
-                onClick = { scope.goToNotifications() },
-            )
-            Space(16.dp)
-            BigButton(
-                icon = R.drawable.ic_orders,
-                text = stringResource(id = R.string.orders_label),
-                counter = dashboard.value?.ordersCount ?: 0,
-                onClick = { scope.goToOrders() },
-            )
-        }*/
-
         dashboard.value.let { dash ->
             scope.sections.windowed(3, 3).forEach { (first, second, third) ->
                 Space(4.dp)
@@ -428,29 +413,6 @@ private fun ShowStockistDashBoard(
                     )
                 }
             }
-
-            /*Space(16.dp)
-            Text(
-                text = stringResource(id = R.string.your_brands),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(dp = 8.dp)
-
-            LazyRow {
-                dashboard.value?.brands?.let {
-                    itemsIndexed(
-                        items = it,
-                        key = { _, item -> item.searchTerm },
-                        itemContent = { _, item ->
-                            BrandsItem(item, scope)
-                        },
-                    )
-                }
-            }*/
-
-
             Space(16.dp)
             Text(
                 text = stringResource(id = R.string.inventory),
@@ -528,6 +490,95 @@ private fun ShowStockistDashBoard(
                     }
                     Text(
                         text = stringResource(id = R.string.out_stock),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+            }
+            Space(16.dp)
+            Text(
+                text = stringResource(id = R.string.offers),
+                color = ConstColors.lightBlue,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Space(dp = 8.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                val shape1 = MaterialTheme.shapes.large.copy(
+                    topEnd = CornerSize(0.dp),
+                    bottomEnd = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color.White, shape1)
+                        .clickable {
+                            scope.moveToOffersScreen()
+                        }
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.lightGreen,
+                            painter = painterResource(id = R.drawable.ic_offer)
+                        )
+                        Space(dp = 8.dp)
+                        dash?.offers?.let {
+                            Text(
+                                text = if (it.isNotEmpty() && it.size > 1) it[1].total.toString() else "0",
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 8.dp))
+                    }
+                    Text(
+                        text = stringResource(id = R.string.running),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
+                val shape2 = MaterialTheme.shapes.large.copy(
+                    topStart = CornerSize(0.dp),
+                    bottomStart = CornerSize(0.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color.White, shape2)
+                        .clickable {
+                            scope.moveToOffersScreen()
+                        }
+                        .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row {
+                        Icon(
+                            contentDescription = null,
+                            tint = ConstColors.orange,
+                            painter = painterResource(id = R.drawable.ic_offer)
+                        )
+                        Space(dp = 8.dp)
+                        dash?.offers?.let {
+                            Text(
+                                text = if (it.isNotEmpty()) it[0].total.toString() else "0",
+                                color = MaterialTheme.colors.background,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
+                        } ?: ShimmerItem(padding = PaddingValues(start = 12.dp, top = 8.dp))
+                    }
+                    Text(
+                        text = stringResource(id = R.string.ended),
                         color = MaterialTheme.colors.background,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.W600,

@@ -47,7 +47,7 @@ struct EntityInfoBottomSheet: ViewModifier {
                                     fontSize: 20,
                                     multilineTextAlignment: .leading)
                     
-                    Text(entityInfo.geoData.fullLandmark())
+                    Text(entityInfo.geoData.fullAddress())
                         .medicoText(textWeight: .medium,
                                     color: .grey3,
                                     multilineTextAlignment: .leading)

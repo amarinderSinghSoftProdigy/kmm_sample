@@ -1,4 +1,4 @@
-package com.zealsoftsol.medico.core.mvi.scope.nested
+package com.zealsoftsol.medico.core.mvi.scope.regular
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
+import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -27,8 +28,13 @@ class OrderHsnEditScope(
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
     init {
-        if (canEditOrderEntry)
-            getHsnCodes(true)
+        if (canEditOrderEntry) {
+            getBatchesData()
+        }
+    }
+
+    private fun getBatchesData() {
+        EventCollector.sendEvent(Event.Action.OrderHsn.GetBatches)
     }
 
     val selectedIndex = DataSource(index)
@@ -39,6 +45,7 @@ class OrderHsnEditScope(
     var showWarningBottomSheet = DataSource(false)
     var showDeclineReasonsBottomSheet = DataSource(false)
     private val selectedDeclineReason = DataSource("")
+    val batchData: DataSource<List<Batches>?> = DataSource(emptyList())
 
     /**
      * values used for pagination
@@ -59,6 +66,7 @@ class OrderHsnEditScope(
     val discount = DataSource(orderEntry.value.discount.value.toString())
     val mrp = DataSource(orderEntry.value.mrp.value.toString())
     val selectedHsnCode = DataSource(orderEntry.value.hsnCode)
+    val selectedBatchData = DataSource(SelectedBatchData())
 
     /**
      * Update this whenever user switches the line index so that you get correct data for order entries
@@ -76,6 +84,18 @@ class OrderHsnEditScope(
         discount.value = orderEntry.value.discount.value.toString()
     }
 
+    /**
+     * collect data of batch selcted by user
+     */
+    data class SelectedBatchData(
+        val quantity: String = "",
+        val ptr: String = "",
+        val mrp: String = "",
+        val selectedHsnCode: String = "",
+        val expiry: String = "",
+        val batch: String = ""
+    )
+
 
     /**
      * update whether to show hsn bottom sheet or not
@@ -86,6 +106,10 @@ class OrderHsnEditScope(
         if (!openSheet) {
             if (searchText.value.isNotEmpty()) {
                 searchText.value = ""
+                getHsnCodes(true)
+            }
+        } else {
+            if (items.value.isEmpty()) {
                 getHsnCodes(true)
             }
         }
@@ -106,6 +130,13 @@ class OrderHsnEditScope(
         this.showDeclineReasonsBottomSheet.value = openSheet
     }
 
+    /**
+     *  move to batches screen
+     */
+    fun moveToBatchesScreen() =
+        EventCollector.sendEvent(
+            Event.Transition.Batches(orderEntry.value.spid, batchData, selectedBatchData, orderEntry.value.requestedQty.value)
+        )
 
     /**
      * get Hsn codes from server

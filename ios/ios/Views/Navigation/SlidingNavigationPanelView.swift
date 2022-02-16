@@ -54,6 +54,7 @@ struct SlidingNavigationPanelView: ViewModifier {
     private func getDragGesture() -> some Gesture {
         DragGesture(minimumDistance: 20, coordinateSpace: .local)
             .onEnded({ value in
+                
                 // Left swipe
                 if value.translation.width < 0 {
                     self.closeSlidingPanel(true)
@@ -146,6 +147,7 @@ private struct _SlidingPanelView: View {
     }
     
     private var optionsPanel: some View {
+        
         ZStack(alignment: .bottomTrailing) {
             AppColor.primary.color
                 .testingIdentifier("sliding_panel")
@@ -195,6 +197,7 @@ private struct _SlidingPanelView: View {
         let onTapActionCallback: (() -> ())?
         
         var body: some View {
+           
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
                           style: style,
@@ -224,6 +227,9 @@ extension NavigationOption {
         switch self {
         case .Dashboard():
             return "Dashboard"
+            
+        case .InStore():
+            return "InStore"
             
         case .LogOut():
             return "Exit"
@@ -268,9 +274,12 @@ extension NavigationOption {
         case .Dashboard():
             return "dashboard"
             
+        case .InStore():
+            return "instore"
+            
         case .LogOut():
             return "log_out"
-            
+       
         case .Settings():
             return "settings"
             

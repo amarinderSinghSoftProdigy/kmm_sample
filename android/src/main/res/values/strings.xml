@@ -380,6 +380,14 @@
     <string name="food_license_validation">Max 14 digits allowed</string>
     <string name="please_select_type">Please Select Promotion Type</string>
     <string name="preview">Preview</string>
+    <string name="edit">Edit</string>
+    <string name="view_batches">View Batches</string>
+    <string name="offer">Offer</string>
+    <string name="offer_deals_running">Offers/Deals running</string>
+    <string name="update_available">New Update Available!</string>
+    <string name="update_app">A new version is available to download. By downloading the latest update you will get the latest features, improvements and bug fixes for medicostores.</string>
+    <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
+    more than or equal to the requested quantity</string>
 
     <!-- Termrs and Cond -->
 

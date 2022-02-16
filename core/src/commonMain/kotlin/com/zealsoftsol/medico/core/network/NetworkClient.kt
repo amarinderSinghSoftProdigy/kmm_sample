@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
@@ -25,6 +26,7 @@ import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
@@ -87,21 +89,21 @@ import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
 import com.zealsoftsol.medico.data.VerifyOtpRequest
 import com.zealsoftsol.medico.data.WhatsappData
-import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.DEFAULT
-import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
-import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
@@ -1051,7 +1053,31 @@ class NetworkClient(
         }
     }
 
+    override suspend fun editOffer(
+        unitCode: String,
+        promoCode: String,
+        request: OfferProductRequest
+    ) = simpleRequest {
+        val path = "/promotions/edit/confirm"
+        client.post<BodyResponse<String>>("${baseUrl.url}$path") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(EditOfferRequest(promoCode, request))
+        }
+    }
 
+    override suspend fun getBatches(
+        unitCode: String,
+        spid: String
+    ) = simpleRequest {
+        client.get<BodyResponse<BatchesData>>("${baseUrl.url}/inventory/view/batches") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.append("spid", spid)
+            }
+        }
+    }
     // Utils
 
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
@@ -1118,7 +1144,7 @@ class NetworkClient(
     }
 
     private inline fun HttpRequestBuilder.applyHeader(tokenInfo: String) {
-        header("x-tenant-id", tokenInfo)
+        header("X-TENANT-ID", tokenInfo)
     }
 
     private inline fun HttpRequestBuilder.jsonBody(body: Any) {
