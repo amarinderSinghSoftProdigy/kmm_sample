@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
@@ -79,10 +80,24 @@ sealed class Event {
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
 
+            data class UploadDocument(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String,
+                val path: String,
+                val registrationStep1: UserRegistration1
+            ) : Registration()
+
             object UploadFileTooBig : Registration()
+            data class ShowUploadBottomSheets(
+                val type: String,
+                val registrationStep1: UserRegistration1
+            ) : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
+            object Submit : Registration()
             object AcceptWelcome : Registration()
             object ShowUploadBottomSheet : Registration()
 
@@ -188,7 +203,7 @@ sealed class Event {
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
             data class ShowDetails(val item: EntityInfo) : Stores()
-            data class ShowLargeImage(val item: String) : Stores()
+            data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
 
         }
 
@@ -425,7 +440,8 @@ sealed class Event {
             data class SearchAutoComplete(val value: String) : Offers()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
             data class SaveOffer(val request: OfferProductRequest) : Offers()
-            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
+                Offers()
         }
 
         sealed class Inventory : Action() {

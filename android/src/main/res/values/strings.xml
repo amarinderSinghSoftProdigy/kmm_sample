@@ -363,13 +363,29 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="offer_successfull">Promotion Created Successfully</string>
+    <string name="password_requirement">1 Uppercase, 1 Lowercase, 1 numeric, min 8 characters</string>
+    <string name="max_30_chars">Maximum 30 chars</string>
+    <string name="food_license_number">Food License Number</string>
+    <string name="do_you_have_food_license">Do you have Food License?</string>
+    <string name="add_food_license">Add Food License Number</string>
+    <string name="provide_drug_license_validation">Drug License 20B/21B/21C either one is Required</string>
+    <string name="upload_trade_profile">Upload Trade Photo</string>
+    <string name="upload_drug_license">Upload Drug License</string>
+    <string name="upload_food_license">Upload Food License</string>
+    <string name="address_info">Address Information</string>
+    <string name="customer_info">Customer Information</string>
+    <string name="email_validation">Enter Valid Email</string>
+    <string name="phone_validation">Enter Valid Phone Number</string>
+    <string name="file_uploaded_successfully">File Uploaded Successfully</string>
+    <string name="food_license_validation">Max 14 digits allowed</string>
+    <string name="please_select_type">Please Select Promotion Type</string>
+    <string name="preview">Preview</string>
     <string name="edit">Edit</string>
     <string name="view_batches">View Batches</string>
     <string name="offer">Offer</string>
     <string name="offer_deals_running">Offers/Deals running</string>
     <string name="update_available">New Update Available!</string>
     <string name="update_app">A new version is available to download. By downloading the latest update you will get the latest features, improvements and bug fixes for medicostores.</string>
-    <string name="please_select_type">Please Select Promotion Type</string>
     <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
     more than or equal to the requested quantity</string>
 
@@ -521,5 +537,8 @@
     <string name="E0053">Invoice not found, please try after sometime.</string>
     <string name="E0054">QRCode can\'t be generated, try after sometime.</string>
     <string name="E0055">Customer already registered, please check again</string>
+    <string name="E0056">Document/Image Not found</string>
+    <string name="E0057">Please enter a valid Food License</string>
+    <string name="E0058">Food License already registered. Please try again.</string>
 
 </resources>

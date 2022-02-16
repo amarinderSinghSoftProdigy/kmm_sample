@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
@@ -88,8 +89,12 @@ sealed class StoresScope : Scope.Child.TabBar() {
             startSearch()
         }
 
-        fun selectItem(item: String) =
-            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
+        fun selectItem(item: String) {
+            val url = CdnUrlProvider.urlFor(
+                item, CdnUrlProvider.Size.Px320
+            )
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
+        }
 
         fun startSearch() {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true, search = ""))

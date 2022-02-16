@@ -31,15 +31,11 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
         is Event.Action.Stores.ShowDetails -> openDetails(event.item)
-        is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item)
+        is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item, event.type)
     }
 
-    fun selectProductLargeImage(item: String) {
-        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(
-            CdnUrlProvider.urlFor(
-                item, CdnUrlProvider.Size.Px320
-            )
-        )
+    fun selectProductLargeImage(item: String, type: String?) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, type)
     }
 
     private fun openDetails(item: EntityInfo) {

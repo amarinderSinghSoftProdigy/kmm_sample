@@ -62,7 +62,7 @@ internal class OtpEventDelegate(
                     is OtpScope.PhoneNumberInput -> {
                         setScope(PasswordScope.EnterNew(it.phoneNumber))
                     }
-                    is SignUpScope.LegalDocuments -> {
+                    is SignUpScope.PreviewDetails -> {
                         EventCollector.sendEvent(Event.Action.Registration.SignUp)
                     }
                     else -> throw UnsupportedOperationException("unknown subtype of PhoneVerificationEntryPoint")

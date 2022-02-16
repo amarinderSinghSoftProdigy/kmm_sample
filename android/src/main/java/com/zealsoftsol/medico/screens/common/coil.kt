@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
+import java.io.File
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable

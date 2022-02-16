@@ -600,7 +600,7 @@ fun ProductItemStore(
                 ) {
 
                     Row {
-                        Surface(onClick = {scope.selectItem(product.imageCode.toString())}) {
+                        Surface(onClick = { scope.selectItem(product.imageCode.toString()) }) {
                             CoilImage(
                                 src = CdnUrlProvider.urlFor(
                                     product.imageCode!!,

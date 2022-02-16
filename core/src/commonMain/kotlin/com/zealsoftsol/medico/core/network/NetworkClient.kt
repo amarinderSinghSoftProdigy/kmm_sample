@@ -38,6 +38,7 @@ import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
+import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.MapBody
@@ -76,6 +77,7 @@ import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -252,9 +254,17 @@ class NetworkClient(
 
     override suspend fun signUpValidation3(userRegistration3: UserRegistration3) =
         fullRequest {
-            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/registration/step3") {
+            client.post<ValidationResponse<UserValidation3>>("${baseUrl.url}/registration/v2/step3") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration3)
+            }
+        }
+
+    override suspend fun uploadDocument(uploadData: LicenseDocumentData) =
+        simpleRequest {
+            client.post<BodyResponse<UploadResponseData>>("${baseUrl.url}/document/add/license") {
+                withTempToken(TempToken.REGISTRATION)
+                jsonBody(uploadData)
             }
         }
 
