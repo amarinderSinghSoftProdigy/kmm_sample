@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -51,6 +53,8 @@ fun PasswordFormatInputField(
     isValid: Boolean = true,
     onValueChange: (String) -> Unit,
     onPositioned: ((LayoutCoordinates) -> Unit)? = null,
+    mandatory: Boolean = false,
+    leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     Box(
         contentAlignment = Alignment.CenterEnd,
@@ -65,6 +69,8 @@ fun PasswordFormatInputField(
             visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
             maxLines = 1,
             onValueChange = onValueChange,
+            leadingIcon = leadingIcon,
+            mandatory = mandatory,
         )
         Icon(
             imageVector = Icons.Default.RemoveRedEye,
@@ -103,6 +109,27 @@ fun PhoneFormatInputField(
 }
 
 @Composable
+fun PhoneFormatInputFieldForRegister(
+    modifier: Modifier = Modifier,
+    hint: String,
+    text: String,
+    onValueChange: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    mandatory: Boolean = false,
+) {
+    InputField(
+        modifier = modifier,
+        hint = hint,
+        text = text,
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+        maxLines = 1,
+        onValueChange = onValueChange,
+        leadingIcon = leadingIcon,
+        mandatory = mandatory
+    )
+}
+
+@Composable
 fun InputField(
     modifier: Modifier = Modifier,
     hint: String,
@@ -112,14 +139,22 @@ fun InputField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    mandatory: Boolean = false,
 ) {
     TextField(
         value = text,//TextFieldValue(text, TextRange(text.length)),
         label = {
-            Text(
-                text = hint,
-                style = TextStyle.Default,
-            )
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(
+                    text = hint,
+                    style = TextStyle.Default,
+                )
+                if (mandatory) {
+                    Space(dp = 4.dp)
+                    Text(text = "*", color = ConstColors.red)
+                }
+            }
         },
         isError = !isValid,
         colors = TextFieldDefaults.textFieldColors(
@@ -134,6 +169,7 @@ fun InputField(
         singleLine = maxLines == 1,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
+        leadingIcon = leadingIcon
     )
 }
 

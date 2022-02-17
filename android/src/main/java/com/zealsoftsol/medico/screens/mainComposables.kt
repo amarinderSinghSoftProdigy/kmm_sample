@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -180,7 +181,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         mUserType = navigation.value?.user?.flow?.value?.type
     }
     Scaffold(
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
@@ -298,7 +299,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
 
                     is SignUpScope.LegalDocuments -> {
                         mUserType = null
-                        AuthLegalDocuments(it,scaffoldState)
+                        AuthLegalDocuments(it, scaffoldState)
                     }
 
                     is SignUpScope.PreviewDetails -> {
@@ -385,29 +386,32 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
-
-            if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
-                if (mUserType == UserType.STOCKIST) {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.InStores,
-                        BottomNavigationItem.PurchaseOrders,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
-                } else {
-                    mBottomNavItems = listOf(
-                        BottomNavigationItem.Dashboard,
-                        BottomNavigationItem.Settings,
-                        BottomNavigationItem.Stores,
-                        BottomNavigationItem.Cart,
-                        BottomNavigationItem.Drawer
-                    )
+            if (childScope.value is SignUpScope) {
+                Divider()
+            } else {
+                if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
+                    if (mUserType == UserType.STOCKIST) {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.InStores,
+                            BottomNavigationItem.PurchaseOrders,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    } else {
+                        mBottomNavItems = listOf(
+                            BottomNavigationItem.Dashboard,
+                            BottomNavigationItem.Settings,
+                            BottomNavigationItem.Stores,
+                            BottomNavigationItem.Cart,
+                            BottomNavigationItem.Drawer
+                        )
+                    }
                 }
-            }
-            if (mUserType != null) {
-                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
-                    BottomNavigationBar(mBottomNavItems)
+                if (mUserType != null) {
+                    if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
+                        BottomNavigationBar(mBottomNavItems)
+                    }
                 }
             }
         }
@@ -426,6 +430,11 @@ private fun RowScope.SimpleTabBar(
     if (info.icon != ScopeIcon.NO_ICON || info.icon != ScopeIcon.HAMBURGER) {
         val keyboard = LocalSoftwareKeyboardController.current
         Icon(
+            tint = if (info.titleColor != -1L) {
+                Color(info.titleColor)
+            } else {
+                MaterialTheme.colors.background
+            },
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
@@ -457,6 +466,11 @@ private fun RowScope.SimpleTabBar(
                 .align(Alignment.CenterVertically)
                 .weight(0.7f)
                 .padding(start = 16.dp),
+            color = if (info.titleColor != -1L) {
+                Color(info.titleColor)
+            } else {
+                MaterialTheme.colors.background
+            }
         )
         is StringResource.Raw -> Text(
             text = res.string.orEmpty(),

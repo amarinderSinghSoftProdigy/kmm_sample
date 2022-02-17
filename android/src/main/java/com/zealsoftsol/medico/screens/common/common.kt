@@ -714,7 +714,8 @@ fun EditField(
 
 @Composable
 fun TextLabel(
-    value: String
+    value: String,
+    src: Int = 0
 ) {
     if (value.isNotEmpty())
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -723,10 +724,31 @@ fun TextLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                if (src != 0) {
+                    Image(
+                        painter = painterResource(src),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Space(dp = 8.dp)
+                }
+
+                val textValue = if (src == R.drawable.ic_verify_password) {
+                    var check = ""
+                    repeat(value.length) {
+                        check = "$check*"
+                    }
+                    check
+                } else {
+                    value
+                }
+
                 Text(
-                    text = value,
+                    text = textValue,
                     fontSize = 14.sp,
                     color = ConstColors.gray,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.weight(0.8f)
                 )
                 Image(
                     painter = painterResource(id = R.drawable.ic_verified),
@@ -753,7 +775,7 @@ fun ImageLabel(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Surface(onClick = onClick) {
+                Surface(onClick = onClick, shape = MaterialTheme.shapes.large) {
                     val cacheFile = File(value)
                     CoilImage(
                         src = cacheFile,
