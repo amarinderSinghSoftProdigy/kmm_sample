@@ -14,7 +14,7 @@ class BatchesScope(
 ) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("view_batches")
 
     val showErrorAlert = DataSource(false)
 
