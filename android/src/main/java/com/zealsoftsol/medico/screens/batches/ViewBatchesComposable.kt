@@ -72,43 +72,53 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = it.productName,
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.W600
-                    )
-                    Space(dp = 10.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.requested_qty))
-                            append(" ")
-                            val startIndex = length
-                            append(scope.requiredQty.toString())
-                            val nextIndex = length
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.red,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                startIndex,
-                                length,
-                            )
-                            addStyle(
-                                SpanStyle(
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                nextIndex,
-                                length,
-                            )
-                        },
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W500
-                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = it.productName,
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.W600
+                        )
+
+                        Text(
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.requested_qty))
+                                append(" ")
+                                val startIndex = length
+                                append(scope.requiredQty.toString())
+                                val nextIndex = length
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.red,
+                                        fontWeight = FontWeight.W500
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                                addStyle(
+                                    SpanStyle(
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W500
+                                    ),
+                                    nextIndex,
+                                    length,
+                                )
+                            },
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W500
+                        )
+                    }
+                    Space(10.dp)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -126,6 +136,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+
                             Text(
                                 text = stringResource(id = R.string.in_stock),
                                 color = Color.Black,
@@ -141,6 +152,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             )
                         }
                     }
+
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
                     if (it.batches.isNotEmpty()) {
                         LazyColumn(
