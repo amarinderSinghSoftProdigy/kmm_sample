@@ -152,6 +152,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                                 key = { pos, _ -> pos },
                                 itemContent = { _, item ->
                                     BatchesItem(item, scope)
+                                    Space(dp = 15.dp)
                                 },
                             )
                         }
