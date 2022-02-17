@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
@@ -44,15 +45,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -83,8 +87,8 @@ import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
 import com.zealsoftsol.medico.utils.PermissionViewModel
-import kotlinx.serialization.builtins.MapEntrySerializer
 import com.zealsoftsol.medico.data.UserType as DataUserType
+
 
 @Composable
 fun AuthUserType(scope: SignUpScope.SelectUserType) {
@@ -143,6 +147,7 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
     )
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val registration = scope.registration.flow.collectAsState()
@@ -154,6 +159,7 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
     val validEmail = scope.validEmail(registration.value.email)
     val validPhone = scope.validPhone(registration.value.phoneNumber)
     val password = scope.isValidPassword(registration.value.password)
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicAuthSignUpScreenWithButton(
         userType = registration.value.userType,
@@ -184,7 +190,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             painter = painterResource(id = R.drawable.ic_profile_register),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -206,7 +219,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             painter = painterResource(id = R.drawable.ic_profile_register),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -222,7 +242,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             painter = painterResource(id = R.drawable.ic_email),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -249,7 +276,10 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             )
                         }
                     },
-                    mandatory = true
+                    mandatory = true,
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
                 //scope.setPhoneNumberValid(isValid)
             }
@@ -268,7 +298,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             painter = painterResource(id = R.drawable.ic_verify_password),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -291,7 +328,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                             painter = painterResource(id = R.drawable.ic_verify_password),
                             contentDescription = null,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -330,10 +374,12 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     })
                 )
             }
+            Space(18.dp)
         },
     )
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun AuthAddressData(scope: SignUpScope.AddressData) {
     val registration = scope.registration.flow.collectAsState()
@@ -344,6 +390,8 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     val coroutineScope = rememberCoroutineScope()
     val lengthValid =
         if (registration.value.landmark.isNotEmpty()) registration.value.landmark.length == 30 else false
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 3.0,//0.6,
@@ -357,9 +405,15 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.pincode),
                     text = registration.value.pincode,
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
                     onValueChange = { scope.changePincode(it) },
                     mandatory = true,
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -368,14 +422,19 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.address_line),
                     text = registration.value.addressLine1,
-                    onValueChange = { scope.changeAddressLine(it) }
+                    onValueChange = { scope.changeAddressLine(it) },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
             InputWithError(
-                errorText = if (lengthValid) stringResource(
-                    id = R.string.max_30_chars
-                ) else null
+                errorText = userValidation.value?.landmark
             ) {
                 //InputFieldWithCounter(
                 InputField(
@@ -390,7 +449,14 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
                         )
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
                 )
             }
             Space(dp = 12.dp)
@@ -427,6 +493,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
     )
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val registration = scope.registration.flow.collectAsState()
@@ -434,6 +501,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
     val validFoodLicense = scope.checkFoodLicense(registration.value.foodLicenseNo)
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
     BasicAuthSignUpScreenWithButton(
         userType = scope.registrationStep1.userType,
         progress = 4.0,//0.8,
@@ -450,6 +518,13 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             hint = stringResource(id = R.string.trade_name),
                             text = registration.value.tradeName,
                             onValueChange = { value -> scope.changeTradeName(value) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                keyboardController?.hide()
+                            })
                         )
                     }
                     Space(dp = 12.dp)
@@ -462,16 +537,22 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             text = registration.value.panNumber,
                             isValid = Validator.TraderDetails.isPanValid(registration.value.panNumber) || registration.value.panNumber.isEmpty(),
                             keyboardOptions = KeyboardOptions.Default
-                                .copy(capitalization = KeyboardCapitalization.Characters),
+                                .copy(
+                                    capitalization = KeyboardCapitalization.Characters,
+                                    imeAction = ImeAction.Done
+                                ),
                             onValueChange = { value -> scope.changePan(value) },
                             trailingIcon = {
                                 Text(
-                                    text = registration.value.gstin.length.toString() + "/" + scope.panLimit,
+                                    text = registration.value.panNumber.length.toString() + "/" + scope.panLimit,
                                     color = ConstColors.gray,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 14.sp,
                                 )
-                            }
+                            },
+                            keyboardActions = KeyboardActions(onDone = {
+                                keyboardController?.hide()
+                            })
                         )
                     }
                     Space(dp = 12.dp)
@@ -485,7 +566,10 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             text = registration.value.gstin,
                             isValid = Validator.TraderDetails.isGstinValid(registration.value.gstin) || registration.value.gstin.isEmpty(),
                             keyboardOptions = KeyboardOptions.Default
-                                .copy(capitalization = KeyboardCapitalization.Characters),
+                                .copy(
+                                    capitalization = KeyboardCapitalization.Characters,
+                                    imeAction = ImeAction.Done
+                                ),
                             onValueChange = { value -> scope.changeGstin(value) },
                             trailingIcon = {
                                 Text(
@@ -494,7 +578,10 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 14.sp,
                                 )
-                            }
+                            },
+                            keyboardActions = KeyboardActions(onDone = {
+                                keyboardController?.hide()
+                            })
                         )
                     }
                     Space(dp = 8.dp)
@@ -517,6 +604,13 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             hint = stringResource(id = R.string.drug_license_20b),
                             text = registration.value.drugLicenseNo1,
                             onValueChange = { value -> scope.changeDrugLicense1(value) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                keyboardController?.hide()
+                            })
                         )
                         //}
                     }
@@ -530,6 +624,13 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             hint = stringResource(id = R.string.drug_license_21b),
                             text = registration.value.drugLicenseNo2,
                             onValueChange = { value -> scope.changeDrugLicense2(value) },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                keyboardController?.hide()
+                            })
                         )
                         // }
                     }
@@ -537,7 +638,8 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                 Space(16.dp)
                 if (it == SignUpScope.Details.Fields.FOOD_LICENSE) {
                     Column {
-                        val switchEnabled = remember { mutableStateOf(false) }
+                        val switchEnabled =
+                            remember { mutableStateOf(registration.value.hasFoodLicense) }
                         Text(
                             text = stringResource(id = R.string.do_you_have_food_license),
                             color = ConstColors.gray,
@@ -577,26 +679,28 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                         Space(16.dp)
                         if (switchEnabled.value) {
                             InputWithError(
-                                errorText = if (validFoodLicense) {
-                                    stringResource(id = R.string.food_license_validation)
-                                } else {
-                                    null
-                                }
+                                errorText = validation.value?.foodLicenseNumber
                             ) {
                                 InputField(
-                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
                                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                                     hint = stringResource(id = R.string.food_license_number),
                                     text = registration.value.foodLicenseNo,
                                     onValueChange = { value -> scope.changeFoodLicense(value) },
                                     trailingIcon = {
                                         Text(
-                                            text = registration.value.gstin.length.toString() + "/" + scope.foodLicenseLimit,
+                                            text = registration.value.foodLicenseNo.length.toString() + "/" + scope.foodLicenseLimit,
                                             color = ConstColors.gray,
                                             fontWeight = FontWeight.Normal,
                                             fontSize = 14.sp,
                                         )
-                                    }
+                                    },
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        keyboardController?.hide()
+                                    })
                                 )
                             }
                         }
@@ -798,7 +902,7 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                 TextLabel(scope.registrationStep1.email, R.drawable.ic_email)
                 TextLabel(scope.registrationStep1.phoneNumber, R.drawable.ic_call)
                 TextLabel(scope.registrationStep1.password, R.drawable.ic_verify_password)
-                TextLabel(scope.registrationStep1.verifyPassword, R.drawable.ic_verify_password)
+                //TextLabel(scope.registrationStep1.verifyPassword, R.drawable.ic_verify_password)
                 Space(dp = 4.dp)
                 Text(
                     text = stringResource(id = R.string.address_info),
@@ -829,8 +933,8 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                         url
                     ) { scope.previewImage(url) }
                 }
-                TextLabel(scope.registrationStep3.gstin)
-                TextLabel(scope.registrationStep3.panNumber)
+                TextLabel(scope.registrationStep3.gstin, labelShow = 1)
+                TextLabel(scope.registrationStep3.panNumber, labelShow = 2)
                 TextLabel(scope.registrationStep3.drugLicenseNo1)
                 TextLabel(scope.registrationStep3.drugLicenseNo2)
                 if (scope.registrationStep4.drugLicense != null) {
@@ -1016,7 +1120,7 @@ private fun BasicAuthSignUpScreenWithButton(
             verticalArrangement = Arrangement.Bottom
         ) {
             MedicoButton(
-                modifier = Modifier.padding(padding),
+                modifier = Modifier.padding(start = padding, end = padding, bottom = padding),
                 text = buttonText,
                 isEnabled = (buttonExtraValid ?: true) && isEnabled.value,
                 onClick = onButtonClick,

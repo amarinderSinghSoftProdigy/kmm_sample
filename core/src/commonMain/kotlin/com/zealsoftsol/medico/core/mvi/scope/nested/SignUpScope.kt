@@ -111,6 +111,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         fun changePhoneNumber(phoneNumber: String) {
+            if (phoneNumber.length > 10) return
             trimInput(phoneNumber, registration.value.phoneNumber) {
                 registration.value = registration.value.copy(phoneNumber = it)
                 checkCanGoNext()

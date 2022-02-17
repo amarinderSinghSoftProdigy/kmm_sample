@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -55,7 +57,9 @@ fun PasswordFormatInputField(
     onPositioned: ((LayoutCoordinates) -> Unit)? = null,
     mandatory: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
-) {
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    ) {
     Box(
         contentAlignment = Alignment.CenterEnd,
         modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
@@ -71,6 +75,8 @@ fun PasswordFormatInputField(
             onValueChange = onValueChange,
             leadingIcon = leadingIcon,
             mandatory = mandatory,
+            keyboardActions = keyboardActions,
+            keyboardOptions = keyboardOptions
         )
         Icon(
             imageVector = Icons.Default.RemoveRedEye,
@@ -116,19 +122,32 @@ fun PhoneFormatInputFieldForRegister(
     onValueChange: (String) -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
     mandatory: Boolean = false,
-) {
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    ) {
     InputField(
         modifier = modifier,
         hint = hint,
         text = text,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone,imeAction = ImeAction.Done),
         maxLines = 1,
         onValueChange = onValueChange,
         leadingIcon = leadingIcon,
-        mandatory = mandatory
+        mandatory = mandatory,
+        keyboardActions = keyboardActions,
     )
 }
-
+/*
+*  keyboardOptions = KeyboardOptions.Default.copy(
+                                                        keyboardType = KeyboardType.Number,
+                                                        imeAction = ImeAction.Done
+                                                    ),
+                                                    keyboardActions = KeyboardActions(onDone = {
+                                                        scope.resetButton(false)
+                                                        scope.selectBatch(false, product = product)
+                                                        scope.buy(product = product)
+                                                        keyboardController?.hide()
+                                                    })
+* */
 @Composable
 fun InputField(
     modifier: Modifier = Modifier,
@@ -137,6 +156,7 @@ fun InputField(
     isValid: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions(),
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -171,7 +191,8 @@ fun InputField(
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
         leadingIcon = leadingIcon,
-        trailingIcon = trailingIcon
+        trailingIcon = trailingIcon,
+        keyboardActions = keyboardActions
     )
 }
 

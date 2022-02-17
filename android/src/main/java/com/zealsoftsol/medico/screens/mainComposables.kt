@@ -182,11 +182,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         mBottomNavItems = null
         mUserType = navigation.value?.user?.flow?.value?.type
     }
-    if (childScope.value is SignUpScope) {
+    /*if (childScope.value is SignUpScope) {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     } else {
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-    }
+    }*/
 
     Scaffold(
         backgroundColor = if (childScope.value is SignUpScope) Color.White else MaterialTheme.colors.primary,
@@ -268,9 +268,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         },
         content = {
             var padding = 56
-            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope) {// no bottom padding while editing order entries
+            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope || childScope.value is SignUpScope) {// no bottom padding while editing order entries
                 padding = 0
             }
+
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),
@@ -281,21 +282,19 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
                     is PasswordScope.VerifyCurrent -> VerifyCurrentPasswordScreen(it)
                     is PasswordScope.EnterNew -> EnterNewPasswordScreen(it)
+
                     is SignUpScope.SelectUserType -> {
                         mUserType = null
                         AuthUserType(it)
                     }
-
                     is SignUpScope.PersonalData -> {
                         mUserType = null
                         AuthPersonalData(it)
                     }
-
                     is SignUpScope.AddressData -> {
                         mUserType = null
                         AuthAddressData(it)
                     }
-
                     is SignUpScope.Details.TraderData -> {
                         mUserType = null
                         AuthDetailsTraderData(it)
@@ -304,16 +303,15 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         mUserType = null
                         AuthDetailsAadhaar(it)
                     }
-
                     is SignUpScope.LegalDocuments -> {
                         mUserType = null
                         AuthLegalDocuments(it, scaffoldState)
                     }
-
                     is SignUpScope.PreviewDetails -> {
                         mUserType = null
                         AuthPreview(it)
                     }
+
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
                         WelcomeScreen(
@@ -394,32 +392,28 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
             }
         },
         bottomBar = {
-            if (childScope.value is SignUpScope) {
-                Divider()
-            } else {
-                if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
-                    if (mUserType == UserType.STOCKIST) {
-                        mBottomNavItems = listOf(
-                            BottomNavigationItem.Dashboard,
-                            BottomNavigationItem.InStores,
-                            BottomNavigationItem.PurchaseOrders,
-                            BottomNavigationItem.Cart,
-                            BottomNavigationItem.Drawer
-                        )
-                    } else {
-                        mBottomNavItems = listOf(
-                            BottomNavigationItem.Dashboard,
-                            BottomNavigationItem.Settings,
-                            BottomNavigationItem.Stores,
-                            BottomNavigationItem.Cart,
-                            BottomNavigationItem.Drawer
-                        )
-                    }
+            if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
+                if (mUserType == UserType.STOCKIST) {
+                    mBottomNavItems = listOf(
+                        BottomNavigationItem.Dashboard,
+                        BottomNavigationItem.InStores,
+                        BottomNavigationItem.PurchaseOrders,
+                        BottomNavigationItem.Cart,
+                        BottomNavigationItem.Drawer
+                    )
+                } else {
+                    mBottomNavItems = listOf(
+                        BottomNavigationItem.Dashboard,
+                        BottomNavigationItem.Settings,
+                        BottomNavigationItem.Stores,
+                        BottomNavigationItem.Cart,
+                        BottomNavigationItem.Drawer
+                    )
                 }
-                if (mUserType != null) {
-                    if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
-                        BottomNavigationBar(mBottomNavItems)
-                    }
+            }
+            if (mUserType != null) {
+                if (childScope.value !is OrderHsnEditScope && childScope.value !is ViewOrderScope) {
+                    BottomNavigationBar(mBottomNavItems)
                 }
             }
         }

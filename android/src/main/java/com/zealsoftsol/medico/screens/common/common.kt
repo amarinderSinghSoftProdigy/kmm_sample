@@ -55,6 +55,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -76,7 +78,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -715,7 +719,8 @@ fun EditField(
 @Composable
 fun TextLabel(
     value: String,
-    src: Int = 0
+    src: Int = 0,
+    labelShow: Int = 0
 ) {
     if (value.isNotEmpty())
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -733,23 +738,67 @@ fun TextLabel(
                     Space(dp = 8.dp)
                 }
 
+                val isPasswordHidden = remember { mutableStateOf(true) }
+
                 val textValue = if (src == R.drawable.ic_verify_password) {
-                    var check = ""
-                    repeat(value.length) {
-                        check = "$check*"
+                    if (!isPasswordHidden.value) {
+                        value
+                    } else {
+                        var check = ""
+                        repeat(value.length) {
+                            check = "$check*"
+                        }
+                        check
                     }
-                    check
                 } else {
                     value
                 }
+
+
 
                 Text(
                     text = textValue,
                     fontSize = 14.sp,
                     color = ConstColors.gray,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.weight(0.8f)
+                    modifier = Modifier.weight(0.7f)
                 )
+
+                if (src == R.drawable.ic_verify_password) {
+                    Icon(
+                        imageVector = Icons.Default.RemoveRedEye,
+                        contentDescription = null,
+                        tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clickable(indication = rememberRipple(radius = 15.dp)) {
+                                isPasswordHidden.value = !isPasswordHidden.value
+                            }
+                            .padding(12.dp),
+                    )
+                }
+
+                val label: String = when (labelShow) {
+                    1 -> {
+                        stringResource(id = R.string.gstin)
+                    }
+                    2 -> {
+                        stringResource(id = R.string.pan)
+                    }
+                    else -> {
+                        ""
+                    }
+                }
+                if (value.isNotEmpty()) {
+                    Text(
+                        text = label,
+                        fontSize = 14.sp,
+                        color = ConstColors.gray,
+                        textAlign = TextAlign.Start,
+                    )
+                    Space(dp = 4.dp)
+                }
+
                 Image(
                     painter = painterResource(id = R.drawable.ic_verified),
                     contentDescription = null,
