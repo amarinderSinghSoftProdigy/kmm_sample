@@ -89,34 +89,36 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             fontWeight = FontWeight.W600
                         )
 
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.requested_qty))
-                                append(" ")
-                                val startIndex = length
-                                append(scope.requiredQty.toString())
-                                val nextIndex = length
-                                addStyle(
-                                    SpanStyle(
-                                        color = ConstColors.red,
-                                        fontWeight = FontWeight.W500
-                                    ),
-                                    startIndex,
-                                    length,
-                                )
-                                addStyle(
-                                    SpanStyle(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W500
-                                    ),
-                                    nextIndex,
-                                    length,
-                                )
-                            },
-                            color = Color.Black,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.W500
-                        )
+                        if (scope.requiredQty != 0.0) { //don't show required quantity when coming from inventory
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.requested_qty))
+                                    append(" ")
+                                    val startIndex = length
+                                    append(scope.requiredQty.toString())
+                                    val nextIndex = length
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.red,
+                                            fontWeight = FontWeight.W500
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W500
+                                        ),
+                                        nextIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.W500
+                            )
+                        }
                     }
                     Space(10.dp)
                     Row(
@@ -362,25 +364,26 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
-
-                    Row(
-                        modifier = Modifier.padding(top = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        MedicoButton(
-                            text = stringResource(id = R.string.select), isEnabled = true,
-                            modifier = Modifier
-                                .height(35.dp)
-                                .padding(start = 40.dp, end = 0.dp)
+                    if(scope.selectedBatchData?.flow?.collectAsState()?.value != null) {
+                        Row(
+                            modifier = Modifier.padding(top = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            scope.updateData(
-                                batchNo = item.batchNo,
-                                expiry = item.expiryDate,
-                                mrp = item.mrp.value.toString(),
-                                price = item.ptr.value.toString(),
-                                hsnCode = item.hsncode,
-                                qty = item.stock.value.toString()
-                            )
+                            MedicoButton(
+                                text = stringResource(id = R.string.select), isEnabled = true,
+                                modifier = Modifier
+                                    .height(35.dp)
+                                    .padding(start = 40.dp, end = 0.dp)
+                            ) {
+                                scope.updateData(
+                                    batchNo = item.batchNo,
+                                    expiry = item.expiryDate,
+                                    mrp = item.mrp.value.toString(),
+                                    price = item.ptr.value.toString(),
+                                    hsnCode = item.hsncode,
+                                    qty = item.stock.value.toString()
+                                )
+                            }
                         }
                     }
                 }

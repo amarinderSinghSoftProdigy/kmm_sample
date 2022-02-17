@@ -23,12 +23,24 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     val stockExpiredData: DataSource<StockExpiredData?> = DataSource(null)
     val manufacturersList: DataSource<List<ManufacturerData>> = DataSource(emptyList())
     val productsList: DataSource<MutableList<ProductsData>> = DataSource(mutableListOf())
+    val showNoBatchesDialog = DataSource(false)
 
     var totalProducts = 0
     private var mManufacturerCode = ""
 
     init {
         getInventory(true)
+    }
+
+    fun hideBatchesDialog(){
+        showNoBatchesDialog.value = false
+    }
+
+    /**
+     * get batches data for the selected product
+     */
+    fun getBatchesData(spid: String) {
+        EventCollector.sendEvent(Event.Action.Inventory.GetBatches(spid))
     }
 
     /**
@@ -57,11 +69,11 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     /**
      * start search for a product
      */
-    fun startSearch(search: String?){
+    fun startSearch(search: String?) {
         productsList.value.clear()
-        if(search.isNullOrEmpty()){
+        if (search.isNullOrEmpty()) {
             getInventory(true)
-        }else {
+        } else {
             EventCollector.sendEvent(
                 Event.Action.Inventory.GetInventory(
                     page = 0,

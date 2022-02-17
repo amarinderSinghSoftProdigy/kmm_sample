@@ -9,7 +9,7 @@ import com.zealsoftsol.medico.data.Batches
 class BatchesScope(
     val spid: String,
     val batchData: DataSource<List<Batches>?> = DataSource(emptyList()),
-    var selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>,
+    var selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData?>,
     val requiredQty: Double,
 ) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
@@ -33,7 +33,7 @@ class BatchesScope(
         hsnCode: String
     ) {
         if(qty.toDouble() >= requiredQty){
-            selectedBatchData.value = OrderHsnEditScope.SelectedBatchData(
+            selectedBatchData?.value = OrderHsnEditScope.SelectedBatchData(
                 batch = batchNo, quantity = qty,
                 ptr = price, mrp = mrp, expiry = expiry, selectedHsnCode = hsnCode
             )

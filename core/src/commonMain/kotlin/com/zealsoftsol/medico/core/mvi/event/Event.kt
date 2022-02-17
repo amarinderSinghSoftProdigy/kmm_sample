@@ -436,6 +436,9 @@ sealed class Event {
                 val manufacturer: String? = null,
                 val page: Int,
             ) : Inventory()
+
+            data class GetBatches(val spid: String) : Inventory()
+
         }
     }
 
@@ -487,7 +490,7 @@ sealed class Event {
         data class Batches(
             val spid: String,
             val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>,
-            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData>,
+            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData?>,
             val requiredQty: Double,
         ) : Transition()
 

@@ -1,8 +1,10 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -22,6 +24,34 @@ internal class InventoryEventDelegate(
             manufacturer = event.manufacturer,
             page = event.page
         )
+        is Event.Action.Inventory.GetBatches -> loadBatches(event.spid)
+    }
+
+    /**
+     * load batches data from server
+     */
+    private suspend fun loadBatches(spid: String) {
+        val user = userRepo.requireUser()
+
+        navigator.withScope<InventoryScope> {
+            withProgress {
+                inventoryScope.getBatches(unitCode = user.unitCode, spid)
+                    .onSuccess { body ->
+                        if (body.results[0].batches.isNotEmpty()) {
+                            setScope(
+                                BatchesScope(
+                                    spid = spid,
+                                    batchData = DataSource(body.results),
+                                    requiredQty = 0.0,
+                                    selectedBatchData = DataSource(null)
+                                )
+                            )
+                        } else {
+                            it.showNoBatchesDialog.value = true
+                        }
+                    }.onError(navigator)
+            }
+        }
     }
 
     /**

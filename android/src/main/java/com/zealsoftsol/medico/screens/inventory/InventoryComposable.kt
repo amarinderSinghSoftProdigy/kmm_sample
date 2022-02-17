@@ -58,6 +58,7 @@ import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.utils.piechart.PieChart
@@ -80,6 +81,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val searchTerm = remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     var queryTextChangedJob: Job? = null
+    val showNoBatchesDialog = scope.showNoBatchesDialog.flow.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -213,7 +215,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
             shape = RoundedCornerShape(5.dp),
             backgroundColor = Color.White,
         ) {
-            Column{
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -254,9 +256,11 @@ fun InventoryMainComposable(scope: InventoryScope) {
 
                     }
                 }
-               LazyColumn(
+                LazyColumn(
                     contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier.padding(horizontal = 7.dp).weight(0.85f),
+                    modifier = Modifier
+                        .padding(horizontal = 7.dp)
+                        .weight(0.85f),
                 ) {
                     itemsIndexed(
                         items = productsList,
@@ -286,6 +290,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
             }
         }
     }
+
+    if (showNoBatchesDialog) {
+        ShowAlert(message = stringResource(id = R.string.no_batches_available)) {
+            scope.hideBatchesDialog()
+        }
+    }
 }
 
 /**
@@ -293,7 +303,11 @@ fun InventoryMainComposable(scope: InventoryScope) {
  */
 @Composable
 private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
-    Column(modifier = Modifier.height(55.dp)) {
+    Column(modifier = Modifier
+        .height(55.dp)
+        .clickable {
+            scope.getBatchesData(item.spid)
+        }) {
         Text(
             text = item.vendorProductName,
             color = Color.Black,

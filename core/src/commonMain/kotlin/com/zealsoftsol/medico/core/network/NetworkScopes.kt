@@ -340,6 +340,11 @@ interface NetworkScope {
             page: Int,
             manufacturer: String?
         ): BodyResponse<InventoryData>
+
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
     }
 
     interface ProfileImage : NetworkScope {
