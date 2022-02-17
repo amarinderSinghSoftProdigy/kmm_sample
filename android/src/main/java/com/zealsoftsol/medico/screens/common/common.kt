@@ -13,6 +13,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -47,8 +48,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -67,6 +70,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -86,8 +90,11 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
+import java.io.File
 import java.util.Locale
 
 @Composable
@@ -706,95 +713,66 @@ fun EditField(
 }
 
 @Composable
-fun EditFieldCustom(
-    label: String,
-    qty: String,
-    onChange: (String) -> Unit,
-    onFocus: (() -> Unit)? = null,
-    isEnabled: Boolean = true,
-    isError: Boolean = false,
-    formattingRule: Boolean = true,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-    keyboardActions: KeyboardActions = KeyboardActions.Default
+fun TextLabel(
+    value: String
 ) {
-    val color = when {
-        isError -> ConstColors.red
-        isEnabled -> MaterialTheme.colors.background
-        else -> ConstColors.gray.copy(alpha = 0.8f)
-    }
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = label.uppercase(),
-                fontSize = 12.sp,
-                color = ConstColors.gray,
-            )
-            Space(16.dp)
-            val wasQty = remember {
-                mutableStateOf(
-                    if (qty.split(".").lastOrNull() == "0") qty.split(".").first() else qty
+    if (value.isNotEmpty())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = value,
+                    fontSize = 14.sp,
+                    color = ConstColors.gray,
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
                 )
             }
+            Space(4.dp)
+            Divider(thickness = 0.5.dp)
+            Space(16.dp)
+        }
+}
 
-            BasicTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .onFocusEvent { if (it.isFocused) onFocus?.invoke() },
-                value = TextFieldValue(wasQty.value, selection = TextRange(wasQty.value.length)),
-                onValueChange = {
-                    if (formattingRule) {
-                        val split = it.text.replace(",", ".").split(".")
-                        val beforeDot = split[0]
-                        val afterDot = split.getOrNull(1)
-                        var modBefore = beforeDot.toIntOrNull() ?: 0
-                        val modAfter = when (afterDot?.length) {
-                            0 -> "."
-                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(1).toIntOrNull()) {
-                                0 -> ".0"
-                                in 1..4 -> ".0"
-                                5 -> ".5"
-                                in 6..9 -> {
-                                    modBefore++
-                                    ".0"
-                                }
-                                null -> ""
-                                else -> throw UnsupportedOperationException("cant be that")
-                            }
-                            null -> ""
-                            else -> throw UnsupportedOperationException("cant be that")
-                        }
-                        wasQty.value = "$modBefore$modAfter"
-                        onChange("$modBefore$modAfter")
-                    } else {
-                        onChange(it.text)
-                    }
-                },
-                keyboardOptions = keyboardOptions,
-                keyboardActions = keyboardActions,
-                maxLines = 1,
-                singleLine = true,
-                readOnly = !isEnabled,
-                enabled = isEnabled,
-                textStyle = TextStyle(
-                    color = color,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W700,
-                    textAlign = TextAlign.Start,
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ImageLabel(
+    value: String,
+    onClick: () -> Unit
+) {
+    if (value.isNotEmpty())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Surface(onClick = onClick) {
+                    val cacheFile = File(value)
+                    CoilImage(
+                        src = cacheFile,
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(80.dp),
+                        onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                        onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                        isCrossFadeEnabled = false
+                    )
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
                 )
-            )
+            }
+            Space(16.dp)
         }
-        Space(4.dp)
-        Canvas(
-            modifier = Modifier
-                .height(1.5.dp)
-                .fillMaxWidth()
-        ) {
-            drawRect(color)
-        }
-    }
 }
 
 /**

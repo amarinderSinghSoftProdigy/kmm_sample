@@ -119,11 +119,18 @@ fun Scope.Host.showBottomSheet(
         when (bs) {
             is BottomSheet.UploadDocuments -> {
                 DocumentUploadBottomSheet(
+                    name = bs.type,
                     supportedFileTypes = bs.supportedFileTypes,
                     useCamera = !bs.isSeasonBoy,
                     activity = activity,
                     coroutineScope = coroutineScope,
-                    onFileReady = { bs.handleFileUpload(it) },
+                    onFileReady = {
+                        if (bs.type.isEmpty()) {
+                            bs.handleFileUpload(it)
+                        } else {
+                            bs.handleUpload(it, bs.type, bs.registrationStep1)
+                        }
+                    },
                     onDismiss = { dismissBottomSheet() },
                 )
             }
@@ -200,6 +207,7 @@ fun Scope.Host.showBottomSheet(
             )
             is BottomSheet.ViewLargeImage -> ViewLargeImageBottomSheet(
                 url = bs.url,
+                type = bs.type,
                 onDismiss = { dismissBottomSheet() },
             )
         }
@@ -1644,6 +1652,7 @@ private fun ModifyOrderEntryBottomSheet(
 
 @Composable
 private fun DocumentUploadBottomSheet(
+    name: String? = "",
     supportedFileTypes: Array<FileType>,
     useCamera: Boolean,
     activity: MainActivity,
@@ -1664,7 +1673,7 @@ private fun DocumentUploadBottomSheet(
             coroutineScope.launch {
                 val file = when (stringId) {
                     R.string.upload -> activity.openFilePicker(supportedFileTypes)
-                    R.string.use_camera -> activity.takePicture()
+                    R.string.use_camera -> activity.takePicture(name)
                     else -> null
                 }
                 if (file != null) {
@@ -2624,7 +2633,8 @@ private fun BaseBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ViewLargeImageBottomSheet(
-    url: String,
+    url: Any,
+    type: String? = "",
     onDismiss: () -> Unit,
 ) {
     Box(
@@ -2634,48 +2644,51 @@ private fun ViewLargeImageBottomSheet(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .clickable(indication = NoOpIndication) { onDismiss() })
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(indication = null) { /* intercept touches */ }
-                .align(Alignment.BottomCenter),
-            color = Color.Black.copy(alpha = 0.5f),
-            elevation = 8.dp,
-        ) {
-            Column(
-                Modifier
+                .fillMaxSize().background(color = Color.Transparent)
+                .clickable(indication = NoOpIndication) { onDismiss() }) {
+            Surface(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+                    .clickable(indication = null) { /* intercept touches */ }
+                    .align(Alignment.BottomCenter),
+                color = Color.Black.copy(alpha = 0.5f),
+                elevation = 8.dp,
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomEnd
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Surface(
-                        color = Color.Black.copy(alpha = 0.12f),
-                        onClick = onDismiss,
+                    Box(
                         modifier = Modifier
-                            .size(32.dp),
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.BottomEnd
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp),
-                        )
+                        Surface(
+                            color = Color.Black.copy(alpha = 0.12f),
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .size(32.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
                     }
+                    Space(16.dp)
+                    CoilImage(
+                        onError = { Placeholder(R.drawable.ic_placeholder) },
+                        src = if (!type.isNullOrEmpty()) {
+                            File(url.toString())
+                        } else url,
+                        size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                        onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+                    )
+                    Space(30.dp)
                 }
-                Space(16.dp)
-                CoilImage(
-                    onError = { Placeholder(R.drawable.ic_placeholder) },
-                    src = url,
-                    size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
-                    onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
-                )
-                Space(30.dp)
             }
         }
     }

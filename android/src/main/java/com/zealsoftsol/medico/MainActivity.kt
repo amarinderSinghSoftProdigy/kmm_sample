@@ -151,7 +151,11 @@ class MainActivity : ComponentActivity(), DIAware {
         MaterialTheme {
             AlertDialog(
                 title = {
-                    Text(stringResource(id = R.string.update_available), color = Color.Black, fontSize = 20.sp)
+                    Text(
+                        stringResource(id = R.string.update_available),
+                        color = Color.Black,
+                        fontSize = 20.sp
+                    )
                 },
                 properties = DialogProperties(
                     dismissOnBackPress = false,
@@ -165,9 +169,19 @@ class MainActivity : ComponentActivity(), DIAware {
                         colors = ButtonDefaults.buttonColors(backgroundColor = ConstColors.yellow),
                         onClick = {
                             try {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("market://details?id=$packageName")
+                                    )
+                                )
                             } catch (e: ActivityNotFoundException) {
-                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+                                startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                                    )
+                                )
                             }
                         }
                     ) {
@@ -214,10 +228,10 @@ class MainActivity : ComponentActivity(), DIAware {
         return if (uri != null) FileUtil.getTempFile(this, uri) else null
     }
 
-    suspend fun takePicture(): File? = withContext(Dispatchers.IO) {
+    suspend fun takePicture(name: String?): File? = withContext(Dispatchers.IO) {
         val photos = File(filesDir, "photos")
         if (!photos.exists()) photos.mkdirs()
-        val image = File(photos, "image.jpg")
+        val image = File(photos, "image_$name.jpg")
         if (image.exists()) image.delete()
         image.createNewFile()
         camera.launch(
