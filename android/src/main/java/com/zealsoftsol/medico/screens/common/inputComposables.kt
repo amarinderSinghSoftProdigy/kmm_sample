@@ -140,6 +140,7 @@ fun InputField(
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     mandatory: Boolean = false,
 ) {
     TextField(
@@ -169,7 +170,8 @@ fun InputField(
         singleLine = maxLines == 1,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
-        leadingIcon = leadingIcon
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon
     )
 }
 

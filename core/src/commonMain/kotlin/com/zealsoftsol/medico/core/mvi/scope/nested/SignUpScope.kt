@@ -38,7 +38,10 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId),titleColor = 0xff0084D4)
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(
+            title = StringResource.Static(titleId),
+            titleColor = 0xff0084D4
+        )
     }
 
     protected open fun checkCanGoNext() = Unit
@@ -188,6 +191,8 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
     ) : SignUpScope("address"), AddressComponent {
 
+        val landmarkLimit = 30
+
         init {
             checkData()
         }
@@ -219,6 +224,9 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             override val validation: DataSource<UserValidation3?> = DataSource(null),
         ) : Details("trader_details", registrationStep1, registrationStep2),
             TraderDetailsComponent {
+            val gstinLimit = 15
+            val panLimit = 10
+            val foodLicenseLimit = 14
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,

@@ -389,7 +389,15 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.landmark),
                     text = registration.value.landmark,
-                    onValueChange = { scope.changeLandmark(it) }
+                    onValueChange = { scope.changeLandmark(it) },
+                    trailingIcon = {
+                        Text(
+                            text = registration.value.landmark.length.toString() + "/" + scope.landmarkLimit,
+                            color = ConstColors.gray,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
@@ -463,6 +471,14 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
                             onValueChange = { value -> scope.changePan(value) },
+                            trailingIcon = {
+                                Text(
+                                    text = registration.value.gstin.length.toString() + "/" + scope.panLimit,
+                                    color = ConstColors.gray,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp,
+                                )
+                            }
                         )
                     }
                     Space(dp = 12.dp)
@@ -478,6 +494,14 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             keyboardOptions = KeyboardOptions.Default
                                 .copy(capitalization = KeyboardCapitalization.Characters),
                             onValueChange = { value -> scope.changeGstin(value) },
+                            trailingIcon = {
+                                Text(
+                                    text = registration.value.gstin.length.toString() + "/" + scope.gstinLimit,
+                                    color = ConstColors.gray,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 14.sp,
+                                )
+                            }
                         )
                     }
                     Space(dp = 8.dp)
@@ -572,6 +596,14 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                                     hint = stringResource(id = R.string.food_license_number),
                                     text = registration.value.foodLicenseNo,
                                     onValueChange = { value -> scope.changeFoodLicense(value) },
+                                    trailingIcon = {
+                                        Text(
+                                            text = registration.value.gstin.length.toString() + "/" + scope.foodLicenseLimit,
+                                            color = ConstColors.gray,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                        )
+                                    }
                                 )
                             }
                         }
