@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
@@ -45,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -78,6 +81,7 @@ import com.zealsoftsol.medico.screens.common.InputWithPrefix
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
+import com.zealsoftsol.medico.screens.common.PhoneFormatInputFieldForRegister
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
@@ -95,47 +99,50 @@ fun AuthUserType(scope: SignUpScope.SelectUserType) {
         userType = "",
         progress = 1.0,//0.2,
         baseScope = scope,
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         buttonText = stringResource(id = R.string.next),
         onButtonClick = { scope.goToPersonalData() },
         body = {
             Text(
                 text = stringResource(id = R.string.who_are_you),
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.W700,
-                color = MaterialTheme.colors.background,
+                color = ConstColors.darkBlue,
             )
             Space(32.dp)
             Row {
                 UserType(
-                    iconRes = R.drawable.ic_stockist,
+                    iconRes = R.drawable.ic_menu_stockist,
                     textRes = R.string.stockist_sub,
                     isSelected = selectedType.value == DataUserType.STOCKIST,
                     onClick = { scope.chooseUserType(DataUserType.STOCKIST) },
+                    filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
                 Space(18.dp)
                 UserType(
-                    iconRes = R.drawable.ic_retailer,
+                    iconRes = R.drawable.ic_menu_retailers,
                     textRes = R.string.retailer,
                     isSelected = selectedType.value == DataUserType.RETAILER,
                     onClick = { scope.chooseUserType(DataUserType.RETAILER) },
+                    filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
             }
             Space(18.dp)
             Row {
                 UserType(
-                    iconRes = R.drawable.ic_hospital,
+                    iconRes = R.drawable.ic_menu_hospitals,
                     textRes = R.string.hospital,
                     isSelected = selectedType.value == DataUserType.HOSPITAL,
                     onClick = { scope.chooseUserType(DataUserType.HOSPITAL) },
+                    filter = ColorFilter.tint(color = ConstColors.darkBlue)
                 )
                 /*Space(18.dp)
                 UserType(
                     iconRes = R.drawable.ic_season_boy,
                     textRes = R.string.season_boy,
                     isSelected = selectedType.value == DataUserType.SEASON_BOY,
-                    onClick = { *//*scope.chooseUserType(DataUserType.SEASON_BOY)*//* },
+                    onClick = { scope.chooseUserType(DataUserType.SEASON_BOY) },
+                    filter = ColorFilter.tint(color = ConstColors.darkBlue),
                 )*/
             }
         }
@@ -170,11 +177,20 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     null
             ) {
                 InputField(
-                    modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                    modifier = Modifier
+                        .scrollOnFocus(scrollState, coroutineScope)
+                        .padding(all = 0.dp),
                     hint = stringResource(id = R.string.first_name),
                     text = registration.value.firstName,
                     isValid = !isFirstNameError,
-                    onValueChange = { scope.changeFirstName(it) }
+                    onValueChange = { scope.changeFirstName(it) },
+                    mandatory = true,
+                    leadingIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_profile_register),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
@@ -189,7 +205,14 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     hint = stringResource(id = R.string.last_name),
                     text = registration.value.lastName,
                     isValid = !isLastNameError,
-                    onValueChange = { scope.changeLastName(it) }
+                    onValueChange = { scope.changeLastName(it) },
+                    mandatory = true,
+                    leadingIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_profile_register),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
@@ -198,18 +221,41 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.email),
                     text = registration.value.email,
-                    onValueChange = { scope.changeEmail(it) }
+                    onValueChange = { scope.changeEmail(it) },
+                    mandatory = true,
+                    leadingIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_email),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
             InputWithError(errorText = if (!validPhone) stringResource(id = R.string.phone_validation) else null) {
-                PhoneFormatInputField(
+                PhoneFormatInputFieldForRegister(
                     modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
                     onValueChange = { phoneNumber ->
                         scope.changePhoneNumber(phoneNumber.filter { it == '+' || it.isDigit() })
                     },
+                    leadingIcon = {
+                        Row {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_call),
+                                contentDescription = null,
+                            )
+                            Space(dp = 4.dp)
+                            Text(
+                                text = "+91",
+                                color = ConstColors.gray,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                            )
+                        }
+                    },
+                    mandatory = true
                 )
                 //scope.setPhoneNumberValid(isValid)
             }
@@ -222,6 +268,13 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     text = registration.value.password,
                     onValueChange = { scope.changePassword(it) },
                     onPositioned = { rectHolder.rect = it.boundsInParent() },
+                    mandatory = true,
+                    leadingIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_verify_password),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
@@ -238,6 +291,13 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     isValid = isValid,
                     onValueChange = { scope.changeRepeatPassword(it) },
                     onPositioned = { rectHolder.rect = it.boundsInParent() },
+                    mandatory = true,
+                    leadingIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_verify_password),
+                            contentDescription = null,
+                        )
+                    }
                 )
             }
             Space(dp = 12.dp)
@@ -304,7 +364,8 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     hint = stringResource(id = R.string.pincode),
                     text = registration.value.pincode,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    onValueChange = { scope.changePincode(it) }
+                    onValueChange = { scope.changePincode(it) },
+                    mandatory = true,
                 )
             }
             Space(dp = 12.dp)
@@ -339,6 +400,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     onSelected = { scope.changeLocation(it) }
                 )
             }
+            Divider(thickness = 2.dp)
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.city) {
                 Dropdown(
@@ -349,6 +411,7 @@ fun AuthAddressData(scope: SignUpScope.AddressData) {
                     onSelected = { scope.changeCity(it) }
                 )
             }
+            Divider(thickness = 2.dp)
             Space(dp = 12.dp)
             InputWithError(errorText = userValidation.value?.district) {
                 ReadOnlyField(registration.value.district, R.string.district)
@@ -386,9 +449,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             onValueChange = { value -> scope.changeTradeName(value) },
                         )
                     }
-                    Space(dp = 8.dp)
-                    GstinOrPanRequiredBadge()
-                    Space(dp = 8.dp)
+                    Space(dp = 12.dp)
                 }
                 if (it == SignUpScope.Details.Fields.PAN) {
                     InputWithError(errorText = validation.value?.panNumber) {
@@ -405,6 +466,7 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                     Space(dp = 12.dp)
                 }
                 if (it == SignUpScope.Details.Fields.GSTIN) {
+
                     InputWithError(errorText = validation.value?.gstin) {
                         InputField(
                             modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
@@ -416,31 +478,41 @@ fun AuthDetailsTraderData(scope: SignUpScope.Details.TraderData) {
                             onValueChange = { value -> scope.changeGstin(value) },
                         )
                     }
-                    Space(dp = 12.dp)
+                    Space(dp = 8.dp)
+                    Text(
+                        text = stringResource(id = R.string.gstin_pan_required),
+                        color = ConstColors.red,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = 4.dp),
+                    )
+                    Space(dp = 8.dp)
                 }
                 if (it == SignUpScope.Details.Fields.LICENSE1) {
                     InputWithError(errorText = validation.value?.drugLicenseNo1) {
-                        InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
-                            InputField(
-                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                                hint = stringResource(id = R.string.drug_license_1),
-                                text = registration.value.drugLicenseNo1,
-                                onValueChange = { value -> scope.changeDrugLicense1(value) },
-                            )
-                        }
+                        //InputWithPrefix(UserRegistration3.DRUG_LICENSE_1_PREFIX) {
+                        InputField(
+                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                            hint = stringResource(id = R.string.drug_license_20b),
+                            text = registration.value.drugLicenseNo1,
+                            onValueChange = { value -> scope.changeDrugLicense1(value) },
+                        )
+                        //}
                     }
                     Space(dp = 12.dp)
                 }
                 if (it == SignUpScope.Details.Fields.LICENSE2) {
                     InputWithError(errorText = validation.value?.drugLicenseNo2) {
-                        InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
-                            InputField(
-                                modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
-                                hint = stringResource(id = R.string.drug_license_2),
-                                text = registration.value.drugLicenseNo2,
-                                onValueChange = { value -> scope.changeDrugLicense2(value) },
-                            )
-                        }
+                        //InputWithPrefix(UserRegistration3.DRUG_LICENSE_2_PREFIX) {
+                        InputField(
+                            modifier = Modifier.scrollOnFocus(scrollState, coroutineScope),
+                            hint = stringResource(id = R.string.drug_license_21b),
+                            text = registration.value.drugLicenseNo2,
+                            onValueChange = { value -> scope.changeDrugLicense2(value) },
+                        )
+                        // }
                     }
                 }
                 Space(16.dp)
@@ -694,12 +766,12 @@ fun AuthPreview(scope: SignUpScope.PreviewDetails) {
                     fontWeight = FontWeight.W600,
                 )
                 Space(dp = 16.dp)
-                TextLabel(scope.registrationStep1.firstName)
-                TextLabel(scope.registrationStep1.lastName)
-                TextLabel(scope.registrationStep1.email)
-                TextLabel(scope.registrationStep1.phoneNumber)
-                TextLabel(scope.registrationStep1.password)
-                TextLabel(scope.registrationStep1.verifyPassword)
+                TextLabel(scope.registrationStep1.firstName, R.drawable.ic_profile_register)
+                TextLabel(scope.registrationStep1.lastName, R.drawable.ic_profile_register)
+                TextLabel(scope.registrationStep1.email, R.drawable.ic_email)
+                TextLabel(scope.registrationStep1.phoneNumber, R.drawable.ic_call)
+                TextLabel(scope.registrationStep1.password, R.drawable.ic_verify_password)
+                TextLabel(scope.registrationStep1.verifyPassword, R.drawable.ic_verify_password)
                 Space(dp = 4.dp)
                 Text(
                     text = stringResource(id = R.string.address_info),
@@ -789,7 +861,13 @@ fun AadhaarInputFields(
 }
 
 @Composable
-private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: () -> Unit) {
+private fun UserType(
+    iconRes: Int,
+    textRes: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    filter: ColorFilter
+) {
     Column(
         modifier = Modifier
             .width(140.dp)
@@ -809,12 +887,15 @@ private fun UserType(iconRes: Int, textRes: Int, isSelected: Boolean, onClick: (
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = null,
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(48.dp),
+            colorFilter = filter
         )
         Text(
             text = stringResource(id = textRes),
             modifier = Modifier.padding(4.dp),
             textAlign = TextAlign.Center,
+            fontWeight = FontWeight.SemiBold,
+            color = ConstColors.darkBlue
         )
     }
 }
@@ -825,7 +906,7 @@ private fun BasicAuthSignUpScreenWithButton(
     progress: Double,
     baseScope: SignUpScope,
     scrollState: ScrollState = rememberScrollState(),
-    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Bottom,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     body: @Composable ColumnScope.() -> Unit,
     buttonText: String,
@@ -836,16 +917,16 @@ private fun BasicAuthSignUpScreenWithButton(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.primary)
+            .fillMaxHeight()
+            .fillMaxWidth()
+            .background(Color.White)
     ) {
-        /*Box(
-            modifier = Modifier
-                .background(ConstColors.yellow, MaterialTheme.shapes.small)
-                .size((LocalConfiguration.current.screenWidthDp * progress).dp, 4.dp)
-        )*/
         val isEnabled = baseScope.canGoNext.flow.collectAsState()
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .background(Color.White)
+        ) {
             Box(
                 modifier = Modifier.padding(end = 16.dp, start = 16.dp, top = 16.dp)
             ) {
@@ -875,7 +956,7 @@ private fun BasicAuthSignUpScreenWithButton(
                     Text(
                         text = userType,
                         fontSize = 16.sp,
-                        color = ConstColors.lightBlue,
+                        color = ConstColors.darkBlue,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -883,7 +964,6 @@ private fun BasicAuthSignUpScreenWithButton(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .verticalScroll(scrollState)
                     .padding(
                         PaddingValues(
@@ -898,9 +978,12 @@ private fun BasicAuthSignUpScreenWithButton(
             ) {
                 body()
             }
+
         }
+
         Column(
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier.align(Alignment.BottomCenter),
+            verticalArrangement = Arrangement.Bottom
         ) {
             MedicoButton(
                 modifier = Modifier.padding(padding),

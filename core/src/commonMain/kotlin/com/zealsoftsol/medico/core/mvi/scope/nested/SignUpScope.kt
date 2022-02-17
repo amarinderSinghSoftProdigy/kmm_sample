@@ -38,7 +38,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId),titleColor = 0xff0084D4)
     }
 
     protected open fun checkCanGoNext() = Unit
