@@ -1,12 +1,14 @@
 package com.zealsoftsol.medico.screens.common
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -30,14 +32,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,7 +55,11 @@ fun PasswordFormatInputField(
     isValid: Boolean = true,
     onValueChange: (String) -> Unit,
     onPositioned: ((LayoutCoordinates) -> Unit)? = null,
-) {
+    mandatory: Boolean = false,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    ) {
     Box(
         contentAlignment = Alignment.CenterEnd,
         modifier = Modifier.onGloballyPositioned { onPositioned?.invoke(it) },
@@ -63,6 +73,10 @@ fun PasswordFormatInputField(
             visualTransformation = if (isPasswordHidden.value) PasswordVisualTransformation() else VisualTransformation.None,
             maxLines = 1,
             onValueChange = onValueChange,
+            leadingIcon = leadingIcon,
+            mandatory = mandatory,
+            keyboardActions = keyboardActions,
+            keyboardOptions = keyboardOptions
         )
         Icon(
             imageVector = Icons.Default.RemoveRedEye,
@@ -101,6 +115,40 @@ fun PhoneFormatInputField(
 }
 
 @Composable
+fun PhoneFormatInputFieldForRegister(
+    modifier: Modifier = Modifier,
+    hint: String,
+    text: String,
+    onValueChange: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    mandatory: Boolean = false,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    ) {
+    InputField(
+        modifier = modifier,
+        hint = hint,
+        text = text,
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone,imeAction = ImeAction.Done),
+        maxLines = 1,
+        onValueChange = onValueChange,
+        leadingIcon = leadingIcon,
+        mandatory = mandatory,
+        keyboardActions = keyboardActions,
+    )
+}
+/*
+*  keyboardOptions = KeyboardOptions.Default.copy(
+                                                        keyboardType = KeyboardType.Number,
+                                                        imeAction = ImeAction.Done
+                                                    ),
+                                                    keyboardActions = KeyboardActions(onDone = {
+                                                        scope.resetButton(false)
+                                                        scope.selectBatch(false, product = product)
+                                                        scope.buy(product = product)
+                                                        keyboardController?.hide()
+                                                    })
+* */
+@Composable
 fun InputField(
     modifier: Modifier = Modifier,
     hint: String,
@@ -108,16 +156,26 @@ fun InputField(
     isValid: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions(),
     maxLines: Int = 1,
     onValueChange: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    mandatory: Boolean = false,
 ) {
     TextField(
         value = text,//TextFieldValue(text, TextRange(text.length)),
         label = {
-            Text(
-                text = hint,
-                style = TextStyle.Default,
-            )
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(
+                    text = hint,
+                    style = TextStyle.Default,
+                )
+                if (mandatory) {
+                    Space(dp = 4.dp)
+                    Text(text = "*", color = ConstColors.red)
+                }
+            }
         },
         isError = !isValid,
         colors = TextFieldDefaults.textFieldColors(
@@ -132,7 +190,61 @@ fun InputField(
         singleLine = maxLines == 1,
         maxLines = maxLines,
         modifier = modifier.fillMaxWidth(),
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        keyboardActions = keyboardActions
     )
+}
+
+@Composable
+fun InputFieldWithCounter(
+    limit: Int,
+    modifier: Modifier = Modifier,
+    hint: String,
+    text: String,
+    isValid: Boolean = true,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = 1,
+    onValueChange: (String) -> Unit,
+) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        TextField(
+            value = text,
+            label = {
+                Text(
+                    text = hint,
+                    style = TextStyle.Default,
+                )
+            },
+            isError = !isValid,
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = Color.White,
+                cursorColor = ConstColors.lightBlue,
+                focusedLabelColor = ConstColors.lightBlue,
+                focusedIndicatorColor = ConstColors.lightBlue,
+            ),
+            onValueChange = onValueChange,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions,
+            singleLine = maxLines == 1,
+            maxLines = maxLines,
+            modifier = modifier.weight(0.8f),
+        )
+
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(0.2f),
+            text = text.length.toString() + "/" + limit.toString(),
+            color = ConstColors.gray,
+            fontSize = 12.sp
+        )
+    }
 }
 
 @Composable

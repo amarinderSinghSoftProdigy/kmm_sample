@@ -172,7 +172,7 @@
     <string name="no_of_credit_days">No. of Credit Days</string>
     <string name="no_avail_offer">No available offer</string>
     <string name="discount_rate">Discount Rate</string>
-    <string name="gstin_pan_required">GSTIN or PAN is required for registration</string>
+    <string name="gstin_pan_required">(GSTIN or PAN is required for registration)</string>
     <string name="verified">Verified</string>
     <string name="view_all">View All</string>
     <string name="view_order">View Order</string>
@@ -388,6 +388,9 @@
     <string name="update_app">A new version is available to download. By downloading the latest update you will get the latest features, improvements and bug fixes for medicostores.</string>
     <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
     more than or equal to the requested quantity</string>
+    <string name="drug_license_20b">DL 20 B</string>
+    <string name="drug_license_21b">DL 21 B</string>
+    <string name="pan">PAN</string>
 
     <!-- Termrs and Cond -->
 

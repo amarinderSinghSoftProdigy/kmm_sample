@@ -60,6 +60,7 @@ sealed class TabBarInfo {
     data class Simple(
         override val icon: ScopeIcon = ScopeIcon.HAMBURGER,
         val title: StringResource?,
+        val titleColor: Long = -1L,
         val notificationItemsCount: ReadOnlyDataSource<Int>? = null,
     ) : TabBarInfo() {
 

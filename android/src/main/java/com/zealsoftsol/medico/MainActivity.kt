@@ -117,7 +117,7 @@ class MainActivity : ComponentActivity(), DIAware {
                                 option = WelcomeOption.Thanks { it.accept() }
                             )
                         }
-                        is TabBarScope -> TabBarScreen(it, coroutineScope)
+                        is TabBarScope -> TabBarScreen(it, coroutineScope,this)
                     }
                 }
                 val isInProgress = hostScope.value.isInProgress.flow.collectAsState()
