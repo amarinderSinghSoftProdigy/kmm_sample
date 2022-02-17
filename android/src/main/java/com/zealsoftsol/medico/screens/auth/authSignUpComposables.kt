@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -67,30 +66,24 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.toast
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.data.AadhaarData
-import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.screens.common.Dropdown
-import com.zealsoftsol.medico.screens.common.GstinOrPanRequiredBadge
 import com.zealsoftsol.medico.screens.common.ImageLabel
 import com.zealsoftsol.medico.screens.common.InputField
-import com.zealsoftsol.medico.screens.common.InputFieldWithCounter
 import com.zealsoftsol.medico.screens.common.InputWithError
-import com.zealsoftsol.medico.screens.common.InputWithPrefix
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.PasswordFormatInputField
-import com.zealsoftsol.medico.screens.common.PhoneFormatInputField
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputFieldForRegister
 import com.zealsoftsol.medico.screens.common.ReadOnlyField
 import com.zealsoftsol.medico.screens.common.RectHolder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.TextLabel
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
-import com.zealsoftsol.medico.utils.PermissionCheckUI
 import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
 import com.zealsoftsol.medico.utils.PermissionViewModel
+import kotlinx.serialization.builtins.MapEntrySerializer
 import com.zealsoftsol.medico.data.UserType as DataUserType
 
 @Composable
@@ -179,8 +172,8 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
             ) {
                 InputField(
                     modifier = Modifier
-                        .scrollOnFocus(scrollState, coroutineScope)
-                        .padding(all = 0.dp),
+                        .align(Alignment.Start)
+                        .scrollOnFocus(scrollState, coroutineScope),
                     hint = stringResource(id = R.string.first_name),
                     text = registration.value.firstName,
                     isValid = !isFirstNameError,
@@ -244,15 +237,15 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     leadingIcon = {
                         Row {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_call),
+                                painter = painterResource(id = R.drawable.ic_phone_number),
                                 contentDescription = null,
                             )
                             Space(dp = 4.dp)
                             Text(
                                 text = "+91",
-                                color = ConstColors.gray,
+                                color = MaterialTheme.colors.background,
                                 fontWeight = FontWeight.Normal,
-                                fontSize = 14.sp,
+                                fontSize = 16.sp,
                             )
                         }
                     },
@@ -996,21 +989,24 @@ private fun BasicAuthSignUpScreenWithButton(
                 }
             }
 
-            Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .padding(
-                        PaddingValues(
-                            top = padding,
-                            start = padding,
-                            end = padding,
-                            bottom = padding + 60.dp
-                        )
-                    ),
-                verticalArrangement = verticalArrangement,
-                horizontalAlignment = horizontalAlignment,
-            ) {
-                body()
+            Box {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(
+                            PaddingValues(
+                                top = padding,
+                                start = padding,
+                                end = padding,
+                                bottom = padding + 60.dp
+                            )
+                        ),
+                    verticalArrangement = verticalArrangement,
+                    horizontalAlignment = horizontalAlignment,
+                ) {
+                    body()
+                }
+
             }
 
         }
