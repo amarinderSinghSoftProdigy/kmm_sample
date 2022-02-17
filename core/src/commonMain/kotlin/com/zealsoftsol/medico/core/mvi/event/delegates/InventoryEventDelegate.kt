@@ -41,11 +41,15 @@ internal class InventoryEventDelegate(
                     page = page
                 )
             }.onSuccess { body ->
-                it.stockStatusData.value = body.stockStatusData
-                it.onlineStatusData.value = body.onlineStatusData
-                it.stockExpiredData.value = body.stockExpiredData
-                it.updateManufacturersList(body.manufacturers)
-                it.updateProductsList(body.results)
+                if (search.isNullOrEmpty()) {
+                    it.stockStatusData.value = body.stockStatusData
+                    it.onlineStatusData.value = body.onlineStatusData
+                    it.stockExpiredData.value = body.stockExpiredData
+                    it.updateManufacturersList(body.manufacturers)
+                    it.updateProductsList(body.results)
+                } else {
+                    it.updateProductsList(body.results)
+                }
                 it.totalProducts = body.totalResults
             }.onError(navigator)
         }

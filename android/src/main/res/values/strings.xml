@@ -379,6 +379,8 @@
     <string name="please_select_type">Please Select Promotion Type</string>
     <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
     more than or equal to the requested quantity</string>
+    <string name="search_inventory">Search Inventory</string>
+    <string name="more">See More</string>
 
     <!-- Termrs and Cond -->
 

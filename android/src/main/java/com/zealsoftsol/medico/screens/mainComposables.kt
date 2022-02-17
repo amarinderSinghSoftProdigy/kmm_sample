@@ -183,7 +183,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope) { //don't show top bar for OrderEditHsnScreen
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope) //don't show top bar for OrderEditHsnScreen and Inventory
+            {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

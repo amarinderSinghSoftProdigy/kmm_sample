@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.OnlineStatusData
 import com.zealsoftsol.medico.data.ProductsData
@@ -13,6 +14,8 @@ import com.zealsoftsol.medico.data.StocksStatusData
 
 class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
+
     private var mCurrentPage = 0
     val mCurrentManufacturerName = DataSource("")
     val stockStatusData: DataSource<StocksStatusData?> = DataSource(null)
@@ -20,6 +23,7 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     val stockExpiredData: DataSource<StockExpiredData?> = DataSource(null)
     val manufacturersList: DataSource<List<ManufacturerData>> = DataSource(emptyList())
     val productsList: DataSource<MutableList<ProductsData>> = DataSource(mutableListOf())
+
     var totalProducts = 0
     private var mManufacturerCode = ""
 
@@ -39,11 +43,32 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         }
     }
 
+    /**
+     * update products list from server
+     */
     fun updateProductsList(list: List<ProductsData>) {
         if (productsList.value.isEmpty()) {
             productsList.value = list as MutableList<ProductsData>
         } else {
             productsList.value.addAll(list)
+        }
+    }
+
+    /**
+     * start search for a product
+     */
+    fun startSearch(search: String?){
+        productsList.value.clear()
+        if(search.isNullOrEmpty()){
+            getInventory(true)
+        }else {
+            EventCollector.sendEvent(
+                Event.Action.Inventory.GetInventory(
+                    page = 0,
+                    search = search,
+                    manufacturer = mManufacturerCode
+                )
+            )
         }
     }
 
@@ -60,7 +85,7 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     /**
      * get current Inventory of stockist
      */
-    fun getInventory(isFirstLoad: Boolean = false) {
+    fun getInventory(isFirstLoad: Boolean = false, search: String? = null) {
         if (isFirstLoad)
             mCurrentPage = 0
         else
@@ -68,6 +93,7 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
         EventCollector.sendEvent(
             Event.Action.Inventory.GetInventory(
                 page = mCurrentPage,
+                search = search,
                 manufacturer = mManufacturerCode
             )
         )

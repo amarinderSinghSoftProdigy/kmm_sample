@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens.inventory
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,18 +19,32 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,23 +59,101 @@ import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.utils.piechart.PieChart
 import com.zealsoftsol.medico.utils.piechart.PieChartData
 import com.zealsoftsol.medico.utils.piechart.renderer.SimpleSliceDrawer
 import com.zealsoftsol.medico.utils.piechart.simpleChartAnimation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
     val manufacturersList = scope.manufacturersList.flow.collectAsState().value
     val productsList = scope.productsList.flow.collectAsState().value
     val totalResults = scope.totalProducts
     val mCurrentManufacturer = scope.mCurrentManufacturerName.flow.collectAsState().value
+    val searchTerm = remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var queryTextChangedJob: Job? = null
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .clickable(
+                        indication = null,
+                        onClick = {
+                            scope.goBack()
+                        }
+                    )
+            )
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp)
+                    .padding(end = 40.dp),
+                shape = RoundedCornerShape(3.dp),
+                elevation = 5.dp
+            ) {
+                TextField(
+                    modifier = Modifier.height(48.dp),
+                    value = searchTerm.value,
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.White,
+                        textColor = Color.Black,
+                        placeholderColor = Color.Black,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                    onValueChange = {
+
+                        searchTerm.value = it
+
+                        queryTextChangedJob?.cancel()
+
+                        queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                            delay(500)
+                            scope.startSearch(it)
+                        }
+                    },
+                    placeholder = {
+                        Text(
+                            stringResource(id = R.string.search_inventory),
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    },
+                    maxLines = 1
+                )
+            }
+        }
+        Divider(
+            color = ConstColors.lightBlue,
+            thickness = 0.5.dp,
+            startIndent = 0.dp
+        )
+        Space(10.dp)
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,11 +213,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
             shape = RoundedCornerShape(5.dp),
             backgroundColor = Color.White,
         ) {
-            Column {
+            Column{
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
+                        .weight(0.1f)
                         .padding(horizontal = 10.dp, vertical = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -160,19 +254,33 @@ fun InventoryMainComposable(scope: InventoryScope) {
 
                     }
                 }
-                LazyColumn(
+               LazyColumn(
                     contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier.padding(horizontal = 7.dp),
+                    modifier = Modifier.padding(horizontal = 7.dp).weight(0.85f),
                 ) {
                     itemsIndexed(
                         items = productsList,
                         key = { index, _ -> index },
                         itemContent = { index, item ->
                             ProductsItem(item, scope)
-                            if (index == productsList.lastIndex && (productsList.size < totalResults)) {
-                                    scope.getInventory()
-                            }
                         },
+                    )
+                }
+
+                if (productsList.size < totalResults) {
+                    Text(
+                        modifier = Modifier
+                            .padding(vertical = 0.dp, horizontal = 10.dp)
+                            .height(40.dp)
+                            .weight(0.1f)
+                            .clickable {
+                                scope.getInventory(search = searchTerm.value)
+                            },
+                        text = stringResource(id = R.string.more),
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 16.sp
                     )
                 }
             }
@@ -259,7 +367,11 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
  * ui item for manufacturer listing
  */
 @Composable
-private fun ManufacturersItem(item: ManufacturerData, scope: InventoryScope, onClick: () -> Unit) {
+private fun ManufacturersItem(
+    item: ManufacturerData,
+    scope: InventoryScope,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .height(90.dp)
