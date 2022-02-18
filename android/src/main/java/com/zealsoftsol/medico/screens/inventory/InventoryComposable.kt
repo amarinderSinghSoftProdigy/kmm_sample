@@ -231,10 +231,11 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         fontSize = 15.sp,
                         fontWeight = FontWeight.W700,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(0.5f)
                     )
 
-                    Row {
+                    Row(modifier = Modifier.weight(0.5f), horizontalArrangement = Arrangement.End) {
                         Text(
                             text = stringResource(id = R.string.total_prod),
                             color = Color.Black,
