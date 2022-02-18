@@ -6,13 +6,17 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
+import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
@@ -103,6 +107,60 @@ sealed class BottomSheet {
     ) : BottomSheet() {
         fun update() =
             EventCollector.sendEvent(Event.Action.Offers.UpdateOffer(info, active))
+    }
+
+    class EditBatchSheet(
+        val info: Batch,
+        val productsData: ProductsData
+    ) : BottomSheet() {
+
+        val promo = DataSource(info)
+        val quantity = DataSource(info.stock.value.toString())
+        val mrp = DataSource(info.mrp.value.toString())
+        val ptr = DataSource(info.ptr.value.toString())
+        val expiry = DataSource(info.expiryDate)
+        val batchNo = DataSource(info.batchNo)
+
+        fun updateExpiry(value: String) {
+            expiry.value = value
+        }
+
+        fun updateMrp(value: String) {
+            mrp.value = value
+        }
+
+        fun updatePtr(value: String) {
+            ptr.value = value
+        }
+
+        fun updateQuantity(value: String) {
+            quantity.value = value
+        }
+
+        fun updateBatch(value: String) {
+            batchNo.value = value
+        }
+
+
+        fun editBatch() {
+            val request = BatchUpdateRequest(
+                productCode = productsData.id ?: "",
+                manufacturerCode = productsData.manufacturerCode ?: "",
+                hsnCode = promo.value.hsncode,
+                vendorProductName = productsData.vendorProductName ?: "",
+                spid = promo.value.spid,
+                stock = quantity.value.toDouble(),
+                expiryDate = expiry.value,
+                ptr = ptr.value.toDouble(),
+                mrp = mrp.value.toDouble(),
+                batchLotNo = batchNo.value,
+                mfgDate = "",
+                warehouseUnitCode = productsData.warehouseUnitCode ?: "",
+                warehouseCode = productsData.warehouseCode ?: "",
+                status = productsData.status ?: "",
+            )
+            EventCollector.sendEvent(Event.Action.Inventory.UpdateBatch(request))
+        }
     }
 
     class UpdateOffer(

@@ -306,10 +306,10 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
     Column(modifier = Modifier
         .height(55.dp)
         .clickable {
-            scope.getBatchesData(item.spid)
+            scope.getBatchesData(item.spid ?: "", item)
         }) {
         Text(
-            text = item.vendorProductName,
+            text = item.vendorProductName ?: "",
             color = Color.Black,
             fontSize = 12.sp,
             modifier = Modifier.fillMaxWidth()
@@ -327,7 +327,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = item.mrp.formattedValue,
+                    text = item.mrp?.formattedValue ?: "",
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
@@ -343,7 +343,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 )
 
                 Text(
-                    text = item.expiryDate.formattedValue,
+                    text = item.expiryDate?.formattedValue ?: "",
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
@@ -363,7 +363,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     modifier = Modifier.padding(end = 5.dp)
                 )
                 CommonRoundedView(
-                    text = item.availableQty.formattedValue, modifier = Modifier.padding(
+                    text = item.availableQty?.formattedValue ?: "", modifier = Modifier.padding(
                         end = 5.dp
                     ), color = ConstColors.darkGreen, radius = 2
                 )

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,11 +23,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -45,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -73,10 +77,12 @@ import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
 import com.zealsoftsol.medico.core.extensions.screenWidth
+import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -95,6 +101,7 @@ import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
+import com.zealsoftsol.medico.screens.common.OutlinedInputField
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
@@ -102,11 +109,13 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.joda.time.DateTime
 import java.io.File
 
 @Composable
@@ -197,6 +206,14 @@ fun Scope.Host.showBottomSheet(
                 onSaveQty = { qty, freeQty -> bs.addToCart(qty, freeQty) },
                 onDismiss = { dismissBottomSheet() },
                 scope = bs.scope
+            )
+            is BottomSheet.EditBatchSheet -> EditBatchItemBottomSheet(
+                info = bs,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.editBatch()
+                },
+                onDismiss = { dismissBottomSheet() }
             )
         }
     }
@@ -2208,6 +2225,220 @@ private fun EditOfferItemBottomSheet(
                         )
                     }
                 }
+            }
+            Space(dp = 16.dp)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EditBatchItemBottomSheet(
+    info: BottomSheet.EditBatchSheet,
+    onSubscribe: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        //val scrollState = rememberScrollState()
+        //val coroutineScope = rememberCoroutineScope()
+        //val promo = info.promo.flow.collectAsState()
+        val quantity = info.quantity.flow.collectAsState()
+        val mrp = info.mrp.flow.collectAsState()
+        val ptr = info.ptr.flow.collectAsState()
+        val expiry = info.expiry.flow.collectAsState()
+        val batchNo = info.batchNo.flow.collectAsState()
+        val context = LocalContext.current
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.ptr),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            modifier = Modifier.weight(0.3f),
+                            fontWeight = FontWeight.W600
+                        )
+
+                        OutlinedInputField(
+                            modifier = Modifier
+                                .weight(0.7f),
+                            hint = stringResource(id = R.string.enter_amount),
+                            text = ptr.value,
+                            isValid = true,
+                            maxLines = 1,
+                            onValueChange = {
+                                info.updatePtr(it)
+                            },
+                        )
+                    }
+                    Space(dp = 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.mrp),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier.weight(0.3f)
+                        )
+
+                        OutlinedInputField(
+                            modifier = Modifier
+                                .weight(0.7f),
+                            hint = stringResource(id = R.string.enter_amount),
+                            text = mrp.value,
+                            isValid = true,
+                            maxLines = 1,
+                            onValueChange = {
+                                info.updateMrp(it)
+                            },
+                        )
+                    }
+                    Space(dp = 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.stock),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier.weight(0.3f)
+                        )
+
+                        OutlinedInputField(
+                            modifier = Modifier
+                                .weight(0.7f),
+                            hint = stringResource(id = R.string.enter_quantity),
+                            text = quantity.value,
+                            isValid = true,
+                            maxLines = 1,
+                            onValueChange = {
+                                info.updateQuantity(it)
+                            },
+                        )
+                    }
+                    Space(dp = 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.exp_mm_yyyy),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier.weight(0.3f)
+                        )
+
+                        Surface(modifier = Modifier
+                            .weight(0.7f)
+                            .height(55.dp),
+                            color = Color.White,
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(2.dp, ConstColors.gray.copy(alpha = 0.5f)),
+                            onClick = {
+                                val now = DateTime.now()
+                                val dialog = DatePickerDialog(
+                                    context,
+                                    { _, year, month, _ ->
+                                        info.updateExpiry("${month + 1}/${year}")
+                                    },
+                                    now.year,
+                                    now.monthOfYear - 1,
+                                    now.dayOfMonth,
+                                )
+                                dialog.show()
+                            }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.CenterVertically)
+                            ) {
+                                Text(
+                                    text = expiry.value,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colors.background,
+                                )
+                            }
+                        }
+                    }
+                    Space(dp = 8.dp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(id = R.string.batch_no_),
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                            modifier = Modifier.weight(0.3f)
+                        )
+
+                        OutlinedInputField(
+                            modifier = Modifier
+                                .height(30.dp)
+                                .weight(0.7f),
+                            hint = stringResource(id = R.string.enter_batch_number),
+                            text = batchNo.value,
+                            isValid = true,
+                            maxLines = 1,
+                            onValueChange = {
+                                info.updateBatch(it)
+                            },
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MedicoButton(
+                    text = stringResource(id = R.string.save),
+                    isEnabled = true,
+                    height = 35.dp,
+                    elevation = null,
+                    onClick = onSubscribe,
+                    textSize = 14.sp,
+                    color = ConstColors.yellow,
+                    txtColor = MaterialTheme.colors.background
+                )
             }
             Space(dp = 16.dp)
         }

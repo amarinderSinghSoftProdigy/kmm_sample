@@ -42,3 +42,21 @@ data class BatchPromotionData(
     val connectedUsers: List<String>,
     val displayOffer: String
 )
+
+@Serializable
+class BatchUpdateRequest(
+    val productCode: String,
+    val manufacturerCode: String,
+    val hsnCode: String,
+    val vendorProductName: String,
+    val spid: String,
+    val stock: Double,
+    val expiryDate: String,
+    val ptr: Double,
+    val mrp: Double,
+    val batchLotNo: String,
+    val mfgDate: String,
+    val warehouseUnitCode: String,
+    val warehouseCode: String,
+    val status: String
+)

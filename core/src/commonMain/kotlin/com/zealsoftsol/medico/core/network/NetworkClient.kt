@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
@@ -1069,6 +1070,17 @@ class NetworkClient(
             url {
                 parameters.append("spid", spid)
             }
+        }
+    }
+
+    override suspend fun editBatches(
+        unitCode: String,
+        request: BatchUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/inventory/save") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
         }
     }
 

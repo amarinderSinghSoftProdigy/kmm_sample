@@ -42,15 +42,24 @@ data class ManufacturerData(
 
 @Serializable
 data class ProductsData(
-    val id: String,
-    val vendorProductName: String,
-    val vendorMnfrName: String,
-    val spid: String,
-    val mrp: MrpData,
-    val ptr: MrpData,
-    val expiryDate: MrpData,
-    val availableQty: MrpData,
+    val id: String? = null,
+    val vendorProductName: String? = null,
+    val vendorMnfrName: String? = null,
+    val spid: String? = null,
+    val mrp: MrpData? = null,
+    val ptr: MrpData? = null,
+    val expiryDate: MrpData? = null,
+    val availableQty: MrpData? = null,
+    val stock: MrpData? = null,
+    val batchNo: String? = null,
+    val hsncode: String? = null,
+    val manufacturerCode: String? = null,
+    val mfgDate: String? = null,
+    val warehouseUnitCode: String? = null,
+    val warehouseCode: String? = null,
+    val status: String? = null,
 )
+
 
 @Serializable
 data class MrpData(

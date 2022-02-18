@@ -8,6 +8,8 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
@@ -27,6 +29,7 @@ import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
@@ -437,7 +440,11 @@ sealed class Event {
                 val page: Int,
             ) : Inventory()
 
-            data class GetBatches(val spid: String) : Inventory()
+            data class GetBatches(val spid: String, val productsData: ProductsData) : Inventory()
+            data class EditBatch(val item: Batch, val productsData: ProductsData) :
+                Inventory()
+
+            data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()
 
         }
     }

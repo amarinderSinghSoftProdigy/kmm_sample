@@ -364,17 +364,24 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
-                    if(scope.selectedBatchData?.flow?.collectAsState()?.value != null) {
-                        Row(
-                            modifier = Modifier.padding(top = 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+
+                    val selectData = scope.selectedBatchData.flow.collectAsState()
+                    Row(
+                        modifier = Modifier.padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MedicoButton(
+                            text = if (selectData.value != null) {
+                                stringResource(id = R.string.select)
+                            } else {
+                                stringResource(id = R.string.edit)
+                            },
+                            isEnabled = true,
+                            modifier = Modifier
+                                .height(35.dp)
+                                .padding(start = 40.dp, end = 0.dp)
                         ) {
-                            MedicoButton(
-                                text = stringResource(id = R.string.select), isEnabled = true,
-                                modifier = Modifier
-                                    .height(35.dp)
-                                    .padding(start = 40.dp, end = 0.dp)
-                            ) {
+                            if (selectData.value != null) {
                                 scope.updateData(
                                     batchNo = item.batchNo,
                                     expiry = item.expiryDate,
@@ -383,6 +390,8 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                                     hsnCode = item.hsncode,
                                     qty = item.stock.value.toString()
                                 )
+                            } else {
+                                scope.showEditBottomSheet(item)
                             }
                         }
                     }

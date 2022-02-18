@@ -39,8 +39,8 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     /**
      * get batches data for the selected product
      */
-    fun getBatchesData(spid: String) {
-        EventCollector.sendEvent(Event.Action.Inventory.GetBatches(spid))
+    fun getBatchesData(spid: String,productsData: ProductsData) {
+        EventCollector.sendEvent(Event.Action.Inventory.GetBatches(spid,productsData))
     }
 
     /**
