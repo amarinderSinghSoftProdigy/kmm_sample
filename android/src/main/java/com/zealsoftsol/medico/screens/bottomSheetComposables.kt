@@ -2301,9 +2301,18 @@ private fun EditBatchItemBottomSheet(
                             isValid = true,
                             maxLines = 1,
                             onValueChange = {
-                                info.updatePtr(it)
+                                if (it.toDoubleOrNull() != null) {
+                                    if (it.length > 1 && it.startsWith("0")) {
+                                        info.updatePtr(it.substring(1))
+                                    } else {
+                                        info.updatePtr(it)
+                                    }
+                                } else {
+                                    info.updatePtr("0")
+                                }
                             },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                            keyboardOptions =
+                            KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         )
                     }
                     Space(dp = 8.dp)
@@ -2324,7 +2333,15 @@ private fun EditBatchItemBottomSheet(
                             isValid = true,
                             maxLines = 1,
                             onValueChange = {
-                                info.updateMrp(it)
+                                if (it.toDoubleOrNull() != null) {
+                                    if (mrp.value == "0") {
+                                        info.updateMrp(it.substring(1))
+                                    } else {
+                                        info.updateMrp(it)
+                                    }
+                                } else {
+                                    info.updateMrp("0")
+                                }
                             },
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         )
