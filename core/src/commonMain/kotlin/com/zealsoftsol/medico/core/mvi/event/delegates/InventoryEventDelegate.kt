@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -39,14 +40,16 @@ internal class InventoryEventDelegate(
 
     private suspend fun updateBatch(item: BatchUpdateRequest) {
         val user = userRepo.requireUser()
-        inventoryScope.editBatches(
-            unitCode = user.unitCode,
-            item
-        ).onSuccess {
-            /*navigator.withScope<BatchesScope> {
+        navigator.withScope<BatchesScope> {
+            withProgress {
+                inventoryScope.editBatches(
+                    unitCode = user.unitCode,
+                    item
+                )
+            }.onSuccess {
 
-            }*/
-        }.onError(navigator)
+            }.onError(navigator)
+        }
     }
 
     /**
