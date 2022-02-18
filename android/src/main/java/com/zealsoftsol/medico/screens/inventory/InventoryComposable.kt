@@ -468,7 +468,7 @@ private fun StatusView(scope: InventoryScope, modifier: Modifier) {
                 )
 
                 MyChartParent(
-                    thickness = 100f,
+                    thickness = 70f,
                     listPieChartData = listOf(
                         //online product
                         PieChartData.Slice(
