@@ -114,7 +114,7 @@ sealed class BottomSheet {
         val productsData: ProductsData
     ) : BottomSheet() {
 
-        val promo = DataSource(info)
+        val canSave = DataSource(false)
         val quantity = DataSource(info.stock.value.toString())
         val mrp = DataSource(info.mrp.value.toString())
         val ptr = DataSource(info.ptr.value.toString())
@@ -123,22 +123,66 @@ sealed class BottomSheet {
 
         fun updateExpiry(value: String) {
             expiry.value = value
+            checkSave()
         }
 
         fun updateMrp(value: String) {
             mrp.value = value
+            checkSave()
         }
 
         fun updatePtr(value: String) {
             ptr.value = value
+            checkSave()
         }
 
         fun updateQuantity(value: String) {
-            quantity.value = value
+            quantity.value = checkQuantity(value)
+            checkSave()
         }
 
         fun updateBatch(value: String) {
             batchNo.value = value
+            checkSave()
+        }
+
+        private fun checkSave() {
+            canSave.value = mrp.value.isNotEmpty()
+                    && expiry.value.isNotEmpty()
+                    && ptr.value.isNotEmpty()
+                    && quantity.value.isNotEmpty()
+                    && batchNo.value.isNotEmpty()
+        }
+
+        private fun checkQuantity(value: String): String {
+            val split = value.replace(",", ".").split(".")
+            val beforeDot = split[0]
+            val afterDot = split.getOrNull(1)
+            var modBefore =
+                beforeDot.toIntOrNull() ?: 0
+            val modAfter = when (afterDot?.length) {
+                0 -> "."
+                in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                    1
+                ).toIntOrNull()) {
+                    0 -> ".0"
+                    in 1..4 -> ".0"
+                    5 -> ".5"
+                    in 6..9 -> {
+                        modBefore++
+                        ".0"
+                    }
+                    null -> ""
+                    else -> throw UnsupportedOperationException(
+                        "cant be that"
+                    )
+                }
+                null -> ""
+                else -> throw UnsupportedOperationException(
+                    "cant be that"
+                )
+            }
+            return "$modBefore$modAfter"
         }
 
 
@@ -146,13 +190,13 @@ sealed class BottomSheet {
             val request = BatchUpdateRequest(
                 productCode = productsData.id ?: "",
                 manufacturerCode = productsData.manufacturerCode ?: "",
-                hsnCode = promo.value.hsncode,
+                hsnCode = info.hsncode,
                 vendorProductName = productsData.vendorProductName ?: "",
-                spid = promo.value.spid,
-                stock = quantity.value.toDouble(),
+                spid = productsData.spid ?: "",
+                stock = quantity.value,
                 expiryDate = expiry.value,
-                ptr = ptr.value.toDouble(),
-                mrp = mrp.value.toDouble(),
+                ptr = ptr.value,
+                mrp = mrp.value,
                 batchLotNo = batchNo.value,
                 mfgDate = "",
                 warehouseUnitCode = productsData.warehouseUnitCode ?: "",
