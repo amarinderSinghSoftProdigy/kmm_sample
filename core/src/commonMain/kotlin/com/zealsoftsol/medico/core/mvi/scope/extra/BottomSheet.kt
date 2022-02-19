@@ -10,7 +10,6 @@ import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OfferProductRequest
@@ -137,7 +136,7 @@ sealed class BottomSheet {
         }
 
         fun updateQuantity(value: String) {
-            quantity.value = checkQuantity(value)
+            quantity.value = value
             checkSave()
         }
 
@@ -147,44 +146,12 @@ sealed class BottomSheet {
         }
 
         private fun checkSave() {
-            canSave.value = mrp.value.isNotEmpty()
+            canSave.value = mrp.value.toDoubleOrNull() != null && !mrp.value.endsWith(".")
                     && expiry.value.isNotEmpty()
-                    && ptr.value.isNotEmpty()
-                    && quantity.value.isNotEmpty()
+                    && ptr.value.toDoubleOrNull() != null  && !ptr.value.endsWith(".")
+                    && quantity.value.toDoubleOrNull() != null && !quantity.value.endsWith(".")
                     && batchNo.value.isNotEmpty()
         }
-
-        private fun checkQuantity(value: String): String {
-            val split = value.replace(",", ".").split(".")
-            val beforeDot = split[0]
-            val afterDot = split.getOrNull(1)
-            var modBefore =
-                beforeDot.toIntOrNull() ?: 0
-            val modAfter = when (afterDot?.length) {
-                0 -> "."
-                in 1..Int.MAX_VALUE -> when (afterDot!!.take(
-                    1
-                ).toIntOrNull()) {
-                    0 -> ".0"
-                    in 1..4 -> ".0"
-                    5 -> ".5"
-                    in 6..9 -> {
-                        modBefore++
-                        ".0"
-                    }
-                    null -> ""
-                    else -> throw UnsupportedOperationException(
-                        "cant be that"
-                    )
-                }
-                null -> ""
-                else -> throw UnsupportedOperationException(
-                    "cant be that"
-                )
-            }
-            return "$modBefore$modAfter"
-        }
-
 
         fun editBatch() {
             val request = BatchUpdateRequest(

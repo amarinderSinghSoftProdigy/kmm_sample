@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
@@ -49,10 +50,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -93,12 +96,12 @@ import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
+import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
-import com.zealsoftsol.medico.screens.common.OutlinedInputField
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
@@ -106,6 +109,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
+import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
@@ -114,6 +118,7 @@ import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.io.File
 
+@ExperimentalMaterialApi
 @Composable
 fun Scope.Host.showBottomSheet(
     activity: MainActivity,
@@ -2227,7 +2232,8 @@ private fun EditOfferItemBottomSheet(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun EditBatchItemBottomSheet(
     info: BottomSheet.EditBatchSheet,
@@ -2235,9 +2241,6 @@ private fun EditBatchItemBottomSheet(
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
-        //val scrollState = rememberScrollState()
-        //val coroutineScope = rememberCoroutineScope()
-        //val promo = info.promo.flow.collectAsState()
         val enableButton = info.canSave.flow.collectAsState()
         val quantity = info.quantity.flow.collectAsState()
         val mrp = info.mrp.flow.collectAsState()
@@ -2245,6 +2248,8 @@ private fun EditBatchItemBottomSheet(
         val expiry = info.expiry.flow.collectAsState()
         val batchNo = info.batchNo.flow.collectAsState()
         val context = LocalContext.current
+        val keyboardController = LocalSoftwareKeyboardController.current
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -2292,28 +2297,28 @@ private fun EditBatchItemBottomSheet(
                             modifier = Modifier.weight(0.3f),
                             fontWeight = FontWeight.W600
                         )
-
-                        OutlinedInputField(
+                        Surface(
                             modifier = Modifier
-                                .weight(0.7f),
-                            hint = stringResource(id = R.string.enter_amount),
-                            text = ptr.value,
-                            isValid = true,
-                            maxLines = 1,
-                            onValueChange = {
-                                if (it.toDoubleOrNull() != null) {
-                                    if (it.length > 1 && it.startsWith("0")) {
-                                        info.updatePtr(it.substring(1))
-                                    } else {
-                                        info.updatePtr(it)
-                                    }
-                                } else {
-                                    info.updatePtr("0")
-                                }
-                            },
-                            keyboardOptions =
-                            KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        )
+                                .weight(0.7f)
+                                .height(55.dp),
+                            color = Color.White,
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(1.dp, ConstColors.separator)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                EditText(
+                                    modifier = Modifier.padding(end = 10.dp),
+                                    canEdit = true,
+                                    value = ptr.value,
+                                    onChange = { info.updatePtr(it) })
+                            }
+                        }
                     }
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2325,26 +2330,28 @@ private fun EditBatchItemBottomSheet(
                             modifier = Modifier.weight(0.3f)
                         )
 
-                        OutlinedInputField(
+                        Surface(
                             modifier = Modifier
-                                .weight(0.7f),
-                            hint = stringResource(id = R.string.enter_amount),
-                            text = mrp.value,
-                            isValid = true,
-                            maxLines = 1,
-                            onValueChange = {
-                                if (it.toDoubleOrNull() != null) {
-                                    if (mrp.value == "0") {
-                                        info.updateMrp(it.substring(1))
-                                    } else {
-                                        info.updateMrp(it)
-                                    }
-                                } else {
-                                    info.updateMrp("0")
-                                }
-                            },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        )
+                                .weight(0.7f)
+                                .height(55.dp),
+                            color = Color.White,
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(1.dp, ConstColors.separator)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                EditText(
+                                    modifier = Modifier.padding(end = 10.dp),
+                                    canEdit = true,
+                                    value = mrp.value,
+                                    onChange = { info.updateMrp(it) })
+                            }
+                        }
                     }
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2356,18 +2363,36 @@ private fun EditBatchItemBottomSheet(
                             modifier = Modifier.weight(0.3f)
                         )
 
-                        OutlinedInputField(
+                        Surface(
                             modifier = Modifier
-                                .weight(0.7f),
-                            hint = stringResource(id = R.string.enter_quantity),
-                            text = quantity.value,
-                            isValid = true,
-                            maxLines = 1,
-                            onValueChange = {
-                                info.updateQuantity(it)
-                            },
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        )
+                                .weight(0.7f)
+                                .height(55.dp),
+                            color = Color.White,
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(1.dp, ConstColors.separator)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                EditText(
+                                    modifier = Modifier.padding(end = 10.dp),
+                                    canEdit = true,
+                                    value = quantity.value,
+                                    onChange = {
+                                        if (it.contains(".")) {
+                                            info.updateQuantity(
+                                                roundToNearestDecimalOf5(it)
+                                            )
+                                        } else {
+                                            info.updateQuantity(it)
+                                        }
+                                    })
+                            }
+                        }
                     }
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -2400,14 +2425,16 @@ private fun EditBatchItemBottomSheet(
                             }) {
                             Box(
                                 modifier = Modifier
-                                    .padding(start = 16.dp)
+                                    .padding(start = 16.dp, end = 10.dp)
                                     .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterStart
+                                contentAlignment = Alignment.CenterEnd
                             ) {
                                 Text(
                                     text = expiry.value,
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colors.background,
+                                    color = Color.Black,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.W600,
+                                    textAlign = TextAlign.End
                                 )
                             }
                         }
@@ -2422,17 +2449,45 @@ private fun EditBatchItemBottomSheet(
                             modifier = Modifier.weight(0.3f)
                         )
 
-                        OutlinedInputField(
+                        Surface(
                             modifier = Modifier
-                                .weight(0.7f),
-                            hint = stringResource(id = R.string.enter_batch_number),
-                            text = batchNo.value,
-                            isValid = true,
-                            maxLines = 1,
-                            onValueChange = {
-                                info.updateBatch(it)
-                            },
-                        )
+                                .weight(0.7f)
+                                .height(55.dp),
+                            color = Color.White,
+                            shape = MaterialTheme.shapes.medium,
+                            border = BorderStroke(1.dp, ConstColors.separator)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp)
+                                    .align(Alignment.CenterVertically),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                BasicTextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(end = 10.dp),
+                                    value = batchNo.value,
+                                    onValueChange = {
+                                        info.updateBatch(it)
+                                    },
+                                    maxLines = 1,
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                                    enabled = true,
+                                    textStyle = TextStyle(
+                                        color = Color.Black,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.W600,
+                                        textAlign = TextAlign.End,
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
                 Space(dp = 16.dp)
