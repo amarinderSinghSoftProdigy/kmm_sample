@@ -65,6 +65,13 @@ class DashboardScope private constructor(
     }
 
     /**
+     * Move to Inventory screens
+     */
+    fun moveToInventoryScreen(){
+        EventCollector.sendEvent(Event.Transition.Inventory)
+    }
+
+    /**
      * Opens search screen with params required for search based on brand
      * @param searchTerm Search term for the brand
      * @param field Which field to search (for eg - manufacturer)

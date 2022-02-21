@@ -20,12 +20,15 @@ import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
+import com.zealsoftsol.medico.data.UserRegistration1
 
 sealed class BottomSheet {
 
     class UploadDocuments(
         val supportedFileTypes: Array<FileType>,
         val isSeasonBoy: Boolean,
+        val type: String,
+        val registrationStep1: UserRegistration1
     ) : BottomSheet() {
 
         fun uploadAadhaar(base64: String): Boolean {
@@ -50,6 +53,32 @@ sealed class BottomSheet {
                 false
             }
         }
+
+
+        fun uploadDocument(
+            base64: String,
+            fileType: FileType,
+            type: String,
+            path: String,
+            registrationStep1: UserRegistration1
+        ): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.Registration.UploadDocument(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type,
+                        path = path,
+                        registrationStep1
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Registration.UploadFileTooBig)
+                false
+            }
+        }
+
 
         private fun sizeInBytes(base64: String): Int =
             (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
@@ -322,7 +351,6 @@ sealed class BottomSheet {
             )
     }
 
-
     data class BatchViewProduct(val product: ProductSearch, val scope: BaseSearchScope) :
         BottomSheet() {
 
@@ -336,4 +364,7 @@ sealed class BottomSheet {
                 )
             )
     }
+
+    data class ViewLargeImage(val url: String,val type:String?) : BottomSheet()
+
 }

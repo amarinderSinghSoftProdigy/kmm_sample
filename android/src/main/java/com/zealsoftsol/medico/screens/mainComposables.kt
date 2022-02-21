@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens
 
+import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -110,6 +111,7 @@ import com.zealsoftsol.medico.screens.auth.AuthDetailsTraderData
 import com.zealsoftsol.medico.screens.auth.AuthLegalDocuments
 import com.zealsoftsol.medico.screens.auth.AuthPersonalData
 import com.zealsoftsol.medico.screens.auth.AuthPhoneNumberInputScreen
+import com.zealsoftsol.medico.screens.auth.AuthPreview
 import com.zealsoftsol.medico.screens.auth.AuthUserType
 import com.zealsoftsol.medico.screens.auth.WelcomeOption
 import com.zealsoftsol.medico.screens.auth.WelcomeScreen
@@ -166,7 +168,7 @@ private var mUserType: UserType? = null
 @ExperimentalMaterialApi
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
+fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: MainActivity) {
     val scaffoldState = rememberScaffoldState()
     val notificationList = rememberLazyListState()
     val searchList = rememberLazyListState()
@@ -178,8 +180,14 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         mBottomNavItems = null
         mUserType = navigation.value?.user?.flow?.value?.type
     }
+    if (childScope.value is SignUpScope) {
+        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+    } else {
+        activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
+
     Scaffold(
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
@@ -259,9 +267,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
         },
         content = {
             var padding = 56
-            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope) {// no bottom padding while editing order entries
+            if (childScope.value is OrderHsnEditScope || childScope.value is ViewOrderScope || childScope.value is SignUpScope) {// no bottom padding while editing order entries
                 padding = 0
             }
+
             Crossfade(
                 childScope.value,
                 animationSpec = tween(durationMillis = 200),
@@ -272,21 +281,19 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                     is OtpScope.AwaitVerification -> AuthAwaitVerificationScreen(it)
                     is PasswordScope.VerifyCurrent -> VerifyCurrentPasswordScreen(it)
                     is PasswordScope.EnterNew -> EnterNewPasswordScreen(it)
+
                     is SignUpScope.SelectUserType -> {
                         mUserType = null
                         AuthUserType(it)
                     }
-
                     is SignUpScope.PersonalData -> {
                         mUserType = null
                         AuthPersonalData(it)
                     }
-
                     is SignUpScope.AddressData -> {
                         mUserType = null
                         AuthAddressData(it)
                     }
-
                     is SignUpScope.Details.TraderData -> {
                         mUserType = null
                         AuthDetailsTraderData(it)
@@ -295,11 +302,15 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
                         mUserType = null
                         AuthDetailsAadhaar(it)
                     }
-
                     is SignUpScope.LegalDocuments -> {
                         mUserType = null
-                        AuthLegalDocuments(it)
+                        AuthLegalDocuments(it, scaffoldState)
                     }
+                    is SignUpScope.PreviewDetails -> {
+                        mUserType = null
+                        AuthPreview(it)
+                    }
+
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
                         WelcomeScreen(
@@ -380,7 +391,6 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope) {
             }
         },
         bottomBar = {
-
             if (mBottomNavItems.isNullOrEmpty() && mUserType != null) {
                 if (mUserType == UserType.STOCKIST) {
                     mBottomNavItems = listOf(
@@ -421,6 +431,11 @@ private fun RowScope.SimpleTabBar(
     if (info.icon != ScopeIcon.NO_ICON || info.icon != ScopeIcon.HAMBURGER) {
         val keyboard = LocalSoftwareKeyboardController.current
         Icon(
+            tint = if (info.titleColor != -1L) {
+                Color(info.titleColor)
+            } else {
+                MaterialTheme.colors.background
+            },
             imageVector = info.icon.toLocalIcon(),
             contentDescription = null,
             modifier = Modifier
@@ -452,6 +467,11 @@ private fun RowScope.SimpleTabBar(
                 .align(Alignment.CenterVertically)
                 .weight(0.7f)
                 .padding(start = 16.dp),
+            color = if (info.titleColor != -1L) {
+                Color(info.titleColor)
+            } else {
+                MaterialTheme.colors.background
+            }
         )
         is StringResource.Raw -> Text(
             text = res.string.orEmpty(),

@@ -567,8 +567,6 @@ fun ProductItemStore(
     val coroutineScope = rememberCoroutineScope()
     val selectedProduct = scope.checkedProduct.flow.collectAsState()
     val enableButton = scope.enableButton.flow.collectAsState()
-    val freeQty = scope.freeQty.flow.collectAsState()
-    val id = scope.productId.flow.collectAsState()
     if (cartItem != null) {
         if (product.sellerInfo?.spid != null && product.sellerInfo?.spid == cartItem.id.spid)
             product.sellerInfo?.cartInfo = CartInfo(
@@ -602,15 +600,17 @@ fun ProductItemStore(
                 ) {
 
                     Row {
-                        CoilImage(
-                            src = CdnUrlProvider.urlFor(
-                                product.imageCode!!,
-                                CdnUrlProvider.Size.Px123
-                            ),
-                            size = 70.dp,
-                            onError = { ItemPlaceholder() },
-                            onLoading = { ItemPlaceholder() },
-                        )
+                        Surface(onClick = { scope.selectItem(product.imageCode.toString()) }) {
+                            CoilImage(
+                                src = CdnUrlProvider.urlFor(
+                                    product.imageCode!!,
+                                    CdnUrlProvider.Size.Px123
+                                ),
+                                size = 70.dp,
+                                onError = { ItemPlaceholder() },
+                                onLoading = { ItemPlaceholder() },
+                            )
+                        }
                         Space(10.dp)
                         Column(modifier = Modifier.padding(top = 8.dp)) {
                             Row(

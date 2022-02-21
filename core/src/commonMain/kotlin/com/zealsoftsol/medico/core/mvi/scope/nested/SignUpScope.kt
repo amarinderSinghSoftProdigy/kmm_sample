@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import android.util.Patterns
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -17,21 +18,29 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 
+
 sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
     CommonScope.CanGoBack {
+
+    val inputProgress: List<Int> = listOfNotNull(1, 2, 3, 4, 5)
 
     val canGoNext: DataSource<Boolean> = DataSource(false)
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? {
-        return (tabBarInfo as? TabBarInfo.Simple)?.copy(title = StringResource.Static(titleId))
+        return (tabBarInfo as? TabBarInfo.Simple)?.copy(
+            title = StringResource.Static(titleId),
+            titleColor = 0xff0084D4
+        )
     }
 
     protected open fun checkCanGoNext() = Unit
@@ -68,7 +77,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : SignUpScope("personal_data") {
-        private var isPhoneValid = false
+        //private var isPhoneValid = false
 
         init {
             checkCanGoNext()
@@ -101,18 +110,20 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         fun changePhoneNumber(phoneNumber: String) {
+            if (phoneNumber.length > 10) return
             trimInput(phoneNumber, registration.value.phoneNumber) {
                 registration.value = registration.value.copy(phoneNumber = it)
                 checkCanGoNext()
             }
         }
 
-        fun setPhoneNumberValid(isValid: Boolean) {
+        /*fun setPhoneNumberValid(isValid: Boolean) {
             isPhoneValid = isValid
             checkCanGoNext()
-        }
+        }*/
 
         fun changePassword(password: String) {
+
             trimInput(password, registration.value.password) {
                 registration.value = registration.value.copy(password = it)
                 checkCanGoNext()
@@ -126,6 +137,34 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             }
         }
 
+        fun validEmail(email: String): Boolean {
+            if (email.isEmpty()) {
+                return true
+            }
+            val pattern = Patterns.EMAIL_ADDRESS
+            return pattern.matcher(email).matches()
+        }
+
+        fun validPhone(phone: String): Boolean {
+            if (phone.isEmpty()) {
+                return true
+            }
+            return phone.length == 10
+        }
+
+
+        fun isValidPassword(str: String): Boolean {
+            if (str.isEmpty()) {
+                return true
+            }
+            val regex = ("^(?=.*[a-z])(?=."
+                    + "*[A-Z])(?=.*\\d)"
+                    + "(?=.*[-+_!@#$%^&*., ?]).+$")
+
+            val p = regex.toRegex()
+            return p.matches(str) && str.length >= 8
+        }
+
         /**
          * Transition to [AddressData] if successful
          */
@@ -135,20 +174,23 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         override fun checkCanGoNext() {
             canGoNext.value = registration.value.run {
                 firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()
-                        && phoneNumber.isNotEmpty() && password.isNotEmpty()
-                        && verifyPassword.isNotEmpty() && verifyPassword == password
-                        && isPhoneValid && isTermsAccepted.value
+                        && validEmail(email) && phoneNumber.isNotEmpty() && phoneNumber.length == 10
+                        && password.isNotEmpty() && verifyPassword.isNotEmpty()
+                        && verifyPassword == password && isTermsAccepted.value
+                        && isValidPassword(password)
             }
         }
     }
 
     class AddressData(
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         override val locationData: DataSource<LocationData?>,
         override val registration: DataSource<UserRegistration2>,
         val userValidation: DataSource<UserValidation2?> = DataSource(null),
         override val pincodeValidation: DataSource<PincodeValidation?> = DataSource(null),
     ) : SignUpScope("address"), AddressComponent {
+
+        val landmarkLimit = 30
 
         init {
             checkData()
@@ -168,7 +210,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
 
     sealed class Details(
         titleId: String,
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
     ) : SignUpScope(titleId) {
 
@@ -181,6 +223,9 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             override val validation: DataSource<UserValidation3?> = DataSource(null),
         ) : Details("trader_details", registrationStep1, registrationStep2),
             TraderDetailsComponent {
+            val gstinLimit = 15
+            val panLimit = 10
+            val foodLicenseLimit = 14
 
             override val inputFields: List<Fields> = listOfNotNull(
                 Fields.TRADE_NAME,
@@ -188,9 +233,12 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
                 Fields.PAN,
                 Fields.LICENSE1,
                 Fields.LICENSE2,
+                Fields.FOOD_LICENSE,
             )
 
             init {
+                changeFoodLicenseStatus(false)
+                registration.value = registration.value.copy(state = registrationStep2.state)
                 checkData()
                 require(registrationStep1.userType != UserType.SEASON_BOY.serverValue) {
                     "trader data not available for season boy"
@@ -230,7 +278,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         }
 
         enum class Fields {
-            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE;
+            TRADE_NAME, GSTIN, PAN, LICENSE1, LICENSE2, AADHAAR_CARD, SHARE_CODE, FOOD_LICENSE, FOOD_LICENSE_NUMBER;
         }
     }
 
@@ -238,16 +286,17 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
      * Should be handled as a root scope with minor differences in child scopes
      */
     sealed class LegalDocuments(
-        internal val registrationStep1: UserRegistration1,
+        val registrationStep1: UserRegistration1,
         internal val registrationStep2: UserRegistration2,
-        internal val registrationStep3: UserRegistration3,
+        val registrationStep3: UserRegistration3,
     ) : SignUpScope("legal_documents"),
         CommonScope.PhoneVerificationEntryPoint,
         CommonScope.UploadDocument {
 
-        init {
-            canGoNext.value = true
-        }
+        val registrationStep4: DataSource<UserRegistration4> = DataSource(UserRegistration4())
+
+        fun validate(userRegistration: UserRegistration4) =
+            EventCollector.sendEvent(Event.Action.Registration.Validate(userRegistration))
 
         fun skip() = EventCollector.sendEvent(Event.Action.Registration.Skip)
 
@@ -258,6 +307,26 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             internal var storageKey: String? = null,
         ) : LegalDocuments(registrationStep1, registrationStep2, registrationStep3) {
 
+            val tradeProfile: DataSource<UploadResponseData?> = DataSource(null)
+            val drugLicense: DataSource<UploadResponseData?> = DataSource(null)
+            val foodLicense: DataSource<UploadResponseData?> = DataSource(null)
+
+            fun checkData() {
+                val isValid =
+                    drugLicense.value != null && tradeProfile.value != null && if (registrationStep3.hasFoodLicense) foodLicense.value != null else true
+                onDataValid(isValid)
+            }
+
+            private fun onDataValid(isValid: Boolean) {
+                val registrationStep = UserRegistration4()
+                registrationStep.drugLicense = drugLicense.value
+                registrationStep.tradeProfile = tradeProfile.value
+                if (registrationStep3.hasFoodLicense)
+                    registrationStep.foodLicense = foodLicense.value
+                registrationStep4.value = registrationStep
+                canGoNext.value = isValid
+            }
+
             override val supportedFileTypes: Array<FileType> = FileType.forDrugLicense()
         }
 
@@ -266,11 +335,36 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             registrationStep2: UserRegistration2,
             internal val aadhaarData: AadhaarData,
             internal var aadhaarFile: String? = null,
-        ) : LegalDocuments(registrationStep1, registrationStep2, UserRegistration3()) {
+        ) : LegalDocuments(
+            registrationStep1, registrationStep2,
+            UserRegistration3()
+        ) {
+
+            fun onDataValid(isValid: Boolean) {
+                canGoNext.value = isValid
+            }
 
             override val supportedFileTypes: Array<FileType> = FileType.forAadhaar()
             override val isSeasonBoy = true
         }
+    }
+
+
+    class PreviewDetails(
+        val registrationStep1: UserRegistration1,
+        val registrationStep2: UserRegistration2,
+        val registrationStep3: UserRegistration3,
+        val registrationStep4: UserRegistration4,
+    ) : SignUpScope("preview"), CommonScope.PhoneVerificationEntryPoint {
+
+        init {
+            canGoNext.value = true
+        }
+
+        fun previewImage(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
+
+        fun submit() = EventCollector.sendEvent(Event.Action.Registration.Submit)
     }
 }
 

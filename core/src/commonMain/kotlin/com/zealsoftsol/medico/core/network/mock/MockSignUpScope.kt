@@ -5,10 +5,12 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PincodeValidation
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -37,6 +39,9 @@ class MockSignUpScope : NetworkScope.SignUp {
 
     override suspend fun uploadAadhaar(aadhaarData: AadhaarUpload) =
         mockResponse { mockEmptyMapBody() }
+
+    override suspend fun uploadDocument(uploadData: LicenseDocumentData) =
+        mockResponse<UploadResponseData> { UploadResponseData() }
 
     override suspend fun uploadDrugLicense(
         licenseData: DrugLicenseUpload

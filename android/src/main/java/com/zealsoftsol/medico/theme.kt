@@ -27,6 +27,7 @@ private val DarkColors = darkColors()
 
 object ConstColors {
     val yellow = Color(0xffFFD600)
+    val darkBlue = Color(0xff00539B)
     val lightBlue = Color(0xff0084D4)
     val gray = Color(0xff666666)
     val ltgray = Color(0x14003657)
