@@ -78,7 +78,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
         val registration: DataSource<UserRegistration1>,
         val validation: DataSource<UserValidation1?> = DataSource(null),
     ) : SignUpScope("personal_data") {
-        private var isPhoneValid = false
+        //private var isPhoneValid = false
 
         init {
             checkCanGoNext()
@@ -118,10 +118,10 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             }
         }
 
-        fun setPhoneNumberValid(isValid: Boolean) {
+        /*fun setPhoneNumberValid(isValid: Boolean) {
             isPhoneValid = isValid
             checkCanGoNext()
-        }
+        }*/
 
         fun changePassword(password: String) {
 
@@ -150,8 +150,7 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
             if (phone.isEmpty()) {
                 return true
             }
-            isPhoneValid = phone.length == 10
-            return isPhoneValid
+            return phone.length == 10
         }
 
 
@@ -178,8 +177,8 @@ sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),
                 firstName.isNotEmpty() && lastName.isNotEmpty() && email.isNotEmpty()
                         && validEmail(email) && phoneNumber.isNotEmpty() && phoneNumber.length == 10
                         && password.isNotEmpty() && verifyPassword.isNotEmpty()
-                        && verifyPassword == password && isPhoneValid
-                        && isTermsAccepted.value && isValidPassword(password)
+                        && verifyPassword == password && isTermsAccepted.value
+                        && isValidPassword(password)
             }
         }
     }
