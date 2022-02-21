@@ -61,4 +61,9 @@ class BatchesScope(
             )
         )
     }
+
+    //update data after editing
+    fun refresh() {
+        EventCollector.sendEvent(Event.Action.Batches.GetBatches(spid,productsData))
+    }
 }

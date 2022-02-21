@@ -353,6 +353,13 @@ interface NetworkScope {
         ): BodyResponse<String>
     }
 
+    interface BatchesStore : NetworkScope{
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
+    }
+
     interface ProfileImage : NetworkScope {
         suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
         suspend fun saveProfileImageData(

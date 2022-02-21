@@ -362,7 +362,7 @@ sealed class Event {
         sealed class Batches : Action() {
             override val typeClazz: KClass<*> = Batches::class
 
-            object GetBatches : Batches()
+            data class GetBatches(val spid: String, val productsData: ProductsData) : Batches()
         }
 
         sealed class OrderHsn : Action() {

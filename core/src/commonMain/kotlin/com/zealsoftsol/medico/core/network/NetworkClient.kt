@@ -134,7 +134,7 @@ class NetworkClient(
     NetworkScope.InventoryStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore,
-    NetworkScope.OrderHsnEditStore {
+    NetworkScope.OrderHsnEditStore, NetworkScope.BatchesStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()

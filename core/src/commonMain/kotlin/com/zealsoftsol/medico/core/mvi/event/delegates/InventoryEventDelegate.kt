@@ -4,10 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
-import com.zealsoftsol.medico.core.mvi.scope.Scopable
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -16,9 +13,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ProductsData
-import com.zealsoftsol.medico.data.PromotionUpdateRequest
 
 internal class InventoryEventDelegate(
     navigator: Navigator,
@@ -46,8 +41,8 @@ internal class InventoryEventDelegate(
                     unitCode = user.unitCode,
                     item
                 )
-            }.onSuccess {
-
+            }.onSuccess { _->
+                it.refresh()
             }.onError(navigator)
         }
     }

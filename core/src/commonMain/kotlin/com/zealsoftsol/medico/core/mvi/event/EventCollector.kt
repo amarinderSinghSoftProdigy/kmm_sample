@@ -5,6 +5,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
@@ -63,6 +64,7 @@ class EventCollector(
     inventoryScope: NetworkScope.InventoryStore,
     offersNetworkScope: NetworkScope.OffersStore,
     orderHsnScope: NetworkScope.OrderHsnEditStore,
+    batchesScope: NetworkScope.BatchesStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -156,7 +158,8 @@ class EventCollector(
             navigator,
             userRepo,
             offersNetworkScope
-        )
+        ),
+        Event.Action.Batches::class to BatchesEventDelegate(navigator, userRepo, batchesScope)
     )
 
     init {
