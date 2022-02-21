@@ -313,6 +313,11 @@
     <string name="inventory">Inventory</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
+    <string name="limited_stock">Limited Stock</string>
+    <string name="long_expiry">Long Expiry(&gt;6 months)</string>
+    <string name="near_expiry">Near Expiry(&lt;6 months)</string>
+    <string name="expired">Expired</string>
+    <string name="availability">Availability</string>
     <string name="dl_one">DL1</string>
     <string name="dl_two">DL2</string>
     <string name="my_account">My Account</string>
@@ -328,6 +333,8 @@
     <string name="your_orders">Your Orders</string>
     <string name="your_invoices">Your Invoices</string>
     <string name="connections">Connections</string>
+    <string name="total_prod">Total Products</string>
+    <string name="stock">Stock:</string>
     <string name="search_hsn_code">Search HSN Code</string>
     <string name="hsn_code">HSN Code</string>
     <string name="hsn_code_error">*HSN Code not available for the product.</string>
@@ -339,7 +346,7 @@
     <string name="decline_reason">Reason for declining order</string>
     <string name="decline_all">Decline All</string>
     <string name="offers">Offers</string>
-    <string name="batchs">Batchs</string>
+    <string name="batchs">Batches</string>
     <string name="added_to_cart">added to the cart with</string>
     <string name="your_brands">Your Brands</string>
     <string name="no_products">No products found!</string>
@@ -388,6 +395,15 @@
     <string name="update_app">A new version is available to download. By downloading the latest update you will get the latest features, improvements and bug fixes for medicostores.</string>
     <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
     more than or equal to the requested quantity</string>
+    <string name="search_inventory">Search Inventory</string>
+    <string name="more">See More</string>
+    <string name="no_batches_available">No batches available for selected product</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="enter_quantity">Enter Quantity</string>
+    <string name="enter_batch_number">Enter Batch Number</string>
+    <string name="mm_yyyy">MM/YYYY</string>
+    <string name="exp_mm_yyyy">Exp (MM/YYYY)</string>
+    <string name="batch_no_">Batch No</string>
     <string name="drug_license_20b">DL 20 B</string>
     <string name="drug_license_21b">DL 21 B</string>
     <string name="pan">PAN</string>

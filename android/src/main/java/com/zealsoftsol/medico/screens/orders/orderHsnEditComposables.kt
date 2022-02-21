@@ -58,13 +58,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -77,11 +75,13 @@ import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -127,7 +127,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
      * update editable data is user has selected a batch from ViewBatchComposable
      */
     remember {
-        selectedBatchData.value.let {
+        selectedBatchData.value?.let {
             if (it.batch.isNotEmpty())
                 scope.updateBatch(it.batch)
             if (it.expiry.isNotEmpty())
@@ -1520,54 +1520,6 @@ private fun WarningProductNotAvailable(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun EditText(
-    canEdit: Boolean,
-    value: String,
-    onChange: (String) -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val textStyle = TextStyle(
-        color = Color.Black,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.W600,
-        textAlign = TextAlign.End,
-    )
-
-    val initSelectionIndex = value.length.takeIf { it <= value.length } ?: value.length
-
-    val textFieldValueState = TextFieldValue(
-        text = value,
-        selection = TextRange(initSelectionIndex)
-    )
-
-    BasicTextField(
-        modifier = Modifier
-            .fillMaxWidth(),
-        value = textFieldValueState,
-        onValueChange = {
-            if (it.text.toDoubleOrNull() != null) {
-                if (it.text.length > 1 && it.text.startsWith("0")) {
-                    onChange(it.text.substring(1))
-                } else {
-                    onChange(it.text)
-                }
-            } else {
-                onChange("0")
-            }
-        },
-        maxLines = 1,
-        singleLine = true,
-        keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-        enabled = canEdit,
-        textStyle = textStyle,
-    )
-}
-
 
 @Composable
 fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
@@ -1657,36 +1609,4 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
             }
         }
     }
-}
-
-fun roundToNearestDecimalOf5(text: String): String {
-    val split = text.replace(",", ".").split(".")
-    val beforeDot = split[0]
-    val afterDot = split.getOrNull(1)
-    var modBefore =
-        beforeDot.toIntOrNull() ?: 0
-    val modAfter = when (afterDot?.length) {
-        0 -> "."
-        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
-            1
-        ).toIntOrNull()) {
-            0 -> ".0"
-            in 1..4 -> ".0"
-            5 -> ".5"
-            in 6..9 -> {
-                modBefore++
-                ".0"
-            }
-            null -> ""
-            else -> throw UnsupportedOperationException(
-                "cant be that"
-            )
-        }
-        null -> ""
-        else -> throw UnsupportedOperationException(
-            "cant be that"
-        )
-    }
-
-    return "$modBefore$modAfter"
 }

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
+import android.util.Patterns
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
@@ -12,7 +13,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.AddressComponent
 import com.zealsoftsol.medico.core.mvi.scope.extra.TraderDetailsComponent
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.utils.StringResource
-import com.zealsoftsol.medico.core.utils.Validator
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.FileType
@@ -27,7 +27,6 @@ import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
-import android.util.Patterns
 
 
 sealed class SignUpScope(private val titleId: String) : Scope.Child.TabBar(),

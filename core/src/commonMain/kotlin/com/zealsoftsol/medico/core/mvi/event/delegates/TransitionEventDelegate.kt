@@ -33,6 +33,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -212,7 +213,8 @@ internal class TransitionEventDelegate(
                         event.spid,
                         event.batchData,
                         event.selectedBatchData,
-                        event.requiredQty
+                        event.requiredQty,
+                        ProductsData()
                     )
                 )
             }

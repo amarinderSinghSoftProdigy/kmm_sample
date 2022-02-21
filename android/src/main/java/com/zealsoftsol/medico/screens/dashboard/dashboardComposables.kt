@@ -176,7 +176,7 @@ private fun ShowRetailerAndHospitalDashboard(
                 dashboard.value?.brands?.let {
                     itemsIndexed(
                         items = it,
-                        key = { _, item -> item.searchTerm },
+                        key = { index, _ -> index },
                         itemContent = { _, item ->
                             BrandsItem(item, scope)
                         },
@@ -429,6 +429,9 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .clickable {
+                            scope.moveToInventoryScreen()
+                        }
                         .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
                         .padding(20.dp),
@@ -466,6 +469,9 @@ private fun ShowStockistDashBoard(
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .clickable {
+                            scope.moveToInventoryScreen()
+                        }
                         .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
                         .padding(20.dp),

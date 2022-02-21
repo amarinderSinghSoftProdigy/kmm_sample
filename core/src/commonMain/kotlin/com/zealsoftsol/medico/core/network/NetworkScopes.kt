@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
@@ -25,6 +26,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
@@ -335,6 +337,32 @@ interface NetworkScope {
         ): BodyResponse<BatchesData>
     }
 
+    interface InventoryStore : NetworkScope {
+        suspend fun getInventoryData(
+            unitCode: String,
+            search: String?,
+            page: Int,
+            manufacturer: String?
+        ): BodyResponse<InventoryData>
+
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
+
+        suspend fun editBatches(
+            unitCode: String,
+            request: BatchUpdateRequest
+        ): BodyResponse<String>
+    }
+
+    interface BatchesStore : NetworkScope{
+        suspend fun getBatches(
+            unitCode: String,
+            spid: String
+        ): BodyResponse<BatchesData>
+    }
+
     interface ProfileImage : NetworkScope {
         suspend fun getProfileImageData(): BodyResponse<ProfileImageData>
         suspend fun saveProfileImageData(
@@ -378,7 +406,7 @@ interface NetworkScope {
 
         suspend fun editOffer(
             unitCode: String,
-            promoCode: String,request: OfferProductRequest
+            promoCode: String, request: OfferProductRequest
         ): BodyResponse<String>
     }
 }

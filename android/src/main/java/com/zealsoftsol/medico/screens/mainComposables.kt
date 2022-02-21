@@ -1,6 +1,5 @@
 package com.zealsoftsol.medico.screens
 
-import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -193,7 +191,8 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope) { //don't show top bar for OrderEditHsnScreen
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope) //don't show top bar for OrderEditHsnScreen and Inventory
+            {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

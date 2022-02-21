@@ -66,7 +66,7 @@ class OrderHsnEditScope(
     val discount = DataSource(orderEntry.value.discount.value.toString())
     val mrp = DataSource(orderEntry.value.mrp.value.toString())
     val selectedHsnCode = DataSource(orderEntry.value.hsnCode)
-    val selectedBatchData = DataSource(SelectedBatchData())
+    val selectedBatchData: DataSource<SelectedBatchData?> = DataSource(SelectedBatchData())
 
     /**
      * Update this whenever user switches the line index so that you get correct data for order entries

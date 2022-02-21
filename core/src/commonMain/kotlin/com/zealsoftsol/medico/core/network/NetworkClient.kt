@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.CartConfirmData
@@ -36,6 +37,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
@@ -131,9 +133,10 @@ class NetworkClient(
     NetworkScope.Config,
     NetworkScope.InStore,
     NetworkScope.WhatsappStore,
+    NetworkScope.InventoryStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore,
-    NetworkScope.OrderHsnEditStore {
+    NetworkScope.OrderHsnEditStore, NetworkScope.BatchesStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -860,6 +863,7 @@ class NetworkClient(
             }
         }
 
+
     override suspend fun getHsnCodes(search: String, pagination: Pagination) = simpleRequest {
         client.get<BodyResponse<PaginatedData<SearchDataItem>>>("${baseUrl.url}/products/hsncodes/search") {
             withMainToken()
@@ -1078,8 +1082,41 @@ class NetworkClient(
             }
         }
     }
-    // Utils
 
+    override suspend fun editBatches(
+        unitCode: String,
+        request: BatchUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/inventory/save") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+    override suspend fun getInventoryData(
+        unitCode: String,
+        search: String?,
+        page: Int,
+        manufacturer: String?
+    ): BodyResponse<InventoryData> = simpleRequest {
+        client.get("${baseUrl.url}/inventory/view") {
+            withMainToken()
+            header("X-TENANT-ID", unitCode)
+            url {
+                parameters.apply {
+                    if (search != null)
+                        append("search", search)
+                    if (manufacturer != null)
+                        append("manufacturer", manufacturer)
+                    append("page", page.toString())
+                    append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
+                }
+            }
+        }
+    }
+
+    // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
     }

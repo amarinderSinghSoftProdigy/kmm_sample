@@ -151,6 +151,9 @@ fun startKodein(
     bind<NetworkScope.OffersStore>() with singleton {
         instance<NetworkClient>()
     }
+    bind<NetworkScope.BatchesStore>() with singleton {
+        instance<NetworkClient>()
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
             instance(),
@@ -164,8 +167,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
-            instance(),
-            )
+        )
     }
     bind<NotificationRepo>() with singleton { NotificationRepo(instance(), instance()) }
     bind<CartRepo>() with singleton { CartRepo(instance()) }
@@ -187,6 +189,7 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance()
         )
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }

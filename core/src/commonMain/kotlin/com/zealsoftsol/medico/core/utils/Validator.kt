@@ -1,7 +1,5 @@
 package com.zealsoftsol.medico.core.utils
 
-import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
-
 object Validator {
 
     object TraderDetails {

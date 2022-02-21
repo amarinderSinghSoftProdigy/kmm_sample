@@ -65,6 +65,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusEvent
@@ -72,15 +73,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -94,8 +95,6 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.network.CdnUrlProvider
-import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
 import java.io.File
@@ -902,3 +901,92 @@ fun shouldShowPermissionRationale(context: Context, permission: String): Boolean
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun EditText(
+    canEdit: Boolean,
+    value: String,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val textStyle = TextStyle(
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.End,
+    )
+
+    var originalValue = value
+
+    if (originalValue == "0.0")
+        originalValue = "0"
+
+    val initSelectionIndex =
+        originalValue.length.takeIf { it <= originalValue.length } ?: originalValue.length
+
+    val textFieldValueState = TextFieldValue(
+        text = originalValue,
+        selection = TextRange(initSelectionIndex)
+    )
+
+    BasicTextField(
+        modifier = modifier
+            .fillMaxWidth(),
+        value = textFieldValueState,
+        onValueChange = {
+            if (it.text.toDoubleOrNull() != null) {
+                if (it.text.length > 1 && (it.text.startsWith("0") && !it.text.contains("."))) {
+                    onChange(it.text.substring(1))
+                } else {
+                    onChange(it.text)
+                }
+            } else {
+                onChange("0")
+            }
+        },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        enabled = canEdit,
+        textStyle = textStyle,
+    )
+}
+
+/**
+ * round t0 nearest decimal of 5 (for eg 1.5 -> 1.5, 1.3 -> 1.0 and 1.7 -> 2.0)
+ */
+fun roundToNearestDecimalOf5(text: String): String {
+    val split = text.replace(",", ".").split(".")
+    val beforeDot = split[0]
+    val afterDot = split.getOrNull(1)
+    var modBefore =
+        beforeDot.toIntOrNull() ?: 0
+    val modAfter = when (afterDot?.length) {
+        0 -> "."
+        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+            1
+        ).toIntOrNull()) {
+            0 -> ".0"
+            in 1..4 -> ".0"
+            5 -> ".5"
+            in 6..9 -> {
+                modBefore++
+                ".0"
+            }
+            null -> ""
+            else -> throw UnsupportedOperationException(
+                "cant be that"
+            )
+        }
+        null -> ""
+        else -> throw UnsupportedOperationException(
+            "cant be that"
+        )
+    }
+
+    return "$modBefore$modAfter"
+}

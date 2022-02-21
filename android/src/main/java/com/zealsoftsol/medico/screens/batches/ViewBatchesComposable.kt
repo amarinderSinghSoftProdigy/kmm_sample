@@ -72,43 +72,55 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    Text(
-                        text = it.productName,
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.W600
-                    )
-                    Space(dp = 10.dp)
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.requested_qty))
-                            append(" ")
-                            val startIndex = length
-                            append(scope.requiredQty.toString())
-                            val nextIndex = length
-                            addStyle(
-                                SpanStyle(
-                                    color = ConstColors.red,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                startIndex,
-                                length,
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = it.productName,
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            fontWeight = FontWeight.W600
+                        )
+
+                        if (scope.requiredQty != 0.0) { //don't show required quantity when coming from inventory
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.requested_qty))
+                                    append(" ")
+                                    val startIndex = length
+                                    append(scope.requiredQty.toString())
+                                    val nextIndex = length
+                                    addStyle(
+                                        SpanStyle(
+                                            color = ConstColors.red,
+                                            fontWeight = FontWeight.W500
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W500
+                                        ),
+                                        nextIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.W500
                             )
-                            addStyle(
-                                SpanStyle(
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.W500
-                                ),
-                                nextIndex,
-                                length,
-                            )
-                        },
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W500
-                    )
+                        }
+                    }
+                    Space(10.dp)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -126,6 +138,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             horizontalArrangement = Arrangement.End,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+
                             Text(
                                 text = stringResource(id = R.string.in_stock),
                                 color = Color.Black,
@@ -141,6 +154,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                             )
                         }
                     }
+
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
                     if (it.batches.isNotEmpty()) {
                         LazyColumn(
@@ -152,6 +166,7 @@ fun ViewBatchesScreen(scope: BatchesScope) {
                                 key = { pos, _ -> pos },
                                 itemContent = { _, item ->
                                     BatchesItem(item, scope)
+                                    Space(dp = 15.dp)
                                 },
                             )
                         }
@@ -350,24 +365,34 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                         )
                     }
 
+                    val selectData = scope.selectedBatchData.flow.collectAsState()
                     Row(
                         modifier = Modifier.padding(top = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         MedicoButton(
-                            text = stringResource(id = R.string.select), isEnabled = true,
+                            text = if (selectData.value != null) {
+                                stringResource(id = R.string.select)
+                            } else {
+                                stringResource(id = R.string.edit)
+                            },
+                            isEnabled = true,
                             modifier = Modifier
                                 .height(35.dp)
                                 .padding(start = 40.dp, end = 0.dp)
                         ) {
-                            scope.updateData(
-                                batchNo = item.batchNo,
-                                expiry = item.expiryDate,
-                                mrp = item.mrp.value.toString(),
-                                price = item.ptr.value.toString(),
-                                hsnCode = item.hsncode,
-                                qty = item.stock.value.toString()
-                            )
+                            if (selectData.value != null) {
+                                scope.updateData(
+                                    batchNo = item.batchNo,
+                                    expiry = item.expiryDate,
+                                    mrp = item.mrp.value.toString(),
+                                    price = item.ptr.value.toString(),
+                                    hsnCode = item.hsncode,
+                                    qty = item.stock.value.toString()
+                                )
+                            } else {
+                                scope.showEditBottomSheet(item)
+                            }
                         }
                     }
                 }
