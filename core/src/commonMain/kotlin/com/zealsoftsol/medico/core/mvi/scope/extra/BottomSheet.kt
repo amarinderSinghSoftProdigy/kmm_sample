@@ -155,15 +155,15 @@ sealed class BottomSheet {
 
         fun editBatch() {
             val request = BatchUpdateRequest(
-                productCode = productsData.id ?: "",
+                productCode = productsData.productCode ?: "",
                 manufacturerCode = productsData.manufacturerCode ?: "",
                 hsnCode = info.hsncode,
                 vendorProductName = productsData.vendorProductName ?: "",
                 spid = productsData.spid ?: "",
-                stock = quantity.value,
+                stock = quantity.value.toDouble(),
                 expiryDate = expiry.value,
-                ptr = ptr.value,
-                mrp = mrp.value,
+                ptr = ptr.value.toDouble(),
+                mrp = mrp.value.toDouble(),
                 batchLotNo = batchNo.value,
                 mfgDate = "",
                 warehouseUnitCode = productsData.warehouseUnitCode ?: "",
