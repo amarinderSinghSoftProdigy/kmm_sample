@@ -259,10 +259,10 @@ fun AuthPersonalData(scope: SignUpScope.PersonalData) {
                     hint = stringResource(id = R.string.phone_number),
                     text = registration.value.phoneNumber,
                     onValueChange = { phoneNumber ->
-                        scope.changePhoneNumber(phoneNumber.filter { it == '+' || it.isDigit() })
+                        scope.changePhoneNumber(phoneNumber.filter { it.isDigit() })
                     },
                     leadingIcon = {
-                        Row {
+                        Row(modifier = Modifier.padding(start = 16.dp, top = 12.dp)) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_phone_number),
                                 contentDescription = null,

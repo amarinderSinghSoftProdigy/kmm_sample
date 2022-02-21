@@ -292,7 +292,7 @@ class NetworkClient(
 
     override suspend fun signUp(submitRegistration: SubmitRegistration) =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else ""}/submit") {
+            client.post<AnyResponse>("${baseUrl.url}/registration${if (submitRegistration.isSeasonBoy) "/seasonboys" else "/v2"}/submit") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(submitRegistration)
             }
