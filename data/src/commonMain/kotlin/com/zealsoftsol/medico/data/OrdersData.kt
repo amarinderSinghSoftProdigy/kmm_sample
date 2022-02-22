@@ -309,7 +309,7 @@ data class OrderTaxInfo(
     val adjWithoutRounded: FormattedData<Double>,
     val netAmount: FormattedData<Double>,
     val amountInWords: String,
-    val taxType: String
+    val taxType: TaxType
 )
 
 @Serializable

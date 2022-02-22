@@ -301,6 +301,8 @@ sealed class Event {
 
             data class Confirm(val fromNotification: Boolean, val reasonCode: String) : Orders()
 
+            data class ConfirmInvoice(val reasonCode: String) : Orders()
+
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
 
             data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()

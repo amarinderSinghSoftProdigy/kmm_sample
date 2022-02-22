@@ -72,6 +72,7 @@ internal class OrdersEventDelegate(
             event.expiry
         )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
+        is Event.Action.Orders.ConfirmInvoice -> confirmInvoiceOrder(event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
         is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
         is Event.Action.Orders.EditDiscount -> editDiscount(event.orderId, event.discount)
@@ -118,6 +119,15 @@ internal class OrdersEventDelegate(
             }
         } else if (scp is ConfirmOrderScope) {
             navigator.withScope<ConfirmOrderScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    item,
+                    isSeasonBoy = false,
+                    canSubscribe = false,
+                )
+            }
+        } else if (scp is ViewOrderInvoiceScope) {
+            navigator.withScope<ViewOrderInvoiceScope> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
                     item,
@@ -390,4 +400,29 @@ internal class OrdersEventDelegate(
             }
         }
     }
+
+    private suspend fun confirmInvoiceOrder(reasonCode: String) {
+        navigator.withScope<ViewOrderInvoiceScope> {
+            withProgress {
+                it.orderTax.value?.info?.orderId?.let { data ->
+                    networkOrdersScope.takeActionOnOrderEntries(
+                        ConfirmOrderRequest(
+                            orderId = data,
+                            sellerUnitCode = userRepo.requireUser().unitCode,
+                            acceptedEntries = it.entries.value.map { it.id },
+                            reasonCode = reasonCode
+                        )
+                    )
+                }
+            }?.onSuccess { _ ->
+                it.order.value?.let {
+                    dropScope(updateDataSource = false)
+                    dropScope(updateDataSource = false)
+                    dropScope(updateDataSource = false)
+                    setScope(OrderPlacedScope(it))
+                }
+            }?.onError(navigator)
+        }
+    }
+
 }

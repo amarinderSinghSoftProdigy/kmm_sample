@@ -60,8 +60,8 @@ import com.zealsoftsol.medico.screens.common.Space
 @Composable
 fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
 
-    if (scope.canEdit)
-        remember { scope.updateData() }
+
+    remember { scope.updateData() }
 
     val order = scope.orderTax.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
@@ -137,56 +137,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 16.sp,
                             )
-
-                            /*Text(
-                                text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.status))
-                                    append(": ")
-                                    val startIndex = length
-                                    append(orderTaxValue.info.orderStatus)
-                                    addStyle(
-                                        SpanStyle(
-                                            color = Color.Black,
-                                            fontWeight = FontWeight.W600
-                                        ),
-                                        startIndex,
-                                        length,
-                                    )
-                                },
-                                color = Color.Black,
-                                fontWeight = FontWeight.W600,
-                                fontSize = 16.sp,
-                            )*/
-
                             Space(5.dp)
-
-                            /*Row(verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable {
-                                    if (scope.canEdit) {
-                                        scope.showEditDiscountOption(false)
-                                        scope.showPaymentOptions(!openPaymentView.value)
-                                    }
-                                }) {
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append(stringResource(id = R.string.type))
-                                        append(": ")
-                                        val startIndex = length
-                                        append(paymentMethod.value)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = ConstColors.green,
-                                                fontWeight = FontWeight.W600
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 16.sp,
-                                )
-                            }*/
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
@@ -203,33 +154,6 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
-                            /*Row(verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable {
-                                    if (scope.canEdit) {
-                                        scope.showPaymentOptions(false)
-                                        scope.showEditDiscountOption(!openEditDiscountView.value)
-                                    }
-                                }) {
-                                Text(
-                                    text = buildAnnotatedString {
-                                        append(stringResource(id = R.string.discount))
-                                        append(": ")
-                                        val startIndex = length
-                                        append(orderTaxValue.info.discount.formatted)
-                                        addStyle(
-                                            SpanStyle(
-                                                color = Color.Black,
-                                                fontWeight = FontWeight.W600
-                                            ),
-                                            startIndex,
-                                            length,
-                                        )
-                                    },
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.W600,
-                                    fontSize = 16.sp,
-                                )
-                            }*/
                         }
                     }
                     Space(8.dp)

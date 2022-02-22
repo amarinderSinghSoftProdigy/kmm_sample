@@ -3195,7 +3195,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = "0.00",
+                    text = "0",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End
                 )
@@ -3246,48 +3246,74 @@ private fun ViewInvoiceBottomSheet(
                 )
             }
             Space(16.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row {
-                    Space(dp = 16.dp)
+
+            if (info?.taxType == TaxType.SGST) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.sgst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
                     Text(
-                        text = stringResource(id = R.string.sgst),
-                        color = ConstColors.txtGrey,
-                        textAlign = TextAlign.Start,
+                        text = info.totalSGST.formatted,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
                     )
                 }
-                Text(
-                    text = info?.totalSGST?.formatted ?: "",
-                    color = MaterialTheme.colors.background,
-                    textAlign = TextAlign.End
-                )
-            }
-            Space(16.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+                Space(16.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
 
-                Row {
-                    Space(dp = 16.dp)
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.cgst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+
                     Text(
-                        text = stringResource(id = R.string.cgst),
-                        color = ConstColors.txtGrey,
-                        textAlign = TextAlign.Start,
+                        text = info.totalCGST.formatted,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
                     )
                 }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
 
-                Text(
-                    text = info?.totalCGST?.formatted ?: "",
-                    color = MaterialTheme.colors.background,
-                    textAlign = TextAlign.End
-                )
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.igst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+
+                    Text(
+                        text = info?.totalIGST?.formatted ?: "",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
             }
 
             Space(16.dp)
