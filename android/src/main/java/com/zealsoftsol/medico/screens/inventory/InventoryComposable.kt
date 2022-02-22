@@ -219,7 +219,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(65.dp)
+                        .height(70.dp)
                         .padding(horizontal = 10.dp, vertical = 10.dp),
                 ) {
                     Text(
