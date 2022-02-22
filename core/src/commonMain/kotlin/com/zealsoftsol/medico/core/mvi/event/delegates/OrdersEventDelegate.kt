@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -26,6 +27,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.TaxType
 
@@ -43,6 +45,13 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.ViewOrderAction -> viewOrderAction(
             event.action,
             event.fromNotification,
+        )
+        is Event.Action.Orders.SelectBottomSheet -> openBottomSheet(
+            event.orderDetails,
+            event.reason
+        )
+        is Event.Action.Orders.ViewOrderInvoiceAction -> viewOrderInvoiceAction(
+            event.orderId, event.acceptedEntries, event.reasonCode
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(
             event.taxType,
@@ -87,9 +96,11 @@ internal class OrdersEventDelegate(
     private suspend fun changePaymentMethod(orderId: String, type: String) {
         navigator.withScope<ViewOrderScope> {
             withProgress {
-                networkOrdersScope.changePaymentMethod(orderId = orderId, unitCode = userRepo.requireUser().unitCode,
-                    type = type)
-            }.onSuccess {_->
+                networkOrdersScope.changePaymentMethod(
+                    orderId = orderId, unitCode = userRepo.requireUser().unitCode,
+                    type = type
+                )
+            }.onSuccess { _ ->
                 it.paymentType.value = type
             }.onError(navigator)
         }
@@ -177,6 +188,41 @@ internal class OrdersEventDelegate(
                 it.entries = DataSource(body.entries)
             }.onError(navigator)
         }
+    }
+
+    private suspend fun viewOrderInvoiceAction(
+        orderId: String,
+        acceptedEntries: List<String>,
+        reasonCode: String? = null,
+    ) {
+        navigator.withScope<Scopable> {
+            withProgress {
+                val item = ConfirmOrderRequest(
+                    orderId,
+                    userRepo.requireUser().unitCode,
+                    acceptedEntries,
+                    reasonCode
+                )
+                networkOrdersScope.getOrderInvoice(item)
+            }.onSuccess { body ->
+                setScope(
+                    ViewOrderInvoiceScope(
+                        canEdit = false,
+                        orderId = orderId,
+                        typeInfo = OrderType.PREVIEW,
+                        order = DataSource(null),
+                        orderTax = DataSource(body.order),
+                        b2bData = DataSource(body.unitData.data),
+                        entries = DataSource(body.entries),
+                        declineReason = DataSource(body.declineReasons)
+                    )
+                )
+            }.onError(navigator)
+        }
+    }
+
+    fun openBottomSheet(item: OrderTaxInfo?, reason: String) {
+        navigator.scope.value.bottomSheet.value = BottomSheet.InvoiceViewProduct(item, reason)
     }
 
     private fun viewOrderAction(action: ViewOrderScope.Action, fromNotification: Boolean) {

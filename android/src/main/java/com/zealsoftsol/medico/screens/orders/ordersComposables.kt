@@ -135,6 +135,7 @@ fun OrdersScreen(scope: OrdersScope, isInProgress: DataSource<Boolean>) {
                     OrderType.ORDER -> R.drawable.ic_missing_orders to R.string.missing_orders
                     OrderType.PURCHASE_ORDER -> R.drawable.ic_missing_orders to R.string.missing_po_orders
                     OrderType.HISTORY -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders
+                    OrderType.PREVIEW -> R.drawable.ic_missing_po_orders to R.string.missing_history_orders
                 }
                 NoRecords(
                     icon = icon,

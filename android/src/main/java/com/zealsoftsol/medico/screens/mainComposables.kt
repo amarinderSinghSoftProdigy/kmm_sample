@@ -94,6 +94,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
@@ -146,6 +147,7 @@ import com.zealsoftsol.medico.screens.orders.ConfirmOrderScreen
 import com.zealsoftsol.medico.screens.orders.OrderHsnEditScreen
 import com.zealsoftsol.medico.screens.orders.OrderPlacedScreen
 import com.zealsoftsol.medico.screens.orders.OrdersScreen
+import com.zealsoftsol.medico.screens.orders.ViewOrderInvoiceScreen
 import com.zealsoftsol.medico.screens.orders.ViewOrderScreen
 import com.zealsoftsol.medico.screens.password.EnterNewPasswordScreen
 import com.zealsoftsol.medico.screens.password.VerifyCurrentPasswordScreen
@@ -358,6 +360,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                         manageBottomNavState(BottomNavKey.PO)
                     }
                     is ViewOrderScope -> ViewOrderScreen(it)
+                    is ViewOrderInvoiceScope -> ViewOrderInvoiceScreen(it)
                     is ConfirmOrderScope -> ConfirmOrderScreen(it)
                     is InvoicesScope -> InvoicesScreen(it)
                     is ViewInvoiceScope -> ViewInvoiceScreen(it)

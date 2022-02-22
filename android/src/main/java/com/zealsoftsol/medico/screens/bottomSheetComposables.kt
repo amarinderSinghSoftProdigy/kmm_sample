@@ -87,6 +87,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
@@ -226,6 +227,14 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.ViewLargeImage -> ViewLargeImageBottomSheet(
                 url = bs.url,
                 type = bs.type,
+                onDismiss = { dismissBottomSheet() },
+            )
+            is BottomSheet.InvoiceViewProduct -> ViewInvoiceBottomSheet(
+                bs.orderDetails,
+                onSubscribe = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
                 onDismiss = { dismissBottomSheet() },
             )
         }
@@ -2992,6 +3001,328 @@ private fun ViewLargeImageBottomSheet(
                     Space(30.dp)
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ViewInvoiceBottomSheet(
+    info: OrderTaxInfo?,
+    onSubscribe: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Surface(
+                    color = Color.Black.copy(alpha = 0.12f),
+                    shape = CircleShape,
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(15.dp),
+                    )
+                }
+            }
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.items))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.noOfItems.toString())
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.units))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.noOfUnits.toString())
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+
+            }
+
+            Space(dp = 16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.adjust))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.adjWithoutRounded?.formatted ?: "")
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.rounding))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.adjRounded?.formatted ?: "")
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+
+            }
+
+            Space(dp = 16.dp)
+            Divider()
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.gross_amount),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.grossAmount?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.discount),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Row {
+                    Text(
+                        text = info?.orderDiscount?.formatted ?: "",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                    Space(dp = 4.dp)
+                    Divider(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .width(1.dp)
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = info?.discount?.formatted ?: "",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.freight),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = "0.00",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.total_tax),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.totalTaxAmount?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(16.dp)
+            Divider()
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.gst),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.totalSGST?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row {
+                    Space(dp = 16.dp)
+                    Text(
+                        text = stringResource(id = R.string.sgst),
+                        color = ConstColors.txtGrey,
+                        textAlign = TextAlign.Start,
+                    )
+                }
+                Text(
+                    text = info?.totalSGST?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Row {
+                    Space(dp = 16.dp)
+                    Text(
+                        text = stringResource(id = R.string.cgst),
+                        color = ConstColors.txtGrey,
+                        textAlign = TextAlign.Start,
+                    )
+                }
+
+                Text(
+                    text = info?.totalCGST?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(16.dp)
+            Divider()
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.net_payable),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.total?.formattedPrice ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+
+            Space(16.dp)
+            MedicoButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.confirm),
+                isEnabled = true,
+                onClick = onSubscribe,
+            )
+            Space(30.dp)
         }
     }
 }

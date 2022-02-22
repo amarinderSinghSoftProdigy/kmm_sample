@@ -54,6 +54,7 @@ import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderResponseInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.OtpRequest
 import com.zealsoftsol.medico.data.PaginatedData
@@ -653,6 +654,15 @@ class NetworkClient(
                     append("b2bUnitCode", unitCode)
                 }
             }
+        }
+    }
+
+    override suspend fun getOrderInvoice(
+        request: ConfirmOrderRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<OrderResponseInvoice>>("${baseUrl.url}/orders/tax/po/preview") {
+            withMainToken()
+            jsonBody(request)
         }
     }
 

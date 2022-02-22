@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 enum class OrderType(val path: String) {
     PURCHASE_ORDER("/po/"),
     ORDER("/"),
-    HISTORY("/po/history/");
+    HISTORY("/po/history/"),
+    PREVIEW("/orders/tax/po/preview");
 }
 
 @Serializable
@@ -63,6 +64,14 @@ data class OrderTax(
     @SerialName("sbRetailerTradeName")
     val seasonBoyRetailerName: String? = null,
 )
+@Serializable
+data class OrderTaxInvoice(
+    @SerialName("orderTaxInfo")
+    val info: OrderTaxInfo,
+    val tradeName: String,
+    @SerialName("sbRetailerTradeName")
+    val seasonBoyRetailerName: String? = null,
+)
 
 @Serializable
 data class OrderResponse(
@@ -70,6 +79,18 @@ data class OrderResponse(
     val entries: List<OrderEntry>,
     @SerialName("orderTax")
     val order: OrderTax,
+    @SerialName("unitInfoData")
+    val unitData: UnitData,
+    val declineReasons: List<DeclineReason>,
+    val isDeliveryAvailable: Boolean
+)
+
+@Serializable
+data class OrderResponseInvoice(
+    @SerialName("orderEntries")
+    val entries: List<OrderEntry>,
+    @SerialName("orderTax")
+    val order: OrderTaxInvoice,
     @SerialName("unitInfoData")
     val unitData: UnitData,
     val declineReasons: List<DeclineReason>,
@@ -262,4 +283,40 @@ data class TotalTaxRate(
     val cgstTaxPercent: FormattedData<Double>,
     val sgstTaxPercent: FormattedData<Double>,
     val igstTaxPercentt: FormattedData<Double>
+)
+
+@Serializable
+data class OrderTaxInfo(
+    val orderDate: String,
+    val orderTime: String,
+    val paymentMethod: String,
+    val orderId: String,
+    val total: Total,
+    val orderStatus: String,
+    val discount: FormattedData<Double>,
+    val orderDiscount: FormattedData<Double>,
+    val totalTaxRates: List<GstData>,
+    val grossAmount: FormattedData<Double>,
+    val totalDiscountAmt: FormattedData<Double>,
+    val totalTaxableAmount: FormattedData<Double>,
+    val totalTaxAmount: FormattedData<Double>,
+    val totalCGST: FormattedData<Double>,
+    val totalSGST: FormattedData<Double>,
+    val totalIGST: FormattedData<Double>,
+    val noOfItems: Double,
+    val noOfUnits: Double,
+    val adjRounded: FormattedData<Double>,
+    val adjWithoutRounded: FormattedData<Double>,
+    val netAmount: FormattedData<Double>,
+    val amountInWords: String,
+    val taxType: String
+)
+
+@Serializable
+data class GstData(
+    val gstDisplayName: String,
+    val totalTaxableAmount: FormattedData<Double>,
+    val cgstTotalAmt: FormattedData<Double>,
+    val sgstTotalAmt: FormattedData<Double>,
+    val igstTotalAmt: FormattedData<Double>
 )

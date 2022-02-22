@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.EntityInfo
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
@@ -177,7 +179,7 @@ sealed class BottomSheet {
         private fun checkSave() {
             canSave.value = mrp.value.toDoubleOrNull() != null && !mrp.value.endsWith(".")
                     && expiry.value.isNotEmpty()
-                    && ptr.value.toDoubleOrNull() != null  && !ptr.value.endsWith(".")
+                    && ptr.value.toDoubleOrNull() != null && !ptr.value.endsWith(".")
                     && quantity.value.toDoubleOrNull() != null && !quantity.value.endsWith(".")
                     && batchNo.value.isNotEmpty()
         }
@@ -365,6 +367,17 @@ sealed class BottomSheet {
             )
     }
 
-    data class ViewLargeImage(val url: String,val type:String?) : BottomSheet()
+    data class ViewLargeImage(val url: String, val type: String?) : BottomSheet()
 
+
+    data class InvoiceViewProduct(val orderDetails: OrderTaxInfo?,val reason:String) : BottomSheet() {
+        fun confirm() {
+            EventCollector.sendEvent(
+                Event.Action.Orders.Confirm(
+                    fromNotification = false,
+                    reason
+                )
+            )
+        }
+    }
 }
