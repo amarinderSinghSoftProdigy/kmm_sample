@@ -3520,14 +3520,14 @@ private fun ViewInvoiceItemTaxBottomSheet(
                         valueTextColor = MaterialTheme.colors.background
                     )*/
                     Space(8.dp)
-                    Column(Modifier.padding(start = 30.dp, end = 16.dp)) {
+                    Column(Modifier.padding(start = 16.dp, end = 16.dp)) {
                         if (orderEntry.cgstTax.amount.value > 0.0) {
                             ItemValue(
                                 Modifier.fillMaxWidth(),
                                 item = stringResource(id = R.string.cgst) + "(${orderEntry.cgstTax.percent.formatted})",
                                 value = orderEntry.cgstTax.amount.formatted,
                                 valueTextColor = MaterialTheme.colors.background,
-                                itemTextColor = ConstColors.gray,
+                                itemTextColor =MaterialTheme.colors.background,
                             )
                             Space(8.dp)
                         }
@@ -3537,7 +3537,17 @@ private fun ViewInvoiceItemTaxBottomSheet(
                                 item = stringResource(id = R.string.sgst) + "(${orderEntry.sgstTax.percent.formatted})",
                                 value = orderEntry.sgstTax.amount.formatted,
                                 valueTextColor = MaterialTheme.colors.background,
-                                itemTextColor = ConstColors.gray,
+                                itemTextColor = MaterialTheme.colors.background,
+                            )
+                            Space(8.dp)
+                        }
+                        if (orderEntry.igstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.igst) + "(${orderEntry.sgstTax.percent.formatted})",
+                                value = orderEntry.igstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = MaterialTheme.colors.background,
                             )
                             Space(8.dp)
                         }
@@ -3548,7 +3558,7 @@ private fun ViewInvoiceItemTaxBottomSheet(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         item = "GST(0.0%)",
-                        value = orderEntry.totalTaxableAmt.formatted,
+                        value = "0.0",
                         valueTextColor = MaterialTheme.colors.background
                     )
                     Space(8.dp)
