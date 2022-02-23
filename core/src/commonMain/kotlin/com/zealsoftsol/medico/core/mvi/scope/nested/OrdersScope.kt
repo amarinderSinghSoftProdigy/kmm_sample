@@ -12,7 +12,6 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.B2BData
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DateRange
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
@@ -303,16 +302,11 @@ class ViewOrderScope(
 
 class ViewOrderInvoiceScope(
     val orderId: String,
-    val typeInfo: OrderType,
-    override val canEdit: Boolean,
-    override var order: DataSource<OrderTax?>,
     var orderTax: DataSource<OrderTaxInvoice?>,
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
     var declineReason: DataSource<List<DeclineReason>>,
-) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
-
-    override val checkedEntries = DataSource(listOf<OrderEntry>())
+) : Scope.Child.TabBar(), CommonScope.WithNotifications {
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val showAlert: DataSource<Boolean> = DataSource(false)
     val selectedId: DataSource<String> = DataSource("")
@@ -480,7 +474,7 @@ class ConfirmOrderScope(
                         selectedDeclineReason.value = ""
                     }
                     val check = emptyList<String>().toMutableList()
-                    entries.value.forEachIndexed { _, value ->
+                    acceptedEntries.forEachIndexed { _, value ->
                         check.add(value.id)
                     }
                     selectItem(order.value?.info?.id ?: "", selectedDeclineReason.value, check)

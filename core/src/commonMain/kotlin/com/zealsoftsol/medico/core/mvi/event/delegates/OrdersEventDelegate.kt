@@ -219,10 +219,7 @@ internal class OrdersEventDelegate(
             }.onSuccess { body ->
                 setScope(
                     ViewOrderInvoiceScope(
-                        canEdit = false,
                         orderId = orderId,
-                        typeInfo = OrderType.PREVIEW,
-                        order = DataSource(null),
                         orderTax = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),

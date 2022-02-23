@@ -1,26 +1,17 @@
 package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -28,21 +19,14 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +35,6 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
@@ -64,7 +47,6 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
     val b2bData = scope.b2bData.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
     val declineReasons = scope.declineReason.flow.collectAsState()
-    val checkedEntries = scope.checkedEntries.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val selectedId = scope.selectedId.flow.collectAsState()
 
@@ -157,9 +139,9 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                     Column(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     ) {
-                        b2bData.value?.let { b2BDataValue ->
+                        b2bData.value?.let { _ ->
                             Space(16.dp)
-                            entries.value.forEachIndexed { index, it ->
+                            entries.value.forEachIndexed { _, it ->
                                 OrderInvoiceEntryItem(
                                     selectedId = selectedId.value,
                                     entry = it,
@@ -212,7 +194,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun OrderInvoiceEntryItem(
+private fun OrderInvoiceEntryItem(
     entry: OrderEntry,
     onClick: () -> Unit,
     selectedId: String = ""
@@ -225,8 +207,8 @@ fun OrderInvoiceEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = when {
-            selectedId == entry.id -> BorderStroke(
+        border = when (selectedId) {
+            entry.id -> BorderStroke(
                 1.dp,
                 ConstColors.gray,
             )

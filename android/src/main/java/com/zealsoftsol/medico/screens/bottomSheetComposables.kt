@@ -383,6 +383,9 @@ private fun InStoreViewProductBottomSheet(
                         }
                         wasError.value = isError
                     }
+                    else -> {
+
+                    }
                 }
                 Space(10.dp)
                 Row(
@@ -468,6 +471,9 @@ private fun InStoreViewProductBottomSheet(
                                 contentColor = Color.White,
                                 onClick = { mode.value = BottomSectionMode.ConfirmQty },
                             )
+                        }
+                        else -> {
+
                         }
                     }
                 }
@@ -764,7 +770,7 @@ private fun BatchViewProductBottomSheet(
                 ) {
                     itemsIndexed(
                         items = sliderList,
-                        itemContent = { index, value ->
+                        itemContent = { _, value ->
                             BatchItem(
                                 value
                             ) {
@@ -1462,7 +1468,6 @@ private fun ModifyOrderEntryBottomSheet(
     val ptr = entry.ptr.flow.collectAsState()
     val batch = entry.batch.flow.collectAsState()
     val expiry = entry.expiry.flow.collectAsState()
-    val isChecked = entry.isChecked.flow.collectAsState()
 
     val canEdit = false//entry.canEdit
 
