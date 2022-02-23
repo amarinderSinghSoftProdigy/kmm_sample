@@ -231,12 +231,19 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() },
             )
             is BottomSheet.InvoiceViewProduct -> ViewInvoiceBottomSheet(
-                orderEntry = bs.orderDetails,
                 info = bs.orderTaxDetails,
                 onDismiss = {
                     dismissBottomSheet()
                     bs.confirm()
                 },
+            )
+            is BottomSheet.InvoiceViewItemProduct -> ViewInvoiceItemTaxBottomSheet(
+                orderEntry = bs.orderDetails,
+                onDismiss = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
+                bs.scope
             )
         }
     }
@@ -3015,7 +3022,6 @@ private fun ViewLargeImageBottomSheet(
 @Composable
 private fun ViewInvoiceBottomSheet(
     info: OrderTaxInfo?,
-    orderEntry: OrderEntry?,
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
@@ -3147,7 +3153,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = orderEntry?.totalAmount?.formatted ?: "",
+                    text = info?.total?.formattedPrice ?: "",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End
                 )
@@ -3167,20 +3173,20 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Row {
-                    /*Text(
-                        text = orderEntry?.discount?.formatted ?: "0",
+                    Text(
+                        text = info?.discount?.formatted ?: "0",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
                     Space(dp = 4.dp)
                     Divider(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(15.dp)
                             .width(1.dp)
                     )
-                    Space(dp = 4.dp)*/
+                    Space(dp = 4.dp)
                     Text(
-                        text = orderEntry?.discount?.formatted ?: "0",
+                        text = info?.orderDiscount?.formatted ?: "0",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3245,7 +3251,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = orderEntry?.totalTaxableAmt?.formatted ?: "",
+                    text = info?.totalTaxAmount?.formatted ?: "",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.W600,
@@ -3263,17 +3269,13 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.sgst) + " (")
-                                append(orderEntry?.sgstTax?.percent?.formatted ?: "")
-                                append(")")
-                            },
+                            text = stringResource(id = R.string.sgst),
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
                     Text(
-                        text = orderEntry?.sgstTax?.amount?.formatted ?: "",
+                        text = info.totalSGST.formatted,
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3289,18 +3291,14 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.cgst) + " (")
-                                append(orderEntry?.cgstTax?.percent?.formatted ?: "")
-                                append(")")
-                            },
+                            text = stringResource(id = R.string.cgst),
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
 
                     Text(
-                        text = orderEntry?.cgstTax?.amount?.formatted ?: "",
+                        text = info.totalCGST.formatted,
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3316,18 +3314,14 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.igst) + " (")
-                                append(orderEntry?.igstTax?.percent?.formatted ?: "")
-                                append(")")
-                            },
+                            text = stringResource(id = R.string.igst),
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
 
                     Text(
-                        text = orderEntry?.igstTax?.amount?.formatted ?: "",
+                        text = info?.totalIGST?.formatted ?: "",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3367,6 +3361,200 @@ private fun ViewInvoiceBottomSheet(
                 onClick = onSubscribe,
             )*/
             Space(30.dp)
+        }
+    }
+}
+
+@Composable
+private fun ViewInvoiceItemTaxBottomSheet(
+    orderEntry: OrderEntry,
+    onDismiss: () -> Unit,
+    scope: Scope
+) {
+    BaseBottomSheet(onDismiss) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        orderEntry.productCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 71.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+                Space(16.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = orderEntry.productName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 20.sp,
+                    )
+                    Space(4.dp)
+                    Row {
+                        Text(
+                            text = orderEntry.productCode,
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                        Space(6.dp)
+                        Box(
+                            modifier = Modifier
+                                .height(14.dp)
+                                .width(1.dp)
+                                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                                .align(Alignment.CenterVertically)
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Units: ")
+                                val startIndex = length
+                                append(orderEntry.standardUnit)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                    }
+                    Space(4.dp)
+                    Text(
+                        text = orderEntry.manufacturerName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                    )
+                }
+            }
+            Divider()
+            Space(10.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.qty),
+                    value = orderEntry.requestedQty.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.free),
+                    value = orderEntry.freeQty.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.price),
+                    value = orderEntry.price.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.total),
+                    value = orderEntry.totalAmount.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                BoxWithConstraints {
+                    ItemValue(
+                        Modifier.width(maxWidth / 2 - 6.dp),
+                        item = stringResource(id = R.string.discount),
+                        value = orderEntry.discount.formatted,
+                        itemTextColor = ConstColors.lightBlue,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                }
+            }
+            Space(10.dp)
+            Divider()
+            Column(Modifier.background(ConstColors.gray.copy(alpha = 0.05f))) {
+                Space(10.dp)
+                if (orderEntry.cgstTax.amount.value > 0.0 || orderEntry.sgstTax.amount.value > 0.0
+                    || orderEntry.igstTax.amount.value > 0.0
+                ) {
+                    /*ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = stringResource(id = R.string.gst) + "(${orderEntry.gstTaxRate.string})",
+                        value = orderEntry.sgstTax.amount.value.plus(orderEntry.cgstTax.amount.value)
+                            .toString(),
+                        valueTextColor = MaterialTheme.colors.background
+                    )*/
+                    Space(8.dp)
+                    Column(Modifier.padding(start = 30.dp, end = 16.dp)) {
+                        if (orderEntry.cgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.cgst) + "(${orderEntry.cgstTax.percent.formatted})",
+                                value = orderEntry.cgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = ConstColors.gray,
+                            )
+                            Space(8.dp)
+                        }
+                        if (orderEntry.sgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.sgst) + "(${orderEntry.sgstTax.percent.formatted})",
+                                value = orderEntry.sgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = ConstColors.gray,
+                            )
+                            Space(8.dp)
+                        }
+                    }
+                } else {
+                    ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = "GST(0.0%)",
+                        value = orderEntry.totalTaxableAmt.formatted,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                    Space(8.dp)
+                }
+                Space(10.dp)
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens.orders
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -147,16 +148,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                     entry = it,
                                     onClick = {
                                         scope.changeSelectedItem(it.id)
-                                        scope.openBottomSheet(
-                                            orderDetails = it,
-                                            orderTaxDetails = order.value?.info,
-                                            if (declineReasons.value.isNotEmpty()) {
-                                                declineReasons.value[0].code
-                                            } else {
-                                                ""
-                                            },
-                                            scope
-                                        )
+                                        scope.openBottomSheet(it, scope)
                                     },
                                 )
                                 Space(8.dp)
@@ -166,7 +158,53 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                     }
                 }
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    OrderTotal(orderTaxValue.info.total.formattedPrice)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .background(ConstColors.lightBlue, MaterialTheme.shapes.medium)
+                            .clickable {
+                                scope.openBottomSheet(
+                                    orderDetails = null,
+                                    orderTaxDetails = order.value?.info,
+                                    if (declineReasons.value.isNotEmpty()) {
+                                        declineReasons.value
+                                    } else {
+                                        ""
+                                    },
+                                    scope
+                                )
+                            }
+                            .padding(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.net_payable),
+                                color = Color.White,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 16.sp,
+                            )
+                            Text(
+                                text = orderTaxValue.info.total.formattedPrice,
+                                color = Color.White,
+                                fontWeight = FontWeight.W700,
+                                fontSize = 20.sp,
+                            )
+                        }
+                        Space(2.dp)
+                        Text(
+                            text = orderTaxValue.info.amountInWords,
+                            color = Color.White,
+                            fontWeight = FontWeight.W600,
+                            fontSize = 10.sp,
+                            modifier = Modifier.align(Alignment.End),
+                        )
+                    }
+                    //OrderTotal(orderTaxValue.info.total.formattedPrice)
                     Space(16.dp)
                     Row(modifier = Modifier.fillMaxWidth()) {
                         MedicoButton(
@@ -176,7 +214,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             onClick = {
                                 scope.confirm(
                                     if (declineReasons.value.isNotEmpty()) {
-                                        declineReasons.value[0].code
+                                        declineReasons.value
                                     } else {
                                         ""
                                     }

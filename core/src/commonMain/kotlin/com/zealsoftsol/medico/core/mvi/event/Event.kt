@@ -273,6 +273,11 @@ sealed class Event {
                 val scope: Scope
             ) : Orders()
 
+            data class SelectItemBottomSheet(
+                val orderDetails: OrderEntry,
+                val scope: Scope
+            ) : Orders()
+
             data class ViewOrderAction(
                 val action: ViewOrderScope.Action,
                 val fromNotification: Boolean

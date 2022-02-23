@@ -48,6 +48,7 @@ data class OrderEntry(
     val igstTax: Tax,
     val reason: String,
     val totalTaxableAmt: FormattedData<Double>,
+    val gstTaxRate: TaxRate,
 ) {
 
     enum class Status {

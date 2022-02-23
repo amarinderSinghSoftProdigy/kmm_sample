@@ -52,6 +52,9 @@ internal class OrdersEventDelegate(
             event.reason,
             event.scope
         )
+        is Event.Action.Orders.SelectItemBottomSheet -> openItemBottomSheet(
+            event.orderDetails, event.scope
+        )
         is Event.Action.Orders.ViewOrderInvoiceAction -> viewOrderInvoiceAction(
             event.orderId, event.acceptedEntries, event.reasonCode
         )
@@ -224,7 +227,7 @@ internal class OrdersEventDelegate(
                         orderTax = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),
-                        declineReason = DataSource(body.declineReasons)
+                        declineReason = DataSource(reasonCode ?: "")
                     )
                 )
             }.onError(navigator)
@@ -239,6 +242,14 @@ internal class OrdersEventDelegate(
     ) {
         navigator.scope.value.bottomSheet.value =
             BottomSheet.InvoiceViewProduct(orderEntry, item, reason, scope)
+    }
+
+    fun openItemBottomSheet(
+        orderEntry: OrderEntry,
+        scope: Scope
+    ) {
+        navigator.scope.value.bottomSheet.value =
+            BottomSheet.InvoiceViewItemProduct(orderEntry,scope)
     }
 
     private fun viewOrderAction(action: ViewOrderScope.Action, fromNotification: Boolean) {

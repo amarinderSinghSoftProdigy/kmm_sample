@@ -382,4 +382,10 @@ sealed class BottomSheet {
             (scope as ViewOrderInvoiceScope).changeSelectedItem("")
         }
     }
+
+    data class InvoiceViewItemProduct(val orderDetails: OrderEntry, val scope: Scope) : BottomSheet(){
+        fun confirm() {
+            (scope as ViewOrderInvoiceScope).changeSelectedItem("")
+        }
+    }
 }

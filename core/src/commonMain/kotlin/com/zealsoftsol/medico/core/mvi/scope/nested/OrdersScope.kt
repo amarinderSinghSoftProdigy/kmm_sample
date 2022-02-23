@@ -306,7 +306,7 @@ class ViewOrderInvoiceScope(
     var orderTax: DataSource<OrderTaxInvoice?>,
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
-    var declineReason: DataSource<List<DeclineReason>>,
+    var declineReason: DataSource<String>,
 ) : Scope.Child.TabBar(), CommonScope.WithNotifications {
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val showAlert: DataSource<Boolean> = DataSource(false)
@@ -386,6 +386,17 @@ class ViewOrderInvoiceScope(
                 orderTaxDetails,
                 reason,
                 scope
+            )
+        )
+    }
+
+    fun openBottomSheet(
+        orderDetails: OrderEntry,
+        scope: Scope
+    ) {
+        EventCollector.sendEvent(
+            Event.Action.Orders.SelectItemBottomSheet(
+                orderDetails, scope
             )
         )
     }
