@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
@@ -1098,6 +1099,17 @@ class NetworkClient(
         request: BatchUpdateRequest
     ) = simpleRequest {
         client.post<BodyResponse<String>>("${baseUrl.url}/inventory/save") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            jsonBody(request)
+        }
+    }
+
+    override suspend fun updateBatchStatus(
+        unitCode: String,
+        request: BatchStatusUpdateRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/inventory/status") {
             withMainToken()
             withB2bCodeToken(unitCode)
             jsonBody(request)

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.batches
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,8 +48,10 @@ import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun ViewBatchesScreen(scope: BatchesScope) {
+
     val batchData = scope.batchData.flow.collectAsState()
     val showAlert = scope.showErrorAlert.flow.collectAsState()
 
@@ -193,6 +200,7 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
         shape = RoundedCornerShape(5.dp),
         elevation = 5.dp,
     ) {
+        val selectData = scope.selectedBatchData.flow.collectAsState()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -234,6 +242,36 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                     }
                 }
             }
+
+            val switchEnabled =
+                remember { mutableStateOf(item.status == Batch.Status.ONLINE) }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = if (switchEnabled.value) stringResource(id = R.string.online)
+                    else stringResource(id = R.string.offline),
+                    color = if (switchEnabled.value) ConstColors.lightGreen else ConstColors.red,
+                    fontSize = 12.sp,
+                )
+                Space(dp = 12.dp)
+                if (selectData.value == null){
+                    Switch(
+                        checked = switchEnabled.value, onCheckedChange = {
+                            switchEnabled.value = it
+                            scope.updateBatchStatus(item, it)
+                        }, colors = SwitchDefaults.colors(
+                            checkedThumbColor = ConstColors.green
+                        )
+                    )
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -365,7 +403,6 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                         )
                     }
 
-                    val selectData = scope.selectedBatchData.flow.collectAsState()
                     Row(
                         modifier = Modifier.padding(top = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
