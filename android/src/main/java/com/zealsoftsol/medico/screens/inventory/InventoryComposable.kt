@@ -216,14 +216,11 @@ fun InventoryMainComposable(scope: InventoryScope) {
             backgroundColor = Color.White,
         ) {
             Column {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
-                        .weight(0.1f)
+                        .height(70.dp)
                         .padding(horizontal = 10.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = mCurrentManufacturer,
@@ -232,10 +229,9 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         fontWeight = FontWeight.W700,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(0.5f)
                     )
 
-                    Row(modifier = Modifier.weight(0.5f), horizontalArrangement = Arrangement.End) {
+                    Row(modifier = Modifier.padding(top = 5.dp), horizontalArrangement = Arrangement.End) {
                         Text(
                             text = stringResource(id = R.string.total_prod),
                             color = Color.Black,
@@ -261,7 +257,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     contentPadding = PaddingValues(start = 3.dp),
                     modifier = Modifier
                         .padding(horizontal = 7.dp)
-                        .weight(0.85f),
+                        .weight(0.9f),
                 ) {
                     itemsIndexed(
                         items = productsList,
@@ -275,9 +271,8 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 if (productsList.size < totalResults) {
                     Text(
                         modifier = Modifier
-                            .padding(vertical = 0.dp, horizontal = 10.dp)
-                            .height(40.dp)
-                            .weight(0.1f)
+                            .padding(horizontal = 10.dp).padding(top =5.dp)
+                            .height(30.dp)
                             .clickable {
                                 scope.getInventory(search = searchTerm.value)
                             },
