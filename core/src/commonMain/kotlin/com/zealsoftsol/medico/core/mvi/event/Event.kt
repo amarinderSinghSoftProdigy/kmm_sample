@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
@@ -458,6 +459,9 @@ sealed class Event {
 
             data class GetBatches(val spid: String, val productsData: ProductsData) : Inventory()
             data class EditBatch(val item: Batch, val productsData: ProductsData) :
+                Inventory()
+
+            data class UpdateBatchStatus(val batchData: BatchStatusUpdateRequest) :
                 Inventory()
 
             data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()

@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.Batches
 import com.zealsoftsol.medico.data.ProductsData
 
@@ -62,8 +63,21 @@ class BatchesScope(
         )
     }
 
+
+    fun updateBatchStatus(item: Batch, status: Boolean) {
+        val request = BatchStatusUpdateRequest(
+            productCode = productsData.productCode ?: "",
+            manufacturerCode = productsData.manufacturerCode ?: "",
+            hsnCode = item.hsncode,
+            spid = productsData.spid ?: "",
+            warehouseCode = productsData.warehouseCode ?: "",
+            status = if (status) "ONLINE" else "OFFLINE",
+        )
+        EventCollector.sendEvent(Event.Action.Inventory.UpdateBatchStatus(request))
+    }
+
     //update data after editing
     fun refresh() {
-        EventCollector.sendEvent(Event.Action.Batches.GetBatches(spid,productsData))
+        EventCollector.sendEvent(Event.Action.Batches.GetBatches(spid, productsData))
     }
 }

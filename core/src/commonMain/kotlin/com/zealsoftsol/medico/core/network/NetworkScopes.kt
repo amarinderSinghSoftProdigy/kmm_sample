@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
@@ -353,6 +354,11 @@ interface NetworkScope {
         suspend fun editBatches(
             unitCode: String,
             request: BatchUpdateRequest
+        ): BodyResponse<String>
+
+        suspend fun updateBatchStatus(
+            unitCode: String,
+            request: BatchStatusUpdateRequest
         ): BodyResponse<String>
     }
 

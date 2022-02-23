@@ -60,3 +60,13 @@ class BatchUpdateRequest(
     val warehouseCode: String,
     val status: String
 )
+
+@Serializable
+class BatchStatusUpdateRequest(
+    val productCode: String,
+    val manufacturerCode: String,
+    val hsnCode: String,
+    val spid: String,
+    val warehouseCode: String,
+    val status: String
+)

@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.ProductsData
 
@@ -31,6 +32,19 @@ internal class InventoryEventDelegate(
         is Event.Action.Inventory.GetBatches -> loadBatches(event.spid, event.productsData)
         is Event.Action.Inventory.EditBatch -> openDetails(event.item, event.productsData)
         is Event.Action.Inventory.UpdateBatch -> updateBatch(event.batchData)
+        is Event.Action.Inventory.UpdateBatchStatus -> updateBatchStatus(event.batchData)
+    }
+
+    private suspend fun updateBatchStatus(spid: BatchStatusUpdateRequest) {
+        val user = userRepo.requireUser()
+        navigator.withScope<BatchesScope> {
+            withProgress {
+                inventoryScope.updateBatchStatus(unitCode = user.unitCode, spid)
+                    .onSuccess { body ->
+
+                    }.onError(navigator)
+            }
+        }
     }
 
     private suspend fun updateBatch(item: BatchUpdateRequest) {
@@ -41,7 +55,7 @@ internal class InventoryEventDelegate(
                     unitCode = user.unitCode,
                     item
                 )
-            }.onSuccess { _->
+            }.onSuccess { _ ->
                 it.refresh()
             }.onError(navigator)
         }

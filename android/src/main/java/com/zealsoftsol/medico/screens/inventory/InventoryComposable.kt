@@ -231,7 +231,10 @@ fun InventoryMainComposable(scope: InventoryScope) {
                         overflow = TextOverflow.Ellipsis,
                     )
 
-                    Row(modifier = Modifier.padding(top = 5.dp), horizontalArrangement = Arrangement.End) {
+                    Row(
+                        modifier = Modifier.padding(top = 5.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
                         Text(
                             text = stringResource(id = R.string.total_prod),
                             color = Color.Black,
@@ -271,7 +274,8 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 if (productsList.size < totalResults) {
                     Text(
                         modifier = Modifier
-                            .padding(horizontal = 10.dp).padding(top =5.dp)
+                            .padding(horizontal = 10.dp)
+                            .padding(top = 5.dp)
                             .height(30.dp)
                             .clickable {
                                 scope.getInventory(search = searchTerm.value)
@@ -299,17 +303,34 @@ fun InventoryMainComposable(scope: InventoryScope) {
  */
 @Composable
 private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
-    Column(modifier = Modifier
-        .height(55.dp)
-        .clickable {
-            scope.getBatchesData(item.spid ?: "", item)
-        }) {
-        Text(
-            text = item.vendorProductName ?: "",
-            color = Color.Black,
-            fontSize = 12.sp,
-            modifier = Modifier.fillMaxWidth()
-        )
+    Column(
+        verticalArrangement = Arrangement.Center, modifier = Modifier
+            .height(55.dp)
+            .clickable {
+                scope.getBatchesData(item.spid ?: "", item)
+            }) {
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = item.vendorProductName ?: "",
+                color = Color.Black,
+                fontSize = 12.sp,
+            )
+            Text(
+                text = item.status ?: "",
+                color = when (item.status) {
+                    "ONLINE" -> {
+                        ConstColors.lightGreen
+                    }
+                    "OFFLINE" -> {
+                        ConstColors.red
+                    }
+                    else -> {
+                        Color.Black
+                    }
+                },
+                fontSize = 12.sp,
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
