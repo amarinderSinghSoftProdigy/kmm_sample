@@ -59,6 +59,8 @@ data class ProductsData(
     val warehouseCode: String? = null,
     val status: String? = null,
     val productCode: String? = null,
+    val stockStatus: String? = null,
+    val stockStatusCode: String? = null,
 )
 
 

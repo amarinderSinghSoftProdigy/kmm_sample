@@ -80,7 +80,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                         Column {
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.invoice_no))
+                                    append(stringResource(id = R.string.order_no))
                                     append(" ")
                                     val startIndex = length
                                     append(orderTaxValue.info.orderId)
@@ -189,7 +189,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                 fontSize = 16.sp,
                             )
                             Text(
-                                text = orderTaxValue.info.total.formattedPrice,
+                                text = orderTaxValue.info.netAmount.formatted,
                                 color = Color.White,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 20.sp,
