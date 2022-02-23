@@ -302,6 +302,7 @@ class ViewOrderScope(
 
 class ViewOrderInvoiceScope(
     val orderId: String,
+    val acceptedEntries: List<String>,
     var orderTax: DataSource<OrderTaxInvoice?>,
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,

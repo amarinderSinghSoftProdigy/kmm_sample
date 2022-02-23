@@ -219,6 +219,7 @@ internal class OrdersEventDelegate(
             }.onSuccess { body ->
                 setScope(
                     ViewOrderInvoiceScope(
+                        acceptedEntries = acceptedEntries,
                         orderId = orderId,
                         orderTax = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
@@ -414,7 +415,7 @@ internal class OrdersEventDelegate(
                         ConfirmOrderRequest(
                             orderId = data,
                             sellerUnitCode = userRepo.requireUser().unitCode,
-                            acceptedEntries = it.entries.value.map { it.id },
+                            acceptedEntries = it.acceptedEntries,
                             reasonCode = reasonCode
                         )
                     )
