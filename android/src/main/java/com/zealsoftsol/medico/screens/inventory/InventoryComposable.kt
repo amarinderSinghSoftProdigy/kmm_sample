@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.ManufacturerData
 import com.zealsoftsol.medico.data.ProductsData
+import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.ShowAlert
@@ -305,7 +306,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
 private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier
-            .height(55.dp)
+            .height(75.dp)
             .clickable {
                 scope.getBatchesData(item.spid ?: "", item)
             }) {
@@ -313,21 +314,6 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             Text(
                 text = item.vendorProductName ?: "",
                 color = Color.Black,
-                fontSize = 12.sp,
-            )
-            Text(
-                text = item.status ?: "",
-                color = when (item.status) {
-                    "ONLINE" -> {
-                        ConstColors.lightGreen
-                    }
-                    "OFFLINE" -> {
-                        ConstColors.red
-                    }
-                    else -> {
-                        Color.Black
-                    }
-                },
                 fontSize = 12.sp,
             )
         }
@@ -386,6 +372,53 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 )
             }
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 5.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.stockStatus ?: "",
+                    color = when (item.stockStatusCode ?: "") {
+                        StockStatus.IN_STOCK.name -> ConstColors.green
+                        StockStatus.LIMITED_STOCK.name -> ConstColors.orange
+                        StockStatus.OUT_OF_STOCK.name -> ConstColors.red
+                        else -> ConstColors.gray
+                    },
+                    fontSize = 12.sp,
+                )
+            }
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.status ?: "",
+                    color = when (item.status) {
+                        "ONLINE" -> {
+                            ConstColors.lightGreen
+                        }
+                        "OFFLINE" -> {
+                            ConstColors.red
+                        }
+                        else -> {
+                            Color.Black
+                        }
+                    },
+                    fontSize = 12.sp,
+                )
+            }
+        }
+
         Divider(
             thickness = 1.dp,
             color = ConstColors.separator.copy(alpha = 0.5f),
