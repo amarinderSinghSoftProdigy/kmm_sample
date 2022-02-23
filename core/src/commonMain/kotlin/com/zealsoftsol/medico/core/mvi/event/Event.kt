@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -13,6 +14,7 @@ import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -26,6 +28,7 @@ import com.zealsoftsol.medico.data.NotificationOption
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
@@ -263,9 +266,27 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Orders()
             data class Select(val orderId: String, val type: OrderType) : Orders()
 
+            data class SelectBottomSheet(
+                val orderDetails: OrderEntry?,
+                val orderTaxDetails: OrderTaxInfo?,
+                val reason: String,
+                val scope: Scope
+            ) : Orders()
+
+            data class SelectItemBottomSheet(
+                val orderDetails: OrderEntry,
+                val scope: Scope
+            ) : Orders()
+
             data class ViewOrderAction(
                 val action: ViewOrderScope.Action,
                 val fromNotification: Boolean
+            ) : Orders()
+
+            data class ViewOrderInvoiceAction(
+                val orderId: String,
+                val acceptedEntries: List<String>,
+                val reasonCode: String? = null,
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
@@ -289,6 +310,8 @@ sealed class Event {
             ) : Orders()
 
             data class Confirm(val fromNotification: Boolean, val reasonCode: String) : Orders()
+
+            data class ConfirmInvoice(val reasonCode: String) : Orders()
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
 

@@ -42,6 +42,7 @@ import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
 import com.zealsoftsol.medico.data.OrderResponse
+import com.zealsoftsol.medico.data.OrderResponseInvoice
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaginatedData
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -229,6 +230,9 @@ interface NetworkScope {
 
         suspend fun saveNewOrderQty(request: OrderNewQtyRequest): BodyResponse<OrderResponse>
         suspend fun confirmOrder(request: ConfirmOrderRequest): AnyResponse
+        suspend fun getOrderInvoice(
+            request: ConfirmOrderRequest
+        ): BodyResponse<OrderResponseInvoice>
 
         suspend fun getInvoices(
             isPoInvoice: Boolean,
@@ -356,7 +360,7 @@ interface NetworkScope {
         ): BodyResponse<String>
     }
 
-    interface BatchesStore : NetworkScope{
+    interface BatchesStore : NetworkScope {
         suspend fun getBatches(
             unitCode: String,
             spid: String

@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrderPlacedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SelectableOrderEntry
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -26,6 +27,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Order
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderNewQtyRequest
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.TaxType
 
@@ -43,6 +45,18 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.ViewOrderAction -> viewOrderAction(
             event.action,
             event.fromNotification,
+        )
+        is Event.Action.Orders.SelectBottomSheet -> openBottomSheet(
+            event.orderDetails,
+            event.orderTaxDetails,
+            event.reason,
+            event.scope
+        )
+        is Event.Action.Orders.SelectItemBottomSheet -> openItemBottomSheet(
+            event.orderDetails, event.scope
+        )
+        is Event.Action.Orders.ViewOrderInvoiceAction -> viewOrderInvoiceAction(
+            event.orderId, event.acceptedEntries, event.reasonCode
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(
             event.taxType,
@@ -63,6 +77,7 @@ internal class OrdersEventDelegate(
             event.expiry
         )
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
+        is Event.Action.Orders.ConfirmInvoice -> confirmInvoiceOrder(event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
         is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
         is Event.Action.Orders.EditDiscount -> editDiscount(event.orderId, event.discount)
@@ -87,9 +102,11 @@ internal class OrdersEventDelegate(
     private suspend fun changePaymentMethod(orderId: String, type: String) {
         navigator.withScope<ViewOrderScope> {
             withProgress {
-                networkOrdersScope.changePaymentMethod(orderId = orderId, unitCode = userRepo.requireUser().unitCode,
-                    type = type)
-            }.onSuccess {_->
+                networkOrdersScope.changePaymentMethod(
+                    orderId = orderId, unitCode = userRepo.requireUser().unitCode,
+                    type = type
+                )
+            }.onSuccess { _ ->
                 it.paymentType.value = type
             }.onError(navigator)
         }
@@ -107,6 +124,15 @@ internal class OrdersEventDelegate(
             }
         } else if (scp is ConfirmOrderScope) {
             navigator.withScope<ConfirmOrderScope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    item,
+                    isSeasonBoy = false,
+                    canSubscribe = false,
+                )
+            }
+        } else if (scp is ViewOrderInvoiceScope) {
+            navigator.withScope<ViewOrderInvoiceScope> {
                 val hostScope = scope.value
                 hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
                     item,
@@ -177,6 +203,53 @@ internal class OrdersEventDelegate(
                 it.entries = DataSource(body.entries)
             }.onError(navigator)
         }
+    }
+
+    private suspend fun viewOrderInvoiceAction(
+        orderId: String,
+        acceptedEntries: List<String>,
+        reasonCode: String? = null,
+    ) {
+        navigator.withScope<Scopable> {
+            withProgress {
+                val item = ConfirmOrderRequest(
+                    orderId,
+                    userRepo.requireUser().unitCode,
+                    acceptedEntries,
+                    reasonCode
+                )
+                networkOrdersScope.getOrderInvoice(item)
+            }.onSuccess { body ->
+                setScope(
+                    ViewOrderInvoiceScope(
+                        acceptedEntries = acceptedEntries,
+                        orderId = orderId,
+                        orderTax = DataSource(body.order),
+                        b2bData = DataSource(body.unitData.data),
+                        entries = DataSource(body.entries),
+                        declineReason = DataSource(reasonCode ?: "")
+                    )
+                )
+            }.onError(navigator)
+        }
+    }
+
+    fun openBottomSheet(
+        orderEntry: OrderEntry?,
+        item: OrderTaxInfo?,
+        reason: String,
+        scope: Scope
+    ) {
+        navigator.scope.value.bottomSheet.value =
+            BottomSheet.InvoiceViewProduct(orderEntry, item, reason, scope)
+    }
+
+    fun openItemBottomSheet(
+        orderEntry: OrderEntry,
+        scope: Scope
+    ) {
+        navigator.scope.value.bottomSheet.value =
+            BottomSheet.InvoiceViewItemProduct(orderEntry,scope)
     }
 
     private fun viewOrderAction(action: ViewOrderScope.Action, fromNotification: Boolean) {
@@ -344,4 +417,27 @@ internal class OrdersEventDelegate(
             }
         }
     }
+
+    private suspend fun confirmInvoiceOrder(reasonCode: String) {
+        navigator.withScope<ViewOrderInvoiceScope> {
+            withProgress {
+                it.orderTax.value?.info?.orderId?.let { data ->
+                    networkOrdersScope.takeActionOnOrderEntries(
+                        ConfirmOrderRequest(
+                            orderId = data,
+                            sellerUnitCode = userRepo.requireUser().unitCode,
+                            acceptedEntries = it.acceptedEntries,
+                            reasonCode = reasonCode
+                        )
+                    )
+                }
+            }?.onSuccess { body ->
+                dropScope(updateDataSource = false)
+                dropScope(updateDataSource = false)
+                dropScope(updateDataSource = false)
+                setScope(OrderPlacedScope(body.order))
+            }?.onError(navigator)
+        }
+    }
+
 }

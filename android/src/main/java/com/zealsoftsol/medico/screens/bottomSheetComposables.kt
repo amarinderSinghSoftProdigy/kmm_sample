@@ -87,6 +87,8 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockInfo
@@ -227,6 +229,21 @@ fun Scope.Host.showBottomSheet(
                 url = bs.url,
                 type = bs.type,
                 onDismiss = { dismissBottomSheet() },
+            )
+            is BottomSheet.InvoiceViewProduct -> ViewInvoiceBottomSheet(
+                info = bs.orderTaxDetails,
+                onDismiss = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
+            )
+            is BottomSheet.InvoiceViewItemProduct -> ViewInvoiceItemTaxBottomSheet(
+                orderEntry = bs.orderDetails,
+                onDismiss = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
+                bs.scope
             )
         }
     }
@@ -373,6 +390,9 @@ private fun InStoreViewProductBottomSheet(
                         }
                         wasError.value = isError
                     }
+                    else -> {
+
+                    }
                 }
                 Space(10.dp)
                 Row(
@@ -458,6 +478,9 @@ private fun InStoreViewProductBottomSheet(
                                 contentColor = Color.White,
                                 onClick = { mode.value = BottomSectionMode.ConfirmQty },
                             )
+                        }
+                        else -> {
+
                         }
                     }
                 }
@@ -754,7 +777,7 @@ private fun BatchViewProductBottomSheet(
                 ) {
                     itemsIndexed(
                         items = sliderList,
-                        itemContent = { index, value ->
+                        itemContent = { _, value ->
                             BatchItem(
                                 value
                             ) {
@@ -1452,7 +1475,6 @@ private fun ModifyOrderEntryBottomSheet(
     val ptr = entry.ptr.flow.collectAsState()
     val batch = entry.batch.flow.collectAsState()
     val expiry = entry.expiry.flow.collectAsState()
-    val isChecked = entry.isChecked.flow.collectAsState()
 
     val canEdit = false//entry.canEdit
 
@@ -2991,6 +3013,557 @@ private fun ViewLargeImageBottomSheet(
                     )
                     Space(30.dp)
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun ViewInvoiceBottomSheet(
+    info: OrderTaxInfo?,
+    onDismiss: () -> Unit,
+) {
+    BaseBottomSheet(onDismiss) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Surface(
+                    color = Color.Black.copy(alpha = 0.12f),
+                    shape = CircleShape,
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(15.dp),
+                    )
+                }
+            }
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.items))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.noOfItems.toString())
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.units))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.noOfUnits.toString())
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+
+            }
+
+            Space(dp = 16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.adjust))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.adjWithoutRounded?.formatted ?: "")
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.rounding))
+                        append("  ")
+                        val startIndex = length
+                        append(info?.adjRounded?.formatted ?: "")
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightBlue, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = ConstColors.darkBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                )
+
+            }
+
+            Space(dp = 16.dp)
+            Divider()
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.gross_amount),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.total?.formattedPrice ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.discount),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Row {
+                    Text(
+                        text = info?.discount?.formatted ?: "0",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                    Space(dp = 4.dp)
+                    Divider(
+                        modifier = Modifier
+                            .height(15.dp)
+                            .width(1.dp)
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = info?.orderDiscount?.formatted ?: "0",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.freight),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = "0",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.total_tax),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.totalTaxAmount?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(16.dp)
+            Divider()
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.gst),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.totalTaxAmount?.formatted ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+            Space(16.dp)
+
+            if (info?.taxType == TaxType.SGST) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.sgst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+                    Text(
+                        text = info.totalSGST.formatted,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
+                Space(16.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.cgst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+
+                    Text(
+                        text = info.totalCGST.formatted,
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Row {
+                        Space(dp = 16.dp)
+                        Text(
+                            text = stringResource(id = R.string.igst),
+                            color = ConstColors.txtGrey,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+
+                    Text(
+                        text = info?.totalIGST?.formatted ?: "",
+                        color = MaterialTheme.colors.background,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            Space(16.dp)
+            Divider()
+            Space(16.dp)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.net_payable),
+                    color = ConstColors.darkBlue,
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.W600,
+                )
+
+                Text(
+                    text = info?.total?.formattedPrice ?: "",
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.W600,
+                )
+            }
+
+            //Space(16.dp)
+            /*MedicoButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.confirm),
+                isEnabled = true,
+                onClick = onSubscribe,
+            )*/
+            Space(30.dp)
+        }
+    }
+}
+
+@Composable
+private fun ViewInvoiceItemTaxBottomSheet(
+    orderEntry: OrderEntry,
+    onDismiss: () -> Unit,
+    scope: Scope
+) {
+    BaseBottomSheet(onDismiss) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        orderEntry.productCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 71.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+                Space(16.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = orderEntry.productName,
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 20.sp,
+                    )
+                    Space(4.dp)
+                    Row {
+                        Text(
+                            text = orderEntry.productCode,
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                        Space(6.dp)
+                        Box(
+                            modifier = Modifier
+                                .height(14.dp)
+                                .width(1.dp)
+                                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                                .align(Alignment.CenterVertically)
+                        )
+                        Space(6.dp)
+                        Text(
+                            text = buildAnnotatedString {
+                                append("Units: ")
+                                val startIndex = length
+                                append(orderEntry.standardUnit)
+                                addStyle(
+                                    SpanStyle(
+                                        color = ConstColors.lightBlue,
+                                        fontWeight = FontWeight.W800
+                                    ),
+                                    startIndex,
+                                    length,
+                                )
+                            },
+                            color = ConstColors.gray,
+                            fontSize = 14.sp,
+                        )
+                    }
+                    Space(4.dp)
+                    Text(
+                        text = orderEntry.manufacturerName,
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                    )
+                }
+            }
+            Divider()
+            Space(10.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.qty),
+                    value = orderEntry.requestedQty.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.free),
+                    value = orderEntry.freeQty.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.price),
+                    value = orderEntry.price.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+                Space(12.dp)
+                ItemValue(
+                    Modifier.weight(1f),
+                    item = stringResource(id = R.string.total),
+                    value = orderEntry.totalAmount.formatted,
+                    itemTextColor = ConstColors.lightBlue,
+                    valueTextColor = MaterialTheme.colors.background
+                )
+            }
+            Space(8.dp)
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                BoxWithConstraints {
+                    ItemValue(
+                        Modifier.width(maxWidth / 2 - 6.dp),
+                        item = stringResource(id = R.string.discount),
+                        value = orderEntry.discount.formatted,
+                        itemTextColor = ConstColors.lightBlue,
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                }
+            }
+            Space(10.dp)
+            Divider()
+            Column(Modifier.background(ConstColors.gray.copy(alpha = 0.05f))) {
+                Space(10.dp)
+                if (orderEntry.cgstTax.amount.value > 0.0 || orderEntry.sgstTax.amount.value > 0.0
+                    || orderEntry.igstTax.amount.value > 0.0
+                ) {
+                    /*ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = stringResource(id = R.string.gst) + "(${orderEntry.gstTaxRate.string})",
+                        value = orderEntry.sgstTax.amount.value.plus(orderEntry.cgstTax.amount.value)
+                            .toString(),
+                        valueTextColor = MaterialTheme.colors.background
+                    )*/
+                    Space(8.dp)
+                    Column(Modifier.padding(start = 16.dp, end = 16.dp)) {
+                        if (orderEntry.cgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.cgst) + "(${orderEntry.cgstTax.percent.formatted})",
+                                value = orderEntry.cgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor =MaterialTheme.colors.background,
+                            )
+                            Space(8.dp)
+                        }
+                        if (orderEntry.sgstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.sgst) + "(${orderEntry.sgstTax.percent.formatted})",
+                                value = orderEntry.sgstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = MaterialTheme.colors.background,
+                            )
+                            Space(8.dp)
+                        }
+                        if (orderEntry.igstTax.amount.value > 0.0) {
+                            ItemValue(
+                                Modifier.fillMaxWidth(),
+                                item = stringResource(id = R.string.igst) + "(${orderEntry.sgstTax.percent.formatted})",
+                                value = orderEntry.igstTax.amount.formatted,
+                                valueTextColor = MaterialTheme.colors.background,
+                                itemTextColor = MaterialTheme.colors.background,
+                            )
+                            Space(8.dp)
+                        }
+                    }
+                } else {
+                    ItemValue(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        item = "GST(0.0%)",
+                        value = "0.0",
+                        valueTextColor = MaterialTheme.colors.background
+                    )
+                    Space(8.dp)
+                }
+                Space(10.dp)
             }
         }
     }
