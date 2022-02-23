@@ -51,12 +51,9 @@ import com.zealsoftsol.medico.screens.common.Space
 @SuppressLint("RememberReturnType")
 @Composable
 fun ViewBatchesScreen(scope: BatchesScope) {
+
     val batchData = scope.batchData.flow.collectAsState()
     val showAlert = scope.showErrorAlert.flow.collectAsState()
-
-    /*remember{
-        scope.refresh()
-    }*/
 
     if (batchData.value != null && batchData.value!!.isNotEmpty()) {
         batchData.value?.get(0)?.let {
@@ -246,8 +243,8 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                 }
             }
 
-            //if (selectData.value == null) {
-            val switchEnabled = remember { mutableStateOf(false) }
+            val switchEnabled =
+                remember { mutableStateOf(item.status == Batch.Status.ONLINE) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -263,16 +260,17 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                     fontSize = 12.sp,
                 )
                 Space(dp = 12.dp)
-                Switch(
-                    checked = switchEnabled.value, onCheckedChange = {
-                        switchEnabled.value = it
-                        scope.updateBatchStatus(item, it)
-                    }, colors = SwitchDefaults.colors(
-                        checkedThumbColor = ConstColors.green
+                if (selectData.value == null){
+                    Switch(
+                        checked = switchEnabled.value, onCheckedChange = {
+                            switchEnabled.value = it
+                            scope.updateBatchStatus(item, it)
+                        }, colors = SwitchDefaults.colors(
+                            checkedThumbColor = ConstColors.green
+                        )
                     )
-                )
+                }
             }
-            //  }
 
             Row(
                 modifier = Modifier

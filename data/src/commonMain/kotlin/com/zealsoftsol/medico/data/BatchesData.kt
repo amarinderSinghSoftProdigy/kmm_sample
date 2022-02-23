@@ -28,7 +28,13 @@ data class Batch(
     val hsncode: String,
     val spid: String,
     val promotionData: BatchPromotionData,
-)
+    val status: Status
+) {
+    enum class Status {
+        ONLINE, OFFLINE
+    }
+}
+
 
 @Serializable
 data class BatchPromotionData(

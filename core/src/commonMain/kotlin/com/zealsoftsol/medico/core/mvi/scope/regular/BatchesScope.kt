@@ -71,7 +71,7 @@ class BatchesScope(
             hsnCode = item.hsncode,
             spid = productsData.spid ?: "",
             warehouseCode = productsData.warehouseCode ?: "",
-            status = if (status) "ONLINE" else "OFFLINE",
+            status = if (status) Batch.Status.ONLINE.toString() else Batch.Status.OFFLINE.toString(),
         )
         EventCollector.sendEvent(Event.Action.Inventory.UpdateBatchStatus(request))
     }
