@@ -60,18 +60,13 @@ import com.zealsoftsol.medico.screens.common.Space
 @Composable
 fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
 
-
-    remember { scope.updateData() }
-
     val order = scope.orderTax.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
     val declineReasons = scope.declineReason.flow.collectAsState()
     val checkedEntries = scope.checkedEntries.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
-    val openPaymentView = scope.showPaymentTypeOption.flow.collectAsState()
-    val openEditDiscountView = scope.showEditDiscountOption.flow.collectAsState()
-    val paymentMethod = scope.paymentType.flow.collectAsState()
+    val selectedId = scope.selectedId.flow.collectAsState()
 
     Box(
         modifier = Modifier
@@ -157,15 +152,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                         }
                     }
                     Space(8.dp)
-                    if (openPaymentView.value) {
-                        ShowPaymentDropDown(scope = scope)
-                    }
-                    if (openEditDiscountView.value) {
-                        ShowEditDiscountDropDown(scope = scope,
-                            onChange = {
-                                scope.updateDiscountValue(it)
-                            })
-                    }
+
                     Divider(Modifier.padding(horizontal = 16.dp))
                     Column(
                         modifier = Modifier.padding(horizontal = 16.dp)
@@ -174,20 +161,20 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             Space(16.dp)
                             entries.value.forEachIndexed { index, it ->
                                 OrderInvoiceEntryItem(
-                                    showDetails = true,
-                                    canEdit = scope.canEdit,
+                                    selectedId = selectedId.value,
                                     entry = it,
-                                    isChecked = it in checkedEntries.value,
-                                    onChecked = { _ -> scope.toggleCheck(it) },
                                     onClick = {
-                                        /*scope.selectEntry(
-                                            taxType = orderTaxValue.info.taxType!!,
-                                            retailerName = b2BDataValue.tradeName,
-                                            canEditOrderEntry = scope.canEdit,
-                                            declineReason = declineReasons.value,
-                                            entry = entries.value,
-                                            index = index
-                                        )*/
+                                        scope.changeSelectedItem(it.id)
+                                        scope.openBottomSheet(
+                                            orderDetails = it,
+                                            orderTaxDetails = order.value?.info,
+                                            if (declineReasons.value.isNotEmpty()) {
+                                                declineReasons.value[0].code
+                                            } else {
+                                                ""
+                                            },
+                                            scope
+                                        )
                                     },
                                 )
                                 Space(8.dp)
@@ -202,11 +189,10 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         MedicoButton(
                             modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(R.string.preview),
+                            text = stringResource(R.string.confirm),
                             isEnabled = true,
                             onClick = {
-                                scope.openBottomSheet(
-                                    order.value?.info,
+                                scope.confirm(
                                     if (declineReasons.value.isNotEmpty()) {
                                         declineReasons.value[0].code
                                     } else {
@@ -223,158 +209,13 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun ShowPaymentDropDown(
-    scope: ViewOrderInvoiceScope
-) {
-    Surface(
-        elevation = 5.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-    ) {
-        Column {
-            Text(
-                text = stringResource(id = R.string.cash),
-                color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        scope.submitPaymentValue(PaymentMethod.CASH)
-                        scope.showPaymentOptions(false)
-                    }
-            )
-            Divider()
-            Text(
-                text = stringResource(id = R.string.credit),
-                color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        scope.submitPaymentValue(PaymentMethod.CREDIT)
-                        scope.showPaymentOptions(false)
-                    }
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun ShowEditDiscountDropDown(
-    scope: ViewOrderInvoiceScope,
-    onChange: (String) -> Unit,
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val discountValue = scope.discountValue.flow.collectAsState()
-
-    Surface(
-        elevation = 5.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-    ) {
-        val textStyle = TextStyle(
-            color = Color.Black,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.W600,
-            textAlign = TextAlign.Start,
-        )
-
-        Column {
-            Text(
-                text = stringResource(id = R.string.edit_discount),
-                color = Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Column(
-                    modifier = Modifier.weight(4f)
-                ) {
-                    BasicTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
-                        value = discountValue.value.toString(),
-                        onValueChange = {
-                            if (it.toDoubleOrNull() != null && it.length < 6) {
-                                if (it.toDouble() <= 100)
-                                    onChange(it)
-                            } else {
-                                onChange("0")
-                            }
-                        },
-                        maxLines = 1,
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Number
-                        ),
-                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                        enabled = true,
-                        textStyle = textStyle
-                    )
-                    Divider(modifier = Modifier.padding(start = 16.dp), thickness = 1.dp)
-                }
-
-                Box(modifier = Modifier.weight(3f)) {}
-
-                MedicoButton(
-                    modifier = Modifier
-                        .weight(3f)
-                        .height(45.dp)
-                        .padding(horizontal = 10.dp)
-                        .padding(bottom = 10.dp),
-                    text = stringResource(id = R.string.save),
-                    isEnabled = true,
-                    txtColor = Color.Black
-                ) {
-                    scope.showEditDiscountOption(false)
-                    scope.submitDiscountValue()
-                }
-            }
-
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderInvoiceEntryItem(
-    canEdit: Boolean,
-    isChecked: Boolean,
     entry: OrderEntry,
-    onChecked: ((Boolean) -> Unit)? = null,
     onClick: () -> Unit,
-    showDetails: Boolean = false
+    selectedId: String = ""
 ) {
     Surface(
         elevation = 5.dp,
@@ -385,13 +226,9 @@ fun OrderInvoiceEntryItem(
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
         border = when {
-            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
+            selectedId == entry.id -> BorderStroke(
                 1.dp,
-                ConstColors.gray.copy(alpha = 0.5f),
-            )
-            entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED -> BorderStroke(
-                1.dp,
-                ConstColors.red,
+                ConstColors.gray,
             )
             else -> null
         },
@@ -400,15 +237,6 @@ fun OrderInvoiceEntryItem(
             Row(
                 modifier = Modifier.padding(8.dp),
             ) {
-                if (canEdit) {
-                    Checkbox(
-                        checked = isChecked,
-                        colors = CheckboxDefaults.colors(checkedColor = ConstColors.green),
-                        onCheckedChange = onChecked,
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                    )
-                    Space(8.dp)
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -576,43 +404,15 @@ fun OrderInvoiceEntryItem(
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
-                    if (canEdit) {
-                        if (showDetails) {
-                            Image(
-                                modifier = Modifier
-                                    .weight(.05f),
-                                painter = painterResource(id = R.drawable.ic_arrow_right),
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
 
-            }
-            if (canEdit) {
-                if (checkOrderEntryValidation(entry)) {
-                    Row(
+                    Image(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 40.dp, bottom = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Canvas(
-                            modifier = Modifier
-                                .size(8.dp), onDraw = {
-                                drawCircle(color = Color.Red)
-                            }
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 5.dp, end = 5.dp),
-                            text = stringResource(id = R.string.please_add),
-                            color = Color.Black,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.W500,
-                        )
-                    }
-
+                            .weight(.05f),
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null
+                    )
                 }
+
             }
         }
 

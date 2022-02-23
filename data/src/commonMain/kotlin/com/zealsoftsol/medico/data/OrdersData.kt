@@ -48,6 +48,7 @@ data class OrderEntry(
     val sgstTax: Tax,
     val igstTax: Tax,
     val reason: String,
+    val totalTaxableAmt: FormattedData<Double>,
 ) {
 
     enum class Status {
@@ -64,6 +65,7 @@ data class OrderTax(
     @SerialName("sbRetailerTradeName")
     val seasonBoyRetailerName: String? = null,
 )
+
 @Serializable
 data class OrderTaxInvoice(
     @SerialName("orderTaxInfo")

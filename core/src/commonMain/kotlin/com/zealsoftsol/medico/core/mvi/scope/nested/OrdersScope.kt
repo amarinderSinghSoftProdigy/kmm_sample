@@ -312,6 +312,11 @@ class ViewOrderInvoiceScope(
     var declineReason: DataSource<List<DeclineReason>>,
 ) : Scope.Child.TabBar(), SelectableOrderEntry, CommonScope.WithNotifications {
 
+    override val checkedEntries = DataSource(listOf<OrderEntry>())
+    override val notifications: DataSource<ScopeNotification?> = DataSource(null)
+    val showAlert: DataSource<Boolean> = DataSource(false)
+    val selectedId: DataSource<String> = DataSource("")
+
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
         val b2bData = b2bData.value
         b2bData?.let {
@@ -353,39 +358,6 @@ class ViewOrderInvoiceScope(
 
     }
 
-    override val checkedEntries = DataSource(listOf<OrderEntry>())
-    override val notifications: DataSource<ScopeNotification?> = DataSource(null)
-    val showAlert: DataSource<Boolean> = DataSource(false)
-    val showPaymentTypeOption: DataSource<Boolean> = DataSource(false)
-    val showEditDiscountOption: DataSource<Boolean> = DataSource(false)
-    val paymentType: DataSource<String> = DataSource("")
-    val discountValue: DataSource<String> = DataSource("0")
-
-    /**
-     * get the details of selected order
-     */
-
-    fun updateData() =
-        EventCollector.sendEvent(
-            Event.Action.Orders.GetOrderDetails(
-                orderId,
-                typeInfo
-            )
-        )
-
-    /**
-     * update the scope of payment option dialog
-     */
-    fun showPaymentOptions(enable: Boolean) {
-        this.showPaymentTypeOption.value = enable
-    }
-
-    /**
-     * update the scope of edit discount dialog
-     */
-    fun showEditDiscountOption(enable: Boolean) {
-        this.showEditDiscountOption.value = enable
-    }
 
     /**
      * update the scope of alert dialog
@@ -394,40 +366,33 @@ class ViewOrderInvoiceScope(
         this.showAlert.value = enable
     }
 
-
     /**
-     * update the discount entered by user
+     * update the scope of alert dialog
      */
-    fun updateDiscountValue(discount: String) {
-        this.discountValue.value = discount
+    fun changeSelectedItem(id: String) {
+        this.selectedId.value = id
     }
 
-    /**
-     * submit discount value to server
-     */
-    fun submitDiscountValue() {
+    fun confirm(reason: String) {
         EventCollector.sendEvent(
-            Event.Action.Orders.EditDiscount(
-                orderId,
-                this.discountValue.value.toDouble()
-            )
+            Event.Action.Orders.ConfirmInvoice(reason)
         )
     }
 
-    /**
-     * submit payment type value to server
-     */
-    fun submitPaymentValue(value: PaymentMethod) {
+    fun openBottomSheet(
+        orderDetails: OrderEntry?,
+        orderTaxDetails: OrderTaxInfo?,
+        reason: String,
+        scope: Scope
+    ) {
         EventCollector.sendEvent(
-            Event.Action.Orders.ChangePaymentMethod(
-                orderId,
-                value.serverValue
+            Event.Action.Orders.SelectBottomSheet(
+                orderDetails,
+                orderTaxDetails,
+                reason,
+                scope
             )
         )
-    }
-
-    fun openBottomSheet(orderDetails: OrderTaxInfo?, reason: String) {
-        EventCollector.sendEvent(Event.Action.Orders.SelectBottomSheet(orderDetails, reason))
     }
 }
 

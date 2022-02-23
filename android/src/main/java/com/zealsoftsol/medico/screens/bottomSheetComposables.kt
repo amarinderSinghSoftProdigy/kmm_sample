@@ -87,6 +87,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SellerInfo
@@ -230,12 +231,12 @@ fun Scope.Host.showBottomSheet(
                 onDismiss = { dismissBottomSheet() },
             )
             is BottomSheet.InvoiceViewProduct -> ViewInvoiceBottomSheet(
-                bs.orderDetails,
-                onSubscribe = {
+                orderEntry = bs.orderDetails,
+                info = bs.orderTaxDetails,
+                onDismiss = {
                     dismissBottomSheet()
                     bs.confirm()
                 },
-                onDismiss = { dismissBottomSheet() },
             )
         }
     }
@@ -3009,7 +3010,7 @@ private fun ViewLargeImageBottomSheet(
 @Composable
 private fun ViewInvoiceBottomSheet(
     info: OrderTaxInfo?,
-    onSubscribe: () -> Unit,
+    orderEntry: OrderEntry?,
     onDismiss: () -> Unit,
 ) {
     BaseBottomSheet(onDismiss) {
@@ -3141,7 +3142,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = info?.grossAmount?.formatted ?: "",
+                    text = orderEntry?.totalAmount?.formatted ?: "",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End
                 )
@@ -3161,8 +3162,8 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Row {
-                    Text(
-                        text = info?.orderDiscount?.formatted ?: "",
+                    /*Text(
+                        text = orderEntry?.discount?.formatted ?: "0",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3172,9 +3173,9 @@ private fun ViewInvoiceBottomSheet(
                             .height(18.dp)
                             .width(1.dp)
                     )
-                    Space(dp = 4.dp)
+                    Space(dp = 4.dp)*/
                     Text(
-                        text = info?.discount?.formatted ?: "",
+                        text = orderEntry?.discount?.formatted ?: "0",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3239,7 +3240,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = info?.totalSGST?.formatted ?: "",
+                    text = orderEntry?.totalTaxableAmt?.formatted ?: "",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.W600,
@@ -3257,13 +3258,17 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = stringResource(id = R.string.sgst),
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.sgst) + " (")
+                                append(orderEntry?.sgstTax?.percent?.formatted ?: "")
+                                append(")")
+                            },
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
                     Text(
-                        text = info.totalSGST.formatted,
+                        text = orderEntry?.sgstTax?.amount?.formatted ?: "",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3279,14 +3284,18 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = stringResource(id = R.string.cgst),
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.cgst) + " (")
+                                append(orderEntry?.cgstTax?.percent?.formatted ?: "")
+                                append(")")
+                            },
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
 
                     Text(
-                        text = info.totalCGST.formatted,
+                        text = orderEntry?.cgstTax?.amount?.formatted ?: "",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3302,14 +3311,18 @@ private fun ViewInvoiceBottomSheet(
                     Row {
                         Space(dp = 16.dp)
                         Text(
-                            text = stringResource(id = R.string.igst),
+                            text = buildAnnotatedString {
+                                append(stringResource(id = R.string.igst) + " (")
+                                append(orderEntry?.igstTax?.percent?.formatted ?: "")
+                                append(")")
+                            },
                             color = ConstColors.txtGrey,
                             textAlign = TextAlign.Start,
                         )
                     }
 
                     Text(
-                        text = info?.totalIGST?.formatted ?: "",
+                        text = orderEntry?.igstTax?.amount?.formatted ?: "",
                         color = MaterialTheme.colors.background,
                         textAlign = TextAlign.End
                     )
@@ -3341,13 +3354,13 @@ private fun ViewInvoiceBottomSheet(
                 )
             }
 
-            Space(16.dp)
-            MedicoButton(
+            //Space(16.dp)
+            /*MedicoButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.confirm),
                 isEnabled = true,
                 onClick = onSubscribe,
-            )
+            )*/
             Space(30.dp)
         }
     }

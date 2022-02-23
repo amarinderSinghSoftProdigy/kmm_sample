@@ -266,7 +266,12 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Orders()
             data class Select(val orderId: String, val type: OrderType) : Orders()
 
-            data class SelectBottomSheet(val orderDetails:OrderTaxInfo?,val reason:String) : Orders()
+            data class SelectBottomSheet(
+                val orderDetails: OrderEntry?,
+                val orderTaxDetails: OrderTaxInfo?,
+                val reason: String,
+                val scope: Scope
+            ) : Orders()
 
             data class ViewOrderAction(
                 val action: ViewOrderScope.Action,

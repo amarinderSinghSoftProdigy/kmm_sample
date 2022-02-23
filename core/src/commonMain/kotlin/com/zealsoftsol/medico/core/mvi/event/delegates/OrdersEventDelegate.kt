@@ -48,7 +48,9 @@ internal class OrdersEventDelegate(
         )
         is Event.Action.Orders.SelectBottomSheet -> openBottomSheet(
             event.orderDetails,
-            event.reason
+            event.orderTaxDetails,
+            event.reason,
+            event.scope
         )
         is Event.Action.Orders.ViewOrderInvoiceAction -> viewOrderInvoiceAction(
             event.orderId, event.acceptedEntries, event.reasonCode
@@ -231,8 +233,14 @@ internal class OrdersEventDelegate(
         }
     }
 
-    fun openBottomSheet(item: OrderTaxInfo?, reason: String) {
-        navigator.scope.value.bottomSheet.value = BottomSheet.InvoiceViewProduct(item, reason)
+    fun openBottomSheet(
+        orderEntry: OrderEntry?,
+        item: OrderTaxInfo?,
+        reason: String,
+        scope: Scope
+    ) {
+        navigator.scope.value.bottomSheet.value =
+            BottomSheet.InvoiceViewProduct(orderEntry, item, reason, scope)
     }
 
     private fun viewOrderAction(action: ViewOrderScope.Action, fromNotification: Boolean) {
@@ -414,13 +422,11 @@ internal class OrdersEventDelegate(
                         )
                     )
                 }
-            }?.onSuccess { _ ->
-                it.order.value?.let {
-                    dropScope(updateDataSource = false)
-                    dropScope(updateDataSource = false)
-                    dropScope(updateDataSource = false)
-                    setScope(OrderPlacedScope(it))
-                }
+            }?.onSuccess { body ->
+                dropScope(updateDataSource = false)
+                dropScope(updateDataSource = false)
+                dropScope(updateDataSource = false)
+                setScope(OrderPlacedScope(body.order))
             }?.onError(navigator)
         }
     }

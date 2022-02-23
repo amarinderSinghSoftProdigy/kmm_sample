@@ -6,6 +6,8 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.EntityInfo
@@ -369,12 +371,15 @@ sealed class BottomSheet {
     data class ViewLargeImage(val url: String, val type: String?) : BottomSheet()
 
 
-    data class InvoiceViewProduct(val orderDetails: OrderTaxInfo?, val reason: String) :
+    data class InvoiceViewProduct(
+        val orderDetails: OrderEntry?,
+        val orderTaxDetails: OrderTaxInfo?,
+        val reason: String,
+        val scope: Scope
+    ) :
         BottomSheet() {
         fun confirm() {
-            EventCollector.sendEvent(
-                Event.Action.Orders.ConfirmInvoice(reason)
-            )
+            (scope as ViewOrderInvoiceScope).changeSelectedItem("")
         }
     }
 }
