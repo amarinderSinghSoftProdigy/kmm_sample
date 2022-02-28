@@ -1235,9 +1235,8 @@ private fun HsnCodeSheet(
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .padding(end = 10.dp)
+                    modifier = Modifier.size(45.dp)
+                        .padding(15.dp)
                         .clickable {
                             scope.manageBottomSheetVisibility(false)
                         }
@@ -1459,9 +1458,8 @@ private fun WarningProductNotAvailable(
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .padding(end = 10.dp)
+                    modifier = Modifier.size(45.dp)
+                        .padding(15.dp)
                         .clickable {
                             scope.manageWarningBottomSheetVisibility(false)
                         }
@@ -1551,9 +1549,8 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .padding(end = 12.dp)
+                    modifier =  Modifier.size(45.dp)
+                        .padding(15.dp)
                         .clickable {
                             scope.manageDeclineBottomSheetVisibility(false)
                         }
