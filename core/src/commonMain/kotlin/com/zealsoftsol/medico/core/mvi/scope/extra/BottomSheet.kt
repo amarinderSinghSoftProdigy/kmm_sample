@@ -6,7 +6,6 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
@@ -212,6 +211,22 @@ sealed class BottomSheet {
         val types: List<PromotionType>
     ) : BottomSheet() {
         fun update() {
+            /*val request = OfferProductRequest(
+               promotionType = promotionType.value,
+               productCode = promo.value.productCode,
+               manufacturerCode = promo.value.manufacturerCode,
+               discount = discount.value,
+               buy = quantity.value,
+               free = freeQuantity.value,
+               active = active.value,
+               spid = promo.value.spid,
+               isOfferForAllUsers = true,
+               connectedUsers = ArrayList(),
+               stock = 0.0,
+               endDate = 1644214031075,
+               startDate = 1675750031075
+           )*/
+
             val request = OfferProductRequest()
             request.discount = discount.value
             request.buy = quantity.value
@@ -383,7 +398,8 @@ sealed class BottomSheet {
         }
     }
 
-    data class InvoiceViewItemProduct(val orderDetails: OrderEntry, val scope: Scope) : BottomSheet(){
+    data class InvoiceViewItemProduct(val orderDetails: OrderEntry, val scope: Scope) :
+        BottomSheet() {
         fun confirm() {
             (scope as ViewOrderInvoiceScope).changeSelectedItem("")
         }

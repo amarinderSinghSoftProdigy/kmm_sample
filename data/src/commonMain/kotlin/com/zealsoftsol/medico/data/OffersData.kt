@@ -131,6 +131,24 @@ class OfferProductRequest {
     var endDate: Long? = null
 }
 
+
+/*@Serializable
+data class OfferProductRequest (
+    var promotionType: String,
+    val productCode: String,
+    val manufacturerCode: String,
+    val spid: String,
+    var buy: Double,
+    var free: Double,
+    var active: Boolean,
+    val isOfferForAllUsers: Boolean,
+    val connectedUsers: ArrayList<String>,
+    var discount: Double,
+    val stock: Double,
+    val startDate: Long,
+    val endDate: Long,
+)*/
+
 @Serializable
 class EditOfferRequest(
     val promoCode: String,

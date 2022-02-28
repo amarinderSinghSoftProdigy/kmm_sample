@@ -140,6 +140,22 @@ sealed class OffersScope : Scope.Child.TabBar() {
             request.stock = 0.0
             request.startDate = 1644214031075
             request.endDate = 1675750031075
+            /*
+            *    val saveRequest = OfferProductRequest(
+                promotionType = request.promotionType,
+                productCode = product.code,
+                manufacturerCode = product.manufacturerCode,
+                discount = request.discount,
+                buy = request.buy,
+                free = request.free,
+                active = request.active,
+                spid = product.spid,
+                isOfferForAllUsers = true,
+                connectedUsers = ArrayList(),
+                stock = 0.0,
+                endDate = 1644214031075,
+                startDate = 1675750031075
+            )*/
             EventCollector.sendEvent(Event.Action.Offers.SaveOffer(request))
         }
     }

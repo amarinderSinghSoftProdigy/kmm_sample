@@ -105,6 +105,7 @@ import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.MedicoSmallButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Placeholder
+import com.zealsoftsol.medico.screens.common.PlaceholderText
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
@@ -1776,8 +1777,8 @@ private fun PreviewItemBottomSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
-                        onError = { Placeholder(R.drawable.ic_acc_place) },
-                        onLoading = { Placeholder(R.drawable.ic_acc_place) },
+                        onError = { PlaceholderText() },
+                        onLoading = { PlaceholderText() },
                         isCrossFadeEnabled = false
                     )
                     /*Image(
@@ -3527,7 +3528,7 @@ private fun ViewInvoiceItemTaxBottomSheet(
                                 item = stringResource(id = R.string.cgst) + "(${orderEntry.cgstTax.percent.formatted})",
                                 value = orderEntry.cgstTax.amount.formatted,
                                 valueTextColor = MaterialTheme.colors.background,
-                                itemTextColor =MaterialTheme.colors.background,
+                                itemTextColor = MaterialTheme.colors.background,
                             )
                             Space(8.dp)
                         }

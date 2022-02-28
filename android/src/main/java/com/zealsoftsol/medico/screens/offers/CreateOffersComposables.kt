@@ -306,7 +306,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                 }
             }
             Space(dp = 16.dp)
-            if(selectedProduct.value!!.promotionData.isNotEmpty()){
+            if (selectedProduct.value!!.promotionData.isNotEmpty()) {
                 LazyColumn {
                     itemsIndexed(
                         items = selectedProduct.value!!.promotionData,
@@ -400,7 +400,9 @@ fun OfferItem(item: Promotions, scope: OffersScope.CreateOffer) {
                 }
 
                 Box(
-                    modifier = Modifier.width(maxWidth / 2).align(Alignment.BottomEnd),
+                    modifier = Modifier
+                        .width(maxWidth / 2)
+                        .align(Alignment.BottomEnd),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Surface(
