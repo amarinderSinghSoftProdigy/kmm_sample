@@ -531,10 +531,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 5.dp,
                     shape = MaterialTheme.shapes.medium,
-                    color = ConstColors.lightGrey
+                    color = Color.White,
+                    border = BorderStroke(1.dp, ConstColors.gray)
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        if (canEditOrderEntry) {
+                        /*if (canEditOrderEntry) {
                             Text(
                                 modifier = Modifier.padding(10.dp),
                                 text = stringResource(id = R.string.edit),
@@ -545,7 +546,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                 fontWeight = FontWeight.W600
                             )
                             Divider()
-                        }
+                        }*/
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -1235,7 +1236,8 @@ private fun HsnCodeSheet(
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier.size(45.dp)
+                    modifier = Modifier
+                        .size(45.dp)
                         .padding(15.dp)
                         .clickable {
                             scope.manageBottomSheetVisibility(false)
@@ -1458,7 +1460,8 @@ private fun WarningProductNotAvailable(
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier.size(45.dp)
+                    modifier = Modifier
+                        .size(45.dp)
                         .padding(15.dp)
                         .clickable {
                             scope.manageWarningBottomSheetVisibility(false)
@@ -1549,7 +1552,8 @@ fun DeclineReasonBottomSheet(scope: OrderHsnEditScope) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier =  Modifier.size(45.dp)
+                    modifier = Modifier
+                        .size(45.dp)
                         .padding(15.dp)
                         .clickable {
                             scope.manageDeclineBottomSheetVisibility(false)

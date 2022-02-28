@@ -222,16 +222,20 @@ internal class OffersEventDelegate(
 
     private suspend fun editOffer(promoCode: String, request: OfferProductRequest) {
         val user = userRepo.requireUser()
-        networkOffersScope.editOffer(
-            unitCode = user.unitCode, promoCode, request
-        ).onSuccess {
-            navigator.withScope<OffersScope.ViewOffers> {
-                getOffers(
-                    it.productSearch.value,
-                    it.manufacturerSearch.value
-                )
+        navigator.withScope<OffersScope.ViewOffers> {
+            withProgress {
+                networkOffersScope.editOffer(
+                    unitCode = user.unitCode, promoCode, request
+                ).onSuccess {
+                    navigator.withScope<OffersScope.ViewOffers> {
+                        getOffers(
+                            it.productSearch.value,
+                            it.manufacturerSearch.value
+                        )
+                    }
+                }.onError(navigator)
             }
-        }.onError(navigator)
+        }
     }
 
     private suspend fun editCreateOffer(promoCode: String, request: OfferProductRequest) {
