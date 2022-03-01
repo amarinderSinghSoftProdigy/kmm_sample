@@ -1964,6 +1964,7 @@ private fun EditOfferItemBottomSheet(
 ) {
     BaseBottomSheet(onDismiss) {
         val promo = info.promo.flow.collectAsState()
+        val free = info.freeQuantity.flow.collectAsState()
         val types = info.types
         val type = info.promotionType.flow.collectAsState()
         val active = info.active.flow.collectAsState()
@@ -2193,14 +2194,11 @@ private fun EditOfferItemBottomSheet(
                             Box(modifier = Modifier.width(130.dp)) {
                                 EditField(
                                     label = stringResource(id = R.string.free),
-                                    qty = promo.value.free.formatted,
+                                    qty = free.value.toString(),
                                     onChange = { info.updateFreeQuantity(it.toDouble()) },
                                     isEnabled = true,
                                 )
                             }
-                        } else {
-                            info.updateFreeQuantity(0.0)
-                            info.updateQuantity(0.0)
                         }
                     }
                 }

@@ -253,6 +253,7 @@ sealed class BottomSheet {
 
         fun updateQuantity(value: Double) {
             quantity.value = value
+            discount.value = 0.0
         }
 
         fun updateActive(value: Boolean) {
@@ -261,10 +262,12 @@ sealed class BottomSheet {
 
         fun updateFreeQuantity(value: Double) {
             freeQuantity.value = value
+            discount.value = 0.0
         }
 
         fun updateDiscount(value: Double) {
             discount.value = value
+            quantity.value = 0.0
         }
 
         fun updatePromotionType(value: String) {
