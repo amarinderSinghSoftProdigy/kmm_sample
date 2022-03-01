@@ -169,6 +169,7 @@ internal class OffersEventDelegate(
             navigator.withScope<OffersScope.CreateOffer> {
                 it.promoTypes.value = body.promotionTypes
                 if (!it.promoTypes.value.isNullOrEmpty()) {
+                    it.promoType.value = it.promoTypes.value[0].code
                     it.activeTab.value = it.promoTypes.value[0].name
                     it.activeType.value = 0
                 }
@@ -198,6 +199,7 @@ internal class OffersEventDelegate(
                 networkOffersScope.getAutocompleteItem(
                     unitCode = user.unitCode, input = autoComplete.suggestion
                 ).onSuccess { body ->
+                    it.selectedProduct.value = body
                     it.selectedProduct.value = body
                 }
             }.onError(navigator)

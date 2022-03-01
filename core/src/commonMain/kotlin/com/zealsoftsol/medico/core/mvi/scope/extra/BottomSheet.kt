@@ -141,7 +141,7 @@ sealed class BottomSheet {
 
     class EditBatchSheet(
         val info: Batch,
-        val productsData: ProductsData
+        private val productsData: ProductsData
     ) : BottomSheet() {
 
         val canSave = DataSource(false)
@@ -211,36 +211,21 @@ sealed class BottomSheet {
         val types: List<PromotionType>
     ) : BottomSheet() {
         fun update() {
-            /*val request = OfferProductRequest(
-               promotionType = promotionType.value,
-               productCode = promo.value.productCode,
-               manufacturerCode = promo.value.manufacturerCode,
-               discount = discount.value,
-               buy = quantity.value,
-               free = freeQuantity.value,
-               active = active.value,
-               spid = promo.value.spid,
-               isOfferForAllUsers = true,
-               connectedUsers = ArrayList(),
-               stock = 0.0,
-               endDate = 1644214031075,
-               startDate = 1675750031075
-           )*/
-
-            val request = OfferProductRequest()
-            request.discount = discount.value
-            request.buy = quantity.value
-            request.free = freeQuantity.value
-            request.manufacturerCode = promo.value.manufacturerCode
-            request.productCode = promo.value.productCode
-            request.active = active.value
-            request.spid = promo.value.spid
-            request.isOfferForAllUsers = true
-            request.connectedUsers = ArrayList()
-            request.stock = 0.0
-            request.startDate = 1644214031075
-            request.endDate = 1675750031075
-            request.promotionType = promotionType.value
+            val request = OfferProductRequest(
+                promotionType = promotionType.value,
+                productCode = promo.value.productCode,
+                manufacturerCode = promo.value.manufacturerCode,
+                discount = discount.value,
+                buy = quantity.value,
+                free = freeQuantity.value,
+                active = active.value,
+                spid = promo.value.spid,
+                isOfferForAllUsers = true,
+                connectedUsers = ArrayList(),
+                stock = 0.0,
+                endDate = 1644214031075,
+                startDate = 1675750031075
+            )
             if (scope is OffersScope.ViewOffers) {
                 EventCollector.sendEvent(
                     Event.Action.Offers.EditOffer(

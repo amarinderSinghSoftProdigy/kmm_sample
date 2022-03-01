@@ -50,7 +50,6 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.MedicoButton
@@ -70,8 +69,9 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
     val activeIndex = scope.activeType.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val dialogMessage = scope.dialogMessage.flow.collectAsState()
-    val requestData = scope.requestData.flow.collectAsState()
-    val request = OfferProductRequest()
+    val discount = scope.discount.flow.collectAsState()
+    val buy = scope.buy.flow.collectAsState()
+    val free = scope.free.flow.collectAsState()
 
     Column(modifier = Modifier.padding(all = 16.dp)) {
 
@@ -108,11 +108,10 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                 } else {
                     boxMod
                         .padding(1.dp)
-                        .clickable { scope.selectTab(it.name) }
+                        .clickable { scope.selectTab(it) }
                 }
                 val isActive = activeTab.value == it.name
                 boxMod = if (isActive) {
-                    request.promotionType = it.code
                     boxMod.background(ConstColors.lightGreen, MaterialTheme.shapes.large)
                 } else {
                     boxMod
@@ -212,20 +211,17 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                     id = R.string.discount
                                 ),
                                 qty = if (activeIndex.value == 0) {
-                                    (requestData.value?.buy ?: 0.0).toString()
+                                    buy.value.toString()
                                 } else {
-                                    (requestData.value?.discount ?: 0.0).toString()
+                                    discount.value.toString()
                                 },
                                 onChange = {
                                     if (activeIndex.value == 0) {
-                                        request.discount = 0.0
-                                        request.buy = it.toDouble()
+                                        scope.updateBuy(it.toDouble())
                                     } else {
-                                        request.buy = 0.0
-                                        request.discount = it.toDouble()
+                                        scope.updateDiscount(it.toDouble())
                                     }
                                 },
-                                isEnabled = true,//saveClicked.value,
                             )
                         }
 
@@ -233,14 +229,10 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                             Box(modifier = Modifier.width(120.dp)) {
                                 EditField(
                                     label = stringResource(id = R.string.free),
-                                    qty = (requestData.value?.free ?: 0.0).toString(),
-                                    onChange = { request.free = it.toDouble() },
-                                    isEnabled = true,//saveClicked.value,
+                                    qty = free.value.toString(),
+                                    onChange = { scope.updateFree(it.toDouble()) },
                                 )
                             }
-                        } else {
-                            request.buy = 0.0
-                            request.free = 0.0
                         }
                     }
                     Space(dp = 12.dp)
@@ -294,8 +286,12 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                                 height = 35.dp,
                                 elevation = null,
                                 onClick = {
-                                    request.active = switchEnabled.value
-                                    scope.saveOffer(request = request, product = product)
+                                    product?.let {
+                                        scope.saveOffer(
+                                            active = switchEnabled.value,
+                                            product = it
+                                        )
+                                    }
                                 },
                                 textSize = 14.sp,
                                 color = ConstColors.yellow,
@@ -310,7 +306,7 @@ fun CreateOffersScreen(scope: OffersScope.CreateOffer) {
                 LazyColumn {
                     itemsIndexed(
                         items = selectedProduct.value!!.promotionData,
-                        itemContent = { index, item ->
+                        itemContent = { _, item ->
                             OfferItem(item, scope)
                         },
                     )
