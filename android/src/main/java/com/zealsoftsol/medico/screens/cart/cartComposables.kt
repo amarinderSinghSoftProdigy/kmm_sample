@@ -668,7 +668,7 @@ private fun BaseCartItem(
                     )
                     Spacer(
                         modifier = Modifier
-                            .weight(0.4f)
+                            .weight(0.2f)
                             .fillMaxWidth()
                     )
                     MedicoButton(
