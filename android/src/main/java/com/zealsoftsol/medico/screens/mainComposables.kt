@@ -189,7 +189,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
     }
 
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
