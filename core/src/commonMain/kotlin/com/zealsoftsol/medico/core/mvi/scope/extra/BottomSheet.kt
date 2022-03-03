@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.extra
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
@@ -223,8 +224,8 @@ sealed class BottomSheet {
                 isOfferForAllUsers = true,
                 connectedUsers = ArrayList(),
                 stock = 0.0,
-                endDate = 1644214031075,
-                startDate = 1675750031075
+                endDate = Time.endTime,
+                startDate = Time.now
             )
             if (scope is OffersScope.ViewOffers) {
                 EventCollector.sendEvent(
