@@ -50,7 +50,7 @@ data class BatchPromotionData(
 )
 
 @Serializable
-class BatchUpdateRequest(
+data class BatchUpdateRequest(
     val productCode: String,
     val manufacturerCode: String,
     val hsnCode: String,
@@ -68,7 +68,7 @@ class BatchUpdateRequest(
 )
 
 @Serializable
-class BatchStatusUpdateRequest(
+data class BatchStatusUpdateRequest(
     val productCode: String,
     val manufacturerCode: String,
     val hsnCode: String,

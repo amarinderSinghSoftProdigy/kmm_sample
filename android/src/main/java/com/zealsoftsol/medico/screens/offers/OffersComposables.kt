@@ -39,6 +39,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -304,7 +305,9 @@ fun OfferItem(item: Promotions, scope: OffersScope.ViewOffers) {
                 }
 
                 Box(
-                    modifier = Modifier.width(maxWidth / 2).align(Alignment.BottomEnd),
+                    modifier = Modifier
+                        .width(maxWidth / 2)
+                        .align(Alignment.BottomEnd),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Surface(
@@ -394,9 +397,9 @@ fun StatusItem(item: PromotionStatusData) {
             .fillMaxWidth()
             .padding(all = 4.dp)
             .background(
-                when (item.status) {
-                    "Ended" -> ConstColors.red
-                    "Running" -> ConstColors.lightGreen
+                when (item.status.uppercase()) {
+                    "ENDED" -> ConstColors.red
+                    "RUNNING" -> ConstColors.lightGreen
                     else -> ConstColors.txtGrey
                 },
                 RoundedCornerShape(5.dp)

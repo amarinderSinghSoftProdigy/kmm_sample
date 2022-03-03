@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
@@ -73,7 +74,11 @@ sealed class OffersScope : Scope.Child.TabBar() {
     class CreateOffer(
         private val title: String
     ) : OffersScope(), CommonScope.CanGoBack {
-        val saveClicked: DataSource<Boolean> = DataSource(true)
+
+        val promoType: DataSource<String> = DataSource("")
+        val discount: DataSource<Double> = DataSource(0.0)
+        val buy: DataSource<Double> = DataSource(0.0)
+        val free: DataSource<Double> = DataSource(0.0)
         val activeTab: DataSource<String> = DataSource("")
         val activeType: DataSource<Int> = DataSource(0)
         val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
@@ -82,7 +87,6 @@ sealed class OffersScope : Scope.Child.TabBar() {
         val dialogMessage: DataSource<String> = DataSource("")
         val promoTypes: DataSource<List<PromotionType>> = DataSource(emptyList())
         val showAlert: DataSource<Boolean> = DataSource(false)
-        val requestData: DataSource<OfferProductRequest?> = DataSource(null)
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title)
@@ -114,8 +118,9 @@ sealed class OffersScope : Scope.Child.TabBar() {
         fun selectAutoComplete(autoComplete: AutoComplete) =
             EventCollector.sendEvent(Event.Action.Offers.SelectAutoComplete(autoComplete))
 
-        fun selectTab(name: String) {
-            activeTab.value = name
+        fun selectTab(name: PromotionType) {
+            activeTab.value = name.name
+            promoType.value = name.code
             promoTypes.value.forEachIndexed { index, value ->
                 if (activeTab.value == value.name) {
                     activeType.value = index
@@ -123,24 +128,42 @@ sealed class OffersScope : Scope.Child.TabBar() {
             }
         }
 
-        fun saveData() {
-            saveClicked.value = !saveClicked.value
+        fun updateBuy(toDouble: Double) {
+            buy.value = toDouble
+            discount.value = 0.0
         }
 
-        fun saveData(request: OfferProductRequest) {
-            requestData.value = request
+        fun updateFree(toDouble: Double) {
+            free.value = toDouble
+            discount.value = 0.0
         }
 
-        fun saveOffer(request: OfferProductRequest, product: OfferProduct?) {
-            request.manufacturerCode = product?.manufacturerCode
-            request.productCode = product?.code
-            request.spid = product?.spid
-            request.isOfferForAllUsers = true
-            request.connectedUsers = ArrayList()
-            request.stock = 0.0
-            request.startDate = 1644214031075
-            request.endDate = 1675750031075
-            EventCollector.sendEvent(Event.Action.Offers.SaveOffer(request))
+        fun updateDiscount(toDouble: Double) {
+            buy.value = 0.0
+            discount.value = toDouble
+        }
+
+
+        fun saveOffer(
+            active: Boolean,
+            product: OfferProduct
+        ) {
+            val saveRequest = OfferProductRequest(
+                promotionType = promoType.value,
+                productCode = product.code,
+                manufacturerCode = product.manufacturerCode,
+                discount = discount.value,
+                buy = buy.value,
+                free = free.value,
+                active = active,
+                spid = product.spid,
+                isOfferForAllUsers = true,
+                connectedUsers = ArrayList(),
+                stock = 0.0,
+                endDate = Time.endTime,
+                startDate = Time.now
+            )
+            EventCollector.sendEvent(Event.Action.Offers.SaveOffer(saveRequest))
         }
     }
 }

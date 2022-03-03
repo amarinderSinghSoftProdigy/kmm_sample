@@ -169,6 +169,7 @@ internal class OffersEventDelegate(
             navigator.withScope<OffersScope.CreateOffer> {
                 it.promoTypes.value = body.promotionTypes
                 if (!it.promoTypes.value.isNullOrEmpty()) {
+                    it.promoType.value = it.promoTypes.value[0].code
                     it.activeTab.value = it.promoTypes.value[0].name
                     it.activeType.value = 0
                 }
@@ -199,6 +200,7 @@ internal class OffersEventDelegate(
                     unitCode = user.unitCode, input = autoComplete.suggestion
                 ).onSuccess { body ->
                     it.selectedProduct.value = body
+                    it.selectedProduct.value = body
                 }
             }.onError(navigator)
         }
@@ -222,16 +224,20 @@ internal class OffersEventDelegate(
 
     private suspend fun editOffer(promoCode: String, request: OfferProductRequest) {
         val user = userRepo.requireUser()
-        networkOffersScope.editOffer(
-            unitCode = user.unitCode, promoCode, request
-        ).onSuccess {
-            navigator.withScope<OffersScope.ViewOffers> {
-                getOffers(
-                    it.productSearch.value,
-                    it.manufacturerSearch.value
-                )
+        navigator.withScope<OffersScope.ViewOffers> {
+            withProgress {
+                networkOffersScope.editOffer(
+                    unitCode = user.unitCode, promoCode, request
+                ).onSuccess {
+                    navigator.withScope<OffersScope.ViewOffers> {
+                        getOffers(
+                            it.productSearch.value,
+                            it.manufacturerSearch.value
+                        )
+                    }
+                }.onError(navigator)
             }
-        }.onError(navigator)
+        }
     }
 
     private suspend fun editCreateOffer(promoCode: String, request: OfferProductRequest) {

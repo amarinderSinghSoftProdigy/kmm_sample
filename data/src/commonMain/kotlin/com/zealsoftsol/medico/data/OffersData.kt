@@ -74,7 +74,7 @@ data class PromotionUpdateRequest(
 )
 
 @Serializable
-class Promotions(
+data class Promotions(
     val endDate: FormattedData<Double>,
     val free: FormattedData<Double>,
     val startDate: FormattedData<Double>,
@@ -96,7 +96,7 @@ class Promotions(
 )
 
 @Serializable
-class OfferProduct(
+data class OfferProduct(
     val mrp: FormattedData<Double>,
     val ptr: FormattedData<Double>,
     val availableQty: FormattedData<Double>,
@@ -115,24 +115,24 @@ class OfferProduct(
 )
 
 @Serializable
-class OfferProductRequest {
-    var promotionType: String? = null
-    var productCode: String? = null
-    var manufacturerCode: String? = null
-    var spid: String? = null
-    var buy: Double? = null
-    var free: Double? = null
-    var active: Boolean? = null
-    var isOfferForAllUsers: Boolean? = null
-    var connectedUsers: ArrayList<String>? = null
-    var discount: Double? = null
-    var stock: Double? = null
-    var startDate: Long? = null
-    var endDate: Long? = null
-}
+data class OfferProductRequest (
+    var promotionType: String,
+    val productCode: String,
+    val manufacturerCode: String,
+    val spid: String,
+    var buy: Double,
+    var free: Double,
+    var active: Boolean,
+    val isOfferForAllUsers: Boolean,
+    val connectedUsers: ArrayList<String>,
+    var discount: Double,
+    val stock: Double,
+    val startDate: Long,
+    val endDate: Long,
+)
 
 @Serializable
-class EditOfferRequest(
+data class EditOfferRequest(
     val promoCode: String,
     val request: OfferProductRequest
 )

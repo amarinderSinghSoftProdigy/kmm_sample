@@ -330,7 +330,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = item.mrp?.formattedValue ?: "",
+                    text = item.ptr?.formattedValue ?: "",
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
@@ -436,33 +436,46 @@ private fun ManufacturersItem(
     scope: InventoryScope,
     onClick: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .height(90.dp)
-            .width(150.dp)
-            .selectable(
-                selected = true,
-                onClick = onClick
-            ),
-        elevation = 3.dp,
-        shape = RoundedCornerShape(5.dp),
-        backgroundColor = Color.White,
-        border = if (item.isChecked) BorderStroke(
-            2.dp,
-            ConstColors.yellow.copy(alpha = 0.5f),
-        ) else
-            BorderStroke(
-                1.dp,
-                Color.White,
+    Column {
+        Card(
+            modifier = Modifier
+                .height(90.dp)
+                .width(150.dp)
+                .selectable(
+                    selected = true,
+                    onClick = onClick
+                ),
+            elevation = 3.dp,
+            shape = RoundedCornerShape(5.dp),
+            backgroundColor = Color.White,
+            border = if (item.isChecked) BorderStroke(
+                2.dp,
+                ConstColors.yellow.copy(alpha = 0.5f),
+            ) else
+                BorderStroke(
+                    1.dp,
+                    Color.White,
+                )
+        ) {
+            CoilImageBrands(
+                src = CdnUrlProvider.urlForM(item.code),
+                contentScale = ContentScale.Crop,
+                onError = { ItemPlaceholder() },
+                onLoading = { ItemPlaceholder() },
+                height = 90.dp,
+                width = 150.dp,
             )
-    ) {
-        CoilImageBrands(
-            src = CdnUrlProvider.urlForManufacturers(item.code),
-            contentScale = ContentScale.Crop,
-            onError = { ItemPlaceholder() },
-            onLoading = { ItemPlaceholder() },
-            height = 90.dp,
-            width = 150.dp,
+        }
+        Space(5.dp)
+        Text(
+            modifier = Modifier
+                .width(150.dp),
+            text = item.name,
+            color = Color.Black,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
     Space(12.dp)
