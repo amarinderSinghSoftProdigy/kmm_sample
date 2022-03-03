@@ -330,7 +330,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = item.mrp?.formattedValue ?: "",
+                    text = item.ptr?.formattedValue ?: "",
                     color = Color.Black,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W700,
