@@ -301,7 +301,7 @@ private fun SellerCartItem(
                 shape = RoundedCornerShape(25.dp),
                 elevation = 0.dp,
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
+                    .padding(start = 12.dp, end = 12.dp)
                     .height(50.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

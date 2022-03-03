@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,7 +62,7 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
-            Space(20.dp)
+            /*Space(20.dp)
             val search = scope.searchText.flow.collectAsState()
             BasicSearchBar(
                 input = search.value,
@@ -70,7 +73,7 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
                 horizontalPadding = 16.dp,
                 isSearchFocused = false,
                 onSearch = { v, _ -> scope.search(v) },
-            )
+            )*/
             val items = scope.items.flow.collectAsState()
             val listState = rememberLazyListState()
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
@@ -82,7 +85,7 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
             } else {
                 LazyColumn(
                     state = listState,
-                    contentPadding = PaddingValues(top = 16.dp,bottom = 60.dp),
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 60.dp),
                 ) {
                     itemsIndexed(
                         items = items.value,
@@ -126,18 +129,37 @@ private fun InStoreSellerItem(item: InStoreSeller, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-            Text(
-                text = item.tradeName,
-                color = MaterialTheme.colors.background,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W600,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Space(4.dp)
+
             Row(
+                modifier=Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = item.tradeName,
+                    color = MaterialTheme.colors.background,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Surface(
+                    modifier = Modifier
+                        .size(20.dp),
+                    onClick = {},
+                    shape = RectangleShape,
+                    color = Color.White,
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete_filled),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue,
+                    )
+                }
+            }
+            Space(4.dp)
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = item.city,
