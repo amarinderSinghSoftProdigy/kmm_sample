@@ -90,7 +90,10 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
                     itemsIndexed(
                         items = items.value,
                         itemContent = { index, item ->
-                            InStoreSellerItem(item) { scope.selectItem(item) }
+                            InStoreSellerItem(
+                                item,
+                                onClick = { scope.selectItem(item) },
+                                onDeleteClick = { scope.deleteItem(item) })
                             if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadItems()
                             }
@@ -115,7 +118,7 @@ fun InStoreSellersScreen(scope: InStoreSellerScope) {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun InStoreSellerItem(item: InStoreSeller, onClick: () -> Unit) {
+private fun InStoreSellerItem(item: InStoreSeller, onClick: () -> Unit, onDeleteClick: () -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -131,7 +134,7 @@ private fun InStoreSellerItem(item: InStoreSeller, onClick: () -> Unit) {
         ) {
 
             Row(
-                modifier=Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -146,7 +149,7 @@ private fun InStoreSellerItem(item: InStoreSeller, onClick: () -> Unit) {
                 Surface(
                     modifier = Modifier
                         .size(20.dp),
-                    onClick = {},
+                    onClick = onDeleteClick,
                     shape = RectangleShape,
                     color = Color.White,
                 ) {

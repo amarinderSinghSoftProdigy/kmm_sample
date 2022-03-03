@@ -364,6 +364,11 @@ sealed class Event {
                 val phoneNumber: String
             ) : InStore()
 
+            data class DeleteOrder(
+                val unitcode: String,
+                val id: String
+            ) : InStore()
+
             data class ProductSearch(val value: String) : InStore()
             data class ProductLoad(val isFirstLoad: Boolean) : InStore()
             data class ProductSelect(val item: InStoreProduct) : InStore()
