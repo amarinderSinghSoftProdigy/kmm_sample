@@ -132,7 +132,7 @@
     <string name="status">Status</string>
     <string name="gstin_num">GSTIN Number</string>
     <string name="payment_method">Type</string>
-    <string name="orders">My Orders</string>
+    <string name="orders">Orders</string>
     <string name="orders_label">Orders</string>
     <string name="new_orders">Purchase orders</string>
     <string name="purchase_orders">Purchase orders</string>
@@ -318,8 +318,8 @@
     <string name="near_expiry">Near Expiry(&lt;6 months)</string>
     <string name="expired">Expired</string>
     <string name="availability">Availability</string>
-    <string name="dl_one">DL1</string>
-    <string name="dl_two">DL2</string>
+    <string name="dl_one">DL 20B</string>
+    <string name="dl_two">DL 21B</string>
     <string name="my_account">My Account</string>
     <string name="tc_privacy_policy">T&amp;C and Privacy Policies</string>
     <string name="customer_care">Customer Care</string>
