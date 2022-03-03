@@ -5,11 +5,13 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -21,6 +23,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.UserRegistration1
@@ -383,9 +386,18 @@ sealed class BottomSheet {
         }
     }
 
-    data class InvoiceViewItemProduct(val orderDetails: OrderEntry, val scope: Scope) : BottomSheet(){
+    data class InvoiceViewItemProduct(val orderDetails: OrderEntry, val scope: Scope) :
+        BottomSheet() {
         fun confirm() {
             (scope as ViewOrderInvoiceScope).changeSelectedItem("")
         }
     }
+
+    data class EditCartItem(
+        val qtyInitial: Double,
+        val freeQtyInitial: Double,
+        val sellerCart: SellerCart,
+        val item: CartItem,
+        val cartScope: CartScope
+    ) : BottomSheet()
 }

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.cart
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -63,21 +65,24 @@ import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
-import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
-import okhttp3.internal.wait
 
+@SuppressLint("RememberReturnType")
 @ExperimentalMaterialApi
 @Composable
 fun CartScreen(scope: CartScope) {
     val items = scope.items.flow.collectAsState()
     val total = scope.total.flow.collectAsState()
     val isContinueEnabled = scope.isContinueEnabled.flow.collectAsState()
+    val isPreviewEnabled = scope.isPreviewEnabled.flow.collectAsState()
+
+    remember {
+        scope.updatePreviewStatus(false)
+    }
 
     if (items.value.isEmpty()) {
         EmptyCart { /*scope.goBack()*/ }
@@ -152,6 +157,16 @@ fun CartScreen(scope: CartScope) {
                                             )
                                         },
                                         onRemoveItem = { scope.removeItem(value, it) },
+                                        openBottomSheet = { item, qty, freeQty ->
+                                            scope.openBottomSheet(
+                                                qty,
+                                                freeQty,
+                                                item = item,
+                                                sellerCart = value,
+                                                cartScope = scope
+                                            )
+                                        },
+                                        isPreview = isPreviewEnabled.value
                                     )
                                 }
                             }
@@ -238,9 +253,20 @@ fun CartScreen(scope: CartScope) {
 
                         MedicoButton(
                             modifier = Modifier.weight(0.3f),
-                            text = stringResource(id = R.string.preview),
+                            text = if (isPreviewEnabled.value) {
+                                stringResource(id = R.string.place_order_)
+                            } else {
+                                stringResource(id = R.string.preview)
+                            },
                             isEnabled = isContinueEnabled.value,
-                            onClick = { scope.continueWithCart() },
+                            onClick = {
+                                if (isPreviewEnabled.value) {
+                                    // scope.updatePreviewStatus(false)
+                                    scope.placeOrder(scope)
+                                } else {
+                                    scope.updatePreviewStatus(true)
+                                }
+                            },
                             height = 35.dp,
                             color = ConstColors.yellow,
                             contentColor = MaterialTheme.colors.background,
@@ -261,86 +287,100 @@ private fun SellerCartItem(
     onRemoveSeller: () -> Unit,
     onSaveQty: (CartItem, Double, Double) -> Unit,
     onRemoveItem: (CartItem) -> Unit,
+    openBottomSheet: (CartItem, Double, Double) -> Unit,
+    isPreview: Boolean = false
 ) {
     FoldableItem(
         expanded = expand,
         headerBackground = Color.White,
+        headerBorder = BorderStroke(0.dp, Color.Transparent),
         headerMinHeight = 60.dp,
         header = { _ ->
-            Space(12.dp)
             Surface(
-                color = Color.White,
-                onClick = onRemoveSeller,
-                modifier = Modifier.size(40.dp),
+                color = ConstColors.lightBackground,
+                shape = RoundedCornerShape(25.dp),
+                elevation = 0.dp,
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .height(50.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_delete),
-                        contentDescription = null,
-                        tint = ConstColors.red,
-                    )
-                }
-            }
-            Space(12.dp)
-            Column {
-                Text(
-                    text = sellerCart.sellerName,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Space(2.dp)
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 16.dp)
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.payment_method))
-                            append(": ")
-                            val startIndex = length
-                            append(sellerCart.paymentMethod.serverValue)
-                            addStyle(
-                                SpanStyle(color = ConstColors.green),
-                                startIndex,
-                                length,
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Space(12.dp)
+                    Surface(
+                        color = Color.Transparent,
+                        onClick = onRemoveSeller,
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_delete),
+                                contentDescription = null,
+                                tint = ConstColors.red,
                             )
-                        },
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                    )
-                    /*Space(4.dp)
-                    Box(
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(1.dp)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-                    )
-                    Space(4.dp)*/
+                        }
+                    }
+                    Space(12.dp)
+                    Column {
+                        Text(
+                            text = sellerCart.sellerName,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Space(2.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 16.dp)
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.payment_method))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(sellerCart.paymentMethod.serverValue)
+                                    addStyle(
+                                        SpanStyle(color = ConstColors.green),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 12.sp,
+                            )
+                            /*Space(4.dp)
+                     Box(
+                         modifier = Modifier
+                             .height(10.dp)
+                             .width(1.dp)
+                             .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                     )
+                     Space(4.dp)*/
 
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.total_))
-                            val startIndex = length
-                            append(": ")
-                            append(sellerCart.total.formattedPrice)
-                            addStyle(
-                                SpanStyle(color = MaterialTheme.colors.background),
-                                startIndex,
-                                length,
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.total_))
+                                    val startIndex = length
+                                    append(": ")
+                                    append(sellerCart.total.formattedPrice)
+                                    addStyle(
+                                        SpanStyle(color = MaterialTheme.colors.background),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = ConstColors.gray,
+                                fontWeight = FontWeight.W500,
+                                fontSize = 12.sp,
+                                maxLines = 1,
                             )
-                        },
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                    )
+                        }
+                    }
                 }
             }
         },
@@ -355,6 +395,8 @@ private fun SellerCartItem(
                 cartItem = value,
                 onSaveQty = { qty, freeQty -> onSaveQty(value, qty!!, freeQty!!) },
                 onRemove = { onRemoveItem(value) },
+                openBottomSheet = { item, qty, freeQty -> openBottomSheet(item, qty!!, freeQty!!) },
+                isPreview = isPreview
             )
         }
     )
@@ -366,6 +408,8 @@ private fun CartItem(
     cartItem: CartItem,
     onSaveQty: (Double?, Double?) -> Unit,
     onRemove: () -> Unit,
+    openBottomSheet: (CartItem, Double?, Double?) -> Unit,
+    isPreview: Boolean = false
 ) {
     val labelColor = when (cartItem.buyingOption) {
         BuyingOption.BUY -> ConstColors.green
@@ -376,8 +420,10 @@ private fun CartItem(
         }
     }
     Surface(
-        shape = RectangleShape,
+        shape = RoundedCornerShape(5.dp),
         color = Color.White,
+        elevation = 5.dp,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
     ) {
         /*Canvas(
             modifier = Modifier
@@ -390,15 +436,18 @@ private fun CartItem(
             modifier = Modifier.padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CoilImage(
-                src = CdnUrlProvider.urlFor(
-                    cartItem.productCode,
-                    CdnUrlProvider.Size.Px123
-                ),
-                size = 90.dp,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-            )
+
+            Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
+                CoilImage(
+                    src = CdnUrlProvider.urlFor(
+                        cartItem.productCode,
+                        CdnUrlProvider.Size.Px123
+                    ),
+                    size = 90.dp,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                )
+            }
             BaseCartItem(
                 qtyInitial = cartItem.quantity.value,
                 freeQtyInitial = cartItem.freeQuantity.value,
@@ -427,22 +476,27 @@ private fun CartItem(
                                     modifier = Modifier.padding(end = 30.dp)
                                 )
                             }
-                            Surface(
-                                shape = CircleShape,
-                                color = Color.White,
-                                border = BorderStroke(1.dp, ConstColors.red),
-                                onClick = onRemove,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .align(Alignment.CenterEnd),
-                            ) {
-                                Box(modifier = Modifier.padding(2.dp)) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = null,
-                                        tint = ConstColors.red,
-                                    )
+
+                            if (!isPreview) {
+                                Surface(
+                                    shape = CircleShape,
+                                    color = Color.White,
+                                    border = BorderStroke(1.dp, ConstColors.red),
+                                    onClick = onRemove,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .align(Alignment.CenterEnd),
+                                ) {
+                                    Box(modifier = Modifier.padding(2.dp)) {
+                                        Icon(
+                                            imageVector = Icons.Default.Close,
+                                            contentDescription = null,
+                                            tint = ConstColors.red,
+                                        )
+                                    }
                                 }
+                            } else {
+                                Space(dp = 24.dp)
                             }
                         }
                         cartItem.seasonBoyRetailer?.let {
@@ -551,6 +605,9 @@ private fun CartItem(
                         )
                     }
                 },
+                openBottomSheet = openBottomSheet,
+                cartItem = cartItem,
+                isPreview = isPreview
             )
         }
     }
@@ -563,6 +620,9 @@ private fun BaseCartItem(
     qtyInitial: Double,
     freeQtyInitial: Double,
     onSaveQty: (Double?, Double?) -> Unit,
+    openBottomSheet: (CartItem, Double?, Double?) -> Unit,
+    cartItem: CartItem,
+    isPreview: Boolean = false
 ) {
     val qty = remember { mutableStateOf(qtyInitial) }
     val freeQty = remember { mutableStateOf(freeQtyInitial) }
@@ -580,122 +640,123 @@ private fun BaseCartItem(
         Space(8.dp)
         when (mode.value) {
             BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
-            BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
-                val isError = (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
-                val wasError = remember { mutableStateOf(isError) }
-                val wasErrorSaved = wasError.value
-                val focusedError = remember(mode.value) { mutableStateOf(-1) }
-                BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.width(maxWidth / 3)) {
-                        EditField(
-                            label = stringResource(id = R.string.qty),
-                            qty = qty.value.toString(),
-                            isError = isError && focusedError.value == 0,
-                            onChange = { qty.value = it.toDouble() },
-                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(maxWidth / 3)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        EditField(
-                            label = stringResource(id = R.string.free),
-                            isEnabled = qty.value > 0.0,
-                            isError = isError && focusedError.value == 1,
-                            qty = freeQty.value.toString(),
-                            onChange = { freeQty.value = it.toDouble() },
-                            onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
-                        )
-                    }
-                }
-                if (isError) {
-                    Space(8.dp)
-                    Text(
-                        text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        color = ConstColors.red,
-                    )
-                }
-                wasError.value = isError
-            }
+            /* BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
+                 val isError = (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
+                 val wasError = remember { mutableStateOf(isError) }
+                 val wasErrorSaved = wasError.value
+                 val focusedError = remember(mode.value) { mutableStateOf(-1) }
+                 BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                     Box(modifier = Modifier.width(maxWidth / 3)) {
+                         EditField(
+                             label = stringResource(id = R.string.qty),
+                             qty = qty.value.toString(),
+                             isError = isError && focusedError.value == 0,
+                             onChange = { qty.value = it.toDouble() },
+                             onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
+                         )
+                     }
+                     Box(
+                         modifier = Modifier
+                             .width(maxWidth / 3)
+                             .align(Alignment.BottomEnd)
+                     ) {
+                         EditField(
+                             label = stringResource(id = R.string.free),
+                             isEnabled = qty.value > 0.0,
+                             isError = isError && focusedError.value == 1,
+                             qty = freeQty.value.toString(),
+                             onChange = { freeQty.value = it.toDouble() },
+                             onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
+                         )
+                     }
+                 }
+                 if (isError) {
+                     Space(8.dp)
+                     Text(
+                         text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
+                         fontSize = 14.sp,
+                         fontWeight = FontWeight.W500,
+                         color = ConstColors.red,
+                     )
+                 }
+                 wasError.value = isError
+             }*/
         }
         Space(10.dp)
         //Divider(color = ConstColors.ltgray)
         //Space(10.dp)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            when (mode.value) {
-                BottomSectionMode.Select -> {
-                    MedicoButton(
-                        text = stringResource(id = R.string.select),
-                        onClick = { onSaveQty(null, null) },
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        isEnabled = true,
-                        height = 35.dp
-                    )
-                }
-                BottomSectionMode.AddToCart -> {
-                    MedicoButton(
-                        text = stringResource(id = R.string.add_to_cart),
-                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        isEnabled = true,
-                        height = 35.dp
-                    )
-                }
-                BottomSectionMode.ConfirmQty -> {
-                    MedicoButton(
-                        text = stringResource(id = R.string.cancel),
-                        color = ConstColors.ltgray,
-                        contentColor = MaterialTheme.colors.background,
-                        onClick = {
-                            mode.value =
-                                if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                            qty.value = qtyInitial
-                            freeQty.value = freeQtyInitial
-                        },
-                        modifier = Modifier.weight(1f),
-                        isEnabled = true,
-                        height = 35.dp
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .weight(0.2f)
-                            .fillMaxWidth()
-                    )
-                    MedicoButton(
-                        text = stringResource(id = R.string.confirm),
-                        isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
-                        onClick = {
-                            mode.value =
-                                if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                            onSaveQty(qty.value, freeQty.value)
-                        },
-                        modifier = Modifier.weight(1f),
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        height = 35.dp
-                    )
-                }
-                BottomSectionMode.Update -> {
-                    Row(
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier.weight(2f),
-                    ) {
-                        Text(
-                            text = "Offer: 2+1",
-                            fontSize = 14.sp,
-                            color = ConstColors.red,
+        if (!isPreview) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                when (mode.value) {
+                    BottomSectionMode.Select -> {
+                        MedicoButton(
+                            text = stringResource(id = R.string.select),
+                            onClick = { onSaveQty(null, null) },
+                            color = ConstColors.yellow,
+                            contentColor = MaterialTheme.colors.background,
+                            isEnabled = true,
+                            height = 35.dp
                         )
-                        /*Text(
+                    }
+                    BottomSectionMode.AddToCart -> {
+                        MedicoButton(
+                            text = stringResource(id = R.string.add_to_cart),
+                            onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                            color = ConstColors.yellow,
+                            contentColor = MaterialTheme.colors.background,
+                            isEnabled = true,
+                            height = 35.dp
+                        )
+                    }
+                    BottomSectionMode.ConfirmQty -> {
+                        MedicoButton(
+                            text = stringResource(id = R.string.cancel),
+                            color = ConstColors.ltgray,
+                            contentColor = MaterialTheme.colors.background,
+                            onClick = {
+                                mode.value =
+                                    if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                qty.value = qtyInitial
+                                freeQty.value = freeQtyInitial
+                            },
+                            modifier = Modifier.weight(1f),
+                            isEnabled = true,
+                            height = 35.dp
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .weight(0.2f)
+                                .fillMaxWidth()
+                        )
+                        MedicoButton(
+                            text = stringResource(id = R.string.confirm),
+                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                            onClick = {
+                                mode.value =
+                                    if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                onSaveQty(qty.value, freeQty.value)
+                            },
+                            modifier = Modifier.weight(1f),
+                            color = ConstColors.yellow,
+                            contentColor = MaterialTheme.colors.background,
+                            height = 35.dp
+                        )
+                    }
+                    BottomSectionMode.Update -> {
+                        Row(
+                            verticalAlignment = Alignment.Bottom,
+                            modifier = Modifier.weight(2f),
+                        ) {
+                            Text(
+                                text = "Offer: 2+1",
+                                fontSize = 14.sp,
+                                color = ConstColors.red,
+                            )
+                            /*Text(
                                 text = stringResource(id = R.string.qty).uppercase(),
                                 fontSize = 12.sp,
                                 color = ConstColors.gray,
@@ -721,17 +782,30 @@ private fun BaseCartItem(
                                     .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                             )*/
+                        }
+                        MedicoButton(
+                            modifier = Modifier.weight(1.5f),
+                            text = stringResource(id = R.string.update),
+                            color = ConstColors.yellow,
+                            contentColor = MaterialTheme.colors.background,
+                            onClick = { openBottomSheet(cartItem, qtyInitial, freeQtyInitial) },
+                            isEnabled = true,
+                            height = 35.dp
+                        )
                     }
-                    MedicoButton(
-                        modifier = Modifier.weight(1.5f),
-                        text = stringResource(id = R.string.update),
-                        color = ConstColors.yellow,
-                        contentColor = MaterialTheme.colors.background,
-                        onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                        isEnabled = true,
-                        height = 35.dp
-                    )
                 }
+            }
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(35.dp),
+            ) {
+                Text(
+                    text = "Offer: 2+1",
+                    fontSize = 14.sp,
+                    color = ConstColors.red,
+                )
             }
         }
     }

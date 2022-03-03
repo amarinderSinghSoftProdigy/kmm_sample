@@ -410,6 +410,8 @@
     <string name="pan">PAN</string>
     <string name="gross_amount">Gross Amount</string>
     <string name="earn_scratch">Place Order To Earn A Scratch Card</string>
+    <string name="place_order_">Place order</string>
+    <string name="promotions">Promotions</string>
 
     <!-- Termrs and Cond -->
 
