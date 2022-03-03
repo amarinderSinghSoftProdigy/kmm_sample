@@ -82,6 +82,10 @@ class OrderHsnEditScope(
         expiry.value = orderEntry.value.expiryDate?.formatted ?: ""
         mrp.value = orderEntry.value.mrp.value.toString()
         discount.value = orderEntry.value.discount.value.toString()
+
+        if (canEditOrderEntry) {
+            getBatchesData()
+        }
     }
 
     /**
@@ -111,6 +115,10 @@ class OrderHsnEditScope(
         } else {
             if (items.value.isEmpty()) {
                 getHsnCodes(true)
+            } else {
+                items.value.forEach {
+                    it.checked = false
+                }
             }
         }
         this.showHsnBottomSheet.value = openSheet
@@ -135,7 +143,12 @@ class OrderHsnEditScope(
      */
     fun moveToBatchesScreen() =
         EventCollector.sendEvent(
-            Event.Transition.Batches(orderEntry.value.spid, batchData, selectedBatchData, orderEntry.value.requestedQty.value)
+            Event.Transition.Batches(
+                orderEntry.value.spid,
+                batchData,
+                selectedBatchData,
+                orderEntry.value.requestedQty.value
+            )
         )
 
     /**

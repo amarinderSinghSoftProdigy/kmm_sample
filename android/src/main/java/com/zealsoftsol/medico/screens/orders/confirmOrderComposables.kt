@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -222,9 +223,8 @@ fun DeclineReasonBottomSheet(scope: ConfirmOrderScope) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .padding(end = 12.dp)
+                    modifier =  Modifier.size(45.dp)
+                        .padding(15.dp)
                         .clickable {
                             scope.manageDeclineBottomSheetVisibility(false)
                         }
