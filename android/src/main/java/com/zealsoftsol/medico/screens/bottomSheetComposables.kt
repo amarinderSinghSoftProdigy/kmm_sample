@@ -316,7 +316,7 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     tint = if (item.connected) ConstColors.lightGreen else ConstColors.red
                                 )
                                 Text(
-                                    text = stringResource(id = R.string.connected_stockist),
+                                    text = item.tradeName,
                                     color = Color.Black,
                                     fontSize = 15.sp,
                                 )
@@ -329,7 +329,7 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = item.tradeName,
+                                    text = item.location,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     color = Color.Gray,
