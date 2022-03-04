@@ -100,7 +100,7 @@ internal class SearchEventDelegate(
             it.search(
                 addPage = false,
                 withDelay = false,
-                withProgress = if (it.supportsAutoComplete) !isWildcardSearch else false,
+                withProgress = true,//if (it.supportsAutoComplete) !isWildcardSearch else false,
                 extraFilters = query.mapValues { (_, value) -> Option.StringValue(value, false) },
             )
         }
