@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -136,6 +137,10 @@ class SearchScope(
         } else {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
+    }
+
+    fun showConnectedStockist(stockist : List<ConnectedStockist>) {
+        EventCollector.sendEvent(Event.Action.Search.ShowConnectedStockistBottomSheet(stockist))
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {

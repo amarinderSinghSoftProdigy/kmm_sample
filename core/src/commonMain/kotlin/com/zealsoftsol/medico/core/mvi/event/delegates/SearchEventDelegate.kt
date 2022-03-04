@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.Facet
 import com.zealsoftsol.medico.data.Filter
@@ -54,6 +55,14 @@ internal class SearchEventDelegate(
         is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
         is Event.Action.Search.ShowDetails -> select(event.item)
         is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
+        is Event.Action.Search.ShowConnectedStockistBottomSheet -> showConnectedStockist(event.stockist)
+    }
+
+    private fun showConnectedStockist(stockist: List<ConnectedStockist>) {
+        navigator.withScope<SearchScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.ShowConnectedStockist(stockist)
+        }
     }
 
     private fun select(item: EntityInfo) {
