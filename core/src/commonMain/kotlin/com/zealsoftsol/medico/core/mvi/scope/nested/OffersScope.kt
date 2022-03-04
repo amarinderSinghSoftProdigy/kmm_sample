@@ -35,7 +35,7 @@ sealed class OffersScope : Scope.Child.TabBar() {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title)
+            return TabBarInfo.OfferHeader(title)
         }
 
         fun loadMoreProducts() =
