@@ -754,7 +754,7 @@ private fun BaseCartItem(
                             if (cartItem.isPromotionActive) {
                                 cartItem.promotionData?.let {
                                     Text(
-                                        text = it.displayOffer,
+                                        text = it.displayLabel,
                                         fontSize = 14.sp,
                                         color = ConstColors.red,
                                     )
@@ -805,11 +805,15 @@ private fun BaseCartItem(
                     .fillMaxWidth()
                     .height(35.dp),
             ) {
-                Text(
-                    text = "Offer: 2+1",
-                    fontSize = 14.sp,
-                    color = ConstColors.red,
-                )
+                if (cartItem.isPromotionActive) {
+                    cartItem.promotionData?.let {
+                        Text(
+                            text = it.displayLabel,
+                            fontSize = 14.sp,
+                            color = ConstColors.red,
+                        )
+                    }
+                }
             }
         }
     }

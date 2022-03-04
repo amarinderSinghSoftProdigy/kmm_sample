@@ -3649,7 +3649,7 @@ private fun ViewEditCartBottomSheet(
                         append(stringResource(id = R.string.promotions))
                         val startIndex = length
                         append(": ")
-                        append("(" + cartItem.promotionData?.displayOffer + ")")
+                        append("(" + cartItem.promotionData?.displayLabel + ")")
                         addStyle(
                             SpanStyle(color = ConstColors.red, fontWeight = FontWeight.W700),
                             startIndex,
