@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -84,7 +85,12 @@ private fun OrderPlacedTile(
         color = ConstColors.green.copy(alpha = .06f),
         border = BorderStroke(2.dp, ConstColors.green)
     ) {*/
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             painter = painterResource(id = R.drawable.ic_order_placed),
             contentDescription = null,
@@ -187,106 +193,138 @@ private fun OrderPlacedTile(
 @Composable
 private fun OrderItem(seller: SellerOrder) {
     Surface(
-        shape = MaterialTheme.shapes.medium,
-        color = Color.White,
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(25.dp),
+        color = ConstColors.lightBackground,
+        border = BorderStroke(1.dp, ConstColors.lightBackground),
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 18.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .height(50.dp)
+                .padding(vertical = 12.dp, horizontal = 16.dp),
         ) {
-            Column(modifier = Modifier.weight(.7f)) {
+
+            Text(
+                text = seller.tradeName,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W600,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+           /* seller.seasonBoyRetailerName?.let {
+                Space(2.dp)
                 Text(
-                    text = seller.tradeName,
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
+                    text = it,
+                    color = ConstColors.gray,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 11.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                seller.seasonBoyRetailerName?.let {
-                    Space(2.dp)
-                    Text(
-                        text = it,
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 11.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                Space(2.dp)
-                Row {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(stringResource(id = R.string.payment_method))
-                            append(": ")
-                            val startIndex = length
-                            append(seller.paymentMethod.serverValue)
-                            addStyle(
-                                SpanStyle(color = ConstColors.lightBlue),
-                                startIndex,
-                                length,
-                            )
-                        },
-                        color = ConstColors.gray,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Space(6.dp)
-                    Box(
-                        modifier = Modifier
-                            .height(14.dp)
-                            .width(1.dp)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-                            .align(Alignment.CenterVertically)
-                    )
-                    Space(6.dp)
-                    Text(
-                        text = seller.orderId,
-                        color = ConstColors.lightBlue,
-                        fontWeight = FontWeight.W500,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier.weight(.3f),
-                horizontalAlignment = Alignment.End,
+            }*/
+            Space(2.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(id = R.string.total),
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.payment_method))
+                        append(": ")
+                        val startIndex = length
+                        append(seller.paymentMethod.serverValue)
+                        addStyle(
+                            SpanStyle(color = ConstColors.lightGreen),
+                            startIndex,
+                            length,
+                        )
+                    },
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Space(2.dp)
+                /*Space(6.dp)
+                Box(
+                    modifier = Modifier
+                        .height(14.dp)
+                        .width(1.dp)
+                        .background(MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                        .align(Alignment.CenterVertically)
+                )
+                Space(6.dp)
                 Text(
-                    text = buildAnnotatedString {
-                        append(seller.total.formattedPrice)
-                        val startIndex = length
-                        append("*")
-                        addStyle(
-                            SpanStyle(color = ConstColors.lightBlue),
-                            startIndex,
-                            length,
-                        )
-                    },
-                    color = MaterialTheme.colors.background,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 16.sp,
+                    text = seller.orderId,
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W500,
+                    fontSize = 12.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                )
+                )*/
+                Row {
+                    Text(
+                        text = stringResource(id = R.string.total),
+                        color = ConstColors.gray,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Space(2.dp)
+                    Text(
+                        text = buildAnnotatedString {
+                            append(seller.total.formattedPrice)
+                            val startIndex = length
+                            append("*")
+                            addStyle(
+                                SpanStyle(color = ConstColors.lightBlue),
+                                startIndex,
+                                length,
+                            )
+                        },
+                        color = MaterialTheme.colors.background,
+                        fontWeight = FontWeight.W700,
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+
+
             }
+            /* Column(
+                 modifier = Modifier.weight(.3f),
+                 horizontalAlignment = Alignment.End,
+             ) {
+                 Text(
+                     text = stringResource(id = R.string.total),
+                     color = ConstColors.gray,
+                     fontWeight = FontWeight.W500,
+                     fontSize = 12.sp,
+                     maxLines = 1,
+                     overflow = TextOverflow.Ellipsis,
+                 )
+                 Space(2.dp)
+                 Text(
+                     text = buildAnnotatedString {
+                         append(seller.total.formattedPrice)
+                         val startIndex = length
+                         append("*")
+                         addStyle(
+                             SpanStyle(color = ConstColors.lightBlue),
+                             startIndex,
+                             length,
+                         )
+                     },
+                     color = MaterialTheme.colors.background,
+                     fontWeight = FontWeight.W700,
+                     fontSize = 16.sp,
+                     maxLines = 1,
+                     overflow = TextOverflow.Ellipsis,
+                 )
+             }*/
         }
     }
 }
