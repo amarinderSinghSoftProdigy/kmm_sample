@@ -58,10 +58,12 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
                 OrderItem(it)
                 Space(12.dp)
             }
-            OrderTotal(scope.total.formattedPrice)
+
         }
 
         Column {
+            OrderTotal(scope.total.formattedPrice)
+            Space(dp = 16.dp)
             MedicoButton(
                 text = stringResource(id = R.string.orders),
                 isEnabled = true,
@@ -78,97 +80,108 @@ private fun OrderPlacedTile(
     orderDate: String,
     orderTime: String,
 ) {
-    Surface(
+    /*Surface(
         shape = MaterialTheme.shapes.medium,
         color = ConstColors.green.copy(alpha = .06f),
         border = BorderStroke(2.dp, ConstColors.green)
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier.padding(22.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_check),
-                    contentDescription = null,
-                )
-                Space(22.dp)
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.order_success_old),
-                        color = MaterialTheme.colors.background,
-                        fontWeight = FontWeight.W600,
-                        fontSize = 16.sp,
+    ) {*/
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_order_placed),
+            contentDescription = null,
+        )
+        Space(16.dp)
+
+        Text(
+            text = stringResource(id = R.string.order_success_old),
+            color = ConstColors.lightGreen,
+            fontWeight = FontWeight.W800,
+            fontSize = 16.sp,
+        )
+        Space(4.dp)
+        Text(
+            text = stringResource(id = R.string.order_email_confirmation),
+            color = MaterialTheme.colors.background,
+            fontWeight = FontWeight.W500,
+            fontSize = 12.sp,
+        )
+        Space(4.dp)
+        Text(
+            text = email,
+            color = ConstColors.lightGreen,
+            fontWeight = FontWeight.W500,
+            fontSize = 12.sp,
+        )
+
+        /*Row {
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.date))
+                    append(": ")
+                    val startIndex = length
+                    append(orderDate)
+                    addStyle(
+                        SpanStyle(color = ConstColors.lightBlue),
+                        startIndex,
+                        length,
                     )
-                    Space(4.dp)
-                    Row {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.date))
-                                append(": ")
-                                val startIndex = length
-                                append(orderDate)
-                                addStyle(
-                                    SpanStyle(color = ConstColors.lightBlue),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 12.sp,
-                        )
-                        Space(8.dp)
-                        Text(
-                            text = buildAnnotatedString {
-                                append(stringResource(id = R.string.time))
-                                append(": ")
-                                val startIndex = length
-                                append(orderTime)
-                                addStyle(
-                                    SpanStyle(color = ConstColors.lightBlue),
-                                    startIndex,
-                                    length,
-                                )
-                            },
-                            color = ConstColors.gray,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 12.sp,
-                        )
-                    }
-                }
-            }
-            Divider(color = ConstColors.green)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    tint = ConstColors.lightBlue,
-                    contentDescription = null,
-                    modifier = Modifier.size(15.dp),
-                )
-                Space(14.dp)
-                Text(
-                    text = buildAnnotatedString {
-                        append(stringResource(id = R.string.order_email_confirmation))
-                        append(" ")
-                        val startIndex = length
-                        append(email)
-                        addStyle(
-                            SpanStyle(color = ConstColors.lightBlue),
-                            startIndex,
-                            length,
-                        )
-                    },
-                    color = ConstColors.gray,
-                    fontWeight = FontWeight.W500,
-                    fontSize = 12.sp,
-                )
-            }
-        }
+                },
+                color = ConstColors.gray,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+            )
+            Space(8.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.time))
+                    append(": ")
+                    val startIndex = length
+                    append(orderTime)
+                    addStyle(
+                        SpanStyle(color = ConstColors.lightBlue),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+            )
+        }*/
+        //Divider(color = ConstColors.green)
+        /*Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                tint = ConstColors.lightBlue,
+                contentDescription = null,
+                modifier = Modifier.size(15.dp),
+            )
+            Space(14.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.order_email_confirmation))
+                    append(" ")
+                    val startIndex = length
+                    append(email)
+                    addStyle(
+                        SpanStyle(color = ConstColors.lightBlue),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.gray,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+            )
+        }*/
     }
+    //}
 }
 
 @Composable
@@ -281,13 +294,12 @@ private fun OrderItem(seller: SellerOrder) {
 @Composable
 fun OrderTotal(price: String) {
     Column {
-        Divider()
+        //Divider()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(66.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .height(50.dp),
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
@@ -299,19 +311,19 @@ fun OrderTotal(price: String) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = price,
-                    color = MaterialTheme.colors.background,
+                    color = ConstColors.lightGreen,
                     fontWeight = FontWeight.W700,
                     fontSize = 22.sp,
                 )
-                Space(4.dp)
+                Space(2.dp)
                 Text(
                     text = stringResource(id = R.string.tax_exclusive),
-                    color = ConstColors.lightBlue,
+                    color = MaterialTheme.colors.background,
                     fontWeight = FontWeight.W600,
                     fontSize = 10.sp,
                 )
             }
         }
-        Divider()
+        //Divider()
     }
 }

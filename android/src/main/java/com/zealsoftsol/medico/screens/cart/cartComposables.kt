@@ -211,14 +211,14 @@ fun CartScreen(scope: CartScope) {
                     }
                     //Divider()
                     Space(8.dp)
-                    Text(
+                    /*Text(
                         text = stringResource(id = R.string.earn_scratch),
                         fontWeight = FontWeight.Normal,
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
                         color = ConstColors.gray,
-                    )
-                    Space(4.dp)
+                    )*/
+                    //Space(4.dp)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -440,7 +440,7 @@ private fun CartItem(
             Surface(shape = RoundedCornerShape(5.dp), color = Color.White, elevation = 5.dp) {
                 CoilImage(
                     src = CdnUrlProvider.urlFor(
-                        cartItem.productCode,
+                        cartItem.imageCode,
                         CdnUrlProvider.Size.Px123
                     ),
                     size = 90.dp,
@@ -751,11 +751,15 @@ private fun BaseCartItem(
                             verticalAlignment = Alignment.Bottom,
                             modifier = Modifier.weight(2f),
                         ) {
-                            Text(
-                                text = "Offer: 2+1",
-                                fontSize = 14.sp,
-                                color = ConstColors.red,
-                            )
+                            if (cartItem.isPromotionActive) {
+                                cartItem.promotionData?.let {
+                                    Text(
+                                        text = it.displayOffer,
+                                        fontSize = 14.sp,
+                                        color = ConstColors.red,
+                                    )
+                                }
+                            }
                             /*Text(
                                 text = stringResource(id = R.string.qty).uppercase(),
                                 fontSize = 12.sp,
