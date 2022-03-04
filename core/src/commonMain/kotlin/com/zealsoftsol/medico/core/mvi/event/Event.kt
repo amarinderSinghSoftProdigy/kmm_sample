@@ -4,7 +4,6 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -16,6 +15,7 @@ import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
@@ -162,6 +162,7 @@ sealed class Event {
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
+            data class ShowConnectedStockistBottomSheet(val stockist : List<ConnectedStockist>): Search()
         }
 
         sealed class Product : Action() {

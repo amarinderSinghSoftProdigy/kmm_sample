@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -84,6 +85,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.CartItem
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -266,8 +268,117 @@ fun Scope.Host.showBottomSheet(
                     )
                 }
             )
+            is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
         }
     }
+}
+
+@Composable
+private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: () -> Unit) {
+    BaseBottomSheet(onDismiss) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = ConstColors.gray,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(end = 5.dp, top = 5.dp)
+                        .clickable { onDismiss() },
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_connected),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(end = 5.dp)
+                )
+                Text(
+                    text = "${stringResource(id = R.string.connected_stockist)}:",
+                    color = Color.Black, fontSize = 15.sp, fontWeight = FontWeight.W700
+                )
+            }
+            LazyColumn(
+                contentPadding = PaddingValues(start = 3.dp),
+                modifier = Modifier
+                    .heightIn(0.dp, 380.dp) //mention max height here
+                    .fillMaxWidth(),
+            ) {
+                itemsIndexed(
+                    items = stockist,
+                    key = { index, _ -> index },
+                    itemContent = { index, item ->
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 5.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_connected),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .padding(end = 5.dp),
+                                    tint = if (item.connected) ConstColors.lightGreen else ConstColors.red
+                                )
+                                Text(
+                                    text = item.tradeName,
+                                    color = Color.Black,
+                                    fontSize = 15.sp,
+                                )
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp).padding(bottom = 5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = item.location,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = Color.Gray,
+                                    fontSize = 14.sp,
+                                )
+                                Row(modifier = Modifier.padding(end = 16.dp)) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_location),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .padding(end = 5.dp)
+                                    )
+                                    Text(
+                                        text = item.distance,
+                                        color = Color.Gray,
+                                        fontSize = 14.sp,
+                                    )
+                                }
+                            }
+                            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                        }
+                    },
+                )
+            }
+            Space(10.dp)
+        }
+    }
+
 }
 
 @Composable

@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.CartItem
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -404,4 +405,6 @@ sealed class BottomSheet {
         val item: CartItem,
         val cartScope: CartScope
     ) : BottomSheet()
+
+    data class ShowConnectedStockist(val stockist: List<ConnectedStockist>) : BottomSheet()
 }
