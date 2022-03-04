@@ -179,6 +179,7 @@
     <string name="choose_seller">Please, choose a seller</string>
     <string name="map_location">Map Location</string>
     <string name="dashboard">Dashboard</string>
+    <string name="total_">Total</string>
     <string name="total">Tot:</string>
     <string name="invoice_total">Tot:</string>
     <string name="continue_text">Continue</string>
@@ -407,6 +408,10 @@
     <string name="drug_license_20b">DL 20 B</string>
     <string name="drug_license_21b">DL 21 B</string>
     <string name="pan">PAN</string>
+    <string name="gross_amount">Gross Amount</string>
+    <string name="earn_scratch">Place Order To Earn A Scratch Card</string>
+    <string name="place_order_">Place order</string>
+    <string name="promotions">Promotions</string>
     <string name="no_preview_available">No Preview Available</string>
     <string name="view_stockist">View Stockists</string>
     <string name="connected_stockist">Connected Stockists</string>
@@ -562,6 +567,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="gross_amount">Gross Amount</string>
 
 </resources>

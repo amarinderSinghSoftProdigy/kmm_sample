@@ -309,6 +309,8 @@ interface NetworkScope {
         ): BodyResponse<InStoreCart>
 
         suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse
+
+        suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse
     }
 
     interface WhatsappStore : NetworkScope {

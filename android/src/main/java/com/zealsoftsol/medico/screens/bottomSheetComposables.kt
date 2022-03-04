@@ -84,6 +84,7 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -247,6 +248,25 @@ fun Scope.Host.showBottomSheet(
                     bs.confirm()
                 },
                 bs.scope
+            )
+
+            is BottomSheet.EditCartItem -> ViewEditCartBottomSheet(
+                bs.qtyInitial,
+                bs.freeQtyInitial,
+                bs.item,
+                onDismiss = {
+                    dismissBottomSheet()
+                },
+                onUpdate = { qtyInitial,
+                             freeQtyInitial ->
+                    dismissBottomSheet()
+                    bs.cartScope.updateItemCount(
+                        bs.sellerCart,
+                        bs.item,
+                        qtyInitial,
+                        freeQtyInitial
+                    )
+                }
             )
             is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
         }
@@ -3675,6 +3695,168 @@ private fun ViewInvoiceItemTaxBottomSheet(
                 }
                 Space(10.dp)
             }
+        }
+    }
+}
+
+
+@ExperimentalMaterialApi
+@Composable
+private fun ViewEditCartBottomSheet(
+    qtyInitial: Double,
+    freeQtyInitial: Double,
+    cartItem: CartItem,
+    onDismiss: () -> Unit,
+    onUpdate: (Double, Double) -> Unit,
+) {
+    val qty = remember { mutableStateOf(qtyInitial) }
+    val freeQty = remember { mutableStateOf(freeQtyInitial) }
+    val mode = remember {
+        mutableStateOf(
+            if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+        )
+    }
+    BaseBottomSheet(onDismiss) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp), horizontalAlignment = Alignment.Start
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Surface(
+                    color = Color.Black.copy(alpha = 0.12f),
+                    shape = CircleShape,
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(15.dp),
+                    )
+                }
+            }
+            Space(16.dp)
+            Text(
+                text = cartItem.productName,
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W700,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(end = 30.dp)
+            )
+            Space(dp = 4.dp)
+
+            if (cartItem.isPromotionActive) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.promotions))
+                        val startIndex = length
+                        append(": ")
+                        append("(" + cartItem.promotionData?.displayLabel + ")")
+                        addStyle(
+                            SpanStyle(color = ConstColors.red, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            val isError = (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
+            val wasError = remember { mutableStateOf(isError) }
+            val wasErrorSaved = wasError.value
+            val focusedError = remember(mode.value) { mutableStateOf(-1) }
+            Space(dp = 16.dp)
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier.width(maxWidth / 3)) {
+                    EditField(
+                        label = stringResource(id = R.string.qty),
+                        qty = qty.value.toString(),
+                        isError = isError && focusedError.value == 0,
+                        onChange = { qty.value = it.toDouble() },
+                        onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .width(maxWidth / 3)
+                        .align(Alignment.BottomEnd)
+                ) {
+                    EditField(
+                        label = stringResource(id = R.string.free),
+                        isEnabled = qty.value > 0.0,
+                        isError = isError && focusedError.value == 1,
+                        qty = freeQty.value.toString(),
+                        onChange = { freeQty.value = it.toDouble() },
+                        onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
+                    )
+                }
+            }
+            if (isError) {
+                Space(8.dp)
+                Text(
+                    text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W500,
+                    color = ConstColors.red,
+                )
+            }
+            wasError.value = isError
+
+            Space(dp = 16.dp)
+            Row {
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(35.dp),
+                    color = ConstColors.gray.copy(alpha = 0.5f),
+                    shape = MaterialTheme.shapes.large,
+                    onClick = onDismiss,
+                    elevation = 0.dp
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = stringResource(id = R.string.cancel),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colors.background
+                        )
+                    }
+
+                }
+                Spacer(
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .fillMaxWidth()
+                )
+                MedicoButton(
+                    text = stringResource(id = R.string.confirm),
+                    isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                    onClick = {
+                        mode.value =
+                            if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                        onUpdate(qty.value, freeQty.value)
+                    },
+                    modifier = Modifier.weight(1f),
+                    color = ConstColors.yellow,
+                    contentColor = MaterialTheme.colors.background,
+                    height = 35.dp
+                )
+
+            }
+
         }
     }
 }

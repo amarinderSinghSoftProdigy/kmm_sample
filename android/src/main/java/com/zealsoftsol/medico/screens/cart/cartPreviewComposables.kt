@@ -86,7 +86,7 @@ fun CartPreviewScreen(scope: CartPreviewScope) {
             MedicoButton(
                 text = stringResource(R.string.place_order),
                 isEnabled = true,
-                onClick = { scope.placeOrder() },
+                onClick = { scope.placeOrder(scope) },
             )
             Space(16.dp)
         }

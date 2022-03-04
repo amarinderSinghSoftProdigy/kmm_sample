@@ -189,7 +189,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
     }
 
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
@@ -785,6 +785,22 @@ private fun NoIconHeader(
         }
         if (scope.childScope.flow.collectAsState().value is StoresScope) {
             Box(modifier = Modifier.weight(0.7f))
+        } else if (scope.childScope.flow.collectAsState().value is InStoreSellerScope) {
+            Row(modifier = Modifier.weight(0.7f)) {
+                val scopeCustom = scope.childScope.flow.collectAsState().value as InStoreSellerScope
+                BasicSearchBar(
+                    start = 0.dp,
+                    input = scopeCustom.searchText.flow.collectAsState().value,
+                    hint = R.string.search_tradename,
+                    searchBarEnd = SearchBarEnd.Eraser,
+                    icon = Icons.Default.Search,
+                    elevation = 2.dp,
+                    isSearchFocused = false,
+                    onSearch = { v, _ ->
+                        scopeCustom.search(v)
+                    },
+                )
+            }
         } else {
             Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
                 Row(

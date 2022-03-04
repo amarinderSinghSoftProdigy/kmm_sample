@@ -1,20 +1,27 @@
 package com.zealsoftsol.medico.core.mvi.event.delegates
 
+import com.zealsoftsol.medico.core.extensions.safeCall
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartPreviewScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.CartItem
+import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.SellerCart
 
 internal class CartEventDelegate(
     navigator: Navigator,
@@ -65,8 +72,26 @@ internal class CartEventDelegate(
         is Event.Action.Cart.LoadCart -> loadCart()
         is Event.Action.Cart.ClearCart -> clearCart()
         is Event.Action.Cart.PreviewCart -> previewCart()
-        is Event.Action.Cart.ConfirmCartOrder -> confirmCartOrder()
+        is Event.Action.Cart.ConfirmCartOrder -> confirmCartOrder(event.cartScope)
         is Event.Action.Cart.PlaceCartOrder -> placeCartOrder(event.checkForQuotedItems)
+        is Event.Action.Cart.OpenEditCartItem -> openCartItemBottomSheet(
+            event.qtyInitial,
+            event.freeQtyInitial,
+            event.sellerCart,
+            event.item,
+            event.cartScope
+        )
+    }
+
+    fun openCartItemBottomSheet(
+        qtyInitial: Double,
+        freeQtyInitial: Double,
+        sellerCart: SellerCart,
+        item: CartItem,
+        cartScope: CartScope
+    ) {
+        navigator.scope.value.bottomSheet.value =
+            BottomSheet.EditCartItem(qtyInitial, freeQtyInitial, sellerCart, item, cartScope)
     }
 
     private suspend fun addItem(
@@ -168,16 +193,31 @@ internal class CartEventDelegate(
         }
     }
 
-    private suspend fun confirmCartOrder() {
-        navigator.withScope<CartPreviewScope> {
-            withProgress { cartRepo.confirmCart(userRepo.requireUser().unitCode) }
-                .onSuccess {
-//                    if (it.modifiedEntries.isEmpty()) {
-                    placeCartOrder(checkQuoted = true)
-//                    } else {
-//                        it.notifications.value = CartPreviewScope.OrderModified(modifiedEntries)
-//                    }
+    private suspend fun confirmCartOrder(scope: Scope) {
+        if (scope is CartPreviewScope) {
+            navigator.withScope<CartPreviewScope> {
+                withProgress { cartRepo.confirmCart(userRepo.requireUser().unitCode) }
+                    .onSuccess {
+                        placeCartOrder(checkQuoted = true)
+                    }.onError(navigator)
+            }
+        } else {
+            navigator.withScope<CartScope> {
+                withProgress { cartRepo.confirmCart(userRepo.requireUser().unitCode) }
+                    .onSuccess {
+                        placeCartOrderDirect()
+                    }.onError(navigator)
+            }
+        }
+    }
+
+    private suspend fun placeCartOrderDirect() {
+        navigator.withScope<CartScope> {
+            withProgress { cartRepo.submitCart(userRepo.requireUser().unitCode) }
+                .onSuccess { body ->
+                    setScope(CartOrderCompletedScope(body, body.total))
                 }.onError(navigator)
+
         }
     }
 
