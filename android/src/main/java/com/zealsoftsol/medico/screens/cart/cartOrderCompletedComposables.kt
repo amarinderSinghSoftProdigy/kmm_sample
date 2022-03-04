@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartOrderCompletedScope
+import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.SellerOrder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Space
@@ -52,7 +53,7 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
     ) {
         Column {
             Space(24.dp)
-            OrderPlacedTile(scope.order.email, scope.order.orderDate, scope.order.orderTime)
+            OrderPlacedTile(scope.order)
             Space(14.dp)
             scope.order.sellersOrder.forEach {
                 OrderItem(it)
@@ -76,16 +77,14 @@ fun CartOrderCompletedScreen(scope: CartOrderCompletedScope) {
 
 @Composable
 private fun OrderPlacedTile(
-    email: String,
-    orderDate: String,
-    orderTime: String,
+    order: CartSubmitResponse,
 ) {
     /*Surface(
         shape = MaterialTheme.shapes.medium,
         color = ConstColors.green.copy(alpha = .06f),
         border = BorderStroke(2.dp, ConstColors.green)
     ) {*/
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
             painter = painterResource(id = R.drawable.ic_order_placed),
             contentDescription = null,
@@ -106,8 +105,9 @@ private fun OrderPlacedTile(
             fontSize = 12.sp,
         )
         Space(4.dp)
+        val tradeNames = order.sellersOrder.map { it.tradeName }.toList().joinToString(",")
         Text(
-            text = email,
+            text = tradeNames,
             color = ConstColors.lightGreen,
             fontWeight = FontWeight.W500,
             fontSize = 12.sp,

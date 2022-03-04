@@ -3642,24 +3642,27 @@ private fun ViewEditCartBottomSheet(
                 modifier = Modifier.padding(end = 30.dp)
             )
             Space(dp = 4.dp)
-            Text(
-                text = buildAnnotatedString {
-                    append(stringResource(id = R.string.promotions))
-                    val startIndex = length
-                    append(": ")
-                    append("(Offer 2+1)")
-                    addStyle(
-                        SpanStyle(color = ConstColors.red, fontWeight = FontWeight.W700),
-                        startIndex,
-                        length,
-                    )
-                },
-                color = MaterialTheme.colors.background,
-                fontWeight = FontWeight.W700,
-                fontSize = 14.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+
+            if (cartItem.isPromotionActive) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.promotions))
+                        val startIndex = length
+                        append(": ")
+                        append("(" + cartItem.promotionData?.displayOffer + ")")
+                        addStyle(
+                            SpanStyle(color = ConstColors.red, fontWeight = FontWeight.W700),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
 
             val isError = (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
             val wasError = remember { mutableStateOf(isError) }
