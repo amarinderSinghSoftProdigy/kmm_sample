@@ -232,6 +232,13 @@ fun StockistMenu(scope: MenuScope) {
         stringResourceId = R.string.deal_offer,
         scope = scope
     )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.QrCode,
+        drawableResourceId = R.drawable.ic_qr_code,
+        stringResourceId = R.string.delivery_qr_code,
+        scope = scope
+    )
 }
 
 

@@ -415,6 +415,8 @@
     <string name="no_preview_available">No Preview Available</string>
     <string name="view_stockist">View Stockists</string>
     <string name="connected_stockist">Connected Stockists</string>
+    <string name="delivery_qr_code">Delivery QR Code</string>
+    <string name="regenerate_code">Regenerate Code</string>
 
     <!-- Termrs and Cond -->
 
