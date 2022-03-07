@@ -17,6 +17,8 @@ data class InStoreSeller(
     val items: Int,
     @SerialName("buyerUnitCode")
     val unitCode: String,
+    @SerialName("id")
+    val id: String,
 )
 
 @Serializable

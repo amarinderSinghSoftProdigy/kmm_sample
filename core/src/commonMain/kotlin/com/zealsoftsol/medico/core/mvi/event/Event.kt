@@ -2,8 +2,8 @@ package com.zealsoftsol.medico.core.mvi.event
 
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
@@ -15,6 +15,8 @@ import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
@@ -35,6 +37,7 @@ import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
@@ -159,6 +162,7 @@ sealed class Event {
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
+            data class ShowConnectedStockistBottomSheet(val stockist : List<ConnectedStockist>): Search()
         }
 
         sealed class Product : Action() {
@@ -242,12 +246,20 @@ sealed class Event {
                 val id: CartIdentifier,
             ) : Cart()
 
+            data class OpenEditCartItem(
+                val qtyInitial: Double,
+                val freeQtyInitial: Double,
+                val sellerCart: SellerCart,
+                val item: CartItem,
+                val cartScope: CartScope
+            ) : Cart()
+
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object LoadCart : Cart()
             object ClearCart : Cart()
             object PreviewCart : Cart()
-            object ConfirmCartOrder : Cart()
+            data class ConfirmCartOrder(val cartScope: Scope) : Cart()
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
         }
 
@@ -351,6 +363,11 @@ sealed class Event {
                 val sellerName: String,
                 val address: String,
                 val phoneNumber: String
+            ) : InStore()
+
+            data class DeleteOrder(
+                val unitcode: String,
+                val id: String
             ) : InStore()
 
             data class ProductSearch(val value: String) : InStore()

@@ -209,6 +209,7 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                 item,
                                 onClick = { scope.selectProduct(item) },
                                 onBuy = { scope.buy(item) },
+                                scope = scope
                             )
                             if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadMoreProducts()
@@ -294,7 +295,7 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) {
+fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit, scope: SearchScope) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -415,6 +416,18 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit) 
                             color = ConstColors.lightBlue,
                             fontSize = 14.sp,
                         )
+                        if(product.viewStockist!=null  && product.viewStockist!!.isNotEmpty()){
+                            Space(4.dp)
+                            Text(
+                                text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
+                                color = Color.Red,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier.clickable{
+                                    scope.showConnectedStockist(product.viewStockist!!)
+                                }
+                            )
+                        }
                     }
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {
@@ -917,7 +930,8 @@ fun BasicSearchBar(
     horizontalPadding: Dp = 8.dp,
     isSearchFocused: Boolean = false,
     onSearch: (String, Boolean) -> Unit,
-    isSearchCross: Boolean = false
+    isSearchCross: Boolean = false,
+    start: Dp = 24.dp
 ) {
     SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
         if (icon != null) {
@@ -931,7 +945,7 @@ fun BasicSearchBar(
         }
         Box(
             modifier = Modifier
-                .padding(start = 24.dp)
+                .padding(start = start)
                 .fillMaxWidth(),
             contentAlignment = Alignment.CenterStart,
         ) {
@@ -947,7 +961,7 @@ fun BasicSearchBar(
             BasicTextField(
                 value = input.uppercase(),
                 cursorBrush = SolidColor(ConstColors.lightBlue),
-                onValueChange = { onSearch(it.replace("+","").replace("*",""), false) },
+                onValueChange = { onSearch(it.replace("+", "").replace("*", ""), false) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions { onSearch(input, true) },
@@ -1045,7 +1059,7 @@ fun SearchBarBox(
         elevation = elevation,
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(40.dp)
             .padding(horizontal = horizontalPadding)
     ) {
         Row(

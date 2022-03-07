@@ -842,7 +842,15 @@ class NetworkClient(
 
     override suspend fun confirmInStoreCart(unitCode: String, id: String): AnyResponse {
         return simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/instore/order/confirm") {
+            client.post("${baseUrl.url}/instore/order/confirm") {
+                withMainToken()
+                jsonBody(mapOf("id" to id, "buyerUnitCode" to unitCode))
+            }
+        }
+    }
+    override suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse {
+        return simpleRequest {
+            client.post("${baseUrl.url}/instore/order/deleteOrder") {
                 withMainToken()
                 jsonBody(mapOf("id" to id, "buyerUnitCode" to unitCode))
             }

@@ -69,6 +69,21 @@ internal class InStoreEventDelegate(
         is Event.Action.InStore.RemoveCartItem -> event.run {
             removeItem(entryId)
         }
+        is Event.Action.InStore.DeleteOrder -> removeOrder(event.unitcode, event.id)
+
+    }
+
+    private suspend fun removeOrder(unitCode: String, id: String) {
+        navigator.withScope<InStoreSellerScope> {
+            withProgress {
+                networkInStoreScope.deleteInStoreOrder(
+                    unitCode = unitCode,
+                    id = id
+                ).onSuccess { body ->
+                    it.loadItems(true)
+                }.onError(navigator)
+            }
+        }
     }
 
     private suspend fun loadSellerInStore(isFirstLoad: Boolean) {

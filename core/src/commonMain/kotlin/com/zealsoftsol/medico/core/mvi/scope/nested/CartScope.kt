@@ -21,13 +21,39 @@ class CartScope(
     val cartCount: ReadOnlyDataSource<Int>,
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
+    val isPreviewEnabled: DataSource<Boolean> = DataSource(false)
+
+    fun updatePreviewStatus(boolean: Boolean) {
+        isPreviewEnabled.value = boolean
+    }
+
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.NoIconTitle(
         "", unreadNotifications, cartCount
     )
 
+    fun placeOrder(scope: Scope) =
+        EventCollector.sendEvent(Event.Action.Cart.ConfirmCartOrder(scope))
+
     init {
         EventCollector.sendEvent(Event.Action.Cart.LoadCart)
     }
+
+    fun openBottomSheet(
+        qtyInitial: Double,
+        freeQtyInitial: Double,
+        sellerCart: SellerCart,
+        item: CartItem,
+        cartScope: CartScope
+    ) =
+        EventCollector.sendEvent(
+            Event.Action.Cart.OpenEditCartItem(
+                qtyInitial,
+                freeQtyInitial,
+                sellerCart,
+                item,
+                cartScope
+            )
+        )
 
     fun updateItemCount(
         sellerCart: SellerCart,
@@ -76,7 +102,8 @@ class CartPreviewScope(
     override val notifications: DataSource<ScopeNotification?> = DataSource(null),
 ) : Scope.Child.TabBar(), CommonScope.WithNotifications {
 
-    fun placeOrder() = EventCollector.sendEvent(Event.Action.Cart.ConfirmCartOrder)
+    fun placeOrder(scope: Scope) =
+        EventCollector.sendEvent(Event.Action.Cart.ConfirmCartOrder(scope))
 
     object OrderWithQuotedItems : ScopeNotification {
         override val isSimple: Boolean = false

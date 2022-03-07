@@ -40,6 +40,9 @@ class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>) : Sco
     fun loadItems() =
         EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = false))
 
+    fun loadItems(boolean: Boolean) =
+        EventCollector.sendEvent(Event.Action.InStore.SellerLoad(isFirstLoad = boolean))
+
     fun search(value: String): Boolean {
         return if (searchText.value != value) {
             EventCollector.sendEvent(Event.Action.InStore.SellerSearch(value))
@@ -55,6 +58,14 @@ class InStoreSellerScope(val unreadNotifications: ReadOnlyDataSource<Int>) : Sco
                 item.tradeName,
                 item.city,
                 item.phoneNumber
+            )
+        )
+
+    fun deleteItem(item: InStoreSeller) =
+        EventCollector.sendEvent(
+            Event.Action.InStore.DeleteOrder(
+                item.unitCode,
+                item.id
             )
         )
 
