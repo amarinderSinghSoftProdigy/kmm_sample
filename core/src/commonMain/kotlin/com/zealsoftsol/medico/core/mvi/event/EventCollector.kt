@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.QrCodeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
@@ -65,6 +66,7 @@ class EventCollector(
     offersNetworkScope: NetworkScope.OffersStore,
     orderHsnScope: NetworkScope.OrderHsnEditStore,
     batchesScope: NetworkScope.BatchesStore,
+    qrCodeScope: NetworkScope.QrCodeStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -159,7 +161,8 @@ class EventCollector(
             userRepo,
             offersNetworkScope
         ),
-        Event.Action.Batches::class to BatchesEventDelegate(navigator, userRepo, batchesScope)
+        Event.Action.Batches::class to BatchesEventDelegate(navigator, userRepo, batchesScope),
+        Event.Action.QrCode::class to QrCodeEventDelegate(navigator, qrCodeScope)
     )
 
     init {

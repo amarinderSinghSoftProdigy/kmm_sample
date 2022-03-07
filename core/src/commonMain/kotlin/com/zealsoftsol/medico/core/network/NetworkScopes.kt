@@ -56,6 +56,7 @@ import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
+import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
@@ -420,5 +421,12 @@ interface NetworkScope {
             unitCode: String,
             promoCode: String, request: OfferProductRequest
         ): BodyResponse<String>
+    }
+
+    interface QrCodeStore: NetworkScope {
+        suspend fun getQrCode(): BodyResponse<QrCodeData>
+
+        suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData>
+
     }
 }
