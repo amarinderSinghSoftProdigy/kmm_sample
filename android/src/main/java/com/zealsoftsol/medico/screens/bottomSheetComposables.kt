@@ -308,12 +308,11 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     .padding(start = 16.dp, top = 5.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_connected),
+                                    painter = painterResource(id = if (item.connected) R.drawable.ic_connected else R.drawable.ic_stockist_connect),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(25.dp)
                                         .padding(end = 5.dp),
-                                    tint = if (item.connected) ConstColors.lightGreen else ConstColors.red
                                 )
                                 Text(
                                     text = item.tradeName,
