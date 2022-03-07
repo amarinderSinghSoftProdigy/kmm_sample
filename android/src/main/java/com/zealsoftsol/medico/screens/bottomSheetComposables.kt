@@ -308,7 +308,7 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     .padding(start = 16.dp, top = 5.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(id = if (item.connected) R.drawable.ic_connected else R.drawable.ic_stockist_connect),
+                                    painter = painterResource(id = if (item.connected) R.drawable.ic_connected else R.drawable.ic_not_connected),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(25.dp)
