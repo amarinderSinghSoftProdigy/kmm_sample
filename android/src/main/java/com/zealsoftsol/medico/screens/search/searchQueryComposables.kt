@@ -295,7 +295,12 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit, scope: SearchScope) {
+fun ProductItem(
+    product: ProductSearch,
+    onClick: () -> Unit,
+    onBuy: () -> Unit,
+    scope: SearchScope
+) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -411,15 +416,18 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit, 
                             Divider(modifier = Modifier.width(maxWidth / 2))
                         }
                         Space(4.dp)
-                        Text(
-                            text = product.uomName,
-                            color = ConstColors.lightBlue,
-                            fontSize = 14.sp,
-                        )
-                        if(product.viewStockist!=null  && product.viewStockist!!.isNotEmpty()){
-                            Space(4.dp)
-                            Text(
+                        if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
+                            MedicoButton(
                                 text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
+                                isEnabled = true,
+                                height = 36.dp,
+                                elevation = null,
+                                color = ConstColors.lightGrey,
+                                onClick = { scope.showConnectedStockist(product.viewStockist!!) },
+                            )
+                        }else{
+                            Text(
+                                text = stringResource(id = R.string.no_stockist),
                                 color = Color.Red,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.W600,

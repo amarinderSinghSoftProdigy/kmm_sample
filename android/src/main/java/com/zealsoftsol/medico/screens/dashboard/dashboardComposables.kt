@@ -37,8 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -592,197 +590,49 @@ private fun ShowStockistDashBoard(
                 }
             }
             Space(16.dp)
-            val soldExpanded = remember { mutableStateOf(false) }
 
-            Text(
-                text = stringResource(id = R.string.today_sold),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(8.dp)
-            /*FoldableItem(
-                expanded = soldExpanded.value,
-                headerBackground = Color.White,
-                headerMinHeight = 62.dp,
-                header = { isExpanded ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.today_sold),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                            tint = ConstColors.lightBlue,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
+            if(dash?.productInfo != null && dash.productInfo?.mostSold?.isNotEmpty()!!) {
+                Text(
+                    text = stringResource(id = R.string.today_sold),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Space(8.dp)
+
+                dash.productInfo?.mostSold?.let {
+                    LazyRow {
+                        itemsIndexed(
+                            items = it,
+                            itemContent = { _, item ->
+                                BrandsImageItem(item, scope)
+                            },
                         )
                     }
-                },
-                childItems = dash?.productInfo?.mostSold ?: listOf(ProductSold.skeleton),
-                itemHorizontalPadding = 0.dp,
-                itemSpacing = 0.dp,
-                item = { value, index ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
-                            .background(
-                                if (index % 2 != 0) Color.White else ConstColors.gray.copy(
-                                    alpha = .05f
-                                )
-                            )
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (!value.isSkeletonItem) {
-                            Text(
-                                text = value.productName,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
-                            Text(
-                                text = value.count.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                modifier = Modifier
-                                    .background(
-                                        ConstColors.gray.copy(.15f),
-                                        MaterialTheme.shapes.medium
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 6.dp),
-                            )
-                        } else {
-                            ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
-                        }
-                    }
-                },
-            )*/
-
-            dash?.productInfo?.mostSold?.let {
-                LazyRow {
-                    itemsIndexed(
-                        items = it,
-                        itemContent = { _, item ->
-                            BrandsImageItem(item, scope)
-                        },
-                    )
-                }
-            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-
+                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+            }
 
             Space(8.dp)
-            Text(
-                text = stringResource(id = R.string.most_searched),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Space(8.dp)
-            val searchExpanded = remember { mutableStateOf(false) }
-            /*FoldableItem(
-                expanded = searchExpanded.value,
-                headerBackground = Color.White,
-                headerMinHeight = 62.dp,
-                header = { isExpanded ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.most_searched),
-                            color = MaterialTheme.colors.background,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                            tint = ConstColors.lightBlue,
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
+            if(dash?.productInfo != null && dash.productInfo?.mostSearched?.isNotEmpty()!!){
+                Text(
+                    text = stringResource(id = R.string.most_searched),
+                    color = ConstColors.lightBlue,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Space(8.dp)
+
+                dash.productInfo?.mostSearched?.let {
+                    LazyRow {
+                        itemsIndexed(
+                            items = it,
+                            itemContent = { _, item ->
+                                BrandsImageItem(item, scope)
+                            },
                         )
                     }
-                },
-                childItems = dash?.productInfo?.mostSearched ?: listOf(ProductSold.skeleton),
-                itemHorizontalPadding = 0.dp,
-                itemSpacing = 0.dp,
-                item = { value, index ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(if (!value.isSkeletonItem) 40.dp else 60.dp)
-                            .background(
-                                if (index % 2 != 0) Color.White else ConstColors.gray.copy(
-                                    alpha = .05f
-                                )
-                            )
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (!value.isSkeletonItem) {
-                            Text(
-                                text = value.productName,
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(end = 8.dp),
-                            )
-                            Text(
-                                text = value.count.toString(),
-                                color = MaterialTheme.colors.background,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W500,
-                                modifier = Modifier
-                                    .background(
-                                        ConstColors.gray.copy(.15f),
-                                        MaterialTheme.shapes.medium
-                                    )
-                                    .padding(vertical = 4.dp, horizontal = 6.dp),
-                            )
-                        } else {
-                            ShimmerItem(padding = PaddingValues(horizontal = 12.dp))
-                        }
-                    }
-                },
-            )*/
-
-            dash?.productInfo?.mostSearched?.let {
-                LazyRow {
-                    itemsIndexed(
-                        items = it,
-                        itemContent = { _, item ->
-                            BrandsImageItem(item, scope)
-                        },
-                    )
-                }
-            } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
-            /*Text(
-                text = stringResource(id = R.string.no_products),
-                color = ConstColors.lightBlue,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )*/
-
+                } ?: ShimmerItem(padding = PaddingValues(end = 12.dp, top = 12.dp))
+            }
         }
         Space(dp = 16.dp)
     }

@@ -417,6 +417,7 @@
     <string name="connected_stockist">Connected Stockists</string>
     <string name="delivery_qr_code">Delivery QR Code</string>
     <string name="regenerate_code">Regenerate Code</string>
+    <string name="no_stockist">No Stockist found</string>
 
     <!-- Termrs and Cond -->
 
