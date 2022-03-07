@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.qrcode
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ fun QrCodeScreen(scope: QrCodeScope) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -45,23 +47,23 @@ fun QrCodeScreen(scope: QrCodeScope) {
 
             Text(
                 text = stringResource(id = R.string.delivery_qr_code),
-                fontWeight = FontWeight.W600,
-                fontSize = 15.sp,
+                fontWeight = FontWeight.W700,
+                fontSize = 16.sp,
                 color = Color.Black
             )
 
             Space(dp = 30.dp)
 
             Surface(elevation = 5.dp, modifier = Modifier
-                .width(200.dp)
-                .height(200.dp)) {
+                .width(300.dp)
+                .height(300.dp)) {
                 CoilImageBrands(
-                    src = "${qrCodeImage}.jpg",
+                    src = qrCodeImage.value,
                     contentScale = ContentScale.FillBounds,
                     onError = { ItemPlaceholder() },
                     onLoading = { ItemPlaceholder() },
-                    height = 200.dp,
-                    width = 200.dp,
+                    height = 300.dp,
+                    width = 300.dp,
                 )
             }
 
@@ -69,8 +71,8 @@ fun QrCodeScreen(scope: QrCodeScope) {
 
             Text(
                 text = qrCode.value,
-                fontWeight = FontWeight.W600,
-                fontSize = 15.sp,
+                fontWeight = FontWeight.W700,
+                fontSize = 16.sp,
                 color = Color.Black
             )
 
