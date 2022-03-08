@@ -406,37 +406,27 @@ fun ProductItem(
                         }
                     }
                 }
+                Space(10.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom,
                 ) {
-                    Column {
-                        BoxWithConstraints {
-                            Divider(modifier = Modifier.width(maxWidth / 2))
-                        }
+                    if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
                         Space(4.dp)
-                        if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
-                            MedicoButton(
-                                text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
-                                isEnabled = true,
-                                height = 36.dp,
-                                elevation = null,
-                                color = ConstColors.lightGrey,
-                                onClick = { scope.showConnectedStockist(product.viewStockist!!) },
-                            )
-                        }else{
-                            Text(
-                                text = stringResource(id = R.string.no_stockist),
-                                color = Color.Red,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W600,
-                                modifier = Modifier.clickable{
-                                    scope.showConnectedStockist(product.viewStockist!!)
-                                }
-                            )
-                        }
+                        MedicoButton(
+                            modifier = Modifier.weight(0.5f).padding(end = 20.dp),
+                            text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
+                            isEnabled = true,
+                            height = 36.dp,
+                            color = ConstColors.lightGrey,
+                            elevation = null,
+                            onClick = {
+                                scope.showConnectedStockist(product.viewStockist!!)
+                            },
+                        )
                     }
+
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {
                             BuyingOption.BUY -> MedicoButton(
