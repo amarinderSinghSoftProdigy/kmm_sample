@@ -38,6 +38,19 @@ sealed class PasswordScope(
         override val notifications: DataSource<ScopeNotification?> = DataSource(null),
     ) : PasswordScope("new_password"),
         CommonScope.WithNotifications {
+
+        fun isValidPassword(str: String): Boolean {
+            if (str.isEmpty()) {
+                return true
+            }
+            val regex = ("^(?=.*[a-z])(?=."
+                    + "*[A-Z])(?=.*\\d)"
+                    + "(?=.*[-+_!@#$%^&*., ?]).+$")
+
+            val p = regex.toRegex()
+            return p.matches(str) && str.length >= 8
+        }
+
         fun changeConfirmPassword(password: String) {
             confirmPassword.value = password
         }
