@@ -412,10 +412,12 @@ fun ProductItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom,
                 ) {
+                    Space(4.dp)
                     if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
-                        Space(4.dp)
                         MedicoButton(
-                            modifier = Modifier.weight(0.5f).padding(end = 20.dp),
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(end = 20.dp),
                             text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
                             isEnabled = true,
                             height = 36.dp,
@@ -424,6 +426,16 @@ fun ProductItem(
                             onClick = {
                                 scope.showConnectedStockist(product.viewStockist!!)
                             },
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(end = 20.dp),
+                            text = stringResource(id = R.string.no_stockist),
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
                         )
                     }
 
