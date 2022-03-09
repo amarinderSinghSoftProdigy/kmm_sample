@@ -35,11 +35,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
@@ -98,12 +103,17 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
                 shape = MaterialTheme.shapes.large,
                 color = ConstColors.lightBlue.copy(alpha = 0.1f)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 20.dp
+
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
                 ) {
-                    statuses.value.forEachIndexed { _, item ->
-                        StatusItem(item)
+                    statuses.value.let {
+                        it.forEachIndexed { _, item ->
+                            StatusItem(item, modifier = Modifier.width(itemSize))
+                        }
                     }
                 }
             }
@@ -401,26 +411,25 @@ private fun SectionButton(
 }
 
 @Composable
-fun StatusItem(item: PromotionStatusData) {
+fun StatusItem(item: PromotionStatusData, modifier: Modifier) {
     Row {
         Surface(
             color = Color.Transparent,
-            modifier = Modifier
-                .padding(8.dp)
-                .weight(0.5f),
-            border = BorderStroke(1.dp, MaterialTheme.colors.background),
+            modifier = modifier
+                .padding(8.dp),
+            border = BorderStroke(1.dp, Color.Black),
             shape = MaterialTheme.shapes.medium,
         ) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = item.status,
-                    color = MaterialTheme.colors.background,
+                    color = Color.Black,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W800,
-                    modifier = Modifier.padding(all = 4.dp),
+                    modifier = Modifier.padding(all = 8.dp),
                 )
                 Text(
                     text = item.total.toString(),
