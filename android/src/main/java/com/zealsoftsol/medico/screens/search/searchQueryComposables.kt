@@ -295,7 +295,12 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit, scope: SearchScope) {
+fun ProductItem(
+    product: ProductSearch,
+    onClick: () -> Unit,
+    onBuy: () -> Unit,
+    scope: SearchScope
+) {
     Surface(
         color = Color.White,
         shape = MaterialTheme.shapes.medium,
@@ -401,34 +406,39 @@ fun ProductItem(product: ProductSearch, onClick: () -> Unit, onBuy: () -> Unit, 
                         }
                     }
                 }
+                Space(10.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom,
                 ) {
-                    Column {
-                        BoxWithConstraints {
-                            Divider(modifier = Modifier.width(maxWidth / 2))
-                        }
-                        Space(4.dp)
-                        Text(
-                            text = product.uomName,
-                            color = ConstColors.lightBlue,
-                            fontSize = 14.sp,
+                    Space(4.dp)
+                    if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(end = 20.dp),
+                            text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
+                            isEnabled = true,
+                            height = 36.dp,
+                            color = ConstColors.lightGrey,
+                            elevation = null,
+                            onClick = {
+                                scope.showConnectedStockist(product.viewStockist!!)
+                            },
                         )
-                        if(product.viewStockist!=null  && product.viewStockist!!.isNotEmpty()){
-                            Space(4.dp)
-                            Text(
-                                text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
-                                color = Color.Red,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W600,
-                                modifier = Modifier.clickable{
-                                    scope.showConnectedStockist(product.viewStockist!!)
-                                }
-                            )
-                        }
+                    } else {
+                        Text(
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(end = 20.dp),
+                            text = stringResource(id = R.string.no_stockist),
+                            color = Color.Red,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W600,
+                        )
                     }
+
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {
                             BuyingOption.BUY -> MedicoButton(

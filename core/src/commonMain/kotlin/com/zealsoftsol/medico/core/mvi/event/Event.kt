@@ -15,9 +15,8 @@ import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
-import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CartItem
-import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
@@ -162,7 +161,8 @@ sealed class Event {
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
-            data class ShowConnectedStockistBottomSheet(val stockist : List<ConnectedStockist>): Search()
+            data class ShowConnectedStockistBottomSheet(val stockist: List<ConnectedStockist>) :
+                Search()
         }
 
         sealed class Product : Action() {
@@ -507,6 +507,13 @@ sealed class Event {
             data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()
 
         }
+
+        sealed class QrCode : Action() {
+            override val typeClazz: KClass<*> = QrCode::class
+
+            object GetQrCode : QrCode()
+            data class RegenerateQrCode(val qrCode: String) : QrCode()
+        }
     }
 
 
@@ -560,6 +567,8 @@ sealed class Event {
             val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData?>,
             val requiredQty: Double,
         ) : Transition()
+
+        object QrCode : Transition()
 
     }
 }

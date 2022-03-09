@@ -71,6 +71,7 @@ import com.zealsoftsol.medico.data.ProfileImageUpload
 import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.PromotionTypeData
 import com.zealsoftsol.medico.data.PromotionUpdateRequest
+import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
@@ -138,7 +139,9 @@ class NetworkClient(
     NetworkScope.InventoryStore,
     NetworkScope.ProfileImage,
     NetworkScope.OffersStore,
-    NetworkScope.OrderHsnEditStore, NetworkScope.BatchesStore {
+    NetworkScope.OrderHsnEditStore,
+    NetworkScope.BatchesStore,
+    NetworkScope.QrCodeStore {
 
     init {
         "USING NetworkClient with $baseUrl".logIt()
@@ -848,6 +851,7 @@ class NetworkClient(
             }
         }
     }
+
     override suspend fun deleteInStoreOrder(unitCode: String, id: String): AnyResponse {
         return simpleRequest {
             client.post("${baseUrl.url}/instore/order/deleteOrder") {
@@ -1146,6 +1150,22 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getQrCode(): BodyResponse<QrCodeData> =
+        client.get("${baseUrl.url}/b2bapp/delivery/qr/code") {
+            withMainToken()
+        }
+
+
+    override suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData> =
+        simpleRequest {
+            client.post("${baseUrl.url}/b2bapp/delivery/qr/regenerate") {
+                withMainToken()
+                url {
+                    parameters.append("qrCode", qrCode)
+                }
+            }
+        }
+
     // Utils
     private inline fun HttpRequestBuilder.withB2bCodeToken(finalToken: String) {
         applyHeader(finalToken)
@@ -1249,6 +1269,7 @@ class NetworkClient(
         STAG("https://staging-api-gateway.medicostores.com"),
         PROD("https://partner-api-gateway.medicostores.com");
     }
+
 }
 
 expect fun addInterceptor(config: HttpClientConfig<HttpClientEngineConfig>)

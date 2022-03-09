@@ -88,6 +88,10 @@ internal class AuthEventDelegate(
                 navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                 navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
             }
+        }else{
+            userRepo.clear()
+            navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+            navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }
 
