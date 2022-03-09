@@ -1119,7 +1119,7 @@ private fun OffersHeader(
                     tint = ConstColors.gray,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(25.dp)
                         .padding(2.dp),
                 )
 
@@ -1133,7 +1133,7 @@ private fun OffersHeader(
                     tint = ConstColors.gray,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(25.dp)
                         .padding(2.dp),
                 )
 
