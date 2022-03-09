@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -30,6 +32,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -72,7 +76,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalComposeUiApi
+@ExperimentalMaterialApi
 @Composable
 fun InventoryMainComposable(scope: InventoryScope) {
     val manufacturersList = scope.manufacturersList.flow.collectAsState().value
@@ -83,6 +88,9 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var queryTextChangedJob: Job? = null
     val showNoBatchesDialog = scope.showNoBatchesDialog.flow.collectAsState().value
+    var showSearchBar = remember { mutableStateOf(false) }
+    var showManufacturers = remember { mutableStateOf(false) }
+    val showGraphs = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -94,7 +102,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 .fillMaxWidth()
                 .height(56.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -104,51 +112,114 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     .clickable(
                         indication = null,
                         onClick = {
-                            scope.goBack()
+                            if(showSearchBar.value){
+                                showSearchBar.value = false
+                            }else{
+                                scope.goBack()
+                            }
                         }
                     )
             )
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp)
-                    .padding(end = 40.dp),
-                shape = RoundedCornerShape(3.dp),
-                elevation = 5.dp
-            ) {
-                TextField(
-                    modifier = Modifier.height(48.dp),
-                    value = searchTerm.value,
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.White,
-                        textColor = Color.Black,
-                        placeholderColor = Color.Black,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                    onValueChange = {
+            if (showSearchBar.value) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp)
+                        .padding(end = 40.dp),
+                    shape = RoundedCornerShape(3.dp),
+                    elevation = 5.dp
+                ) {
+                    TextField(
+                        modifier = Modifier.height(48.dp),
+                        value = searchTerm.value,
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.White,
+                            textColor = Color.Black,
+                            placeholderColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                        onValueChange = {
 
-                        searchTerm.value = it
+                            searchTerm.value = it
 
-                        queryTextChangedJob?.cancel()
+                            queryTextChangedJob?.cancel()
 
-                        queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                            delay(500)
-                            scope.startSearch(it)
-                        }
-                    },
-                    placeholder = {
-                        Text(
-                            stringResource(id = R.string.search_inventory),
-                            color = Color.Gray,
-                            fontSize = 14.sp
+                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                delay(500)
+                                scope.startSearch(it)
+                            }
+                        },
+                        placeholder = {
+                            Text(
+                                stringResource(id = R.string.search_inventory),
+                                color = Color.Gray,
+                                fontSize = 14.sp
+                            )
+                        },
+                        maxLines = 1
+                    )
+                }
+            }
+
+            if (!showSearchBar.value) {
+                Row(
+                    modifier = Modifier
+                        .padding(end = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Surface(
+                        color = Color.Transparent,
+                        onClick = {
+                            showGraphs.value = !showGraphs.value
+                        }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_pie_graph),
+                            tint = ConstColors.gray,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(2.dp),
                         )
-                    },
-                    maxLines = 1
-                )
+
+                    }
+                    Space(10.dp)
+                    Surface(
+                        color = Color.Transparent,
+                        onClick = {
+                            showManufacturers.value = !showManufacturers.value
+                        }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_manufacturer_toolbar),
+                            tint = ConstColors.gray,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(2.dp),
+                        )
+
+                    }
+                    Space(10.dp)
+                    Surface(
+                        color = Color.Transparent,
+                        onClick = {
+                            showSearchBar.value = true
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            tint = ConstColors.gray,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(2.dp),
+                        )
+
+                    }
+                }
             }
         }
         Divider(
@@ -156,57 +227,65 @@ fun InventoryMainComposable(scope: InventoryScope) {
             thickness = 0.5.dp,
             startIndent = 0.dp
         )
-        Space(10.dp)
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(10.dp)
-        ) {
-            item {
-                StatusView(
-                    scope = scope, modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp)
-                )
-            }
-            item {
-                AvailabilityView(
-                    scope = scope,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp),
-                )
-            }
-            item {
-                ExpiryView(
-                    scope = scope,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .padding(8.dp),
-                )
+        if (showGraphs.value) {
+
+            Space(10.dp)
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(10.dp)
+            ) {
+                item {
+                    StatusView(
+                        scope = scope, modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp)
+                    )
+                }
+                item {
+                    AvailabilityView(
+                        scope = scope,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp),
+                    )
+                }
+                item {
+                    ExpiryView(
+                        scope = scope,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .padding(8.dp),
+                    )
+                }
             }
         }
-        LazyRow(
-            contentPadding = PaddingValues(start = 3.dp),
-            modifier = Modifier.padding(horizontal = 16.dp),
-        ) {
-            manufacturersList.let {
-                itemsIndexed(
-                    items = it,
-                    key = { index, _ -> index },
-                    itemContent = { index, item ->
-                        ManufacturersItem(item, scope) {
-                            it.forEachIndexed { _, it ->
-                                it.isChecked = false
+
+        if(showManufacturers.value){
+            Space(10.dp)
+            LazyRow(
+                contentPadding = PaddingValues(start = 3.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            ) {
+                manufacturersList.let {
+                    itemsIndexed(
+                        items = it,
+                        key = { index, _ -> index },
+                        itemContent = { index, item ->
+                            ManufacturersItem(item, scope) {
+                                it.forEachIndexed { _, it ->
+                                    it.isChecked = false
+                                }
+                                it[index].isChecked = true
+                                scope.updateManufacturer(item.name, item.code)
                             }
-                            it[index].isChecked = true
-                            scope.updateManufacturer(item.name, item.code)
-                        }
-                    },
-                )
+                        },
+                    )
+                }
             }
         }
+
         Space(dp = 16.dp)
         Card(
             modifier = Modifier

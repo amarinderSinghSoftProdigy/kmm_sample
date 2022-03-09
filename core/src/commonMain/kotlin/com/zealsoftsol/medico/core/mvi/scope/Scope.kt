@@ -134,6 +134,12 @@ sealed class TabBarInfo {
         override val icon: ScopeIcon = ScopeIcon.BACK
     }
 
+    data class OfferHeader(
+        val title: String //pass the string resource id
+    ) : TabBarInfo() {
+        override val icon: ScopeIcon = ScopeIcon.BACK
+    }
+
     data class StoreTitle(
         val storeName: String,
         val notificationItemsCount: ReadOnlyDataSource<Int>? = null,

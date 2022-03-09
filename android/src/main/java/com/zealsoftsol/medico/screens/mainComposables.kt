@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -264,6 +265,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                             is TabBarInfo.NoIconTitle -> NoIconHeader(scope, info)
                             is TabBarInfo.StoreTitle -> StoreHeader(scope, info)
                             is TabBarInfo.OnlyBackHeader -> OnlyBackHeader(scope, info)
+                            is TabBarInfo.OfferHeader -> OffersHeader(
+                                scope,
+                                info,
+                            )
                         }
                     }
                 }
@@ -1018,6 +1023,123 @@ private fun OnlyBackHeader(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+    }
+}
+
+/**
+ * use this as header when only back icon is required on header and nothing else
+ */
+@ExperimentalMaterialApi
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun OffersHeader(
+    scope: TabBarScope,
+    info: TabBarInfo.OfferHeader,
+) {
+    val childScope = scope.childScope.flow.collectAsState().value as OffersScope.ViewOffers
+    val switchEnabled = remember { mutableStateOf(false) }
+    val showManufacturers = remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Icon(
+                imageVector = info.icon.toLocalIcon(),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .fillMaxHeight()
+                    .padding(16.dp)
+                    .clickable(
+                        indication = null,
+                        onClick = {
+                            if (switchEnabled.value) {
+                                switchEnabled.value = false
+                            } else {
+                                scope.goBack()
+                            }
+                        },
+                    )
+            )
+            if (info.title.isNotEmpty() && !switchEnabled.value)
+                Text(
+                    text = stringResourceByName(info.title),
+                    color = MaterialTheme.colors.background,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+        }
+
+        if (switchEnabled.value) {
+            val search =
+                childScope.productSearch.flow.collectAsState()
+            Row {
+                BasicSearchBar(
+                    input = search.value,
+                    hint = R.string.search_by_product,
+                    icon = null,
+                    horizontalPadding = 12.dp,
+                    isSearchFocused = true,
+                    searchBarEnd = SearchBarEnd.Eraser,
+                    onSearch = { value, _ ->
+                        if (value.isEmpty()) {
+                            switchEnabled.value = false
+                        }
+                        childScope.startSearch(search = value)
+                    },
+                    isSearchCross = true
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Surface(
+                color = Color.Transparent,
+                onClick = {
+                    showManufacturers.value = !showManufacturers.value
+                    EventCollector.sendEvent(Event.Action.Offers.ShowManufacturers(showManufacturers.value))
+                }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_manufacturer_toolbar),
+                    tint = ConstColors.gray,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                )
+
+            }
+            Space(dp = 12.dp)
+            Surface(
+                color = Color.Transparent,
+                onClick = { switchEnabled.value = !switchEnabled.value }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    tint = ConstColors.gray,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                )
+
+            }
+        }
+        Space(dp = 16.dp)
     }
 }
 

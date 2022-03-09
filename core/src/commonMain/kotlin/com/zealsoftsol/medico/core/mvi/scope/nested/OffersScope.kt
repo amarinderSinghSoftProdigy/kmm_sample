@@ -29,13 +29,14 @@ sealed class OffersScope : Scope.Child.TabBar() {
         val totalItems: DataSource<Int> = DataSource(0)
         val searchText: DataSource<String> = DataSource("")
         val pagination: Pagination = Pagination()
+        val showManufacturers = DataSource(false)
 
         init {
             startSearch()
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title)
+            return TabBarInfo.OfferHeader(title)
         }
 
         fun loadMoreProducts() =

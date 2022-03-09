@@ -486,6 +486,7 @@ sealed class Event {
             data class SaveOffer(val request: OfferProductRequest) : Offers()
             data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
                 Offers()
+            data class ShowManufacturers(val showManufacturers: Boolean) : Offers()
         }
 
         sealed class Inventory : Action() {

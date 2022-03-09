@@ -2,13 +2,11 @@ package com.zealsoftsol.medico.screens.offers
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,18 +28,23 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
@@ -50,20 +53,19 @@ import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @SuppressLint("RememberReturnType")
 @Composable
 fun OffersScreen(scope: OffersScope.ViewOffers) {
-    val search = scope.productSearch.flow.collectAsState()
     val offers = scope.items.flow.collectAsState()
     val manufacturer = scope.manufacturer.flow.collectAsState()
     val statuses = scope.statuses.flow.collectAsState()
     val manufacturerList = scope.manufacturerSearch.flow.collectAsState()
+    val switchEnabled = remember { mutableStateOf(false) }
+    val showManufacturersList = scope.showManufacturers.flow.collectAsState()
 
     remember {
         scope.startSearch()
@@ -73,41 +75,56 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                modifier = Modifier.weight(0.65f),
-                shape = MaterialTheme.shapes.large,
-                color = Color.Transparent,
-                border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+            SectionButton(
+                modifier = Modifier.weight(0.5f),
+                icon = painterResource(id = R.drawable.ic_offer),
+                text = stringResource(id = R.string.offer),
+                color = ConstColors.lightBlue,
+                tint = Color.White
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(all = 8.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    LazyColumn {
-                        itemsIndexed(
-                            items = statuses.value,
-                            itemContent = { _, item ->
-                                StatusItem(item)
-                            },
-                        )
-                    }
-                }
+                switchEnabled.value = !switchEnabled.value
             }
+
             Space(dp = 16.dp)
             SectionButton(
-                modifier = Modifier.weight(0.35f),
+                modifier = Modifier.weight(0.5f),
                 icon = painterResource(id = R.drawable.ic_offer),
                 text = stringResource(id = R.string.create_offer),
             ) {
                 scope.openCreateOffer()
             }
         }
-        BasicSearchBar(
+
+        if (switchEnabled.value) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp),
+                shape = MaterialTheme.shapes.large,
+                color = ConstColors.lightBlue.copy(alpha = 0.1f)
+            ) {
+
+                val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 2) - 20.dp
+
+                FlowRow(
+                    mainAxisSize = SizeMode.Expand,
+                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                ) {
+                    statuses.value.let {
+                        it.forEachIndexed { _, item ->
+                            StatusItem(item, modifier = Modifier.width(itemSize))
+                        }
+                    }
+                }
+            }
+            Space(dp = 16.dp)
+        }
+        //dasdsad
+      /*  BasicSearchBar(
             input = search.value,
             hint = R.string.search_by_product,
             icon = null,
-            horizontalPadding = 8.dp,
+            horizontalPadding = 12.dp,
             onIconClick = null,
             isSearchFocused = false,
             onSearch = { value, _ ->
@@ -116,37 +133,39 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
             isSearchCross = false
         )
         Space(dp = 16.dp)
-        Divider(thickness = 0.5.dp)
-        Space(dp = 8.dp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp),
-                text = stringResource(id = R.string.manufacturers),
-                color = ConstColors.lightBlue,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W600,
-            )
-            if (manufacturerList.value.size > 0) {
+        Divider(thickness = 0.5.dp)*/
+        if(showManufacturersList.value) {
+            Space(dp = 8.dp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = "( " + manufacturerList.value.size + " )",
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = stringResource(id = R.string.manufacturers),
                     color = ConstColors.lightBlue,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W600,
                 )
+                if (manufacturerList.value.size > 0) {
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = "( " + manufacturerList.value.size + " )",
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
             }
+            Space(dp = 8.dp)
+            LazyRow(modifier = Modifier.padding(start = 16.dp)) {
+                itemsIndexed(
+                    items = manufacturer.value,
+                    itemContent = { _, item ->
+                        ManufacturerItem(item, scope, manufacturerList.value)
+                    },
+                )
+            }
+            Space(dp = 12.dp)
+            Divider(thickness = 0.5.dp)
         }
-        Space(dp = 8.dp)
-        LazyRow(modifier = Modifier.padding(start = 16.dp)) {
-            itemsIndexed(
-                items = manufacturer.value,
-                itemContent = { _, item ->
-                    ManufacturerItem(item, scope, manufacturerList.value)
-                },
-            )
-        }
-        Space(dp = 12.dp)
-        Divider(thickness = 0.5.dp)
         Space(dp = 8.dp)
         if (offers.value.isEmpty()) {
             NoRecordsWithoutHome(
@@ -345,12 +364,14 @@ private fun SectionButton(
     modifier: Modifier,
     icon: Painter,
     text: String,
+    color: Color = ConstColors.yellow,
+    tint: Color = MaterialTheme.colors.background,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        color = ConstColors.yellow,
+        color = color,
         enabled = true,
         onClick = onClick,
     ) {
@@ -358,8 +379,7 @@ private fun SectionButton(
         Box(
             modifier = Modifier
                 .padding(10.dp)
-                .height(70.dp)
-                .fillMaxHeight(),
+                .height(70.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -376,12 +396,12 @@ private fun SectionButton(
                         modifier = Modifier
                             .size(35.dp)
                             .align(Alignment.Center),
-                        tint = MaterialTheme.colors.background
+                        tint = tint
                     )
                 }
                 Text(
                     text = text,
-                    color = MaterialTheme.colors.background,
+                    color = tint,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.W600,
                 )
@@ -391,34 +411,38 @@ private fun SectionButton(
 }
 
 @Composable
-fun StatusItem(item: PromotionStatusData) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 4.dp)
-            .background(
-                when (item.status.uppercase()) {
-                    "ENDED" -> ConstColors.red
-                    "RUNNING" -> ConstColors.lightGreen
-                    else -> ConstColors.txtGrey
-                },
-                RoundedCornerShape(5.dp)
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = item.status,
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W800,
-            modifier = Modifier.padding(all = 4.dp),
-        )
-        Text(
-            text = item.total.toString(),
-            color = Color.White,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W800,
-            modifier = Modifier.padding(all = 4.dp),
-        )
+fun StatusItem(item: PromotionStatusData, modifier: Modifier) {
+    Row {
+        Surface(
+            color = Color.Transparent,
+            modifier = modifier
+                .padding(8.dp),
+            border = BorderStroke(1.dp, Color.Black),
+            shape = MaterialTheme.shapes.medium,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = item.status,
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W800,
+                    modifier = Modifier.padding(all = 8.dp),
+                )
+                Text(
+                    text = item.total.toString(),
+                    color = when (item.status.uppercase()) {
+                        "ENDED" -> ConstColors.red
+                        "RUNNING" -> ConstColors.lightGreen
+                        else -> MaterialTheme.colors.background
+                    },
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.W800,
+                    modifier = Modifier.padding(all = 4.dp),
+                )
+            }
+        }
     }
 }
