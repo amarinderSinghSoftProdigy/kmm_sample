@@ -2,13 +2,11 @@ package com.zealsoftsol.medico.screens.offers
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,7 +38,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
@@ -51,11 +48,9 @@ import com.zealsoftsol.medico.data.Manufacturer
 import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
-import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @SuppressLint("RememberReturnType")
 @Composable
@@ -65,6 +60,7 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
     val statuses = scope.statuses.flow.collectAsState()
     val manufacturerList = scope.manufacturerSearch.flow.collectAsState()
     val switchEnabled = remember { mutableStateOf(false) }
+    val showManufacturersList = scope.showManufacturers.flow.collectAsState()
 
     remember {
         scope.startSearch()
@@ -113,7 +109,8 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
             }
             Space(dp = 16.dp)
         }
-        /*BasicSearchBar(
+        //dasdsad
+      /*  BasicSearchBar(
             input = search.value,
             hint = R.string.search_by_product,
             icon = null,
@@ -126,37 +123,39 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
             isSearchCross = false
         )
         Space(dp = 16.dp)
-        Divider(thickness = 0.5.dp)
-        Space(dp = 8.dp)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                modifier = Modifier.padding(start = 16.dp),
-                text = stringResource(id = R.string.manufacturers),
-                color = ConstColors.lightBlue,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W600,
-            )
-            if (manufacturerList.value.size > 0) {
+        Divider(thickness = 0.5.dp)*/
+        if(showManufacturersList.value) {
+            Space(dp = 8.dp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = "( " + manufacturerList.value.size + " )",
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = stringResource(id = R.string.manufacturers),
                     color = ConstColors.lightBlue,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W600,
                 )
+                if (manufacturerList.value.size > 0) {
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = "( " + manufacturerList.value.size + " )",
+                        color = ConstColors.lightBlue,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                    )
+                }
             }
+            Space(dp = 8.dp)
+            LazyRow(modifier = Modifier.padding(start = 16.dp)) {
+                itemsIndexed(
+                    items = manufacturer.value,
+                    itemContent = { _, item ->
+                        ManufacturerItem(item, scope, manufacturerList.value)
+                    },
+                )
+            }
+            Space(dp = 12.dp)
+            Divider(thickness = 0.5.dp)
         }
-        Space(dp = 8.dp)
-        LazyRow(modifier = Modifier.padding(start = 16.dp)) {
-            itemsIndexed(
-                items = manufacturer.value,
-                itemContent = { _, item ->
-                    ManufacturerItem(item, scope, manufacturerList.value)
-                },
-            )
-        }
-        Space(dp = 12.dp)
-        Divider(thickness = 0.5.dp)*/
         Space(dp = 8.dp)
         if (offers.value.isEmpty()) {
             NoRecordsWithoutHome(

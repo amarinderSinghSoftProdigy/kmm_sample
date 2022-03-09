@@ -1038,6 +1038,8 @@ private fun OffersHeader(
 ) {
     val childScope = scope.childScope.flow.collectAsState().value as OffersScope.ViewOffers
     val switchEnabled = remember { mutableStateOf(false) }
+    val showManufacturers = remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1057,7 +1059,11 @@ private fun OffersHeader(
                     .clickable(
                         indication = null,
                         onClick = {
-                            scope.goBack()
+                            if (switchEnabled.value) {
+                                switchEnabled.value = false
+                            } else {
+                                scope.goBack()
+                            }
                         },
                     )
             )
@@ -1104,7 +1110,10 @@ private fun OffersHeader(
         ) {
             Surface(
                 color = Color.Transparent,
-                onClick = { }) {
+                onClick = {
+                    showManufacturers.value = !showManufacturers.value
+                    EventCollector.sendEvent(Event.Action.Offers.ShowManufacturers(showManufacturers.value))
+                }) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_manufacturer_toolbar),
                     tint = ConstColors.gray,

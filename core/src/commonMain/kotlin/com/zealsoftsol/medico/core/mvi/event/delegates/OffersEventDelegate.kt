@@ -45,6 +45,16 @@ internal class OffersEventDelegate(
         is Event.Action.Offers.SelectAutoComplete -> selectAutocomplete(event.autoComplete)
         is Event.Action.Offers.SaveOffer -> saveOffer(event.request)
         is Event.Action.Offers.EditCreatedOffer -> saveOffer(event.request)
+        is Event.Action.Offers.ShowManufacturers -> showManufacturersList(event.showManufacturers)
+    }
+
+    /**
+     * Hide/show manufacturers list in UI
+     */
+    private fun showManufacturersList(showManufacturers: Boolean) {
+        navigator.withScope<OffersScope.ViewOffers> {
+            it.showManufacturers.value = showManufacturers
+        }
     }
 
     private suspend fun getOffers(search: String?, query: ArrayList<String>) {
