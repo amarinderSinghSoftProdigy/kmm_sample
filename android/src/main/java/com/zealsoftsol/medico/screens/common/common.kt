@@ -341,6 +341,7 @@ fun Scope.Host.showErrorAlert() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun <T : WithNotifications> T.showNotificationAlert() {
     val notification = notifications.flow.collectAsState()

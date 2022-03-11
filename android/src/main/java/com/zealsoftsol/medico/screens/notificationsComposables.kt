@@ -199,10 +199,10 @@ private fun BodyForChoosePaymentMethod(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(5.dp),
                 color = Color.White,
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier.weight(0.4f),
                 border = BorderStroke(
                     1.dp,
-                    color = if (paymentMethod.value == PaymentMethod.CASH) ConstColors.yellow else Color.White
+                    color = if (paymentMethod.value == PaymentMethod.CASH) ConstColors.lightGreen else Color.White
                 ),
             ) {
                 Row(
@@ -220,14 +220,14 @@ private fun BodyForChoosePaymentMethod(
                         shape = RoundedCornerShape(5.dp),
                         color = Color.White,
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(40.dp)
                     ) {
-                        Row(modifier = Modifier.padding(15.dp)) {
+                        Row {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_delete),
+                                painter = painterResource(id = R.drawable.ic_cash),
                                 contentDescription = null,
-                                tint = ConstColors.gray,
-                                modifier = Modifier.size(30.dp),
+                                tint = if (paymentMethod.value == PaymentMethod.CASH) ConstColors.lightGreen else ConstColors.gray,
+                                modifier = Modifier.size(40.dp),
                             )
                         }
                     }
@@ -241,14 +241,14 @@ private fun BodyForChoosePaymentMethod(
             }
             Space(dp = 16.dp)
             Surface(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier.weight(0.6f),
                 onClick = { notification.changePaymentMethod(PaymentMethod.CREDIT) },
                 elevation = 4.dp,
                 shape = RoundedCornerShape(5.dp),
                 color = Color.White,
                 border = BorderStroke(
                     1.dp,
-                    color = if (paymentMethod.value == PaymentMethod.CREDIT) ConstColors.yellow else Color.White
+                    color = if (paymentMethod.value == PaymentMethod.CREDIT) ConstColors.lightGreen else Color.White
                 ),
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
@@ -264,14 +264,14 @@ private fun BodyForChoosePaymentMethod(
                             shape = RoundedCornerShape(5.dp),
                             color = Color.White,
                             modifier = Modifier
-                                .size(50.dp)
+                                .size(40.dp)
                         ) {
-                            Row(modifier = Modifier.padding(15.dp)) {
+                            Row {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_delete),
+                                    painter = painterResource(id = R.drawable.ic_credit),
                                     contentDescription = null,
-                                    tint = ConstColors.gray,
-                                    modifier = Modifier.size(30.dp),
+                                    tint = if (paymentMethod.value == PaymentMethod.CREDIT) ConstColors.lightGreen else ConstColors.gray,
+                                    modifier = Modifier.size(40.dp),
                                 )
                             }
                         }
