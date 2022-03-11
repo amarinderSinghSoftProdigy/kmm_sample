@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
@@ -58,30 +59,32 @@ fun Notification(
         onDismissRequest = onDismiss,
         backgroundColor = Color.White,
         title =
-        if (title != null) {
-            {
-                val string = when (notification) {
-                    is ManagementScope.ChoosePaymentMethod -> stringResource(
-                        id = titleRes,
-                        notification.tradeName
-                    )
-                    else -> title
-                }
-                Column {
+        if (notification is ManagementScope.ChoosePaymentMethod) {
+            null
+        } else {
+            if (title != null) {
+                {
+                    /*val string = when (notification) {
+                        is ManagementScope.ChoosePaymentMethod -> ""
+                        else -> title
+                    }*/
                     Text(
-                        text = string,
+                        text = title,
                         color = MaterialTheme.colors.onPrimary,
                         style = MaterialTheme.typography.h6,
+                        fontSize = 16.sp
                     )
-                    Space(dp = 16.dp)
                 }
+            } else {
+                null
             }
-        } else {
-            null
         },
         text = {
             when (notification) {
-                is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(notification)
+                is ManagementScope.ChoosePaymentMethod -> BodyForChoosePaymentMethod(
+                    notification,
+                    titleRes
+                )
                 is ManagementScope.Congratulations -> Text(
                     text = stringResource(
                         id = R.string.retailer_added_template,
@@ -167,80 +170,51 @@ fun Notification(
 
 @ExperimentalMaterialApi
 @Composable
-private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePaymentMethod) {
+private fun BodyForChoosePaymentMethod(
+    notification: ManagementScope.ChoosePaymentMethod,
+    titleRes: Int
+) {
     val paymentMethod = notification.paymentMethod.flow.collectAsState()
     val creditDays = notification.creditDays.flow.collectAsState()
     notification.log("nptification")
-    Row(
-        modifier = Modifier
-            .height(150.dp)
-            .padding(top = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Surface(
-            onClick = { notification.changePaymentMethod(PaymentMethod.CASH) },
-            elevation = 4.dp,
-            shape = RoundedCornerShape(5.dp),
-            color = Color.White,
-            modifier = Modifier.weight(0.5f),
-            border = BorderStroke(
-                1.dp,
-                color = if (paymentMethod.value == PaymentMethod.CASH) ConstColors.yellow else Color.White
+
+
+    Column {
+        Text(
+            text = stringResource(
+                id = titleRes,
+                notification.tradeName
             ),
+            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.h6,
+        )
+        Space(dp = 8.dp)
+        Row(
+            modifier = Modifier
+                .height(130.dp)
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
+            Surface(
+                onClick = { notification.changePaymentMethod(PaymentMethod.CASH) },
+                elevation = 4.dp,
+                shape = RoundedCornerShape(5.dp),
+                color = Color.White,
+                modifier = Modifier.weight(0.5f),
+                border = BorderStroke(
+                    1.dp,
+                    color = if (paymentMethod.value == PaymentMethod.CASH) ConstColors.yellow else Color.White
+                ),
             ) {
-                /* RadioButton(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    /* RadioButton(
              selected = paymentMethod.value == PaymentMethod.CASH,
              onClick = { notification.changePaymentMethod(PaymentMethod.CASH) },
              colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
          )*/
-
-                Surface(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(5.dp),
-                    color = Color.White,
-                    modifier = Modifier
-                        .size(50.dp)
-                ) {
-                    Row(modifier = Modifier.padding(15.dp)) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_delete),
-                            contentDescription = null,
-                            tint = ConstColors.gray,
-                            modifier = Modifier.size(30.dp),
-                        )
-                    }
-                }
-
-                Space(4.dp)
-                Text(
-                    text = stringResource(id = R.string.cash),
-                    color = Color.Black,
-                )
-            }
-        }
-        Space(dp = 16.dp)
-        Surface(
-            modifier = Modifier.weight(0.5f),
-            onClick = { notification.changePaymentMethod(PaymentMethod.CREDIT) },
-            elevation = 4.dp,
-            shape = RoundedCornerShape(5.dp),
-            color = Color.White,
-            border = BorderStroke(
-                1.dp,
-                color = if (paymentMethod.value == PaymentMethod.CREDIT) ConstColors.yellow else Color.White
-            ),
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    /*RadioButton(
-                selected = paymentMethod.value == PaymentMethod.CREDIT,
-                onClick = { notification.changePaymentMethod(PaymentMethod.CREDIT) },
-                colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
-            )*/
 
                     Surface(
                         elevation = 4.dp,
@@ -258,19 +232,64 @@ private fun BodyForChoosePaymentMethod(notification: ManagementScope.ChoosePayme
                             )
                         }
                     }
+
                     Space(4.dp)
                     Text(
-                        text = stringResource(id = R.string.credit),
+                        text = stringResource(id = R.string.cash),
                         color = Color.Black,
                     )
                 }
-                if (paymentMethod.value == PaymentMethod.CREDIT) {
-                    InputField(
-                        hint = stringResource(id = R.string.no_of_credit_days),
-                        text = creditDays.value,
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        onValueChange = { notification.changeCreditDays(it) },
-                    )
+            }
+            Space(dp = 16.dp)
+            Surface(
+                modifier = Modifier.weight(0.5f),
+                onClick = { notification.changePaymentMethod(PaymentMethod.CREDIT) },
+                elevation = 4.dp,
+                shape = RoundedCornerShape(5.dp),
+                color = Color.White,
+                border = BorderStroke(
+                    1.dp,
+                    color = if (paymentMethod.value == PaymentMethod.CREDIT) ConstColors.yellow else Color.White
+                ),
+            ) {
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        /*RadioButton(
+                selected = paymentMethod.value == PaymentMethod.CREDIT,
+                onClick = { notification.changePaymentMethod(PaymentMethod.CREDIT) },
+                colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+            )*/
+
+                        Surface(
+                            elevation = 4.dp,
+                            shape = RoundedCornerShape(5.dp),
+                            color = Color.White,
+                            modifier = Modifier
+                                .size(50.dp)
+                        ) {
+                            Row(modifier = Modifier.padding(15.dp)) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_delete),
+                                    contentDescription = null,
+                                    tint = ConstColors.gray,
+                                    modifier = Modifier.size(30.dp),
+                                )
+                            }
+                        }
+                        Space(4.dp)
+                        Text(
+                            text = stringResource(id = R.string.credit),
+                            color = Color.Black,
+                        )
+                    }
+                    if (paymentMethod.value == PaymentMethod.CREDIT) {
+                        InputField(
+                            hint = stringResource(id = R.string.no_of_credit_days),
+                            text = creditDays.value,
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                            onValueChange = { notification.changeCreditDays(it) },
+                        )
+                    }
                 }
             }
         }
@@ -311,7 +330,8 @@ private fun ButtonsForChoosePaymentMethod(
         Surface(
             modifier = Modifier.weight(0.5f),
             shape = RoundedCornerShape(5.dp), enabled = isSendEnabled,
-            color = ConstColors.yellow, onClick = onNext
+            color = ConstColors.yellow,
+            onClick = onNext
         ) {
             Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.Center) {
                 Text(
