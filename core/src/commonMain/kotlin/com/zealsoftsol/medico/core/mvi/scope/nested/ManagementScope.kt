@@ -152,6 +152,12 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         override val title: String? = "choose_payment_method"
         override val body: String? = null
 
+        init {
+            paymentMethod.value = PaymentMethod.CASH
+            isSendEnabled.value = true
+        }
+
+
         fun changePaymentMethod(paymentMethod: PaymentMethod) {
             this.paymentMethod.value = paymentMethod
             isSendEnabled.value = when (paymentMethod) {
@@ -161,6 +167,13 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         }
 
         fun changeCreditDays(days: String) {
+            if (days.length > 2) {
+                return
+            }
+            isSendEnabled.value = when (this.paymentMethod.value) {
+                PaymentMethod.CASH -> true
+                PaymentMethod.CREDIT -> creditDays.value.toIntOrNull() != null
+            }
             creditDays.value = days
             isSendEnabled.value = days.toIntOrNull() != null
         }
