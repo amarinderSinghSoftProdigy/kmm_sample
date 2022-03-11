@@ -154,6 +154,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
 
         init {
             paymentMethod.value = PaymentMethod.CASH
+            isSendEnabled.value = true
         }
 
 

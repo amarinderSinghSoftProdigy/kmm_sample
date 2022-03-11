@@ -191,8 +191,7 @@ private fun BodyForChoosePaymentMethod(
         Space(dp = 8.dp)
         Row(
             modifier = Modifier
-                .height(130.dp)
-                .padding(top = 20.dp),
+                .height(150.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
@@ -330,7 +329,7 @@ private fun ButtonsForChoosePaymentMethod(
         Surface(
             modifier = Modifier.weight(0.5f),
             shape = RoundedCornerShape(5.dp), enabled = isSendEnabled,
-            color = ConstColors.yellow,
+            color = if (isSendEnabled) ConstColors.yellow else ConstColors.yellow.copy(alpha = 0.5f),
             onClick = onNext
         ) {
             Row(modifier = Modifier.padding(16.dp), horizontalArrangement = Arrangement.Center) {
