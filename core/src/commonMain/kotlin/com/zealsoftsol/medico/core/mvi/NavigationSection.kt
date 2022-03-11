@@ -17,25 +17,33 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
     fun select() = EventCollector.sendEvent(event)
 
     object Dashboard : NavigationOption(Event.Transition.Dashboard, "dashboard")
-    object Settings : NavigationOption(Event.Transition.Settings, "settings")
+    object Settings : NavigationOption(Event.Transition.Settings(false), "settings")
     object Help : NavigationOption(Event.Action.Help.GetHelp, "help")
     object Stockists : NavigationOption(Event.Transition.Management(UserType.STOCKIST), "stockists")
     object Retailers : NavigationOption(Event.Transition.Management(UserType.RETAILER), "retailers")
     object Hospitals : NavigationOption(Event.Transition.Management(UserType.HOSPITAL), "hospitals")
-    object SeasonBoys :
-        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
+//    object SeasonBoys :
+//        NavigationOption(Event.Transition.Management(UserType.SEASON_BOY), "season_boys")
 
     object Stores : NavigationOption(Event.Transition.Stores, "stores")
 
+    object Inventory : NavigationOption(Event.Transition.Inventory, "inventory")
+
     object Orders : NavigationOption(Event.Transition.Orders, "orders")
 
-    object NewOrders : NavigationOption(Event.Transition.NewOrders, "purchase_orders")
+    object PoOrdersAndHistory :
+        NavigationOption(Event.Transition.PoOrdersAndHistory, "new_orders")
 
-    object OrdersHistory : NavigationOption(Event.Transition.OrdersHistory, "orders_history")
+    object MyInvoices : NavigationOption(Event.Transition.MyInvoices, "invoices")
 
-    object Invoices : NavigationOption(Event.Transition.Invoices, "invoices")
+    object Offers : NavigationOption(Event.Transition.Offers, "deal_offer")
+
+    object PoInvoices : NavigationOption(Event.Transition.PoInvoices, "po_invoices")
+
+    object InStore : NavigationOption(Event.Transition.InStore, "instore")
 
     object LogOut : NavigationOption(Event.Action.Auth.LogOut(true), "log_out")
+
 
     companion object {
         internal fun empty() = emptyList<NavigationOption>()
@@ -45,15 +53,17 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
         internal fun default(userType: UserType) = listOfNotNull(
             Dashboard,
-            Orders,
-            NewOrders.takeIf { userType == UserType.STOCKIST },
+            PoOrdersAndHistory.takeIf { userType == UserType.STOCKIST },
+            InStore.takeIf { userType == UserType.STOCKIST },
+            PoInvoices.takeIf { userType == UserType.STOCKIST },
             Stores,
+            //Inventory.takeIf { userType == UserType.STOCKIST },
             Stockists,
             Retailers.takeIf { userType == UserType.STOCKIST || userType == UserType.SEASON_BOY },
             Hospitals.takeIf { userType == UserType.STOCKIST },
-            SeasonBoys.takeIf { userType == UserType.STOCKIST },
-            OrdersHistory.takeIf { userType == UserType.STOCKIST },
-            Invoices,
+//            SeasonBoys.takeIf { userType == UserType.STOCKIST },
+            Orders,
+            MyInvoices,
             Help,
             Settings,
         )

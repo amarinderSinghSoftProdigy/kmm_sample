@@ -600,7 +600,8 @@ struct FiltersSection: View {
                                  alignment: .leading) { option in
                         Chip(option: .StringValue(value: option.name,
                                                   isSelected: option == selectedSortOption.value,
-                                                  isVisible: true))
+                                                  isVisible: true,
+                                                  id: ""))
                             .onTapGesture {
                                 self.onOptionSelect(option)
                             }

@@ -73,7 +73,7 @@ fun InvoicesScreen(scope: InvoicesScope) {
                 )
                 Space(12.dp)
                 Text(
-                    text = stringResource(id = R.string.invoices),
+                    text = stringResource(id = if (scope.isPoInvoice) R.string.po_invoices else R.string.invoices),
                     color = MaterialTheme.colors.background,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W700,
@@ -163,7 +163,7 @@ private fun InvoiceItem(invoice: Invoice, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = invoice.info.id,
+                    text = invoice.info.sellerId,
                     color = ConstColors.gray,
                     fontWeight = FontWeight.W500,
                     fontSize = 12.sp,

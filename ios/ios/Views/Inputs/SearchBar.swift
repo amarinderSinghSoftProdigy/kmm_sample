@@ -18,7 +18,8 @@ struct SearchBar: View {
     let trailingButton: SearchBarButton?
     
     let isDisabled: Bool
-    
+    let backgroundColor: AppColor
+
     let showsCancelButton: Bool
     
     @State private var isSelected: Bool = false
@@ -35,7 +36,7 @@ struct SearchBar: View {
     var body: some View {
         HStack {
             ZStack {
-                AppColor.white.color
+                backgroundColor.color
                     .cornerRadius(10)
                 
                 HStack(spacing: style.spacing) {
@@ -112,6 +113,7 @@ struct SearchBar: View {
     init(placeholderLocalizationKey: String = "search",
          searchText: NSString? = nil,
          style: Style = .standart,
+         backgroundColor: AppColor = .white,
          showsCancelButton: Bool = true,
          leadingButton: SearchBarButton? = SearchBarButton(button: .smallMagnifyingGlass),
          trailingButton: SearchBarButton? = SearchBarButton(emptyTextButton: nil,
@@ -132,6 +134,8 @@ struct SearchBar: View {
                                   set: { value in onTextChange?(value, false) })
         
         self.onTextChange = onTextChange
+        
+        self.backgroundColor = backgroundColor
     }
     
     enum Style {

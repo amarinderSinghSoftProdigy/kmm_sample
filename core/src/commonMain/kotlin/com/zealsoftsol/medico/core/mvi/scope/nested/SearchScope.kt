@@ -9,14 +9,22 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.CartData
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 
 interface BaseSearchScope : Scopable {
+    val enableButton: DataSource<Boolean>
     val productSearch: DataSource<String>
     val isFilterOpened: DataSource<Boolean>
+    val isBatchSelected: DataSource<Boolean>
+    val showToast: DataSource<Boolean>
+    val cartData: DataSource<CartData?>
+    val checkedProduct: DataSource<ProductSearch?>
+    val filtersManufactures: DataSource<List<Filter>>
     val filters: DataSource<List<Filter>>
     val filterSearches: DataSource<Map<String, String>>
     val autoComplete: DataSource<List<AutoComplete>>
@@ -24,6 +32,8 @@ interface BaseSearchScope : Scopable {
     val sortOptions: DataSource<List<SortOption>>
     val selectedSortOption: DataSource<SortOption?>
     val activeFilterIds: DataSource<List<String>>
+    val freeQty: DataSource<Double>
+    val productId: DataSource<String>
 
     // store search if present
     val unitCode: String?
@@ -32,7 +42,16 @@ interface BaseSearchScope : Scopable {
     val supportsAutoComplete: Boolean
     val pagination: Pagination
 
+    fun selectBatch(check: Boolean, product: ProductSearch) =
+        EventCollector.sendEvent(Event.Action.Search.SelectBatch(check, product))
+
     fun reset() = EventCollector.sendEvent(Event.Action.Search.Reset)
+
+    fun resetButton(check: Boolean) =
+        EventCollector.sendEvent(Event.Action.Search.ResetButton(check))
+
+    fun updateFree(qty: Double, id: String) =
+        EventCollector.sendEvent(Event.Action.Search.UpdateFree(qty, id))
 
     fun toggleFilter() = EventCollector.sendEvent(Event.Action.Search.ToggleFilter)
 
@@ -56,10 +75,10 @@ interface BaseSearchScope : Scopable {
         }
     }
 
-    fun searchProduct(input: String, withAutoComplete: Boolean): Boolean {
+    fun searchProduct(input: String, withAutoComplete: Boolean, sellerUnitCode: String): Boolean {
         return trimInput(input, productSearch.value) {
             val event = if (withAutoComplete) {
-                Event.Action.Search.SearchAutoComplete(it)
+                Event.Action.Search.SearchAutoComplete(it, sellerUnitCode)
             } else {
                 Event.Action.Search.SearchInput(isOneOf = false, search = input)
             }
@@ -73,6 +92,9 @@ interface BaseSearchScope : Scopable {
     fun loadMoreProducts() =
         EventCollector.sendEvent(Event.Action.Search.LoadMoreProducts)
 
+    fun addToCart(product: ProductSearch) =
+        EventCollector.sendEvent(Event.Action.Search.AddToCart(product))
+
     fun buy(product: ProductSearch) = product.buyingOption?.let {
         EventCollector.sendEvent(
             Event.Action.Product.BuyProduct(
@@ -84,8 +106,15 @@ interface BaseSearchScope : Scopable {
 }
 
 class SearchScope(
+    autoCompleteDashboard: AutoComplete?,
+    override val enableButton: DataSource<Boolean> = DataSource(false),
     override val productSearch: DataSource<String> = DataSource(""),
     override val isFilterOpened: DataSource<Boolean> = DataSource(false),
+    override val isBatchSelected: DataSource<Boolean> = DataSource(false),
+    override val showToast: DataSource<Boolean> = DataSource(false),
+    override val checkedProduct: DataSource<ProductSearch?> = DataSource(null),
+    override val cartData: DataSource<CartData?> = DataSource(null),
+    override val filtersManufactures: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filters: DataSource<List<Filter>> = DataSource(emptyList()),
     override val filterSearches: DataSource<Map<String, String>> = DataSource(emptyMap()),
     override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList()),
@@ -93,6 +122,8 @@ class SearchScope(
     override val sortOptions: DataSource<List<SortOption>> = DataSource(emptyList()),
     override val selectedSortOption: DataSource<SortOption?> = DataSource(null),
     override val activeFilterIds: DataSource<List<String>> = DataSource(emptyList()),
+    override val freeQty: DataSource<Double> = DataSource(0.0),
+    override val productId: DataSource<String> = DataSource(""),
 ) : Scope.Child.TabBar(), BaseSearchScope {
 
     override val unitCode: String? = null
@@ -100,7 +131,16 @@ class SearchScope(
     override val pagination: Pagination = Pagination()
 
     init {
-        EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
+        if (autoCompleteDashboard != null) {
+            EventCollector.sendEvent(Event.Action.Search.SelectAutoComplete(autoCompleteDashboard))
+        } else {
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+        }
+    }
+
+    fun showConnectedStockist(stockist : List<ConnectedStockist>) {
+        EventCollector.sendEvent(Event.Action.Search.ShowConnectedStockistBottomSheet(stockist))
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {

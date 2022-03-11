@@ -11,7 +11,6 @@ import com.zealsoftsol.medico.core.network.mock.MockCustomerScope
 import com.zealsoftsol.medico.core.network.mock.MockHelpScope
 import com.zealsoftsol.medico.core.network.mock.MockManagementScope
 import com.zealsoftsol.medico.core.network.mock.MockNotificationScope
-import com.zealsoftsol.medico.core.network.mock.MockOrderScope
 import com.zealsoftsol.medico.core.network.mock.MockPasswordScope
 import com.zealsoftsol.medico.core.network.mock.MockProductScope
 import com.zealsoftsol.medico.core.network.mock.MockSearchScope
@@ -129,15 +128,37 @@ fun startKodein(
             MockHelpScope()
         }
     }
+    bind<NetworkScope.Config>() with singleton {
+        instance<NetworkClient>()
+    }
+
     bind<NetworkScope.Orders>() with singleton {
-        if (!useMocks) {
-            instance<NetworkClient>()
-        } else {
-            MockOrderScope()
-        }
+        instance<NetworkClient>()
+    }
+
+    bind<NetworkScope.InStore>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.WhatsappStore>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.OrderHsnEditStore>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.ProfileImage>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.OffersStore>() with singleton {
+        instance<NetworkClient>()
+    }
+    bind<NetworkScope.BatchesStore>() with singleton {
+        instance<NetworkClient>()
     }
     bind<UserRepo>() with singleton {
         UserRepo(
+            instance(),
+            instance(),
+            instance(),
             instance(),
             instance(),
             instance(),
@@ -164,6 +185,12 @@ fun startKodein(
             instance(),
             instance(),
             instance(),
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+            instance(),
+            instance()
         )
     }
     bind<IpAddressFetcher>() with singleton { IpAddressFetcher() }

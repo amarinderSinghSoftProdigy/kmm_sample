@@ -19,7 +19,10 @@ data class EntityInfo(
     val subscriptionData: SubscriptionData? = null,
     val seasonBoyRetailerData: SeasonBoyRetailerData? = null,
     val seasonBoyData: SeasonBoyData? = null,
-) : ManagementItem
+    val drugLicenseNo1: String? = null,
+    val drugLicenseNo2: String? = null,
+    val tradeNameUrl: String?=null,
+    ) : ManagementItem
 
 @Serializable
 data class SeasonBoyData(

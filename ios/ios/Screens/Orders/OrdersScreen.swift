@@ -12,6 +12,8 @@ import SwiftUI
 struct OrdersScreen: View {
     let scope: OrdersScope
     
+    @ObservedObject var activeTab: SwiftDataSource<OrdersScope.Tab>
+    
     @ObservedObject var filterOpened: SwiftDataSource<KotlinBoolean>
     @ObservedObject var dateRange: SwiftDataSource<DataDateRange>
     
@@ -72,6 +74,8 @@ struct OrdersScreen: View {
     init(scope: OrdersScope) {
         self.scope = scope
         
+        self.activeTab = SwiftDataSource(dataSource: scope.activeTab)
+        
         self.filterOpened = SwiftDataSource(dataSource: scope.isFilterOpened)
         self.dateRange = SwiftDataSource(dataSource: scope.dateRange)
         
@@ -83,10 +87,19 @@ struct OrdersScreen: View {
     
     private var ordersView: some View {
         VStack(spacing: 16) {
-            TabOptionView(localizationKey: scope.type.localizationKey,
-                          isSelected: true,
-                          itemsNumber: (self.ordersNumber.value as? Int) ?? 0)
-            
+            let selectedOption = Binding(get: {
+                guard let activeTab = self.activeTab.value else { return 0 }
+
+                return scope.tabs.firstIndex(of: activeTab) ?? 0
+            }, set: { newValue in
+                scope.selectTab(tab: scope.tabs[newValue])
+            })
+            if scope.tabs.count == 1 {
+                self.singleTabView
+            }
+            else {
+                self.getOptionsPicker(withSelectedOption: selectedOption)
+            }
             if let orders = self.orders.value,
                orders.count > 0 {
                 TransparentList(data: self.orders,
@@ -99,31 +112,56 @@ struct OrdersScreen: View {
                     OrderView(order: order)
                 }
             }
-            else if orders.updateCount > 0 {
+            else {
                 emptyListView
             }
         }
     }
     
+    private var singleTabView: some View {
+        return AnyView(
+            TabOptionView(localizationKey: "orders:",
+                          isSelected: true,
+                          itemsNumber: (self.ordersNumber.value as? Int) ?? 0)
+        )
+    }
+    
+    private func getOptionsPicker(withSelectedOption selectedOption: Binding<Int>) -> some View {
+        HStack {
+            ForEach(0..<scope.tabs.count) { index in
+                TabOptionView(localizationKey: scope.tabs[index].stringId,
+                              isSelected: selectedOption.wrappedValue == index,
+                              itemsNumber: (self.ordersNumber.value as? Int) ?? 0)
+                    .onTapGesture {
+                        selectedOption.wrappedValue = index
+                    }
+            }
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 3)
+        .background(AppColor.navigationBar.color.cornerRadius(8))
+    }
+    
     private var emptyListView: some View {
-        let imageName: String
-        let titleLocalizationKey: String
-        
-        switch scope.type {
-        case .purchaseOrder:
-            imageName = "EmptyOrders"
-            titleLocalizationKey = "empty_new_orders"
-            
-        case .order:
-            imageName = "EmptyOrders"
-            titleLocalizationKey = "empty_orders"
-            
-        case .history:
-            imageName = "EmptyOrdersHistory"
-            titleLocalizationKey = "empty_orders_history"
-            
-        default:
-            return AnyView(EmptyView())
+        var imageName: String = ""
+        var titleLocalizationKey: String = ""
+        if let tab = activeTab.value {
+            switch tab {
+            case .poOrders:
+                imageName = "EmptyOrders"
+                titleLocalizationKey = "empty_new_orders"
+
+            case .orders:
+                imageName = "EmptyOrders"
+                titleLocalizationKey = "empty_orders"
+
+            case .historyOrders:
+                imageName = "EmptyOrdersHistory"
+                titleLocalizationKey = "empty_orders_history"
+
+            default:
+                return AnyView(EmptyView())
+            }
         }
         
         return AnyView(EmptyListView(imageName: imageName,

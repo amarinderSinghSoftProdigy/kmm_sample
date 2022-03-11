@@ -48,6 +48,7 @@ private fun longPaginatedData(size: Int) =
                         pincode = "520001",
                         city = "Delhi",
                         landmark = "Landmark",
+                        addressLine = ""
                     ),
                     gstin = "123456789",
                     panNumber = "11111",
@@ -55,6 +56,8 @@ private fun longPaginatedData(size: Int) =
                     tradeName = "Pharmacy Doctors ${it + 1}",
                     unitCode = "12345",
                     subscriptionData = null,
+                    drugLicenseNo1 = null,
+                    drugLicenseNo2 = null,
                 )
             },
         9999999,

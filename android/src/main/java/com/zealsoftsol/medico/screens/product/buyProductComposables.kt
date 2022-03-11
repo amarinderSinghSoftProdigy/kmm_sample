@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -60,13 +61,13 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.BuyProductScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
+import com.zealsoftsol.medico.data.PromotionData
 import com.zealsoftsol.medico.data.SeasonBoyRetailer
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.data.TapMode
 import com.zealsoftsol.medico.data.WithTradeName
 import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.Dropdown
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -87,7 +88,10 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
-                src = CdnUrlProvider.urlFor(scope.product.code, CdnUrlProvider.Size.Px123),
+                src = CdnUrlProvider.urlFor(
+                    scope.product.imageCode ?: "",
+                    CdnUrlProvider.Size.Px123
+                ),
                 size = 71.dp,
                 onError = { ItemPlaceholder() },
                 onLoading = { ItemPlaceholder() },
@@ -277,42 +281,42 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
             val chosenSeller = chooseQuote.chosenSeller.flow.collectAsState()
             val quantities = scope.quantities.flow.collectAsState()
 
-            Space(16.dp)
-            QuotedItem(
-                title = stringResource(id = R.string.quote_existing_stockist),
-                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST,
-                isSeasonBoy = chooseQuote.isSeasonBoy,
-                qtyInitial = chosenSeller.value?.let { quantities.value[it]?.first ?: 0.0 } ?: 0.0,
-                freeQtyInitial = chosenSeller.value?.let { quantities.value[it]?.second ?: 0.0 }
-                    ?: 0.0,
-                onSaveQty = { qty, freeQty ->
-                    chosenSeller.value?.let {
-                        if (qty != null && freeQty != null) {
-                            scope.saveQuantitiesAndSelect(it, qty, freeQty)
-                        } else {
-                            scope.select(it)
-                        }
-                    }
-                },
-                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST) },
-                body = {
-                    Column {
-                        Dropdown(
-                            rememberChooseKey = chosenSeller.value,
-                            value = chosenSeller.value?.tradeName,
-                            hint = stringResource(id = R.string.select_stockist),
-                            dropDownItems = sellers.value.map { it.tradeName },
-                            backgroundColor = MaterialTheme.colors.primary,
-                            arrowTintColor = ConstColors.lightBlue,
-                            onSelected = { selected -> chooseQuote.chooseSeller(sellers.value.first { it.tradeName == selected }) },
-                        )
-                    }
-                },
-            )
+//            Space(16.dp)
+//            QuotedItem(
+//                title = stringResource(id = R.string.quote_existing_stockist),
+//                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST,
+//                isSeasonBoy = chooseQuote.isSeasonBoy,
+//                qtyInitial = chosenSeller.value?.let { quantities.value[it]?.first ?: 0.0 } ?: 0.0,
+//                freeQtyInitial = chosenSeller.value?.let { quantities.value[it]?.second ?: 0.0 }
+//                    ?: 0.0,
+//                onSaveQty = { qty, freeQty ->
+//                    chosenSeller.value?.let {
+//                        if (qty != null && freeQty != null) {
+//                            scope.saveQuantitiesAndSelect(it, qty, freeQty)
+//                        } else {
+//                            scope.select(it)
+//                        }
+//                    }
+//                },
+//                onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.EXISTING_STOCKIST) },
+//                body = {
+//                    Column {
+//                        Dropdown(
+//                            rememberChooseKey = chosenSeller.value,
+//                            value = chosenSeller.value?.tradeName,
+//                            hint = stringResource(id = R.string.select_stockist),
+//                            dropDownItems = sellers.value.map { it.tradeName },
+//                            backgroundColor = MaterialTheme.colors.primary,
+//                            arrowTintColor = ConstColors.lightBlue,
+//                            onSelected = { selected -> chooseQuote.chooseSeller(sellers.value.first { it.tradeName == selected }) },
+//                        )
+//                    }
+//                },
+//            )
             Space(16.dp)
             QuotedItem(
                 title = stringResource(id = R.string.quote_anyone),
-                isSelected = selectedOption.value == BuyProductScope.ChooseQuote.Option.ANYONE,
+                isSelected = null,// selectedOption.value == BuyProductScope.ChooseQuote.Option.ANYONE,
                 isSeasonBoy = chooseQuote.isSeasonBoy,
                 onToggle = { chooseQuote.toggleOption(BuyProductScope.ChooseQuote.Option.ANYONE) },
                 qtyInitial = SellerInfo.anyone.let { quantities.value[it]?.first ?: 0.0 },
@@ -424,7 +428,7 @@ fun BuyProductScreen(scope: BuyProductScope<WithTradeName>) {
 @Composable
 private fun QuotedItem(
     title: String,
-    isSelected: Boolean,
+    isSelected: Boolean?,
     isSeasonBoy: Boolean,
     qtyInitial: Double,
     freeQtyInitial: Double,
@@ -441,18 +445,20 @@ private fun QuotedItem(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = isSelected,
-                    enabled = true,
-                    onClick = onToggle,
-                    colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
-                )
-                Space(16.dp)
+                if (isSelected != null) {
+                    RadioButton(
+                        selected = isSelected,
+                        enabled = true,
+                        onClick = onToggle,
+                        colors = RadioButtonDefaults.colors(selectedColor = ConstColors.lightBlue),
+                    )
+                    Space(16.dp)
+                }
                 Text(
                     text = title,
                     color = Color.Black,
                     fontSize = 16.sp,
-                    fontWeight = if (isSelected) FontWeight.W700 else FontWeight.W400,
+                    fontWeight = if (isSelected != false) FontWeight.W700 else FontWeight.W400,
                 )
             }
             val qty = remember { mutableStateOf(qtyInitial) }
@@ -466,7 +472,7 @@ private fun QuotedItem(
                     }
                 )
             }
-            AnimatedVisibility(visible = isSelected) {
+            AnimatedVisibility(visible = isSelected ?: true) {
                 Column {
                     Space(16.dp)
                     Divider()
@@ -636,6 +642,7 @@ private fun SellerInfoItem(
         qtyInitial = quantity,
         freeQtyInitial = quantityFree,
         onSaveQty = onSaveQty,
+        promotionData = sellerInfo.promotionData?.takeIf { sellerInfo.isPromotionActive },
         forceMode = if (isSelectable) BottomSectionMode.Select else null,
         onItemClick = onItemClick,
         canAddToCart = sellerInfo.stockInfo?.status != StockStatus.OUT_OF_STOCK,
@@ -827,7 +834,7 @@ private fun SeasonBoyReatilerInfoItem(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun NeededSurface(
+fun NeededSurface(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
@@ -854,6 +861,7 @@ private fun BaseSellerItem(
     qtyInitial: Double,
     freeQtyInitial: Double,
     canAddToCart: Boolean,
+    promotionData: PromotionData? = null,
     onSaveQty: (Double?, Double?) -> Unit,
     forceMode: BottomSectionMode? = null,
     onItemClick: (() -> Unit)? = null,
@@ -868,151 +876,175 @@ private fun BaseSellerItem(
     }
 
     NeededSurface(if (mode.value == BottomSectionMode.Update || mode.value == BottomSectionMode.AddToCart) onItemClick else null) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
-            Space(16.dp)
-            when (mode.value) {
-                BottomSectionMode.Select, BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
-                BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
-                    val isError =
-                        (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
-                    val wasError = remember { mutableStateOf(isError) }
-                    val wasErrorSaved = wasError.value
-                    val focusedError = remember(mode.value) { mutableStateOf(-1) }
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 3)) {
-                            EditField(
-                                label = stringResource(id = R.string.qty),
-                                qty = qty.value.toString(),
-                                isError = isError && focusedError.value == 0,
-                                onChange = { qty.value = it.toDouble() },
-                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 0 },
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 3)
-                                .align(Alignment.BottomEnd)
-                        ) {
-                            EditField(
-                                label = stringResource(id = R.string.free),
-                                isEnabled = qty.value > 0.0,
-                                isError = isError && focusedError.value == 1,
-                                qty = freeQty.value.toString(),
-                                onChange = { freeQty.value = it.toDouble() },
-                                onFocus = { if (!wasErrorSaved && isError) focusedError.value = 1 },
-                            )
-                        }
-                    }
-                    if (isError) {
-                        Space(8.dp)
-                        Text(
-                            text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            color = ConstColors.red,
-                        )
-                    }
-                    wasError.value = isError
-                }
+        Box {
+            promotionData?.let {
+                Text(
+                    text = it.displayLabel,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    color = Color.White,
+                    modifier = Modifier
+                        .height(16.dp)
+                        .background(ConstColors.red, CutCornerShape(topStart = 16.dp))
+                        .padding(horizontal = 16.dp)
+                        .padding(start = 16.dp)
+                        .align(Alignment.TopEnd)
+                )
             }
-            Space(10.dp)
-            Divider(color = ConstColors.ltgray)
-            Space(12.dp)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically) { headerContent() }
+                Space(16.dp)
                 when (mode.value) {
-                    BottomSectionMode.Select -> {
-                        MedicoRoundButton(
-                            text = stringResource(id = R.string.select),
-                            onClick = { onSaveQty(null, null) },
-                        )
-                    }
-                    BottomSectionMode.AddToCart -> {
-                        MedicoRoundButton(
-                            text = stringResource(id = R.string.add_to_cart),
-                            onClick = {
-                                if (canAddToCart) {
-                                    mode.value = BottomSectionMode.ConfirmQty
-                                }
-                            },
-                            color = if (canAddToCart) ConstColors.yellow else Color.LightGray,
-                        )
-                    }
-                    BottomSectionMode.ConfirmQty -> {
-                        MedicoRoundButton(
-                            text = stringResource(id = R.string.cancel),
-                            color = ConstColors.ltgray,
-                            onClick = {
-                                mode.value =
-                                    if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                                qty.value = qtyInitial
-                                freeQty.value = freeQtyInitial
-                            },
-                            modifier = Modifier.weight(1f),
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .weight(0.4f)
-                                .fillMaxWidth()
-                        )
-                        MedicoRoundButton(
-                            text = stringResource(id = R.string.confirm),
-                            isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
-                            onClick = {
-                                mode.value =
-                                    if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
-                                onSaveQty(qty.value, freeQty.value)
-                            },
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                    BottomSectionMode.Update -> {
-                        Row(
-                            verticalAlignment = Alignment.Bottom,
-                            modifier = Modifier.weight(2f),
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.qty).uppercase(),
-                                fontSize = 12.sp,
-                                color = ConstColors.gray,
-                            )
-                            Space(6.dp)
-                            Text(
-                                text = qty.value.toString(),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W700,
-                                color = MaterialTheme.colors.background,
-                            )
-                            Space(6.dp)
-                            Text(
-                                text = "+${freeQty.value}",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W700,
-                                color = ConstColors.lightBlue,
+                    BottomSectionMode.Select, BottomSectionMode.AddToCart, BottomSectionMode.Update -> mainBodyContent()
+                    BottomSectionMode.ConfirmQty -> Column(horizontalAlignment = Alignment.End) {
+                        val isError =
+                            (qty.value + freeQty.value) % 1 != 0.0 || freeQty.value > qty.value
+                        val wasError = remember { mutableStateOf(isError) }
+                        val wasErrorSaved = wasError.value
+                        val focusedError = remember(mode.value) { mutableStateOf(-1) }
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 3)) {
+                                EditField(
+                                    label = stringResource(id = R.string.qty),
+                                    qty = qty.value.toString(),
+                                    isError = isError && focusedError.value == 0,
+                                    onChange = { qty.value = it.toDouble() },
+                                    onFocus = {
+                                        if (!wasErrorSaved && isError) focusedError.value = 0
+                                    },
+                                )
+                            }
+                            Box(
                                 modifier = Modifier
-                                    .background(
-                                        ConstColors.lightBlue.copy(alpha = 0.05f),
-                                        RoundedCornerShape(4.dp)
-                                    )
-                                    .border(1.dp, ConstColors.lightBlue, RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                    .width(maxWidth / 3)
+                                    .align(Alignment.BottomEnd)
+                            ) {
+                                EditField(
+                                    label = stringResource(id = R.string.free),
+                                    isEnabled = qty.value > 0.0,
+                                    isError = isError && focusedError.value == 1,
+                                    qty = freeQty.value.toString(),
+                                    onChange = { freeQty.value = it.toDouble() },
+                                    onFocus = {
+                                        if (!wasErrorSaved && isError) focusedError.value = 1
+                                    },
+                                )
+                            }
+                        }
+                        if (isError) {
+                            Space(8.dp)
+                            Text(
+                                text = stringResource(id = if (freeQty.value > qty.value) R.string.free_more_qty else R.string.invalid_qty),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                color = ConstColors.red,
                             )
                         }
-                        MedicoRoundButton(
-                            modifier = Modifier.weight(1.5f),
-                            text = stringResource(id = R.string.update),
-                            color = ConstColors.lightBlue,
-                            contentColor = Color.White,
-                            onClick = { mode.value = BottomSectionMode.ConfirmQty },
-                        )
+                        wasError.value = isError
+                    }
+                }
+                Space(10.dp)
+                Divider(color = ConstColors.ltgray)
+                Space(12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    when (mode.value) {
+                        BottomSectionMode.Select -> {
+                            MedicoRoundButton(
+                                text = stringResource(id = R.string.select),
+                                onClick = { onSaveQty(null, null) },
+                            )
+                        }
+                        BottomSectionMode.AddToCart -> {
+                            MedicoRoundButton(
+                                text = stringResource(id = R.string.add_to_cart),
+                                onClick = {
+                                    if (canAddToCart) {
+                                        mode.value = BottomSectionMode.ConfirmQty
+                                    }
+                                },
+                                color = if (canAddToCart) ConstColors.yellow else Color.LightGray,
+                            )
+                        }
+                        BottomSectionMode.ConfirmQty -> {
+                            MedicoRoundButton(
+                                text = stringResource(id = R.string.cancel),
+                                color = ConstColors.ltgray,
+                                onClick = {
+                                    mode.value =
+                                        if (qtyInitial > 0 || freeQtyInitial > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                    qty.value = qtyInitial
+                                    freeQty.value = freeQtyInitial
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .weight(0.4f)
+                                    .fillMaxWidth()
+                            )
+                            MedicoRoundButton(
+                                text = stringResource(id = R.string.confirm),
+                                isEnabled = (qty.value + freeQty.value) % 1 == 0.0 && qty.value > 0.0 && qty.value >= freeQty.value,
+                                onClick = {
+                                    mode.value =
+                                        if (qty.value > 0 || freeQty.value > 0) BottomSectionMode.Update else BottomSectionMode.AddToCart
+                                    onSaveQty(qty.value, freeQty.value)
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                        BottomSectionMode.Update -> {
+                            Row(
+                                verticalAlignment = Alignment.Bottom,
+                                modifier = Modifier.weight(2f),
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.qty).uppercase(),
+                                    fontSize = 12.sp,
+                                    color = ConstColors.gray,
+                                )
+                                Space(6.dp)
+                                Text(
+                                    text = qty.value.toString(),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = MaterialTheme.colors.background,
+                                )
+                                Space(6.dp)
+                                Text(
+                                    text = "+${freeQty.value}",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.W700,
+                                    color = ConstColors.lightBlue,
+                                    modifier = Modifier
+                                        .background(
+                                            ConstColors.lightBlue.copy(alpha = 0.05f),
+                                            RoundedCornerShape(4.dp)
+                                        )
+                                        .border(
+                                            1.dp,
+                                            ConstColors.lightBlue,
+                                            RoundedCornerShape(4.dp)
+                                        )
+                                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                                )
+                            }
+                            MedicoRoundButton(
+                                modifier = Modifier.weight(1.5f),
+                                text = stringResource(id = R.string.update),
+                                color = ConstColors.lightBlue,
+                                contentColor = Color.White,
+                                onClick = { mode.value = BottomSectionMode.ConfirmQty },
+                            )
+                        }
                     }
                 }
             }

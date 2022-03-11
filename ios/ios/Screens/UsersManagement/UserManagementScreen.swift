@@ -53,13 +53,13 @@ struct UserManagementScreen: View {
                                           titleLocalizationKey: "empty_hospitals",
                                           handleHomeTap: handleHomeTap)
             
-        case is ManagementScope.UserSeasonBoy:
-            imageName = "SeasonBoy"
-            searchBarPlaceholderKey = "season_boys_search"
-            screenName = "SeasonBoy"
-            emptyListView = EmptyListView(imageName: "EmptySeasonBoys",
-                                          titleLocalizationKey: "empty_seasons_boys",
-                                          handleHomeTap: handleHomeTap)
+//        case is ManagementScope.UserSeasonBoy:
+//            imageName = "SeasonBoy"
+//            searchBarPlaceholderKey = "season_boys_search"
+//            screenName = "SeasonBoy"
+//            emptyListView = EmptyListView(imageName: "EmptySeasonBoys",
+//                                          titleLocalizationKey: "empty_seasons_boys",
+//                                          handleHomeTap: handleHomeTap)
             
         default:
             return AnyView(EmptyView())

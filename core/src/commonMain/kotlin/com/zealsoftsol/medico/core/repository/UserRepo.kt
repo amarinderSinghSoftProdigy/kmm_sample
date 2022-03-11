@@ -11,27 +11,35 @@ import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AuthCredentials
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
 import com.zealsoftsol.medico.data.PincodeValidation
+import com.zealsoftsol.medico.data.ProfileImageData
+import com.zealsoftsol.medico.data.ProfileImageUpload
+import com.zealsoftsol.medico.data.ProfileResponseData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.TokenInfo
+import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
+import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
 import com.zealsoftsol.medico.data.ValidationResponse
+import com.zealsoftsol.medico.data.WhatsappData
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,12 +47,16 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
 
+
 class UserRepo(
     private val networkAuthScope: NetworkScope.Auth,
     private val networkSignUpScope: NetworkScope.SignUp,
     private val networkPasswordScope: NetworkScope.Password,
     private val networkCustomerScope: NetworkScope.Customer,
     private val networkNotificationScope: NetworkScope.Notification,
+    private val networkConfigScope: NetworkScope.Config,
+    private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
+    private val profileImageScope: NetworkScope.ProfileImage,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -57,6 +69,7 @@ class UserRepo(
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
     )
+    val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
     val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
@@ -97,6 +110,7 @@ class UserRepo(
                     else -> User.Details.DrugLicense(
                         it.tradeName,
                         it.gstin!!,
+                        it.panNumber ?: "",
                         it.drugLicenseNo1!!,
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl
@@ -112,6 +126,12 @@ class UserRepo(
             user
         }
         return result
+    }
+
+    suspend fun loadConfig() {
+        networkConfigScope.getConfig().onSuccess {
+            configFlow.value = it
+        }
     }
 
     suspend fun loadDashboard() {
@@ -190,6 +210,10 @@ class UserRepo(
         return networkSignUpScope.signUpValidation3(userRegistration3)
     }
 
+    suspend fun upoladDocument(uploadData: LicenseDocumentData): BodyResponse<UploadResponseData> {
+        return networkSignUpScope.uploadDocument(uploadData)
+    }
+
     @Deprecated("move to separate network scope")
     suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation> {
         return networkSignUpScope.getLocationData(pincode)
@@ -199,14 +223,14 @@ class UserRepo(
         userRegistration1: UserRegistration1,
         userRegistration2: UserRegistration2,
         userRegistration3: UserRegistration3,
-        storageKey: String?,
+        userRegistration4: UserRegistration4,
     ): AnyResponse {
         return networkSignUpScope.signUp(
             SubmitRegistration.nonSeasonBoy(
                 userRegistration1,
                 userRegistration2,
                 userRegistration3,
-                storageKey,
+                userRegistration4,
                 ipAddressFetcher.getIpAddress().orEmpty(),
             )
         )
@@ -288,6 +312,43 @@ class UserRepo(
         if (getUserAccess() == UserAccess.FULL_ACCESS && token != null) {
             networkNotificationScope.sendFirebaseToken(token)
         }
+    }
+
+    suspend fun getWhatsappPreference(): BodyResponse<WhatsappData> {
+        return whatsappPreferenceScope.getWhatsappPreferences(requireUser().unitCode)
+    }
+
+    suspend fun saveWhatsappPreference(
+        language: String,
+        phoneNumber: String,
+    ): AnyResponse {
+        return whatsappPreferenceScope.saveWhatsappPreferences(
+            language,
+            phoneNumber,
+            requireUser().unitCode
+        )
+    }
+
+
+    suspend fun uploadProfileImage(
+        fileString: String,
+        mimeType: String,
+        type: String,
+        size: String,
+    ): BodyResponse<ProfileResponseData> {
+        return profileImageScope.saveProfileImageData(
+            ProfileImageUpload(
+                size = size,
+                name = type,
+                mimeType = mimeType,
+                documentType = type,
+                documentData = fileString,
+            ), type
+        )
+    }
+
+    suspend fun getProfileImageData(): BodyResponse<ProfileImageData> {
+        return profileImageScope.getProfileImageData()
     }
 
     private fun clearUserData() {

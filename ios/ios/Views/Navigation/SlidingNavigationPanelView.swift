@@ -54,6 +54,7 @@ struct SlidingNavigationPanelView: ViewModifier {
     private func getDragGesture() -> some Gesture {
         DragGesture(minimumDistance: 20, coordinateSpace: .local)
             .onEnded({ value in
+                
                 // Left swipe
                 if value.translation.width < 0 {
                     self.closeSlidingPanel(true)
@@ -146,6 +147,7 @@ private struct _SlidingPanelView: View {
     }
     
     private var optionsPanel: some View {
+        
         ZStack(alignment: .bottomTrailing) {
             AppColor.primary.color
                 .testingIdentifier("sliding_panel")
@@ -195,10 +197,12 @@ private struct _SlidingPanelView: View {
         let onTapActionCallback: (() -> ())?
         
         var body: some View {
+           
             TableViewCell(textLocalizationKey: navigationOption.textLocalizationKey,
                           imageName: navigationOption.imageName,
                           style: style,
-                          extraChipTextLocalizationKey: navigationOption == .NewOrders() ? "new" : nil,
+                          extraChipTextLocalizationKey: nil
+                          ,
                           onTapAction: {
                             _ = navigationOption.select()
                             
@@ -224,6 +228,9 @@ extension NavigationOption {
         case .Dashboard():
             return "Dashboard"
             
+        case .InStore():
+            return "InStore"
+            
         case .LogOut():
             return "Exit"
             
@@ -239,8 +246,8 @@ extension NavigationOption {
         case .Hospitals():
             return "Hospital"
             
-        case .SeasonBoys():
-            return "SeasonBoy"
+//        case .SeasonBoys():
+//            return "SeasonBoy"
             
         case .Stores():
             return "Store"
@@ -248,17 +255,14 @@ extension NavigationOption {
         case .Help():
             return "Help"
             
-        case .NewOrders():
-            return "NewOrders"
-            
         case .Orders():
             return "Orders"
             
-        case .Invoices():
-            return "Invoice"
+        case .PoOrdersAndHistory():
+            return "PurchaseOrders"
             
-        case .OrdersHistory():
-            return "OrdersHistory"
+        case .MyInvoices():
+            return "Invoice"
             
         default:
             return nil
@@ -270,9 +274,12 @@ extension NavigationOption {
         case .Dashboard():
             return "dashboard"
             
+        case .InStore():
+            return "instore"
+            
         case .LogOut():
             return "log_out"
-            
+       
         case .Settings():
             return "settings"
             
@@ -285,8 +292,8 @@ extension NavigationOption {
         case .Hospitals():
             return "hospitals"
             
-        case .SeasonBoys():
-            return "seasonBoys"
+//        case .SeasonBoys():
+//            return "seasonBoys"
             
         case .Stores():
             return "stores"
@@ -294,17 +301,14 @@ extension NavigationOption {
         case .Help():
             return "help"
             
-        case .NewOrders():
-            return "purchase_orders"
-            
         case .Orders():
             return "my_orders"
             
-        case .Invoices():
-            return "invoices"
+        case .PoOrdersAndHistory():
+            return "purchase_orders"
             
-        case .OrdersHistory():
-            return "orders_history"
+        case .MyInvoices():
+            return "invoices"
             
         default:
             return nil

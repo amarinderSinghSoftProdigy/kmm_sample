@@ -52,6 +52,7 @@ internal class AuthEventDelegate(
                     .onSuccess {
                         withProgress {
                             userRepo.sendFirebaseToken()
+                            userRepo.loadConfig()
                             notificationRepo.loadUnreadMessagesFromServer()
                             cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }
@@ -87,6 +88,10 @@ internal class AuthEventDelegate(
                 navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                 navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
             }
+        }else{
+            userRepo.clear()
+            navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
+            navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
         }
     }
 

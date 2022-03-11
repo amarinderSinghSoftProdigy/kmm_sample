@@ -1,6 +1,7 @@
 import SwiftUI
 import core
 
+//MARK: Host Screen
 struct HostScreen: View {
     @ObservedObject var currentScope: SwiftDataSource<Scope.Host>
     
@@ -15,11 +16,13 @@ struct HostScreen: View {
     }
 }
 
+//MARK: Base Scope View
 struct BaseScopeView: View {
     let scope: Scope.Host
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        
+        return ZStack(alignment: .topLeading) {
             AppColor.primary.color.edgesIgnoringSafeArea(.all)
                 .hideKeyboardOnTap()
             
@@ -31,7 +34,7 @@ struct BaseScopeView: View {
             NotificationsListener()
 
             ErrorAlert(errorsHandler: scope)
-
+            
             ActivityScreen(isInProgress: scope.isInProgress)
         }
     }
@@ -90,26 +93,30 @@ struct BaseScopeView: View {
     }
 }
 
+//MARK: TabBar Screen
 struct TabBarScreen: View {
+    
     let tabBarScope: TabBarScope
     
     @ObservedObject var scope: SwiftDataSource<Scope.ChildTabBar>
     
     var body: some View {
-        currentView
-            .navigationBar(withNavigationSection: tabBarScope.navigationSection,
+       currentView
+          .navigationBar(withNavigationSection: tabBarScope.navigationSection,
                            withNavigationBarInfo: tabBarScope.tabBar,
                            handleGoBack: { tabBarScope.goBack() })
     }
     
     init(tabBarScope: TabBarScope) {
         self.tabBarScope = tabBarScope
-        
         self.scope = SwiftDataSource(dataSource: tabBarScope.childScope)
     }
     
     private var currentView: some View {
-        Group {
+        
+        print("Scope Vaue Changed to: \(scope.value)")
+        
+        return Group {
             switch scope.value {
                 
             case let scope as OtpScope:
@@ -141,7 +148,7 @@ struct TabBarScreen: View {
                 
             case let scope as DashboardScope:
                 DashboardScreen(scope: scope)
-                
+
             case let scope as NotificationScope.All:
                 NotificationsScreen(scope: scope)
                 
@@ -185,6 +192,24 @@ struct TabBarScreen: View {
             case let scope as OrderPlacedScope:
                 OrderPlacedScreen(scope: scope)
                 
+            case let scope as InStoreSellerScope:
+                InStoreSellersScreen(scope: scope)
+                
+            case let scope as InStoreUsersScope:
+                InStoreUsersScreen(scope: scope)
+                
+            case let scope as InStoreAddUserScope:
+                InStoreAddUserScreen(scope: scope)
+                
+            case let scope as InStoreProductsScope:
+                InStoreProductsScreen(scope: scope)
+                
+            case let scope as InStoreCartScope:
+                InStoreCartScreen(scope: scope)
+                
+            case let scope as InStoreOrderPlacedScope:
+                InStoreOrderSuccessScreen(scope: scope)
+
             default:
                 EmptyView()
             }
@@ -192,13 +217,16 @@ struct TabBarScreen: View {
     }
 }
 
+//MARK: BottomSheet View
 struct BottomSheetView: View {
     @ObservedObject var bottomSheet: SwiftDataSource<BottomSheet>
 
     let dismissBottomSheet: () -> ()
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        print("Bottom Sheet: \(bottomSheet.value)")
+        
+        return ZStack(alignment: .topLeading) {
             switch bottomSheet.value {
 
             case let uploadBottomSheet as BottomSheet.UploadDocuments:
@@ -219,7 +247,20 @@ struct BottomSheetView: View {
                 Color.clear
                     .modifier(PreviewStockistBottomSheet(bottomSheet: previewStockistSheet,
                                                          onBottomSheetDismiss: dismissBottomSheet))
-                        
+            
+            case let viewTaxInfoSheet as BottomSheet.ViewTaxInfo:
+                Color.clear
+                    .modifier(ViewTaxInfoBottomSheet(bottomSheet: viewTaxInfoSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
+                
+            case let viewItemTaxSheet as BottomSheet.ViewItemTax:
+                Color.clear
+                    .modifier(ViewItemTaxBottomSheet(bottomSheet: viewItemTaxSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
+            case let inStoreProductSheet as BottomSheet.InStoreViewProduct:
+                Color.clear
+                    .modifier(InStoreViewProductBottomSheet(bottomSheet: inStoreProductSheet,
+                                                         onBottomSheetDismiss: dismissBottomSheet))
             default:
                 Color.clear
             }

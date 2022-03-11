@@ -28,6 +28,7 @@ data class Facet(
 data class Value(
     val count: Int,
     val value: String,
+    val id: String,
 )
 
 @Serializable
@@ -37,6 +38,7 @@ data class ProductSearch(
     val formattedMrp: String,
     val formattedPrice: String? = null,
     val id: String,
+    val drugFormName: String,
     val manufacturer: String,
     val marginPercent: String? = null,
     val name: String,
@@ -46,6 +48,21 @@ data class ProductSearch(
     val uomName: String,
     val standardUnit: String? = null,
     val sellerInfo: SellerInfo? = null,
+    val manufacturerId: String? = null,
+    var quantity: Double = 0.0,
+    var freeQuantity: Double = 0.0,
+    var vendorProductId: String? = null,
+    var vendorMnfrId: String? = null,
+    var imageCode: String? = null,
+    val viewStockist: List<ConnectedStockist>? = null
+)
+
+@Serializable
+data class ConnectedStockist(
+    val tradeName: String,
+    val distance: String,
+    val connected: Boolean,
+    val location: String,
 )
 
 @Serializable
@@ -57,7 +74,9 @@ data class SellerInfo(
     val spid: String,
     val stockInfo: StockInfo?,
     val priceInfo: PriceInfo?,
-    val cartInfo: CartInfo? = null,
+    var cartInfo: CartInfo? = null,
+    val isPromotionActive: Boolean,
+    val promotionData: PromotionData? = null,
 ) : WithTradeName {
 
     companion object Anyone {
@@ -71,6 +90,7 @@ data class SellerInfo(
                 pincode = "",
                 city = "",
                 landmark = "",
+                addressLine = ""
             ),
             tradeName = "",
             unitCode = "",
@@ -81,6 +101,7 @@ data class SellerInfo(
                     date = 0,
                     formattedDate = "",
                     color = "",
+                    ""
                 ),
                 formattedStatus = "",
                 status = StockStatus.OUT_OF_STOCK,
@@ -89,10 +110,23 @@ data class SellerInfo(
                 price = PriceData(0.0, ""),
                 mrp = PriceData(0.0, ""),
                 marginPercent = "",
-            )
+            ),
+            isPromotionActive = false,
         )
     }
 }
+
+@Serializable
+data class PromotionData(
+    val type: String,
+    val code: String,
+    val buy: FormattedData<Double>,
+    val free: FormattedData<Double>,
+    val productDiscount: FormattedData<Double>,
+    val displayLabel: String,
+    val offerPrice: FormattedData<Double>,
+    val validity: String? = null,
+)
 
 @Serializable
 data class PriceInfo(
@@ -104,7 +138,8 @@ data class PriceInfo(
 @Serializable
 data class PriceData(
     val price: Double,
-    val formattedPrice: String
+    val formattedPrice: String,
+    val itemCount: Int = -1,
 )
 
 @Serializable
@@ -124,6 +159,7 @@ data class Expiry(
     val formattedDate: String,
     @SerialName("hexCode")
     val color: String,
+    val monthsToExpire: String,
 )
 
 enum class StockStatus {
@@ -156,7 +192,8 @@ sealed class Option {
     data class StringValue(
         val value: String,
         val isSelected: Boolean,
-        val isVisible: Boolean = true
+        val isVisible: Boolean = true,
+        val id: String = ""
     ) : Option()
 
     object ViewMore : Option()

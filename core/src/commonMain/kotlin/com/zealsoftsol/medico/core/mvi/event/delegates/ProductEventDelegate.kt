@@ -50,6 +50,7 @@ internal class ProductEventDelegate(
                 ProductInfoScope(
                     product = body.product!!,
                     alternativeBrands = body.alternateProducts,
+                    variants = body.variants.filter { it.code != body.product!!.code },
                 )
             )
         }.onError(navigator)
@@ -76,8 +77,8 @@ internal class ProductEventDelegate(
                             product.code,
                             product.buyingOption!!,
                             CartIdentifier(spid),
-                            1.0,
-                            0.0,
+                            product.quantity,
+                            product.freeQuantity,
                         )
                     )
                     return
@@ -100,12 +101,14 @@ internal class ProductEventDelegate(
         }.onSuccess { body ->
             val isSeasonBoy = userRepo.requireUser().type == UserType.SEASON_BOY
             val nextScope = when (buyingOption) {
-                BuyingOption.BUY -> BuyProductScope.ChooseStockist(
-                    isSeasonBoy = isSeasonBoy,
-                    product = body.product,
-                    sellersInfo = DataSource(body.sellerInfo),
-                    tapModeHelper = tapModeHelper,
-                )
+                BuyingOption.BUY -> {
+                    BuyProductScope.ChooseStockist(
+                        isSeasonBoy = isSeasonBoy,
+                        product = body.product,
+                        sellersInfo = DataSource(body.sellerInfo),
+                        tapModeHelper = tapModeHelper,
+                    )
+                }
                 BuyingOption.QUOTE -> BuyProductScope.ChooseQuote(
                     isSeasonBoy = isSeasonBoy,
                     product = body.product,

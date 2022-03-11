@@ -1,27 +1,48 @@
 package com.zealsoftsol.medico.core.mvi.event
 
+import com.zealsoftsol.medico.core.interop.DataSource
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.Batch
+import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
+import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BuyingOption
+import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
+import com.zealsoftsol.medico.data.CartItem
+import com.zealsoftsol.medico.data.ConnectedStockist
+import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
 import com.zealsoftsol.medico.data.NotificationFilter
 import com.zealsoftsol.medico.data.NotificationOption
+import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.OrderEntry
+import com.zealsoftsol.medico.data.OrderTaxInfo
 import com.zealsoftsol.medico.data.OrderType
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.ProductsData
+import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UserRegistration
+import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
 import kotlin.reflect.KClass
 
@@ -37,6 +58,7 @@ sealed class Event {
             data class LogOut(val notifyServer: Boolean) : Auth()
             data class UpdateAuthCredentials(val emailOrPhone: String, val password: String) :
                 Auth()
+
             object UpdateDashboard : Auth()
         }
 
@@ -66,14 +88,44 @@ sealed class Event {
             data class UploadAadhaar(val aadhaarAsBase64: String) : Registration()
             data class UploadDrugLicense(val licenseAsBase64: String, val fileType: FileType) :
                 Registration()
+
+            data class UploadDocument(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String,
+                val path: String,
+                val registrationStep1: UserRegistration1
+            ) : Registration()
+
             object UploadFileTooBig : Registration()
+            data class ShowUploadBottomSheets(
+                val type: String,
+                val registrationStep1: UserRegistration1
+            ) : Registration()
 
             object SignUp : Registration()
             object Skip : Registration()
+            object Submit : Registration()
             object AcceptWelcome : Registration()
             object ShowUploadBottomSheet : Registration()
 
             object ConfirmCreateRetailer : Registration()
+        }
+
+        sealed class Profile : Action() {
+            override val typeClazz: KClass<*> = Profile::class
+
+            data class UploadUserProfile(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : Profile()
+
+            object UploadFileTooBig : Profile()
+            object GetProfileData : Profile()
+            data class ShowUploadBottomSheet(val type: String) : Profile()
         }
 
         sealed class Search : Action() {
@@ -91,15 +143,26 @@ sealed class Event {
                 }
             }
 
-            data class SearchAutoComplete(val value: String) : Search()
+            data class SearchAutoComplete(val value: String, val sellerUnitCode: String? = null) :
+                Search()
+
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SelectSortOption(val option: SortOption?) : Search()
+            data class SelectBatch(val option: Boolean, val product: ProductSearch) : Search()
+            data class ViewAllItems(val value: String) : Search()
+            data class AddToCart(val product: ProductSearch) : Search()
+            data class showToast(val msg: String, val cartData: CartData?) : Search()
+            data class ShowDetails(val item: EntityInfo) : Search()
+            data class ResetButton(val item: Boolean) : Search()
+            data class UpdateFree(val qty: Double, val id: String) : Search()
             object LoadMoreProducts : Search()
             object Reset : Search()
             object ToggleFilter : Search()
+            data class ShowConnectedStockistBottomSheet(val stockist: List<ConnectedStockist>) :
+                Search()
         }
 
         sealed class Product : Action() {
@@ -128,6 +191,7 @@ sealed class Event {
             data class RequestSubscribe(val item: EntityInfo) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
                 Management()
+
             object VerifyRetailerTraderDetails : Management()
         }
 
@@ -149,6 +213,9 @@ sealed class Event {
             data class Select(val item: Store) : Stores()
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
+            data class ShowDetails(val item: EntityInfo) : Stores()
+            data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
+
         }
 
         sealed class Cart : Action() {
@@ -179,19 +246,30 @@ sealed class Event {
                 val id: CartIdentifier,
             ) : Cart()
 
+            data class OpenEditCartItem(
+                val qtyInitial: Double,
+                val freeQtyInitial: Double,
+                val sellerCart: SellerCart,
+                val item: CartItem,
+                val cartScope: CartScope
+            ) : Cart()
+
             data class RemoveSellerItems(val sellerUnitCode: String) : Cart()
 
             object LoadCart : Cart()
             object ClearCart : Cart()
             object PreviewCart : Cart()
-            object ConfirmCartOrder : Cart()
+            data class ConfirmCartOrder(val cartScope: Scope) : Cart()
             data class PlaceCartOrder(val checkForQuotedItems: Boolean) : Cart()
         }
 
         sealed class Help : Action() {
             override val typeClazz: KClass<*> = Help::class
 
+            object GetContactUs : Help()
+            object GetTandC : Help()
             object GetHelp : Help()
+            data class ChangeTab(val index: String) : Help()
         }
 
         sealed class Orders : Action() {
@@ -201,13 +279,40 @@ sealed class Event {
             data class Load(val isFirstLoad: Boolean) : Orders()
             data class Select(val orderId: String, val type: OrderType) : Orders()
 
+            data class SelectBottomSheet(
+                val orderDetails: OrderEntry?,
+                val orderTaxDetails: OrderTaxInfo?,
+                val reason: String,
+                val scope: Scope
+            ) : Orders()
+
+            data class SelectItemBottomSheet(
+                val orderDetails: OrderEntry,
+                val scope: Scope
+            ) : Orders()
+
             data class ViewOrderAction(
                 val action: ViewOrderScope.Action,
                 val fromNotification: Boolean
             ) : Orders()
 
+            data class ViewOrderInvoiceAction(
+                val orderId: String,
+                val acceptedEntries: List<String>,
+                val reasonCode: String? = null,
+            ) : Orders()
+
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()
-            data class SelectEntry(val entry: OrderEntry) : Orders()
+            data class SelectEntry(
+                val taxType: TaxType,
+                val retailerName: String,
+                val canEditOrderEntry: Boolean,
+                val orderId: String,
+                val declineReason: List<DeclineReason>,
+                val entry: List<OrderEntry>,
+                val index: Int
+            ) : Orders()
+
             data class SaveEntryQty(
                 val entry: OrderEntry,
                 val quantity: Double,
@@ -217,7 +322,18 @@ sealed class Event {
                 val expiry: String,
             ) : Orders()
 
-            data class Confirm(val fromNotification: Boolean) : Orders()
+            data class Confirm(val fromNotification: Boolean, val reasonCode: String) : Orders()
+
+            data class ConfirmInvoice(val reasonCode: String) : Orders()
+
+            data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
+
+            data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
+
+            data class EditDiscount(val orderId: String, val discount: Double) : Orders()
+
+            data class ChangePaymentMethod(val orderId: String, val type: String) : Orders()
+
         }
 
         sealed class Invoices : Action() {
@@ -225,10 +341,182 @@ sealed class Event {
 
             data class Search(val value: String) : Invoices()
             data class Load(val isFirstLoad: Boolean) : Invoices()
-            data class Select(val invoiceId: String) : Invoices()
-            object Download : Invoices()
+            data class Select(val invoiceId: String, val isPoInvoice: Boolean) : Invoices()
+
+            object ShowTaxInfo : Invoices()
+            data class ShowTaxFor(val invoiceEntry: InvoiceEntry) : Invoices()
+
+            data class ViewInvoiceAction(
+                val action: ViewInvoiceScope.Action,
+                val payload: Any?,
+            ) : Invoices()
+        }
+
+        sealed class InStore : Action() {
+
+            override val typeClazz: KClass<*> = InStore::class
+
+            data class SellerSearch(val value: String) : InStore()
+            data class SellerLoad(val isFirstLoad: Boolean) : InStore()
+            data class SellerSelect(
+                val unitcode: String,
+                val sellerName: String,
+                val address: String,
+                val phoneNumber: String
+            ) : InStore()
+
+            data class DeleteOrder(
+                val unitcode: String,
+                val id: String
+            ) : InStore()
+
+            data class ProductSearch(val value: String) : InStore()
+            data class ProductLoad(val isFirstLoad: Boolean) : InStore()
+            data class ProductSelect(val item: InStoreProduct) : InStore()
+
+            data class UserSearch(val value: String) : InStore()
+            data class UserLoad(val isFirstLoad: Boolean) : InStore()
+
+            data class AddUserUpdatePincode(val pincode: String) : InStore()
+            object AddUser : InStore()
+            object FinishAddUser : InStore()
+
+            object LoadCart : InStore()
+            object ClearCart : InStore()
+            data class AddCartItem(
+                val productCode: String,
+                val spid: String,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : InStore()
+
+            data class UpdateCartItem(
+                val productCode: String,
+                val spid: String,
+                val quantity: Double,
+                val freeQuantity: Double,
+            ) : InStore()
+
+            data class RemoveCartItem(
+                val entryId: String,
+            ) : InStore()
+
+            object ConfirmCartOrder : InStore()
+        }
+
+        sealed class WhatsAppPreference : Action() {
+            override val typeClazz: KClass<*> = WhatsAppPreference::class
+
+            data class SavePreference(
+                val language: String,
+                val phoneNumber: String,
+            ) : WhatsAppPreference()
+
+            object GetPreference : WhatsAppPreference()
+        }
+
+
+        sealed class Batches : Action() {
+            override val typeClazz: KClass<*> = Batches::class
+
+            data class GetBatches(val spid: String, val productsData: ProductsData) : Batches()
+        }
+
+        sealed class OrderHsn : Action() {
+            override val typeClazz: KClass<*> = OrderHsn::class
+
+            data class Load(val isFirstLoad: Boolean) : OrderHsn()
+
+            data class Search(val value: String) : OrderHsn()
+
+            data class SaveOrderEntry(
+                val orderId: String,
+                val orderEntryId: String,
+                val servedQty: Double,
+                val freeQty: Double,
+                val price: Double,
+                val batchNo: String,
+                val expiryDate: String,
+                val mrp: Double,
+                val discount: Double,
+                val hsnCode: String,
+            ) : OrderHsn()
+
+            data class RejectOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+                val reasonCode: String
+            ) : OrderHsn()
+
+            data class AcceptOrderEntry(
+                val orderEntryId: String,
+                val spid: String,
+            ) : OrderHsn()
+
+            object GetBatches : OrderHsn()
+
+        }
+
+        sealed class Offers : Action() {
+            override val typeClazz: KClass<*> = Offers::class
+
+            data class ShowBottomSheet(
+                val promotionType: String,
+                val name: String,
+                val active: Boolean
+            ) :
+                Offers()
+
+            data class ShowEditBottomSheet(
+                val promotion: Promotions
+            ) : Offers()
+
+            object LoadMoreProducts : Offers()
+            object OpenCreateOffer : Offers()
+            data class GetOffers(
+                val search: String? = null,
+                val query: ArrayList<String> = ArrayList(),
+            ) : Offers()
+
+            data class UpdateOffer(val promotionType: String, val active: Boolean) : Offers()
+            data class EditOffer(val promoCode: String, val request: OfferProductRequest) : Offers()
+            object GetTypes : Offers()
+            data class SearchAutoComplete(val value: String) : Offers()
+            data class SelectAutoComplete(val autoComplete: AutoComplete) : Offers()
+            data class SaveOffer(val request: OfferProductRequest) : Offers()
+            data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
+                Offers()
+            data class ShowManufacturers(val showManufacturers: Boolean) : Offers()
+        }
+
+        sealed class Inventory : Action() {
+            override val typeClazz: KClass<*> = Inventory::class
+
+            data class GetInventory(
+                val search: String? = null,
+                val manufacturer: String? = null,
+                val page: Int,
+            ) : Inventory()
+
+            data class GetBatches(val spid: String, val productsData: ProductsData) : Inventory()
+            data class EditBatch(val item: Batch, val productsData: ProductsData) :
+                Inventory()
+
+            data class UpdateBatchStatus(val batchData: BatchStatusUpdateRequest) :
+                Inventory()
+
+            data class UpdateBatch(val batchData: BatchUpdateRequest) : Inventory()
+
+        }
+
+        sealed class QrCode : Action() {
+            override val typeClazz: KClass<*> = QrCode::class
+
+            object GetQrCode : QrCode()
+            data class RegenerateQrCode(val qrCode: String) : QrCode()
         }
     }
+
 
     sealed class Transition : Event() {
         override val typeClazz: KClass<*> = Transition::class
@@ -238,12 +526,13 @@ sealed class Event {
         object SignUp : Transition()
         object Otp : Transition()
         object ChangePassword : Transition()
-        object Search : Transition()
+        data class Search(val autoComplete: AutoComplete? = null) : Transition()
         object Dashboard : Transition()
-        object Settings : Transition()
+        data class Settings(val showBackIcon: Boolean) : Transition()
         object Profile : Transition()
         object Address : Transition()
         object GstinDetails : Transition()
+        object WhatsappPreference : Transition()
         data class Management(val manageUserType: UserType) : Transition()
         object RequestCreateRetailer : Transition()
         object AddRetailerAddress : Transition()
@@ -256,8 +545,31 @@ sealed class Event {
         object Stores : Transition()
         object Cart : Transition()
         object Orders : Transition()
-        object NewOrders : Transition()
-        object OrdersHistory : Transition()
-        object Invoices : Transition()
+        object PoOrdersAndHistory : Transition()
+        object MyInvoices : Transition()
+        object Offers : Transition()
+        object CreateOffers : Transition()
+        object PoInvoices : Transition()
+        object InStore : Transition()
+        object InStoreUsers : Transition()
+        object InStoreAddUser : Transition()
+        data class InStoreCart(
+            val unitcode: String,
+            val name: String,
+            val address: String,
+            val phoneNumber: String
+        ) : Transition()
+
+        object Inventory : Transition()
+        object Menu : Transition()
+        data class Batches(
+            val spid: String,
+            val batchData: DataSource<List<com.zealsoftsol.medico.data.Batches>?>,
+            val selectedBatchData: DataSource<OrderHsnEditScope.SelectedBatchData?>,
+            val requiredQty: Double,
+        ) : Transition()
+
+        object QrCode : Transition()
+
     }
 }

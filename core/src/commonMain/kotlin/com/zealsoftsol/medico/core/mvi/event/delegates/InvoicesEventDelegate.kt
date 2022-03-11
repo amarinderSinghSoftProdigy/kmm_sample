@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scopable
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.withProgress
@@ -14,6 +15,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceEntry
 
 internal class InvoicesEventDelegate(
     navigator: Navigator,
@@ -25,14 +27,17 @@ internal class InvoicesEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Invoices) = when (event) {
         is Event.Action.Invoices.Load -> loadInvoices(event.isFirstLoad)
         is Event.Action.Invoices.Search -> searchInvoices(event.value)
-        is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId)
-        is Event.Action.Invoices.Download -> download()
+        is Event.Action.Invoices.Select -> selectInvoice(event.invoiceId, event.isPoInvoice)
+        is Event.Action.Invoices.ShowTaxInfo -> showTaxInfo()
+        is Event.Action.Invoices.ShowTaxFor -> showTaxFor(event.invoiceEntry)
+        is Event.Action.Invoices.ViewInvoiceAction -> viewInvoiceAction(event.action, event.payload)
     }
 
     private suspend fun loadInvoices(isFirstLoad: Boolean) {
         loadHelper.load<InvoicesScope, Invoice>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()
             networkOrdersScope.getInvoices(
+                isPoInvoice = isPoInvoice,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
@@ -46,6 +51,7 @@ internal class InvoicesEventDelegate(
         loadHelper.search<InvoicesScope, Invoice>(searchValue = search) {
             val user = userRepo.requireUser()
             networkOrdersScope.getInvoices(
+                isPoInvoice = isPoInvoice,
                 unitCode = user.unitCode,
                 search = searchText.value,
                 from = dateRange.value?.fromMs,
@@ -55,15 +61,19 @@ internal class InvoicesEventDelegate(
         }
     }
 
-    private suspend fun selectInvoice(invoiceId: String) {
+    private suspend fun selectInvoice(invoiceId: String, isPoInvoice: Boolean) {
         navigator.withScope<Scopable> {
             withProgress {
-                networkOrdersScope.getInvoice(userRepo.requireUser().unitCode, invoiceId)
+                networkOrdersScope.getInvoice(
+                    isPoInvoice,
+                    userRepo.requireUser().unitCode,
+                    invoiceId
+                )
             }.onSuccess { body ->
                 setScope(
                     ViewInvoiceScope(
-                        DataSource(body.invoice),
-                        DataSource(body.data),
+                        DataSource(body.taxInfo),
+                        DataSource(if (isPoInvoice) body.buyerData else body.sellerData),
                         DataSource(body.invoiceEntries),
                     )
                 )
@@ -71,9 +81,29 @@ internal class InvoicesEventDelegate(
         }
     }
 
-    private suspend fun download() {
+    private fun viewInvoiceAction(action: ViewInvoiceScope.Action, payload: Any?) {
         navigator.withScope<ViewInvoiceScope> {
+            when (action) {
+                ViewInvoiceScope.Action.VIEW_QR -> {
+                    navigator.scope.value.bottomSheet.value =
+                        BottomSheet.ViewQrCode(payload as String)
+                }
+                ViewInvoiceScope.Action.DOWNLOAD_INVOICE -> {
+                    it.notifications.value = ViewInvoiceScope.InvoiceDownloading
+                }
+            }
+        }
+    }
 
+    private fun showTaxInfo() {
+        navigator.withScope<ViewInvoiceScope> {
+            navigator.scope.value.bottomSheet.value = BottomSheet.ViewTaxInfo(it.taxInfo.value)
+        }
+    }
+
+    private fun showTaxFor(invoiceEntry: InvoiceEntry) {
+        navigator.withScope<ViewInvoiceScope> {
+            navigator.scope.value.bottomSheet.value = BottomSheet.ViewItemTax(invoiceEntry)
         }
     }
 }

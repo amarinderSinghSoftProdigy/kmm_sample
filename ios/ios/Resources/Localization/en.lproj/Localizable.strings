@@ -160,6 +160,7 @@
 "storage" = "Storage";
 "storage_description" = "Store at room temperature (10–30°C)";
 "alternative_brands" = "Alternative Brands";
+"variants" = "Variants";
 
 // MARK: Buy Product
 "units:" = "Units:";
@@ -380,6 +381,16 @@
 "inv_total:" = "Total:";
 "invoice_no:" = "Invoice No:";
 "empty_invoices" = "No Invoices were found";
+"discount:" = "Discount:";
+"net_payable:" = "Net Payable:";
+"units" = "Units";
+"adjust" = "(-/+ Adjust)";
+"rounding" = "Rounding";
+"gross_amount" = "Gross Amount";
+"discount" = "Discount";
+"freight" = "Freight";
+"total_tax" = "Total Tax";
+"price" = "Price";
 
 // MARK: Error Codes
 "E0000" = "Error";
@@ -431,3 +442,28 @@
 "E0046" = "Invalid current password, please enter valid password again!!";
 "E0047" = "Something went wrong!! Please try, change password again after sometime";
 "E0048" = "Invalid (Qty + FreeQty), Please correct to nearest number";
+"E0053" = "Invoice not found, please try after sometime.";
+"E0054" = "QRCode can\'t be generated, try after sometime.";
+"E0055" = "Customer already registered, please check again";
+"permission_message" = "In order to perform the action, we require the camera and files permission to be granted.";
+
+//InStore
+"instore" = "In-Store";
+"items:" = "Items:";
+"instore_orders" = "In-Store Orders";
+"empty_instore_orders" = "No Instore Orders";
+"empty_instore_users" = "No Instore Users";
+"empty_instore_products" = "No Instore Products";
+"instore_order" = "In Store Order";
+"search_tradename_mobile_no" = "Search Tradename or Mobile No";
+"new_customer" = "New Customer";
+"customer_details" = "Customer Details";
+"payment_type" = "Payment type";
+"reset" = "Reset";
+"add_customer" = "Add Customer";
+"amount" = "Amount";
+"search_by_product" = "Search By Product";
+"no_available_offer" = "No Available Offer";
+"complete_order" = "Complete Order";
+"instore_order_placed_success" = "Order placed successfully for";
+"instore_orders" = "Instore Orders";

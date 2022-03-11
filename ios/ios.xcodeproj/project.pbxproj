@@ -97,8 +97,6 @@
 		33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F1C07125683FFF0041A890 /* OtpFlowScreen.swift */; };
 		33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F55EF3265E6E3C00298BE7 /* OrdersScreen.swift */; };
 		33F8DFBB25763732009E98EE /* SelectUserTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F8DFBA25763732009E98EE /* SelectUserTypeScreen.swift */; };
-		33F8DFC525763A91009E98EE /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
-		33F8DFC625763A91009E98EE /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		33F8DFE325764253009E98EE /* Barlow-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33F8DFE225764253009E98EE /* Barlow-Bold.ttf */; };
 		33FD6A40259CAD640092887D /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A3F259CAD640092887D /* SearchBar.swift */; };
 		33FD6A44259CBE9B0092887D /* GlobalSearchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FD6A43259CBE9B0092887D /* GlobalSearchScreen.swift */; };
@@ -110,16 +108,28 @@
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
 		7555FF88242A565B00829871 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF87242A565B00829871 /* Preview Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
+		9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */; };
+		9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */; };
+		CE3B6B2427B12E2900A19F22 /* InStoreCartScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */; };
+		CE9EEA8C27ABA85000B6FAFC /* InStoreAddUserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */; };
+		CE9EEA8E27ABFEF700B6FAFC /* InStoreProductsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */; };
+		CEB873AC27B38C990054EBB9 /* Publishers.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB873AB27B38C990054EBB9 /* Publishers.swift */; };
+		CEB873AD27B38DD00054EBB9 /* core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; };
+		CEB873AE27B38DD00054EBB9 /* core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 33F8DFC425763A91009E98EE /* core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEB9737127B25B9400B5153D /* InStoreOrderSuccessScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */; };
+		CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */; };
+		CED29ACA27A90FE20076A63B /* InStoreSellersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */; };
+		CED29ACC27A952500076A63B /* InStoreUsersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		7555FFB4242A642300829871 /* Embed Frameworks */ = {
+		CEB873AF27B38DD00054EBB9 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				33F8DFC625763A91009E98EE /* core.framework in Embed Frameworks */,
+				CEB873AE27B38DD00054EBB9 /* core.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,10 +255,20 @@
 		7AA80CF33BE2304862146BEE /* Pods_Medico.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Medico.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7ED1FF174FDDF050269DD464 /* Pods-Medico.prod-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.prod-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.prod-debug.xcconfig"; sourceTree = "<group>"; };
 		8F4C16B158170595A4EC8EE8 /* Pods-Medico-MedicoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico-MedicoUITests.release.xcconfig"; path = "Target Support Files/Pods-Medico-MedicoUITests/Pods-Medico-MedicoUITests.release.xcconfig"; sourceTree = "<group>"; };
+		9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTaxInfoBottomSheet.swift; sourceTree = "<group>"; };
+		9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewItemTaxBottomSheet.swift; sourceTree = "<group>"; };
 		A4D04C257EEAE918940525D2 /* Pods_Medico_MedicoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Medico_MedicoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC038EA1AD4DE30F33A4F60D /* Pods-Medico.stag-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.stag-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.stag-release.xcconfig"; sourceTree = "<group>"; };
 		B15E786F8A13687792CDC701 /* Pods-Medico.dev-debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-debug.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-debug.xcconfig"; sourceTree = "<group>"; };
 		C24B78CAC6E0F09D5BBF9B3D /* Pods-Medico.dev-release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Medico.dev-release.xcconfig"; path = "Target Support Files/Pods-Medico/Pods-Medico.dev-release.xcconfig"; sourceTree = "<group>"; };
+		CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreCartScreen.swift; sourceTree = "<group>"; };
+		CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreAddUserScreen.swift; sourceTree = "<group>"; };
+		CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreProductsScreen.swift; sourceTree = "<group>"; };
+		CEB873AB27B38C990054EBB9 /* Publishers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publishers.swift; sourceTree = "<group>"; };
+		CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreOrderSuccessScreen.swift; sourceTree = "<group>"; };
+		CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreViewProductBottomSheet.swift; sourceTree = "<group>"; };
+		CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreSellersScreen.swift; sourceTree = "<group>"; };
+		CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InStoreUsersScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,9 +276,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33F8DFC525763A91009E98EE /* core.framework in Frameworks */,
 				333F45D125A49AC8008DE1D2 /* Introspect in Frameworks */,
 				4BA0007DEC69B01DBC21A4C4 /* Pods_Medico.framework in Frameworks */,
+				CEB873AD27B38DD00054EBB9 /* core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,9 +509,10 @@
 		337C0A35256D423D00C3F0A5 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
+				CED29AC827A90FB70076A63B /* InStore */,
 				33B1B7FE2563F4C6005215A3 /* Authentication */,
 				33377B1A2632D48A00B619F9 /* Cart */,
-				335FFAF725DD07DD00BC5FC1 /* Dashboard */,
 				33FD6A42259CBE7E0092887D /* GlobalSearch */,
 				333D3266262EBAAE0075E1D3 /* Help */,
 				330D8C4F266A0F6B005D46DB /* Invoices */,
@@ -633,6 +654,9 @@
 				33ED9E9B2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift */,
 				332EB65225F2253C009BC392 /* PopSheet.swift */,
 				33A1212E26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift */,
+				9C323A1227569C7A004D2558 /* ViewTaxInfoBottomSheet.swift */,
+				9C323A1427569D30004D2558 /* ViewItemTaxBottomSheet.swift */,
+				CEC5C70827AD282D004B8301 /* InStoreViewProductBottomSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -657,6 +681,7 @@
 				33385A7B256FB66B00DACD7C /* CommonExt.swift */,
 				33AD104B256F92CC005FF354 /* SwiftUIExtensions.swift */,
 				33385A85256FB7C200DACD7C /* ViewExtensions.swift */,
+				CEB873AB27B38C990054EBB9 /* Publishers.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -752,10 +777,10 @@
 			isa = PBXGroup;
 			children = (
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
+				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				33B1B80725642192005215A3 /* Extensions */,
 				332F7DF9258B39BD00C5BF6B /* KotlinSources */,
 				337C0A36256D426900C3F0A5 /* Resources */,
-				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				337C0A35256D423D00C3F0A5 /* Screens */,
 				33CA67C725AEF81300148A27 /* Services */,
 				33016394255999F200835961 /* Utils */,
@@ -782,6 +807,19 @@
 				A4D04C257EEAE918940525D2 /* Pods_Medico_MedicoUITests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CED29AC827A90FB70076A63B /* InStore */ = {
+			isa = PBXGroup;
+			children = (
+				CED29AC927A90FE20076A63B /* InStoreSellersScreen.swift */,
+				CED29ACB27A952500076A63B /* InStoreUsersScreen.swift */,
+				CE9EEA8B27ABA85000B6FAFC /* InStoreAddUserScreen.swift */,
+				CE9EEA8D27ABFEF600B6FAFC /* InStoreProductsScreen.swift */,
+				CE3B6B2327B12E2900A19F22 /* InStoreCartScreen.swift */,
+				CEB9737027B25B9400B5153D /* InStoreOrderSuccessScreen.swift */,
+			);
+			path = InStore;
 			sourceTree = "<group>";
 		};
 		F5E94E8000B79EC32F9C20E2 /* Pods */ = {
@@ -813,10 +851,10 @@
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
-				7555FFB4242A642300829871 /* Embed Frameworks */,
 				331B195126C3D53200F0E806 /* ShellScript */,
 				D56BEB1B90779AF1E4EB6534 /* [CP] Embed Pods Frameworks */,
 				331BECFF25934DC300757694 /* ShellScript */,
+				CEB873AF27B38DD00054EBB9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -837,7 +875,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1220;
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Zeal Software Solutions";
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
@@ -994,6 +1032,7 @@
 			files = (
 				33ED9E9C2661327700DAD5A6 /* ModifyOrderEntryBottomSheet.swift in Sources */,
 				33648DCF261B18A900CDB5D3 /* NumberPicker.swift in Sources */,
+				CED29ACA27A90FE20076A63B /* InStoreSellersScreen.swift in Sources */,
 				3376EC7A2583875900570BB3 /* FilePicker.swift in Sources */,
 				33ABAEC8258B826A0061F63C /* CommonViews.swift in Sources */,
 				33B4A30D25A30F3F00B04AF3 /* FlexibleView.swift in Sources */,
@@ -1011,8 +1050,10 @@
 				33FF142F261CB3E9004F9F98 /* StoresScreen.swift in Sources */,
 				334288AC25B3180F008F3890 /* MapView.swift in Sources */,
 				338F98E7257F77C3002D36FF /* ImagePicker.swift in Sources */,
+				CEB873AC27B38C990054EBB9 /* Publishers.swift in Sources */,
 				33BAF811265FDFED00559A68 /* ViewOrderScreen.swift in Sources */,
 				330867522566D67E000C3EB8 /* HostScreen.swift in Sources */,
+				9C323A1327569C7A004D2558 /* ViewTaxInfoBottomSheet.swift in Sources */,
 				332CFD4525AF335E00341A7E /* PhoneNumberUtil.swift in Sources */,
 				338BFF0625C8171500514E79 /* NotificationsManager.swift in Sources */,
 				3395030F25824ABB0080CC88 /* SlidingNavigationPanelView.swift in Sources */,
@@ -1026,6 +1067,7 @@
 				33648DAD261AFB2500CDB5D3 /* BuyProductScreen.swift in Sources */,
 				3373ED66265FB99700118DD9 /* DatePicker.swift in Sources */,
 				333F45D325A4B5A8008DE1D2 /* URLImage.swift in Sources */,
+				CEC5C70927AD282D004B8301 /* InStoreViewProductBottomSheet.swift in Sources */,
 				332CFD4125AF31FC00341A7E /* ScreenLogger.swift in Sources */,
 				33385A7E256FB66B00DACD7C /* CommonExt.swift in Sources */,
 				33DE40C32664CB83001EB277 /* ConfirmOrderScreen.swift in Sources */,
@@ -1042,15 +1084,20 @@
 				33C3216626E79BAD00C7CAB4 /* QuantityInput.swift in Sources */,
 				336D347025C973470021F39A /* NotificationsScreen.swift in Sources */,
 				33B834DF2577764D00D72CE8 /* SignUpPersonalDataScreen.swift in Sources */,
+				CED29ACC27A952500076A63B /* InStoreUsersScreen.swift in Sources */,
+				CE9EEA8E27ABFEF700B6FAFC /* InStoreProductsScreen.swift in Sources */,
 				338BFF0825C8173800514E79 /* CloudMessagingNotificationsService.swift in Sources */,
 				332CFD4825AF337F00341A7E /* AppColor.swift in Sources */,
+				CE3B6B2427B12E2900A19F22 /* InStoreCartScreen.swift in Sources */,
 				33F151F1256FE7F000C4C656 /* OtpPhoneVerification.swift in Sources */,
 				33F151EB256FE1F000C4C656 /* OtpPhoneRequestScreen.swift in Sources */,
 				33F55EF4265E6E3C00298BE7 /* OrdersScreen.swift in Sources */,
 				333D3268262EBABF0075E1D3 /* HelpScreen.swift in Sources */,
+				CEB9737127B25B9400B5153D /* InStoreOrderSuccessScreen.swift in Sources */,
 				33CA67CB25AEF8E100148A27 /* FirebaseAnalyticsService.swift in Sources */,
 				33F1C07225683FFF0041A890 /* OtpFlowScreen.swift in Sources */,
 				33A1212F26E8D8B800D7AABF /* PreviewStockistBottomSheet.swift in Sources */,
+				CE9EEA8C27ABA85000B6FAFC /* InStoreAddUserScreen.swift in Sources */,
 				335EE0D5257A7EF90004AD42 /* SignUpTraderDetails.swift in Sources */,
 				33385A86256FB7C200DACD7C /* ViewExtensions.swift in Sources */,
 				33CA67EA25AF0EFD00148A27 /* DIContainer.swift in Sources */,
@@ -1059,6 +1106,7 @@
 				339C5041257A2E7600AAB45F /* CommonViewModifiers.swift in Sources */,
 				33FD6A40259CAD640092887D /* SearchBar.swift in Sources */,
 				331FC3AC25D3F6C00072D3B3 /* ComplexNotifications.swift in Sources */,
+				9C323A1527569D30004D2558 /* ViewItemTaxBottomSheet.swift in Sources */,
 				33CA67C925AEF87600148A27 /* AnalyticsService.swift in Sources */,
 				33621CFA257125B2004BD4CF /* ActivityView.swift in Sources */,
 				330D8C51266A0F85005D46DB /* InvoicesScreen.swift in Sources */,
@@ -1128,6 +1176,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1171,7 +1220,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1186,7 +1235,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Development";
@@ -1224,6 +1273,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1267,7 +1317,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1282,7 +1332,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Development";
@@ -1320,6 +1370,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1357,7 +1408,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1372,7 +1423,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Staging Distribution";
@@ -1410,6 +1461,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1447,7 +1499,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1462,7 +1514,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Prod Distribution";
@@ -1500,6 +1552,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1561,6 +1614,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1598,7 +1652,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1613,7 +1667,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Development";
@@ -1633,7 +1687,7 @@
 				CODE_SIGN_ENTITLEMENTS = Medico.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = QHQT856493;
 				ENABLE_PREVIEWS = YES;
@@ -1648,7 +1702,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "${MEDICO_BUNDLE_IDENTIFIER}";
 				PRODUCT_NAME = "$(MEDICO_BUNDLE_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Medico Dev Distribution";

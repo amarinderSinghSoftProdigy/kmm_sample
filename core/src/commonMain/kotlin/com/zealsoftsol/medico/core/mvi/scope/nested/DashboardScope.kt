@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
@@ -18,17 +19,21 @@ import com.zealsoftsol.medico.data.UserType
 class DashboardScope private constructor(
     val userType: UserType,
     val unreadNotifications: ReadOnlyDataSource<Int>,
+    val cartItemsCount: ReadOnlyDataSource<Int>,
     val dashboard: ReadOnlyDataSource<DashboardData?>,
 ) : Scope.Child.TabBar() {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
+        TabBarInfo.NoIconTitle("", unreadNotifications, cartItemsCount)
 
     val sections = when (userType) {
         UserType.STOCKIST -> listOf(
 //            Section.NOTIFICATIONS,
 //            Section.NEW_ORDERS,
-            Section.STOCKIST_CONNECT,
             Section.RETAILER_COUNT,
             Section.HOSPITAL_COUNT,
-            Section.SEASON_BOY_COUNT
+            Section.STOCKIST_CONNECT,
+//            Section.SEASON_BOY_COUNT
         )
         UserType.RETAILER, UserType.HOSPITAL -> listOf(
 //            Section.NOTIFICATIONS,
@@ -52,21 +57,48 @@ class DashboardScope private constructor(
         EventCollector.sendEvent(Event.Action.Auth.UpdateDashboard)
     }
 
+    /**
+     * Move to offers screens
+     */
+    fun moveToOffersScreen(){
+        EventCollector.sendEvent(Event.Transition.Offers)
+    }
+
+    /**
+     * Move to Inventory screens
+     */
+    fun moveToInventoryScreen(){
+        EventCollector.sendEvent(Event.Transition.Inventory)
+    }
+
+    /**
+     * Opens search screen with params required for search based on brand
+     * @param searchTerm Search term for the brand
+     * @param field Which field to search (for eg - manufacturer)
+     */
+    fun startBrandSearch(searchTerm: String, field: String) {
+        val autoComplete = AutoComplete(
+            query = field, details = "in Manufacturers",
+            suggestion = searchTerm
+        )
+        EventCollector.sendEvent(Event.Transition.Search(autoComplete))
+    }
+
     fun goToNotifications() = EventCollector.sendEvent(Event.Transition.Notifications)
 
     fun goToOrders() =
-        EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.NewOrders else Event.Transition.Orders)
+        EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.PoOrdersAndHistory else Event.Transition.Orders)
 
     fun selectSection(section: Section) = section.event?.let(EventCollector::sendEvent) ?: false
 
     enum class Section(val stringId: String, val event: Event?) {
-        STOCKIST_COUNT("stockists", null),
+        STOCKIST_COUNT("stockists", Event.Transition.Management(UserType.STOCKIST)),
         STOCKIST_ADD("add_stockist", Event.Transition.Management(UserType.STOCKIST)),
-        STOCKIST_CONNECT("connect_stockist", Event.Transition.Management(UserType.STOCKIST)),
+        STOCKIST_CONNECT("stockists", Event.Transition.Management(UserType.STOCKIST)),
         RETAILER_COUNT("retailers", Event.Transition.Management(UserType.RETAILER)),
         RETAILER_ADD("add_retailer", Event.Transition.Management(UserType.RETAILER)),
-        HOSPITAL_COUNT("hospitals", Event.Transition.Management(UserType.HOSPITAL)),
-        SEASON_BOY_COUNT("season_boys", Event.Transition.Management(UserType.SEASON_BOY));
+        HOSPITAL_COUNT("hospitals", Event.Transition.Management(UserType.HOSPITAL));
+//        SEASON_BOY_COUNT("season_boys", Event.Transition.Management(UserType.SEASON_BOY));
 
 //        NOTIFICATIONS("notifications", Event.Transition.Notifications),
 //        ORDERS("orders", Event.Transition.Orders),
@@ -84,8 +116,16 @@ class DashboardScope private constructor(
             unreadNotifications: ReadOnlyDataSource<Int>,
             cartItemsCount: ReadOnlyDataSource<Int>,
         ) = TabBarScope(
-            childScope = DashboardScope(user.type, unreadNotifications, dashboardData),
-            initialTabBarInfo = TabBarInfo.Search(cartItemsCount = cartItemsCount),
+            childScope = DashboardScope(
+                user.type,
+                unreadNotifications = unreadNotifications,
+                cartItemsCount = cartItemsCount,
+                dashboard = dashboardData
+            ),
+            initialTabBarInfo = TabBarInfo.Search(
+                notificationItemsCount = unreadNotifications,
+                cartItemsCount = cartItemsCount
+            ),
             initialNavigationSection = NavigationSection(
                 userDataSource,
                 NavigationOption.default(user.type),

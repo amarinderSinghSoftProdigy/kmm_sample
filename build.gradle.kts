@@ -21,8 +21,8 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven("https://kotlin.bintray.com/kotlinx/")
         maven(url = "https://jitpack.io")
+        maven("https://kotlin.bintray.com/kotlinx/")
     }
 }
 

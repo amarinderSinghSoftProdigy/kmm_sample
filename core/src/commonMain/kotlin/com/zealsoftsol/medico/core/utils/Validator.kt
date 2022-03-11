@@ -11,6 +11,14 @@ object Validator {
         fun isPanValid(pan: String) = PAN_REGEX.matches(pan)
 
         fun isGstinValid(gstin: String) = GSTIN_REGEX.matches(gstin)
+
+        fun isFoodLicenseValid(foodLicense: Boolean, foodLicenseNumber: String): Boolean {
+            return if (foodLicense) {
+                foodLicenseNumber.isNotEmpty() && foodLicenseNumber.length == 14
+            } else {
+                true
+            }
+        }
     }
 
     object Aadhaar {

@@ -43,9 +43,9 @@ struct ViewOrderScreen: View {
                 CartOrderTotalPriceView(price: price)
             }
             
-            if scope.canEdit {
-                self.actionsView
-            }
+//            if scope.canEdit {
+//                self.actionsView
+//            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 24)
@@ -152,7 +152,7 @@ struct OrderEntriesView: View {
                     ForEach(entries, id: \.self) { entry in
                         EntryView(entry: entry,
                                   selected: checkedEntries?.contains(entry) == true,
-                                  canEdit: selectableOrderEntry.canEdit) {
+                                  canEdit: false) {
                             selectableOrderEntry.toggleCheck(entry: entry)
                         }
                         .onTapGesture {
@@ -269,7 +269,7 @@ struct CustomerView: View {
 
                             Spacer()
 
-                            Text(b2bData.gstin)
+                            Text(b2bData.gstin ?? "")
                         }
 
                         HStack {

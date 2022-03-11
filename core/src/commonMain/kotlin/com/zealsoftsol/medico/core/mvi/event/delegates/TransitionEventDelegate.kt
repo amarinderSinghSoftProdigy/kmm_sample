@@ -6,9 +6,15 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreAddUserScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OrdersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
@@ -16,6 +22,10 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.BatchesScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.repository.CartRepo
 import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -24,7 +34,7 @@ import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.data.OrderType
+import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
@@ -49,7 +59,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                 is Event.Transition.SignUp -> setScope(SignUpScope.SelectUserType.get())
-                is Event.Transition.Search -> setScope(SearchScope())
+                is Event.Transition.Search -> setScope(SearchScope(event.autoComplete))
                 is Event.Transition.Dashboard -> {
                     dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                     setScope(
@@ -57,8 +67,8 @@ internal class TransitionEventDelegate(
                             userRepo.requireUser(),
                             userRepo.getUserDataSource(),
                             dashboardData = userRepo.getDashboardDataSource(),
-                            notificationRepo.getUnreadMessagesDataSource(),
-                            cartRepo.getEntriesCountDataSource(),
+                            unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                            cartItemsCount = cartRepo.getEntriesCountDataSource(),
                         )
                     )
                 }
@@ -66,10 +76,13 @@ internal class TransitionEventDelegate(
                     val user = userRepo.requireUser()
                     setScope(
                         SettingsScope.List(
+                            notificationRepo.getUnreadMessagesDataSource(),
                             if (user.type == UserType.SEASON_BOY)
                                 SettingsScope.List.Section.simple(user.isActivated)
                             else
-                                SettingsScope.List.Section.all(user.isActivated)
+                                SettingsScope.List.Section.all(user.isActivated),
+                            userRepo.requireUser(),
+                            event.showBackIcon,
                         )
                     )
                 }
@@ -80,10 +93,16 @@ internal class TransitionEventDelegate(
                     PasswordScope.VerifyCurrent()
                 )
                 is Event.Transition.Address -> setScope(
-                    SettingsScope.Address(userRepo.requireUser().addressData)
+                    SettingsScope.Address(
+                        userRepo.requireUser().addressData,
+                        userRepo.requireUser()
+                    )
                 )
                 is Event.Transition.GstinDetails -> setScope(
-                    SettingsScope.GstinDetails(userRepo.requireUser().details as User.Details.DrugLicense)
+                    SettingsScope.GstinDetails(
+                        userRepo.requireUser().details as User.Details.DrugLicense,
+                        userRepo.requireUser()
+                    )
                 )
                 is Event.Transition.Management -> setScope(
                     when (event.manageUserType) {
@@ -124,27 +143,82 @@ internal class TransitionEventDelegate(
                     NotificationScope.All()
                 )
                 is Event.Transition.Stores -> setScope(
-                    StoresScope.All()
+                    StoresScope.All(
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
+                    )
                 )
                 is Event.Transition.Cart -> setScope(
                     CartScope(
                         items = ReadOnlyDataSource(cartRepo.entries),
                         total = ReadOnlyDataSource(cartRepo.total),
                         isContinueEnabled = ReadOnlyDataSource(cartRepo.isContinueEnabled),
+                        unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
+                        cartCount = cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.Orders -> setScope(
-                    OrdersScope(OrderType.ORDER)
+                    OrdersScope(
+                        listOf(OrdersScope.Tab.ORDERS),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
-                is Event.Transition.NewOrders -> setScope(
-                    OrdersScope(OrderType.PURCHASE_ORDER)
+                is Event.Transition.PoOrdersAndHistory -> setScope(
+                    OrdersScope(
+                        listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
-                is Event.Transition.OrdersHistory -> setScope(
-                    OrdersScope(OrderType.HISTORY)
+                is Event.Transition.MyInvoices -> setScope(
+                    InvoicesScope(
+                        isPoInvoice = false,
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
                 )
-                is Event.Transition.Invoices -> setScope(
-                    InvoicesScope()
+                is Event.Transition.Offers -> setScope(
+                    OffersScope.ViewOffers("deal_offer")
                 )
+                is Event.Transition.CreateOffers -> setScope(
+                    OffersScope.CreateOffer("create_offer")
+                )
+                is Event.Transition.PoInvoices -> setScope(
+                    InvoicesScope(
+                        isPoInvoice = true,
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
+                )
+                is Event.Transition.InStore -> setScope(
+                    InStoreSellerScope(notificationRepo.getUnreadMessagesDataSource())
+                )
+                is Event.Transition.InStoreUsers -> setScope(
+                    InStoreUsersScope()
+                )
+                is Event.Transition.InStoreAddUser -> setScope(
+                    InStoreAddUserScope()
+                )
+                is Event.Transition.InStoreCart -> setScope(
+                    InStoreCartScope(event.unitcode, event.name, event.address, event.phoneNumber)
+                )
+                is Event.Transition.WhatsappPreference -> setScope(
+                    WhatsappPreferenceScope("whatsapp_preference")
+                )
+                is Event.Transition.Inventory -> setScope(InventoryScope())
+                is Event.Transition.Menu -> setScope(
+                    MenuScope(
+                        userRepo.requireUser(),
+                        notificationRepo.getUnreadMessagesDataSource()
+                    )
+                )
+                is Event.Transition.Batches -> setScope(
+                    BatchesScope(
+                        event.spid,
+                        event.batchData,
+                        event.selectedBatchData,
+                        event.requiredQty,
+                        ProductsData()
+                    )
+                )
+               is Event.Transition.QrCode -> setScope(QrCodeScope())
             }
         }
     }

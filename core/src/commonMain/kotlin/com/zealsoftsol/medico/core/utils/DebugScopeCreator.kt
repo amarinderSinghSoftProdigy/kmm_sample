@@ -202,7 +202,7 @@ object DebugScopeCreator {
             details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
                 "",
                 ""
-            ) else User.Details.DrugLicense("", "", "", "", "url"),
+            ) else User.Details.DrugLicense("", "", "","", "", "url"),
             isActivated = false,
             isDocumentUploaded = isDocumentUploaded
         )
@@ -228,7 +228,7 @@ object DebugScopeCreator {
     }
 
     fun searchQueryScreen() {
-        nav.setScope(SearchScope())
+        nav.setScope(SearchScope(null))
     }
 
     fun productScreen() {
@@ -251,12 +251,16 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        Expiry(0, "", "#FF00FF"),
+                        Expiry(0, "", "#FF00FF",""),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),
                     standardUnit = "1x20",
                     sellerInfo = null,
+                    drugFormName = "",
+                    vendorMnfrId = "MNFR000307",
+                    vendorProductId = "VD000307",
+                    imageCode = "VD000307",
                 ),
                 alternativeBrands = listOf(
                     AlternateProductData(
@@ -269,6 +273,7 @@ object DebugScopeCreator {
                     )
                 ),
                 isDetailsOpened = DataSource(false),
+                variants = emptyList(),
             )
         )
     }
@@ -286,7 +291,7 @@ private inline val testUser
         "000",
         "unitcode",
         UserType.STOCKIST,
-        User.Details.DrugLicense("", "", "", "", "url"),
+        User.Details.DrugLicense("", "", "","", "", "url"),
         true,
         true,
         AddressData("", "", "", "", 0.0, 0.0, "", 0, "", ""),

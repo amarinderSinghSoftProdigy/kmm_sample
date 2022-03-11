@@ -5,20 +5,28 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.interop.Time
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.delegates.AuthEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.BatchesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.CartEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.EventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.HelpEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InStoreEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.InventoryEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.InvoicesEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ManagementEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.NotificationEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OffersEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.OrdersHsnEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.OtpEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.PasswordEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.ProductEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.ProfileEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.QrCodeEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.RegistrationEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.SearchEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.StoresEventDelegate
 import com.zealsoftsol.medico.core.mvi.event.delegates.TransitionEventDelegate
+import com.zealsoftsol.medico.core.mvi.event.delegates.WhatsappEventDelegate
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
@@ -45,7 +53,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
 
-internal class EventCollector(
+class EventCollector(
     navigator: Navigator,
     searchNetworkScope: NetworkScope.Search,
     productNetworkScope: NetworkScope.Product,
@@ -53,6 +61,12 @@ internal class EventCollector(
     storesNetworkScope: NetworkScope.Stores,
     helpNetworkScope: NetworkScope.Help,
     ordersNetworkScope: NetworkScope.Orders,
+    inStoreNetworkScope: NetworkScope.InStore,
+    inventoryScope: NetworkScope.InventoryStore,
+    offersNetworkScope: NetworkScope.OffersStore,
+    orderHsnScope: NetworkScope.OrderHsnEditStore,
+    batchesScope: NetworkScope.BatchesStore,
+    qrCodeScope: NetworkScope.QrCodeStore,
     private val notificationRepo: NotificationRepo,
     private val userRepo: UserRepo,
     private val cartRepo: CartRepo,
@@ -98,6 +112,7 @@ internal class EventCollector(
             navigator,
             userRepo,
             cartRepo,
+            notificationRepo,
             storesNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),
@@ -116,12 +131,38 @@ internal class EventCollector(
             ordersNetworkScope,
             LoadHelper(navigator, loadHelperScope),
         ),
+        Event.Action.OrderHsn::class to OrdersHsnEventDelegate(
+            navigator,
+            userRepo,
+            orderHsnScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
         Event.Action.Invoices::class to InvoicesEventDelegate(
             navigator,
             userRepo,
             ordersNetworkScope,
             LoadHelper(navigator, loadHelperScope),
-        )
+        ),
+        Event.Action.InStore::class to InStoreEventDelegate(
+            navigator,
+            userRepo,
+            inStoreNetworkScope,
+            LoadHelper(navigator, loadHelperScope),
+        ),
+        Event.Action.WhatsAppPreference::class to WhatsappEventDelegate(navigator, userRepo),
+        Event.Action.Inventory::class to InventoryEventDelegate(
+            navigator,
+            userRepo,
+            inventoryScope
+        ),
+        Event.Action.Profile::class to ProfileEventDelegate(navigator, userRepo),
+        Event.Action.Offers::class to OffersEventDelegate(
+            navigator,
+            userRepo,
+            offersNetworkScope
+        ),
+        Event.Action.Batches::class to BatchesEventDelegate(navigator, userRepo, batchesScope),
+        Event.Action.QrCode::class to QrCodeEventDelegate(navigator, qrCodeScope)
     )
 
     init {
@@ -134,7 +175,7 @@ internal class EventCollector(
         scope.launch {
             while (isActive) {
                 delay(60_000)
-                if (Time.now - lastActionTime > INACTIVITY_THRESHOLD_MS) {
+                if (Time.now - lastActionTime > userRepo.configFlow.value.sessionTimeout) {
                     sendEvent(Event.Action.Auth.LogOut(notifyServer = true))
                 }
             }
@@ -167,14 +208,15 @@ internal class EventCollector(
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
             }
             GlobalScope.launch(compatDispatcher) {
+                userRepo.loadConfig()
+            }
+            GlobalScope.launch(compatDispatcher) {
                 notificationRepo.loadUnreadMessagesFromServer()
             }
         }
     }
 
     companion object {
-        private const val INACTIVITY_THRESHOLD_MS = 1000 * 60 * 30
-
         private val events = MutableSharedFlow<Event>(1, 0, BufferOverflow.DROP_OLDEST)
 
         fun sendEvent(event: Event) = events.tryEmit(event)

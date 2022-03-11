@@ -46,7 +46,7 @@ interface AddressComponent : Scopable {
     }
 
     fun changeLandmark(landmark: String) {
-        if (landmark.length > 15) return
+        if (landmark.length > 30) return
         trimInput(landmark, registration.value.landmark) {
             registration.value = registration.value.copy(landmark = it)
             checkData()
@@ -81,6 +81,7 @@ interface TraderDetailsComponent : Scopable {
                         panNumber
                     ))
                     && drugLicenseNo1.isNotEmpty() && drugLicenseNo2.isNotEmpty()
+                    && Validator.TraderDetails.isFoodLicenseValid(hasFoodLicense, foodLicenseNo)
         }
         onDataValid(isValid)
     }
@@ -126,5 +127,23 @@ interface TraderDetailsComponent : Scopable {
                 checkData()
             }
         }
+    }
+
+    fun changeFoodLicense(foodLicenseNo: String) {
+        if (foodLicenseNo.length <= 14) {
+            trimInput(foodLicenseNo, registration.value.foodLicenseNo) {
+                registration.value = registration.value.copy(foodLicenseNo = it)
+                checkData()
+            }
+        }
+    }
+
+    fun checkFoodLicense(foodLicenseNo: String): Boolean {
+        return foodLicenseNo.length == 14 && foodLicenseNo.isNotEmpty()
+    }
+
+    fun changeFoodLicenseStatus(boolean: Boolean) {
+        registration.value = registration.value.copy(hasFoodLicense = boolean)
+        checkData()
     }
 }

@@ -1,5 +1,10 @@
 package com.zealsoftsol.medico.screens.common
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -8,6 +13,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.IndicationInstance
 import androidx.compose.foundation.LocalIndication
@@ -32,19 +38,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -53,6 +65,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusEvent
@@ -60,10 +73,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -73,27 +89,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
+import java.io.File
 import java.util.Locale
 
 @Composable
 fun TabBar(
-    color: Color = MaterialTheme.colors.secondary,
+    color: Color = Color.White,
+    isNewDesign: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-            .background(color),
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        content()
+    Column() {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(if (!isNewDesign) color else ConstColors.newDesignGray),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            content()
+        }
+        Divider(color = ConstColors.lightBlue.copy(alpha = 0.5f), thickness = (0.7).dp)
     }
 }
 
@@ -122,6 +145,7 @@ fun MedicoButton(
     modifier: Modifier = Modifier,
     text: String,
     isEnabled: Boolean,
+    txtColor: Color = MaterialTheme.colors.background,
     color: Color = ConstColors.yellow,
     contentColor: Color = MaterialTheme.colors.onPrimary,
     border: BorderStroke? = null,
@@ -151,6 +175,7 @@ fun MedicoButton(
             fontSize = textSize,
             fontWeight = FontWeight.W700,
             modifier = Modifier.align(Alignment.CenterVertically),
+            color = txtColor
         )
     }
 }
@@ -316,6 +341,7 @@ fun Scope.Host.showErrorAlert() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun <T : WithNotifications> T.showNotificationAlert() {
     val notification = notifications.flow.collectAsState()
@@ -500,6 +526,37 @@ fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun DataWithLabel(label: Int, data: String, modifier: Modifier = Modifier, size: TextUnit) {
+    Row(modifier = modifier) {
+        Text(
+            text = "${stringResource(id = label)}:",
+            fontSize = size,
+            color = ConstColors.gray,
+        )
+        Space(4.dp)
+        Text(
+            text = data,
+            fontSize = size,
+            fontWeight = FontWeight.W600,
+            color = MaterialTheme.colors.background,
+        )
+    }
+}
+
+@Composable
+fun SingleTextLabel(
+    data: String,
+    color: Color = MaterialTheme.colors.background
+) {
+    Text(
+        text = data,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W600,
+        color = color,
+    )
+}
+
+@Composable
 fun Dropdown(
     rememberChooseKey: Any?,
     value: String?,
@@ -570,6 +627,9 @@ fun EditField(
     isError: Boolean = false,
     formattingRule: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    showThinDivider: Boolean = false,
+    textStyle: TextStyle? = null,
+    keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val color = when {
         isError -> ConstColors.red
@@ -592,6 +652,13 @@ fun EditField(
                     if (qty.split(".").lastOrNull() == "0") qty.split(".").first() else qty
                 )
             }
+
+            val style = textStyle ?: TextStyle(
+                color = color,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                textAlign = TextAlign.End,
+            )
 
             BasicTextField(
                 modifier = Modifier
@@ -631,21 +698,296 @@ fun EditField(
                 singleLine = true,
                 readOnly = !isEnabled,
                 enabled = isEnabled,
-                textStyle = TextStyle(
-                    color = color,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W700,
-                    textAlign = TextAlign.End,
-                )
+                textStyle = style
             )
         }
         Space(4.dp)
-        Canvas(
-            modifier = Modifier
-                .height(1.5.dp)
-                .fillMaxWidth()
-        ) {
-            drawRect(color)
+        if (showThinDivider) {
+            Divider()
+        } else {
+            Canvas(
+                modifier = Modifier
+                    .height((1.5).dp)
+                    .fillMaxWidth()
+            ) {
+                drawRect(color)
+            }
         }
     }
+}
+
+@Composable
+fun TextLabel(
+    value: String,
+    src: Int = 0,
+    labelShow: Int = 0
+) {
+    if (value.isNotEmpty())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                if (src != 0) {
+                    Image(
+                        painter = painterResource(src),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Space(dp = 8.dp)
+                }
+
+                val isPasswordHidden = remember { mutableStateOf(true) }
+
+                val textValue = if (src == R.drawable.ic_verify_password) {
+                    if (!isPasswordHidden.value) {
+                        value
+                    } else {
+                        var check = ""
+                        repeat(value.length) {
+                            check = "$check*"
+                        }
+                        check
+                    }
+                } else {
+                    value
+                }
+
+
+
+                Text(
+                    text = textValue,
+                    fontSize = 14.sp,
+                    color = ConstColors.gray,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.weight(0.7f)
+                )
+
+                if (src == R.drawable.ic_verify_password) {
+                    Icon(
+                        imageVector = Icons.Default.RemoveRedEye,
+                        contentDescription = null,
+                        tint = if (isPasswordHidden.value) ConstColors.gray else ConstColors.lightBlue,
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clickable(indication = rememberRipple(radius = 15.dp)) {
+                                isPasswordHidden.value = !isPasswordHidden.value
+                            }
+                            .padding(12.dp),
+                    )
+                }
+
+                val label: String = when (labelShow) {
+                    1 -> {
+                        stringResource(id = R.string.gstin)
+                    }
+                    2 -> {
+                        stringResource(id = R.string.pan)
+                    }
+                    else -> {
+                        ""
+                    }
+                }
+                if (value.isNotEmpty()) {
+                    Text(
+                        text = label,
+                        fontSize = 14.sp,
+                        color = ConstColors.gray,
+                        textAlign = TextAlign.Start,
+                    )
+                    Space(dp = 4.dp)
+                }
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
+            Space(4.dp)
+            Divider(thickness = 0.5.dp)
+            Space(16.dp)
+        }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ImageLabel(
+    value: String,
+    onClick: () -> Unit
+) {
+    if (value.isNotEmpty())
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Surface(onClick = onClick, shape = MaterialTheme.shapes.large) {
+                    val cacheFile = File(value)
+                    CoilImage(
+                        src = cacheFile,
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(80.dp),
+                        onError = { Placeholder(R.drawable.ic_img_placeholder) },
+                        onLoading = { Placeholder(R.drawable.ic_img_placeholder) },
+                        isCrossFadeEnabled = false
+                    )
+                }
+                Image(
+                    painter = painterResource(id = R.drawable.ic_verified),
+                    contentDescription = null,
+                    modifier = Modifier.size(15.dp)
+                )
+            }
+            Space(16.dp)
+        }
+}
+
+/**
+ * @param scope current scope to get the current and updated state of views
+ */
+
+@Composable
+fun ShowAlert(message: String, onClick: () -> Unit) {
+    MaterialTheme {
+
+        AlertDialog(
+            onDismissRequest = onClick,
+            text = {
+                Text(message)
+            },
+            confirmButton = {
+                Button(
+                    onClick = onClick
+                ) {
+                    Text(stringResource(id = R.string.okay))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ShowToastGlobal(msg: String) {
+    val context = LocalContext.current
+    Column(
+        content = {
+            Toast.makeText(
+                context,
+                msg,
+                Toast.LENGTH_SHORT
+            ).show()
+        },
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+}
+
+fun checkIfPermissionGranted(context: Context, permission: String): Boolean {
+    return (ContextCompat.checkSelfPermission(context, permission)
+            == PackageManager.PERMISSION_GRANTED)
+}
+
+fun shouldShowPermissionRationale(context: Context, permission: String): Boolean {
+    val activity = context as Activity?
+    if (activity == null)
+        Log.d("Permission", "Activity is null")
+
+    return ActivityCompat.shouldShowRequestPermissionRationale(
+        activity!!,
+        permission
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun EditText(
+    canEdit: Boolean,
+    value: String,
+    onChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val textStyle = TextStyle(
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.End,
+    )
+
+    var originalValue = value
+
+    if (originalValue == "0.0")
+        originalValue = "0"
+
+    val initSelectionIndex =
+        originalValue.length.takeIf { it <= originalValue.length } ?: originalValue.length
+
+    val textFieldValueState = TextFieldValue(
+        text = originalValue,
+        selection = TextRange(initSelectionIndex)
+    )
+
+    BasicTextField(
+        modifier = modifier
+            .fillMaxWidth(),
+        value = textFieldValueState,
+        onValueChange = {
+            if (it.text.toDoubleOrNull() != null) {
+                if (it.text.length > 1 && (it.text.startsWith("0") && !it.text.contains("."))) {
+                    onChange(it.text.substring(1))
+                } else {
+                    onChange(it.text)
+                }
+            } else {
+                onChange("0")
+            }
+        },
+        maxLines = 1,
+        singleLine = true,
+        keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+        enabled = canEdit,
+        textStyle = textStyle,
+    )
+}
+
+/**
+ * round t0 nearest decimal of 5 (for eg 1.5 -> 1.5, 1.3 -> 1.0 and 1.7 -> 2.0)
+ */
+fun roundToNearestDecimalOf5(text: String): String {
+    val split = text.replace(",", ".").split(".")
+    val beforeDot = split[0]
+    val afterDot = split.getOrNull(1)
+    var modBefore =
+        beforeDot.toIntOrNull() ?: 0
+    val modAfter = when (afterDot?.length) {
+        0 -> "."
+        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+            1
+        ).toIntOrNull()) {
+            0 -> ".0"
+            in 1..4 -> ".0"
+            5 -> ".5"
+            in 6..9 -> {
+                modBefore++
+                ".0"
+            }
+            null -> ""
+            else -> throw UnsupportedOperationException(
+                "cant be that"
+            )
+        }
+        null -> ""
+        else -> throw UnsupportedOperationException(
+            "cant be that"
+        )
+    }
+
+    return "$modBefore$modAfter"
 }

@@ -316,6 +316,7 @@ struct BuyProductScreen: View {
                                    initialQuantity: quantity,
                                    initialFreeQuantity: freeQuantity,
                                    maxQuantity: Double(info.stockInfo?.availableQty ?? .max),
+                                   promotionData: info.promotionData,
                                    onQuantitySelect: onQuantitySelect,
                                    onViewTap: { onViewTap(info) })
                 )
@@ -421,17 +422,17 @@ struct BuyProductScreen: View {
         var body: some View {
             VStack(spacing: 16) {
                 if let quantities = self.quantities.value as? [DataSellerInfo: KotlinPair<KotlinDouble, KotlinDouble>] {
-                    QuoteView(localizationKey: "quote_existing_stockist",
-                              isSelected: self.selectedOption.value == .existingStockist,
-                              needsSelectedStockist: true,
-                              isSeasonBoy: scope.isSeasonBoy,
-                              availableStockists: availableStockists.value as? [DataSellerInfo],
-                              chosenSeller: selectedStockist.value?.tradeName,
-                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
-                              quantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.first ?? 0)),
-                              freeQuantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.second ?? 0)),
-                              onQuantitySelect: handleQuantitySelect,
-                              onToggle: { scope.toggleOption(option: .existingStockist) })
+//                    QuoteView(localizationKey: "quote_existing_stockist",
+//                              isSelected: self.selectedOption.value == .existingStockist,
+//                              needsSelectedStockist: true,
+//                              isSeasonBoy: scope.isSeasonBoy,
+//                              availableStockists: availableStockists.value as? [DataSellerInfo],
+//                              chosenSeller: selectedStockist.value?.tradeName,
+//                              onSellerPickerSelect: { scope.chooseSeller(sellerInfo: $0) },
+//                              quantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.first ?? 0)),
+//                              freeQuantity: Double(truncating: selectedStockist.value == nil ? 0 : (quantities[selectedStockist.value!]?.second ?? 0)),
+//                              onQuantitySelect: handleQuantitySelect,
+//                              onToggle: { scope.toggleOption(option: .existingStockist) })
                     
                     QuoteView(localizationKey: "quote_any_stockist",
                               isSelected: selectedOption.value == .anyone,
@@ -595,7 +596,10 @@ struct BaseSellerView<Header: View>: ViewModifier {
     
     let header: Header
     
+    let promotionData: DataPromotionData?
+    
     private let horizontalPadding: CGFloat
+    private let verticalPadding: CGFloat
     private let standaloneButtonsHeight: CGFloat
     private let buttonsHeight: CGFloat = 38
     
@@ -616,7 +620,23 @@ struct BaseSellerView<Header: View>: ViewModifier {
     private let isQuoted: Bool
     
     func body(content: Content) -> some View {
+                
         VStack {
+            if let promotionData = promotionData {
+            HStack {
+                    Spacer()
+                    Text(promotionData.displayLabel)
+                        .medicoText(textWeight: .bold, fontSize: 12, color: .white, multilineTextAlignment: .center)
+                        .padding(.horizontal, 25)
+                        .padding(.vertical, 2)
+                        .background(
+                            Rectangle()
+                                .trim(from: 0.08, to: 0.9)
+                                .fill(AppColor.red.color)
+                        )
+                }
+                .padding(.top, -10)
+            }
             Group {
                 header
                 
@@ -645,18 +665,16 @@ struct BaseSellerView<Header: View>: ViewModifier {
         .onReceive(Just(initialQuantity)) {
             if self.mode != .confirmQuantity {
                 self.quantity = $0
-                
                 updateMode()
             }
         }
         .onReceive(Just(initialFreeQuantity)) {
             if self.mode != .confirmQuantity {
                 self.freeQuantity = $0
-                
                 updateMode()
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, verticalPadding)
         .background(appColor: .white)
         .onTapGesture {
             if self.mode != .confirmQuantity {
@@ -671,6 +689,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
     init(initialMode: Mode?,
          header: Header,
          horizontalPadding: CGFloat = 16,
+         verticalPadding: CGFloat = 8,
          buttonsHeight: CGFloat = 38,
          showsDivider: Bool = true,
          addActionEnabled: Bool = true,
@@ -679,6 +698,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
          initialQuantity: Double,
          initialFreeQuantity: Double,
          maxQuantity: Double,
+         promotionData: DataPromotionData? = nil,
          onQuantitySelect: @escaping (Double?, Double?) -> Void,
          onViewTap: (() -> Void)? = nil) {
         let initialMode = initialMode ?? (initialQuantity > 0 || initialFreeQuantity > 0 ? .update : .addToCart)
@@ -686,6 +706,7 @@ struct BaseSellerView<Header: View>: ViewModifier {
         
         self.header = header
         self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
         self.standaloneButtonsHeight = buttonsHeight
         
         self.showsDivider = showsDivider
@@ -703,9 +724,11 @@ struct BaseSellerView<Header: View>: ViewModifier {
         
         self.onQuantitySelect = onQuantitySelect
         self.onViewTap = onViewTap
+        self.promotionData = promotionData
     }
     
     private var bottomPanel: some View {
+        
         Group {
             switch mode {
             case .addToCart, .select:

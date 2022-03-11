@@ -90,7 +90,24 @@ struct ProductDetails: View {
                     }
                 }
             }
-            
+            LocalizedText(localizationKey: "variants",
+                          textWeight: .medium,
+                          fontSize: 15,
+                          color: .darkBlue,
+                          multilineTextAlignment: .leading)
+                .padding(.top, 12)
+            PickerSelector(placeholder: "select_stockists",
+                           chosenElement: scope.product.name,
+                           data: scope.variants.map { $0.name },
+                           optionsHeight: 40,
+                           backgroundColor: .white,
+                           chevronColor: .lightBlue) { name in
+                if let variant = scope.variants.first(where: { $0.name == name }) {
+                    self.scope.selectVariantProduct(variant: variant)
+                }
+            }
+            .padding(.top, 4)
+            .padding(.bottom, 12)
             switch self.scope.product.buyingOption {
             case DataBuyingOption.buy:
                 MedicoButton(localizedStringKey: "add_to_cart") {

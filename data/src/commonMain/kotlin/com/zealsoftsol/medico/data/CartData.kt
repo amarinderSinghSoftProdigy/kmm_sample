@@ -85,6 +85,21 @@ data class CartItem(
     val seasonBoyRetailer: SeasonBoyRetailer? = null,
     @SerialName("quoteMessage")
     val quotedData: QuotedData? = null,
+    val isPromotionActive: Boolean = false,
+    val promotionData: PromotionsData? = null,
+    val imageCode: String
+)
+
+@Serializable
+data class PromotionsData(
+    val type: String,
+    val code: String,
+    val buy: FormattedData<Double>,
+    val free: FormattedData<Double>,
+    val productDiscount: FormattedData<Double>,
+    val displayLabel: String,
+    val offerPrice: FormattedData<Double>,
+    val validity: String
 )
 
 @Serializable
