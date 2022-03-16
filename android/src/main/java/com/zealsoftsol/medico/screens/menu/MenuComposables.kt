@@ -83,6 +83,14 @@ fun MenuScreen(scope: MenuScope) {
                 scope = scope
             )
 
+            Separator(thickness = 0.5f)
+            AccountContentItem(
+                route = Event.Transition.IOC,
+                drawableResourceId = R.drawable.ic_menu_notifications,
+                stringResourceId = R.string.create_debt,
+                scope = scope
+            )
+
             //display rest of the user menu based on user type
             if (userType == UserType.STOCKIST) {
                 StockistMenu(scope)

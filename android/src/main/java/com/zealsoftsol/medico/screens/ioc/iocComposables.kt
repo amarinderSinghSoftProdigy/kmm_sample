@@ -1,0 +1,471 @@
+package com.zealsoftsol.medico.screens.ioc
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.zealsoftsol.medico.ConstColors
+import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.InputField
+import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.Space
+import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.search.BasicSearchBar
+import com.zealsoftsol.medico.screens.search.SearchBarEnd
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+fun IocScreen(scope: IocScope) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        when (scope) {
+            is IocScope.IOCListing -> IOCListing(scope)
+            is IocScope.IOCCreate -> IocCreate(scope)
+        }
+    }
+}
+
+/**
+ * items to be displayed in autocomplete dropdown list
+ */
+@Composable
+private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
+    val regex = "(?i)$input".toRegex()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 12.dp, horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            BoxWithConstraints {
+                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(autoComplete.suggestion)
+                            regex.find(autoComplete.suggestion)?.let {
+                                addStyle(
+                                    SpanStyle(fontWeight = FontWeight.W700),
+                                    it.range.first,
+                                    it.range.last + 1,
+                                )
+                            }
+                        },
+                        color = MaterialTheme.colors.background,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W400,
+                    )
+                    if (autoComplete.details.isNotEmpty()) {
+                        Text(
+                            text = autoComplete.details,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colors.background,
+                            fontWeight = FontWeight.W400,
+                        )
+                    }
+                }
+            }
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                tint = ConstColors.lightBlue,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Divider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = Color(0xFFE6F0F7),
+        )
+    }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+private fun IOCListing(scope: IocScope.IOCListing) {
+    val search = scope.searchText.flow.collectAsState()
+    Box {
+        Column {
+            Space(16.dp)
+            BasicSearchBar(
+                input = search.value,
+                hint = R.string.search,
+                searchBarEnd = SearchBarEnd.Eraser,
+                elevation = 0.dp,
+                horizontalPadding = 16.dp,
+                isSearchFocused = false,
+                onSearch = { v, _ -> scope.search(v) },
+                onIconClick = {
+                    scope.search("")
+                },
+                backgroundColor = ConstColors.ltgray
+            )
+
+            val items = scope.items.flow.collectAsState()
+            if (items.value.isEmpty() && scope.items.updateCount > 0) {
+                NoRecords(
+                    icon = R.drawable.ic_missing_stores,
+                    text = R.string.missing_stores,
+                    onHome = { scope.goHome() },
+                )
+            } else {
+                LazyColumn(
+                    state = rememberLazyListState(),
+                    contentPadding = PaddingValues(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                ) {
+                    itemsIndexed(
+                        items = items.value,
+                        itemContent = { index, item ->
+                            StoreItem(item, scope) { scope.selectItem("Retailer 301") }
+                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                                scope.loadItems()
+                            }
+                        },
+                    )
+                }
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxWidth()
+                .background(color = ConstColors.lightBlue.copy(alpha = 0.1f))
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+
+                MedicoRoundButton(
+                    /*modifier = Modifier.width(150.dp),*/
+                    text = stringResource(id = R.string.continue_),
+                    isEnabled = true,
+                    elevation = null,
+                    onClick = { },
+                    color = ConstColors.lightBlue,
+                    contentColor = Color.White,
+                    wrapTextSize = true,)
+            }
+        }
+    }
+
+}
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+private fun StoreItem(
+    store: String,
+    scope: IocScope.IOCListing,
+    onClick: () -> Unit,
+) {
+    val items = ArrayList<String>()
+    items.add("")
+    val expanded = remember { mutableStateOf(false) }
+
+    Column {
+
+
+        FoldableItem(
+            expanded = expanded.value,
+            headerBackground = Color.White,
+            headerBorder = BorderStroke(0.dp, Color.Transparent),
+            headerMinHeight = 50.dp,
+            header = { _ ->
+                Surface(
+                    shape = RoundedCornerShape(5.dp),
+                    elevation = 5.dp,
+                    color = Color.White,
+                ) {
+                    Row(
+
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp, bottom = 12.dp)
+                    ) {
+                        Row {
+                            Space(12.dp)
+                            Checkbox(
+                                checked = false,
+                                colors = CheckboxDefaults.colors(checkedColor = ConstColors.green),
+                                onCheckedChange = { },
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                            )
+                            Space(12.dp)
+                            Text(
+                                text = "Retailer 301",
+                                color = ConstColors.lightBlue,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                            )
+                            Space(12.dp)
+                        }
+                        Icon(
+                            imageVector = if (expanded.value) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                }
+
+            },
+            childItems = items,
+            hasItemLeadingSpacing = false,
+            hasItemTrailingSpacing = false,
+            itemSpacing = 8.dp,
+            itemHorizontalPadding = 0.dp,
+            itemsBackground = Color.Transparent,
+            item = { value, _ ->
+                IocItem(
+                    scope = scope,
+                    onClick = onClick
+                )
+            }
+        )
+        Space(dp = 8.dp)
+    }
+}
+
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun IocItem(
+    onClick: () -> Unit,
+    scope: IocScope.IOCListing,
+) {
+    Column(
+        modifier = Modifier
+            .padding(all = 16.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Text(
+            text = "Hyderabaad, Vijaywada, 744562",
+            color = MaterialTheme.colors.background,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Space(4.dp)
+
+        Text(
+            text = "37AADCS0488NSZ1",
+            color = ConstColors.lightBlue,
+            fontWeight = FontWeight.W500,
+            fontSize = 14.sp,
+        )
+
+        Space(4.dp)
+        Text(
+            text = "DL 1: 20B:116701445801254",
+            color = ConstColors.txtGrey,
+            fontWeight = FontWeight.W500,
+            fontSize = 12.sp,
+        )
+
+        Space(4.dp)
+        Text(
+            text = "DL 1: 20B:116701445801254",
+            color = ConstColors.txtGrey,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W500
+        )
+
+        Space(4.dp)
+
+        Text(
+            text = stringResource(id = R.string.credit),
+            fontSize = 12.sp,
+            color = ConstColors.lightBlue,
+        )
+        Space(4.dp)
+        Text(
+            text = buildAnnotatedString {
+                append("Status: ")
+                val startIndex = length
+                append("Connected")
+                addStyle(
+                    SpanStyle(
+                        color = ConstColors.lightGreen,
+                        fontWeight = FontWeight.W700
+                    ),
+                    startIndex,
+                    length,
+                )
+            },
+            fontSize = 12.sp,
+            fontWeight = FontWeight.W700,
+            color = MaterialTheme.colors.background,
+        )
+    }
+}
+
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+private fun IocCreate(scope: IocScope.IOCCreate) {
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    Column(modifier = Modifier.padding(all = 16.dp)) {
+        Space(16.dp)
+        InputField(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .scrollOnFocus(scrollState, coroutineScope),
+            hint = stringResource(id = R.string.enter_invoice_no),
+            text = "",
+            isValid = true,
+            onValueChange = { },
+            mandatory = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
+        )
+        Space(12.dp)
+        InputField(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .scrollOnFocus(scrollState, coroutineScope),
+            hint = stringResource(id = R.string.enter_invoice_date),
+            text = "",
+            isValid = true,
+            onValueChange = { },
+            mandatory = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
+        )
+        Space(12.dp)
+        InputField(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .scrollOnFocus(scrollState, coroutineScope),
+            hint = stringResource(id = R.string.enter_total_amount),
+            text = "",
+            isValid = true,
+            onValueChange = { },
+            mandatory = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
+        )
+        Space(12.dp)
+        InputField(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .scrollOnFocus(scrollState, coroutineScope),
+            hint = stringResource(id = R.string.enter_outstanding_amount),
+            text = "",
+            isValid = true,
+            onValueChange = { },
+            mandatory = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
+        )
+        Space(16.dp)
+        MedicoButton(
+            text = stringResource(id = R.string.upload_invoice),
+            isEnabled = true,
+            elevation = null,
+            onClick = { },
+            color = ConstColors.lightBlue,
+            contentColor = Color.White,
+            txtColor= Color.White,
+        )
+    }
+}
+
+
+
+

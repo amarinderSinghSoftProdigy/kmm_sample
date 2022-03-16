@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreCartScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.NotificationScope
@@ -219,6 +220,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                is Event.Transition.QrCode -> setScope(QrCodeScope())
+               is Event.Transition.IOC -> setScope(IocScope.IOCListing())
             }
         }
     }

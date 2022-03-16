@@ -141,6 +141,7 @@ class NetworkClient(
     NetworkScope.OffersStore,
     NetworkScope.OrderHsnEditStore,
     NetworkScope.BatchesStore,
+    NetworkScope.IOCStore,
     NetworkScope.QrCodeStore {
 
     init {

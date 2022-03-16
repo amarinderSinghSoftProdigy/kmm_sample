@@ -941,9 +941,14 @@ fun BasicSearchBar(
     isSearchFocused: Boolean = false,
     onSearch: (String, Boolean) -> Unit,
     isSearchCross: Boolean = false,
-    start: Dp = 24.dp
+    start: Dp = 24.dp,
+    backgroundColor: Color = Color.White,
 ) {
-    SearchBarBox(elevation = elevation, horizontalPadding = horizontalPadding) {
+    SearchBarBox(
+        elevation = elevation,
+        horizontalPadding = horizontalPadding,
+        backgroundColor = backgroundColor
+    ) {
         if (icon != null) {
             Icon(
                 imageVector = icon,
@@ -1061,10 +1066,11 @@ fun SearchBarBox(
     modifier: Modifier = Modifier,
     elevation: Dp,
     horizontalPadding: Dp,
+    backgroundColor: Color = Color.White,
     body: @Composable RowScope.() -> Unit,
 ) {
     Surface(
-        color = Color.White,
+        color = backgroundColor,
         shape = MaterialTheme.shapes.medium,
         elevation = elevation,
         modifier = Modifier

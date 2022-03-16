@@ -429,4 +429,8 @@ interface NetworkScope {
         suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData>
 
     }
+
+    interface IOCStore : NetworkScope {
+
+    }
 }

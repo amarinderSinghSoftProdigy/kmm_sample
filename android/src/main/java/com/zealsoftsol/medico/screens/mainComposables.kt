@@ -80,6 +80,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
@@ -138,6 +139,7 @@ import com.zealsoftsol.medico.screens.instore.InStoreUsersScreen
 import com.zealsoftsol.medico.screens.inventory.InventoryMainComposable
 import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
 import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
+import com.zealsoftsol.medico.screens.ioc.IocScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
@@ -397,6 +399,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
+                    is IocScope -> IocScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -1016,10 +1019,10 @@ private fun OnlyBackHeader(
         )
         if (info.title.isNotEmpty())
             Text(
-                text = stringResourceByName(info.title),
+                text = if (info.title.contains("_")) stringResourceByName(info.title) else info.title,
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W700,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

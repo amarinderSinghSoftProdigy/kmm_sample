@@ -218,6 +218,14 @@ sealed class Event {
 
         }
 
+        sealed class IOC : Action() {
+            override val typeClazz: KClass<*> = IOC::class
+
+            data class Select(val item: String) : IOC()
+            data class Search(val value: String) : IOC()
+            data class Load(val isFirstLoad: Boolean) : IOC()
+        }
+
         sealed class Cart : Action() {
             override val typeClazz: KClass<*> = Cart::class
 
@@ -486,6 +494,7 @@ sealed class Event {
             data class SaveOffer(val request: OfferProductRequest) : Offers()
             data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
                 Offers()
+
             data class ShowManufacturers(val showManufacturers: Boolean) : Offers()
         }
 
@@ -570,6 +579,7 @@ sealed class Event {
         ) : Transition()
 
         object QrCode : Transition()
+        object IOC : Transition()
 
     }
 }
