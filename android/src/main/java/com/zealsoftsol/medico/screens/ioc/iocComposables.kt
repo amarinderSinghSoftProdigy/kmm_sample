@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +30,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,15 +72,18 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
+import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
+import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
+import com.zealsoftsol.medico.utils.PermissionViewModel
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-fun IocScreen(scope: IocScope) {
+fun IocScreen(scope: IocScope, scaffoldState: ScaffoldState) {
     Column(modifier = Modifier.fillMaxSize()) {
         when (scope) {
             is IocScope.IOCListing -> IOCListing(scope)
-            is IocScope.IOCCreate -> IocCreate(scope)
+            is IocScope.IOCCreate -> IocCreate(scope, scaffoldState)
         }
     }
 }
@@ -211,7 +217,8 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                     onClick = { },
                     color = ConstColors.lightBlue,
                     contentColor = Color.White,
-                    wrapTextSize = true,)
+                    wrapTextSize = true,
+                )
             }
         }
     }
@@ -375,10 +382,13 @@ fun IocItem(
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun IocCreate(scope: IocScope.IOCCreate) {
+private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val permissionViewModel = PermissionViewModel()
+    val tradeCheck = false
+    PermissionCheckUIForInvoice(scaffoldState, permissionViewModel)
 
     Column(modifier = Modifier.padding(all = 16.dp)) {
         Space(16.dp)
@@ -454,14 +464,49 @@ private fun IocCreate(scope: IocScope.IOCCreate) {
             })
         )
         Space(16.dp)
+
+        Surface(
+            onClick = {
+                permissionViewModel.setPerformLocationAction(true, "")
+                //scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp),
+            shape = MaterialTheme.shapes.large,
+            color = Color.White,
+            border = BorderStroke(1.dp, ConstColors.gray.copy(alpha = .2f))
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_img_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.size(50.dp),
+                )
+                Space(dp = 4.dp)
+                Text(
+                    text = if (tradeCheck) stringResource(id = R.string.file_uploaded_successfully)
+                    else stringResource(id = R.string.upload_invoice),
+                    color = if (tradeCheck) MaterialTheme.colors.background else ConstColors.gray,
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp,
+                    fontWeight = if (tradeCheck) FontWeight.Bold else FontWeight.Normal
+                )
+            }
+        }
+
+        Space(16.dp)
         MedicoButton(
-            text = stringResource(id = R.string.upload_invoice),
+            text = stringResource(id = R.string.submit),
             isEnabled = true,
             elevation = null,
             onClick = { },
             color = ConstColors.lightBlue,
             contentColor = Color.White,
-            txtColor= Color.White,
+            txtColor = Color.White,
         )
     }
 }

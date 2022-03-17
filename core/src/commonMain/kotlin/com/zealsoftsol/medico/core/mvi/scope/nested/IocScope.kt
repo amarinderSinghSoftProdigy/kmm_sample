@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
@@ -20,7 +21,8 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 
-sealed class IocScope : Scope.Child.TabBar() {
+sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
+    override val supportedFileTypes: Array<FileType> = FileType.forProfile()
 
     class IOCListing : IocScope(), Loadable<String> {
         override val isRoot: Boolean = false
@@ -37,7 +39,7 @@ sealed class IocScope : Scope.Child.TabBar() {
             list.add("")
             list.add("")
             items.value = list
-            //EventCollector.sendEvent(Event.Action.Stores.Load(isFirstLoad = true))
+            //EventCollector.sendEvent(Event.Action.Stores.Load())
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -49,7 +51,8 @@ sealed class IocScope : Scope.Child.TabBar() {
 
         fun search(value: String) {} //= EventCollector.sendEvent(Event.Action.Stores.Search(value))
 
-        fun loadItems() {}//= EventCollector.sendEvent(Event.Action.Stores.Load(isFirstLoad = false))
+        fun loadItems() = EventCollector.sendEvent(Event.Action.IOC.LoadMoreProducts)
+
     }
 
     class IOCCreate(val title: String) : IocScope() {
@@ -58,5 +61,7 @@ sealed class IocScope : Scope.Child.TabBar() {
             return TabBarInfo.OnlyBackHeader(title = title)
         }
 
+        fun openBottomSheet(type: String) =
+            EventCollector.sendEvent(Event.Action.IOC.ShowUploadBottomSheets(type))
     }
 }

@@ -1055,6 +1055,36 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getRetailers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ): BodyResponse<AnyResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun uploadInvoice(unitCode: String, request: Any): BodyResponse<String> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun autocompleteRetailers(
+        input: String,
+        unitCode: String
+    ): BodyResponse<List<AutoComplete>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAutocompleteRetailerItem(
+        input: String,
+        unitCode: String
+    ): BodyResponse<AnyResponse> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun saveDetails(unitCode: String, request: Any): BodyResponse<String> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getAutocompleteItem(
         input: String,
         unitCode: String

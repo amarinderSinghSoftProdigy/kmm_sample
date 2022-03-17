@@ -218,14 +218,6 @@ sealed class Event {
 
         }
 
-        sealed class IOC : Action() {
-            override val typeClazz: KClass<*> = IOC::class
-
-            data class Select(val item: String) : IOC()
-            data class Search(val value: String) : IOC()
-            data class Load(val isFirstLoad: Boolean) : IOC()
-        }
-
         sealed class Cart : Action() {
             override val typeClazz: KClass<*> = Cart::class
 
@@ -523,6 +515,19 @@ sealed class Event {
 
             object GetQrCode : QrCode()
             data class RegenerateQrCode(val qrCode: String) : QrCode()
+        }
+
+        sealed class IOC : Action() {
+            override val typeClazz: KClass<*> = IOC::class
+
+            data class Select(val item: String) : IOC()
+            data class Search(val value: String) : IOC()
+            data class Load(val search: String? = null,
+                            val query: ArrayList<String> = ArrayList(),) : IOC()
+            object LoadMoreProducts : IOC()
+            data class ShowUploadBottomSheets(
+                val type: String
+            ) : IOC()
         }
     }
 

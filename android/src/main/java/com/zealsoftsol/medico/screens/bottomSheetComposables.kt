@@ -160,6 +160,16 @@ fun Scope.Host.showBottomSheet(
                     onDismiss = { dismissBottomSheet() },
                 )
             }
+            is BottomSheet.UploadInvoiceData -> {
+                DocumentUploadBottomSheet(
+                    supportedFileTypes = bs.supportedFileTypes,
+                    useCamera = false,
+                    activity = activity,
+                    coroutineScope = coroutineScope,
+                    onFileReady = { bs.handleInvoiceUpload(it, bs.type) },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
                 entityInfo = bs.entityInfo,
                 isForSeasonBoy = bs.isSeasonBoy,
@@ -328,7 +338,9 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     .padding(start = 16.dp, top = 5.dp)
                             ) {
                                 Image(
-                                    painter = if(item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(id = R.drawable.ic_not_connected),
+                                    painter = if (item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(
+                                        id = R.drawable.ic_not_connected
+                                    ),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(25.dp)
@@ -343,7 +355,8 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 16.dp).padding(bottom = 5.dp),
+                                    .padding(start = 16.dp)
+                                    .padding(bottom = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {

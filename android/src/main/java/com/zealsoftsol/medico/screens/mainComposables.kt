@@ -399,7 +399,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocScope -> IocScreen(it)
+                    is IocScope -> IocScreen(it,scaffoldState)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

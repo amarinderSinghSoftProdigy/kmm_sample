@@ -432,5 +432,31 @@ interface NetworkScope {
 
     interface IOCStore : NetworkScope {
 
+        suspend fun getRetailers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<AnyResponse>
+
+        suspend fun uploadInvoice(
+            unitCode: String,
+            request: Any
+        ): BodyResponse<String>
+
+        suspend fun autocompleteRetailers(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<List<AutoComplete>>
+
+        suspend fun getAutocompleteRetailerItem(
+            input: String,
+            unitCode: String,
+        ): BodyResponse<AnyResponse>
+
+        suspend fun saveDetails(
+            unitCode: String,
+            request: Any
+        ): BodyResponse<String>
+
     }
 }
