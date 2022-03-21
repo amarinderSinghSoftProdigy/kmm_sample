@@ -520,6 +520,13 @@ sealed class Event {
         sealed class IOC : Action() {
             override val typeClazz: KClass<*> = IOC::class
 
+            data class UploadInvoice(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : IOC()
+
             data class Select(val item: String) : IOC()
             data class Search(val value: String) : IOC()
             data class Load(val search: String? = null) : IOC()

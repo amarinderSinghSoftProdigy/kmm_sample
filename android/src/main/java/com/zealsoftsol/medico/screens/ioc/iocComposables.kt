@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.ioc
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,11 +46,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -64,6 +68,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.ImageLabel
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -74,6 +79,7 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
 import com.zealsoftsol.medico.utils.PermissionViewModel
+import org.joda.time.DateTime
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
@@ -431,7 +437,17 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val permissionViewModel = PermissionViewModel()
-    val tradeCheck = false
+    val context = LocalContext.current
+    var tradeCheck = false
+    val invoiceUpload = scope.invoiceUpload.flow.collectAsState()
+    val invoiceNum = scope.invoiceNum.flow.collectAsState()
+    val invoiceDate = scope.invoiceDate.flow.collectAsState()
+    val totalAmount = scope.totalAmount.flow.collectAsState()
+    val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
+    if (invoiceUpload.value != null) {
+        tradeCheck = true
+    }
+
     PermissionCheckUIForInvoice(scaffoldState, permissionViewModel)
 
     Column(modifier = Modifier.padding(all = 16.dp)) {
@@ -441,9 +457,9 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_invoice_no),
-            text = "",
+            text = invoiceNum.value,
             isValid = true,
-            onValueChange = { },
+            onValueChange = { scope.updateInvoiceNum(it) },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
@@ -459,7 +475,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_invoice_date),
-            text = "",
+            text = invoiceDate.value,
             isValid = true,
             onValueChange = { },
             mandatory = true,
@@ -471,18 +487,52 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 keyboardController?.hide()
             })
         )
+
+        /*Space(12.dp)
+        InputField(
+            modifier = Modifier
+                .scrollOnFocus(scrollState, coroutineScope)
+                .onFocusEvent {
+                    if (it.isFocused) {
+                        val now = DateTime.now()
+                        val dialog = DatePickerDialog(
+                            context,
+                            { _, year, month, _ ->
+                                scope.updateInvoiceDate("${month + 1}/${year}")
+                            },
+                            now.year,
+                            now.monthOfYear - 1,
+                            now.dayOfMonth,
+                        )
+                        dialog.show()
+                    }
+                },
+            hint = stringResource(id = R.string.enter_invoice_date),
+            text = invoiceDate.value,
+            isValid = true,
+            onValueChange = { },
+            mandatory = true,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            })
+        )*/
+
         Space(12.dp)
         InputField(
             modifier = Modifier
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_total_amount),
-            text = "",
+            text = totalAmount.value.toString(),
             isValid = true,
-            onValueChange = { },
+            onValueChange = { scope.updateTotalAmount(it) },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
@@ -495,9 +545,9 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_outstanding_amount),
-            text = "",
+            text = outstandingAmount.value.toString(),
             isValid = true,
-            onValueChange = { },
+            onValueChange = { scope.updateOutstandingAmount(it) },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
@@ -511,7 +561,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
 
         Surface(
             onClick = {
-                permissionViewModel.setPerformLocationAction(true, "")
+                permissionViewModel.setPerformLocationAction(true, "IOC_IMAGE")
                 //scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
             },
             modifier = Modifier
@@ -540,6 +590,14 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                     fontWeight = if (tradeCheck) FontWeight.Bold else FontWeight.Normal
                 )
             }
+        }
+
+        if (invoiceUpload.value != null) {
+            Space(16.dp)
+            val url = invoiceUpload.value?.cdnUrl ?: ""
+            ImageLabel(
+                url
+            ) { scope.previewImage(url) }
         }
 
         Space(16.dp)

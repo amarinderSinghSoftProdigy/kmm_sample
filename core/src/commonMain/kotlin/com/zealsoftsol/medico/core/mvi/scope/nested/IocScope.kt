@@ -21,9 +21,12 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.UploadResponseData
 
 sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
+
+    val invoiceUpload: DataSource<UploadResponseData?> = DataSource(null)
 
     class IOCListing : IocScope(), Loadable<RetailerData> {
         override val isRoot: Boolean = false
@@ -56,11 +59,34 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     class IOCCreate(val title: String) : IocScope() {
 
+        val invoiceNum: DataSource<String> = DataSource("")
+        val invoiceDate: DataSource<String> = DataSource("")
+        val totalAmount: DataSource<String> = DataSource("")
+        val outstandingAmount: DataSource<String> = DataSource("")
+
+
+        fun updateInvoiceNum(data: String) {
+            invoiceNum.value = data
+        }
+
+        fun updateInvoiceDate(data: String) {
+            invoiceDate.value = data
+        }
+
+        fun updateTotalAmount(data: String) {
+            totalAmount.value = data
+        }
+
+        fun updateOutstandingAmount(data: String) {
+            outstandingAmount.value = data
+        }
+
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title = title)
         }
 
-        fun openBottomSheet(type: String) =
-            EventCollector.sendEvent(Event.Action.IOC.ShowUploadBottomSheets(type))
+        fun previewImage(item: String) =
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
+
     }
 }

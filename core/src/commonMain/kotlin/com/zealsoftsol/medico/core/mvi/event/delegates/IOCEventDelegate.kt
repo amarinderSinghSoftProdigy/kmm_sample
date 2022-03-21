@@ -7,6 +7,8 @@ import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
+import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -29,6 +31,35 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.Search -> searchStores(event.value)
         is Event.Action.IOC.Select -> select(event.item)
         is Event.Action.IOC.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
+        is Event.Action.IOC.UploadInvoice -> uploadDocument(event)
+    }
+
+    private suspend fun uploadDocument(event: Event.Action.IOC) {
+        navigator.withScope<IocScope> {
+            val result = withProgress {
+                when (event) {
+                    is Event.Action.IOC.UploadInvoice -> {
+                        userRepo.uploadProfileImage(
+                            size = event.size,
+                            fileString = event.asBase64,
+                            mimeType = event.fileType.mimeType,
+                            type = event.type
+                        )
+                    }
+                    else -> throw UnsupportedOperationException("unsupported event $event for uploadDocument()")
+                }
+
+            }
+            result.onSuccess { body ->
+                when (body.documentType) {
+                    "IOC_IMAGE" -> {
+                        it.invoiceUpload.value =
+                            it.invoiceUpload.value?.copy(cdnUrl = body.cdnUrl, id = body.id)
+                    }
+
+                }
+            }.onError(navigator)
+        }
     }
 
     private fun showUploadBottomSheets(type: String) {

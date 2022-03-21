@@ -421,7 +421,7 @@
     <string name="create_debt">Create Debt</string>
     <string name="enter_invoice_no">Enter Invoice No.</string>
     <string name="enter_invoice_date">Enter Invoice Date</string>
-    <string name="enter_total_amount">Enter Invoice Date</string>
+    <string name="enter_total_amount">Enter Total Amount</string>
     <string name="enter_outstanding_amount">Enter Outstanding Amount</string>
     <string name="upload_invoice">Upload Invoice</string>
     <string name="dl_one_">DL 1:</string>
