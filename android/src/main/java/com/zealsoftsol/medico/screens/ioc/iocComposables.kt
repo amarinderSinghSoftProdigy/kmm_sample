@@ -151,6 +151,9 @@ private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick:
 @Composable
 private fun IOCListing(scope: IocScope.IOCListing) {
     val search = scope.searchText.flow.collectAsState()
+    val selectedIndex = scope.selectedIndex.flow.collectAsState()
+    val items = scope.items.flow.collectAsState()
+
     Box {
         Column {
             Space(16.dp)
@@ -168,7 +171,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                 backgroundColor = ConstColors.lightBlue.copy(alpha = 0.1f)
             )
 
-            val items = scope.items.flow.collectAsState()
+
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
                 NoRecords(
                     icon = R.drawable.ic_missing_stores,
@@ -182,12 +185,15 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                     state = rememberLazyListState(),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 12.dp, vertical = 16.dp),
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
                 ) {
                     itemsIndexed(
                         items = items.value,
                         itemContent = { index, item ->
-                            StoreItem(item, scope) { scope.selectItem("Retailer 301") }
+                            StoreItem(
+                                item,
+                                scope, index, selectedIndex.value
+                            )
                             if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                                 scope.loadItems()
                             }
@@ -212,9 +218,9 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                 MedicoRoundButton(
                     /*modifier = Modifier.width(150.dp),*/
                     text = stringResource(id = R.string.continue_),
-                    isEnabled = true,
+                    isEnabled = selectedIndex.value != -1,
                     elevation = null,
-                    onClick = { },
+                    onClick = { scope.selectItem(items.value[selectedIndex.value].tradeName) },
                     color = ConstColors.lightBlue,
                     contentColor = Color.White,
                     wrapTextSize = true,
@@ -231,42 +237,40 @@ private fun IOCListing(scope: IocScope.IOCListing) {
 private fun StoreItem(
     store: RetailerData,
     scope: IocScope.IOCListing,
-    onClick: () -> Unit,
+    index: Int,
+    selectedIndex: Int,
 ) {
     val items = ArrayList<RetailerData>()
     items.add(store)
     val expanded = remember { mutableStateOf(false) }
-    val check = remember { mutableStateOf(false) }
-
     Column {
-
-
         FoldableItem(
             expanded = expanded.value,
             headerBackground = Color.White,
             headerBorder = BorderStroke(0.dp, Color.Transparent),
-            headerMinHeight = 55.dp,
+            headerMinHeight = 50.dp,
             header = { _ ->
                 Surface(
                     shape = RoundedCornerShape(5.dp),
                     elevation = 5.dp,
                     color = Color.White,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .height(60.dp)
                 ) {
                     Row(
-
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp, bottom = 12.dp, start = 5.dp, end = 5.dp)
+                            .padding(start = 5.dp, end = 5.dp)
                     ) {
                         Row(modifier = Modifier.weight(0.9f)) {
                             Space(4.dp)
                             Checkbox(
-                                checked = check.value,
+                                checked = selectedIndex == index,
                                 colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                                onCheckedChange = { check.value = !check.value },
+                                onCheckedChange = { scope.updateIndex(index) },
                                 modifier = Modifier.align(Alignment.CenterVertically),
                             )
                             Space(12.dp)
@@ -292,18 +296,17 @@ private fun StoreItem(
             childItems = items,
             hasItemLeadingSpacing = false,
             hasItemTrailingSpacing = false,
-            itemSpacing = 8.dp,
+            itemSpacing = 0.dp,
             itemHorizontalPadding = 0.dp,
             itemsBackground = Color.Transparent,
             item = { value, _ ->
                 IocItem(
                     item = value,
                     scope = scope,
-                    onClick = onClick
                 )
             }
         )
-        Space(dp = 8.dp)
+        Space(dp = 4.dp)
     }
 }
 
@@ -312,7 +315,6 @@ private fun StoreItem(
 @Composable
 fun IocItem(
     item: RetailerData,
-    onClick: () -> Unit,
     scope: IocScope.IOCListing,
 ) {
 
@@ -326,7 +328,6 @@ fun IocItem(
             modifier = Modifier
                 .padding(all = 16.dp)
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
         ) {
             Text(
                 text = buildAnnotatedString {

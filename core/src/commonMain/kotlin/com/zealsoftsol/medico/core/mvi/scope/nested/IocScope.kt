@@ -30,16 +30,10 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<RetailerData>> = DataSource(emptyList())
         override val totalItems: DataSource<Int> = DataSource(0)
+        val selectedIndex: DataSource<Int> = DataSource(-1)
         override val searchText: DataSource<String> = DataSource("")
 
         init {
-            /*val list = ArrayList<String>()
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            items.value = list*/
             EventCollector.sendEvent(Event.Action.IOC.Load(searchText.value))
         }
 
@@ -47,8 +41,12 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             return TabBarInfo.OnlyBackHeader(title = "create_debt")
         }
 
+        fun updateIndex(index: Int) {
+            selectedIndex.value = index
+        }
 
-        fun selectItem(item: String) = EventCollector.sendEvent(Event.Action.IOC.Select(item))
+        fun selectItem(item: String) =
+            EventCollector.sendEvent(Event.Action.IOC.Select(item))
 
         fun search(value: String) = EventCollector.sendEvent(Event.Action.IOC.Search(value))
 
