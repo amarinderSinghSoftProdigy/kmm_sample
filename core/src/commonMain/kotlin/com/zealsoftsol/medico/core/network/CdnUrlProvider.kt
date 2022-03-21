@@ -8,7 +8,7 @@ object CdnUrlProvider {
     }
 
     fun urlFor(medicineId: String, size: Size) =
-        "${BASE_URL}/img/p/$medicineId/${medicineId}_${size.dimension}x${size.dimension}.jpg"
+        "${BASE_URL}/img/vp/${medicineId}.jpg"
 
     fun urlForM(medicineId: String?) =
         "${BASE_URL}/img/m/$medicineId.JPG"
