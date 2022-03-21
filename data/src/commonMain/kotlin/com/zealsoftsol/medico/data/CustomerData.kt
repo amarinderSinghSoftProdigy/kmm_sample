@@ -5,11 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CustomerData(
-    val aadhaarCardNo: String?,
+    /*val aadhaarCardNo: String?,
     val addressData: AddressData,
+    */
     val metaData: CustomerMetaData?,
     val customerType: String,
-    val drugLicenseNo1: String?,
+    /*val drugLicenseNo1: String?,
     val drugLicenseNo2: String?,
     val drugLicenseUrl: String?,
     val isDocumentUploaded: Boolean,
@@ -21,8 +22,11 @@ data class CustomerData(
     val phoneNumber: String,
     val panNumber: String?,
     val tradeName: String,
+    */
     val unitCode: String?,
-    val subscription: Subscription? = null,
+    val latitude: Double,
+    val longitude: Double,
+    //val subscription: Subscription? = null,
 )
 
 @Serializable

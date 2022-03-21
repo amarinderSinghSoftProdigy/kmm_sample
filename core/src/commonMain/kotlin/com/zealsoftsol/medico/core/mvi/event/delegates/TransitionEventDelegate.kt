@@ -94,13 +94,13 @@ internal class TransitionEventDelegate(
                 )
                 is Event.Transition.Address -> setScope(
                     SettingsScope.Address(
-                        userRepo.requireUser().addressData,
+                        null,
                         userRepo.requireUser()
                     )
                 )
                 is Event.Transition.GstinDetails -> setScope(
                     SettingsScope.GstinDetails(
-                        userRepo.requireUser().details as User.Details.DrugLicense,
+                        null,//userRepo.requireUser().details as User.Details.DrugLicense,
                         userRepo.requireUser()
                     )
                 )

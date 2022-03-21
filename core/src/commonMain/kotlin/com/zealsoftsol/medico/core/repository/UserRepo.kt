@@ -99,13 +99,13 @@ class UserRepo(
                 throw UnsupportedOperationException("can not create user without unitCode or customerMetaData")
             }
             val user = User(
-                it.firstName,
+                /*it.firstName,
                 it.lastName,
                 it.email,
-                it.phoneNumber,
+                it.phoneNumber,*/
                 it.unitCode!!,
                 parsedType,
-                when (parsedType) {
+                /*when (parsedType) {
                     UserType.SEASON_BOY -> User.Details.Aadhaar(it.aadhaarCardNo!!, "")
                     else -> User.Details.DrugLicense(
                         it.tradeName,
@@ -115,11 +115,13 @@ class UserRepo(
                         it.drugLicenseNo2!!,
                         it.drugLicenseUrl
                     )
-                },
+                },*/
                 it.metaData!!.activated,
-                it.isDocumentUploaded,
+                it.latitude,
+                it.longitude
+                /*it.isDocumentUploaded,
                 it.addressData,
-                it.subscription,
+                it.subscription,*/
             )
             val json = Json.encodeToString(User.serializer(), user)
             settings.putString(AUTH_USER_KEY, json)

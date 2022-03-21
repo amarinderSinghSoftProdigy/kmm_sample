@@ -89,7 +89,7 @@ internal class ProductEventDelegate(
             }
         }
         navigator.withProgress {
-            val address = userRepo.requireUser().addressData
+            val address = userRepo.requireUser()//userRepo.requireUser().addressData
             when (buyingOption) {
                 BuyingOption.BUY -> networkProductScope.buyProductInfo(
                     product.code,
@@ -140,8 +140,10 @@ internal class ProductEventDelegate(
                     productCode,
                     userRepo.requireUser().unitCode,
                     sellerInfo?.unitCode,
-                    userRepo.requireUser().addressData.latitude,
-                    userRepo.requireUser().addressData.longitude,
+                    userRepo.requireUser().latitude,
+                    userRepo.requireUser().latitude,
+                    //userRepo.requireUser().addressData.latitude,
+                    //userRepo.requireUser().addressData.longitude,
                 )
             }.onSuccess { body ->
                 setScope(

@@ -190,7 +190,7 @@ object DebugScopeCreator {
     }
 
     fun signUpWelcomeScreen() {
-        nav.setScope(WelcomeScope(testUser.fullName()))
+        //nav.setScope(WelcomeScope(testUser.fullName()))
     }
 
     fun limitedAccessMainScreen(
@@ -199,12 +199,12 @@ object DebugScopeCreator {
     ) {
         val user = testUser.copy(
             type = type,
-            details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
-                "",
-                ""
-            ) else User.Details.DrugLicense("", "", "","", "", "url"),
+            /* details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
+                 "",
+                 ""
+             ) else User.Details.DrugLicense("", "", "","", "", "url"),*/
             isActivated = false,
-            isDocumentUploaded = isDocumentUploaded
+            //isDocumentUploaded = isDocumentUploaded
         )
         nav.setScope(
             LimitedAccessScope.get(
@@ -251,7 +251,7 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        Expiry(0, "", "#FF00FF",""),
+                        Expiry(0, "", "#FF00FF", ""),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),
@@ -285,15 +285,16 @@ object DebugScopeCreator {
 
 private inline val testUser
     get() = User(
-        "Test",
+        /*"Test",
         "User",
         "test@mail.com",
-        "000",
+        "000",*/
         "unitcode",
         UserType.STOCKIST,
-        User.Details.DrugLicense("", "", "","", "", "url"),
-        true,
-        true,
+        /*User.Details.DrugLicense("", "", "","", "", "url"),
+        */true,
+        0.0, 0.0
+        /*true,
         AddressData("", "", "", "", 0.0, 0.0, "", 0, "", ""),
-        Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),
+        Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),*/
     )

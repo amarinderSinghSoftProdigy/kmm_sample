@@ -42,13 +42,13 @@ sealed class LimitedAccessScope : Scope.Child.TabBar(),
         fun get(user: User, dataSource: ReadOnlyDataSource<User>): TabBarScope {
             return TabBarScope(
                 childScope = if (user.type == UserType.SEASON_BOY) {
-                    val details = (user.details as User.Details.Aadhaar)
+                    //val details = (user.details as User.Details.Aadhaar)
                     SeasonBoy(
                         user = dataSource,
                         aadhaarData = DataSource(
                             AadhaarData(
-                                details.cardNumber,
-                                details.shareCode
+                                "",//details.cardNumber,
+                                ""//details.shareCode
                             )
                         ),
                         isVerified = DataSource(false),

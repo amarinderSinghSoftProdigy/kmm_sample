@@ -114,7 +114,7 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
             }
         }
 
-        Text(
+       /* Text(
             text = if (userType == UserType.STOCKIST) {
                 //(user.details as User.Details.DrugLicense).tradeName
                 user.fullName()
@@ -124,7 +124,7 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
             color = Color.Black,
             modifier = Modifier.padding(start = 115.dp, top = 155.dp),
             fontSize = 16.sp
-        )
+        )*/
 
         Column(
             modifier = Modifier
@@ -367,14 +367,14 @@ fun ProfileComposable(user: User) {
             .background(Color.White)
             .fillMaxSize()
     ) {
-        ReadOnlyField(user.firstName, R.string.first_name)
+       /* ReadOnlyField(user.firstName, R.string.first_name)
         Space(12.dp)
         ReadOnlyField(user.lastName, R.string.last_name)
         Space(12.dp)
         ReadOnlyField(user.email, R.string.email)
         Space(12.dp)
         ReadOnlyField(user.phoneNumber.formatIndia(), R.string.phone_number)
-    }
+   */ }
 }
 
 @Composable

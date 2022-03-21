@@ -4,19 +4,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
-    val firstName: String,
+    /*val firstName: String,
     val lastName: String,
     val email: String,
-    val phoneNumber: String,
+    val phoneNumber: String,*/
     val unitCode: String,
     val type: UserType,
-    val details: Details,
+    //val details: Details,
     val isActivated: Boolean,
-    val isDocumentUploaded: Boolean,
+    val latitude: Double,
+    val longitude: Double,
+    /*val isDocumentUploaded: Boolean,
     val addressData: AddressData,
-    val subscription: Subscription?,
+    val subscription: Subscription?,*/
 ) {
-    fun fullName() = "$firstName $lastName"
+    //fun fullName() = "$firstName $lastName"
 
     @Serializable
     sealed class Details {

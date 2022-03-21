@@ -210,9 +210,9 @@ class EventCollector(
             GlobalScope.launch(compatDispatcher) {
                 userRepo.loadConfig()
             }
-            GlobalScope.launch(compatDispatcher) {
+            /*GlobalScope.launch(compatDispatcher) {
                 notificationRepo.loadUnreadMessagesFromServer()
-            }
+            }*/
         }
     }
 

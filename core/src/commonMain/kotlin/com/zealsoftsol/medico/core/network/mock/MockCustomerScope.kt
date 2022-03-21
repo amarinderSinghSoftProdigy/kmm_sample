@@ -43,7 +43,7 @@ class MockCustomerScope : NetworkScope.Customer {
     companion object {
 
         fun getMockCustomerData(userType: UserType = UserType.STOCKIST) = CustomerData(
-            "2194129343",
+            /*"2194129343",
             AddressData(
                 "India",
                 "landmark",
@@ -55,10 +55,10 @@ class MockCustomerScope : NetworkScope.Customer {
                 520001,
                 "",
                 ""
-            ),
+            ),*/
             CustomerMetaData(true, "", ""),
             userType.serverValue,
-            "drug1",
+            /*"drug1",
             "drug2",
             "url",
             true,
@@ -69,7 +69,9 @@ class MockCustomerScope : NetworkScope.Customer {
             "+1111111",
             "55532",
             "Test Trader",
+            "0000000",*/
             "0000000",
+            0.0, 0.0
         )
     }
 }

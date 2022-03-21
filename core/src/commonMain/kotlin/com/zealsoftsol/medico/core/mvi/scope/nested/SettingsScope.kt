@@ -84,10 +84,11 @@ sealed class SettingsScope(
     class Profile(val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
-    class Address(val addressData: AddressData, val user: User) : Child.TabBar(),
+    class Address(val addressData: AddressData? = null, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
-    class GstinDetails(val details: User.Details.DrugLicense, val user: User) : Child.TabBar(),
+    class GstinDetails(val details: User.Details.DrugLicense? = null, val user: User) :
+        Child.TabBar(),
         CommonScope.CanGoBack
 
 }

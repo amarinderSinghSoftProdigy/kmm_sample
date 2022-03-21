@@ -51,7 +51,7 @@ fun MenuScreen(scope: MenuScope) {
                 .height(30.dp)
         )
 
-        Text(
+        /*Text(
             text = if (userType == UserType.STOCKIST) {
                 (user.details as User.Details.DrugLicense).tradeName
             } else {
@@ -61,7 +61,7 @@ fun MenuScreen(scope: MenuScope) {
             modifier = Modifier.padding(start = 50.dp, top = 50.dp),
             fontSize = 16.sp,
             fontWeight = FontWeight.W700
-        )
+        )*/
 
         Column(
             modifier = Modifier

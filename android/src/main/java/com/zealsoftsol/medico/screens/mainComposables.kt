@@ -104,6 +104,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName
@@ -323,16 +324,16 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
                         WelcomeScreen(
-                            fullName = user.value.fullName(),
-                            option = if (!user.value.isDocumentUploaded) {
+                            fullName = "",//user.value.fullName(),
+                            option = /*if (!user.value.isDocumentUploaded) {
                                 if (it is AadhaarDataComponent) {
                                     WelcomeOption.Upload.Aadhaar(it) { it.showBottomSheet() }
                                 } else {
                                     WelcomeOption.Upload.DrugLicense { it.showBottomSheet() }
                                 }
-                            } else {
-                                WelcomeOption.Thanks(null)
-                            },
+                            } else {*/
+                                WelcomeOption.Thanks(null),
+                            //},
                         )
                     }
                     is DashboardScope -> {
@@ -387,9 +388,10 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is OrderHsnEditScope -> OrderHsnEditScreen(it)
                     is InventoryScope -> InventoryMainComposable(it)
                     is SettingsScope.Profile -> ProfileComposable(it.user)
-                    is SettingsScope.Address -> AddressComposable(it.user.addressData)
+                    is SettingsScope.Address -> AddressComposable(//it.user.addressData
+                        AddressData("","","","",0.0,0.0,"",0,"",""))
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
-                        it.user.details as User.Details.DrugLicense,
+                        User.Details.DrugLicense("","","","","","")//it.user.details as User.Details.DrugLicense,
                     )
                     is MenuScope -> {
                         MenuScreen(it)

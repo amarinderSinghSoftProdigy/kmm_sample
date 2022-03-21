@@ -323,7 +323,7 @@ class NetworkClient(
         }
 
     override suspend fun getCustomerData() = simpleRequest {
-        client.get<BodyResponse<CustomerData>>("${baseUrl.url}/medico/customer/details") {
+        client.get<BodyResponse<CustomerData>>("${baseUrl.url}/medico/customer/v2/details") {
             withMainToken()
         }
     }
