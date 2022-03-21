@@ -62,18 +62,17 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
-import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
-import com.zealsoftsol.medico.utils.PermissionCheckUIForSignUp
 import com.zealsoftsol.medico.utils.PermissionViewModel
 
 @ExperimentalMaterialApi
@@ -173,8 +172,10 @@ private fun IOCListing(scope: IocScope.IOCListing) {
             if (items.value.isEmpty() && scope.items.updateCount > 0) {
                 NoRecords(
                     icon = R.drawable.ic_missing_stores,
-                    text = R.string.missing_stores,
-                    onHome = { scope.goHome() },
+                    text = R.string.no_users_found,
+                    subtitle = "",
+                    buttonText = stringResource(id = R.string.clear),
+                    onHome = { scope.search("") },
                 )
             } else {
                 LazyColumn(
@@ -229,13 +230,14 @@ private fun IOCListing(scope: IocScope.IOCListing) {
 @ExperimentalComposeUiApi
 @Composable
 private fun StoreItem(
-    store: String,
+    store: RetailerData,
     scope: IocScope.IOCListing,
     onClick: () -> Unit,
 ) {
-    val items = ArrayList<String>()
-    items.add("")
+    val items = ArrayList<RetailerData>()
+    items.add(store)
     val expanded = remember { mutableStateOf(false) }
+    val check = remember { mutableStateOf(false) }
 
     Column {
 
@@ -259,17 +261,17 @@ private fun StoreItem(
                             .fillMaxWidth()
                             .padding(top = 12.dp, bottom = 12.dp)
                     ) {
-                        Row {
+                        Row(modifier = Modifier.weight(0.9f)) {
                             Space(12.dp)
                             Checkbox(
-                                checked = false,
-                                colors = CheckboxDefaults.colors(checkedColor = ConstColors.green),
-                                onCheckedChange = { },
+                                checked = check.value,
+                                colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
+                                onCheckedChange = { check.value = !check.value },
                                 modifier = Modifier.align(Alignment.CenterVertically),
                             )
                             Space(12.dp)
                             Text(
-                                text = "Retailer 301",
+                                text = store.tradeName,
                                 color = ConstColors.lightBlue,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
@@ -294,6 +296,7 @@ private fun StoreItem(
             itemsBackground = Color.Transparent,
             item = { value, _ ->
                 IocItem(
+                    item = value,
                     scope = scope,
                     onClick = onClick
                 )
@@ -307,6 +310,7 @@ private fun StoreItem(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun IocItem(
+    item: RetailerData,
     onClick: () -> Unit,
     scope: IocScope.IOCListing,
 ) {
@@ -316,7 +320,11 @@ fun IocItem(
             .clickable(onClick = onClick)
     ) {
         Text(
-            text = "Hyderabaad, Vijaywada, 744562",
+            text = buildAnnotatedString {
+                append(item.cityOrTown)
+                append(", ")
+                append(item.pincode)
+            },
             color = MaterialTheme.colors.background,
             fontWeight = FontWeight.W800,
             fontSize = 14.sp,
@@ -327,7 +335,7 @@ fun IocItem(
         Space(4.dp)
 
         Text(
-            text = "37AADCS0488NSZ1",
+            text = item.gstin,
             color = ConstColors.lightBlue,
             fontWeight = FontWeight.W500,
             fontSize = 14.sp,
@@ -335,7 +343,19 @@ fun IocItem(
 
         Space(4.dp)
         Text(
-            text = "DL 1: 20B:116701445801254",
+            text = buildAnnotatedString {
+                append(stringResource(id = R.string.dl_one_))
+                val startIndex = length
+                append(item.drugLicenseNo1)
+                addStyle(
+                    SpanStyle(
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500
+                    ),
+                    startIndex,
+                    length,
+                )
+            },
             color = ConstColors.txtGrey,
             fontWeight = FontWeight.W500,
             fontSize = 12.sp,
@@ -343,7 +363,19 @@ fun IocItem(
 
         Space(4.dp)
         Text(
-            text = "DL 1: 20B:116701445801254",
+            text = buildAnnotatedString {
+                append(stringResource(id = R.string.dl_two_))
+                val startIndex = length
+                append(item.drugLicenseNo2)
+                addStyle(
+                    SpanStyle(
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500
+                    ),
+                    startIndex,
+                    length,
+                )
+            },
             color = ConstColors.txtGrey,
             fontSize = 12.sp,
             fontWeight = FontWeight.W500
@@ -352,16 +384,17 @@ fun IocItem(
         Space(4.dp)
 
         Text(
-            text = stringResource(id = R.string.credit),
+            text = item.paymentMethod,
             fontSize = 12.sp,
             color = ConstColors.lightBlue,
         )
         Space(4.dp)
-        Text(
+        /*Text(
             text = buildAnnotatedString {
-                append("Status: ")
+                append(stringResource(id = R.string.status))
+                append(": ")
                 val startIndex = length
-                append("Connected")
+                append(item.status)
                 addStyle(
                     SpanStyle(
                         color = ConstColors.lightGreen,
@@ -374,7 +407,7 @@ fun IocItem(
             fontSize = 12.sp,
             fontWeight = FontWeight.W700,
             color = MaterialTheme.colors.background,
-        )
+        )*/
     }
 }
 

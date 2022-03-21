@@ -54,7 +54,7 @@ import com.zealsoftsol.medico.data.PromotionStatusData
 import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
-import com.zealsoftsol.medico.screens.common.NoRecordsWithoutHome
+import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 
 @SuppressLint("RememberReturnType")
@@ -168,10 +168,11 @@ fun OffersScreen(scope: OffersScope.ViewOffers) {
         }
         Space(dp = 8.dp)
         if (offers.value.isEmpty()) {
-            NoRecordsWithoutHome(
+            NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.missing_offers,
                 subtitle = "",
+                buttonText = stringResource(id = R.string.clear),
                 onHome = { scope.startSearch() },
             )
         } else {

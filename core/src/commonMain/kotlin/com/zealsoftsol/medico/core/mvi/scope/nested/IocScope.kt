@@ -18,28 +18,29 @@ import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.GeoData
 import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.ProductSearch
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 
 sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
 
-    class IOCListing : IocScope(), Loadable<String> {
+    class IOCListing : IocScope(), Loadable<RetailerData> {
         override val isRoot: Boolean = false
         override val pagination: Pagination = Pagination()
-        override val items: DataSource<List<String>> = DataSource(emptyList())
+        override val items: DataSource<List<RetailerData>> = DataSource(emptyList())
         override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
 
         init {
-            val list = ArrayList<String>()
+            /*val list = ArrayList<String>()
             list.add("")
             list.add("")
             list.add("")
             list.add("")
             list.add("")
-            items.value = list
-            //EventCollector.sendEvent(Event.Action.Stores.Load())
+            items.value = list*/
+            EventCollector.sendEvent(Event.Action.IOC.Load(searchText.value))
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -49,7 +50,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
         fun selectItem(item: String) = EventCollector.sendEvent(Event.Action.IOC.Select(item))
 
-        fun search(value: String) {} //= EventCollector.sendEvent(Event.Action.Stores.Search(value))
+        fun search(value: String) = EventCollector.sendEvent(Event.Action.IOC.Search(value))
 
         fun loadItems() = EventCollector.sendEvent(Event.Action.IOC.LoadMoreProducts)
 

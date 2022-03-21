@@ -522,8 +522,7 @@ sealed class Event {
 
             data class Select(val item: String) : IOC()
             data class Search(val value: String) : IOC()
-            data class Load(val search: String? = null,
-                            val query: ArrayList<String> = ArrayList(),) : IOC()
+            data class Load(val search: String? = null) : IOC()
             object LoadMoreProducts : IOC()
             data class ShowUploadBottomSheets(
                 val type: String

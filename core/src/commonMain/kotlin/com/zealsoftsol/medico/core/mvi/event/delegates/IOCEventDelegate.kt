@@ -7,20 +7,9 @@ import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
 import com.zealsoftsol.medico.core.network.NetworkScope
-import com.zealsoftsol.medico.core.repository.CartRepo
-import com.zealsoftsol.medico.core.repository.NotificationRepo
 import com.zealsoftsol.medico.core.repository.UserRepo
-import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
-import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.requireUser
-import com.zealsoftsol.medico.core.utils.LoadHelper
-import com.zealsoftsol.medico.data.AnyResponse
-import com.zealsoftsol.medico.data.EntityInfo
-import com.zealsoftsol.medico.data.Store
-import com.zealsoftsol.medico.data.UserRegistration1
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,16 +18,13 @@ import kotlin.coroutines.coroutineContext
 internal class IOCEventDelegate(
     navigator: Navigator,
     private val userRepo: UserRepo,
-    private val cartRepo: CartRepo,
-    private val notificationRepo: NotificationRepo,
     private val networkStoresScope: NetworkScope.IOCStore,
-    private val loadHelper: LoadHelper,
 ) : EventDelegate<Event.Action.IOC>(navigator) {
 
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.IOC) = when (event) {
-        is Event.Action.IOC.Load -> loadStores(event.search, event.query)
+        is Event.Action.IOC.Load -> loadStores(event.search)
         is Event.Action.IOC.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.IOC.Search -> searchStores(event.value)
         is Event.Action.IOC.Select -> select(event.item)
@@ -55,18 +41,15 @@ internal class IOCEventDelegate(
         }
     }
 
-    private suspend fun loadStores(search: String?, query: ArrayList<String>) {
+    private suspend fun loadStores(search: String?) {
         navigator.withScope<IocScope.IOCListing> {
             it.pagination.reset()
-            //it.productSearch.value = search ?: ""
-            //if (!query.isNullOrEmpty()) it.manufacturerSearch.value = query
-            val isWildcardSearch = search.isNullOrBlank()
+            it.searchText.value = search ?: ""
             it.search(
                 addPage = false,
                 withDelay = false,
-                withProgress = isWildcardSearch,
+                withProgress = true,
                 extraFilters = search,
-                manufacturers = query
             )
         }
     }
@@ -80,7 +63,6 @@ internal class IOCEventDelegate(
                     withDelay = false,
                     withProgress = true,
                     "",
-                    ArrayList()
                 )
             }
         }
@@ -88,14 +70,16 @@ internal class IOCEventDelegate(
 
 
     private suspend fun searchStores(search: String) {
-        /* loadHelper.search<StoresScope.All, Store>(searchValue = search) {
-             val user = userRepo.requireUser()
-             networkStoresScope.getStores(
-                 unitCode = user.unitCode,
-                 search = searchText.value,
-                 pagination = pagination,
-             ).getBodyOrNull()
-         }*/
+        navigator.withScope<IocScope.IOCListing> {
+            it.pagination.reset()
+            it.searchText.value = search
+            it.search(
+                addPage = false,
+                withDelay = false,
+                withProgress = false,
+                extraFilters = search,
+            )
+        }
     }
 
     private fun select(item: String) {
@@ -111,7 +95,6 @@ internal class IOCEventDelegate(
         withDelay: Boolean,
         withProgress: Boolean,
         extraFilters: String? = "",
-        manufacturers: ArrayList<String>?,
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
@@ -121,10 +104,8 @@ internal class IOCEventDelegate(
                 search = extraFilters,
                 pagination = pagination,
             ).onSuccess { body ->
-                /*pagination.setTotal(body.totalResults)
-                statuses.value = body.promotionStatusDatas
-                manufacturer.value = body.manufacturers
-                items.value = if (!addPage) body.promotions else items.value + body.promotions*/
+                pagination.setTotal(body.totalResults)
+                items.value = if (!addPage) body.results else items.value + body.results
             }.onError(navigator)
             onEnd()
         }

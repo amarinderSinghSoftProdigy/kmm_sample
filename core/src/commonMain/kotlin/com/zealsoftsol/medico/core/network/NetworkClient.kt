@@ -32,6 +32,7 @@ import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -1059,8 +1060,18 @@ class NetworkClient(
         unitCode: String,
         search: String?,
         pagination: Pagination
-    ): BodyResponse<AnyResponse> {
-        TODO("Not yet implemented")
+    ) = simpleRequest {
+        client.get<BodyResponse<IOCResponse>>("${baseUrl.url}/ioc/users") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
     }
 
     override suspend fun uploadInvoice(unitCode: String, request: Any): BodyResponse<String> {

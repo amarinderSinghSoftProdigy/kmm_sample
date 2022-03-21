@@ -21,6 +21,7 @@ import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
@@ -436,7 +437,7 @@ interface NetworkScope {
             unitCode: String,
             search: String?,
             pagination: Pagination
-        ): BodyResponse<AnyResponse>
+        ): BodyResponse<IOCResponse>
 
         suspend fun uploadInvoice(
             unitCode: String,

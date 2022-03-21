@@ -424,6 +424,9 @@
     <string name="enter_total_amount">Enter Invoice Date</string>
     <string name="enter_outstanding_amount">Enter Outstanding Amount</string>
     <string name="upload_invoice">Upload Invoice</string>
+    <string name="dl_one_">DL 1:</string>
+    <string name="dl_two_">DL 2:</string>
+    <string name="no_users_found">No user found!</string>
 
     <!-- Termrs and Cond -->
 

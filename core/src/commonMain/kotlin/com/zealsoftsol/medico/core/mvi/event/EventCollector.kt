@@ -168,10 +168,7 @@ class EventCollector(
         Event.Action.IOC::class to IOCEventDelegate(
             navigator,
             userRepo,
-            cartRepo,
-            notificationRepo,
-            iocNetworkScope,
-            LoadHelper(navigator, loadHelperScope),
+            iocNetworkScope
         )
     )
 
