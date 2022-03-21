@@ -165,7 +165,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                 onIconClick = {
                     scope.search("")
                 },
-                backgroundColor = ConstColors.ltgray
+                backgroundColor = ConstColors.lightBlue.copy(alpha = 0.1f)
             )
 
             val items = scope.items.flow.collectAsState()
@@ -180,10 +180,9 @@ private fun IOCListing(scope: IocScope.IOCListing) {
             } else {
                 LazyColumn(
                     state = rememberLazyListState(),
-                    contentPadding = PaddingValues(top = 16.dp),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 12.dp, vertical = 16.dp),
                 ) {
                     itemsIndexed(
                         items = items.value,
@@ -246,12 +245,13 @@ private fun StoreItem(
             expanded = expanded.value,
             headerBackground = Color.White,
             headerBorder = BorderStroke(0.dp, Color.Transparent),
-            headerMinHeight = 50.dp,
+            headerMinHeight = 55.dp,
             header = { _ ->
                 Surface(
                     shape = RoundedCornerShape(5.dp),
                     elevation = 5.dp,
                     color = Color.White,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     Row(
 
@@ -259,10 +259,10 @@ private fun StoreItem(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp, bottom = 12.dp)
+                            .padding(top = 12.dp, bottom = 12.dp, start = 5.dp, end = 5.dp)
                     ) {
                         Row(modifier = Modifier.weight(0.9f)) {
-                            Space(12.dp)
+                            Space(4.dp)
                             Checkbox(
                                 checked = check.value,
                                 colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
@@ -275,6 +275,7 @@ private fun StoreItem(
                                 color = ConstColors.lightBlue,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
+                                maxLines = 2,
                             )
                             Space(12.dp)
                         }
@@ -314,82 +315,90 @@ fun IocItem(
     onClick: () -> Unit,
     scope: IocScope.IOCListing,
 ) {
-    Column(
-        modifier = Modifier
-            .padding(all = 16.dp)
-            .clickable(onClick = onClick)
+
+    Surface(
+        shape = RoundedCornerShape(bottomEnd = 5.dp, bottomStart = 5.dp),
+        elevation = 5.dp,
+        color = Color.White,
+        modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 5.dp)
     ) {
-        Text(
-            text = buildAnnotatedString {
-                append(item.cityOrTown)
-                append(", ")
-                append(item.pincode)
-            },
-            color = MaterialTheme.colors.background,
-            fontWeight = FontWeight.W800,
-            fontSize = 14.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Column(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append(item.cityOrTown)
+                    append(", ")
+                    append(item.pincode)
+                },
+                color = MaterialTheme.colors.background,
+                fontWeight = FontWeight.W800,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
-        Space(4.dp)
+            Space(4.dp)
 
-        Text(
-            text = item.gstin,
-            color = ConstColors.lightBlue,
-            fontWeight = FontWeight.W500,
-            fontSize = 14.sp,
-        )
+            Text(
+                text = item.gstin,
+                color = ConstColors.lightBlue,
+                fontWeight = FontWeight.W500,
+                fontSize = 14.sp,
+            )
 
-        Space(4.dp)
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(id = R.string.dl_one_))
-                val startIndex = length
-                append(item.drugLicenseNo1)
-                addStyle(
-                    SpanStyle(
-                        color = ConstColors.txtGrey,
-                        fontWeight = FontWeight.W500
-                    ),
-                    startIndex,
-                    length,
-                )
-            },
-            color = ConstColors.txtGrey,
-            fontWeight = FontWeight.W500,
-            fontSize = 12.sp,
-        )
+            Space(4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.dl_one_))
+                    val startIndex = length
+                    append(item.drugLicenseNo1)
+                    addStyle(
+                        SpanStyle(
+                            color = ConstColors.txtGrey,
+                            fontWeight = FontWeight.W500
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.txtGrey,
+                fontWeight = FontWeight.W500,
+                fontSize = 12.sp,
+            )
 
-        Space(4.dp)
-        Text(
-            text = buildAnnotatedString {
-                append(stringResource(id = R.string.dl_two_))
-                val startIndex = length
-                append(item.drugLicenseNo2)
-                addStyle(
-                    SpanStyle(
-                        color = ConstColors.txtGrey,
-                        fontWeight = FontWeight.W500
-                    ),
-                    startIndex,
-                    length,
-                )
-            },
-            color = ConstColors.txtGrey,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.W500
-        )
+            Space(4.dp)
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.dl_two_))
+                    val startIndex = length
+                    append(item.drugLicenseNo2)
+                    addStyle(
+                        SpanStyle(
+                            color = ConstColors.txtGrey,
+                            fontWeight = FontWeight.W500
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                color = ConstColors.txtGrey,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.W500
+            )
 
-        Space(4.dp)
+            Space(4.dp)
 
-        Text(
-            text = item.paymentMethod,
-            fontSize = 12.sp,
-            color = ConstColors.lightBlue,
-        )
-        Space(4.dp)
-        /*Text(
+            Text(
+                text = item.paymentMethod,
+                fontSize = 12.sp,
+                color = ConstColors.lightBlue,
+            )
+            Space(4.dp)
+            /*Text(
             text = buildAnnotatedString {
                 append(stringResource(id = R.string.status))
                 append(": ")
@@ -408,6 +417,7 @@ fun IocItem(
             fontWeight = FontWeight.W700,
             color = MaterialTheme.colors.background,
         )*/
+        }
     }
 }
 

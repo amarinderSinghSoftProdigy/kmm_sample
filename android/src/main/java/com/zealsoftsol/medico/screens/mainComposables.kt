@@ -194,7 +194,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
     }
 
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
@@ -399,7 +399,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocScope -> IocScreen(it,scaffoldState)
+                    is IocScope -> IocScreen(it, scaffoldState)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
