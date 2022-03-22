@@ -533,6 +533,8 @@ sealed class Event {
             data class Search(val value: String) : IOC()
             data class Load(val search: String? = null) : IOC()
             object LoadMoreProducts : IOC()
+            object OpenCreateIOC : IOC()
+            data class OpenIOCDetails(val item: String) : IOC()
             data class ShowUploadBottomSheets(
                 val type: String
             ) : IOC()

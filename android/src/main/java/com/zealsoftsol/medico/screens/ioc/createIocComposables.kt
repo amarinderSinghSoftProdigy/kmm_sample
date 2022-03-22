@@ -157,21 +157,17 @@ private fun IOCListing(scope: IocScope.IOCListing) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .fillMaxWidth()
-                .background(color = ConstColors.lightBlue.copy(alpha = 0.1f))
         ) {
             Row(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-
                 MedicoRoundButton(
-                    /*modifier = Modifier.width(150.dp),*/
                     text = stringResource(id = R.string.continue_),
                     isEnabled = selectedIndex.value != -1,
                     elevation = null,
                     onClick = { scope.selectItem(items.value[selectedIndex.value]) },
-                    color = ConstColors.lightBlue,
-                    contentColor = Color.White,
+                    contentColor = MaterialTheme.colors.background,
                     wrapTextSize = true,
                 )
             }
@@ -201,7 +197,7 @@ private fun ParentIocItem(
             header = {
                 Surface(
                     shape = RoundedCornerShape(5.dp),
-                    elevation = 5.dp,
+                    elevation = 1.dp,
                     color = Color.White,
                     modifier = Modifier
                         .padding(horizontal = 4.dp, vertical = 4.dp)
@@ -266,7 +262,7 @@ fun IocItem(
 
     Surface(
         shape = RoundedCornerShape(bottomEnd = 5.dp, bottomStart = 5.dp),
-        elevation = 5.dp,
+        elevation = 1.dp,
         color = Color.White,
         modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 5.dp)
     ) {
@@ -366,6 +362,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val invoiceDate = scope.invoiceDate.flow.collectAsState()
     val totalAmount = scope.totalAmount.flow.collectAsState()
     val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
+    val enable = scope.enableButton.flow.collectAsState()
     if (invoiceUpload.value.cdnUrl.isNotEmpty()) {
         tradeCheck = true
     }
@@ -617,12 +614,11 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
         Space(16.dp)
         MedicoButton(
             text = stringResource(id = R.string.submit),
-            isEnabled = true,
+            isEnabled = enable.value,
             elevation = null,
             onClick = { scope.addInvoice() },
-            color = ConstColors.lightBlue,
-            contentColor = Color.White,
-            txtColor = Color.White,
+            contentColor = MaterialTheme.colors.background,
+            txtColor = MaterialTheme.colors.background,
         )
     }
 }

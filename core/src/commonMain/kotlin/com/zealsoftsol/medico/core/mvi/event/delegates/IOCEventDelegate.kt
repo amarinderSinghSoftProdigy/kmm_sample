@@ -32,13 +32,15 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.LoadMoreProducts -> loadMoreProducts()
         is Event.Action.IOC.Search -> searchStores(event.value)
         is Event.Action.IOC.Select -> select(event.item)
+        is Event.Action.IOC.OpenIOCDetails -> openDetails(event.item)
         is Event.Action.IOC.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
         is Event.Action.IOC.UploadInvoice -> uploadDocument(event)
         is Event.Action.IOC.SubmitInvoice -> submitInvoice(event.value)
+        is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
     }
 
     private suspend fun submitInvoice(value: AddInvoice) {
-        navigator.withScope<IocScope> {
+        navigator.withScope<IocScope.IOCCreate> {
             val result = withProgress {
                 networkStoresScope.submitInvoice(value)
             }
@@ -49,7 +51,7 @@ internal class IOCEventDelegate(
     }
 
     private suspend fun uploadDocument(event: Event.Action.IOC) {
-        navigator.withScope<IocScope> {
+        navigator.withScope<IocScope.IOCCreate> {
             val result = withProgress {
                 when (event) {
                     is Event.Action.IOC.UploadInvoice -> {
@@ -68,11 +70,12 @@ internal class IOCEventDelegate(
                 when (body.documentType) {
                     "IOC_IMAGE" -> {
                         it.invoiceUpload.value =
-                            it.invoiceUpload.value?.copy(
+                            it.invoiceUpload.value.copy(
                                 cdnUrl = body.cdnUrl,
                                 id = body.id,
                                 documentType = body.documentType
                             )
+                        it.validate()
                     }
 
                 }
@@ -135,6 +138,22 @@ internal class IOCEventDelegate(
         navigator.withScope<IocScope.IOCListing> {
             setScope(
                 IocScope.IOCCreate(item)
+            )
+        }
+    }
+
+    private fun openDetails(item: String) {
+        navigator.withScope<IocScope.InvListing> {
+            setScope(
+                IocScope.InvDetails(item)
+            )
+        }
+    }
+
+    private fun openCreateIOC() {
+        navigator.withScope<IocScope.InvListing> {
+            setScope(
+                IocScope.IOCListing()
             )
         }
     }

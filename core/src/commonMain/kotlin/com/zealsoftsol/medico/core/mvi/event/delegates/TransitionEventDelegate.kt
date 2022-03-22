@@ -220,7 +220,7 @@ internal class TransitionEventDelegate(
                     )
                 )
                is Event.Transition.QrCode -> setScope(QrCodeScope())
-               is Event.Transition.IOC -> setScope(IocScope.IOCListing())
+               is Event.Transition.IOC -> setScope(IocScope.InvListing())
             }
         }
     }

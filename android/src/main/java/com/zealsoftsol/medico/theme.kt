@@ -38,6 +38,7 @@ object ConstColors {
     val newDesignGray = Color(0xffF0F3F5)
     val darkGreen = Color(0xff509F00)
     val darkRed = Color(0xffF42525)
+    val marron = Color(0xff8F201F)
     val separator = Color(0XffE0E0E0)
     val txtGrey = Color(0XffA6A6A6)
     val lightGrey = Color(0xffEEEEEE)
