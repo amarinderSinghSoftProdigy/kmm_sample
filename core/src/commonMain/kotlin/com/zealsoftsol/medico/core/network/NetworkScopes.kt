@@ -2,6 +2,8 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AddInvoiceResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -439,25 +441,9 @@ interface NetworkScope {
             pagination: Pagination
         ): BodyResponse<IOCResponse>
 
-        suspend fun uploadInvoice(
-            unitCode: String,
-            request: Any
-        ): BodyResponse<String>
-
-        suspend fun autocompleteRetailers(
-            input: String,
-            unitCode: String,
-        ): BodyResponse<List<AutoComplete>>
-
-        suspend fun getAutocompleteRetailerItem(
-            input: String,
-            unitCode: String,
-        ): BodyResponse<AnyResponse>
-
-        suspend fun saveDetails(
-            unitCode: String,
-            request: Any
-        ): BodyResponse<String>
+        suspend fun submitInvoice(
+            request: AddInvoice
+        ): BodyResponse<AddInvoiceResponse>
 
     }
 }

@@ -11,6 +11,8 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AddInvoiceResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
@@ -1074,26 +1076,14 @@ class NetworkClient(
         }
     }
 
-    override suspend fun uploadInvoice(unitCode: String, request: Any): BodyResponse<String> {
-        TODO("Not yet implemented")
-    }
 
-    override suspend fun autocompleteRetailers(
-        input: String,
-        unitCode: String
-    ): BodyResponse<List<AutoComplete>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getAutocompleteRetailerItem(
-        input: String,
-        unitCode: String
-    ): BodyResponse<AnyResponse> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun saveDetails(unitCode: String, request: Any): BodyResponse<String> {
-        TODO("Not yet implemented")
+    override suspend fun submitInvoice(
+        request: AddInvoice
+    ) = simpleRequest {
+        client.post<BodyResponse<AddInvoiceResponse>>("${baseUrl.url}/ioc/add/invoice") {
+            withMainToken()
+            jsonBody(request)
+        }
     }
 
     override suspend fun getAutocompleteItem(

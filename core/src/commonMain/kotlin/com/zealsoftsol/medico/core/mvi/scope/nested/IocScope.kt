@@ -1,32 +1,24 @@
 package com.zealsoftsol.medico.core.mvi.scope.nested
 
 import com.zealsoftsol.medico.core.interop.DataSource
-import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
-import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.data.AutoComplete
-import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.Filter
-import com.zealsoftsol.medico.data.GeoData
-import com.zealsoftsol.medico.data.GeoPoints
-import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.RetailerData
-import com.zealsoftsol.medico.data.SortOption
-import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.UploadResponseData
 
-sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
+
+sealed class IocScope : Scope.Child.TabBar(), CommonScope.CanGoBack, CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
 
-    val invoiceUpload: DataSource<UploadResponseData?> = DataSource(null)
+    val invoiceUpload: DataSource<UploadResponseData> =
+        DataSource(UploadResponseData("", "", "", ""))
 
     class IOCListing : IocScope(), Loadable<RetailerData> {
         override val isRoot: Boolean = false
@@ -36,10 +28,6 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val selectedIndex: DataSource<Int> = DataSource(-1)
         override val searchText: DataSource<String> = DataSource("")
 
-        init {
-            EventCollector.sendEvent(Event.Action.IOC.Load(searchText.value))
-        }
-
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title = "create_debt")
         }
@@ -48,19 +36,23 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             selectedIndex.value = index
         }
 
-        fun selectItem(item: String) =
+        fun selectItem(item: RetailerData) =
             EventCollector.sendEvent(Event.Action.IOC.Select(item))
 
-        fun search(value: String) = EventCollector.sendEvent(Event.Action.IOC.Search(value))
+        fun search(value: String) {
+            updateIndex(-1)
+            EventCollector.sendEvent(Event.Action.IOC.Search(value))
+        }
 
         fun loadItems() = EventCollector.sendEvent(Event.Action.IOC.LoadMoreProducts)
 
     }
 
-    class IOCCreate(val title: String) : IocScope() {
+    class IOCCreate(val item: RetailerData) : IocScope() {
 
         val invoiceNum: DataSource<String> = DataSource("")
         val invoiceDate: DataSource<String> = DataSource("")
+        private val invoiceDateMili: DataSource<Long> = DataSource(0)
         val totalAmount: DataSource<String> = DataSource("")
         val outstandingAmount: DataSource<String> = DataSource("")
 
@@ -69,11 +61,16 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             invoiceNum.value = data
         }
 
-        fun updateInvoiceDate(data: String) {
+        fun updateInvoiceDate(data: String, mili: Long) {
             invoiceDate.value = data
+            invoiceDateMili.value = mili
         }
 
         fun updateTotalAmount(data: String) {
+            if (data == "0" || data == "0.0") {
+                totalAmount.value = ""
+                return
+            }
             totalAmount.value = data
         }
 
@@ -81,12 +78,26 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             outstandingAmount.value = data
         }
 
+        fun addInvoice() {
+            val addRequest = AddInvoice(
+                item.unitCode,
+                invoiceNum.value,
+                invoiceDateMili.value,
+                totalAmount.value.toDouble(),
+                outstandingAmount.value.toDouble(),
+                invoiceUpload.value.cdnUrl,
+                invoiceUpload.value.id,
+                invoiceUpload.value.documentType
+            )
+            EventCollector.sendEvent(Event.Action.IOC.SubmitInvoice(addRequest))
+        }
+
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = title)
+            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
         }
 
         fun previewImage(item: String) =
-            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item, type = "type"))
+            EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
     }
 }

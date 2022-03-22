@@ -42,6 +42,7 @@ object ConstColors {
     val txtGrey = Color(0XffA6A6A6)
     val lightGrey = Color(0xffEEEEEE)
     val lightBackground = Color(0xffF9F9F9)
+    val inputFieldColor = Color(0xff698896)
 }
 
 @Composable

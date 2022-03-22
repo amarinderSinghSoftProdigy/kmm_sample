@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.ioc
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -7,17 +8,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
@@ -37,7 +35,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,14 +43,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -65,7 +60,6 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
-import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ImageLabel
@@ -80,6 +74,9 @@ import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
 import com.zealsoftsol.medico.utils.PermissionViewModel
 import org.joda.time.DateTime
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
@@ -93,65 +90,7 @@ fun IocScreen(scope: IocScope, scaffoldState: ScaffoldState) {
     }
 }
 
-/**
- * items to be displayed in autocomplete dropdown list
- */
-@Composable
-private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
-    val regex = "(?i)$input".toRegex()
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 12.dp, horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            BoxWithConstraints {
-                Column(modifier = Modifier.widthIn(max = maxWidth - 24.dp)) {
-                    Text(
-                        text = buildAnnotatedString {
-                            append(autoComplete.suggestion)
-                            regex.find(autoComplete.suggestion)?.let {
-                                addStyle(
-                                    SpanStyle(fontWeight = FontWeight.W700),
-                                    it.range.first,
-                                    it.range.last + 1,
-                                )
-                            }
-                        },
-                        color = MaterialTheme.colors.background,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W400,
-                    )
-                    if (autoComplete.details.isNotEmpty()) {
-                        Text(
-                            text = autoComplete.details,
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colors.background,
-                            fontWeight = FontWeight.W400,
-                        )
-                    }
-                }
-            }
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                tint = ConstColors.lightBlue,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
-        }
-        Divider(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            color = Color(0xFFE6F0F7),
-        )
-    }
-}
-
+@SuppressLint("RememberReturnType")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -159,6 +98,10 @@ private fun IOCListing(scope: IocScope.IOCListing) {
     val search = scope.searchText.flow.collectAsState()
     val selectedIndex = scope.selectedIndex.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
+
+    remember {
+        scope.search("")
+    }
 
     Box {
         Column {
@@ -196,7 +139,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                     itemsIndexed(
                         items = items.value,
                         itemContent = { index, item ->
-                            StoreItem(
+                            ParentIocItem(
                                 item,
                                 scope, index, selectedIndex.value
                             )
@@ -226,7 +169,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                     text = stringResource(id = R.string.continue_),
                     isEnabled = selectedIndex.value != -1,
                     elevation = null,
-                    onClick = { scope.selectItem(items.value[selectedIndex.value].tradeName) },
+                    onClick = { scope.selectItem(items.value[selectedIndex.value]) },
                     color = ConstColors.lightBlue,
                     contentColor = Color.White,
                     wrapTextSize = true,
@@ -240,7 +183,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun StoreItem(
+private fun ParentIocItem(
     store: RetailerData,
     scope: IocScope.IOCListing,
     index: Int,
@@ -255,7 +198,7 @@ private fun StoreItem(
             headerBackground = Color.White,
             headerBorder = BorderStroke(0.dp, Color.Transparent),
             headerMinHeight = 50.dp,
-            header = { _ ->
+            header = {
                 Surface(
                     shape = RoundedCornerShape(5.dp),
                     elevation = 5.dp,
@@ -307,8 +250,7 @@ private fun StoreItem(
             itemsBackground = Color.Transparent,
             item = { value, _ ->
                 IocItem(
-                    item = value,
-                    scope = scope,
+                    item = value
                 )
             }
         )
@@ -317,11 +259,9 @@ private fun StoreItem(
 }
 
 @ExperimentalComposeUiApi
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun IocItem(
     item: RetailerData,
-    scope: IocScope.IOCListing,
 ) {
 
     Surface(
@@ -405,30 +345,12 @@ fun IocItem(
                 color = ConstColors.lightBlue,
             )
             Space(4.dp)
-            /*Text(
-            text = buildAnnotatedString {
-                append(stringResource(id = R.string.status))
-                append(": ")
-                val startIndex = length
-                append(item.status)
-                addStyle(
-                    SpanStyle(
-                        color = ConstColors.lightGreen,
-                        fontWeight = FontWeight.W700
-                    ),
-                    startIndex,
-                    length,
-                )
-            },
-            fontSize = 12.sp,
-            fontWeight = FontWeight.W700,
-            color = MaterialTheme.colors.background,
-        )*/
         }
     }
 }
 
 
+@SuppressLint("SimpleDateFormat")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -444,13 +366,19 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val invoiceDate = scope.invoiceDate.flow.collectAsState()
     val totalAmount = scope.totalAmount.flow.collectAsState()
     val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
-    if (invoiceUpload.value != null) {
+    if (invoiceUpload.value.cdnUrl.isNotEmpty()) {
         tradeCheck = true
     }
 
     PermissionCheckUIForInvoice(scaffoldState, permissionViewModel)
 
-    Column(modifier = Modifier.padding(all = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(all = 16.dp)
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+    ) {
         Space(16.dp)
         InputField(
             modifier = Modifier
@@ -469,57 +397,74 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 keyboardController?.hide()
             })
         )
-        Space(12.dp)
-        InputField(
-            modifier = Modifier
-                .align(Alignment.Start)
-                .scrollOnFocus(scrollState, coroutineScope),
-            hint = stringResource(id = R.string.enter_invoice_date),
-            text = invoiceDate.value,
-            isValid = true,
-            onValueChange = { },
-            mandatory = true,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-            })
+        Space(16.dp)
+
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clickable {
+                val now = DateTime.now()
+                val dialog = DatePickerDialog(
+                    context,
+                    { _, year, month, day ->
+                        val formatter = SimpleDateFormat("dd/MM/yyyy")
+                        formatter.isLenient = false
+                        val oldTime = "$day/${month + 1}/${year}"
+                        val oldDate: Date? = formatter.parse(oldTime)
+                        val oldMillis: Long? = oldDate?.time
+                        scope.updateInvoiceDate(oldTime, oldMillis ?: 0)
+                    },
+                    now.year,
+                    now.monthOfYear - 1,
+                    now.dayOfMonth,
+                )
+                dialog.show()
+            }) {
+
+            Text(
+                text = buildAnnotatedString {
+                    append(stringResource(id = R.string.enter_invoice_date))
+                    val startIndex = length
+                    append(" *")
+                    addStyle(
+                        SpanStyle(
+                            color = ConstColors.red,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        startIndex,
+                        length,
+                    )
+                },
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = ConstColors.inputFieldColor,
+            )
+            if (invoiceDate.value.isNotEmpty()) {
+                Text(
+                    text = invoiceDate.value,
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
+                )
+                Space(dp = 12.dp)
+            } else {
+                Space(dp = 16.dp)
+            }
+        }
+        Divider(
+            color = ConstColors.inputFieldColor,
+            thickness = 1.dp,
         )
 
-        /*Space(12.dp)
-        InputField(
-            modifier = Modifier
-                .scrollOnFocus(scrollState, coroutineScope)
-                .onFocusEvent {
-                    if (it.isFocused) {
-                        val now = DateTime.now()
-                        val dialog = DatePickerDialog(
-                            context,
-                            { _, year, month, _ ->
-                                scope.updateInvoiceDate("${month + 1}/${year}")
-                            },
-                            now.year,
-                            now.monthOfYear - 1,
-                            now.dayOfMonth,
-                        )
-                        dialog.show()
-                    }
-                },
-            hint = stringResource(id = R.string.enter_invoice_date),
-            text = invoiceDate.value,
-            isValid = true,
-            onValueChange = { },
-            mandatory = true,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-            })
-        )*/
+        val total = remember {
+            mutableStateOf(
+                if (totalAmount.value.split(".")
+                        .lastOrNull() == ""
+                ) totalAmount.value.split(".")
+                    .first() else totalAmount.value
+            )
+        }
 
         Space(12.dp)
         InputField(
@@ -527,9 +472,40 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_total_amount),
-            text = totalAmount.value.toString(),
+            text = totalAmount.value,
             isValid = true,
-            onValueChange = { scope.updateTotalAmount(it) },
+            onValueChange = {
+                val split =
+                    it.replace(",", ".").split(".")
+                val beforeDot = split[0]
+                val afterDot = split.getOrNull(1)
+                var modBefore =
+                    beforeDot.toIntOrNull() ?: 0
+                val modAfter = when (afterDot?.length) {
+                    0 -> "."
+                    in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                        1
+                    ).toIntOrNull()) {
+                        0 -> ".0"
+                        in 1..4 -> ".0"
+                        5 -> ".5"
+                        in 6..9 -> {
+                            modBefore++
+                            ".0"
+                        }
+                        null -> ""
+                        else -> throw UnsupportedOperationException(
+                            "cant be that"
+                        )
+                    }
+                    null -> ""
+                    else -> throw UnsupportedOperationException(
+                        "cant be that"
+                    )
+                }
+                total.value = "$modBefore$modAfter"
+                scope.updateTotalAmount(total.value)
+            },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -540,17 +516,56 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             })
         )
         Space(12.dp)
+        val outStand = remember {
+            mutableStateOf(
+                if (totalAmount.value.split(".")
+                        .lastOrNull() == ""
+                ) totalAmount.value.split(".")
+                    .first() else totalAmount.value
+            )
+        }
         InputField(
             modifier = Modifier
                 .align(Alignment.Start)
                 .scrollOnFocus(scrollState, coroutineScope),
             hint = stringResource(id = R.string.enter_outstanding_amount),
-            text = outstandingAmount.value.toString(),
+            text = outstandingAmount.value,
             isValid = true,
-            onValueChange = { scope.updateOutstandingAmount(it) },
+            onValueChange = {
+                val split =
+                    it.replace(",", ".").split(".")
+                val beforeDot = split[0]
+                val afterDot = split.getOrNull(1)
+                var modBefore =
+                    beforeDot.toIntOrNull() ?: 0
+                val modAfter = when (afterDot?.length) {
+                    0 -> "."
+                    in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                        1
+                    ).toIntOrNull()) {
+                        0 -> ".0"
+                        in 1..4 -> ".0"
+                        5 -> ".5"
+                        in 6..9 -> {
+                            modBefore++
+                            ".0"
+                        }
+                        null -> ""
+                        else -> throw UnsupportedOperationException(
+                            "cant be that"
+                        )
+                    }
+                    null -> ""
+                    else -> throw UnsupportedOperationException(
+                        "cant be that"
+                    )
+                }
+                outStand.value = "$modBefore$modAfter"
+                scope.updateOutstandingAmount(outStand.value)
+            },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
+                keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
@@ -562,7 +577,6 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
         Surface(
             onClick = {
                 permissionViewModel.setPerformLocationAction(true, "IOC_IMAGE")
-                //scope.showBottomSheet("TRADE_PROFILE", scope.registrationStep1)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -592,11 +606,11 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             }
         }
 
-        if (invoiceUpload.value != null) {
+        if (invoiceUpload.value.cdnUrl.isNotEmpty()) {
             Space(16.dp)
-            val url = invoiceUpload.value?.cdnUrl ?: ""
+            val url = invoiceUpload.value.cdnUrl
             ImageLabel(
-                url
+                url, true
             ) { scope.previewImage(url) }
         }
 
@@ -605,7 +619,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             text = stringResource(id = R.string.submit),
             isEnabled = true,
             elevation = null,
-            onClick = { },
+            onClick = { scope.addInvoice() },
             color = ConstColors.lightBlue,
             contentColor = Color.White,
             txtColor = Color.White,

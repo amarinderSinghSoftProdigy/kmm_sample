@@ -9,6 +9,11 @@ data class IOCResponse(
     val results: List<RetailerData>,
 )
 
+@Serializable
+data class AddInvoiceResponse(
+    val info: String,
+)
+
 
 @Serializable
 data class RetailerData(
@@ -24,5 +29,19 @@ data class RetailerData(
     val customerType: String,
     val status: String
 )
+
+@Serializable
+data class AddInvoice(
+    val unitCode: String,
+    val invoiceNo: String,
+    val invoiceDate: Long,
+    val invoiceTotal: Double,
+    val outstandingAmt: Double,
+    val invoiceCdnUrl: String,
+    val documentId: String,
+    val documentType: String
+)
+
+
 
 

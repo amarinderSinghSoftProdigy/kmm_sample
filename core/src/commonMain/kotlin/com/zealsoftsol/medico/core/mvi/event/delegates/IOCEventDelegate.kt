@@ -12,6 +12,8 @@ import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.RetailerData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,6 +34,18 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.Select -> select(event.item)
         is Event.Action.IOC.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
         is Event.Action.IOC.UploadInvoice -> uploadDocument(event)
+        is Event.Action.IOC.SubmitInvoice -> submitInvoice(event.value)
+    }
+
+    private suspend fun submitInvoice(value: AddInvoice) {
+        navigator.withScope<IocScope> {
+            val result = withProgress {
+                networkStoresScope.submitInvoice(value)
+            }
+            result.onSuccess { body ->
+                it.goBack()
+            }.onError(navigator)
+        }
     }
 
     private suspend fun uploadDocument(event: Event.Action.IOC) {
@@ -54,7 +68,11 @@ internal class IOCEventDelegate(
                 when (body.documentType) {
                     "IOC_IMAGE" -> {
                         it.invoiceUpload.value =
-                            it.invoiceUpload.value?.copy(cdnUrl = body.cdnUrl, id = body.id)
+                            it.invoiceUpload.value?.copy(
+                                cdnUrl = body.cdnUrl,
+                                id = body.id,
+                                documentType = body.documentType
+                            )
                     }
 
                 }
@@ -113,7 +131,7 @@ internal class IOCEventDelegate(
         }
     }
 
-    private fun select(item: String) {
+    private fun select(item: RetailerData) {
         navigator.withScope<IocScope.IOCListing> {
             setScope(
                 IocScope.IOCCreate(item)

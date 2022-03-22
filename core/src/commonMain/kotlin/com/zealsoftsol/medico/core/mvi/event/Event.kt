@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Batch
@@ -36,6 +37,7 @@ import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
@@ -527,13 +529,14 @@ sealed class Event {
                 val type: String
             ) : IOC()
 
-            data class Select(val item: String) : IOC()
+            data class Select(val item: RetailerData) : IOC()
             data class Search(val value: String) : IOC()
             data class Load(val search: String? = null) : IOC()
             object LoadMoreProducts : IOC()
             data class ShowUploadBottomSheets(
                 val type: String
             ) : IOC()
+            data class SubmitInvoice(val value: AddInvoice) : IOC()
         }
     }
 
