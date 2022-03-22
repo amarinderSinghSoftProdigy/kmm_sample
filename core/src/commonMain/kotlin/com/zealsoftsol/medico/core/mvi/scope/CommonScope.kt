@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration1
+import com.zealsoftsol.medico.data.UserV2
 
 interface CommonScope : Scopable {
     interface PhoneVerificationEntryPoint : CommonScope
@@ -42,6 +43,9 @@ interface CommonScope : Scopable {
         }
     }
 
+    interface WithUserV2 : CommonScope {
+        val userV2: ReadOnlyDataSource<UserV2>
+    }
     interface WithUser : CommonScope {
         val user: ReadOnlyDataSource<User>
     }

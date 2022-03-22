@@ -324,16 +324,16 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is LimitedAccessScope -> {
                         val user = it.user.flow.collectAsState()
                         WelcomeScreen(
-                            fullName = "",//user.value.fullName(),
-                            option = /*if (!user.value.isDocumentUploaded) {
+                            fullName = user.value.fullName(),
+                            option = if (!user.value.isDocumentUploaded) {
                                 if (it is AadhaarDataComponent) {
                                     WelcomeOption.Upload.Aadhaar(it) { it.showBottomSheet() }
                                 } else {
                                     WelcomeOption.Upload.DrugLicense { it.showBottomSheet() }
                                 }
-                            } else {*/
-                                WelcomeOption.Thanks(null),
-                            //},
+                            } else {
+                                WelcomeOption.Thanks(null)
+                            },
                         )
                     }
                     is DashboardScope -> {
@@ -388,10 +388,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     is OrderHsnEditScope -> OrderHsnEditScreen(it)
                     is InventoryScope -> InventoryMainComposable(it)
                     is SettingsScope.Profile -> ProfileComposable(it.user)
-                    is SettingsScope.Address -> AddressComposable(//it.user.addressData
-                        AddressData("","","","",0.0,0.0,"",0,"",""))
+                    is SettingsScope.Address -> AddressComposable(it.user.addressData)
                     is SettingsScope.GstinDetails -> GstinDetailsComposable(
-                        User.Details.DrugLicense("","","","","","")//it.user.details as User.Details.DrugLicense,
+                        it.user.details as User.Details.DrugLicense,
                     )
                     is MenuScope -> {
                         MenuScreen(it)

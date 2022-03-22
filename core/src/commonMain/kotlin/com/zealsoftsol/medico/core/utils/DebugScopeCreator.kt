@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.kodein.di.instance
 
@@ -197,7 +198,7 @@ object DebugScopeCreator {
         type: UserType,
         isDocumentUploaded: Boolean
     ) {
-        val user = testUser.copy(
+        val user = testUserV2.copy(
             type = type,
             /* details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
                  "",
@@ -208,7 +209,8 @@ object DebugScopeCreator {
         )
         nav.setScope(
             LimitedAccessScope.get(
-                user,
+                testUser,
+                ReadOnlyDataSource(MutableStateFlow(testUser)),
                 ReadOnlyDataSource(MutableStateFlow(user)),
             )
         )
@@ -218,8 +220,8 @@ object DebugScopeCreator {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             DashboardScope.get(
-                testUser,
-                ReadOnlyDataSource(MutableStateFlow(testUser)),
+                testUserV2,
+                ReadOnlyDataSource(MutableStateFlow(testUserV2)),
                 ReadOnlyDataSource(MutableStateFlow(null)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
@@ -285,16 +287,25 @@ object DebugScopeCreator {
 
 private inline val testUser
     get() = User(
-        /*"Test",
+        "Test",
         "User",
         "test@mail.com",
-        "000",*/
+        "000",
         "unitcode",
         UserType.STOCKIST,
-        /*User.Details.DrugLicense("", "", "","", "", "url"),
-        */true,
-        0.0, 0.0
-        /*true,
+        User.Details.DrugLicense("", "", "", "", "", "url"),
+        true,
+
+        true,
         AddressData("", "", "", "", 0.0, 0.0, "", 0, "", ""),
-        Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),*/
+        Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),
+    )
+
+private inline val testUserV2
+    get() = UserV2(
+        "unitcode",
+        UserType.STOCKIST,
+        true,
+
+        0.0, 0.0, "", ""
     )

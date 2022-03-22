@@ -262,7 +262,7 @@ internal class RegistrationEventDelegate(
                         //startOtp(it.registrationStep1.phoneNumber)
                     }
                     is LimitedAccessScope -> {
-                        userRepo.loadUserFromServer().onError(navigator)
+                        userRepo.loadUserFromServerV2().onError(navigator)
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }

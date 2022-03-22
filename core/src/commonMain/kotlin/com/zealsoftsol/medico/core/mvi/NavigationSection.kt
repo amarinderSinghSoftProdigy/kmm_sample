@@ -5,9 +5,10 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 
 data class NavigationSection(
-    val user: ReadOnlyDataSource<User>,
+    val user: ReadOnlyDataSource<UserV2>,
     val main: List<NavigationOption> = NavigationOption.empty(),
     val footer: List<NavigationOption> = NavigationOption.empty(),
 )
