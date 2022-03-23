@@ -2,6 +2,18 @@ package com.zealsoftsol.medico.data
 
 import kotlinx.serialization.Serializable
 
+
+@Serializable
+data class UserV2(
+    val unitCode: String,
+    val type: UserType,
+    val isActivated: Boolean,
+    val latitude: Double,
+    val longitude: Double,
+    val name: String,
+    val tradeName: String,
+)
+
 @Serializable
 data class User(
     val firstName: String,

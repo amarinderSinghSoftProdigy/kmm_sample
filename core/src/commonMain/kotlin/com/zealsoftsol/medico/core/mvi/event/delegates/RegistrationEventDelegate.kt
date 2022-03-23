@@ -223,8 +223,8 @@ internal class RegistrationEventDelegate(
                         userRepo.uploadDrugLicense(
                             fileString = event.licenseAsBase64,
                             phoneNumber = userReg?.phoneNumber
-                                ?: userRepo.requireUser().phoneNumber,
-                            email = userReg?.email ?: userRepo.requireUser().email,
+                                ?: ""/*userRepo.requireUser().phoneNumber*/,
+                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
                             mimeType = event.fileType.mimeType,
                         ).onSuccess { body ->
                             storageKey = body.key
@@ -237,8 +237,8 @@ internal class RegistrationEventDelegate(
                             aadhaar = requireNotNull(searchQueuesFor<AadhaarDataComponent>()).aadhaarData.value,
                             fileString = event.aadhaarAsBase64,
                             phoneNumber = userReg?.phoneNumber
-                                ?: userRepo.requireUser().phoneNumber,
-                            email = userReg?.email ?: userRepo.requireUser().email,
+                                ?: ""/*userRepo.requireUser().phoneNumber*/,
+                            email = userReg?.email ?: ""/*userRepo.requireUser().email*/,
                         ).onError(navigator)
                             .isSuccess
                     }
@@ -262,7 +262,7 @@ internal class RegistrationEventDelegate(
                         //startOtp(it.registrationStep1.phoneNumber)
                     }
                     is LimitedAccessScope -> {
-                        userRepo.loadUserFromServer().onError(navigator)
+                        userRepo.loadUserFromServerV2().onError(navigator)
                     }
                     else -> throw UnsupportedOperationException("unknown UploadDocument common scope")
                 }

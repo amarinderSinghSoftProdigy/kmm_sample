@@ -12,6 +12,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 
 /**
  * Entry scope for authorized activated users
@@ -110,8 +111,8 @@ class DashboardScope private constructor(
 
     companion object {
         fun get(
-            user: User,
-            userDataSource: ReadOnlyDataSource<User>,
+            user: UserV2,
+            userDataSource: ReadOnlyDataSource<UserV2>,
             dashboardData: ReadOnlyDataSource<DashboardData?>,
             unreadNotifications: ReadOnlyDataSource<Int>,
             cartItemsCount: ReadOnlyDataSource<Int>,

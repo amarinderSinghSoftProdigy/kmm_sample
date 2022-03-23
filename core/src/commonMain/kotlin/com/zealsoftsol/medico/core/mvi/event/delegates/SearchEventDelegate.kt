@@ -345,7 +345,8 @@ internal class SearchEventDelegate(
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
-            val address = userRepo.requireUser().addressData
+            //val address = userRepo.requireUser().addressData
+            val address = userRepo.requireUser()
             networkSearchScope.search(
                 selectedSortOption.value?.code,
                 (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },

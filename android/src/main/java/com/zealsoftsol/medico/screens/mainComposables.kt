@@ -104,6 +104,7 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
+import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName

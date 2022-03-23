@@ -8,6 +8,8 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.SettingsScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.repository.UserRepo
+import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.data.ErrorCode
 
 internal class ProfileEventDelegate(
@@ -25,11 +27,13 @@ internal class ProfileEventDelegate(
     private suspend fun getProfileData() {
         navigator.withScope<SettingsScope> {
             val result = withProgress {
+                userRepo.loadUserFromServer()
                 userRepo.getProfileImageData()
             }
             result.onSuccess { _ ->
                 val data = result.getBodyOrNull()
                 it.profileData.value = data
+                it.userDetails.value = userRepo.requireUserOld()
             }.onError(navigator)
         }
     }

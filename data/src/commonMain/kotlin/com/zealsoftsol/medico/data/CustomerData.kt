@@ -26,6 +26,17 @@ data class CustomerData(
 )
 
 @Serializable
+data class CustomerDataV2(
+    val metaData: CustomerMetaData?,
+    val customerType: String,
+    val unitCode: String?,
+    val latitude: Double,
+    val longitude: Double,
+    val name: String,
+    val tradeName: String,
+)
+
+@Serializable
 data class CustomerMetaData(
     val activated: Boolean,
     val pageType: String,

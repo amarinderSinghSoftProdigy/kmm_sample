@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
@@ -321,6 +322,12 @@ class NetworkClient(
                 jsonBody(data)
             }
         }
+
+    override suspend fun getCustomerDataV2() = simpleRequest {
+        client.get<BodyResponse<CustomerDataV2>>("${baseUrl.url}/medico/customer/v2/details") {
+            withMainToken()
+        }
+    }
 
     override suspend fun getCustomerData() = simpleRequest {
         client.get<BodyResponse<CustomerData>>("${baseUrl.url}/medico/customer/details") {

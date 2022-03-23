@@ -62,6 +62,7 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
     val user = scope.mUser
     val userType = user.type
     val profileData = scope.profileData.flow.collectAsState()
+    val userDetails = scope.userDetails.flow.collectAsState()
     val permissionViewModel = PermissionViewModel()
     PermissionCheckUI(scaffoldState, permissionViewModel)
     Box(
@@ -116,10 +117,9 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
 
         Text(
             text = if (userType == UserType.STOCKIST) {
-                //(user.details as User.Details.DrugLicense).tradeName
-                user.fullName()
+                user.tradeName
             } else {
-                user.fullName()
+                userDetails.value?.fullName() ?: ""
             },
             color = Color.Black,
             modifier = Modifier.padding(start = 115.dp, top = 155.dp),
@@ -184,18 +184,6 @@ fun SettingsScreen(scope: SettingsScope, scaffoldState: ScaffoldState) {
                     stringResourceId = R.string.whatsapp,
                     scope = scope
                 )
-//                Separator(thickness = 0.5f)
-//                AccountContentItem(
-//                    drawableResourceId = R.drawable.ic_invoice_pref,
-//                    stringResourceId = R.string.invoice_preferences,
-//                    scope = scope
-//                )
-//                Separator(thickness = 0.5f)
-//                AccountContentItem(
-//                    drawableResourceId = R.drawable.ic_order_value,
-//                    stringResourceId = R.string.order_value,
-//                    scope = scope
-//                )
             } else {
                 AccountContentItem(
                     route = Event.Transition.WhatsappPreference,
