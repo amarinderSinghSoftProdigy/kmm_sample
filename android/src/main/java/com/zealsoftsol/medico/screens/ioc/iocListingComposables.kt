@@ -704,9 +704,16 @@ fun PaymentOptionItem(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Image(
-                        painter = painterResource(id = R.drawable.ic_cash_in_hand),
+                        painter = when (index) {
+                            0 -> painterResource(id = R.drawable.ic_cash_in_hand)
+                            1 -> painterResource(id = R.drawable.ic_gpay)
+                            2 -> painterResource(id = R.drawable.ic_phonepe)
+                            3 -> painterResource(id = R.drawable.ic_amazon_pay)
+                            4 -> painterResource(id = R.drawable.ic_upi)
+                            else -> painterResource(id = R.drawable.ic_net_banking)
+                        },
                         contentDescription = null,
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier.size(40.dp)
                     )
                     Space(dp = 4.dp)
                     Text(
@@ -775,9 +782,11 @@ fun SpinnerItem(
     index: Int,
     onClick: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = onClick)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
