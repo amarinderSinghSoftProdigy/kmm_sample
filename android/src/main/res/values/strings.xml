@@ -430,6 +430,7 @@
     <string name="inv_online_collection">Inv. Online Collection</string>
     <string name="amount_received">Amount Received</string>
     <string name="ddmmyy">dd/mm/yy</string>
+    <string name="invoice_online_col">Inv. Online Collection</string>
 
     <!-- Termrs and Cond -->
 

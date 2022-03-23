@@ -16,6 +16,7 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
@@ -24,6 +25,7 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
@@ -438,11 +440,30 @@ sealed class BottomSheet {
     data class ShowConnectedStockist(val stockist: List<ConnectedStockist>) : BottomSheet()
 
     class EditIOC(
-        val info: String,
+        val info: InvoiceData,
     ) : BottomSheet() {
+
+        val date = DataSource(info.date)
+        val amount = DataSource(info.amount)
+        val type = DataSource(info.type)
+
+        fun updateDate(date: String, mili: Long) {
+            this.date.value = date
+        }
+
+        fun updateAmount(data: String) {
+            this.amount.value = data
+        }
+
+        fun updateType(data: String) {
+            this.type.value = data
+        }
+
         fun confirm() {
             EventCollector.sendEvent(Event.Action.IOC.UpdateIOC)
         }
+
+
     }
 
 }

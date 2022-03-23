@@ -42,6 +42,13 @@ data class AddInvoice(
     val documentType: String
 )
 
+@Serializable
+data class InvoiceData(
+    val date: String,
+    val amount: String,
+    val type: String
+)
+
 
 
 

@@ -42,6 +42,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
@@ -50,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -89,6 +91,7 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
@@ -102,6 +105,8 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
+import com.zealsoftsol.medico.screens.common.FoldableItem
+import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -116,6 +121,9 @@ import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.ioc.IocItem
+import com.zealsoftsol.medico.screens.ioc.SpinnerItem
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
@@ -123,7 +131,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun Scope.Host.showBottomSheet(
@@ -280,7 +292,7 @@ fun Scope.Host.showBottomSheet(
             )
             is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
             is BottomSheet.EditIOC -> EditIOCBottomSheet(
-                bs.info,
+                bs,
                 onConfirm = { bs.confirm() },
                 onDismiss = { dismissBottomSheet() },
             )
@@ -3878,14 +3890,22 @@ private fun ViewEditCartBottomSheet(
     }
 }
 
+@ExperimentalComposeUiApi
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun EditIOCBottomSheet(
-    item: String,
+    scope: BottomSheet.EditIOC,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val activity = LocalContext.current as MainActivity
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val date = scope.date.flow.collectAsState()
+    val amount = scope.amount.flow.collectAsState()
+    val type = scope.type.flow.collectAsState()
+
     BaseBottomSheet(onDismiss) {
         Box(
             modifier = Modifier
@@ -3897,6 +3917,7 @@ private fun EditIOCBottomSheet(
                     .fillMaxWidth()
                     .align(Alignment.BottomEnd)
             ) {
+                Space(dp = 8.dp)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -3927,26 +3948,169 @@ private fun EditIOCBottomSheet(
                     }
                 }
 
-                Space(dp = 16.dp)
-                Column {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Column {
+                Space(dp = 20.dp)
+                Column(horizontalAlignment = Alignment.End) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier
+                            .weight(0.4f)
+                            .clickable {
+                                val now = DateTime.now()
+                                val dialog = DatePickerDialog(
+                                    activity,
+                                    { _, year, month, day ->
+                                        val formatter = SimpleDateFormat("dd/MM/yyyy")
+                                        formatter.isLenient = false
+                                        val oldTime = "$day/${month + 1}/${year}"
+                                        val oldDate: Date? = formatter.parse(oldTime)
+                                        val oldMillis: Long? = oldDate?.time
+                                        scope.updateDate(oldTime, oldMillis ?: 0)
+                                    },
+                                    now.year,
+                                    now.monthOfYear - 1,
+                                    now.dayOfMonth,
+                                )
+                                dialog.show()
+                            }) {
                             Text(
-                                text = stringResource(id = R.string.ddmmyy),
+                                text = if (date.value.isNotEmpty()) date.value else stringResource(
+                                    id = R.string.ddmmyy
+                                ),
                                 fontSize = 14.sp,
-                                color = ConstColors.txtGrey
+                                color = if (date.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.txtGrey
                             )
-                            Divider(thickness = 0.5.dp)
+                            Space(dp = 8.dp)
+                            Divider(
+                                thickness = 0.5.dp, color = ConstColors.lightBlue,
+                            )
                         }
+                        Space(dp = 30.dp)
+                        Column(modifier = Modifier.weight(0.4f)) {
+                            val total = remember {
+                                mutableStateOf(
+                                    if (amount.value.split(".")
+                                            .lastOrNull() == ""
+                                    ) amount.value.split(".")
+                                        .first() else amount.value
+                                )
+                            }
+                            BasicTextField(
+                                value = if (total.value.isNotEmpty()) total.value else "0.0",
+                                modifier = Modifier
+                                    .align(Alignment.Start)
+                                    .scrollOnFocus(scrollState, coroutineScope),
+                                onValueChange = {
+                                    val split = it.replace(",", ".").split(".")
+                                    val beforeDot = split[0]
+                                    val afterDot = split.getOrNull(1)
+                                    var modBefore =
+                                        beforeDot.toIntOrNull() ?: 0
+                                    val modAfter = when (afterDot?.length) {
+                                        0 -> "."
+                                        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                            1
+                                        ).toIntOrNull()) {
+                                            0 -> ".0"
+                                            in 1..4 -> ".0"
+                                            5 -> ".5"
+                                            in 6..9 -> {
+                                                modBefore++
+                                                ".0"
+                                            }
+                                            null -> ""
+                                            else -> throw UnsupportedOperationException(
+                                                "cant be that"
+                                            )
+                                        }
+                                        null -> ""
+                                        else -> throw UnsupportedOperationException(
+                                            "cant be that"
+                                        )
+                                    }
+                                    total.value = "$modBefore$modAfter"
+                                    scope.updateAmount(total.value)
+                                },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                }),
+                                singleLine = true,
+                                readOnly = false,
+                                enabled = true,
+                            )
+                            Space(dp = 8.dp)
+                            Divider(
+                                thickness = 0.5.dp, color = ConstColors.lightBlue,
+                            )
+                        }
+                    }
+                    Space(dp = 16.dp)
+                    val list = ArrayList<String>()
+                    list.add("RTGS")
+                    list.add("NEFT")
+                    list.add("CASH")
+                    list.add("IMPS")
 
-                        ClickableText(
-                            text = AnnotatedString(""),
-                            style = TextStyle(
-                                color = ConstColors.gray,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.W600
-                            ),
-                            onClick = { },
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        FoldableItem(
+                            expanded = if (type.value.isNotEmpty()) false else false,
+                            headerBackground = Color.White,
+                            headerBorder = BorderStroke(0.dp, Color.Transparent),
+                            headerMinHeight = 50.dp,
+                            header = {
+                                Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 5.dp, end = 5.dp)
+                                    ) {
+                                        Row(modifier = Modifier.weight(0.9f)) {
+                                            Text(
+                                                text = if (type.value.isNotEmpty()) type.value else stringResource(
+                                                    id = R.string.type
+                                                ),
+                                                color = if (type.value.isNotEmpty()) MaterialTheme.colors.background
+                                                else ConstColors.txtGrey,
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = 14.sp,
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowDropDown,
+                                            contentDescription = null,
+                                            tint = ConstColors.gray,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                    }
+                                    Space(dp = 8.dp)
+                                    Divider(
+                                        thickness = 0.5.dp,
+                                        color = ConstColors.lightBlue,
+                                    )
+                                }
+                            },
+                            childItems = list,
+                            hasItemLeadingSpacing = false,
+                            hasItemTrailingSpacing = false,
+                            itemSpacing = 0.dp,
+                            itemHorizontalPadding = 0.dp,
+                            itemsBackground = Color.Transparent,
+                            item = { value, index ->
+                                SpinnerItem(
+                                    item = value,
+                                    index = index
+                                ) {
+                                    scope.updateType(list[index])
+                                }
+
+                            }
                         )
                     }
                     Space(dp = 16.dp)
@@ -3954,7 +4118,7 @@ private fun EditIOCBottomSheet(
                         text = stringResource(id = R.string.submit),
                         isEnabled = true,
                         elevation = null,
-                        onClick = { },
+                        onClick = onDismiss,
                         contentColor = MaterialTheme.colors.background,
                         wrapTextSize = true,
                     )

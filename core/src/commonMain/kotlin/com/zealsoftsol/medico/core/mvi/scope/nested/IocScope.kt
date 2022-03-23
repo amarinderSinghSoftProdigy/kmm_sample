@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.UploadResponseData
 
@@ -206,7 +207,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
-    fun openEditInvoice(item: String) {
+    fun openEditInvoice(item: InvoiceData) {
         EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item))
     }
 

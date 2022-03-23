@@ -23,6 +23,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
@@ -535,7 +536,7 @@ sealed class Event {
             object LoadMoreProducts : IOC()
             object OpenCreateIOC : IOC()
             object UpdateIOC : IOC()
-            data class OpenEditIOCBottomSheet(val item: String) : IOC()
+            data class OpenEditIOCBottomSheet(val item: InvoiceData) : IOC()
             data class OpenIOCListing(val item: String) : IOC()
             data class OpenIOCDetails(val item: String) : IOC()
             data class ShowUploadBottomSheets(

@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.data.InvoiceData
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -167,7 +169,9 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                 Row(
                     modifier = Modifier
                         .weight(0.5f)
-                        .clickable { scope.openEditInvoice("") },
+                        .clickable {
+                            scope.openEditInvoice(InvoiceData("", "", ""))
+                        },
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -301,7 +305,7 @@ private fun InvListing(scope: IocScope.InvListing) {
                             item,
                             { scope.openIOCDetails("Retailer 302") },
                             { scope.previewImage("") },
-                            { scope.openEditInvoice("") }
+                            { scope.openEditInvoice(InvoiceData("", "", "")) }
                         )
                         /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
@@ -700,7 +704,7 @@ fun PaymentOptionItem(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
                     Image(
-                        painter = painterResource(id = R.drawable.ic_edit),
+                        painter = painterResource(id = R.drawable.ic_cash_in_hand),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp)
                     )
@@ -761,4 +765,34 @@ fun PaymentOptionItem(
         }
     }
 }
+
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+fun SpinnerItem(
+    item: String,
+    index: Int,
+    onClick: () -> Unit
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = onClick)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp)
+        ) {
+            Text(
+                text = item,
+                color = ConstColors.txtGrey,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                textAlign = TextAlign.End
+            )
+        }
+        Divider(thickness = 0.5.dp)
+    }
+}
+
 

@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.RetailerData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -39,7 +40,7 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.OpenIOCListing -> openListing(event.item)
         is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
         is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(event.item)
-        is Event.Action.IOC.UpdateIOC -> showEditIOCBottomSheets("")
+        is Event.Action.IOC.UpdateIOC -> updateInvoice()
     }
 
     private suspend fun submitInvoice(value: AddInvoice) {
@@ -96,11 +97,15 @@ internal class IOCEventDelegate(
         }
     }
 
-    private fun showEditIOCBottomSheets(type: String) {
+    private fun showEditIOCBottomSheets(type: InvoiceData) {
         navigator.withScope<IocScope> {
             val scope = scope.value
             scope.bottomSheet.value = BottomSheet.EditIOC(type)
         }
+    }
+
+    private fun updateInvoice() {
+
     }
 
     private suspend fun loadStores(search: String?) {
