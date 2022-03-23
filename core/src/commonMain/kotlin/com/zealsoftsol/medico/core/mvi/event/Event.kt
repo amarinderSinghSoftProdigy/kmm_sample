@@ -534,6 +534,9 @@ sealed class Event {
             data class Load(val search: String? = null) : IOC()
             object LoadMoreProducts : IOC()
             object OpenCreateIOC : IOC()
+            object UpdateIOC : IOC()
+            data class OpenEditIOCBottomSheet(val item: String) : IOC()
+            data class OpenIOCListing(val item: String) : IOC()
             data class OpenIOCDetails(val item: String) : IOC()
             data class ShowUploadBottomSheets(
                 val type: String

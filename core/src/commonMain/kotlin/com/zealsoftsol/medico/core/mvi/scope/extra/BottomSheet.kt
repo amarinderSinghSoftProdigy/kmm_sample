@@ -436,4 +436,13 @@ sealed class BottomSheet {
     ) : BottomSheet()
 
     data class ShowConnectedStockist(val stockist: List<ConnectedStockist>) : BottomSheet()
+
+    class EditIOC(
+        val info: String,
+    ) : BottomSheet() {
+        fun confirm() {
+            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC)
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.ioc
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,6 +64,7 @@ import kotlinx.coroutines.launch
 fun IocListingScreen(scope: IocScope, scaffoldState: ScaffoldState) {
     Column(modifier = Modifier.fillMaxSize()) {
         when (scope) {
+            is IocScope.InvUserListing -> InvUserListing(scope)
             is IocScope.InvListing -> InvListing(scope)
             is IocScope.InvDetails -> InvDetails(scope)
         }
@@ -74,34 +77,145 @@ fun IocListingScreen(scope: IocScope, scaffoldState: ScaffoldState) {
 private fun InvDetails(scope: IocScope.InvDetails) {
     val items = scope.items.flow.collectAsState()
 
-    Column{
-        Space(4.dp)
+    Column {
+        Column(
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "245346626",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "`2500",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Space(4.dp)
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "09-02-22",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightGreen,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                )
+                Text(
+                    text = "Pending",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.orange,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(4.dp)
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+
+                Text(
+                    text = "Out.Amt `109999.00",
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.End
+                )
+            }
+            Space(8.dp)
+            Divider(thickness = 0.5.dp)
+            Space(8.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .clickable { scope.previewImage("") },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        tint = ConstColors.txtGrey
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = "View Invoice",
+                        color = ConstColors.txtGrey,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .clickable { scope.openEditInvoice("") },
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = "Edit Invoice",
+                        fontSize = 14.sp,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W700,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+            Space(4.dp)
+        }
+
         if (items.value.isEmpty() && scope.items.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.no_users_found,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
-                onHome = {  },
+                onHome = { },
             )
         } else {
             LazyColumn(
                 state = rememberLazyListState(),
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp),
+                    .padding(start = 12.dp, end = 12.dp)
             ) {
                 itemsIndexed(
                     items = items.value,
                     itemContent = { index, item ->
-                        IivoiceListItem(
+                        PaymentOptionItem(
                             item,
-                        ) {
-
-                        }
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                            index
+                        )
+                        /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
-                        }
+                        }*/
                     },
                 )
             }
@@ -113,6 +227,96 @@ private fun InvDetails(scope: IocScope.InvDetails) {
 @ExperimentalComposeUiApi
 @Composable
 private fun InvListing(scope: IocScope.InvListing) {
+    val items = scope.items.flow.collectAsState()
+
+    Column {
+        Surface(
+            shape = RoundedCornerShape(5.dp),
+            elevation = 1.dp,
+            color = ConstColors.lightBlue,
+            modifier = Modifier
+                .padding(all = 16.dp)
+                .fillMaxWidth(),
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.amount_received),
+                    color = Color.White,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "12000",
+                    color = Color.White,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 26.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Space(dp = 16.dp)
+                Row(
+                    modifier = Modifier
+                        .background(ConstColors.darkBlue)
+                        .fillMaxWidth()
+                        .padding(all = 16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Outstanding: `2000 ",
+                        color = Color.White,
+                        fontWeight = FontWeight.W800,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+        }
+
+        Space(dp = 12.dp)
+
+        if (items.value.isEmpty() && scope.items.updateCount > 0) {
+            NoRecords(
+                icon = R.drawable.ic_missing_stores,
+                text = R.string.no_users_found,
+                subtitle = "",
+                buttonText = stringResource(id = R.string.clear),
+                onHome = { },
+            )
+        } else {
+            LazyColumn(
+                state = rememberLazyListState(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp),
+            ) {
+                itemsIndexed(
+                    items = items.value,
+                    itemContent = { index, item ->
+                        InvoiceListItem(
+                            item,
+                            { scope.openIOCDetails("Retailer 302") },
+                            { scope.previewImage("") },
+                            { scope.openEditInvoice("") }
+                        )
+                        /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
+                            scope.loadItems()
+                        }*/
+                    },
+                )
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+private fun InvUserListing(scope: IocScope.InvUserListing) {
     val search = scope.searchText.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
     val showSearchBar = remember { mutableStateOf(false) }
@@ -265,7 +469,7 @@ private fun InvListing(scope: IocScope.InvListing) {
                         IocListItem(
                             item,
                         ) {
-                            scope.openIOCDetails("Retailer 301")
+                            scope.openIOCListing("Retailer 302")
                         }
                         if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
@@ -355,9 +559,11 @@ fun IocListItem(
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-fun IivoiceListItem(
+fun InvoiceListItem(
     item: String,
-    onClick: () -> Unit
+    onItemClick: () -> Unit,
+    onPreview: () -> Unit,
+    onEditInvoice: () -> Unit
 ) {
 
     Surface(
@@ -368,17 +574,29 @@ fun IivoiceListItem(
     ) {
         Column(
             modifier = Modifier
+                .clickable(onClick = onItemClick)
                 .padding(all = 8.dp)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = "245346626",
-                color = ConstColors.lightBlue,
-                fontWeight = FontWeight.W800,
-                fontSize = 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "245346626",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "`2500",
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                )
+            }
 
             Space(4.dp)
 
@@ -400,27 +618,146 @@ fun IivoiceListItem(
                 )
             }
 
+            Space(16.dp)
             Divider(thickness = 0.5.dp)
-            Space(4.dp)
+            Space(8.dp)
 
             Row(modifier = Modifier.fillMaxWidth()) {
+
+                Row(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .clickable(onClick = onPreview),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        tint = ConstColors.txtGrey
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = "View Invoice",
+                        color = ConstColors.txtGrey,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .clickable(onClick = onEditInvoice),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = null,
+                        tint = ConstColors.lightBlue
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = "Edit Invoice",
+                        fontSize = 14.sp,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W700,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+            Space(4.dp)
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+fun PaymentOptionItem(
+    item: String,
+    index: Int
+) {
+
+    Surface(
+        shape = RoundedCornerShape(5.dp),
+        elevation = 1.dp,
+        color = Color.White,
+        modifier = Modifier.padding(all = 4.dp),
+    ) {
+
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp)
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = item,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "09-02-22",
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 12.sp,
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = "500",
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            Space(dp = 4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if (index == 0) {
+                    Text(
+                        text = "09-02-22",
+                        modifier = Modifier.weight(0.5f),
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 14.sp,
+                    )
+                }
                 Text(
-                    text = "10 Invoices",
+                    text = "Out.Amt `109999.00",
                     modifier = Modifier.weight(0.5f),
-                    color = ConstColors.txtGrey,
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.W500
-                )
-                Text(
-                    text = "RETAILER",
-                    modifier = Modifier.weight(0.5f),
-                    fontSize = 14.sp,
-                    color = ConstColors.txtGrey,
-                    fontWeight = FontWeight.W500,
                     textAlign = TextAlign.End
                 )
             }
-            Space(4.dp)
+            Space(dp = 16.dp)
         }
     }
 }

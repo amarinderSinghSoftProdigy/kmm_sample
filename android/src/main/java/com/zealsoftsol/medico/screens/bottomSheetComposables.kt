@@ -279,6 +279,11 @@ fun Scope.Host.showBottomSheet(
                 }
             )
             is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
+            is BottomSheet.EditIOC -> EditIOCBottomSheet(
+                bs.info,
+                onConfirm = { bs.confirm() },
+                onDismiss = { dismissBottomSheet() },
+            )
         }
     }
 }
@@ -3872,3 +3877,90 @@ private fun ViewEditCartBottomSheet(
         }
     }
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EditIOCBottomSheet(
+    item: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val activity = LocalContext.current as MainActivity
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = stringResource(id = R.string.update),
+                        fontSize = 14.sp,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W700
+                    )
+
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 16.dp)
+                Column {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column {
+                            Text(
+                                text = stringResource(id = R.string.ddmmyy),
+                                fontSize = 14.sp,
+                                color = ConstColors.txtGrey
+                            )
+                            Divider(thickness = 0.5.dp)
+                        }
+
+                        ClickableText(
+                            text = AnnotatedString(""),
+                            style = TextStyle(
+                                color = ConstColors.gray,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.W600
+                            ),
+                            onClick = { },
+                        )
+                    }
+                    Space(dp = 16.dp)
+                    MedicoRoundButton(
+                        text = stringResource(id = R.string.submit),
+                        isEnabled = true,
+                        elevation = null,
+                        onClick = { },
+                        contentColor = MaterialTheme.colors.background,
+                        wrapTextSize = true,
+                    )
+                }
+            }
+        }
+    }
+}
+

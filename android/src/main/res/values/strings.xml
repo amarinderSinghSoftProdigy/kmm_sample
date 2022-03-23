@@ -427,6 +427,9 @@
     <string name="dl_one_">DL 1:</string>
     <string name="dl_two_">DL 2:</string>
     <string name="no_users_found">No user found!</string>
+    <string name="inv_online_collection">Inv. Online Collection</string>
+    <string name="amount_received">Amount Received</string>
+    <string name="ddmmyy">dd/mm/yy</string>
 
     <!-- Termrs and Cond -->
 
@@ -579,6 +582,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="inv_online_collection">Inv. Online Collection</string>
 
 </resources>

@@ -199,7 +199,7 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocScope.InvListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocScope.InvUserListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -400,7 +400,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
+                    is IocScope.InvUserListing -> IocListingScreen(it, scaffoldState)
                     is IocScope.InvListing -> IocListingScreen(it, scaffoldState)
+                    is IocScope.InvDetails -> IocListingScreen(it, scaffoldState)
                     is IocScope.IOCListing -> IocScreen(it, scaffoldState)
                     is IocScope.IOCCreate -> IocScreen(it, scaffoldState)
                 }

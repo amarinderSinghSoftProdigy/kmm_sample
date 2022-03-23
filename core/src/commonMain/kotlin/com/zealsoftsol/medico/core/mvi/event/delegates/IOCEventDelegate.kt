@@ -36,7 +36,10 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.ShowUploadBottomSheets -> showUploadBottomSheets(event.type)
         is Event.Action.IOC.UploadInvoice -> uploadDocument(event)
         is Event.Action.IOC.SubmitInvoice -> submitInvoice(event.value)
+        is Event.Action.IOC.OpenIOCListing -> openListing(event.item)
         is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
+        is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(event.item)
+        is Event.Action.IOC.UpdateIOC -> showEditIOCBottomSheets("")
     }
 
     private suspend fun submitInvoice(value: AddInvoice) {
@@ -93,6 +96,13 @@ internal class IOCEventDelegate(
         }
     }
 
+    private fun showEditIOCBottomSheets(type: String) {
+        navigator.withScope<IocScope> {
+            val scope = scope.value
+            scope.bottomSheet.value = BottomSheet.EditIOC(type)
+        }
+    }
+
     private suspend fun loadStores(search: String?) {
         navigator.withScope<IocScope.IOCListing> {
             it.pagination.reset()
@@ -138,6 +148,14 @@ internal class IOCEventDelegate(
         navigator.withScope<IocScope.IOCListing> {
             setScope(
                 IocScope.IOCCreate(item)
+            )
+        }
+    }
+
+    private fun openListing(item: String) {
+        navigator.withScope<IocScope.InvUserListing> {
+            setScope(
+                IocScope.InvListing(item)
             )
         }
     }
