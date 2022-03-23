@@ -54,8 +54,8 @@ internal class AuthEventDelegate(
                     .onSuccess {
                         withProgress {
                             userRepo.sendFirebaseToken()
-                            userRepo.loadConfig()
-                            notificationRepo.loadUnreadMessagesFromServer()
+                            //userRepo.loadConfig()
+                            //notificationRepo.loadUnreadMessagesFromServer()
                             cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }
                         dropScope(Navigator.DropStrategy.All, updateDataSource = false)
