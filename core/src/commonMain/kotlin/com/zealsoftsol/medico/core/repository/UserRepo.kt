@@ -80,7 +80,7 @@ class UserRepo(
     val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
-        return userFlow.value?.let {
+        return userV2Flow.value?.let {
             if (it.isActivated) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
     }
