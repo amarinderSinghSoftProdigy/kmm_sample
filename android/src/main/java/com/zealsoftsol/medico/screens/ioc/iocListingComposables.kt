@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.ioc
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,8 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -24,8 +23,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -37,11 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -49,16 +45,14 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
-import com.zealsoftsol.medico.data.InvoiceData
-import com.zealsoftsol.medico.data.RetailerData
+import com.zealsoftsol.medico.data.BuyerDetailsData
+import com.zealsoftsol.medico.data.FormattedData
+import com.zealsoftsol.medico.data.InvContactDetails
+import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
@@ -77,6 +71,7 @@ fun IocListingScreen(scope: IocScope, scaffoldState: ScaffoldState) {
 @ExperimentalComposeUiApi
 @Composable
 private fun InvDetails(scope: IocScope.InvDetails) {
+    val data = scope.data.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
 
     Column {
@@ -87,7 +82,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "245346626",
+                    text = data.value?.invoiceNo ?: "",
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W800,
@@ -96,7 +91,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "`2500",
+                    text = data.value?.invoiceAmount?.formatted ?: "",
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W800,
@@ -109,9 +104,9 @@ private fun InvDetails(scope: IocScope.InvDetails) {
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "09-02-22",
+                    text = data.value?.invoiceDate?.formatted ?: "",
                     modifier = Modifier.weight(0.5f),
-                    color = ConstColors.lightGreen,
+                    color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W600,
                     fontSize = 12.sp,
                 )
@@ -132,7 +127,11 @@ private fun InvDetails(scope: IocScope.InvDetails) {
             ) {
 
                 Text(
-                    text = "Out.Amt `109999.00",
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.out_amount))
+                        append(" ")
+                        append(data.value?.invoiceOutstdAmount?.formatted ?: "")
+                    },
                     color = ConstColors.marron,
                     fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
@@ -149,7 +148,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                 Row(
                     modifier = Modifier
                         .weight(0.5f)
-                        .clickable { scope.previewImage("") },
+                        .clickable { scope.previewImage(data.value?.viewInvoiceUrl ?: "") },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -160,7 +159,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = "View Invoice",
+                        text = stringResource(id = R.string.view_invoice),
                         color = ConstColors.txtGrey,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W700
@@ -170,7 +169,18 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     modifier = Modifier
                         .weight(0.5f)
                         .clickable {
-                            scope.openEditInvoice(InvoiceData("", "", ""))
+                            scope.openEditInvoice(
+                                BuyerDetailsData(
+                                    data.value?.unitCode ?: "",
+                                    data.value?.tradeName ?: "",
+                                    data.value?.invoiceNo ?: "",
+                                    data.value?.invoiceAmount ?: FormattedData("0.0", 0.0),
+                                    data.value?.viewInvoiceUrl ?: "",
+                                    "Pending",
+                                    data.value?.invoiceId ?: "",
+                                    data.value?.invoiceDate ?: FormattedData("0", 0L),
+                                )
+                            )
                         },
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -184,7 +194,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = "Edit Invoice",
+                        text = stringResource(id = R.string.edit_invoice),
                         fontSize = 14.sp,
                         color = ConstColors.lightBlue,
                         fontWeight = FontWeight.W700,
@@ -212,14 +222,8 @@ private fun InvDetails(scope: IocScope.InvDetails) {
             ) {
                 itemsIndexed(
                     items = items.value,
-                    itemContent = { index, item ->
-                        PaymentOptionItem(
-                            item,
-                            index
-                        )
-                        /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }*/
+                    itemContent = { _, item ->
+                        PaymentOptionItem(item)
                     },
                 )
             }
@@ -231,9 +235,21 @@ private fun InvDetails(scope: IocScope.InvDetails) {
 @ExperimentalComposeUiApi
 @Composable
 private fun InvListing(scope: IocScope.InvListing) {
+    val item = scope.item
     val items = scope.items.flow.collectAsState()
+    val data = scope.data.flow.collectAsState()
 
     Column {
+        Space(dp = 16.dp)
+        Text(
+            text = item.tradeName,
+            color = ConstColors.lightBlue,
+            fontWeight = FontWeight.W800,
+            fontSize = 14.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 16.dp)
+        )
         Surface(
             shape = RoundedCornerShape(5.dp),
             elevation = 1.dp,
@@ -255,7 +271,7 @@ private fun InvListing(scope: IocScope.InvListing) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "12000",
+                    text = data.value?.amountReceived?.formatted ?: "0.0",
                     color = Color.White,
                     fontWeight = FontWeight.W800,
                     fontSize = 26.sp,
@@ -271,7 +287,11 @@ private fun InvListing(scope: IocScope.InvListing) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Outstanding: `2000 ",
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.outstanding))
+                            append(": ")
+                            append(data.value?.outstandingAmount?.formatted ?: "0.0")
+                        },
                         color = Color.White,
                         fontWeight = FontWeight.W800,
                         fontSize = 16.sp,
@@ -303,9 +323,9 @@ private fun InvListing(scope: IocScope.InvListing) {
                     itemContent = { index, item ->
                         InvoiceListItem(
                             item,
-                            { scope.openIOCDetails("Retailer 302") },
-                            { scope.previewImage("") },
-                            { scope.openEditInvoice(InvoiceData("", "", "")) }
+                            { scope.openIOCDetails(item) },
+                            { scope.previewImage(item.viewInvoiceUrl) },
+                            { scope.openEditInvoice(item) }
                         )
                         /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
@@ -317,15 +337,16 @@ private fun InvListing(scope: IocScope.InvListing) {
     }
 }
 
+@SuppressLint("RememberReturnType")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
 private fun InvUserListing(scope: IocScope.InvUserListing) {
     val search = scope.searchText.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
-    val showSearchBar = remember { mutableStateOf(false) }
-    var queryTextChangedJob: Job? = null
-    val keyboardController = LocalSoftwareKeyboardController.current
+    remember {
+        scope.load("")
+    }
 
     Column(
         modifier = Modifier
@@ -347,79 +368,23 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                     .clickable(
                         indication = null,
                         onClick = {
-                            if (showSearchBar.value) {
-                                showSearchBar.value = false
-                            } else {
-                                scope.goBack()
-                            }
+                            scope.goBack()
                         }
                     )
             )
-            if (showSearchBar.value) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp)
-                        .padding(end = 40.dp),
-                    shape = RoundedCornerShape(3.dp),
-                    elevation = 5.dp
-                ) {
-                    TextField(
-                        modifier = Modifier.height(40.dp),
-                        value = search.value,
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            textColor = Color.Black,
-                            placeholderColor = Color.Black,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                        onValueChange = {
-                            queryTextChangedJob?.cancel()
-                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                delay(500)
-                                //scope.startSearch(it)
-                            }
-                        },
-                        placeholder = {
-                            Text(
-                                stringResource(id = R.string.search),
-                                color = Color.Gray,
-                                fontSize = 14.sp
-                            )
-                        },
-                        maxLines = 1
-                    )
-                }
-            }
 
-            if (!showSearchBar.value) {
-                Row(
-                    modifier = Modifier
-                        .padding(end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        color = Color.Transparent,
-                        onClick = {
-                            showSearchBar.value = true
-                        }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            tint = ConstColors.gray,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(25.dp)
-                                .padding(2.dp),
-                        )
-
-                    }
-                }
-            }
+            BasicSearchBar(
+                input = search.value,
+                hint = R.string.search,
+                icon = Icons.Default.Search,
+                horizontalPadding = 16.dp,
+                onIconClick = null,
+                isSearchFocused = false,
+                onSearch = { value, _ ->
+                    scope.load(value = value)
+                },
+                isSearchCross = true
+            )
         }
         Divider(
             color = ConstColors.lightBlue,
@@ -458,7 +423,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                 text = R.string.no_users_found,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
-                onHome = { scope.search("") },
+                onHome = { scope.load("") },
             )
         } else {
             LazyColumn(
@@ -473,7 +438,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                         IocListItem(
                             item,
                         ) {
-                            scope.openIOCListing("Retailer 302")
+                            scope.openIOCListing(item)
                         }
                         if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()
@@ -490,7 +455,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
 @ExperimentalComposeUiApi
 @Composable
 fun IocListItem(
-    item: String,
+    item: InvUserData,
     onClick: () -> Unit
 ) {
 
@@ -507,7 +472,7 @@ fun IocListItem(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Retailer 301",
+                text = item.tradeName,
                 color = ConstColors.lightBlue,
                 fontWeight = FontWeight.W800,
                 fontSize = 16.sp,
@@ -519,14 +484,22 @@ fun IocListItem(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Paid `209999.00",
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.inv_toal))
+                        append(" ")
+                        append(item.paidAmount.formatted)
+                    },
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightGreen,
                     fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
                 )
                 Text(
-                    text = "Out.Amt `109999.00",
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.out_amount))
+                        append(" ")
+                        append(item.outstandingAmount.formatted)
+                    },
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.marron,
                     fontWeight = FontWeight.W600,
@@ -539,14 +512,18 @@ fun IocListItem(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "10 Invoices",
+                    text = buildAnnotatedString {
+                        append(item.totalInvoices.toString())
+                        append(" ")
+                        append(stringResource(id = R.string.invoices))
+                    },
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.txtGrey,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W500
                 )
                 Text(
-                    text = "RETAILER",
+                    text = item.customerType,
                     modifier = Modifier.weight(0.5f),
                     fontSize = 14.sp,
                     color = ConstColors.txtGrey,
@@ -564,7 +541,7 @@ fun IocListItem(
 @ExperimentalComposeUiApi
 @Composable
 fun InvoiceListItem(
-    item: String,
+    item: BuyerDetailsData,
     onItemClick: () -> Unit,
     onPreview: () -> Unit,
     onEditInvoice: () -> Unit
@@ -584,7 +561,7 @@ fun InvoiceListItem(
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "245346626",
+                    text = item.invoiceNo,
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W800,
@@ -593,7 +570,7 @@ fun InvoiceListItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "`2500",
+                    text = item.invoiceAmount.formatted,
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W800,
@@ -606,16 +583,20 @@ fun InvoiceListItem(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "09-02-22",
+                    text = item.invoiceDate.formatted,
                     modifier = Modifier.weight(0.5f),
-                    color = ConstColors.lightGreen,
+                    color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W600,
                     fontSize = 12.sp,
                 )
                 Text(
-                    text = "Pending",
+                    text = item.viewStatus,
                     modifier = Modifier.weight(0.5f),
-                    color = ConstColors.orange,
+                    color = when (item.viewStatus.uppercase()) {
+                        "COMPLETED" -> ConstColors.lightGreen
+                        "PENDING" -> ConstColors.orange
+                        else -> MaterialTheme.colors.background
+                    },
                     fontWeight = FontWeight.W600,
                     fontSize = 12.sp,
                     textAlign = TextAlign.End
@@ -642,34 +623,37 @@ fun InvoiceListItem(
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = "View Invoice",
+                        text = stringResource(id = R.string.view_invoice),
                         color = ConstColors.txtGrey,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W700
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .clickable(onClick = onEditInvoice),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
 
-                    Icon(
-                        modifier = Modifier.size(15.dp),
-                        painter = painterResource(id = R.drawable.ic_edit),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue
-                    )
-                    Space(dp = 4.dp)
-                    Text(
-                        text = "Edit Invoice",
-                        fontSize = 14.sp,
-                        color = ConstColors.lightBlue,
-                        fontWeight = FontWeight.W700,
-                        textAlign = TextAlign.End
-                    )
+                if (item.viewStatus.uppercase() != "COMPLETED") {
+                    Row(
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .clickable(onClick = onEditInvoice),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Icon(
+                            modifier = Modifier.size(15.dp),
+                            painter = painterResource(id = R.drawable.ic_edit),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
+                        Space(dp = 4.dp)
+                        Text(
+                            text = stringResource(id = R.string.edit_invoice),
+                            fontSize = 14.sp,
+                            color = ConstColors.lightBlue,
+                            fontWeight = FontWeight.W700,
+                            textAlign = TextAlign.End
+                        )
+                    }
                 }
             }
             Space(4.dp)
@@ -681,17 +665,14 @@ fun InvoiceListItem(
 @ExperimentalComposeUiApi
 @Composable
 fun PaymentOptionItem(
-    item: String,
-    index: Int
+    item: InvContactDetails,
 ) {
-
     Surface(
         shape = RoundedCornerShape(5.dp),
         elevation = 1.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
     ) {
-
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -702,14 +683,14 @@ fun PaymentOptionItem(
             ) {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
                     Image(
-                        painter = when (index) {
-                            0 -> painterResource(id = R.drawable.ic_cash_in_hand)
-                            1 -> painterResource(id = R.drawable.ic_gpay)
-                            2 -> painterResource(id = R.drawable.ic_phonepe)
-                            3 -> painterResource(id = R.drawable.ic_amazon_pay)
-                            4 -> painterResource(id = R.drawable.ic_upi)
+                        painter = when (item.paymentType) {
+                            "CASH_IN_HAND" -> painterResource(id = R.drawable.ic_cash_in_hand)
+                            "GOOGLE_PAY" -> painterResource(id = R.drawable.ic_gpay)
+                            "PHONE_PE" -> painterResource(id = R.drawable.ic_phonepe)
+                            "AMAZON_PAY" -> painterResource(id = R.drawable.ic_amazon_pay)
+                            "BHIM_UPI" -> painterResource(id = R.drawable.ic_upi)
+                            "PAYTM" -> painterResource(id = R.drawable.ic_upi)
                             else -> painterResource(id = R.drawable.ic_net_banking)
                         },
                         contentDescription = null,
@@ -717,7 +698,15 @@ fun PaymentOptionItem(
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = item,
+                        text = when (item.paymentType) {
+                            "CASH_IN_HAND" -> stringResource(id = R.string.cash_in_hand)
+                            "GOOGLE_PAY" -> stringResource(id = R.string.g_pay)
+                            "PHONE_PE" -> stringResource(id = R.string.phone_pe)
+                            "AMAZON_PAY" -> stringResource(id = R.string.amazon_pay)
+                            "BHIM_UPI" -> stringResource(id = R.string.upi)
+                            "PAYTM" -> stringResource(id = R.string.paytm)
+                            else -> stringResource(id = R.string.net_banking)
+                        },
                         color = ConstColors.txtGrey,
                         fontWeight = FontWeight.W500,
                         fontSize = 12.sp,
@@ -727,14 +716,14 @@ fun PaymentOptionItem(
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "09-02-22",
+                        text = item.collectionDate.formatted,
                         color = ConstColors.txtGrey,
                         fontWeight = FontWeight.W500,
                         fontSize = 12.sp,
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = "500",
+                        text = item.collectionAmount.formatted,
                         color = ConstColors.lightBlue,
                         fontWeight = FontWeight.W600,
                         fontSize = 16.sp,
@@ -750,23 +739,15 @@ fun PaymentOptionItem(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                if (index == 0) {
+                if (item.paymentType == "CASH_IN_HAND") {
                     Text(
-                        text = "09-02-22",
+                        text = item.lineMan,
                         modifier = Modifier.weight(0.5f),
                         color = ConstColors.txtGrey,
                         fontWeight = FontWeight.W500,
                         fontSize = 14.sp,
                     )
                 }
-                Text(
-                    text = "Out.Amt `109999.00",
-                    modifier = Modifier.weight(0.5f),
-                    color = ConstColors.marron,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End
-                )
             }
             Space(dp = 16.dp)
         }

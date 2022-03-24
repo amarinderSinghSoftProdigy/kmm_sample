@@ -13,6 +13,7 @@ import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
@@ -23,6 +24,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
@@ -532,17 +534,27 @@ sealed class Event {
 
             data class Select(val item: RetailerData) : IOC()
             data class Search(val value: String) : IOC()
-            data class Load(val search: String? = null) : IOC()
             object LoadMoreProducts : IOC()
-            object OpenCreateIOC : IOC()
             object UpdateIOC : IOC()
-            data class OpenEditIOCBottomSheet(val item: InvoiceData) : IOC()
-            data class OpenIOCListing(val item: String) : IOC()
-            data class OpenIOCDetails(val item: String) : IOC()
+            data class OpenEditIOCBottomSheet(val item: BuyerDetailsData) : IOC()
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
             data class ShowUploadBottomSheets(
                 val type: String
             ) : IOC()
+
             data class SubmitInvoice(val value: AddInvoice) : IOC()
+
+            //Methods for InvUserListing
+            data class LoadUsers(val search: String? = null) : IOC()
+            object LoadMoreUsers : IOC()
+            data class OpenIOCListing(val item: InvUserData) : IOC()
+            object OpenCreateIOC : IOC()
+
+            //Methods for InvLisitng
+            data class LoadInvListing(val unitCode: String) : IOC()
+
+            //Methods for InvDetails
+            data class LoadInvDetails(val invoiceId: String) : IOC()
         }
     }
 

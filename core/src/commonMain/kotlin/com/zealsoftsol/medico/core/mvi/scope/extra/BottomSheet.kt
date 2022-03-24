@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
@@ -440,15 +441,17 @@ sealed class BottomSheet {
     data class ShowConnectedStockist(val stockist: List<ConnectedStockist>) : BottomSheet()
 
     class EditIOC(
-        val info: InvoiceData,
+        val info: BuyerDetailsData,
     ) : BottomSheet() {
 
-        val date = DataSource(info.date)
-        val amount = DataSource(info.amount)
-        val type = DataSource(info.type)
+        val dateMili = DataSource(0L)
+        val date = DataSource(info.invoiceDate.formatted)
+        val amount = DataSource(info.invoiceAmount.value.toString())
+        val type = DataSource("")
 
         fun updateDate(date: String, mili: Long) {
             this.date.value = date
+            this.dateMili.value = mili
         }
 
         fun updateAmount(data: String) {

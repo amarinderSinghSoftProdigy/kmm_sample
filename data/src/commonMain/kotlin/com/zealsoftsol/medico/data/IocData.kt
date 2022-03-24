@@ -50,5 +50,69 @@ data class InvoiceData(
 )
 
 
+@Serializable
+data class SellerUsersData(
+    val results: List<InvUserData>,
+    val totalResults: Int
+)
+
+@Serializable
+data class InvUserData(
+    val unitCode: String,
+    val tradeName: String,
+    val customerType: String,
+    val paidAmount: FormattedData<Double>,
+    val outstandingAmount: FormattedData<Double>,
+    val totalAmount: FormattedData<Double>,
+    val totalInvoices: Int
+)
+
+@Serializable
+data class InvListingData(
+    val amountReceived: FormattedData<Double>,
+    val outstandingAmount: FormattedData<Double>,
+    val totalInvoices: Int,
+    val buyerDetails: BuyerDetails,
+)
+
+@Serializable
+data class BuyerDetails(
+    val results: List<BuyerDetailsData>,
+    val totalResults: Int
+)
+
+@Serializable
+data class BuyerDetailsData(
+    val unitCode: String,
+    val tradeName: String,
+    val invoiceNo: String,
+    val invoiceAmount: FormattedData<Double>,
+    val viewInvoiceUrl: String,
+    val viewStatus: String,
+    val invoiceId: String,
+    val invoiceDate: FormattedData<Long>
+)
+
+@Serializable
+data class InvoiceDetails(
+    val unitCode: String,
+    val tradeName: String,
+    val invoiceNo: String,
+    val invoiceDate: FormattedData<Long>,
+    val invoiceAmount: FormattedData<Double>,
+    val invoiceOutstdAmount: FormattedData<Double>,
+    val viewInvoiceUrl: String,
+    val invoiceId: String,
+    val iocCollections: List<InvContactDetails>
+)
+
+@Serializable
+data class InvContactDetails(
+    val lineMan: String,
+    val mobileNumber: String,
+    val paymentType: String,
+    val collectionDate: FormattedData<Long>,
+    val collectionAmount: FormattedData<Double>
+)
 
 

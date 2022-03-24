@@ -69,6 +69,7 @@ import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.offers.ShowAlert
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 import com.zealsoftsol.medico.screens.search.SearchBarEnd
 import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
@@ -363,12 +364,22 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val totalAmount = scope.totalAmount.flow.collectAsState()
     val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
     val enable = scope.enableButton.flow.collectAsState()
+    val openDialog = scope.showAlert.flow.collectAsState()
+    val dialogMessage = scope.dialogMessage.flow.collectAsState()
     if (invoiceUpload.value.cdnUrl.isNotEmpty()) {
         tradeCheck = true
     }
 
     PermissionCheckUIForInvoice(scaffoldState, permissionViewModel)
-
+    if (openDialog.value)
+        ShowAlert(
+            if (dialogMessage.value.isNotEmpty())
+                dialogMessage.value
+            else stringResource(id = R.string.offer_successfull)
+        ) {
+            scope.changeAlertScope(false)
+            scope.goBack()
+        }
     Column(
         modifier = Modifier
             .padding(all = 16.dp)
@@ -569,6 +580,18 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 keyboardController?.hide()
             })
         )
+        Space(8.dp)
+        if (!enable.value && totalAmount.value.isNotEmpty()
+            && outstandingAmount.value.isNotEmpty()
+        ) {
+            Text(
+                text = stringResource(id = R.string.invoice_amount_validation),
+                color = ConstColors.red,
+                textAlign = TextAlign.Start,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal
+            )
+        }
         Space(16.dp)
 
         Surface(

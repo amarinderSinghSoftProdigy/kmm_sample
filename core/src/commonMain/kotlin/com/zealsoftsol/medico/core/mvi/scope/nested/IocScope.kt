@@ -10,9 +10,15 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.InvContactDetails
+import com.zealsoftsol.medico.data.InvListingData
+import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceData
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.RetailerData
+import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.UploadResponseData
 
 
@@ -22,23 +28,13 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     val invoiceUpload: DataSource<UploadResponseData> =
         DataSource(UploadResponseData("", "", "", ""))
 
-    class InvUserListing : IocScope(), Loadable<String>, CommonScope.CanGoBack {
+    class InvUserListing : IocScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
 
         override val isRoot: Boolean = false
         override val pagination: Pagination = Pagination()
-        override val items: DataSource<List<String>> = DataSource(emptyList())
+        override val items: DataSource<List<InvUserData>> = DataSource(emptyList())
         override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
-
-        init {
-            val list = ArrayList<String>()
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            items.value = list
-        }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
             TabBarInfo.OnlyBackHeader("")
@@ -47,66 +43,52 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             EventCollector.sendEvent(Event.Action.IOC.OpenCreateIOC)
         }
 
-        fun openIOCListing(item: String) {
+        fun openIOCListing(item: InvUserData) {
             EventCollector.sendEvent(Event.Action.IOC.OpenIOCListing(item))
         }
 
-        fun selectItem(item: RetailerData) =
-            EventCollector.sendEvent(Event.Action.IOC.Select(item))
-
-        fun search(value: String) {
-            EventCollector.sendEvent(Event.Action.IOC.Search(value))
+        fun load(value: String) {
+            EventCollector.sendEvent(Event.Action.IOC.LoadUsers(value))
         }
 
-        fun loadItems() = EventCollector.sendEvent(Event.Action.IOC.LoadMoreProducts)
+        fun loadItems() = EventCollector.sendEvent(Event.Action.IOC.LoadMoreUsers)
 
     }
 
-    class InvListing(val item: String) : IocScope(), Loadable<String>, CommonScope.CanGoBack {
+    class InvListing(val item: InvUserData) : IocScope(), CommonScope.CanGoBack {
         override val isRoot: Boolean = false
-        override val pagination: Pagination = Pagination()
-        override val items: DataSource<List<String>> = DataSource(emptyList())
-        override val totalItems: DataSource<Int> = DataSource(0)
-        override val searchText: DataSource<String> = DataSource("")
+        val items: DataSource<List<BuyerDetailsData>> = DataSource(emptyList())
+        val data: DataSource<InvListingData?> = DataSource(null)
 
         init {
-            val list = ArrayList<String>()
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            list.add("")
-            items.value = list
+            EventCollector.sendEvent(Event.Action.IOC.LoadInvListing(item.unitCode))
         }
 
-        fun openIOCDetails(item: String) {
+        fun openIOCDetails(item: BuyerDetailsData) {
             EventCollector.sendEvent(Event.Action.IOC.OpenIOCDetails(item))
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item)
+            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
         }
     }
 
-    class InvDetails(val item: String) : IocScope(), Loadable<String> {
+    class InvDetails(val item: BuyerDetailsData) : IocScope() {
         override val isRoot: Boolean = false
-        override val pagination: Pagination = Pagination()
-        override val items: DataSource<List<String>> = DataSource(emptyList())
-        override val totalItems: DataSource<Int> = DataSource(0)
-        override val searchText: DataSource<String> = DataSource("")
+        val data: DataSource<InvoiceDetails?> = DataSource(null)
+        val items: DataSource<List<InvContactDetails>> = DataSource(emptyList())
 
         init {
-            val list = ArrayList<String>()
-            list.add("Cash In Hand")
-            list.add("Google Pay")
-            list.add("Phone Pay")
-            list.add("Amazon Pay")
-            list.add("Bhim UPI")
-            items.value = list
+            loadData(item.invoiceId)
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item)
+            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
+        }
+
+
+        private fun loadData(invoiceId: String) {
+            EventCollector.sendEvent(Event.Action.IOC.LoadInvDetails(invoiceId))
         }
 
     }
@@ -141,6 +123,8 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     class IOCCreate(val item: RetailerData) : IocScope(), CommonScope.CanGoBack {
 
+        val dialogMessage: DataSource<String> = DataSource("")
+        val showAlert: DataSource<Boolean> = DataSource(false)
         val enableButton: DataSource<Boolean> = DataSource(false)
         val invoiceNum: DataSource<String> = DataSource("")
         val invoiceDate: DataSource<String> = DataSource("")
@@ -181,7 +165,12 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         fun validate() {
             enableButton.value = (invoiceNum.value.isNotEmpty() && invoiceDate.value.isNotEmpty()
                     && totalAmount.value.isNotEmpty() && outstandingAmount.value.isNotEmpty()
-                    && invoiceUpload.value.cdnUrl.isNotEmpty())
+                    && invoiceUpload.value.cdnUrl.isNotEmpty()) &&
+                    totalAmount.value.toDouble() > outstandingAmount.value.toDouble()
+        }
+
+        fun changeAlertScope(enable: Boolean) {
+            showAlert.value = enable
         }
 
         fun addInvoice() {
@@ -207,7 +196,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
-    fun openEditInvoice(item: InvoiceData) {
+    fun openEditInvoice(item: BuyerDetailsData) {
         EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item))
     }
 

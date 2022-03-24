@@ -41,8 +41,10 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
@@ -79,6 +81,7 @@ import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -1057,6 +1060,40 @@ class NetworkClient(
             }
         }
     }
+
+    override suspend fun getUsers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ) = simpleRequest {
+        client.get<BodyResponse<SellerUsersData>>("${baseUrl.url}/ioc/seller/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
+    }
+
+    override suspend fun retailerInvoiceDetails(
+        unitCode: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvListingData>>("${baseUrl.url}/ioc/seller/$unitCode") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun invoiceDetails(
+        invoiceId: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/seller/invoice/$invoiceId") {
+            withMainToken()
+        }
+    }
+
 
     override suspend fun getRetailers(
         unitCode: String,

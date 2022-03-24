@@ -30,8 +30,10 @@ import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
@@ -63,6 +65,7 @@ import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.SubmitRegistration
@@ -426,7 +429,7 @@ interface NetworkScope {
         ): BodyResponse<String>
     }
 
-    interface QrCodeStore: NetworkScope {
+    interface QrCodeStore : NetworkScope {
         suspend fun getQrCode(): BodyResponse<QrCodeData>
 
         suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData>
@@ -434,6 +437,20 @@ interface NetworkScope {
     }
 
     interface IOCStore : NetworkScope {
+
+        suspend fun getUsers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<SellerUsersData>
+
+        suspend fun retailerInvoiceDetails(
+            unitCode: String,
+        ): BodyResponse<InvListingData>
+
+        suspend fun invoiceDetails(
+            invoiceId: String,
+        ): BodyResponse<InvoiceDetails>
 
         suspend fun getRetailers(
             unitCode: String,

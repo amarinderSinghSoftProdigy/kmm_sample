@@ -263,7 +263,8 @@
     <string name="available_formats">Available File Formats</string>
     <string name="max_file_size">Maximum file size:</string>
     <string name="mb_10">10 MB</string>
-    <string name="invoices">My Invoices</string>
+    <string name="my_invoices">My Invoices</string>
+    <string name="invoices">Invoices</string>
     <string name="po_invoices">PO Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>
@@ -431,6 +432,20 @@
     <string name="amount_received">Amount Received</string>
     <string name="ddmmyy">dd/mm/yy</string>
     <string name="invoice_online_col">Inv. Online Collection</string>
+    <string name="invoice_successfull">Invoice Created Successfully</string>
+    <string name="out_amount">Out.Amt</string>
+    <string name="inv_toal">Inv. Total</string>
+    <string name="view_invoice">View Invoice</string>
+    <string name="outstanding">Outstanding</string>
+    <string name="edit_invoice">Edit Invoice</string>
+    <string name="invoice_amount_validation">Invoice amount should be greater than Outstanding Amount</string>
+    <string name="cash_in_hand">Cash In Hand</string>
+    <string name="net_banking">Net Banking</string>
+    <string name="paytm">Paytm</string>
+    <string name="upi">UPI</string>
+    <string name="amazon_pay">Amazon Pay</string>
+    <string name="phone_pe">PhonePe</string>
+    <string name="g_pay">Google Pay</string>
 
     <!-- Termrs and Cond -->
 

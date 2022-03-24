@@ -73,7 +73,7 @@ fun InvoicesScreen(scope: InvoicesScope) {
                 )
                 Space(12.dp)
                 Text(
-                    text = stringResource(id = if (scope.isPoInvoice) R.string.po_invoices else R.string.invoices),
+                    text = stringResource(id = if (scope.isPoInvoice) R.string.po_invoices else R.string.my_invoices),
                     color = MaterialTheme.colors.background,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W700,
