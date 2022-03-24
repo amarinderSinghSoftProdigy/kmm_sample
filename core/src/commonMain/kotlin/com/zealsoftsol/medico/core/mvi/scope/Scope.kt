@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.utils.StringResource
 import com.zealsoftsol.medico.core.utils.trimInput
+import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.ErrorCode
 import kotlin.reflect.KClass
 
@@ -26,6 +27,15 @@ sealed class Scope : Scopable {
             open fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo? = null
 
             open fun goHome() = EventCollector.sendEvent(Event.Transition.Dashboard)
+
+            open fun globalSearch(searchValue: String) {
+                val autoComplete = AutoComplete(
+                    query = "suggest", details = "",
+                    suggestion = searchValue
+                )
+                EventCollector.sendEvent(Event.Transition.Search(autoComplete))
+            }
+
         }
     }
 

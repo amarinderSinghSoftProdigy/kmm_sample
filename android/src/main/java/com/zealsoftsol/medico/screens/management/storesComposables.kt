@@ -117,6 +117,8 @@ fun StoresScreen(scope: StoresScope) {
     }
 }
 
+var searchedProduct = ""
+
 @ExperimentalComposeUiApi
 @Composable
 private fun StorePreview(scope: StoresScope.StorePreview) {
@@ -163,6 +165,7 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                 onIconClick = null,
                 isSearchFocused = false,//scope.storage.restore("focus") as? Boolean ?: true,
                 onSearch = { value, _ ->
+                    searchedProduct = value
                     scope.searchProduct(
                         value,
                         withAutoComplete = true,
@@ -279,7 +282,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         icon = R.drawable.ic_missing_stores,
                         text = R.string.missing_inventory_stores,
                         subtitle = scope.store.tradeName,
-                        onHome = { scope.goHome() },
+                        onHome = { scope.globalSearch(searchedProduct) },
+                        buttonText = stringResource(id = R.string.global_search)
                     )
                 } else {
                     if (autoComplete.value.isEmpty()) {
