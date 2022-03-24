@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -240,16 +239,6 @@ private fun InvListing(scope: IocScope.InvListing) {
     val data = scope.data.flow.collectAsState()
 
     Column {
-        Space(dp = 16.dp)
-        Text(
-            text = item.tradeName,
-            color = ConstColors.lightBlue,
-            fontWeight = FontWeight.W800,
-            fontSize = 14.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start = 16.dp)
-        )
         Surface(
             shape = RoundedCornerShape(5.dp),
             elevation = 1.dp,
