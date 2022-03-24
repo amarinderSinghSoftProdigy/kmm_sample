@@ -88,6 +88,7 @@ import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -1118,6 +1119,15 @@ class NetworkClient(
         request: AddInvoice
     ) = simpleRequest {
         client.post<BodyResponse<AddInvoiceResponse>>("${baseUrl.url}/ioc/add/invoice") {
+            withMainToken()
+            jsonBody(request)
+        }
+    }
+
+    override suspend fun updateInvoice(
+        request: UpdateInvoiceRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/ioc/seller/invoice/edit") {
             withMainToken()
             jsonBody(request)
         }

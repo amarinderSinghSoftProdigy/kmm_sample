@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
@@ -46,6 +47,7 @@ import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
@@ -535,8 +537,11 @@ sealed class Event {
             data class Select(val item: RetailerData) : IOC()
             data class Search(val value: String) : IOC()
             object LoadMoreProducts : IOC()
-            object UpdateIOC : IOC()
-            data class OpenEditIOCBottomSheet(val item: BuyerDetailsData) : IOC()
+            data class UpdateIOC(val request: UpdateInvoiceRequest, val scope: IocScope) : IOC()
+            data class OpenEditIOCBottomSheet(
+                val item: BuyerDetailsData, val scope: IocScope
+            ) : IOC()
+
             data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
             data class ShowUploadBottomSheets(
                 val type: String

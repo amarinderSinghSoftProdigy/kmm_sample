@@ -178,7 +178,8 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                                     "Pending",
                                     data.value?.invoiceId ?: "",
                                     data.value?.invoiceDate ?: FormattedData("0", 0L),
-                                )
+                                ),
+                                scope
                             )
                         },
                     horizontalArrangement = Arrangement.End,
@@ -314,7 +315,7 @@ private fun InvListing(scope: IocScope.InvListing) {
                             item,
                             { scope.openIOCDetails(item) },
                             { scope.previewImage(item.viewInvoiceUrl) },
-                            { scope.openEditInvoice(item) }
+                            { scope.openEditInvoice(item, scope) }
                         )
                         /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
                             scope.loadItems()

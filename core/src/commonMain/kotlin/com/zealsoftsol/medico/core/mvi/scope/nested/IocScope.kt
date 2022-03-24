@@ -196,8 +196,8 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
-    fun openEditInvoice(item: BuyerDetailsData) {
-        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item))
+    fun openEditInvoice(item: BuyerDetailsData, scope: IocScope) {
+        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item, scope))
     }
 
 }

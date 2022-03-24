@@ -72,6 +72,7 @@ import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -461,6 +462,10 @@ interface NetworkScope {
         suspend fun submitInvoice(
             request: AddInvoice
         ): BodyResponse<AddInvoiceResponse>
+
+        suspend fun updateInvoice(
+            request: UpdateInvoiceRequest
+        ): BodyResponse<String>
 
     }
 }

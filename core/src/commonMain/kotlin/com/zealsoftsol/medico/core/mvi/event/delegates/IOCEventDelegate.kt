@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.RetailerData
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -40,8 +41,11 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.SubmitInvoice -> submitInvoice(event.value)
         is Event.Action.IOC.OpenIOCListing -> openListing(event.item)
         is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
-        is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(event.item)
-        is Event.Action.IOC.UpdateIOC -> updateInvoice()
+        is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(
+            event.item,
+            event.scope
+        )
+        is Event.Action.IOC.UpdateIOC -> updateInvoice(event.request, event.scope)
         is Event.Action.IOC.LoadMoreUsers -> loadMoreUsers()
         is Event.Action.IOC.LoadInvListing -> getRetailerInvoiceListing(event.unitCode)
         is Event.Action.IOC.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
@@ -102,15 +106,31 @@ internal class IOCEventDelegate(
         }
     }
 
-    private fun showEditIOCBottomSheets(type: BuyerDetailsData) {
+    private fun showEditIOCBottomSheets(type: BuyerDetailsData, scopeFrom: IocScope) {
         navigator.withScope<IocScope> {
             val scope = scope.value
-            scope.bottomSheet.value = BottomSheet.EditIOC(type)
+            scope.bottomSheet.value = BottomSheet.EditIOC(type, scopeFrom)
         }
     }
 
-    private fun updateInvoice() {
+    private suspend fun updateInvoice(request: UpdateInvoiceRequest, scope: IocScope) {
+        navigator.withScope<IocScope> {
+            navigator.withProgress {
+                networkStoresScope.updateInvoice(
+                    request
+                )
+            }.onSuccess {
+                when (scope) {
+                    is IocScope.InvListing -> {
+                        getRetailerInvoiceListing(scope.item.unitCode)
+                    }
+                    is IocScope.InvDetails -> {
+                        getInvoiceDetails(scope.item.invoiceId)
+                    }
+                }
 
+            }.onError(navigator)
+        }
     }
 
     private suspend fun loadMoreProducts() {

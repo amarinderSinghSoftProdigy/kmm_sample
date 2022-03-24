@@ -293,7 +293,10 @@ fun Scope.Host.showBottomSheet(
             is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
             is BottomSheet.EditIOC -> EditIOCBottomSheet(
                 bs,
-                onConfirm = { bs.confirm() },
+                onConfirm = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
                 onDismiss = { dismissBottomSheet() },
             )
         }
@@ -3902,6 +3905,7 @@ private fun EditIOCBottomSheet(
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val enableButton = scope.enableButton.flow.collectAsState()
     val date = scope.date.flow.collectAsState()
     val amount = scope.amount.flow.collectAsState()
     val type = scope.type.flow.collectAsState()
@@ -4107,7 +4111,7 @@ private fun EditIOCBottomSheet(
                                     item = value,
                                     index = index
                                 ) {
-                                    scope.updateType(list[index])
+                                    scope.updateType(value)
                                 }
 
                             }
@@ -4116,9 +4120,9 @@ private fun EditIOCBottomSheet(
                     Space(dp = 16.dp)
                     MedicoRoundButton(
                         text = stringResource(id = R.string.submit),
-                        isEnabled = true,
+                        isEnabled = enableButton.value,
                         elevation = null,
-                        onClick = onDismiss,
+                        onClick = onConfirm,
                         contentColor = MaterialTheme.colors.background,
                         wrapTextSize = true,
                     )

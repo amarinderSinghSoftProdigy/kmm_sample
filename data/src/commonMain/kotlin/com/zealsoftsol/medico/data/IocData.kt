@@ -116,3 +116,12 @@ data class InvContactDetails(
 )
 
 
+@Serializable
+data class UpdateInvoiceRequest(
+    val invoiceDate: Long,
+    val invoiceAmount: Double,
+    val paymentType: String,
+    val invoiceId: String
+)
+
+
