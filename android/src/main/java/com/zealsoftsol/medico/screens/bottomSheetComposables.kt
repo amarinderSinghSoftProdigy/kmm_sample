@@ -99,6 +99,7 @@ import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.data.TaxInfo
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
@@ -3132,7 +3133,7 @@ private fun ViewLargeImageBottomSheet(
                         }
                     }
                     Space(16.dp)
-                    CoilImage(
+                    CoilImageZoom(
                         onError = { Placeholder(R.drawable.ic_placeholder) },
                         src = if (!type.isNullOrEmpty()) {
                             File(url.toString())

@@ -149,6 +149,7 @@ sealed class Event {
             data class SelectFilter(val filter: Filter, val option: Option) : Search()
             data class SearchFilter(val filter: Filter, val value: String) : Search()
             data class SelectAutoComplete(val autoComplete: AutoComplete) : Search()
+            data class SelectAutoCompleteGlobal(val autoComplete: AutoComplete) : Search()
             data class ClearFilter(val filter: Filter?) : Search()
             data class SelectSortOption(val option: SortOption?) : Search()
             data class SelectBatch(val option: Boolean, val product: ProductSearch) : Search()

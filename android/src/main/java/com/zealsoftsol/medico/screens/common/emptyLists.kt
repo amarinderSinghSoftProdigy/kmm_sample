@@ -27,6 +27,7 @@ fun NoRecords(
     @StringRes text: Int,
     subtitle: String? = null,
     onHome: () -> Unit,
+    buttonText : String = stringResource(id = R.string.home)
 ) {
     Column(
         modifier = Modifier
@@ -60,7 +61,7 @@ fun NoRecords(
         Space(16.dp)
         MedicoSmallButton(
 //            modifier = Modifier.padding(horizontal = ),
-            text = stringResource(id = R.string.home),
+            text = buttonText,
             onClick = onHome,
         )
     }

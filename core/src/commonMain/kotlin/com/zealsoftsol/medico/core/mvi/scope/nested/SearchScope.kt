@@ -133,13 +133,22 @@ class SearchScope(
     init {
         //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
         if (autoCompleteDashboard != null) {
-            EventCollector.sendEvent(Event.Action.Search.SelectAutoComplete(autoCompleteDashboard))
+            if (autoCompleteDashboard.query == "suggest") {
+                EventCollector.sendEvent(
+                    Event.Action.Search.SelectAutoCompleteGlobal(autoCompleteDashboard))
+            } else {
+                EventCollector.sendEvent(
+                    Event.Action.Search.SelectAutoComplete(
+                        autoCompleteDashboard
+                    )
+                )
+            }
         } else {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
         }
     }
 
-    fun showConnectedStockist(stockist : List<ConnectedStockist>) {
+    fun showConnectedStockist(stockist: List<ConnectedStockist>) {
         EventCollector.sendEvent(Event.Action.Search.ShowConnectedStockistBottomSheet(stockist))
     }
 
