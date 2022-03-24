@@ -679,7 +679,7 @@ fun PaymentOptionItem(
                             "PHONE_PE" -> painterResource(id = R.drawable.ic_phonepe)
                             "AMAZON_PAY" -> painterResource(id = R.drawable.ic_amazon_pay)
                             "BHIM_UPI" -> painterResource(id = R.drawable.ic_upi)
-                            "PAYTM" -> painterResource(id = R.drawable.ic_upi)
+                            "PAYTM" -> painterResource(id = R.drawable.ic_paytm)
                             else -> painterResource(id = R.drawable.ic_net_banking)
                         },
                         contentDescription = null,
