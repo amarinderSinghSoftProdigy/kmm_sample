@@ -38,12 +38,15 @@ object ConstColors {
     val newDesignGray = Color(0xffF0F3F5)
     val darkGreen = Color(0xff509F00)
     val darkRed = Color(0xffF42525)
-    val marron = Color(0xff8F201F)
+    val marron = Color(0xffCC1414)
     val separator = Color(0XffE0E0E0)
     val txtGrey = Color(0XffA6A6A6)
     val lightGrey = Color(0xffEEEEEE)
     val lightBackground = Color(0xffF9F9F9)
     val inputFieldColor = Color(0xff698896)
+    val blueBack = Color(0xffF6FDFF)
+    val greenBack = Color(0xffF9FDF4)
+    val redBack = Color(0xffFFF5F5)
 }
 
 @Composable

@@ -549,55 +549,98 @@ fun IocListItem(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = stringResource(id = R.string.total),
-                    modifier = Modifier.weight(0.33f),
+                    text = stringResource(id = R.string.total_),
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.blueBack),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W400,
                     fontSize = 12.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Start
                 )
                 Text(
                     text = stringResource(id = R.string.paid),
-                    modifier = Modifier.weight(0.33f),
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.greenBack),
                     color = ConstColors.lightGreen,
                     fontWeight = FontWeight.W400,
                     fontSize = 12.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Start
                 )
                 Text(
                     text = stringResource(id = R.string.outstanding),
-                    modifier = Modifier.weight(0.33f),
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.redBack),
                     color = ConstColors.marron,
                     fontWeight = FontWeight.W400,
                     fontSize = 12.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Start
                 )
             }
-            Space(4.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Divider(
+                    thickness = 8.dp,
+                    color = ConstColors.blueBack,
+                    modifier = Modifier
+                        .weight(0.33f),
+                )
+                Divider(
+                    thickness = 8.dp,
+                    color = ConstColors.greenBack,
+                    modifier = Modifier
+                        .weight(0.33f),
+                )
+                Divider(
+                    thickness = 8.dp,
+                    color = ConstColors.redBack,
+                    modifier = Modifier
+                        .weight(0.33f),
+                )
+            }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = item.totalAmount.formatted,
-                    modifier = Modifier.weight(0.33f),
+                    text = buildAnnotatedString {
+                        append(item.totalAmount.formatted)
+                        append(" ")
+                    },
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.blueBack),
                     color = ConstColors.lightBlue,
                     fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.End
                 )
                 Text(
-                    text = item.paidAmount.formatted,
-                    modifier = Modifier.weight(0.33f),
+                    text = buildAnnotatedString {
+                        append(item.paidAmount.formatted)
+                        append(" ")
+                    },
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.greenBack),
                     color = ConstColors.lightGreen,
                     fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.End
                 )
                 Text(
-                    text = item.outstandingAmount.formatted,
-                    modifier = Modifier.weight(0.33f),
+                    text = buildAnnotatedString {
+                        append(item.outstandingAmount.formatted)
+                        append(" ")
+                    },
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .background(ConstColors.redBack),
                     color = ConstColors.marron,
                     fontWeight = FontWeight.W600,
                     fontSize = 14.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.End
                 )
             }
             Space(8.dp)
