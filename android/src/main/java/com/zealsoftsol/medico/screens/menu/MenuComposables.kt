@@ -87,7 +87,7 @@ fun MenuScreen(scope: MenuScope) {
             AccountContentItem(
                 route = Event.Transition.IOC,
                 drawableResourceId = R.drawable.ic_menu_invoice,
-                stringResourceId = R.string.invoice_online_col,
+                stringResourceId = R.string.inv_online_collection,
                 scope = scope
             )
 

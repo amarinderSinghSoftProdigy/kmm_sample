@@ -194,7 +194,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     )
                     Space(dp = 4.dp)
                     Text(
-                        text = stringResource(id = R.string.edit_invoice),
+                        text = stringResource(id = R.string.add_payment),
                         fontSize = 14.sp,
                         color = ConstColors.lightBlue,
                         fontWeight = FontWeight.W700,
@@ -365,7 +365,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
 
             BasicSearchBar(
                 input = search.value,
-                hint = R.string.search,
+                hint = R.string.search_tradename,
                 icon = Icons.Default.Search,
                 horizontalPadding = 16.dp,
                 onIconClick = null,
@@ -477,7 +477,7 @@ fun IocListItem(
                     text = buildAnnotatedString {
                         append(stringResource(id = R.string.inv_toal))
                         append(" ")
-                        append(item.paidAmount.formatted)
+                        append(item.totalAmount.formatted)
                     },
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.lightGreen,
@@ -628,21 +628,6 @@ fun InvoiceListItem(
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        Icon(
-                            modifier = Modifier.size(15.dp),
-                            painter = painterResource(id = R.drawable.ic_edit),
-                            contentDescription = null,
-                            tint = ConstColors.lightBlue
-                        )
-                        Space(dp = 4.dp)
-                        Text(
-                            text = stringResource(id = R.string.edit_invoice),
-                            fontSize = 14.sp,
-                            color = ConstColors.lightBlue,
-                            fontWeight = FontWeight.W700,
-                            textAlign = TextAlign.End
-                        )
                     }
                 }
             }
