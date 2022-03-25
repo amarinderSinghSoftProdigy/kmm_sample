@@ -164,6 +164,7 @@ sealed class Event {
             object ToggleFilter : Search()
             data class ShowConnectedStockistBottomSheet(val stockist: List<ConnectedStockist>) :
                 Search()
+            data class LoadStockist(val code: String, val imageCode: String): Search()
         }
 
         sealed class Product : Action() {

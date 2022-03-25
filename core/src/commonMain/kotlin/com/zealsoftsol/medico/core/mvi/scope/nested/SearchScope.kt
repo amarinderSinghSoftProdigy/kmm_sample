@@ -10,7 +10,6 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.trimInput
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.CartData
-import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.Option
 import com.zealsoftsol.medico.data.ProductSearch
@@ -129,13 +128,15 @@ class SearchScope(
     override val unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
     override val pagination: Pagination = Pagination()
+    val showNoStockistAlert = DataSource(false)
 
     init {
         //if there is already an autocomplete item start search based on brand manufacturer else perform normal search
         if (autoCompleteDashboard != null) {
             if (autoCompleteDashboard.query == "suggest") {
                 EventCollector.sendEvent(
-                    Event.Action.Search.SelectAutoCompleteGlobal(autoCompleteDashboard))
+                    Event.Action.Search.SelectAutoCompleteGlobal(autoCompleteDashboard)
+                )
             } else {
                 EventCollector.sendEvent(
                     Event.Action.Search.SelectAutoComplete(
@@ -148,8 +149,12 @@ class SearchScope(
         }
     }
 
-    fun showConnectedStockist(stockist: List<ConnectedStockist>) {
-        EventCollector.sendEvent(Event.Action.Search.ShowConnectedStockistBottomSheet(stockist))
+    fun manageAlertVisibility(value: Boolean){
+        showNoStockistAlert.value = value
+    }
+
+    fun showConnectedStockist(code: String, imageCode: String) {
+        EventCollector.sendEvent(Event.Action.Search.LoadStockist(code, imageCode))
     }
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {

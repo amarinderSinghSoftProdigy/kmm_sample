@@ -8,6 +8,7 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
+import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
@@ -57,8 +58,47 @@ internal class SearchEventDelegate(
         is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
         is Event.Action.Search.ShowConnectedStockistBottomSheet -> showConnectedStockist(event.stockist)
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
+        is Event.Action.Search.LoadStockist -> loadStockist(event.code, event.imageCode)
     }
 
+    /**
+     * Load all stockist on a product
+     */
+    private suspend fun loadStockist(code: String, imageCode: String) {
+        val address = userRepo.requireUser()
+        navigator.withScope<SearchScope> {
+            withProgress {
+                networkSearchScope.loadStockist(
+                    address.latitude,
+                    address.longitude,
+                    imageCode,
+                    code
+                )
+                    .onSuccess { body ->
+                        if (body.isNotEmpty())
+                            showConnectedStockist(body)
+                        else
+                            it.manageAlertVisibility(true)
+
+                    }.onError(navigator)
+            }
+        }
+    }
+
+    /**
+     *  load the searched stockists on a bottom sheet
+     */
+    private fun showConnectedStockist(stockist: List<ConnectedStockist>) {
+        navigator.withScope<SearchScope> {
+            val hostScope = scope.value
+            hostScope.bottomSheet.value = BottomSheet.ShowConnectedStockist(stockist)
+        }
+    }
+
+
+    /**
+     * search autocomplete items directly on global search
+     */
     private suspend fun selectAutoCompleteGlobal(autoComplete: AutoComplete) {
         navigator.withScope<BaseSearchScope> {
             it.productSearch.value = autoComplete.suggestion
@@ -73,13 +113,6 @@ internal class SearchEventDelegate(
         }
     }
 
-
-    private fun showConnectedStockist(stockist: List<ConnectedStockist>) {
-        navigator.withScope<SearchScope> {
-            val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.ShowConnectedStockist(stockist)
-        }
-    }
 
     private fun select(item: EntityInfo) {
         navigator.withScope<StoresScope.StorePreview> {
