@@ -549,7 +549,10 @@ fun IocListItem(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = stringResource(id = R.string.total_),
+                    text = buildAnnotatedString {
+                        append(" ")
+                        append(stringResource(id = R.string.total_))
+                    },
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.blueBack),
@@ -559,7 +562,10 @@ fun IocListItem(
                     textAlign = TextAlign.Start
                 )
                 Text(
-                    text = stringResource(id = R.string.paid),
+                    text = buildAnnotatedString {
+                        append(" ")
+                        append(stringResource(id = R.string.paid))
+                    },
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.greenBack),
@@ -569,7 +575,10 @@ fun IocListItem(
                     textAlign = TextAlign.Start
                 )
                 Text(
-                    text = stringResource(id = R.string.outstanding),
+                    text = buildAnnotatedString {
+                        append(" ")
+                        append(stringResource(id = R.string.outstanding))
+                    },
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.redBack),
