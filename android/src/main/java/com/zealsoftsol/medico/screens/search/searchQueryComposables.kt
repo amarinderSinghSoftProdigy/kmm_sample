@@ -211,7 +211,8 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                             itemContent = { index, item ->
                                 ProductItem(
                                     item,
-                                    onClick = { scope.selectProduct(item) },
+                                    onClick = { //scope.selectProduct(item)
+                                    },
                                     onBuy = { scope.buy(item) },
                                     scope = scope
                                 )
@@ -440,15 +441,6 @@ fun ProductItem(
                             scope.showConnectedStockist(product.code, product.imageCode)
                         },
                     )
-                    /* Text(
-                         modifier = Modifier
-                             .weight(0.5f)
-                             .padding(end = 20.dp),
-                         text = stringResource(id = R.string.no_stockist),
-                         color = Color.Red,
-                         fontSize = 14.sp,
-                         fontWeight = FontWeight.W600,
-                     )*/
 
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {
