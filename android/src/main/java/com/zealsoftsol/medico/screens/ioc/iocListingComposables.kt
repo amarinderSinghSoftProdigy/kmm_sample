@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -150,33 +152,65 @@ private fun InvDetails(scope: IocScope.InvDetails) {
             Space(8.dp)
             Divider(thickness = 0.5.dp)
             Space(8.dp)
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .clickable { scope.previewImage(data.value?.viewInvoiceUrl ?: "") },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(15.dp),
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.txtGrey
-                    )
-                    Space(dp = 4.dp)
-                    Text(
-                        text = stringResource(id = R.string.view_invoice),
-                        color = ConstColors.txtGrey,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    val list = ArrayList<String>()
+                    list.add("")
+                    FoldableItem(
+                        expanded = false,
+                        headerBackground = Color.White,
+                        headerBorder = BorderStroke(0.dp, Color.Transparent),
+                        headerMinHeight = 25.dp,
+                        header = {
+                            Row(
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .height(25.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(15.dp),
+                                    painter = painterResource(id = R.drawable.ic_eye),
+                                    contentDescription = null,
+                                    tint = ConstColors.txtGrey
+                                )
+                                Space(dp = 4.dp)
+                                Text(
+                                    text = stringResource(id = R.string.view_invoice),
+                                    color = ConstColors.txtGrey,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W700
+                                )
+                            }
+
+                        },
+                        childItems = list,
+                        hasItemLeadingSpacing = false,
+                        hasItemTrailingSpacing = false,
+                        itemSpacing = 0.dp,
+                        itemHorizontalPadding = 0.dp,
+                        itemsBackground = Color.Transparent,
+                        item = { _, _ ->
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                CoilImage(
+                                    onError = { Placeholder(R.drawable.ic_placeholder) },
+                                    src = data.value?.viewInvoiceUrl ?: "",
+                                    size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                                    onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+                                )
+                            }
+                        }
                     )
                 }
+
+
                 Row(
                     modifier = Modifier
-                        .weight(0.5f)
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
                         .clickable {
                             scope.openEditInvoice(
                                 BuyerDetailsData(
@@ -320,16 +354,10 @@ private fun InvListing(scope: IocScope.InvListing) {
             ) {
                 itemsIndexed(
                     items = items.value,
-                    itemContent = { index, item ->
+                    itemContent = { _, item ->
                         InvoiceListItem(
                             item,
-                            { scope.openIOCDetails(item) },
-                            { scope.previewImage(item.viewInvoiceUrl) },
-                            { scope.openEditInvoice(item, scope) }
-                        )
-                        /*if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
-                        }*/
+                        ) { scope.openIOCDetails(item) }
                     },
                 )
             }
@@ -422,8 +450,9 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.no_collection_found,
                 subtitle = "",
-                buttonText = stringResource(id = R.string.clear),
-                onHome = { scope.load("") },
+                buttonText = if (search.value.isNotEmpty()) stringResource(id = R.string.clear)
+                else stringResource(id = R.string.go_back),
+                onHome = { if (search.value.isNotEmpty()) scope.load("") else scope.goBack() },
             )
         } else {
             LazyColumn(
@@ -461,10 +490,11 @@ fun IocListItem(
 
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 1.dp,
+        elevation = 5.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
-        onClick = onClick
+        onClick = onClick,
+        border = BorderStroke(1.dp, ConstColors.separator)
     ) {
         Column(
             modifier = Modifier
@@ -487,22 +517,6 @@ fun IocListItem(
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.invoices))
-                        append(": ")
-                    },
-                    color = ConstColors.txtGrey,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W500
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_invoice_grey),
-                    contentDescription = null,
-                    modifier = Modifier.size(10.dp),
-                    tint = ConstColors.txtGrey
-                )
-                Space(dp = 4.dp)
-                Text(
-                    text = buildAnnotatedString {
                         val startIndex = length
                         append(item.totalInvoices.toString())
                         addStyle(
@@ -513,10 +527,18 @@ fun IocListItem(
                             startIndex,
                             length,
                         )
-                        append(" (")
-                        append(item.customerType)
-                        append(")")
+                        append(" ")
+                        append(stringResource(id = R.string.invoices))
                     },
+                    modifier = Modifier.weight(0.5f),
+                    color = ConstColors.txtGrey,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W500,
+                    textAlign = TextAlign.Start
+                )
+                Text(
+                    text = item.customerType,
+                    modifier = Modifier.weight(0.5f),
                     fontSize = 12.sp,
                     color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W500,
@@ -590,15 +612,14 @@ fun IocListItem(
 fun InvoiceListItem(
     item: BuyerDetailsData,
     onItemClick: () -> Unit,
-    onPreview: () -> Unit,
-    onEditInvoice: () -> Unit
 ) {
 
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 1.dp,
+        elevation = 5.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
+        border = BorderStroke(1.dp, ConstColors.separator)
     ) {
         Column(
             modifier = Modifier
@@ -716,9 +737,10 @@ fun PaymentOptionItem(
 ) {
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 1.dp,
+        elevation = 5.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
+        border = BorderStroke(1.dp, ConstColors.separator)
     ) {
         Column {
             Row(

@@ -363,6 +363,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
     val invoiceDate = scope.invoiceDate.flow.collectAsState()
     val totalAmount = scope.totalAmount.flow.collectAsState()
     val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
+    val outstandingDiffAmount = scope.outstandingDiffAmount.flow.collectAsState()
     val enable = scope.enableButton.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val dialogMessage = scope.dialogMessage.flow.collectAsState()
@@ -583,6 +584,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
         Space(8.dp)
         if (!enable.value && totalAmount.value.isNotEmpty()
             && outstandingAmount.value.isNotEmpty()
+            && totalAmount.value.toDouble() < outstandingAmount.value.toDouble()
         ) {
             Text(
                 text = stringResource(id = R.string.invoice_amount_validation),
@@ -591,6 +593,36 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal
             )
+        }
+        Space(12.dp)
+
+        if (outstandingDiffAmount.value.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.outstanding_amount),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = ConstColors.inputFieldColor,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Text(
+                    text = outstandingDiffAmount.value,
+                    color = MaterialTheme.colors.background,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+                Space(dp = 12.dp)
+
+                Divider(
+                    color = ConstColors.inputFieldColor,
+                    thickness = 1.dp,
+                )
+            }
         }
         Space(16.dp)
 

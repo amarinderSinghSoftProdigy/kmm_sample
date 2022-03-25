@@ -424,6 +424,7 @@
     <string name="enter_invoice_date">Invoice Date</string>
     <string name="enter_total_amount">Total Amount</string>
     <string name="enter_outstanding_amount">Amount Paid</string>
+    <string name="outstanding_amount">Outstanding Amount</string>
     <string name="upload_invoice">Upload Invoice</string>
     <string name="dl_one_">DL 20B:</string>
     <string name="dl_two_">DL 21B:</string>
@@ -438,7 +439,7 @@
     <string name="outstanding">Outstanding</string>
     <string name="edit_invoice">Edit Invoice</string>
     <string name="add_payment">Add Payment</string>
-    <string name="invoice_amount_validation">Invoice amount should be greater than Outstanding Amount</string>
+    <string name="invoice_amount_validation">Total amount should be greater than Amount Paid</string>
     <string name="cash_in_hand">Cash In Hand</string>
     <string name="net_banking">Net Banking</string>
     <string name="paytm">Paytm</string>

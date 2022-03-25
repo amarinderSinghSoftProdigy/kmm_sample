@@ -271,8 +271,12 @@ internal class IOCEventDelegate(
                 search = extraFilters,
                 pagination = pagination,
             ).onSuccess { body ->
-                pagination.setTotal(body.totalResults)
-                items.value = if (!addPage) body.results else items.value + body.results
+                if (body.totalResults == 0) {
+                    items.value = ArrayList()
+                } else {
+                    pagination.setTotal(body.totalResults)
+                    items.value = if (!addPage) body.results else items.value + body.results
+                }
             }.onError(navigator)
             onEnd()
         }

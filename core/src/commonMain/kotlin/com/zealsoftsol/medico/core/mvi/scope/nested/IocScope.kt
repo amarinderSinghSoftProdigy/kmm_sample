@@ -174,6 +174,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         private val invoiceDateMili: DataSource<Long> = DataSource(0)
         val totalAmount: DataSource<String> = DataSource("")
         val outstandingAmount: DataSource<String> = DataSource("")
+        val outstandingDiffAmount: DataSource<String> = DataSource("")
 
 
         fun updateInvoiceNum(data: String) {
@@ -197,15 +198,19 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         fun updateOutstandingAmount(data: String) {
-            if (data == "0" || data == "0.0") {
-                outstandingAmount.value = ""
-            } else {
-                outstandingAmount.value = data
-            }
+            outstandingAmount.value = data
             validate()
         }
 
         fun validate() {
+            if (totalAmount.value.isNotEmpty() && outstandingAmount.value.isNotEmpty() &&
+                totalAmount.value.toDouble() > outstandingAmount.value.toDouble()
+            ) {
+                outstandingDiffAmount.value =
+                    (totalAmount.value.toDouble() - outstandingAmount.value.toDouble()).toString()
+            } else {
+                outstandingDiffAmount.value = ""
+            }
             enableButton.value = (invoiceNum.value.isNotEmpty() && invoiceDate.value.isNotEmpty()
                     && totalAmount.value.isNotEmpty() && outstandingAmount.value.isNotEmpty()
                     && invoiceUpload.value.cdnUrl.isNotEmpty()) &&
@@ -244,13 +249,13 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     }
 
     enum class PaymentTypes(val stringId: String, val type: String) {
-        CASH_IN_HAND("cash_in_hand","CASH_IN_HAND"),
-        GOOGLE_PAY("g_pay","GOOGLE_PAY"),
-        AMAZON_PAY("amazon_pay","AMAZON_PAY"),
-        PHONE_PE("phone_pe","PHONE_PE"),
-        BHIM_UPI("upi","BHIM_UPI"),
-        PAYTM("paytm","PAYTM"),
-        NET_BANKING("net_banking","NET_BANKING");
+        CASH_IN_HAND("cash_in_hand", "CASH_IN_HAND"),
+        GOOGLE_PAY("g_pay", "GOOGLE_PAY"),
+        AMAZON_PAY("amazon_pay", "AMAZON_PAY"),
+        PHONE_PE("phone_pe", "PHONE_PE"),
+        BHIM_UPI("upi", "BHIM_UPI"),
+        PAYTM("paytm", "PAYTM"),
+        NET_BANKING("net_banking", "NET_BANKING");
     }
 
 }
