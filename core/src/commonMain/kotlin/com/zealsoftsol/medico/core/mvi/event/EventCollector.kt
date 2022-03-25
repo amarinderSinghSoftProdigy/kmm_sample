@@ -40,7 +40,9 @@ import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.core.utils.TapModeHelper
 import kotlinx.coroutines.CoroutineScope
@@ -193,14 +195,15 @@ class EventCollector(
         return when (userRepo.getUserAccess()) {
             UserRepo.UserAccess.FULL_ACCESS -> DashboardScope.get(
                 user = userRepo.requireUser(),
-                userDataSource = userRepo.getUserDataSource(),
+                userDataSource = userRepo.getUserDataSourceV2(),
                 dashboardData = userRepo.getDashboardDataSource(),
                 unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                 cartItemsCount = cartRepo.getEntriesCountDataSource(),
             )
             UserRepo.UserAccess.LIMITED_ACCESS -> LimitedAccessScope.get(
-                userRepo.requireUser(),
+                userRepo.requireUserOld(),
                 userRepo.getUserDataSource(),
+                userRepo.getUserDataSourceV2(),
             )
             UserRepo.UserAccess.NO_ACCESS -> LogInScope(DataSource(userRepo.getAuthCredentials()))
         }
@@ -209,7 +212,7 @@ class EventCollector(
     fun updateData() {
         if (userRepo.getUserAccess() != UserRepo.UserAccess.NO_ACCESS) {
             GlobalScope.launch(compatDispatcher) {
-                userRepo.loadUserFromServer()
+                userRepo.loadUserFromServerV2()
             }
             GlobalScope.launch(compatDispatcher) {
                 cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)

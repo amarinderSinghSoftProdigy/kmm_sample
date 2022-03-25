@@ -56,7 +56,23 @@ internal class SearchEventDelegate(
         is Event.Action.Search.ShowDetails -> select(event.item)
         is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
         is Event.Action.Search.ShowConnectedStockistBottomSheet -> showConnectedStockist(event.stockist)
+        is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
     }
+
+    private suspend fun selectAutoCompleteGlobal(autoComplete: AutoComplete) {
+        navigator.withScope<BaseSearchScope> {
+            it.productSearch.value = autoComplete.suggestion
+            it.pagination.reset()
+            networkSearchScope.autocomplete(autoComplete.suggestion, null)
+                .onSuccess { body ->
+                    it.autoComplete.value = body
+                    if (body.isEmpty() && it.products.value.isNotEmpty()) {
+                        it.products.value = emptyList()
+                    }
+                }.onError(navigator)
+        }
+    }
+
 
     private fun showConnectedStockist(stockist: List<ConnectedStockist>) {
         navigator.withScope<SearchScope> {
@@ -345,7 +361,8 @@ internal class SearchEventDelegate(
         crossinline onEnd: () -> Unit = {}
     ) {
         searchAsync(withDelay = withDelay, withProgress = withProgress) {
-            val address = userRepo.requireUser().addressData
+            //val address = userRepo.requireUser().addressData
+            val address = userRepo.requireUser()
             networkSearchScope.search(
                 selectedSortOption.value?.code,
                 (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },

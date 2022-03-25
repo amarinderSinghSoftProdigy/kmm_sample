@@ -12,14 +12,16 @@ import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.ProfileImageData
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserV2
 
 sealed class SettingsScope(
     private val titleId: String,
-    val mUser: User,
+    val mUser: UserV2,
     val unreadNotifications: ReadOnlyDataSource<Int>,
     private val showBackIcon: Boolean,
     val profileData: DataSource<ProfileImageData?> = DataSource(null)
 ) : Scope.Child.TabBar(), CommonScope.UploadDocument {
+    val userDetails: DataSource<User?> = DataSource(null)
 
     init {
         sendEvent(action = Event.Action.Profile.GetProfileData)
@@ -46,7 +48,7 @@ sealed class SettingsScope(
     class List(
         val unReadNotifications: ReadOnlyDataSource<Int>,
         val sections: kotlin.collections.List<Section>,
-        val user: User,
+        val user: UserV2,
         showBack: Boolean
     ) : SettingsScope("settings", user, unreadNotifications = unReadNotifications, showBack) {
 
@@ -87,7 +89,8 @@ sealed class SettingsScope(
     class Address(val addressData: AddressData, val user: User) : Child.TabBar(),
         CommonScope.CanGoBack
 
-    class GstinDetails(val details: User.Details.DrugLicense, val user: User) : Child.TabBar(),
+    class GstinDetails(val details: User.Details.DrugLicense, val user: User) :
+        Child.TabBar(),
         CommonScope.CanGoBack
 
 }

@@ -6,9 +6,10 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.data.UserV2
 
 class MenuScope(
-    val user: User, val unreadNotifications: ReadOnlyDataSource<Int>,
+    val user: UserV2, val unreadNotifications: ReadOnlyDataSource<Int>,
 ) : Scope.Child.TabBar() {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo =

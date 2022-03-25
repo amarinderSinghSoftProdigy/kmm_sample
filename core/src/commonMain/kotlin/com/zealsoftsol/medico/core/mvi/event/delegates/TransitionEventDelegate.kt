@@ -34,7 +34,9 @@ import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.repository.requireUserOld
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -66,7 +68,7 @@ internal class TransitionEventDelegate(
                     setScope(
                         DashboardScope.get(
                             userRepo.requireUser(),
-                            userRepo.getUserDataSource(),
+                            userRepo.getUserDataSourceV2(),
                             dashboardData = userRepo.getDashboardDataSource(),
                             unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                             cartItemsCount = cartRepo.getEntriesCountDataSource(),
@@ -88,21 +90,21 @@ internal class TransitionEventDelegate(
                     )
                 }
                 is Event.Transition.Profile -> setScope(
-                    SettingsScope.Profile(userRepo.requireUser())
+                    SettingsScope.Profile(userRepo.requireUserOld())
                 )
                 is Event.Transition.ChangePassword -> setScope(
                     PasswordScope.VerifyCurrent()
                 )
                 is Event.Transition.Address -> setScope(
                     SettingsScope.Address(
-                        userRepo.requireUser().addressData,
-                        userRepo.requireUser()
+                        userRepo.requireUserOld().addressData,
+                        userRepo.requireUserOld()
                     )
                 )
                 is Event.Transition.GstinDetails -> setScope(
                     SettingsScope.GstinDetails(
-                        userRepo.requireUser().details as User.Details.DrugLicense,
-                        userRepo.requireUser()
+                        userRepo.requireUserOld().details as User.Details.DrugLicense,
+                        userRepo.requireUserOld()
                     )
                 )
                 is Event.Transition.Management -> setScope(

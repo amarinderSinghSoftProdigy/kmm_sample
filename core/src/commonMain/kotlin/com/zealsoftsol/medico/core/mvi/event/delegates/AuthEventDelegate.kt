@@ -16,7 +16,9 @@ import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSource
+import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
+import com.zealsoftsol.medico.core.repository.requireUserOld
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
@@ -48,12 +50,12 @@ internal class AuthEventDelegate(
                     it.credentials.value.password,
                 )
             }.onSuccess { _ ->
-                withProgress { userRepo.loadUserFromServer() }
+                withProgress { userRepo.loadUserFromServerV2() }
                     .onSuccess {
                         withProgress {
                             userRepo.sendFirebaseToken()
-                            userRepo.loadConfig()
-                            notificationRepo.loadUnreadMessagesFromServer()
+                            //userRepo.loadConfig()
+                            //notificationRepo.loadUnreadMessagesFromServer()
                             cartRepo.loadCartFromServer(userRepo.requireUser().unitCode)
                         }
                         dropScope(Navigator.DropStrategy.All, updateDataSource = false)
@@ -62,13 +64,17 @@ internal class AuthEventDelegate(
                             if (user.isActivated)
                                 DashboardScope.get(
                                     user = user,
-                                    userDataSource = userRepo.getUserDataSource(),
+                                    userDataSource = userRepo.getUserDataSourceV2(),
                                     dashboardData = userRepo.getDashboardDataSource(),
                                     unreadNotifications = notificationRepo.getUnreadMessagesDataSource(),
                                     cartItemsCount = cartRepo.getEntriesCountDataSource(),
                                 )
                             else
-                                LimitedAccessScope.get(user, userRepo.getUserDataSource())
+                                LimitedAccessScope.get(
+                                    userRepo.requireUserOld(),
+                                    userRepo.getUserDataSource(),
+                                    userRepo.getUserDataSourceV2()
+                                )
                         )
                     }.onError(navigator)
             }.onError(navigator)
@@ -88,7 +94,7 @@ internal class AuthEventDelegate(
                 navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
                 navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))
             }
-        }else{
+        } else {
             userRepo.clear()
             navigator.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
             navigator.setScope(LogInScope(DataSource(userRepo.getAuthCredentials())))

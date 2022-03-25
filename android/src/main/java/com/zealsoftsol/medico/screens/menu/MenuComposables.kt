@@ -53,9 +53,9 @@ fun MenuScreen(scope: MenuScope) {
 
         Text(
             text = if (userType == UserType.STOCKIST) {
-                (user.details as User.Details.DrugLicense).tradeName
+                user.tradeName
             } else {
-                user.fullName()
+                user.name
             },
             color = Color.Black,
             modifier = Modifier.padding(start = 50.dp, top = 50.dp),

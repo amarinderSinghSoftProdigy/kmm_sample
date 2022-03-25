@@ -320,15 +320,15 @@ private fun SubscriptionDeatails(
             CoilImage(
                 src = "",
                 size = 100.dp,
-                onError = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
-                onLoading = { UserLogoPlaceholder(details.customerData.run { "$firstName $lastName" }) },
+                onError = { UserLogoPlaceholder(details.customerData.run { ""/*"$firstName $lastName"*/ }) },
+                onLoading = { UserLogoPlaceholder(details.customerData.run { ""/*"$firstName $lastName"*/ }) },
             )
             Space(24.dp)
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                GeoLocation(details.customerData.addressData.location, isBold = true)
+                //GeoLocation(details.customerData.addressData.location, isBold = true)
 //                Text(
 //                    text = previewItem.geoData.distance,
 //                    fontSize = 12.sp,
@@ -342,16 +342,16 @@ private fun SubscriptionDeatails(
                     color = ConstColors.lightBlue,
                     modifier = Modifier.clickable {
                         activity.openMaps(
-                            details.customerData.addressData.latitude,
-                            details.customerData.addressData.longitude,
+                            details.customerData.latitude,
+                            details.customerData.longitude,
                         )
                     },
                 )
             }
         }
         Space(24.dp)
-        DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
-        DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
+        //DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
+       // DataWithLabel(R.string.gstin_num, details.customerData.gstin.orEmpty())
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -460,8 +460,8 @@ private fun SubscriptionDeatails(
             }
         }
     } else {
-        DataWithLabel(R.string.email, details.customerData.email)
-        DataWithLabel(R.string.address, details.customerData.addressData.address)
-        DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
+        //DataWithLabel(R.string.email, details.customerData.email)
+        //DataWithLabel(R.string.address, details.customerData.addressData.address)
+        //DataWithLabel(R.string.phone_number, details.customerData.phoneNumber)
     }
 }

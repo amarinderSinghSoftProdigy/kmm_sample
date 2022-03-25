@@ -14,6 +14,7 @@ import com.zealsoftsol.medico.data.BodyResponse
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
+import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.LicenseDocumentData
@@ -35,6 +36,7 @@ import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserRegistration4
 import com.zealsoftsol.medico.data.UserRequest
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 import com.zealsoftsol.medico.data.UserValidation1
 import com.zealsoftsol.medico.data.UserValidation2
 import com.zealsoftsol.medico.data.UserValidation3
@@ -69,11 +71,16 @@ class UserRepo(
             Json.decodeFromString(User.serializer(), settings.getString(AUTH_USER_KEY))
         }.getOrNull()
     )
+    val userV2Flow: MutableStateFlow<UserV2?> = MutableStateFlow(
+        runCatching {
+            Json.decodeFromString(UserV2.serializer(), settings.getString(AUTH_USER_KEY_V2))
+        }.getOrNull()
+    )
     val configFlow: MutableStateFlow<ConfigData> = MutableStateFlow(ConfigData())
     val dashboardFlow: MutableStateFlow<DashboardData?> = MutableStateFlow(null)
 
     fun getUserAccess(): UserAccess {
-        return userFlow.value?.let {
+        return userV2Flow.value?.let {
             if (it.isActivated) UserAccess.FULL_ACCESS else UserAccess.LIMITED_ACCESS
         } ?: UserAccess.NO_ACCESS
     }
@@ -86,6 +93,32 @@ class UserRepo(
                 password
             )
         )
+    }
+
+    suspend fun loadUserFromServerV2(): BodyResponse<CustomerDataV2> {
+        val result = networkCustomerScope.getCustomerDataV2()
+        userV2Flow.value = result.getBodyOrNull()?.let {
+            val parsedType = UserType.parse(it.customerType) ?: run {
+                "unknown user type".warnIt()
+                return@let null
+            }
+            if (it.unitCode == null || it.metaData == null) {
+                throw UnsupportedOperationException("can not create user without unitCode or customerMetaData")
+            }
+            val user = UserV2(
+                it.unitCode!!,
+                parsedType,
+                it.metaData!!.activated,
+                it.latitude,
+                it.longitude,
+                it.name,
+                it.tradeName
+            )
+            val json = Json.encodeToString(UserV2.serializer(), user)
+            settings.putString(AUTH_USER_KEY_V2, json)
+            user
+        }
+        return result
     }
 
     suspend fun loadUserFromServer(): BodyResponse<CustomerData> {
@@ -353,6 +386,7 @@ class UserRepo(
 
     private fun clearUserData() {
         settings.remove(AUTH_USER_KEY)
+        settings.remove(AUTH_USER_KEY_V2)
         tokenStorage.clear()
     }
 
@@ -364,14 +398,21 @@ class UserRepo(
         // TODO make secure
         private const val AUTH_LOGIN_KEY = "auid"
         private const val AUTH_USER_KEY = "ukey"
+        private const val AUTH_USER_KEY_V2 = "ukeyV2"
     }
 }
 
-internal inline fun UserRepo.requireUser(): User =
+internal inline fun UserRepo.requireUser(): UserV2 =
+    requireNotNull(userV2Flow.value) { "user can no be null" }
+
+internal inline fun UserRepo.requireUserOld(): User =
     requireNotNull(userFlow.value) { "user can no be null" }
 
 internal inline fun UserRepo.getUserDataSource(): ReadOnlyDataSource<User> = ReadOnlyDataSource(
-    userFlow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
+    userFlow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUserOld())
+)
+internal inline fun UserRepo.getUserDataSourceV2(): ReadOnlyDataSource<UserV2> = ReadOnlyDataSource(
+    userV2Flow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
 )
 
 internal inline fun UserRepo.getDashboardDataSource(): ReadOnlyDataSource<DashboardData?> =

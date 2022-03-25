@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
+import com.zealsoftsol.medico.utils.ZoomableImage
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -52,6 +53,29 @@ fun CoilImage(
             painter = painter,
             modifier = modifier,
             contentDescription = null,
+        )
+        when (val state = painter.state) {
+            is ImagePainter.State.Loading -> onLoading?.invoke()
+            is ImagePainter.State.Success -> Unit
+            is ImagePainter.State.Error, is ImagePainter.State.Empty -> onError?.invoke()
+        }
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun CoilImageZoom(
+    src: Any,
+    size: Dp,
+    isCrossFadeEnabled: Boolean = true,
+    onError: @Composable (() -> Unit)? = null,
+    onLoading: @Composable (() -> Unit)? = null,
+) {
+    val painter = rememberImagePainter(src, builder = { crossfade(isCrossFadeEnabled) })
+    Box(Modifier.size(size), contentAlignment = Alignment.Center) {
+        ZoomableImage(
+            painter = painter,
+            modifier = Modifier.size(size),
         )
         when (val state = painter.state) {
             is ImagePainter.State.Loading -> onLoading?.invoke()

@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
 import com.zealsoftsol.medico.data.UserRegistration3
 import com.zealsoftsol.medico.data.UserType
+import com.zealsoftsol.medico.data.UserV2
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.kodein.di.instance
 
@@ -190,25 +191,26 @@ object DebugScopeCreator {
     }
 
     fun signUpWelcomeScreen() {
-        nav.setScope(WelcomeScope(testUser.fullName()))
+        //nav.setScope(WelcomeScope(testUser.fullName()))
     }
 
     fun limitedAccessMainScreen(
         type: UserType,
         isDocumentUploaded: Boolean
     ) {
-        val user = testUser.copy(
+        val user = testUserV2.copy(
             type = type,
-            details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
-                "",
-                ""
-            ) else User.Details.DrugLicense("", "", "","", "", "url"),
+            /* details = if (type == UserType.SEASON_BOY) User.Details.Aadhaar(
+                 "",
+                 ""
+             ) else User.Details.DrugLicense("", "", "","", "", "url"),*/
             isActivated = false,
-            isDocumentUploaded = isDocumentUploaded
+            //isDocumentUploaded = isDocumentUploaded
         )
         nav.setScope(
             LimitedAccessScope.get(
-                user,
+                testUser,
+                ReadOnlyDataSource(MutableStateFlow(testUser)),
                 ReadOnlyDataSource(MutableStateFlow(user)),
             )
         )
@@ -218,8 +220,8 @@ object DebugScopeCreator {
         nav.dropScope(Navigator.DropStrategy.All, updateDataSource = false)
         nav.setScope(
             DashboardScope.get(
-                testUser,
-                ReadOnlyDataSource(MutableStateFlow(testUser)),
+                testUserV2,
+                ReadOnlyDataSource(MutableStateFlow(testUserV2)),
                 ReadOnlyDataSource(MutableStateFlow(null)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
                 ReadOnlyDataSource(MutableStateFlow(0)),
@@ -251,7 +253,7 @@ object DebugScopeCreator {
 //                    productCategoryName = "",
                     stockInfo = StockInfo(
                         1,
-                        Expiry(0, "", "#FF00FF",""),
+                        Expiry(0, "", "#FF00FF", ""),
                         "In Stock",
                         StockStatus.IN_STOCK,
                     ),
@@ -291,9 +293,19 @@ private inline val testUser
         "000",
         "unitcode",
         UserType.STOCKIST,
-        User.Details.DrugLicense("", "", "","", "", "url"),
+        User.Details.DrugLicense("", "", "", "", "", "url"),
         true,
+
         true,
         AddressData("", "", "", "", 0.0, 0.0, "", 0, "", ""),
         Subscription(Subscription.Type.TRIAL, "valid untill some time", Time.now),
+    )
+
+private inline val testUserV2
+    get() = UserV2(
+        "unitcode",
+        UserType.STOCKIST,
+        true,
+
+        0.0, 0.0, "", ""
     )
