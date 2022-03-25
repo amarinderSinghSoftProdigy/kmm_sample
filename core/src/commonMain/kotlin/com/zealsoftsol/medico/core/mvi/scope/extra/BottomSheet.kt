@@ -449,8 +449,9 @@ sealed class BottomSheet {
 
         val enableButton: DataSource<Boolean> = DataSource(false)
         val dateMili = DataSource(0L)
-        val date = DataSource(info.invoiceDate.formatted)
-        val amount = DataSource(info.invoiceAmount.value.toString())
+        val date = DataSource("")
+        val amount = DataSource("")
+        val typeId = DataSource("")
         val type = DataSource("")
 
         fun updateDate(date: String, mili: Long) {
@@ -464,12 +465,13 @@ sealed class BottomSheet {
             validate()
         }
 
-        fun updateType(data: String) {
+        fun updateType(data: String, dataId: String) {
+            this.typeId.value = dataId
             this.type.value = data
             validate()
         }
 
-        fun validate() {
+        private fun validate() {
             enableButton.value = date.value.isNotEmpty()
                     && amount.value.isNotEmpty()
                     && type.value.isNotEmpty()
@@ -481,10 +483,10 @@ sealed class BottomSheet {
             val request = UpdateInvoiceRequest(
                 this.dateMili.value,
                 this.amount.value.toDouble(),
-                this.type.value,
+                this.typeId.value,
                 info.invoiceId
             )
-            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC(request,scope))
+            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC(request, scope))
         }
 
 

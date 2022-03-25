@@ -11,12 +11,16 @@ import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.BuyerDetailsData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceDetails
+import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.UploadResponseData
@@ -27,6 +31,15 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     val invoiceUpload: DataSource<UploadResponseData> =
         DataSource(UploadResponseData("", "", "", ""))
+    val paymentTypes: List<PaymentTypes> = listOf(
+        PaymentTypes.CASH_IN_HAND,
+        PaymentTypes.PAYTM,
+        PaymentTypes.GOOGLE_PAY,
+        PaymentTypes.AMAZON_PAY,
+        PaymentTypes.PHONE_PE,
+        PaymentTypes.BHIM_UPI,
+        PaymentTypes.NET_BANKING,
+    )
 
     class InvUserListing : IocScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
 
@@ -69,6 +82,36 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+            /*val address = GeoData(
+                location = store.location,
+                city = store.city,
+                pincode = store.pincode,
+                distance = store.distance,
+                formattedDistance = store.formattedDistance,
+                addressLine = store.fullAddress(),
+                destination = null,
+                landmark = "",
+                origin = GeoPoints(0.0, 0.0)
+            )
+            val item = EntityInfo(
+                tradeName = item.tradeName,
+                phoneNumber = store.mobileNumber,
+                geoData = address,
+                seasonBoyData = null,
+                seasonBoyRetailerData = null,
+                drugLicenseNo1 = store.drugLicenseNo1,
+                drugLicenseNo2 = store.drugLicenseNo2,
+                gstin = store.gstin,
+                isVerified = true,
+                panNumber = store.panNumber,
+                subscriptionData = null,
+                unitCode = store.sellerUnitCode
+            )
+            return TabBarInfo.StoreTitle(
+                storeName = item.tradeName,
+                event = Event.Action.Stores.ShowDetails(item)
+            )*/
+
             return TabBarInfo.OnlyBackHeader(title = item.tradeName)
         }
     }
@@ -198,6 +241,16 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     fun openEditInvoice(item: BuyerDetailsData, scope: IocScope) {
         EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item, scope))
+    }
+
+    enum class PaymentTypes(val stringId: String, val type: String) {
+        CASH_IN_HAND("cash_in_hand","CASH_IN_HAND"),
+        GOOGLE_PAY("g_pay","GOOGLE_PAY"),
+        AMAZON_PAY("amazon_pay","AMAZON_PAY"),
+        PHONE_PE("phone_pe","PHONE_PE"),
+        BHIM_UPI("upi","BHIM_UPI"),
+        PAYTM("paytm","PAYTM"),
+        NET_BANKING("net_banking","NET_BANKING");
     }
 
 }

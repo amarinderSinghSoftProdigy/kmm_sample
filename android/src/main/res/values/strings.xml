@@ -446,6 +446,9 @@
     <string name="amazon_pay">Amazon Pay</string>
     <string name="phone_pe">PhonePe</string>
     <string name="g_pay">Google Pay</string>
+    <string name="paid">Paid</string>
+    <string name="no_collection_found">No Invoice Collection Found!</string>
+    <string name="no_invoices_found">No Invoices Found!</string>
 
     <!-- Termrs and Cond -->
 

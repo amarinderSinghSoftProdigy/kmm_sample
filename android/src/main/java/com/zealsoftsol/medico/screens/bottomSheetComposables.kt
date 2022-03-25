@@ -122,6 +122,7 @@ import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.ioc.IocItem
 import com.zealsoftsol.medico.screens.ioc.SpinnerItem
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
@@ -3909,6 +3910,7 @@ private fun EditIOCBottomSheet(
     val date = scope.date.flow.collectAsState()
     val amount = scope.amount.flow.collectAsState()
     val type = scope.type.flow.collectAsState()
+    val scopes = scope.scope.paymentTypes
 
     BaseBottomSheet(onDismiss) {
         Box(
@@ -3929,7 +3931,7 @@ private fun EditIOCBottomSheet(
                 ) {
 
                     Text(
-                        text = stringResource(id = R.string.update),
+                        text = stringResource(id = R.string.add_payment),
                         fontSize = 14.sp,
                         color = ConstColors.lightBlue,
                         fontWeight = FontWeight.W700
@@ -4054,11 +4056,7 @@ private fun EditIOCBottomSheet(
                         }
                     }
                     Space(dp = 16.dp)
-                    val list = ArrayList<String>()
-                    list.add("RTGS")
-                    list.add("NEFT")
-                    list.add("CASH")
-                    list.add("IMPS")
+                    val list = scope.scope.paymentTypes
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         FoldableItem(
@@ -4077,7 +4075,9 @@ private fun EditIOCBottomSheet(
                                     ) {
                                         Row(modifier = Modifier.weight(0.9f)) {
                                             Text(
-                                                text = if (type.value.isNotEmpty()) type.value else stringResource(
+                                                text = if (type.value.isNotEmpty()) stringResourceByName(
+                                                    name = type.value
+                                                ) else stringResource(
                                                     id = R.string.type
                                                 ),
                                                 color = if (type.value.isNotEmpty()) MaterialTheme.colors.background
@@ -4108,10 +4108,12 @@ private fun EditIOCBottomSheet(
                             itemsBackground = Color.Transparent,
                             item = { value, index ->
                                 SpinnerItem(
-                                    item = value,
-                                    index = index
+                                    item = value
                                 ) {
-                                    scope.updateType(value)
+                                    scope.updateType(
+                                        value.stringId,
+                                        value.type
+                                    )
                                 }
 
                             }

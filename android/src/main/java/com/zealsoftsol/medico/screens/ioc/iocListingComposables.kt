@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.ioc
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -33,8 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,14 +47,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
+import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvUserData
+import com.zealsoftsol.medico.screens.common.CoilImage
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.NoRecords
+import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 @ExperimentalMaterialApi
@@ -295,8 +305,8 @@ private fun InvListing(scope: IocScope.InvListing) {
 
         if (items.value.isEmpty() && scope.items.updateCount > 0) {
             NoRecords(
-                icon = R.drawable.ic_missing_stores,
-                text = R.string.no_users_found,
+                icon = R.drawable.ic_missing_invoices,
+                text = R.string.no_invoices_found,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
                 onHome = { },
@@ -410,7 +420,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
         if (items.value.isEmpty() && scope.items.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
-                text = R.string.no_users_found,
+                text = R.string.no_collection_found,
                 subtitle = "",
                 buttonText = stringResource(id = R.string.clear),
                 onHome = { scope.load("") },
@@ -471,57 +481,104 @@ fun IocListItem(
             )
 
             Space(4.dp)
-
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.inv_toal))
-                        append(" ")
-                        append(item.totalAmount.formatted)
-                    },
-                    modifier = Modifier.weight(0.5f),
-                    color = ConstColors.lightGreen,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(stringResource(id = R.string.out_amount))
-                        append(" ")
-                        append(item.outstandingAmount.formatted)
-                    },
-                    modifier = Modifier.weight(0.5f),
-                    color = ConstColors.marron,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End
-                )
-            }
-
-            Space(4.dp)
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = buildAnnotatedString {
-                        append(item.totalInvoices.toString())
-                        append(" ")
                         append(stringResource(id = R.string.invoices))
+                        append(": ")
                     },
-                    modifier = Modifier.weight(0.5f),
                     color = ConstColors.txtGrey,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.W500
                 )
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_invoice_grey),
+                    contentDescription = null,
+                    modifier = Modifier.size(10.dp),
+                    tint = ConstColors.txtGrey
+                )
+                Space(dp = 4.dp)
                 Text(
-                    text = item.customerType,
-                    modifier = Modifier.weight(0.5f),
-                    fontSize = 14.sp,
+                    text = buildAnnotatedString {
+                        val startIndex = length
+                        append(item.totalInvoices.toString())
+                        addStyle(
+                            SpanStyle(
+                                color = ConstColors.txtGrey,
+                                fontWeight = FontWeight.W800
+                            ),
+                            startIndex,
+                            length,
+                        )
+                        append(" (")
+                        append(item.customerType)
+                        append(")")
+                    },
+                    fontSize = 12.sp,
                     color = ConstColors.txtGrey,
                     fontWeight = FontWeight.W500,
                     textAlign = TextAlign.End
                 )
             }
+            Space(8.dp)
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(id = R.string.total),
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(id = R.string.paid),
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.lightGreen,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(id = R.string.outstanding),
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W400,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
             Space(4.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = item.totalAmount.formatted,
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = item.paidAmount.formatted,
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.lightGreen,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = item.outstandingAmount.formatted,
+                    modifier = Modifier.weight(0.33f),
+                    color = ConstColors.marron,
+                    fontWeight = FontWeight.W600,
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+            Space(8.dp)
         }
     }
 }
@@ -597,39 +654,54 @@ fun InvoiceListItem(
             Divider(thickness = 0.5.dp)
             Space(8.dp)
 
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                val list = ArrayList<String>()
+                list.add("")
+                FoldableItem(
+                    expanded = false,
+                    headerBackground = Color.White,
+                    headerBorder = BorderStroke(0.dp, Color.Transparent),
+                    headerMinHeight = 25.dp,
+                    header = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(25.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(15.dp),
+                                painter = painterResource(id = R.drawable.ic_eye),
+                                contentDescription = null,
+                                tint = ConstColors.txtGrey
+                            )
+                            Space(dp = 4.dp)
+                            Text(
+                                text = stringResource(id = R.string.view_invoice),
+                                color = ConstColors.txtGrey,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W700
+                            )
+                        }
 
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .clickable(onClick = onPreview),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(15.dp),
-                        painter = painterResource(id = R.drawable.ic_eye),
-                        contentDescription = null,
-                        tint = ConstColors.txtGrey
-                    )
-                    Space(dp = 4.dp)
-                    Text(
-                        text = stringResource(id = R.string.view_invoice),
-                        color = ConstColors.txtGrey,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W700
-                    )
-                }
-
-                if (item.viewStatus.uppercase() != "COMPLETED") {
-                    Row(
-                        modifier = Modifier
-                            .weight(0.5f)
-                            .clickable(onClick = onEditInvoice),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    },
+                    childItems = list,
+                    hasItemLeadingSpacing = false,
+                    hasItemTrailingSpacing = false,
+                    itemSpacing = 0.dp,
+                    itemHorizontalPadding = 0.dp,
+                    itemsBackground = Color.Transparent,
+                    item = { _, _ ->
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            CoilImage(
+                                onError = { Placeholder(R.drawable.ic_placeholder) },
+                                src = item.viewInvoiceUrl,
+                                size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                                onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
+                            )
+                        }
                     }
-                }
+                )
             }
             Space(4.dp)
         }
@@ -660,12 +732,12 @@ fun PaymentOptionItem(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
                         painter = when (item.paymentType) {
-                            "CASH_IN_HAND" -> painterResource(id = R.drawable.ic_cash_in_hand)
-                            "GOOGLE_PAY" -> painterResource(id = R.drawable.ic_gpay)
-                            "PHONE_PE" -> painterResource(id = R.drawable.ic_phonepe)
-                            "AMAZON_PAY" -> painterResource(id = R.drawable.ic_amazon_pay)
-                            "BHIM_UPI" -> painterResource(id = R.drawable.ic_upi)
-                            "PAYTM" -> painterResource(id = R.drawable.ic_paytm)
+                            IocScope.PaymentTypes.CASH_IN_HAND.type -> painterResource(id = R.drawable.ic_cash_in_hand)
+                            IocScope.PaymentTypes.GOOGLE_PAY.type -> painterResource(id = R.drawable.ic_gpay)
+                            IocScope.PaymentTypes.PHONE_PE.type -> painterResource(id = R.drawable.ic_phonepe)
+                            IocScope.PaymentTypes.AMAZON_PAY.type -> painterResource(id = R.drawable.ic_amazon_pay)
+                            IocScope.PaymentTypes.BHIM_UPI.type -> painterResource(id = R.drawable.ic_upi)
+                            IocScope.PaymentTypes.PAYTM.type -> painterResource(id = R.drawable.ic_paytm)
                             else -> painterResource(id = R.drawable.ic_net_banking)
                         },
                         contentDescription = null,
@@ -674,12 +746,12 @@ fun PaymentOptionItem(
                     Space(dp = 4.dp)
                     Text(
                         text = when (item.paymentType) {
-                            "CASH_IN_HAND" -> stringResource(id = R.string.cash_in_hand)
-                            "GOOGLE_PAY" -> stringResource(id = R.string.g_pay)
-                            "PHONE_PE" -> stringResource(id = R.string.phone_pe)
-                            "AMAZON_PAY" -> stringResource(id = R.string.amazon_pay)
-                            "BHIM_UPI" -> stringResource(id = R.string.upi)
-                            "PAYTM" -> stringResource(id = R.string.paytm)
+                            IocScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
+                            IocScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
+                            IocScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
+                            IocScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
+                            IocScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
+                            IocScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
                             else -> stringResource(id = R.string.net_banking)
                         },
                         color = ConstColors.txtGrey,
@@ -714,7 +786,7 @@ fun PaymentOptionItem(
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                if (item.paymentType == "CASH_IN_HAND") {
+                if (item.paymentType == IocScope.PaymentTypes.CASH_IN_HAND.type) {
                     Text(
                         text = item.lineMan,
                         modifier = Modifier.weight(0.5f),
@@ -734,8 +806,7 @@ fun PaymentOptionItem(
 @ExperimentalComposeUiApi
 @Composable
 fun SpinnerItem(
-    item: String,
-    index: Int,
+    item: IocScope.PaymentTypes,
     onClick: () -> Unit
 ) {
     Column(
@@ -749,7 +820,7 @@ fun SpinnerItem(
                 .padding(all = 8.dp)
         ) {
             Text(
-                text = item,
+                text = stringResourceByName(name = item.stringId),
                 color = ConstColors.txtGrey,
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
