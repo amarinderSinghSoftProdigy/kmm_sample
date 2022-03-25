@@ -490,11 +490,11 @@ fun IocListItem(
 
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 5.dp,
+        elevation = 3.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
         onClick = onClick,
-        border = BorderStroke(1.dp, ConstColors.separator)
+        border = BorderStroke(0.5.dp, ConstColors.txtGrey)
     ) {
         Column(
             modifier = Modifier
@@ -616,10 +616,10 @@ fun InvoiceListItem(
 
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 5.dp,
+        elevation = 3.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
-        border = BorderStroke(1.dp, ConstColors.separator)
+        border = BorderStroke(0.5.dp, ConstColors.txtGrey)
     ) {
         Column(
             modifier = Modifier
@@ -737,10 +737,10 @@ fun PaymentOptionItem(
 ) {
     Surface(
         shape = RoundedCornerShape(5.dp),
-        elevation = 5.dp,
+        elevation = 3.dp,
         color = Color.White,
         modifier = Modifier.padding(all = 4.dp),
-        border = BorderStroke(1.dp, ConstColors.separator)
+        border = BorderStroke(0.5.dp, ConstColors.txtGrey)
     ) {
         Column {
             Row(
