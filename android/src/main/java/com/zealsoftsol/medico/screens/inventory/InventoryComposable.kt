@@ -130,21 +130,27 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     elevation = 3.dp,
                     color = Color.White
                 ) {
-                    Row(modifier = Modifier
-                        .height(45.dp)
-                        .fillMaxWidth(), verticalAlignment = CenterVertically) {
+                    Row(
+                        modifier = Modifier
+                            .height(45.dp)
+                            .fillMaxWidth(), verticalAlignment = CenterVertically
+                    ) {
                         BasicTextField(
-                            modifier = Modifier.weight(1f).padding(horizontal = 5.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 5.dp),
                             value = searchTerm.value,
+                            maxLines = 1,
+                            singleLine = true,
                             onValueChange = {
-                                searchTerm.value = it
+                                    searchTerm.value = it
 
-                                queryTextChangedJob?.cancel()
+                                    queryTextChangedJob?.cancel()
 
-                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                    delay(500)
-                                    scope.startSearch(it)
-                                }
+                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                        delay(500)
+                                        scope.startSearch(it)
+                                    }
                             },
                             textStyle = LocalTextStyle.current.copy(
                                 color = Color.Black,
@@ -166,41 +172,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             }
                         )
                     }
-
-//                    TextField(
-//                        modifier = Modifier.height(50.dp),
-//                        value = searchTerm.value,
-//                        colors = TextFieldDefaults.textFieldColors(
-//                            backgroundColor = Color.White,
-//                            textColor = Color.Black,
-//                            placeholderColor = Color.Black,
-//                            focusedIndicatorColor = Color.Transparent,
-//                            unfocusedIndicatorColor = Color.Transparent,
-//                            disabledIndicatorColor = Color.Transparent
-//                        ),
-//                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-//                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-//                        onValueChange = {
-//
-//                            searchTerm.value = it
-//
-//                            queryTextChangedJob?.cancel()
-//
-//                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-//                                delay(500)
-//                                scope.startSearch(it)
-//                            }
-//                        },
-//                        placeholder = {
-//                            Text(
-//                                stringResource(id = R.string.search_inventory),
-//                                color = Color.Gray,
-//                                fontSize = 14.sp
-//                            )
-//                        },
-//                        maxLines = 1,
-//                        textStyle = TextStyle(fontSize = 13.sp)
-//                    )
                 }
             }
 
