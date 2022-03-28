@@ -6,7 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.core.repository.UserRepo
@@ -43,16 +43,16 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.OpenCreateIOC -> openCreateIOC()
         is Event.Action.IOC.OpenEditIOCBottomSheet -> showEditIOCBottomSheets(
             event.item,
-            event.scope
+            event.sellerScope
         )
-        is Event.Action.IOC.UpdateIOC -> updateInvoice(event.request, event.scope)
+        is Event.Action.IOC.UpdateIOC -> updateInvoice(event.request, event.sellerScope)
         is Event.Action.IOC.LoadMoreUsers -> loadMoreUsers()
         is Event.Action.IOC.LoadInvListing -> getRetailerInvoiceListing(event.unitCode)
         is Event.Action.IOC.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
     }
 
     private suspend fun submitInvoice(value: AddInvoice) {
-        navigator.withScope<IocScope.IOCCreate> {
+        navigator.withScope<IocSellerScope.IOCCreate> {
             val result = withProgress {
                 networkStoresScope.submitInvoice(value)
             }
@@ -64,7 +64,7 @@ internal class IOCEventDelegate(
     }
 
     private suspend fun uploadDocument(event: Event.Action.IOC) {
-        navigator.withScope<IocScope.IOCCreate> {
+        navigator.withScope<IocSellerScope.IOCCreate> {
             val result = withProgress {
                 when (event) {
                     is Event.Action.IOC.UploadInvoice -> {
@@ -106,26 +106,26 @@ internal class IOCEventDelegate(
         }
     }
 
-    private fun showEditIOCBottomSheets(type: BuyerDetailsData, scopeFrom: IocScope) {
-        navigator.withScope<IocScope> {
+    private fun showEditIOCBottomSheets(type: BuyerDetailsData, sellerScopeFrom: IocSellerScope) {
+        navigator.withScope<IocSellerScope> {
             val scope = scope.value
-            scope.bottomSheet.value = BottomSheet.EditIOC(type, scopeFrom)
+            scope.bottomSheet.value = BottomSheet.EditIOC(type, sellerScopeFrom)
         }
     }
 
-    private suspend fun updateInvoice(request: UpdateInvoiceRequest, scope: IocScope) {
-        navigator.withScope<IocScope> {
+    private suspend fun updateInvoice(request: UpdateInvoiceRequest, sellerScope: IocSellerScope) {
+        navigator.withScope<IocSellerScope> {
             navigator.withProgress {
                 networkStoresScope.updateInvoice(
                     request
                 )
             }.onSuccess {
-                when (scope) {
-                    is IocScope.InvListing -> {
-                        getRetailerInvoiceListing(scope.item.unitCode)
+                when (sellerScope) {
+                    is IocSellerScope.InvListing -> {
+                        getRetailerInvoiceListing(sellerScope.item.unitCode)
                     }
-                    is IocScope.InvDetails -> {
-                        getInvoiceDetails(scope.item.invoiceId)
+                    is IocSellerScope.InvDetails -> {
+                        getInvoiceDetails(sellerScope.item.invoiceId)
                     }
                 }
 
@@ -134,7 +134,7 @@ internal class IOCEventDelegate(
     }
 
     private suspend fun loadMoreProducts() {
-        navigator.withScope<IocScope.IOCListing> {
+        navigator.withScope<IocSellerScope.IOCListing> {
             if (!navigator.scope.value.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
                 it.search(
@@ -149,7 +149,7 @@ internal class IOCEventDelegate(
 
 
     private suspend fun searchStores(search: String) {
-        navigator.withScope<IocScope.IOCListing> {
+        navigator.withScope<IocSellerScope.IOCListing> {
             it.pagination.reset()
             it.searchText.value = search
             it.search(
@@ -162,38 +162,38 @@ internal class IOCEventDelegate(
     }
 
     private fun select(item: RetailerData) {
-        navigator.withScope<IocScope.IOCListing> {
+        navigator.withScope<IocSellerScope.IOCListing> {
             setScope(
-                IocScope.IOCCreate(item)
+                IocSellerScope.IOCCreate(item)
             )
         }
     }
 
     private fun openListing(item: InvUserData) {
-        navigator.withScope<IocScope.InvUserListing> {
+        navigator.withScope<IocSellerScope.InvUserListing> {
             setScope(
-                IocScope.InvListing(item)
+                IocSellerScope.InvListing(item)
             )
         }
     }
 
     private fun openDetails(item: BuyerDetailsData) {
-        navigator.withScope<IocScope.InvListing> {
+        navigator.withScope<IocSellerScope.InvListing> {
             setScope(
-                IocScope.InvDetails(item)
+                IocSellerScope.InvDetails(item)
             )
         }
     }
 
     private fun openCreateIOC() {
-        navigator.withScope<IocScope.InvUserListing> {
+        navigator.withScope<IocSellerScope.InvUserListing> {
             setScope(
-                IocScope.IOCListing()
+                IocSellerScope.IOCListing()
             )
         }
     }
 
-    private suspend inline fun IocScope.IOCListing.search(
+    private suspend inline fun IocSellerScope.IOCListing.search(
         addPage: Boolean,
         withDelay: Boolean,
         withProgress: Boolean,
@@ -231,7 +231,7 @@ internal class IOCEventDelegate(
 
     //Methods for InvUserListing
     private suspend fun loadUsers(search: String?) {
-        navigator.withScope<IocScope.InvUserListing> {
+        navigator.withScope<IocSellerScope.InvUserListing> {
             it.pagination.reset()
             it.searchText.value = search ?: ""
             it.search(
@@ -244,7 +244,7 @@ internal class IOCEventDelegate(
     }
 
     private suspend fun loadMoreUsers() {
-        navigator.withScope<IocScope.InvUserListing> {
+        navigator.withScope<IocSellerScope.InvUserListing> {
             if (!navigator.scope.value.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
                 it.search(
@@ -257,7 +257,7 @@ internal class IOCEventDelegate(
         }
     }
 
-    private suspend inline fun IocScope.InvUserListing.search(
+    private suspend inline fun IocSellerScope.InvUserListing.search(
         addPage: Boolean,
         withDelay: Boolean,
         withProgress: Boolean,
@@ -299,7 +299,7 @@ internal class IOCEventDelegate(
 
     //Methods for Retailer Invoice listing
     private suspend fun getRetailerInvoiceListing(unitCode: String) {
-        navigator.withScope<IocScope.InvListing> {
+        navigator.withScope<IocSellerScope.InvListing> {
             navigator.withProgress {
                 networkStoresScope.retailerInvoiceDetails(
                     unitCode,
@@ -314,7 +314,7 @@ internal class IOCEventDelegate(
 
     //Methods for Retailer Invoice Details
     private suspend fun getInvoiceDetails(invoiceId: String) {
-        navigator.withScope<IocScope.InvDetails> {
+        navigator.withScope<IocSellerScope.InvDetails> {
             navigator.withProgress {
                 networkStoresScope.invoiceDetails(
                     invoiceId,

@@ -151,6 +151,7 @@ class NetworkClient(
     NetworkScope.OrderHsnEditStore,
     NetworkScope.BatchesStore,
     NetworkScope.IOCStore,
+    NetworkScope.IOCBuyerStore,
     NetworkScope.QrCodeStore {
 
     init {
@@ -1117,6 +1118,39 @@ class NetworkClient(
         invoiceId: String,
     ) = simpleRequest {
         client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/seller/invoice/$invoiceId") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getBuyers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ) = simpleRequest {
+        client.get<BodyResponse<SellerUsersData>>("${baseUrl.url}/ioc/buyer/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
+    }
+
+    override suspend fun buyerInvoiceListing(
+        unitCode: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvListingData>>("${baseUrl.url}/ioc/buyer/$unitCode") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun buyerInvoiceDetails(
+        invoiceId: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/buyer/invoice/$invoiceId") {
             withMainToken()
         }
     }

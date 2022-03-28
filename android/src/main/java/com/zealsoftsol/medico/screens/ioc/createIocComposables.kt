@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ImageLabel
@@ -82,11 +82,11 @@ import kotlin.collections.ArrayList
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-fun IocScreen(scope: IocScope, scaffoldState: ScaffoldState) {
+fun IocScreen(sellerScope: IocSellerScope, scaffoldState: ScaffoldState) {
     Column(modifier = Modifier.fillMaxSize()) {
-        when (scope) {
-            is IocScope.IOCListing -> IOCListing(scope)
-            is IocScope.IOCCreate -> IocCreate(scope, scaffoldState)
+        when (sellerScope) {
+            is IocSellerScope.IOCListing -> IOCListing(sellerScope)
+            is IocSellerScope.IOCCreate -> IocCreate(sellerScope, scaffoldState)
         }
     }
 }
@@ -95,13 +95,13 @@ fun IocScreen(scope: IocScope, scaffoldState: ScaffoldState) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun IOCListing(scope: IocScope.IOCListing) {
-    val search = scope.searchText.flow.collectAsState()
-    val selectedIndex = scope.selectedIndex.flow.collectAsState()
-    val items = scope.items.flow.collectAsState()
+private fun IOCListing(sellerScope: IocSellerScope.IOCListing) {
+    val search = sellerScope.searchText.flow.collectAsState()
+    val selectedIndex = sellerScope.selectedIndex.flow.collectAsState()
+    val items = sellerScope.items.flow.collectAsState()
 
     remember {
-        scope.search("")
+        sellerScope.search("")
     }
 
     Box {
@@ -114,21 +114,21 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                 elevation = 0.dp,
                 horizontalPadding = 16.dp,
                 isSearchFocused = false,
-                onSearch = { v, _ -> scope.search(v) },
+                onSearch = { v, _ -> sellerScope.search(v) },
                 onIconClick = {
-                    scope.search("")
+                    sellerScope.search("")
                 },
                 backgroundColor = ConstColors.lightBlue.copy(alpha = 0.1f)
             )
 
 
-            if (items.value.isEmpty() && scope.items.updateCount > 0) {
+            if (items.value.isEmpty() && sellerScope.items.updateCount > 0) {
                 NoRecords(
                     icon = R.drawable.ic_missing_stores,
                     text = R.string.no_users_found,
                     subtitle = "",
                     buttonText = stringResource(id = R.string.clear),
-                    onHome = { scope.search("") },
+                    onHome = { sellerScope.search("") },
                 )
             } else {
                 LazyColumn(
@@ -142,10 +142,10 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                         itemContent = { index, item ->
                             ParentIocItem(
                                 item,
-                                scope, index, selectedIndex.value
+                                sellerScope, index, selectedIndex.value
                             )
-                            if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                                scope.loadItems()
+                            if (index == items.value.lastIndex && sellerScope.pagination.canLoadMore()) {
+                                sellerScope.loadItems()
                             }
                         },
                     )
@@ -167,7 +167,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
                     text = stringResource(id = R.string.continue_),
                     isEnabled = selectedIndex.value != -1,
                     elevation = null,
-                    onClick = { scope.selectItem(items.value[selectedIndex.value]) },
+                    onClick = { sellerScope.selectItem(items.value[selectedIndex.value]) },
                     contentColor = MaterialTheme.colors.background,
                     wrapTextSize = true,
                 )
@@ -182,7 +182,7 @@ private fun IOCListing(scope: IocScope.IOCListing) {
 @Composable
 private fun ParentIocItem(
     store: RetailerData,
-    scope: IocScope.IOCListing,
+    sellerScope: IocSellerScope.IOCListing,
     index: Int,
     selectedIndex: Int,
 ) {
@@ -216,7 +216,7 @@ private fun ParentIocItem(
                             Checkbox(
                                 checked = selectedIndex == index,
                                 colors = CheckboxDefaults.colors(checkedColor = ConstColors.lightBlue),
-                                onCheckedChange = { scope.updateIndex(index) },
+                                onCheckedChange = { sellerScope.updateIndex(index) },
                                 modifier = Modifier.align(Alignment.CenterVertically),
                             )
                             Space(12.dp)
@@ -351,22 +351,22 @@ fun IocItem(
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
+private fun IocCreate(sellerScope: IocSellerScope.IOCCreate, scaffoldState: ScaffoldState) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
     val permissionViewModel = PermissionViewModel()
     val context = LocalContext.current
     var tradeCheck = false
-    val invoiceUpload = scope.invoiceUpload.flow.collectAsState()
-    val invoiceNum = scope.invoiceNum.flow.collectAsState()
-    val invoiceDate = scope.invoiceDate.flow.collectAsState()
-    val totalAmount = scope.totalAmount.flow.collectAsState()
-    val outstandingAmount = scope.outstandingAmount.flow.collectAsState()
-    val outstandingDiffAmount = scope.outstandingDiffAmount.flow.collectAsState()
-    val enable = scope.enableButton.flow.collectAsState()
-    val openDialog = scope.showAlert.flow.collectAsState()
-    val dialogMessage = scope.dialogMessage.flow.collectAsState()
+    val invoiceUpload = sellerScope.invoiceUpload.flow.collectAsState()
+    val invoiceNum = sellerScope.invoiceNum.flow.collectAsState()
+    val invoiceDate = sellerScope.invoiceDate.flow.collectAsState()
+    val totalAmount = sellerScope.totalAmount.flow.collectAsState()
+    val outstandingAmount = sellerScope.outstandingAmount.flow.collectAsState()
+    val outstandingDiffAmount = sellerScope.outstandingDiffAmount.flow.collectAsState()
+    val enable = sellerScope.enableButton.flow.collectAsState()
+    val openDialog = sellerScope.showAlert.flow.collectAsState()
+    val dialogMessage = sellerScope.dialogMessage.flow.collectAsState()
     if (invoiceUpload.value.cdnUrl.isNotEmpty()) {
         tradeCheck = true
     }
@@ -378,8 +378,8 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                 dialogMessage.value
             else stringResource(id = R.string.offer_successfull)
         ) {
-            scope.changeAlertScope(false)
-            scope.goBack()
+            sellerScope.changeAlertScope(false)
+            sellerScope.goBack()
         }
     Column(
         modifier = Modifier
@@ -396,7 +396,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             hint = stringResource(id = R.string.enter_invoice_no),
             text = invoiceNum.value,
             isValid = true,
-            onValueChange = { scope.updateInvoiceNum(it) },
+            onValueChange = { sellerScope.updateInvoiceNum(it) },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
@@ -421,7 +421,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                         val oldTime = "$day/${month + 1}/${year}"
                         val oldDate: Date? = formatter.parse(oldTime)
                         val oldMillis: Long? = oldDate?.time
-                        scope.updateInvoiceDate(oldTime, oldMillis ?: 0)
+                        sellerScope.updateInvoiceDate(oldTime, oldMillis ?: 0)
                     },
                     now.year,
                     now.monthOfYear - 1,
@@ -513,7 +513,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                     )
                 }
                 total.value = "$modBefore$modAfter"
-                scope.updateTotalAmount(total.value)
+                sellerScope.updateTotalAmount(total.value)
             },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -570,7 +570,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
                     )
                 }
                 outStand.value = "$modBefore$modAfter"
-                scope.updateOutstandingAmount(outStand.value)
+                sellerScope.updateOutstandingAmount(outStand.value)
             },
             mandatory = true,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -663,7 +663,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             val url = invoiceUpload.value.cdnUrl
             ImageLabel(
                 url, true
-            ) { scope.previewImage(url) }
+            ) { sellerScope.previewImage(url) }
         }
 
         Space(16.dp)
@@ -671,7 +671,7 @@ private fun IocCreate(scope: IocScope.IOCCreate, scaffoldState: ScaffoldState) {
             text = stringResource(id = R.string.submit),
             isEnabled = enable.value,
             elevation = null,
-            onClick = { scope.addInvoice() },
+            onClick = { sellerScope.addInvoice() },
             contentColor = MaterialTheme.colors.background,
             txtColor = MaterialTheme.colors.background,
         )

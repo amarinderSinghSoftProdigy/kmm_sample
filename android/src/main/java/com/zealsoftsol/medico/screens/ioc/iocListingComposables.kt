@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InvContactDetails
@@ -59,12 +59,12 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-fun IocListingScreen(scope: IocScope, scaffoldState: ScaffoldState) {
+fun IocListingScreen(sellerScope: IocSellerScope, scaffoldState: ScaffoldState) {
     Column(modifier = Modifier.fillMaxSize()) {
-        when (scope) {
-            is IocScope.InvUserListing -> InvUserListing(scope)
-            is IocScope.InvListing -> InvListing(scope)
-            is IocScope.InvDetails -> InvDetails(scope)
+        when (sellerScope) {
+            is IocSellerScope.InvUserListing -> InvUserListing(sellerScope)
+            is IocSellerScope.InvListing -> InvListing(sellerScope)
+            is IocSellerScope.InvDetails -> InvDetails(sellerScope)
         }
     }
 }
@@ -72,9 +72,9 @@ fun IocListingScreen(scope: IocScope, scaffoldState: ScaffoldState) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvDetails(scope: IocScope.InvDetails) {
-    val data = scope.data.flow.collectAsState()
-    val items = scope.items.flow.collectAsState()
+private fun InvDetails(sellerScope: IocSellerScope.InvDetails) {
+    val data = sellerScope.data.flow.collectAsState()
+    val items = sellerScope.items.flow.collectAsState()
 
     Column {
         Column(
@@ -151,7 +151,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.5f)
-                        .clickable { scope.previewImage(data.value?.viewInvoiceUrl ?: "") },
+                        .clickable { sellerScope.previewImage(data.value?.viewInvoiceUrl ?: "") },
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -169,62 +169,11 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                         fontWeight = FontWeight.W700
                     )
                 }
-                /*Column(modifier = Modifier.fillMaxWidth()) {
-                    val list = ArrayList<String>()
-                    list.add("")
-                    FoldableItem(
-                        expanded = false,
-                        headerBackground = Color.White,
-                        headerBorder = BorderStroke(0.dp, Color.Transparent),
-                        headerMinHeight = 25.dp,
-                        header = {
-                            Row(
-                                modifier = Modifier
-                                    .weight(0.5f)
-                                    .height(25.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(15.dp),
-                                    painter = painterResource(id = R.drawable.ic_eye),
-                                    contentDescription = null,
-                                    tint = ConstColors.txtGrey
-                                )
-                                Space(dp = 4.dp)
-                                Text(
-                                    text = stringResource(id = R.string.view_invoice),
-                                    color = ConstColors.txtGrey,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W700
-                                )
-                            }
-
-                        },
-                        childItems = list,
-                        hasItemLeadingSpacing = false,
-                        hasItemTrailingSpacing = false,
-                        itemSpacing = 0.dp,
-                        itemHorizontalPadding = 0.dp,
-                        itemsBackground = Color.Transparent,
-                        item = { _, _ ->
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                CoilImage(
-                                    onError = { Placeholder(R.drawable.ic_placeholder) },
-                                    src = data.value?.viewInvoiceUrl ?: "",
-                                    size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
-                                    onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
-                                )
-                            }
-                        }
-                    )
-                }*/
-
-
                 Row(
                     modifier = Modifier
                         .weight(0.5f)
                         .clickable {
-                            scope.openEditInvoice(
+                            sellerScope.openEditInvoice(
                                 BuyerDetailsData(
                                     data.value?.unitCode ?: "",
                                     data.value?.tradeName ?: "",
@@ -235,7 +184,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                                     data.value?.invoiceId ?: "",
                                     data.value?.invoiceDate ?: FormattedData("0", 0L),
                                 ),
-                                scope
+                                sellerScope
                             )
                         },
                     horizontalArrangement = Arrangement.End,
@@ -261,7 +210,7 @@ private fun InvDetails(scope: IocScope.InvDetails) {
             Space(4.dp)
         }
 
-        if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        if (items.value.isEmpty() && sellerScope.items.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.no_users_found,
@@ -290,10 +239,10 @@ private fun InvDetails(scope: IocScope.InvDetails) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvListing(scope: IocScope.InvListing) {
-    val item = scope.item
-    val items = scope.items.flow.collectAsState()
-    val data = scope.data.flow.collectAsState()
+private fun InvListing(sellerScope: IocSellerScope.InvListing) {
+    val item = sellerScope.item
+    val items = sellerScope.items.flow.collectAsState()
+    val data = sellerScope.data.flow.collectAsState()
 
     Column {
         Surface(
@@ -349,7 +298,7 @@ private fun InvListing(scope: IocScope.InvListing) {
 
         Space(dp = 12.dp)
 
-        if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        if (items.value.isEmpty() && sellerScope.items.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_invoices,
                 text = R.string.no_invoices_found,
@@ -369,8 +318,8 @@ private fun InvListing(scope: IocScope.InvListing) {
                     itemContent = { _, item ->
                         InvoiceListItem(
                             item,
-                            { scope.openIOCDetails(item) },
-                            { scope.previewImage(item = item.viewInvoiceUrl) })
+                            { sellerScope.openIOCDetails(item) },
+                            { sellerScope.previewImage(item = item.viewInvoiceUrl) })
                     },
                 )
             }
@@ -382,11 +331,11 @@ private fun InvListing(scope: IocScope.InvListing) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvUserListing(scope: IocScope.InvUserListing) {
-    val search = scope.searchText.flow.collectAsState()
-    val items = scope.items.flow.collectAsState()
+private fun InvUserListing(sellerScope: IocSellerScope.InvUserListing) {
+    val search = sellerScope.searchText.flow.collectAsState()
+    val items = sellerScope.items.flow.collectAsState()
     remember {
-        scope.load("")
+        sellerScope.load("")
     }
 
     Column(
@@ -409,7 +358,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                     .clickable(
                         indication = null,
                         onClick = {
-                            scope.goBack()
+                            sellerScope.goBack()
                         }
                     )
             )
@@ -422,7 +371,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                 onIconClick = null,
                 isSearchFocused = false,
                 onSearch = { value, _ ->
-                    scope.load(value = value)
+                    sellerScope.load(value = value)
                 },
                 isSearchCross = true
             )
@@ -450,7 +399,7 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                 text = stringResource(id = R.string.create_debt),
                 modifier = Modifier
                     .weight(0.5f)
-                    .clickable { scope.openCreateIOC() },
+                    .clickable { sellerScope.openCreateIOC() },
                 color = ConstColors.lightBlue,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
@@ -458,14 +407,14 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
             )
         }
 
-        if (items.value.isEmpty() && scope.items.updateCount > 0) {
+        if (items.value.isEmpty() && sellerScope.items.updateCount > 0) {
             NoRecords(
                 icon = R.drawable.ic_missing_stores,
                 text = R.string.no_collection_found,
                 subtitle = "",
                 buttonText = if (search.value.isNotEmpty()) stringResource(id = R.string.clear)
                 else stringResource(id = R.string.go_back),
-                onHome = { if (search.value.isNotEmpty()) scope.load("") else scope.goBack() },
+                onHome = { if (search.value.isNotEmpty()) sellerScope.load("") else sellerScope.goBack() },
             )
         } else {
             LazyColumn(
@@ -480,10 +429,10 @@ private fun InvUserListing(scope: IocScope.InvUserListing) {
                         IocListItem(
                             item,
                         ) {
-                            scope.openIOCListing(item)
+                            sellerScope.openIOCListing(item)
                         }
-                        if (index == items.value.lastIndex && scope.pagination.canLoadMore()) {
-                            scope.loadItems()
+                        if (index == items.value.lastIndex && sellerScope.pagination.canLoadMore()) {
+                            sellerScope.loadItems()
                         }
                     },
                 )
@@ -588,7 +537,7 @@ fun IocListItem(
                         },
                         color = ConstColors.lightBlue,
                         modifier = Modifier
-                            .padding(bottom = 12.dp,end = 8.dp)
+                            .padding(bottom = 12.dp, end = 8.dp)
                             .fillMaxWidth(),
                         fontWeight = FontWeight.W600,
                         fontSize = 14.sp,
@@ -620,7 +569,7 @@ fun IocListItem(
                         },
                         color = ConstColors.lightGreen,
                         modifier = Modifier
-                            .padding(bottom = 12.dp,end = 8.dp)
+                            .padding(bottom = 12.dp, end = 8.dp)
                             .fillMaxWidth(),
                         fontWeight = FontWeight.W600,
                         fontSize = 14.sp,
@@ -651,7 +600,7 @@ fun IocListItem(
                             append(" ")
                         },
                         modifier = Modifier
-                            .padding(bottom = 12.dp,end = 8.dp)
+                            .padding(bottom = 12.dp, end = 8.dp)
                             .fillMaxWidth(),
                         color = ConstColors.marron,
                         fontWeight = FontWeight.W600,
@@ -837,12 +786,12 @@ fun PaymentOptionItem(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
                         painter = when (item.paymentType) {
-                            IocScope.PaymentTypes.CASH_IN_HAND.type -> painterResource(id = R.drawable.ic_cash_in_hand)
-                            IocScope.PaymentTypes.GOOGLE_PAY.type -> painterResource(id = R.drawable.ic_gpay)
-                            IocScope.PaymentTypes.PHONE_PE.type -> painterResource(id = R.drawable.ic_phonepe)
-                            IocScope.PaymentTypes.AMAZON_PAY.type -> painterResource(id = R.drawable.ic_amazon_pay)
-                            IocScope.PaymentTypes.BHIM_UPI.type -> painterResource(id = R.drawable.ic_upi)
-                            IocScope.PaymentTypes.PAYTM.type -> painterResource(id = R.drawable.ic_paytm)
+                            IocSellerScope.PaymentTypes.CASH_IN_HAND.type -> painterResource(id = R.drawable.ic_cash_in_hand)
+                            IocSellerScope.PaymentTypes.GOOGLE_PAY.type -> painterResource(id = R.drawable.ic_gpay)
+                            IocSellerScope.PaymentTypes.PHONE_PE.type -> painterResource(id = R.drawable.ic_phonepe)
+                            IocSellerScope.PaymentTypes.AMAZON_PAY.type -> painterResource(id = R.drawable.ic_amazon_pay)
+                            IocSellerScope.PaymentTypes.BHIM_UPI.type -> painterResource(id = R.drawable.ic_upi)
+                            IocSellerScope.PaymentTypes.PAYTM.type -> painterResource(id = R.drawable.ic_paytm)
                             else -> painterResource(id = R.drawable.ic_net_banking)
                         },
                         contentDescription = null,
@@ -851,12 +800,12 @@ fun PaymentOptionItem(
                     Space(dp = 4.dp)
                     Text(
                         text = when (item.paymentType) {
-                            IocScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
-                            IocScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
-                            IocScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
-                            IocScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
-                            IocScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
-                            IocScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
+                            IocSellerScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
+                            IocSellerScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
+                            IocSellerScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
+                            IocSellerScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
+                            IocSellerScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
+                            IocSellerScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
                             else -> stringResource(id = R.string.net_banking)
                         },
                         color = ConstColors.txtGrey,
@@ -884,20 +833,29 @@ fun PaymentOptionItem(
                 }
             }
 
-            Space(dp = 4.dp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if (item.paymentType == IocScope.PaymentTypes.CASH_IN_HAND.type) {
+            if (item.paymentType == IocSellerScope.PaymentTypes.CASH_IN_HAND.type) {
+                Space(dp = 4.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text(
                         text = item.lineMan,
                         modifier = Modifier.weight(0.5f),
                         color = ConstColors.txtGrey,
                         fontWeight = FontWeight.W500,
                         fontSize = 14.sp,
+                    )
+
+                    Text(
+                        text = item.mobileNumber,
+                        modifier = Modifier.weight(0.5f),
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
                     )
                 }
             }
@@ -911,7 +869,7 @@ fun PaymentOptionItem(
 @ExperimentalComposeUiApi
 @Composable
 fun SpinnerItem(
-    item: IocScope.PaymentTypes,
+    item: IocSellerScope.PaymentTypes,
     onClick: () -> Unit
 ) {
     Column(

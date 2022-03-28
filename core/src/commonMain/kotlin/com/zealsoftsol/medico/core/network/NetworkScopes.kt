@@ -478,4 +478,21 @@ interface NetworkScope {
         ): BodyResponse<String>
 
     }
+
+    interface IOCBuyerStore : NetworkScope {
+
+        suspend fun getBuyers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<SellerUsersData>
+
+        suspend fun buyerInvoiceListing(
+            unitCode: String,
+        ): BodyResponse<InvListingData>
+
+        suspend fun buyerInvoiceDetails(
+            invoiceId: String,
+        ): BodyResponse<InvoiceDetails>
+    }
 }

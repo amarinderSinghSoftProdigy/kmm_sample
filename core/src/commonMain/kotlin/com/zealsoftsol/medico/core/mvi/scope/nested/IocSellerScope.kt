@@ -5,28 +5,21 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.Scope
-import com.zealsoftsol.medico.core.mvi.scope.ScopeIcon
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.BuyerDetailsData
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
-import com.zealsoftsol.medico.data.GeoData
-import com.zealsoftsol.medico.data.GeoPoints
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InvUserData
-import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceDetails
-import com.zealsoftsol.medico.data.ManagementCriteria
 import com.zealsoftsol.medico.data.RetailerData
-import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.UploadResponseData
 
 
-sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
+sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
 
     val invoiceUpload: DataSource<UploadResponseData> =
@@ -41,7 +34,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         PaymentTypes.NET_BANKING,
     )
 
-    class InvUserListing : IocScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
+    class InvUserListing : IocSellerScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
 
         override val isRoot: Boolean = false
         override val pagination: Pagination = Pagination()
@@ -68,7 +61,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     }
 
-    class InvListing(val item: InvUserData) : IocScope(), CommonScope.CanGoBack {
+    class InvListing(val item: InvUserData) : IocSellerScope(), CommonScope.CanGoBack {
         override val isRoot: Boolean = false
         val items: DataSource<List<BuyerDetailsData>> = DataSource(emptyList())
         val data: DataSource<InvListingData?> = DataSource(null)
@@ -82,41 +75,11 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            /*val address = GeoData(
-                location = store.location,
-                city = store.city,
-                pincode = store.pincode,
-                distance = store.distance,
-                formattedDistance = store.formattedDistance,
-                addressLine = store.fullAddress(),
-                destination = null,
-                landmark = "",
-                origin = GeoPoints(0.0, 0.0)
-            )
-            val item = EntityInfo(
-                tradeName = item.tradeName,
-                phoneNumber = store.mobileNumber,
-                geoData = address,
-                seasonBoyData = null,
-                seasonBoyRetailerData = null,
-                drugLicenseNo1 = store.drugLicenseNo1,
-                drugLicenseNo2 = store.drugLicenseNo2,
-                gstin = store.gstin,
-                isVerified = true,
-                panNumber = store.panNumber,
-                subscriptionData = null,
-                unitCode = store.sellerUnitCode
-            )
-            return TabBarInfo.StoreTitle(
-                storeName = item.tradeName,
-                event = Event.Action.Stores.ShowDetails(item)
-            )*/
-
             return TabBarInfo.OnlyBackHeader(title = item.tradeName)
         }
     }
 
-    class InvDetails(val item: BuyerDetailsData) : IocScope() {
+    class InvDetails(val item: BuyerDetailsData) : IocSellerScope() {
         override val isRoot: Boolean = false
         val data: DataSource<InvoiceDetails?> = DataSource(null)
         val items: DataSource<List<InvContactDetails>> = DataSource(emptyList())
@@ -136,7 +99,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     }
 
-    class IOCListing : IocScope(), Loadable<RetailerData> {
+    class IOCListing : IocSellerScope(), Loadable<RetailerData> {
         override val isRoot: Boolean = false
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<RetailerData>> = DataSource(emptyList())
@@ -164,7 +127,7 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     }
 
-    class IOCCreate(val item: RetailerData) : IocScope(), CommonScope.CanGoBack {
+    class IOCCreate(val item: RetailerData) : IocSellerScope(), CommonScope.CanGoBack {
 
         val dialogMessage: DataSource<String> = DataSource("")
         val showAlert: DataSource<Boolean> = DataSource(false)
@@ -244,8 +207,8 @@ sealed class IocScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
-    fun openEditInvoice(item: BuyerDetailsData, scope: IocScope) {
-        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item, scope))
+    fun openEditInvoice(item: BuyerDetailsData, sellerScope: IocSellerScope) {
+        EventCollector.sendEvent(Event.Action.IOC.OpenEditIOCBottomSheet(item, sellerScope))
     }
 
     enum class PaymentTypes(val stringId: String, val type: String) {

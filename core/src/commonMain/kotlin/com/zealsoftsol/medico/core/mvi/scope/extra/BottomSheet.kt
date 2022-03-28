@@ -7,7 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
@@ -18,7 +18,6 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
-import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OfferProductRequest
 import com.zealsoftsol.medico.data.OrderEntry
@@ -27,7 +26,6 @@ import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.PromotionType
 import com.zealsoftsol.medico.data.Promotions
-import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
@@ -444,7 +442,7 @@ sealed class BottomSheet {
 
     class EditIOC(
         val info: BuyerDetailsData,
-        val scope: IocScope,
+        val sellerScope: IocSellerScope,
     ) : BottomSheet() {
 
         val enableButton: DataSource<Boolean> = DataSource(false)
@@ -486,7 +484,7 @@ sealed class BottomSheet {
                 this.typeId.value,
                 info.invoiceId
             )
-            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC(request, scope))
+            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC(request, sellerScope))
         }
 
 

@@ -3,7 +3,8 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
@@ -26,7 +27,6 @@ import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvUserData
-import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
@@ -539,9 +539,9 @@ sealed class Event {
             data class Select(val item: RetailerData) : IOC()
             data class Search(val value: String) : IOC()
             object LoadMoreProducts : IOC()
-            data class UpdateIOC(val request: UpdateInvoiceRequest, val scope: IocScope) : IOC()
+            data class UpdateIOC(val request: UpdateInvoiceRequest, val sellerScope: IocSellerScope) : IOC()
             data class OpenEditIOCBottomSheet(
-                val item: BuyerDetailsData, val scope: IocScope
+                val item: BuyerDetailsData, val sellerScope: IocSellerScope
             ) : IOC()
 
             data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
@@ -562,6 +562,24 @@ sealed class Event {
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOC()
+        }
+        sealed class IOCBuyer : Action() {
+            override val typeClazz: KClass<*> = IOCBuyer::class
+
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOCBuyer()
+            data class OpenPaymentMethod(val item: BuyerDetailsData) : IOCBuyer()
+            data class OpenPayNow(val item: BuyerDetailsData,val type: IocBuyerScope.PaymentTypes) : IOCBuyer()
+
+            //Methods for InvUserListing
+            data class LoadUsers(val search: String? = null) : IOCBuyer()
+            object LoadMoreUsers : IOCBuyer()
+            data class OpenIOCListing(val item: InvUserData) : IOCBuyer()
+
+            //Methods for InvLisitng
+            data class LoadInvListing(val unitCode: String) : IOCBuyer()
+
+            //Methods for InvDetails
+            data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
         }
     }
 
@@ -618,7 +636,8 @@ sealed class Event {
         ) : Transition()
 
         object QrCode : Transition()
-        object IOC : Transition()
+        object IOCSeller : Transition()
+        object IOCBuyer : Transition()
 
     }
 }

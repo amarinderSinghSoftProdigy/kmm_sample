@@ -80,7 +80,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
@@ -105,7 +106,6 @@ import com.zealsoftsol.medico.core.mvi.scope.regular.QrCodeScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.WhatsappPreferenceScope
 import com.zealsoftsol.medico.core.utils.StringResource
-import com.zealsoftsol.medico.data.AddressData
 import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.WithTradeName
@@ -140,6 +140,7 @@ import com.zealsoftsol.medico.screens.instore.InStoreUsersScreen
 import com.zealsoftsol.medico.screens.inventory.InventoryMainComposable
 import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
 import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
+import com.zealsoftsol.medico.screens.ioc.IocBuyerListingScreen
 import com.zealsoftsol.medico.screens.ioc.IocListingScreen
 import com.zealsoftsol.medico.screens.ioc.IocScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
@@ -196,11 +197,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
     }
 
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocScope.InvUserListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing && childScope.value !is IocBuyerScope.InvUserListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -401,11 +402,16 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocScope.InvUserListing -> IocListingScreen(it, scaffoldState)
-                    is IocScope.InvListing -> IocListingScreen(it, scaffoldState)
-                    is IocScope.InvDetails -> IocListingScreen(it, scaffoldState)
-                    is IocScope.IOCListing -> IocScreen(it, scaffoldState)
-                    is IocScope.IOCCreate -> IocScreen(it, scaffoldState)
+                    is IocSellerScope.InvUserListing -> IocListingScreen(it, scaffoldState)
+                    is IocSellerScope.InvListing -> IocListingScreen(it, scaffoldState)
+                    is IocSellerScope.InvDetails -> IocListingScreen(it, scaffoldState)
+                    is IocSellerScope.IOCListing -> IocScreen(it, scaffoldState)
+                    is IocSellerScope.IOCCreate -> IocScreen(it, scaffoldState)
+                    is IocBuyerScope.InvUserListing -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.InvListing -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }

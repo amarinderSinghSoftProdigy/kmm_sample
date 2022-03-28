@@ -92,7 +92,6 @@ import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.InStoreProduct
-import com.zealsoftsol.medico.data.InvoiceData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.data.OrderTaxInfo
@@ -108,7 +107,6 @@ import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
 import com.zealsoftsol.medico.screens.common.FoldableItem
-import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -125,7 +123,6 @@ import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
 import com.zealsoftsol.medico.screens.common.stringResourceByName
-import com.zealsoftsol.medico.screens.ioc.IocItem
 import com.zealsoftsol.medico.screens.ioc.SpinnerItem
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
@@ -3914,7 +3911,6 @@ private fun EditIOCBottomSheet(
     val date = scope.date.flow.collectAsState()
     val amount = scope.amount.flow.collectAsState()
     val type = scope.type.flow.collectAsState()
-    val scopes = scope.scope.paymentTypes
 
     BaseBottomSheet(onDismiss) {
         Box(
@@ -4060,7 +4056,7 @@ private fun EditIOCBottomSheet(
                         }
                     }
                     Space(dp = 16.dp)
-                    val list = scope.scope.paymentTypes
+                    val list = scope.sellerScope.paymentTypes
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         FoldableItem(

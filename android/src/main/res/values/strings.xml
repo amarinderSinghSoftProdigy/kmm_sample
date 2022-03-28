@@ -449,11 +449,15 @@
     <string name="phone_pe">PhonePe</string>
     <string name="g_pay">Google Pay</string>
     <string name="paid">Paid</string>
+    <string name="no_col_found">No Collection Found!</string>
     <string name="no_collection_found">No Invoice Collection Found!</string>
     <string name="no_invoices_found">No Invoices Found!</string>
     <string name="online_collections">Online Collections</string>
     <string name="digital_payments">Digital Payments</string>
     <string name="digital_invoice_payments">Digital Invoice Payments</string>
+    <string name="line_man_name">Lineman Name</string>
+    <string name="payment_method_">Payment Method</string>
+    <string name="pay_now">Pay Now</string>
 
     <!-- Termrs and Cond -->
 
