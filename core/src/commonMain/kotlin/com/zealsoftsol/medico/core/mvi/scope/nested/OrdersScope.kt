@@ -28,10 +28,17 @@ import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
-) : Scope.Child.TabBar(), Loadable<Order> {
+    private val cartItemsCount: ReadOnlyDataSource<Int>,
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.NoIconTitle("", unreadNotifications)
+    ) : Scope.Child.TabBar(), Loadable<Order> {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.NoIconTitle(
+            title = "",
+            notificationItemsCount = unreadNotifications,
+            cartItemsCount = cartItemsCount
+        )
+    }
 
     override val isRoot: Boolean = false
 

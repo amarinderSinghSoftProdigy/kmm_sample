@@ -36,7 +36,7 @@ sealed class StoresScope : Scope.Child.TabBar() {
             )
         }
 
-        override val isRoot: Boolean = true
+        override val isRoot: Boolean = false
 
         override val pagination: Pagination = Pagination()
         override val items: DataSource<List<Store>> = DataSource(emptyList())
