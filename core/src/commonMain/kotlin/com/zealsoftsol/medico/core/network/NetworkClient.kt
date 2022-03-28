@@ -24,6 +24,7 @@ import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
@@ -383,6 +384,24 @@ class NetworkClient(
             url {
                 parameters.append("suggest", input)
                 unitCodeForStores?.let { parameters.append("b2bUnitCode", it) }
+            }
+        }
+    }
+
+    override suspend fun loadStockist(
+        latitude: Double,
+        longitude: Double,
+        imageCode: String,
+        code: String
+    ) = simpleRequest {
+        val path = "/search/view/stockists"
+        client.get<BodyResponse<List<ConnectedStockist>>>("${baseUrl.url}$path") {
+            withMainToken()
+            url {
+                parameters.append("code", code)
+                parameters.append("latitude", latitude.toString())
+                parameters.append("longitude", longitude.toString())
+                parameters.append("imageCode", imageCode)
             }
         }
     }

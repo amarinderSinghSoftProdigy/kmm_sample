@@ -15,6 +15,7 @@ import com.zealsoftsol.medico.data.CartRequest
 import com.zealsoftsol.medico.data.CartSubmitResponse
 import com.zealsoftsol.medico.data.ConfigData
 import com.zealsoftsol.medico.data.ConfirmOrderRequest
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.CreateRetailer
 import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
@@ -156,6 +157,13 @@ interface NetworkScope {
             input: String,
             unitCodeForStores: String?,
         ): BodyResponse<List<AutoComplete>>
+
+        suspend fun loadStockist(
+            latitude: Double,
+            longitude: Double,
+            imageCode: String,
+            code: String
+        ): BodyResponse<List<ConnectedStockist>>
     }
 
     interface Management : NetworkScope {
@@ -425,7 +433,7 @@ interface NetworkScope {
         ): BodyResponse<String>
     }
 
-    interface QrCodeStore: NetworkScope {
+    interface QrCodeStore : NetworkScope {
         suspend fun getQrCode(): BodyResponse<QrCodeData>
 
         suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData>

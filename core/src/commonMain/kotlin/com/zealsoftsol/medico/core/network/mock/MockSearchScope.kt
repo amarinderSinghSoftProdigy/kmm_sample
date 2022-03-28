@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.logIt
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.network.NetworkScope
 import com.zealsoftsol.medico.data.AutoComplete
+import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.SearchResponse
 
 class MockSearchScope : NetworkScope.Search {
@@ -30,4 +31,13 @@ class MockSearchScope : NetworkScope.Search {
         mockResponse {
             emptyList<AutoComplete>()
         }
+
+    override suspend fun loadStockist(
+        latitude: Double,
+        longitude: Double,
+        imageCode: String,
+        code: String
+    ) = mockResponse {
+        emptyList<ConnectedStockist>()
+    }
 }
