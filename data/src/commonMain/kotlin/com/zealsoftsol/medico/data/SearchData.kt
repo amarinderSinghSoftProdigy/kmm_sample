@@ -53,14 +53,13 @@ data class ProductSearch(
     var freeQuantity: Double = 0.0,
     var vendorProductId: String? = null,
     var vendorMnfrId: String? = null,
-    var imageCode: String? = null,
-    val viewStockist: List<ConnectedStockist>? = null
+    var imageCode: String = "",
 )
 
 @Serializable
 data class ConnectedStockist(
     val tradeName: String,
-    val distance: String,
+    val distance: FormattedData<Double>,
     val connected: Boolean,
     val location: String,
 )

@@ -93,149 +93,164 @@ import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 
 @Composable
 fun SearchScreen(scope: SearchScope, listState: LazyListState) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        val search = scope.productSearch.flow.collectAsState()
-        val autoComplete = scope.autoComplete.flow.collectAsState()
-        val filters = scope.filters.flow.collectAsState()
-        val filterSearches = scope.filterSearches.flow.collectAsState()
-        val products = scope.products.flow.collectAsState()
-        val showFilter = scope.isFilterOpened.flow.collectAsState()
-        val sortOptions = scope.sortOptions.flow.collectAsState()
-        val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-        val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+    Box {
+        val showAlert = scope.showNoStockistAlert.flow.collectAsState()
 
-        if (showFilter.value) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 24.dp * 2 + 48.dp)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    Space(16.dp)
-                    Text(
-                        text = stringResource(id = R.string.filters),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.W600,
-                        color = MaterialTheme.colors.background,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                    if (activeFilterIds.value.isNotEmpty()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            val search = scope.productSearch.flow.collectAsState()
+            val autoComplete = scope.autoComplete.flow.collectAsState()
+            val filters = scope.filters.flow.collectAsState()
+            val filterSearches = scope.filterSearches.flow.collectAsState()
+            val products = scope.products.flow.collectAsState()
+            val showFilter = scope.isFilterOpened.flow.collectAsState()
+            val sortOptions = scope.sortOptions.flow.collectAsState()
+            val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+
+            if (showFilter.value) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 24.dp * 2 + 48.dp)
+                            .verticalScroll(rememberScrollState()),
+                    ) {
                         Space(16.dp)
-                        Separator(padding = 16.dp)
-                        Space(12.dp)
-                        FlowRow(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            activeFilterIds.value.forEach { q ->
-                                val filter = scope.getFilterNameById(q)
-                                FilterChip(name = filter.name) {
-                                    scope.clearFilter(filter)
+                        Text(
+                            text = stringResource(id = R.string.filters),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W600,
+                            color = MaterialTheme.colors.background,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                        if (activeFilterIds.value.isNotEmpty()) {
+                            Space(16.dp)
+                            Separator(padding = 16.dp)
+                            Space(12.dp)
+                            FlowRow(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                activeFilterIds.value.forEach { q ->
+                                    val filter = scope.getFilterNameById(q)
+                                    FilterChip(name = filter.name) {
+                                        scope.clearFilter(filter)
+                                    }
                                 }
                             }
                         }
-                    }
-                    SortSection(
-                        options = sortOptions.value,
-                        selectedOption = selectedSortOption.value,
-                        onClick = { scope.selectSortOption(it) },
-                    )
-                    filters.value.forEach { filter ->
-                        FilterSection(
-                            name = filter.name,
-                            options = filter.options,
-                            searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
-                                scope.searchFilter(
-                                    filter,
-                                    it
-                                )
-                            },
-                            onOptionClick = { scope.selectFilter(filter, it) },
-                            onFilterClear = { scope.clearFilter(filter) },
+                        SortSection(
+                            options = sortOptions.value,
+                            selectedOption = selectedSortOption.value,
+                            onClick = { scope.selectSortOption(it) },
                         )
+                        filters.value.forEach { filter ->
+                            FilterSection(
+                                name = filter.name,
+                                options = filter.options,
+                                searchOption = SearchOption(filterSearches.value[filter.queryId].orEmpty()) {
+                                    scope.searchFilter(
+                                        filter,
+                                        it
+                                    )
+                                },
+                                onOptionClick = { scope.selectFilter(filter, it) },
+                                onFilterClear = { scope.clearFilter(filter) },
+                            )
+                        }
+                        Space(16.dp)
                     }
-                    Space(16.dp)
-                }
-                Column(modifier = Modifier.align(Alignment.BottomCenter)) {
-                    Canvas(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
-                    ) {
-                        drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White)))
-                    }
-                    Separator(padding = 0.dp)
-                    Row(modifier = Modifier.background(Color.White)) {
-                        Row(
-                            modifier = Modifier
+                    Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                        Canvas(
+                            Modifier
                                 .fillMaxWidth()
-                                .padding(24.dp),
+                                .height(24.dp)
                         ) {
-                            MedicoButton(
-                                modifier = Modifier.weight(.5f),
-                                text = stringResource(R.string.clear),
-                                isEnabled = true,
-                                color = Color.Transparent,
-                                contentColor = ConstColors.lightBlue,
-                                border = BorderStroke(2.dp, ConstColors.lightBlue),
-                                elevation = null,
-                                onClick = { scope.clearFilter(null) },
-                            )
-                            Space(16.dp)
-                            MedicoButton(
-                                modifier = Modifier.weight(.5f),
-                                text = stringResource(R.string.apply),
-                                isEnabled = true,
-                                color = ConstColors.yellow,
-                                contentColor = MaterialTheme.colors.background,
-                                elevation = null,
-                                onClick = { scope.toggleFilter() },
-                            )
+                            drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White)))
+                        }
+                        Separator(padding = 0.dp)
+                        Row(modifier = Modifier.background(Color.White)) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                            ) {
+                                MedicoButton(
+                                    modifier = Modifier.weight(.5f),
+                                    text = stringResource(R.string.clear),
+                                    isEnabled = true,
+                                    color = Color.Transparent,
+                                    contentColor = ConstColors.lightBlue,
+                                    border = BorderStroke(2.dp, ConstColors.lightBlue),
+                                    elevation = null,
+                                    onClick = { scope.clearFilter(null) },
+                                )
+                                Space(16.dp)
+                                MedicoButton(
+                                    modifier = Modifier.weight(.5f),
+                                    text = stringResource(R.string.apply),
+                                    isEnabled = true,
+                                    color = ConstColors.yellow,
+                                    contentColor = MaterialTheme.colors.background,
+                                    elevation = null,
+                                    onClick = { scope.toggleFilter() },
+                                )
+                            }
                         }
                     }
                 }
-            }
-        } else {
-            if (autoComplete.value.isEmpty()) {
-                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                    itemsIndexed(
-                        items = products.value,
-                        key = { _, item -> item.id },
-                        itemContent = { index, item ->
-                            ProductItem(
-                                item,
-                                onClick = { scope.selectProduct(item) },
-                                onBuy = { scope.buy(item) },
-                                scope = scope
-                            )
-                            if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                                scope.loadMoreProducts()
-                            }
-                        },
-                    )
-                }
             } else {
-                LazyColumn(
-                    state = rememberLazyListState(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = Color.White)
-                ) {
-                    items(
-                        items = autoComplete.value,
-                        key = { item -> item.suggestion },
-                        itemContent = { item ->
-                            AutoCompleteItem(item, search.value) { scope.selectAutoComplete(item) }
-                        },
-                    )
+                if (autoComplete.value.isEmpty()) {
+                    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                        itemsIndexed(
+                            items = products.value,
+                            key = { _, item -> item.id },
+                            itemContent = { index, item ->
+                                ProductItem(
+                                    item,
+                                    onClick = { //scope.selectProduct(item)
+                                    },
+                                    onBuy = { scope.buy(item) },
+                                    scope = scope
+                                )
+                                if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                                    scope.loadMoreProducts()
+                                }
+                            },
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = rememberLazyListState(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White)
+                    ) {
+                        items(
+                            items = autoComplete.value,
+                            key = { item -> item.suggestion },
+                            itemContent = { item ->
+                                AutoCompleteItem(
+                                    item,
+                                    search.value
+                                ) { scope.selectAutoComplete(item) }
+                            },
+                        )
+                    }
                 }
             }
         }
+        if (showAlert.value)
+            ShowAlert(message = stringResource(id = R.string.no_stockist)) {
+                scope.manageAlertVisibility(false)
+            }
+
     }
 }
+
 
 @Composable
 private fun AutoCompleteItem(autoComplete: AutoComplete, input: String, onClick: () -> Unit) {
@@ -413,31 +428,19 @@ fun ProductItem(
                     verticalAlignment = Alignment.Bottom,
                 ) {
                     Space(4.dp)
-                    if (product.viewStockist != null && product.viewStockist!!.isNotEmpty()) {
-                        MedicoButton(
-                            modifier = Modifier
-                                .weight(0.5f)
-                                .padding(end = 20.dp),
-                            text = "${stringResource(id = R.string.view_stockist)} (${product.viewStockist!!.size})",
-                            isEnabled = true,
-                            height = 36.dp,
-                            color = ConstColors.lightGrey,
-                            elevation = null,
-                            onClick = {
-                                scope.showConnectedStockist(product.viewStockist!!)
-                            },
-                        )
-                    } else {
-                        Text(
-                            modifier = Modifier
-                                .weight(0.5f)
-                                .padding(end = 20.dp),
-                            text = stringResource(id = R.string.no_stockist),
-                            color = Color.Red,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                        )
-                    }
+                    MedicoButton(
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .padding(end = 20.dp),
+                        text = stringResource(id = R.string.view_stockist),
+                        isEnabled = true,
+                        height = 36.dp,
+                        color = ConstColors.lightGrey,
+                        elevation = null,
+                        onClick = {
+                            scope.showConnectedStockist(product.code, product.imageCode)
+                        },
+                    )
 
                     Box(modifier = Modifier.width(120.dp)) {
                         when (product.buyingOption) {

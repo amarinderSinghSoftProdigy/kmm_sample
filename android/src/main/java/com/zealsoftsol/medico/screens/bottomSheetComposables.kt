@@ -398,7 +398,7 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                             .padding(end = 5.dp)
                                     )
                                     Text(
-                                        text = item.distance,
+                                        text = item.distance.formatted,
                                         color = Color.Gray,
                                         fontSize = 14.sp,
                                     )
