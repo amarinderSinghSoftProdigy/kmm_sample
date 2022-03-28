@@ -81,6 +81,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenHeight
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
@@ -3172,7 +3173,9 @@ private fun ViewLargeImageBottomSheet(
                         src = if (!type.isNullOrEmpty()) {
                             File(url.toString())
                         } else url,
-                        size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                        modifier = Modifier
+                            .width(LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp)
+                            .height(LocalContext.current.let { it.screenHeight / it.density }.dp - 50.dp),
                         onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
                     )
                     Space(30.dp)

@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,12 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -37,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -49,17 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
-import com.zealsoftsol.medico.core.extensions.density
-import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocScope
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FormattedData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvUserData
-import com.zealsoftsol.medico.screens.common.CoilImage
-import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.NoRecords
-import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.stringResourceByName
@@ -152,11 +143,33 @@ private fun InvDetails(scope: IocScope.InvDetails) {
             Space(8.dp)
             Divider(thickness = 0.5.dp)
             Space(8.dp)
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.5f)
+                        .clickable { scope.previewImage(data.value?.viewInvoiceUrl ?: "") },
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        tint = ConstColors.txtGrey
+                    )
+                    Space(dp = 4.dp)
+                    Text(
+                        text = stringResource(id = R.string.view_invoice),
+                        color = ConstColors.txtGrey,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W700
+                    )
+                }
+                /*Column(modifier = Modifier.fillMaxWidth()) {
                     val list = ArrayList<String>()
                     list.add("")
                     FoldableItem(
@@ -204,13 +217,12 @@ private fun InvDetails(scope: IocScope.InvDetails) {
                             }
                         }
                     )
-                }
+                }*/
 
 
                 Row(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp)
+                        .weight(0.5f)
                         .clickable {
                             scope.openEditInvoice(
                                 BuyerDetailsData(
@@ -357,7 +369,8 @@ private fun InvListing(scope: IocScope.InvListing) {
                     itemContent = { _, item ->
                         InvoiceListItem(
                             item,
-                        ) { scope.openIOCDetails(item) }
+                            { scope.openIOCDetails(item) },
+                            { scope.previewImage(item = item.viewInvoiceUrl) })
                     },
                 )
             }
@@ -496,163 +509,158 @@ fun IocListItem(
         onClick = onClick,
         border = BorderStroke(0.5.dp, ConstColors.txtGrey)
     ) {
-        Column(
-            modifier = Modifier
-                .padding(all = 8.dp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = item.tradeName,
-                color = ConstColors.lightBlue,
-                fontWeight = FontWeight.W800,
-                fontSize = 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Space(4.dp)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        val startIndex = length
-                        append(item.totalInvoices.toString())
-                        addStyle(
-                            SpanStyle(
-                                color = ConstColors.txtGrey,
-                                fontWeight = FontWeight.W800
-                            ),
-                            startIndex,
-                            length,
-                        )
-                        append(" ")
-                        append(stringResource(id = R.string.invoices))
-                    },
-                    modifier = Modifier.weight(0.5f),
-                    color = ConstColors.txtGrey,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W500,
-                    textAlign = TextAlign.Start
-                )
-                Text(
-                    text = item.customerType,
-                    modifier = Modifier.weight(0.5f),
-                    fontSize = 12.sp,
-                    color = ConstColors.txtGrey,
-                    fontWeight = FontWeight.W500,
-                    textAlign = TextAlign.End
-                )
-            }
-            Space(8.dp)
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = buildAnnotatedString {
-                        append(" ")
-                        append(stringResource(id = R.string.total_))
-                    },
-                    modifier = Modifier
-                        .weight(0.33f)
-                        .background(ConstColors.blueBack),
-                    color = ConstColors.lightBlue,
-                    fontWeight = FontWeight.W400,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Start
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(" ")
-                        append(stringResource(id = R.string.paid))
-                    },
-                    modifier = Modifier
-                        .weight(0.33f)
-                        .background(ConstColors.greenBack),
-                    color = ConstColors.lightGreen,
-                    fontWeight = FontWeight.W400,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Start
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(" ")
-                        append(stringResource(id = R.string.outstanding))
-                    },
-                    modifier = Modifier
-                        .weight(0.33f)
-                        .background(ConstColors.redBack),
-                    color = ConstColors.marron,
-                    fontWeight = FontWeight.W400,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Start
-                )
-            }
-            Row(
+        Column {
+            Column(
                 modifier = Modifier
+                    .padding(all = 8.dp)
                     .fillMaxWidth()
             ) {
-                Divider(
-                    thickness = 8.dp,
-                    color = ConstColors.blueBack,
-                    modifier = Modifier
-                        .weight(0.33f),
-                )
-                Divider(
-                    thickness = 8.dp,
-                    color = ConstColors.greenBack,
-                    modifier = Modifier
-                        .weight(0.33f),
-                )
-                Divider(
-                    thickness = 8.dp,
-                    color = ConstColors.redBack,
-                    modifier = Modifier
-                        .weight(0.33f),
-                )
-            }
-            Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = buildAnnotatedString {
-                        append(item.totalAmount.formatted)
-                        append(" ")
-                    },
+                    text = item.tradeName,
+                    color = ConstColors.lightBlue,
+                    fontWeight = FontWeight.W800,
+                    fontSize = 16.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Space(4.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            val startIndex = length
+                            append(item.totalInvoices.toString())
+                            addStyle(
+                                SpanStyle(
+                                    color = ConstColors.txtGrey,
+                                    fontWeight = FontWeight.W800
+                                ),
+                                startIndex,
+                                length,
+                            )
+                            append(" ")
+                            append(stringResource(id = R.string.invoices))
+                        },
+                        modifier = Modifier.weight(0.5f),
+                        color = ConstColors.txtGrey,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W500,
+                        textAlign = TextAlign.Start
+                    )
+                    Text(
+                        text = item.customerType,
+                        modifier = Modifier.weight(0.5f),
+                        fontSize = 12.sp,
+                        color = ConstColors.txtGrey,
+                        fontWeight = FontWeight.W500,
+                        textAlign = TextAlign.End
+                    )
+                }
+                Space(8.dp)
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.blueBack),
-                    color = ConstColors.lightBlue,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(item.paidAmount.formatted)
-                        append(" ")
-                    },
+                ) {
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(" ")
+                            append(stringResource(id = R.string.total_))
+                        },
+                        color = ConstColors.lightBlue,
+                        modifier = Modifier.padding(8.dp),
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Start
+                    )
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(item.totalAmount.formatted)
+                            append(" ")
+                        },
+                        color = ConstColors.lightBlue,
+                        modifier = Modifier
+                            .padding(bottom = 12.dp,end = 8.dp)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.W600,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+
+                Column(
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.greenBack),
-                    color = ConstColors.lightGreen,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        append(item.outstandingAmount.formatted)
-                        append(" ")
-                    },
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(" ")
+                            append(stringResource(id = R.string.paid))
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        color = ConstColors.lightGreen,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Start
+                    )
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(item.paidAmount.formatted)
+                            append(" ")
+                        },
+                        color = ConstColors.lightGreen,
+                        modifier = Modifier
+                            .padding(bottom = 12.dp,end = 8.dp)
+                            .fillMaxWidth(),
+                        fontWeight = FontWeight.W600,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+
+                Column(
                     modifier = Modifier
                         .weight(0.33f)
                         .background(ConstColors.redBack),
-                    color = ConstColors.marron,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.End
-                )
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(" ")
+                            append(stringResource(id = R.string.outstanding))
+                        },
+                        modifier = Modifier.padding(8.dp),
+                        color = ConstColors.marron,
+                        fontWeight = FontWeight.W400,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Start
+                    )
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(item.outstandingAmount.formatted)
+                            append(" ")
+                        },
+                        modifier = Modifier
+                            .padding(bottom = 12.dp,end = 8.dp)
+                            .fillMaxWidth(),
+                        color = ConstColors.marron,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
             }
-            Space(8.dp)
+
         }
     }
 }
@@ -664,6 +672,7 @@ fun IocListItem(
 fun InvoiceListItem(
     item: BuyerDetailsData,
     onItemClick: () -> Unit,
+    onImageClick: () -> Unit,
 ) {
 
     Surface(
@@ -727,7 +736,29 @@ fun InvoiceListItem(
             Divider(thickness = 0.5.dp)
             Space(8.dp)
 
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(25.dp)
+                    .clickable(onClick = onImageClick),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(id = R.drawable.ic_eye),
+                    contentDescription = null,
+                    tint = ConstColors.txtGrey
+                )
+                Space(dp = 4.dp)
+                Text(
+                    text = stringResource(id = R.string.view_invoice),
+                    color = ConstColors.txtGrey,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W700
+                )
+            }
+
+            /*Column(modifier = Modifier.fillMaxWidth()) {
                 val list = ArrayList<String>()
                 list.add("")
                 FoldableItem(
@@ -775,7 +806,7 @@ fun InvoiceListItem(
                         }
                     }
                 )
-            }
+            }*/
             Space(4.dp)
         }
     }
