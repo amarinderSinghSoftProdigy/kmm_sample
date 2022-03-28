@@ -36,7 +36,6 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
@@ -245,13 +244,17 @@ private fun OrderInvoiceEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = when (selectedId) {
-            entry.id -> BorderStroke(
+        border  = when {
+            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
                 1.dp,
-                ConstColors.gray,
+                ConstColors.gray.copy(alpha = 0.5f),
+            )
+            entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED -> BorderStroke(
+                1.dp,
+                ConstColors.red,
             )
             else -> null
-        },
+        }
     ) {
         Column {
             Row(
