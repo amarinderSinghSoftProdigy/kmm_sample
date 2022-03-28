@@ -83,14 +83,6 @@ fun MenuScreen(scope: MenuScope) {
                 scope = scope
             )
 
-            Separator(thickness = 0.5f)
-            AccountContentItem(
-                route = Event.Transition.IOC,
-                drawableResourceId = R.drawable.ic_menu_invoice,
-                stringResourceId = R.string.inv_online_collection,
-                scope = scope
-            )
-
             //display rest of the user menu based on user type
             if (userType == UserType.STOCKIST) {
                 StockistMenu(scope)
@@ -107,6 +99,13 @@ fun MenuScreen(scope: MenuScope) {
  */
 @Composable
 fun RetailerAndHospitalMenu(scope: MenuScope) {
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.IOC,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.digital_invoice_payments,
+        scope = scope,
+    )
     Separator(thickness = 0.5f)
     AccountContentItem(
         route = Event.Transition.Orders,
@@ -149,6 +148,30 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
  */
 @Composable
 fun StockistMenu(scope: MenuScope) {
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.inv_online_collection,
+        scope = scope,
+        fontWeight = FontWeight.W700,
+        arrowVisibility = false
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.IOC,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.online_collections,
+        scope = scope,
+        paddingStart = 50,
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.IOC,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.digital_payments,
+        scope = scope,
+        paddingStart = 50,
+    )
     Separator(thickness = 0.5f)
     AccountContentItem(
         drawableResourceId = R.drawable.ic_menu_po,

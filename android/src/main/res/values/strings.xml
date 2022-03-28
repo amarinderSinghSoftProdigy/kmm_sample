@@ -451,6 +451,9 @@
     <string name="paid">Paid</string>
     <string name="no_collection_found">No Invoice Collection Found!</string>
     <string name="no_invoices_found">No Invoices Found!</string>
+    <string name="online_collections">Online Collections</string>
+    <string name="digital_payments">Digital Payments</string>
+    <string name="digital_invoice_payments">Digital Invoice Payments</string>
 
     <!-- Termrs and Cond -->
 
