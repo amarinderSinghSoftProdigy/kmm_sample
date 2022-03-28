@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -46,9 +48,19 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
     val order = scope.orderTax.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
-    val declineReasons = scope.declineReason.flow.collectAsState()
+    val declineReasonCode = scope.declineReasonCode.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val selectedId = scope.selectedId.flow.collectAsState()
+    var declineReason = ""
+
+    run reason@{
+        scope.declineReasons.forEach {
+            if (declineReasonCode.value == it.code) {
+                declineReason = it.name
+                return@reason
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -149,6 +161,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                         scope.changeSelectedItem(it.id)
                                         scope.openBottomSheet(it, scope)
                                     },
+                                    declineReason = declineReason
                                 )
                                 Space(8.dp)
                             }
@@ -166,8 +179,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                 scope.openBottomSheet(
                                     orderDetails = null,
                                     orderTaxDetails = order.value?.info,
-                                    if (declineReasons.value.isNotEmpty()) {
-                                        declineReasons.value
+                                    if (declineReasonCode.value.isNotEmpty()) {
+                                        declineReasonCode.value
                                     } else {
                                         ""
                                     },
@@ -212,8 +225,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             isEnabled = true,
                             onClick = {
                                 scope.confirm(
-                                    if (declineReasons.value.isNotEmpty()) {
-                                        declineReasons.value
+                                    if (declineReasonCode.value.isNotEmpty()) {
+                                        declineReasonCode.value
                                     } else {
                                         ""
                                     }
@@ -234,7 +247,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
 private fun OrderInvoiceEntryItem(
     entry: OrderEntry,
     onClick: () -> Unit,
-    selectedId: String = ""
+    selectedId: String = "",
+    declineReason: String
 ) {
     Surface(
         elevation = 5.dp,
@@ -244,7 +258,7 @@ private fun OrderInvoiceEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border  = when {
+        border = when {
             entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
                 1.dp,
                 ConstColors.gray.copy(alpha = 0.5f),
@@ -436,6 +450,28 @@ private fun OrderInvoiceEntryItem(
                     )
                 }
 
+            }
+            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp), onDraw = {
+                            drawCircle(color = Color.Red)
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                        text = "${stringResource(id = R.string.declined)} - $declineReason",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.W500,
+                    )
+                }
             }
         }
 

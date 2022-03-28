@@ -306,7 +306,8 @@ class ViewOrderInvoiceScope(
     var orderTax: DataSource<OrderTaxInvoice?>,
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
-    var declineReason: DataSource<String>,
+    var declineReasonCode: DataSource<String>,
+    val declineReasons: List<DeclineReason>
 ) : Scope.Child.TabBar(), CommonScope.WithNotifications {
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val showAlert: DataSource<Boolean> = DataSource(false)
@@ -565,7 +566,8 @@ class ConfirmOrderScope(
     fun selectItem(orderId: String, reasonCode: String, entires: List<String>) {
         EventCollector.sendEvent(
             Event.Action.Orders.ViewOrderInvoiceAction(
-                orderId = orderId, reasonCode = reasonCode, acceptedEntries = entires
+                orderId = orderId, reasonCode = reasonCode, acceptedEntries = entires,
+                declineReasons = declineReason.value
             )
         )
     }
