@@ -3476,7 +3476,7 @@ private fun ViewInvoiceBottomSheet(
                 )
 
                 Text(
-                    text = info?.total?.formattedPrice ?: "",
+                    text = info?.netAmount?.formatted ?: "",
                     color = MaterialTheme.colors.background,
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.W600,
@@ -3494,6 +3494,7 @@ private fun ViewInvoiceBottomSheet(
         }
     }
 }
+
 
 @Composable
 private fun ViewInvoiceItemTaxBottomSheet(
