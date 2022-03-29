@@ -263,7 +263,8 @@
     <string name="available_formats">Available File Formats</string>
     <string name="max_file_size">Maximum file size:</string>
     <string name="mb_10">10 MB</string>
-    <string name="invoices">My Invoices</string>
+    <string name="my_invoices">My Invoices</string>
+    <string name="invoices">Invoices</string>
     <string name="po_invoices">PO Invoices</string>
     <string name="download">Download</string>
     <string name="no">No</string>
@@ -419,6 +420,44 @@
     <string name="regenerate_code">Regenerate Code</string>
     <string name="no_stockist">No Stockist found</string>
     <string name="global_search">Global Search</string>
+    <string name="create_debt">Create IOC</string>
+    <string name="enter_invoice_no">Invoice No.</string>
+    <string name="enter_invoice_date">Invoice Date</string>
+    <string name="enter_total_amount">Total Amount</string>
+    <string name="enter_outstanding_amount">Amount Paid</string>
+    <string name="outstanding_amount">Outstanding Amount</string>
+    <string name="upload_invoice">Upload Invoice</string>
+    <string name="dl_one_">DL 20B:</string>
+    <string name="dl_two_">DL 21B:</string>
+    <string name="no_users_found">No user found!</string>
+    <string name="inv_online_collection">Inv. Online Collection</string>
+    <string name="amount_received">Amount Received</string>
+    <string name="ddmmyy">dd/mm/yy</string>
+    <string name="invoice_successfull">Invoice Created Successfully</string>
+    <string name="out_amount">Out.Amt</string>
+    <string name="inv_toal">Inv. Total</string>
+    <string name="view_invoice">View Invoice</string>
+    <string name="outstanding">Outstanding</string>
+    <string name="edit_invoice">Edit Invoice</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="invoice_amount_validation">Total amount should be greater than Amount Paid</string>
+    <string name="cash_in_hand">Cash In Hand</string>
+    <string name="net_banking">Net Banking</string>
+    <string name="paytm">Paytm</string>
+    <string name="upi">UPI</string>
+    <string name="amazon_pay">Amazon Pay</string>
+    <string name="phone_pe">PhonePe</string>
+    <string name="g_pay">Google Pay</string>
+    <string name="paid">Paid</string>
+    <string name="no_col_found">No Collection Found!</string>
+    <string name="no_collection_found">No Invoice Collection Found!</string>
+    <string name="no_invoices_found">No Invoices Found!</string>
+    <string name="online_collections">Online Collections</string>
+    <string name="digital_payments">Digital Payments</string>
+    <string name="digital_invoice_payments">Digital Invoice Payments</string>
+    <string name="line_man_name">Lineman Name</string>
+    <string name="payment_method_">Payment Method</string>
+    <string name="pay_now">Pay Now</string>
 
     <!-- Termrs and Cond -->
 

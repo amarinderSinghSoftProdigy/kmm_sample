@@ -42,6 +42,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
@@ -50,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -79,6 +81,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.MainActivity
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
+import com.zealsoftsol.medico.core.extensions.screenHeight
 import com.zealsoftsol.medico.core.extensions.screenWidth
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
@@ -103,6 +106,7 @@ import com.zealsoftsol.medico.screens.common.CoilImageZoom
 import com.zealsoftsol.medico.screens.common.DataWithLabel
 import com.zealsoftsol.medico.screens.common.EditField
 import com.zealsoftsol.medico.screens.common.EditText
+import com.zealsoftsol.medico.screens.common.FoldableItem
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
@@ -117,6 +121,9 @@ import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
 import com.zealsoftsol.medico.screens.common.clickable
 import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.roundToNearestDecimalOf5
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import com.zealsoftsol.medico.screens.common.stringResourceByName
+import com.zealsoftsol.medico.screens.ioc.SpinnerItem
 import com.zealsoftsol.medico.screens.management.GeoLocationSheet
 import com.zealsoftsol.medico.screens.product.BottomSectionMode
 import com.zealsoftsol.medico.screens.search.BatchItem
@@ -124,7 +131,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun Scope.Host.showBottomSheet(
@@ -158,6 +169,16 @@ fun Scope.Host.showBottomSheet(
                     activity = activity,
                     coroutineScope = coroutineScope,
                     onFileReady = { bs.handleProfileUpload(it, bs.type) },
+                    onDismiss = { dismissBottomSheet() },
+                )
+            }
+            is BottomSheet.UploadInvoiceData -> {
+                DocumentUploadBottomSheet(
+                    supportedFileTypes = bs.supportedFileTypes,
+                    useCamera = false,
+                    activity = activity,
+                    coroutineScope = coroutineScope,
+                    onFileReady = { bs.handleInvoiceUpload(it, bs.type) },
                     onDismiss = { dismissBottomSheet() },
                 )
             }
@@ -270,6 +291,14 @@ fun Scope.Host.showBottomSheet(
                 }
             )
             is BottomSheet.ShowConnectedStockist -> ShowConnectedStockist(stockist = bs.stockist) { dismissBottomSheet() }
+            is BottomSheet.EditIOC -> EditIOCBottomSheet(
+                bs,
+                onConfirm = {
+                    dismissBottomSheet()
+                    bs.confirm()
+                },
+                onDismiss = { dismissBottomSheet() },
+            )
         }
     }
 }
@@ -329,7 +358,9 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     .padding(start = 16.dp, top = 5.dp)
                             ) {
                                 Image(
-                                    painter = if(item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(id = R.drawable.ic_not_connected),
+                                    painter = if (item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(
+                                        id = R.drawable.ic_not_connected
+                                    ),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(25.dp)
@@ -344,7 +375,8 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 16.dp).padding(bottom = 5.dp),
+                                    .padding(start = 16.dp)
+                                    .padding(bottom = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -3138,7 +3170,9 @@ private fun ViewLargeImageBottomSheet(
                         src = if (!type.isNullOrEmpty()) {
                             File(url.toString())
                         } else url,
-                        size = LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp,
+                        modifier = Modifier
+                            .width(LocalContext.current.let { it.screenWidth / it.density }.dp - 32.dp)
+                            .height(LocalContext.current.let { it.screenHeight / it.density }.dp - 50.dp),
                         onLoading = { CircularProgressIndicator(color = ConstColors.yellow) }
                     )
                     Space(30.dp)
@@ -3860,3 +3894,243 @@ private fun ViewEditCartBottomSheet(
         }
     }
 }
+
+@ExperimentalComposeUiApi
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun EditIOCBottomSheet(
+    scope: BottomSheet.EditIOC,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val activity = LocalContext.current as MainActivity
+    val scrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val enableButton = scope.enableButton.flow.collectAsState()
+    val date = scope.date.flow.collectAsState()
+    val amount = scope.amount.flow.collectAsState()
+    val type = scope.type.flow.collectAsState()
+
+    BaseBottomSheet(onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+            ) {
+                Space(dp = 8.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = stringResource(id = R.string.add_payment),
+                        fontSize = 14.sp,
+                        color = ConstColors.lightBlue,
+                        fontWeight = FontWeight.W700
+                    )
+
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.Black.copy(alpha = 0.12f),
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .size(24.dp),
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            tint = ConstColors.gray,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
+
+                Space(dp = 20.dp)
+                Column(horizontalAlignment = Alignment.End) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier
+                            .weight(0.4f)
+                            .clickable {
+                                val now = DateTime.now()
+                                val dialog = DatePickerDialog(
+                                    activity,
+                                    { _, year, month, day ->
+                                        val formatter = SimpleDateFormat("dd/MM/yyyy")
+                                        formatter.isLenient = false
+                                        val oldTime = "$day/${month + 1}/${year}"
+                                        val oldDate: Date? = formatter.parse(oldTime)
+                                        val oldMillis: Long? = oldDate?.time
+                                        scope.updateDate(oldTime, oldMillis ?: 0)
+                                    },
+                                    now.year,
+                                    now.monthOfYear - 1,
+                                    now.dayOfMonth,
+                                )
+                                dialog.show()
+                            }) {
+                            Text(
+                                text = if (date.value.isNotEmpty()) date.value else stringResource(
+                                    id = R.string.ddmmyy
+                                ),
+                                fontSize = 14.sp,
+                                color = if (date.value.isNotEmpty()) MaterialTheme.colors.background else ConstColors.txtGrey
+                            )
+                            Space(dp = 8.dp)
+                            Divider(
+                                thickness = 0.5.dp, color = ConstColors.lightBlue,
+                            )
+                        }
+                        Space(dp = 30.dp)
+                        Column(modifier = Modifier.weight(0.4f)) {
+                            val total = remember {
+                                mutableStateOf(
+                                    if (amount.value.split(".")
+                                            .lastOrNull() == ""
+                                    ) amount.value.split(".")
+                                        .first() else amount.value
+                                )
+                            }
+                            BasicTextField(
+                                value = if (total.value.isNotEmpty()) total.value else "0.0",
+                                modifier = Modifier
+                                    .align(Alignment.Start)
+                                    .scrollOnFocus(scrollState, coroutineScope),
+                                onValueChange = {
+                                    val split = it.replace(",", ".").split(".")
+                                    val beforeDot = split[0]
+                                    val afterDot = split.getOrNull(1)
+                                    var modBefore =
+                                        beforeDot.toIntOrNull() ?: 0
+                                    val modAfter = when (afterDot?.length) {
+                                        0 -> "."
+                                        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                            1
+                                        ).toIntOrNull()) {
+                                            0 -> ".0"
+                                            in 1..4 -> ".0"
+                                            5 -> ".5"
+                                            in 6..9 -> {
+                                                modBefore++
+                                                ".0"
+                                            }
+                                            null -> ""
+                                            else -> throw UnsupportedOperationException(
+                                                "cant be that"
+                                            )
+                                        }
+                                        null -> ""
+                                        else -> throw UnsupportedOperationException(
+                                            "cant be that"
+                                        )
+                                    }
+                                    total.value = "$modBefore$modAfter"
+                                    scope.updateAmount(total.value)
+                                },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    keyboardController?.hide()
+                                }),
+                                singleLine = true,
+                                readOnly = false,
+                                enabled = true,
+                            )
+                            Space(dp = 8.dp)
+                            Divider(
+                                thickness = 0.5.dp, color = ConstColors.lightBlue,
+                            )
+                        }
+                    }
+                    Space(dp = 16.dp)
+                    val list = scope.sellerScope.paymentTypes
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        FoldableItem(
+                            expanded = if (type.value.isNotEmpty()) false else false,
+                            headerBackground = Color.White,
+                            headerBorder = BorderStroke(0.dp, Color.Transparent),
+                            headerMinHeight = 50.dp,
+                            header = {
+                                Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 5.dp, end = 5.dp)
+                                    ) {
+                                        Row(modifier = Modifier.weight(0.9f)) {
+                                            Text(
+                                                text = if (type.value.isNotEmpty()) stringResourceByName(
+                                                    name = type.value
+                                                ) else stringResource(
+                                                    id = R.string.type
+                                                ),
+                                                color = if (type.value.isNotEmpty()) MaterialTheme.colors.background
+                                                else ConstColors.txtGrey,
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = 14.sp,
+                                            )
+                                        }
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowDropDown,
+                                            contentDescription = null,
+                                            tint = ConstColors.gray,
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                    }
+                                    Space(dp = 8.dp)
+                                    Divider(
+                                        thickness = 0.5.dp,
+                                        color = ConstColors.lightBlue,
+                                    )
+                                }
+                            },
+                            childItems = list,
+                            hasItemLeadingSpacing = false,
+                            hasItemTrailingSpacing = false,
+                            itemSpacing = 0.dp,
+                            itemHorizontalPadding = 0.dp,
+                            itemsBackground = Color.Transparent,
+                            item = { value, index ->
+                                SpinnerItem(
+                                    item = value
+                                ) {
+                                    scope.updateType(
+                                        value.stringId,
+                                        value.type
+                                    )
+                                }
+
+                            }
+                        )
+                    }
+                    Space(dp = 16.dp)
+                    MedicoRoundButton(
+                        text = stringResource(id = R.string.submit),
+                        isEnabled = enableButton.value,
+                        elevation = null,
+                        onClick = onConfirm,
+                        contentColor = MaterialTheme.colors.background,
+                        wrapTextSize = true,
+                    )
+                }
+            }
+        }
+    }
+}
+

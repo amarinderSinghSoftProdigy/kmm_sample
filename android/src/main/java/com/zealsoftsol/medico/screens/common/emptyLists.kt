@@ -26,8 +26,8 @@ fun NoRecords(
     @DrawableRes icon: Int,
     @StringRes text: Int,
     subtitle: String? = null,
+    buttonText: String = stringResource(id = R.string.home),
     onHome: () -> Unit,
-    buttonText : String = stringResource(id = R.string.home)
 ) {
     Column(
         modifier = Modifier
@@ -62,50 +62,6 @@ fun NoRecords(
         MedicoSmallButton(
 //            modifier = Modifier.padding(horizontal = ),
             text = buttonText,
-            onClick = onHome,
-        )
-    }
-}
-
-@Composable
-fun NoRecordsWithoutHome(
-    @DrawableRes icon: Int,
-    @StringRes text: Int,
-    subtitle: String? = null,
-    onHome: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 36.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = null,
-        )
-        Space(16.dp)
-        Text(
-            text = stringResource(id = text),
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W700,
-            color = MaterialTheme.colors.background,
-            textAlign = TextAlign.Center,
-        )
-        subtitle?.let {
-            Space(8.dp)
-            Text(
-                text = it,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W400,
-                color = ConstColors.gray,
-                textAlign = TextAlign.Center,
-            )
-        }
-        Space(16.dp)
-        MedicoSmallButton(
-            text = stringResource(id = R.string.clear),
             onClick = onHome,
         )
     }

@@ -815,6 +815,7 @@ fun TextLabel(
 @Composable
 fun ImageLabel(
     value: String,
+    direct: Boolean = false,
     onClick: () -> Unit
 ) {
     if (value.isNotEmpty())
@@ -825,9 +826,8 @@ fun ImageLabel(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Surface(onClick = onClick, shape = MaterialTheme.shapes.large) {
-                    val cacheFile = File(value)
                     CoilImage(
-                        src = cacheFile,
+                        src = if (direct) value else File(value),
                         modifier = Modifier
                             .width(130.dp)
                             .height(80.dp),
