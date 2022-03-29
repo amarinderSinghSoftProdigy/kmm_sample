@@ -27,7 +27,6 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
-import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.clickable
 
@@ -101,6 +100,13 @@ fun MenuScreen(scope: MenuScope) {
 fun RetailerAndHospitalMenu(scope: MenuScope) {
     Separator(thickness = 0.5f)
     AccountContentItem(
+        route = Event.Transition.IOCBuyer,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.digital_invoice_payments,
+        scope = scope,
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
         route = Event.Transition.Orders,
         drawableResourceId = R.drawable.ic_menu_orders,
         stringResourceId = R.string.your_orders,
@@ -141,6 +147,30 @@ fun RetailerAndHospitalMenu(scope: MenuScope) {
  */
 @Composable
 fun StockistMenu(scope: MenuScope) {
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.inv_online_collection,
+        scope = scope,
+        fontWeight = FontWeight.W700,
+        arrowVisibility = false
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.IOCSeller,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.online_collections,
+        scope = scope,
+        paddingStart = 50,
+    )
+    Separator(thickness = 0.5f)
+    AccountContentItem(
+        route = Event.Transition.IOCBuyer,
+        drawableResourceId = R.drawable.ic_menu_invoice,
+        stringResourceId = R.string.digital_payments,
+        scope = scope,
+        paddingStart = 50,
+    )
     Separator(thickness = 0.5f)
     AccountContentItem(
         drawableResourceId = R.drawable.ic_menu_po,

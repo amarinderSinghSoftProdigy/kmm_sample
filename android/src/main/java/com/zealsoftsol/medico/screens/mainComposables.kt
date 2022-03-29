@@ -80,6 +80,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreProductsScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InStoreUsersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.InvoicesScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.LimitedAccessScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
@@ -138,6 +140,9 @@ import com.zealsoftsol.medico.screens.instore.InStoreUsersScreen
 import com.zealsoftsol.medico.screens.inventory.InventoryMainComposable
 import com.zealsoftsol.medico.screens.invoices.InvoicesScreen
 import com.zealsoftsol.medico.screens.invoices.ViewInvoiceScreen
+import com.zealsoftsol.medico.screens.ioc.IocBuyerListingScreen
+import com.zealsoftsol.medico.screens.ioc.IocListingScreen
+import com.zealsoftsol.medico.screens.ioc.IocScreen
 import com.zealsoftsol.medico.screens.management.AddRetailerScreen
 import com.zealsoftsol.medico.screens.management.ManagementScreen
 import com.zealsoftsol.medico.screens.management.StoresScreen
@@ -192,11 +197,11 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
     }
 
     Scaffold(
-        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope) Color.White else MaterialTheme.colors.primary,
+        backgroundColor = if (childScope.value is SignUpScope || childScope.value is CartScope || childScope.value is IocSellerScope) Color.White else MaterialTheme.colors.primary,
         scaffoldState = scaffoldState,
         drawerGesturesEnabled = navigation.value != null,
         topBar = {
-            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope) //don't show top bar for OrderEditHsnScreen and Inventory
+            if (childScope.value !is OrderHsnEditScope && childScope.value !is InventoryScope && childScope.value !is IocSellerScope.InvUserListing && childScope.value !is IocBuyerScope.InvUserListing) //don't show top bar for OrderEditHsnScreen and Inventory and IOC listing
             {
                 val tabBarInfo = scope.tabBar.flow.collectAsState()
                 TabBar(isNewDesign = tabBarInfo.value is TabBarInfo.NewDesignLogo) {
@@ -397,6 +402,16 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
+                    is IocSellerScope.InvUserListing -> IocListingScreen(it)
+                    is IocSellerScope.InvListing -> IocListingScreen(it)
+                    is IocSellerScope.InvDetails -> IocListingScreen(it)
+                    is IocSellerScope.IOCListing -> IocScreen(it, scaffoldState)
+                    is IocSellerScope.IOCCreate -> IocScreen(it, scaffoldState)
+                    is IocBuyerScope.InvUserListing -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.InvListing -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.InvDetails -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.IOCPaymentMethod -> IocBuyerListingScreen(it)
+                    is IocBuyerScope.IOCPayNow -> IocBuyerListingScreen(it)
                 }
                 if (it is CommonScope.WithNotifications) it.showNotificationAlert()
             }
@@ -1023,10 +1038,10 @@ private fun OnlyBackHeader(
         )
         if (info.title.isNotEmpty())
             Text(
-                text = stringResourceByName(info.title),
+                text = if (info.title.contains("_")) stringResourceByName(info.title) else info.title,
                 color = MaterialTheme.colors.background,
                 fontWeight = FontWeight.W700,
-                fontSize = 12.sp,
+                fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )

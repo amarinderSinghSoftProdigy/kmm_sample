@@ -2,12 +2,15 @@ package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AddInvoiceResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -23,14 +26,17 @@ import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
@@ -62,12 +68,15 @@ import com.zealsoftsol.medico.data.QrCodeData
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -438,5 +447,58 @@ interface NetworkScope {
 
         suspend fun regenerateQrCode(qrCode: String): BodyResponse<QrCodeData>
 
+    }
+
+    interface IOCStore : NetworkScope {
+
+        suspend fun getUsers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<SellerUsersData>
+
+        suspend fun retailerInvoiceDetails(
+            unitCode: String,
+        ): BodyResponse<InvListingData>
+
+        suspend fun invoiceDetails(
+            invoiceId: String,
+        ): BodyResponse<InvoiceDetails>
+
+        suspend fun getRetailers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<IOCResponse>
+
+        suspend fun submitInvoice(
+            request: AddInvoice
+        ): BodyResponse<AddInvoiceResponse>
+
+        suspend fun updateInvoice(
+            request: UpdateInvoiceRequest
+        ): BodyResponse<String>
+
+    }
+
+    interface IOCBuyerStore : NetworkScope {
+
+        suspend fun getBuyers(
+            unitCode: String,
+            search: String?,
+            pagination: Pagination
+        ): BodyResponse<BuyerUsersData>
+
+        suspend fun buyerInvoiceListing(
+            unitCode: String,
+        ): BodyResponse<InvListingData>
+
+        suspend fun buyerInvoiceDetails(
+            invoiceId: String,
+        ): BodyResponse<InvoiceDetails>
+
+        suspend fun submitPayment(
+            request: SubmitPaymentRequest,
+        ): BodyResponse<String>
     }
 }

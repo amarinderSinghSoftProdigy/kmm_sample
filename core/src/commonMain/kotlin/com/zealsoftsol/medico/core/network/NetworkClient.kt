@@ -11,12 +11,15 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
+import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.AddInvoiceResponse
 import com.zealsoftsol.medico.data.AnyResponse
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -34,14 +37,17 @@ import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
 import com.zealsoftsol.medico.data.HelpData
+import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
 import com.zealsoftsol.medico.data.InStoreCartRequest
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InStoreSeller
 import com.zealsoftsol.medico.data.InStoreUser
 import com.zealsoftsol.medico.data.InStoreUserRegistration
+import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InventoryData
 import com.zealsoftsol.medico.data.Invoice
+import com.zealsoftsol.medico.data.InvoiceDetails
 import com.zealsoftsol.medico.data.InvoiceResponse
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
@@ -78,12 +84,15 @@ import com.zealsoftsol.medico.data.RefreshTokenRequest
 import com.zealsoftsol.medico.data.Response
 import com.zealsoftsol.medico.data.SearchDataItem
 import com.zealsoftsol.medico.data.SearchResponse
+import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
 import com.zealsoftsol.medico.data.UnreadNotifications
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UploadResponseData
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserRegistration2
@@ -143,6 +152,8 @@ class NetworkClient(
     NetworkScope.OffersStore,
     NetworkScope.OrderHsnEditStore,
     NetworkScope.BatchesStore,
+    NetworkScope.IOCStore,
+    NetworkScope.IOCBuyerStore,
     NetworkScope.QrCodeStore {
 
     init {
@@ -247,7 +258,7 @@ class NetworkClient(
     }
 
     override suspend fun signUpValidation1(userRegistration1: UserRegistration1) =
-        fullRequest<MapBody, UserValidation1> {
+        fullRequest {
             client.post<ValidationResponse<UserValidation1>>("${baseUrl.url}/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration1)
@@ -255,7 +266,7 @@ class NetworkClient(
         }
 
     override suspend fun signUpValidation2(userRegistration2: UserRegistration2) =
-        fullRequest<MapBody, UserValidation2> {
+        fullRequest {
             client.post<ValidationResponse<UserValidation2>>("${baseUrl.url}/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration2)
@@ -753,7 +764,7 @@ class NetworkClient(
     }
 
     override suspend fun getConfig(): BodyResponse<ConfigData> = simpleRequest {
-        client.get<BodyResponse<ConfigData>>("${baseUrl.url}/medico/config") {
+        client.get("${baseUrl.url}/medico/config") {
             withMainToken()
         }
     }
@@ -820,7 +831,7 @@ class NetworkClient(
 
     override suspend fun addUser(registration: InStoreUserRegistration): AnyResponse =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/instore/user/add") {
+            client.post("${baseUrl.url}/instore/user/add") {
                 withMainToken()
                 jsonBody(registration)
             }
@@ -961,7 +972,7 @@ class NetworkClient(
 
     override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
         simpleRequest {
-            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/confirm") {
+            client.post("${baseUrl.url}/orders/tax/po/confirm") {
                 withMainToken()
                 jsonBody(orderData)
             }
@@ -989,7 +1000,7 @@ class NetworkClient(
         orderId: String,
         discount: Double
     ): BodyResponse<OrderResponse> = simpleRequest {
-        client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/discount/add") {
+        client.post("${baseUrl.url}/orders/tax/po/discount/add") {
             withMainToken()
             jsonBody(
                 mapOf(
@@ -1077,6 +1088,119 @@ class NetworkClient(
                 parameters.append("b2bUnitCode", unitCode)
                 parameters.append("suggest", input)
             }
+        }
+    }
+
+    override suspend fun getUsers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ) = simpleRequest {
+        client.get<BodyResponse<SellerUsersData>>("${baseUrl.url}/ioc/seller/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
+    }
+
+    override suspend fun retailerInvoiceDetails(
+        unitCode: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvListingData>>("${baseUrl.url}/ioc/seller/$unitCode") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun invoiceDetails(
+        invoiceId: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/seller/invoice/$invoiceId") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun getBuyers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ) = simpleRequest {
+        client.get<BodyResponse<BuyerUsersData>>("${baseUrl.url}/ioc/buyer/search") {
+            withMainToken()
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
+    }
+
+    override suspend fun buyerInvoiceListing(
+        unitCode: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvListingData>>("${baseUrl.url}/ioc/buyer/$unitCode") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun buyerInvoiceDetails(
+        invoiceId: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/buyer/invoice/$invoiceId") {
+            withMainToken()
+        }
+    }
+
+    override suspend fun submitPayment(
+        request: SubmitPaymentRequest,
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/ioc/buyer/paynow") {
+            withMainToken()
+            jsonBody(request)
+        }
+    }
+
+
+    override suspend fun getRetailers(
+        unitCode: String,
+        search: String?,
+        pagination: Pagination
+    ) = simpleRequest {
+        client.get<BodyResponse<IOCResponse>>("${baseUrl.url}/ioc/users") {
+            withMainToken()
+            withB2bCodeToken(unitCode)
+            url {
+                parameters.apply {
+                    append("page", pagination.nextPage().toString())
+                    append("pageSize", pagination.itemsPerPage.toString())
+                    if (!search.isNullOrEmpty()) append("search", search)
+                }
+            }
+        }
+    }
+
+
+    override suspend fun submitInvoice(
+        request: AddInvoice
+    ) = simpleRequest {
+        client.post<BodyResponse<AddInvoiceResponse>>("${baseUrl.url}/ioc/add/invoice") {
+            withMainToken()
+            jsonBody(request)
+        }
+    }
+
+    override suspend fun updateInvoice(
+        request: UpdateInvoiceRequest
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/ioc/seller/invoice/edit") {
+            withMainToken()
+            jsonBody(request)
         }
     }
 

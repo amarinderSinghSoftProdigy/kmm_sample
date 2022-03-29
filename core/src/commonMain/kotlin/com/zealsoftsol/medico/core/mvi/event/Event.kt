@@ -3,15 +3,19 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
+import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AlternateProductData
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartIdentifier
@@ -22,6 +26,7 @@ import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
 import com.zealsoftsol.medico.data.InStoreProduct
+import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.NotificationAction
 import com.zealsoftsol.medico.data.NotificationData
@@ -36,11 +41,14 @@ import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.ProductSearch
 import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.Promotions
+import com.zealsoftsol.medico.data.RetailerData
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.TaxType
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration
 import com.zealsoftsol.medico.data.UserRegistration1
 import com.zealsoftsol.medico.data.UserType
@@ -164,7 +172,8 @@ sealed class Event {
             object ToggleFilter : Search()
             data class ShowConnectedStockistBottomSheet(val stockist: List<ConnectedStockist>) :
                 Search()
-            data class LoadStockist(val code: String, val imageCode: String): Search()
+
+            data class LoadStockist(val code: String, val imageCode: String) : Search()
         }
 
         sealed class Product : Action() {
@@ -489,6 +498,7 @@ sealed class Event {
             data class SaveOffer(val request: OfferProductRequest) : Offers()
             data class EditCreatedOffer(val promoCode: String, val request: OfferProductRequest) :
                 Offers()
+
             data class ShowManufacturers(val showManufacturers: Boolean) : Offers()
         }
 
@@ -517,6 +527,79 @@ sealed class Event {
 
             object GetQrCode : QrCode()
             data class RegenerateQrCode(val qrCode: String) : QrCode()
+        }
+
+        sealed class IOC : Action() {
+            override val typeClazz: KClass<*> = IOC::class
+
+            //Create IOC and listing
+            data class UploadInvoice(
+                val size: String,
+                val asBase64: String,
+                val fileType: FileType,
+                val type: String
+            ) : IOC()
+
+            data class Select(val item: RetailerData) : IOC()
+            data class Search(val value: String) : IOC()
+            object LoadMoreProducts : IOC()
+            data class UpdateIOC(
+                val request: UpdateInvoiceRequest,
+                val sellerScope: IocSellerScope
+            ) : IOC()
+
+            data class ShowUploadBottomSheets(
+                val type: String
+            ) : IOC()
+
+            data class SubmitInvoice(val value: AddInvoice) : IOC()
+
+            //Methods for InvBuyerUserListing
+            data class LoadUsers(val search: String? = null) : IOC()
+            object LoadMoreUsers : IOC()
+            data class OpenIOCListing(val item: InvUserData) : IOC()
+            object OpenCreateIOC : IOC()
+
+            //Methods for InvBuyerLisitng
+            data class LoadInvListing(val unitCode: String) : IOC()
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
+
+            //Methods for InvDetails
+            data class LoadInvDetails(val invoiceId: String) : IOC()
+
+            data class OpenEditIOCBottomSheet(
+                val item: BuyerDetailsData, val sellerScope: IocSellerScope
+            ) : IOC()
+
+        }
+
+        sealed class IOCBuyer : Action() {
+            override val typeClazz: KClass<*> = IOCBuyer::class
+
+            //Methods for Pay now
+            data class OpenPayNow(
+                val unitCode: String,
+                val invoiceId: String,
+                val type: IocBuyerScope.PaymentTypes
+            ) : IOCBuyer()
+
+            data class SubmitPayment(val item: SubmitPaymentRequest, val mobile: String) :
+                IOCBuyer()
+
+            //Methods for InvUserListing
+            data class LoadUsers(val search: String? = null) : IOCBuyer()
+            object LoadMoreUsers : IOCBuyer()
+            data class OpenIOCListing(val item: InvUserData) : IOCBuyer()
+
+            //Methods for InvLisitng
+            data class LoadInvListing(val unitCode: String) : IOCBuyer()
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOCBuyer()
+
+            //Methods for InvDetails
+            data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
+            data class OpenPaymentMethod(val unitCode: String, val invoiceId: String) : IOCBuyer()
+
+            object ClearScopes : IOCBuyer()
         }
     }
 
@@ -573,6 +656,8 @@ sealed class Event {
         ) : Transition()
 
         object QrCode : Transition()
+        object IOCSeller : Transition()
+        object IOCBuyer : Transition()
 
     }
 }
