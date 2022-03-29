@@ -391,12 +391,22 @@ private fun OrderInvoiceEntryItem(
                                         append(": ")
                                         val startIndex = length
                                         append(entry.totalAmount.formatted)
+                                        val nextIndex = length
                                         addStyle(
                                             SpanStyle(
                                                 color = Color.Black,
                                                 fontWeight = FontWeight.W500
                                             ),
                                             startIndex,
+                                            length,
+                                        )
+                                        append("*")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.lightBlue,
+                                                fontWeight = FontWeight.W500
+                                            ),
+                                            nextIndex,
                                             length,
                                         )
                                     },
@@ -472,6 +482,57 @@ private fun OrderInvoiceEntryItem(
                         fontWeight = FontWeight.W500,
                     )
                 }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp)
+                    .padding(start = 8.dp, end = 35.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.required_qty))
+                        append(": ")
+                        val startIndex = length
+                        append(entry.requestedQty.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W500
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.serve_qty))
+                        append(": ")
+                        val startIndex = length
+                        append(entry.servedQty.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = ConstColors.green,
+                                fontWeight = FontWeight.W500
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
         }
 
