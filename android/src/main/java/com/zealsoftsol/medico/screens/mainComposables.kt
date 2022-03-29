@@ -402,9 +402,9 @@ fun TabBarScreen(scope: TabBarScope, coroutineScope: CoroutineScope, activity: M
                     }
                     is BatchesScope -> ViewBatchesScreen(it)
                     is QrCodeScope -> QrCodeScreen(it)
-                    is IocSellerScope.InvUserListing -> IocListingScreen(it, scaffoldState)
-                    is IocSellerScope.InvListing -> IocListingScreen(it, scaffoldState)
-                    is IocSellerScope.InvDetails -> IocListingScreen(it, scaffoldState)
+                    is IocSellerScope.InvUserListing -> IocListingScreen(it)
+                    is IocSellerScope.InvListing -> IocListingScreen(it)
+                    is IocSellerScope.InvDetails -> IocListingScreen(it)
                     is IocSellerScope.IOCListing -> IocScreen(it, scaffoldState)
                     is IocSellerScope.IOCCreate -> IocScreen(it, scaffoldState)
                     is IocBuyerScope.InvUserListing -> IocBuyerListingScreen(it)

@@ -19,6 +19,7 @@ import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -86,6 +87,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
@@ -256,7 +258,7 @@ class NetworkClient(
     }
 
     override suspend fun signUpValidation1(userRegistration1: UserRegistration1) =
-        fullRequest<MapBody, UserValidation1> {
+        fullRequest {
             client.post<ValidationResponse<UserValidation1>>("${baseUrl.url}/registration/step1") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration1)
@@ -264,7 +266,7 @@ class NetworkClient(
         }
 
     override suspend fun signUpValidation2(userRegistration2: UserRegistration2) =
-        fullRequest<MapBody, UserValidation2> {
+        fullRequest {
             client.post<ValidationResponse<UserValidation2>>("${baseUrl.url}/registration/step2") {
                 withTempToken(TempToken.REGISTRATION)
                 jsonBody(userRegistration2)
@@ -762,7 +764,7 @@ class NetworkClient(
     }
 
     override suspend fun getConfig(): BodyResponse<ConfigData> = simpleRequest {
-        client.get<BodyResponse<ConfigData>>("${baseUrl.url}/medico/config") {
+        client.get("${baseUrl.url}/medico/config") {
             withMainToken()
         }
     }
@@ -829,7 +831,7 @@ class NetworkClient(
 
     override suspend fun addUser(registration: InStoreUserRegistration): AnyResponse =
         simpleRequest {
-            client.post<AnyResponse>("${baseUrl.url}/instore/user/add") {
+            client.post("${baseUrl.url}/instore/user/add") {
                 withMainToken()
                 jsonBody(registration)
             }
@@ -970,7 +972,7 @@ class NetworkClient(
 
     override suspend fun takeActionOnOrderEntries(orderData: ConfirmOrderRequest): BodyResponse<OrderResponse> =
         simpleRequest {
-            client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/confirm") {
+            client.post("${baseUrl.url}/orders/tax/po/confirm") {
                 withMainToken()
                 jsonBody(orderData)
             }
@@ -998,7 +1000,7 @@ class NetworkClient(
         orderId: String,
         discount: Double
     ): BodyResponse<OrderResponse> = simpleRequest {
-        client.post<BodyResponse<OrderResponse>>("${baseUrl.url}/orders/tax/po/discount/add") {
+        client.post("${baseUrl.url}/orders/tax/po/discount/add") {
             withMainToken()
             jsonBody(
                 mapOf(
@@ -1127,7 +1129,7 @@ class NetworkClient(
         search: String?,
         pagination: Pagination
     ) = simpleRequest {
-        client.get<BodyResponse<SellerUsersData>>("${baseUrl.url}/ioc/buyer/search") {
+        client.get<BodyResponse<BuyerUsersData>>("${baseUrl.url}/ioc/buyer/search") {
             withMainToken()
             url {
                 parameters.apply {
@@ -1152,6 +1154,15 @@ class NetworkClient(
     ) = simpleRequest {
         client.get<BodyResponse<InvoiceDetails>>("${baseUrl.url}/ioc/buyer/invoice/$invoiceId") {
             withMainToken()
+        }
+    }
+
+    override suspend fun submitPayment(
+        request: SubmitPaymentRequest,
+    ) = simpleRequest {
+        client.post<BodyResponse<String>>("${baseUrl.url}/ioc/buyer/paynow") {
+            withMainToken()
+            jsonBody(request)
         }
     }
 

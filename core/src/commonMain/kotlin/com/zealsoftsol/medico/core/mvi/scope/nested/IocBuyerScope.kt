@@ -8,7 +8,6 @@ import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
-import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.FormattedData
@@ -16,8 +15,7 @@ import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceDetails
-import com.zealsoftsol.medico.data.RetailerData
-import com.zealsoftsol.medico.data.UploadResponseData
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 
 
 sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
@@ -32,6 +30,9 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         PaymentTypes.BHIM_UPI,
         PaymentTypes.NET_BANKING,
     )
+    val paymentTypesCash: List<PaymentTypes> = listOf(
+        PaymentTypes.CASH_IN_HAND,
+    )
 
     class InvUserListing : IocBuyerScope(), Loadable<InvUserData>, CommonScope.CanGoBack {
 
@@ -40,6 +41,16 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         override val items: DataSource<List<InvUserData>> = DataSource(emptyList())
         override val totalItems: DataSource<Int> = DataSource(0)
         override val searchText: DataSource<String> = DataSource("")
+        val slider: DataSource<Float> = DataSource(0f)
+        val total: DataSource<FormattedData<Double>?> = DataSource(null)
+        val paid: DataSource<FormattedData<Double>?> = DataSource(null)
+        val outstand: DataSource<FormattedData<Double>?> = DataSource(null)
+
+        fun getSliderPosition() {
+            slider.value = ((((total.value?.value ?: 0.0) - (outstand.value?.value
+                ?: 0.0)) / (total.value?.value
+                ?: 1.0)) * 100).toFloat()
+        }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
             TabBarInfo.OnlyBackHeader("")
@@ -63,9 +74,16 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         override val isRoot: Boolean = false
         val items: DataSource<List<BuyerDetailsData>> = DataSource(emptyList())
         val data: DataSource<InvListingData?> = DataSource(null)
+        val slider: DataSource<Float> = DataSource(0f)
 
         init {
             EventCollector.sendEvent(Event.Action.IOCBuyer.LoadInvListing(item.unitCode))
+        }
+
+        fun getSliderPosition() {
+            slider.value =
+                ((((data.value?.totalAmount?.value ?: 0.0) - (data.value?.outstandingAmount?.value
+                    ?: 0.0)) / (data.value?.totalAmount?.value ?: 1.0)) * 100).toFloat()
         }
 
         fun openIOCDetails(item: BuyerDetailsData) {
@@ -106,7 +124,7 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val selected: DataSource<Int> = DataSource(-1)
 
         init {
-            items.value = paymentTypes
+            items.value = paymentTypesCash
         }
 
         fun openPayNow(item: BuyerDetailsData, index: Int, type: PaymentTypes) {
@@ -153,17 +171,30 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             validate()
         }
 
-        fun validate() {
-            enableButton.value =
-                totalAmount.value.isNotEmpty()
-                        && lineManName.value.isNotEmpty()
-                        && validPhone(mobileNumber.value)
+        fun submitPayment(phoneNumber: String) {
+            val request = SubmitPaymentRequest(
+                method.type, item.invoiceId,
+                item.unitCode, lineManName.value,
+                totalAmount.value.toDouble(),
+                phoneNumber, ""
+            )
+            EventCollector.sendEvent(Event.Action.IOCBuyer.SubmitPayment(request))
+        }
+
+
+        private fun validate() {
+            enableButton.value = totalAmount.value.isNotEmpty()
+                    && lineManName.value.isNotEmpty()
+                    && validPhone(mobileNumber.value)
+                    && mobileNumber.value.isNotEmpty()
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title = method.stringId)
         }
 
+        fun startOtp(phoneNumber: String) =
+            EventCollector.sendEvent(Event.Action.Otp.Send(phoneNumber))
     }
 
     fun previewImage(item: String) =

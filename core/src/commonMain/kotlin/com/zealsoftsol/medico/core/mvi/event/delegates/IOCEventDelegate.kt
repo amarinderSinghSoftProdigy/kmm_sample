@@ -275,7 +275,8 @@ internal class IOCEventDelegate(
                     items.value = ArrayList()
                 } else {
                     pagination.setTotal(body.totalResults)
-                    items.value = if (!addPage) body.results else items.value + body.results
+                    items.value =
+                        if (!addPage) body.results else items.value + body.results
                 }
             }.onError(navigator)
             onEnd()

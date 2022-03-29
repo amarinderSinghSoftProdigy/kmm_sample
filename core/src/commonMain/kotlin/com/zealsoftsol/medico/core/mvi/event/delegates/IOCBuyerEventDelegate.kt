@@ -11,6 +11,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.InvUserData
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,8 +34,20 @@ internal class IOCBuyerEventDelegate(
         is Event.Action.IOCBuyer.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
         is Event.Action.IOCBuyer.OpenPaymentMethod -> openPaymentMethod(event.item)
         is Event.Action.IOCBuyer.OpenPayNow -> openPayNow(event.item, event.type)
+        is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item)
     }
 
+    private suspend fun submitPayment(request: SubmitPaymentRequest) {
+        navigator.withScope<IocBuyerScope.IOCPayNow> {
+            navigator.withProgress {
+                networkStoresScope.submitPayment(
+                    request
+                )
+            }.onSuccess { body ->
+                it.startOtp(request.mobileNumber)
+            }.onError(navigator)
+        }
+    }
 
     private fun openListing(item: InvUserData) {
         navigator.withScope<IocBuyerScope.InvUserListing> {
@@ -111,11 +124,16 @@ internal class IOCBuyerEventDelegate(
                 search = extraFilters,
                 pagination = pagination,
             ).onSuccess { body ->
-                if (body.totalResults == 0) {
+                total.value = body.totalAmount
+                paid.value = body.amountPaid
+                outstand.value = body.outstandingAmount
+                getSliderPosition()
+                if (body.suppliers.totalResults == 0) {
                     items.value = ArrayList()
                 } else {
-                    pagination.setTotal(body.totalResults)
-                    items.value = if (!addPage) body.results else items.value + body.results
+                    pagination.setTotal(body.suppliers.totalResults)
+                    items.value =
+                        if (!addPage) body.suppliers.results else items.value + body.suppliers.results
                 }
             }.onError(navigator)
             onEnd()
@@ -146,6 +164,7 @@ internal class IOCBuyerEventDelegate(
                 )
             }.onSuccess { body ->
                 it.data.value = body
+                it.getSliderPosition()
                 it.items.value = body.buyerDetails.results
             }.onError(navigator)
         }

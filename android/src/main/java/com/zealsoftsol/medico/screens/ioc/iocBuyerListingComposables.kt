@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,11 +35,9 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -60,20 +57,18 @@ import androidx.compose.ui.unit.sp
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
-import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.screens.common.InputField
 import com.zealsoftsol.medico.screens.common.InputWithError
-import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.PhoneFormatInputFieldForRegister
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.formatIndia
 import com.zealsoftsol.medico.screens.common.scrollOnFocus
-import com.zealsoftsol.medico.screens.common.stringResourceByName
 import com.zealsoftsol.medico.screens.search.BasicSearchBar
 
 
@@ -83,9 +78,9 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 fun IocBuyerListingScreen(scope: IocBuyerScope) {
     Column(modifier = Modifier.fillMaxSize()) {
         when (scope) {
-            is IocBuyerScope.InvUserListing -> InvUserListing(scope)
-            is IocBuyerScope.InvListing -> InvListing(scope)
-            is IocBuyerScope.InvDetails -> InvDetails(scope)
+            is IocBuyerScope.InvUserListing -> InvBuyerUserListing(scope)
+            is IocBuyerScope.InvListing -> InvBuyerListing(scope)
+            is IocBuyerScope.InvDetails -> InvBuyerDetails(scope)
             is IocBuyerScope.IOCPayNow -> IocPayNow(scope)
             is IocBuyerScope.IOCPaymentMethod -> IocPaymentMethod(scope)
         }
@@ -95,12 +90,13 @@ fun IocBuyerListingScreen(scope: IocBuyerScope) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvDetails(scope: IocBuyerScope.InvDetails) {
+private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
     val data = scope.data.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
-    val status = "Pending"
 
-    Box {
+    Box(
+        modifier = Modifier.background(Color.White)
+    ) {
         Column {
             Column(
                 modifier = Modifier
@@ -138,22 +134,24 @@ private fun InvDetails(scope: IocBuyerScope.InvDetails) {
                         fontSize = 12.sp,
                     )
                     Text(
-                        text = status,
+                        text = data.value?.viewStatus ?: "",
                         modifier = Modifier.weight(0.5f),
-                        color = ConstColors.lightGreen,
+                        color =
+                        if (data.value?.viewStatus.isNullOrEmpty()) {
+                            MaterialTheme.colors.background
+                        } else {
+                            when ((data.value?.viewStatus ?: "").uppercase()) {
+                                "COMPLETED" -> ConstColors.lightGreen
+                                "PENDING" -> ConstColors.orange
+                                else -> MaterialTheme.colors.background
+                            }
+                        },
                         fontWeight = FontWeight.W600,
                         fontSize = 12.sp,
                         textAlign = TextAlign.End
                     )
 
                 }
-                Space(4.dp)
-                Text(
-                    text = status,
-                    color = ConstColors.orange,
-                    fontWeight = FontWeight.W600,
-                    fontSize = 12.sp,
-                )
                 Space(8.dp)
                 Divider(thickness = 0.5.dp)
                 Space(8.dp)
@@ -229,9 +227,10 @@ private fun InvDetails(scope: IocBuyerScope.InvDetails) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvListing(scope: IocBuyerScope.InvListing) {
+private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
     val items = scope.items.flow.collectAsState()
     val data = scope.data.flow.collectAsState()
+    val slider = scope.slider.flow.collectAsState()
 
     Column {
 
@@ -242,11 +241,10 @@ private fun InvListing(scope: IocBuyerScope.InvListing) {
             modifier = Modifier.padding(all = 16.dp),
         ) {
             Column {
-                var sliderPosition by remember { mutableStateOf(50f) }
                 Slider(
                     modifier = Modifier.height(35.dp),
-                    value = sliderPosition,
-                    onValueChange = { sliderPosition = it },
+                    value = slider.value,
+                    onValueChange = { },
                     valueRange = 0f..100f,
                     onValueChangeFinished = {},
                     colors = SliderDefaults.colors(
@@ -265,7 +263,7 @@ private fun InvListing(scope: IocBuyerScope.InvListing) {
                             .weight(0.33f),
                     ) {
                         Text(
-                            text = "85000.00",
+                            text = data.value?.totalAmount?.formatted ?: "",
                             color = Color.White,
                             fontWeight = FontWeight.W700,
                             fontSize = 16.sp,
@@ -367,9 +365,14 @@ private fun InvListing(scope: IocBuyerScope.InvListing) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvUserListing(scope: IocBuyerScope.InvUserListing) {
+private fun InvBuyerUserListing(scope: IocBuyerScope.InvUserListing) {
     val search = scope.searchText.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
+    val total = scope.total.flow.collectAsState()
+    val paid = scope.paid.flow.collectAsState()
+    val outstand = scope.outstand.flow.collectAsState()
+    val slider = scope.slider.flow.collectAsState()
+
     remember {
         scope.load("")
     }
@@ -431,11 +434,10 @@ private fun InvUserListing(scope: IocBuyerScope.InvUserListing) {
                 modifier = Modifier.padding(all = 8.dp),
             ) {
                 Column {
-                    var sliderPosition by remember { mutableStateOf(50f) }
                     Slider(
                         modifier = Modifier.height(35.dp),
-                        value = sliderPosition,
-                        onValueChange = { sliderPosition = it },
+                        value = slider.value,
+                        onValueChange = { },
                         valueRange = 0f..100f,
                         onValueChangeFinished = {},
                         colors = SliderDefaults.colors(
@@ -447,14 +449,15 @@ private fun InvUserListing(scope: IocBuyerScope.InvUserListing) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
+                            .padding(8.dp),
+
+                        ) {
                         Column(
                             modifier = Modifier
                                 .weight(0.33f),
                         ) {
                             Text(
-                                text = "85000.00",
+                                text = total.value?.formatted ?: "",
                                 color = Color.White,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 16.sp,
@@ -479,7 +482,7 @@ private fun InvUserListing(scope: IocBuyerScope.InvUserListing) {
 
 
                             Text(
-                                text = "5000.00",
+                                text = paid.value?.formatted ?: "",
                                 color = Color.White,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 16.sp,
@@ -501,7 +504,7 @@ private fun InvUserListing(scope: IocBuyerScope.InvUserListing) {
                                 .weight(0.33f),
                         ) {
                             Text(
-                                text = "4500.00",
+                                text = outstand.value?.formatted ?: "",
                                 color = Color.White,
                                 fontWeight = FontWeight.W600,
                                 modifier = Modifier.fillMaxWidth(),
@@ -786,32 +789,22 @@ fun BuyerInvoiceListItem(
                     )
 
                     Text(
-                        text = item.invoiceDate.formatted,
+                        text = item.viewStatus,
                         modifier = Modifier.weight(0.5f),
-                        color = ConstColors.txtGrey,
-                        fontWeight = FontWeight.W500,
+                        color = when (item.viewStatus.uppercase()) {
+                            "COMPLETED" -> ConstColors.lightGreen
+                            "PENDING" -> ConstColors.orange
+                            else -> MaterialTheme.colors.background
+                        },
+                        fontWeight = FontWeight.W600,
                         fontSize = 12.sp,
                         textAlign = TextAlign.End
                     )
                 }
-                Space(dp = 4.dp)
-                Text(
-                    text = item.viewStatus,
-                    color = when (item.viewStatus.uppercase()) {
-                        "COMPLETED" -> ConstColors.lightGreen
-                        "PENDING" -> ConstColors.orange
-                        else -> MaterialTheme.colors.background
-                    },
-                    fontWeight = FontWeight.W600,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.End
-                )
             }
-
-            Space(16.dp)
+            Space(12.dp)
             Divider(thickness = 0.5.dp)
             Space(8.dp)
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -877,12 +870,12 @@ fun BuyerPaymentOptionItem(
                     Space(dp = 4.dp)
                     Text(
                         text = when (item.paymentType) {
-                            IocSellerScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
-                            IocSellerScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
-                            IocSellerScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
-                            IocSellerScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
-                            IocSellerScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
-                            IocSellerScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
+                            IocBuyerScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
+                            IocBuyerScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
+                            IocBuyerScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
+                            IocBuyerScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
+                            IocBuyerScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
+                            IocBuyerScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
                             else -> stringResource(id = R.string.net_banking)
                         },
                         color = ConstColors.txtGrey,
@@ -945,16 +938,16 @@ fun BuyerPaymentOptionItem(
 @ExperimentalComposeUiApi
 @Composable
 private fun IocPayNow(
-    sellerScope: IocBuyerScope.IOCPayNow
+    scope: IocBuyerScope.IOCPayNow
 ) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
-    val lineManName = sellerScope.lineManName.flow.collectAsState()
-    val totalAmount = sellerScope.totalAmount.flow.collectAsState()
-    val mobileNumber = sellerScope.mobileNumber.flow.collectAsState()
-    val validPhone = sellerScope.validPhone(mobileNumber.value)
-    val enable = sellerScope.enableButton.flow.collectAsState()
+    val lineManName = scope.lineManName.flow.collectAsState()
+    val totalAmount = scope.totalAmount.flow.collectAsState()
+    val mobileNumber = scope.mobileNumber.flow.collectAsState()
+    val validPhone = scope.validPhone(mobileNumber.value)
+    val enable = scope.enableButton.flow.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -973,7 +966,7 @@ private fun IocPayNow(
                 hint = stringResource(id = R.string.line_man_name),
                 text = lineManName.value,
                 isValid = true,
-                onValueChange = { sellerScope.updateLineManName(it) },
+                onValueChange = { scope.updateLineManName(it) },
                 mandatory = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -1030,7 +1023,7 @@ private fun IocPayNow(
                         )
                     }
                     total.value = "$modBefore$modAfter"
-                    sellerScope.updateTotalAmount(total.value)
+                    scope.updateTotalAmount(total.value)
                 },
                 mandatory = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -1048,22 +1041,21 @@ private fun IocPayNow(
                     hint = stringResource(id = R.string.phone_number),
                     text = mobileNumber.value,
                     onValueChange = { phoneNumber ->
-                        sellerScope.updatePhoneNumber(phoneNumber.filter { it.isDigit() })
+                        scope.updatePhoneNumber(phoneNumber.filter { it.isDigit() })
                     },
                     mandatory = true,
                     keyboardActions = KeyboardActions(onDone = {
                         keyboardController?.hide()
                     })
                 )
-                //scope.setPhoneNumberValid(isValid)
             }
-            Space(16.dp)
+            Space(26.dp)
 
             MedicoRoundButton(
                 text = stringResource(id = R.string.continue_),
                 isEnabled = enable.value,
                 elevation = null,
-                onClick = { },
+                onClick = { scope.submitPayment(mobileNumber.value.formatIndia()) },
                 contentColor = MaterialTheme.colors.background,
             )
         }
@@ -1076,15 +1068,15 @@ private fun IocPayNow(
 @ExperimentalComposeUiApi
 @Composable
 private fun IocPaymentMethod(
-    sellerScope: IocBuyerScope.IOCPaymentMethod
+    scope: IocBuyerScope.IOCPaymentMethod
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        val items = sellerScope.items.flow.collectAsState()
-        val selected = sellerScope.selected.flow.collectAsState()
+        val items = scope.items.flow.collectAsState()
+        val selected = scope.selected.flow.collectAsState()
         val indexOld = remember { selected.value }
         Space(16.dp)
         LazyColumn(
@@ -1097,7 +1089,7 @@ private fun IocPaymentMethod(
                 items = items.value,
                 itemContent = { index, item ->
                     SelectPaymentOptionItem(item, indexOld == index) {
-                        sellerScope.openPayNow(sellerScope.item, index, item)
+                        scope.openPayNow(scope.item, index, item)
                     }
                 },
             )
@@ -1154,12 +1146,12 @@ fun SelectPaymentOptionItem(
 
                 Text(
                     text = when (item.type) {
-                        IocSellerScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
-                        IocSellerScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
-                        IocSellerScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
-                        IocSellerScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
-                        IocSellerScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
-                        IocSellerScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
+                        IocBuyerScope.PaymentTypes.CASH_IN_HAND.type -> stringResource(id = R.string.cash_in_hand)
+                        IocBuyerScope.PaymentTypes.GOOGLE_PAY.type -> stringResource(id = R.string.g_pay)
+                        IocBuyerScope.PaymentTypes.PHONE_PE.type -> stringResource(id = R.string.phone_pe)
+                        IocBuyerScope.PaymentTypes.AMAZON_PAY.type -> stringResource(id = R.string.amazon_pay)
+                        IocBuyerScope.PaymentTypes.BHIM_UPI.type -> stringResource(id = R.string.upi)
+                        IocBuyerScope.PaymentTypes.PAYTM.type -> stringResource(id = R.string.paytm)
                         else -> stringResource(id = R.string.net_banking)
                     },
                     color = ConstColors.txtGrey,

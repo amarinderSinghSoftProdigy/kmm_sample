@@ -10,6 +10,7 @@ import com.zealsoftsol.medico.data.BatchStatusUpdateRequest
 import com.zealsoftsol.medico.data.BatchUpdateRequest
 import com.zealsoftsol.medico.data.BatchesData
 import com.zealsoftsol.medico.data.BodyResponse
+import com.zealsoftsol.medico.data.BuyerUsersData
 import com.zealsoftsol.medico.data.CartConfirmData
 import com.zealsoftsol.medico.data.CartData
 import com.zealsoftsol.medico.data.CartOrderRequest
@@ -70,6 +71,7 @@ import com.zealsoftsol.medico.data.SearchResponse
 import com.zealsoftsol.medico.data.SellerUsersData
 import com.zealsoftsol.medico.data.StorageKeyResponse
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.SubmitRegistration
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.TokenInfo
@@ -485,7 +487,7 @@ interface NetworkScope {
             unitCode: String,
             search: String?,
             pagination: Pagination
-        ): BodyResponse<SellerUsersData>
+        ): BodyResponse<BuyerUsersData>
 
         suspend fun buyerInvoiceListing(
             unitCode: String,
@@ -494,5 +496,9 @@ interface NetworkScope {
         suspend fun buyerInvoiceDetails(
             invoiceId: String,
         ): BodyResponse<InvoiceDetails>
+
+        suspend fun submitPayment(
+            request: SubmitPaymentRequest,
+        ): BodyResponse<String>
     }
 }

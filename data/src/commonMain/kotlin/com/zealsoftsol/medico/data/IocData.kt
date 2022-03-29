@@ -43,10 +43,11 @@ data class AddInvoice(
 )
 
 @Serializable
-data class InvoiceData(
-    val date: String,
-    val amount: String,
-    val type: String
+data class BuyerUsersData(
+    val totalAmount: FormattedData<Double>,
+    val amountPaid: FormattedData<Double>,
+    val outstandingAmount: FormattedData<Double>,
+    val suppliers: SellerUsersData
 )
 
 
@@ -71,6 +72,7 @@ data class InvUserData(
 data class InvListingData(
     val amountReceived: FormattedData<Double>,
     val outstandingAmount: FormattedData<Double>,
+    val totalAmount: FormattedData<Double>,
     val totalInvoices: Int,
     val buyerDetails: BuyerDetails,
 )
@@ -103,6 +105,7 @@ data class InvoiceDetails(
     val invoiceOutstdAmount: FormattedData<Double>,
     val viewInvoiceUrl: String,
     val invoiceId: String,
+    val viewStatus: String,
     val iocCollections: List<InvContactDetails>
 )
 
@@ -122,6 +125,17 @@ data class UpdateInvoiceRequest(
     val invoiceAmount: Double,
     val paymentType: String,
     val invoiceId: String
+)
+
+@Serializable
+data class SubmitPaymentRequest(
+    val paymentType: String,
+    val invoiceId: String,
+    val sellerUnitCode: String,
+    val lineManName: String,
+    val amount: Double,
+    val mobileNumber: String,
+    val transactionId: String
 )
 
 

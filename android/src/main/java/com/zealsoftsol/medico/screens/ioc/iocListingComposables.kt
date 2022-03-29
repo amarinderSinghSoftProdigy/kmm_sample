@@ -21,7 +21,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -59,12 +58,13 @@ import com.zealsoftsol.medico.screens.search.BasicSearchBar
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-fun IocListingScreen(sellerScope: IocSellerScope, scaffoldState: ScaffoldState) {
+fun IocListingScreen(sellerScope: IocSellerScope) {
     Column(modifier = Modifier.fillMaxSize()) {
         when (sellerScope) {
-            is IocSellerScope.InvUserListing -> InvUserListing(sellerScope)
-            is IocSellerScope.InvListing -> InvListing(sellerScope)
-            is IocSellerScope.InvDetails -> InvDetails(sellerScope)
+            is IocSellerScope.InvUserListing -> InvSellerUserListing(sellerScope)
+            is IocSellerScope.InvListing -> InvSellerListing(sellerScope)
+            is IocSellerScope.InvDetails -> InvSellerDetails(sellerScope)
+            else -> {}
         }
     }
 }
@@ -72,7 +72,7 @@ fun IocListingScreen(sellerScope: IocSellerScope, scaffoldState: ScaffoldState) 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvDetails(sellerScope: IocSellerScope.InvDetails) {
+private fun InvSellerDetails(sellerScope: IocSellerScope.InvDetails) {
     val data = sellerScope.data.flow.collectAsState()
     val items = sellerScope.items.flow.collectAsState()
 
@@ -113,7 +113,7 @@ private fun InvDetails(sellerScope: IocSellerScope.InvDetails) {
                     fontSize = 12.sp,
                 )
                 Text(
-                    text = "Pending",
+                    text = data.value?.viewStatus ?: "",
                     modifier = Modifier.weight(0.5f),
                     color = ConstColors.orange,
                     fontWeight = FontWeight.W600,
@@ -180,7 +180,7 @@ private fun InvDetails(sellerScope: IocSellerScope.InvDetails) {
                                     data.value?.invoiceNo ?: "",
                                     data.value?.invoiceAmount ?: FormattedData("0.0", 0.0),
                                     data.value?.viewInvoiceUrl ?: "",
-                                    "Pending",
+                                    data.value?.viewStatus ?: "",
                                     data.value?.invoiceId ?: "",
                                     data.value?.invoiceDate ?: FormattedData("0", 0L),
                                 ),
@@ -239,8 +239,7 @@ private fun InvDetails(sellerScope: IocSellerScope.InvDetails) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvListing(sellerScope: IocSellerScope.InvListing) {
-    val item = sellerScope.item
+private fun InvSellerListing(sellerScope: IocSellerScope.InvListing) {
     val items = sellerScope.items.flow.collectAsState()
     val data = sellerScope.data.flow.collectAsState()
 
@@ -331,7 +330,7 @@ private fun InvListing(sellerScope: IocSellerScope.InvListing) {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun InvUserListing(sellerScope: IocSellerScope.InvUserListing) {
+private fun InvSellerUserListing(sellerScope: IocSellerScope.InvUserListing) {
     val search = sellerScope.searchText.flow.collectAsState()
     val items = sellerScope.items.flow.collectAsState()
     remember {

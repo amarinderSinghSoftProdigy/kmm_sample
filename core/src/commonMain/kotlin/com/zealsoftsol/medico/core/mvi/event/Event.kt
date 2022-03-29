@@ -46,6 +46,7 @@ import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.SortOption
 import com.zealsoftsol.medico.data.Store
+import com.zealsoftsol.medico.data.SubmitPaymentRequest
 import com.zealsoftsol.medico.data.TaxType
 import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration
@@ -566,9 +567,8 @@ sealed class Event {
         sealed class IOCBuyer : Action() {
             override val typeClazz: KClass<*> = IOCBuyer::class
 
-            data class OpenIOCDetails(val item: BuyerDetailsData) : IOCBuyer()
-            data class OpenPaymentMethod(val item: BuyerDetailsData) : IOCBuyer()
             data class OpenPayNow(val item: BuyerDetailsData,val type: IocBuyerScope.PaymentTypes) : IOCBuyer()
+            data class SubmitPayment(val item: SubmitPaymentRequest) : IOCBuyer()
 
             //Methods for InvUserListing
             data class LoadUsers(val search: String? = null) : IOCBuyer()
@@ -577,9 +577,11 @@ sealed class Event {
 
             //Methods for InvLisitng
             data class LoadInvListing(val unitCode: String) : IOCBuyer()
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOCBuyer()
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
+            data class OpenPaymentMethod(val item: BuyerDetailsData) : IOCBuyer()
         }
     }
 
