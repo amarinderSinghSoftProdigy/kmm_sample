@@ -462,7 +462,7 @@ class ConfirmOrderScope(
     }
 
 
-    val actions = DataSource(listOf(Action.CONFIRM))
+    val actions = DataSource(listOf(Action.PREVIEW))
     val entries = DataSource(acceptedEntries)
     override val checkedEntries = DataSource(emptyList<OrderEntry>())
     val tabs = listOf(Tab.ACCEPTED, Tab.REJECTED)
@@ -486,21 +486,24 @@ class ConfirmOrderScope(
                 rejectedEntries = rejectedEntries - checkedEntries.value
                 refreshEntries()
             }
-            Action.CONFIRM -> {
-                if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
-                    manageDeclineBottomSheetVisibility(true)
-                } else {
-                    if (rejectedEntries.isEmpty()) {
-                        selectedDeclineReason.value = ""
-                    }
-                    val check = emptyList<String>().toMutableList()
-                    acceptedEntries.forEachIndexed { _, value ->
-                        check.add(value.id)
-                    }
-                    selectItem(order.value?.info?.id ?: "", selectedDeclineReason.value, check)
-                    //EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false, selectedDeclineReason.value))
-                }
+            Action.CONFIRM -> previewOrConfirmOrder()
+            Action.PREVIEW -> previewOrConfirmOrder()
+        }
+    }
+
+    private fun previewOrConfirmOrder(){
+        if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
+            manageDeclineBottomSheetVisibility(true)
+        } else {
+            if (rejectedEntries.isEmpty()) {
+                selectedDeclineReason.value = ""
             }
+            val check = emptyList<String>().toMutableList()
+            acceptedEntries.forEachIndexed { _, value ->
+                check.add(value.id)
+            }
+            selectItem(order.value?.info?.id ?: "", selectedDeclineReason.value, check)
+            //EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false, selectedDeclineReason.value))
         }
     }
 
@@ -533,7 +536,7 @@ class ConfirmOrderScope(
     }
 
     /**
-     * update the reason selected for decliening the order entry
+     * update the reason selected for declining the order entry
      */
     fun updateDeclineReason(reason: String) {
         this.selectedDeclineReason.value = reason
@@ -547,7 +550,8 @@ class ConfirmOrderScope(
     ) {
         REJECT("reject_selected", 1f, "#ed5152", "#FFFFFF"),
         ACCEPT("accept_selected", 1f, "#0084D4", "#FFFFFF"),
-        CONFIRM("confirm", 1f, "#FFD600");
+        CONFIRM("confirm", 1f, "#FFD600"),
+        PREVIEW("preview", 1f, "#FFD600")
     }
 
     enum class Tab(val stringId: String, val bgColorHex: String) {
