@@ -32,19 +32,32 @@ internal class IOCBuyerEventDelegate(
         is Event.Action.IOCBuyer.LoadMoreUsers -> loadMoreUsers()
         is Event.Action.IOCBuyer.LoadInvListing -> getRetailerInvoiceListing(event.unitCode)
         is Event.Action.IOCBuyer.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
-        is Event.Action.IOCBuyer.OpenPaymentMethod -> openPaymentMethod(event.item)
-        is Event.Action.IOCBuyer.OpenPayNow -> openPayNow(event.item, event.type)
-        is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item)
+        is Event.Action.IOCBuyer.OpenPaymentMethod -> openPaymentMethod(
+            event.unitCode,
+            event.invoiceId
+        )
+        is Event.Action.IOCBuyer.OpenPayNow -> openPayNow(
+            event.unitCode,
+            event.invoiceId,
+            event.type
+        )
+        is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item, event.mobile)
+        is Event.Action.IOCBuyer.ClearScopes -> clearScopes()
     }
 
-    private suspend fun submitPayment(request: SubmitPaymentRequest) {
+    private fun clearScopes() {
+        navigator.dropScope()
+        navigator.dropScope()
+    }
+
+    private suspend fun submitPayment(request: SubmitPaymentRequest, mobile: String) {
         navigator.withScope<IocBuyerScope.IOCPayNow> {
             navigator.withProgress {
                 networkStoresScope.submitPayment(
                     request
                 )
-            }.onSuccess { body ->
-                it.startOtp(request.mobileNumber)
+            }.onSuccess { _ ->
+                it.startOtp(mobile)
             }.onError(navigator)
         }
     }
@@ -66,18 +79,18 @@ internal class IOCBuyerEventDelegate(
     }
 
 
-    private fun openPayNow(item: BuyerDetailsData, type: IocBuyerScope.PaymentTypes) {
+    private fun openPayNow(unitCode: String, invoiceId: String, type: IocBuyerScope.PaymentTypes) {
         navigator.withScope<IocBuyerScope.IOCPaymentMethod> {
             setScope(
-                IocBuyerScope.IOCPayNow(item, type)
+                IocBuyerScope.IOCPayNow(unitCode, invoiceId, type)
             )
         }
     }
 
-    private fun openPaymentMethod(item: BuyerDetailsData) {
+    private fun openPaymentMethod(unitCode: String, invoiceId: String) {
         navigator.withScope<IocBuyerScope.InvDetails> {
             setScope(
-                IocBuyerScope.IOCPaymentMethod(item)
+                IocBuyerScope.IOCPaymentMethod(unitCode, invoiceId)
             )
         }
     }
@@ -124,13 +137,13 @@ internal class IOCBuyerEventDelegate(
                 search = extraFilters,
                 pagination = pagination,
             ).onSuccess { body ->
-                total.value = body.totalAmount
-                paid.value = body.amountPaid
-                outstand.value = body.outstandingAmount
-                getSliderPosition()
                 if (body.suppliers.totalResults == 0) {
                     items.value = ArrayList()
                 } else {
+                    total.value = body.totalAmount
+                    paid.value = body.amountPaid
+                    outstand.value = body.outstandingAmount
+                    getSliderPosition()
                     pagination.setTotal(body.suppliers.totalResults)
                     items.value =
                         if (!addPage) body.suppliers.results else items.value + body.suppliers.results

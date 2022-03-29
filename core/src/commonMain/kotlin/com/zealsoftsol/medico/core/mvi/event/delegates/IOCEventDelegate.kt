@@ -127,6 +127,8 @@ internal class IOCEventDelegate(
                     is IocSellerScope.InvDetails -> {
                         getInvoiceDetails(sellerScope.item.invoiceId)
                     }
+                    else -> {
+                    }
                 }
 
             }.onError(navigator)

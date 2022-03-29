@@ -172,7 +172,8 @@ sealed class Event {
             object ToggleFilter : Search()
             data class ShowConnectedStockistBottomSheet(val stockist: List<ConnectedStockist>) :
                 Search()
-            data class LoadStockist(val code: String, val imageCode: String): Search()
+
+            data class LoadStockist(val code: String, val imageCode: String) : Search()
         }
 
         sealed class Product : Action() {
@@ -530,6 +531,7 @@ sealed class Event {
         sealed class IOC : Action() {
             override val typeClazz: KClass<*> = IOC::class
 
+            //Create IOC and listing
             data class UploadInvoice(
                 val size: String,
                 val asBase64: String,
@@ -540,35 +542,48 @@ sealed class Event {
             data class Select(val item: RetailerData) : IOC()
             data class Search(val value: String) : IOC()
             object LoadMoreProducts : IOC()
-            data class UpdateIOC(val request: UpdateInvoiceRequest, val sellerScope: IocSellerScope) : IOC()
-            data class OpenEditIOCBottomSheet(
-                val item: BuyerDetailsData, val sellerScope: IocSellerScope
+            data class UpdateIOC(
+                val request: UpdateInvoiceRequest,
+                val sellerScope: IocSellerScope
             ) : IOC()
 
-            data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
             data class ShowUploadBottomSheets(
                 val type: String
             ) : IOC()
 
             data class SubmitInvoice(val value: AddInvoice) : IOC()
 
-            //Methods for InvUserListing
+            //Methods for InvBuyerUserListing
             data class LoadUsers(val search: String? = null) : IOC()
             object LoadMoreUsers : IOC()
             data class OpenIOCListing(val item: InvUserData) : IOC()
             object OpenCreateIOC : IOC()
 
-            //Methods for InvLisitng
+            //Methods for InvBuyerLisitng
             data class LoadInvListing(val unitCode: String) : IOC()
+            data class OpenIOCDetails(val item: BuyerDetailsData) : IOC()
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOC()
+
+            data class OpenEditIOCBottomSheet(
+                val item: BuyerDetailsData, val sellerScope: IocSellerScope
+            ) : IOC()
+
         }
+
         sealed class IOCBuyer : Action() {
             override val typeClazz: KClass<*> = IOCBuyer::class
 
-            data class OpenPayNow(val item: BuyerDetailsData,val type: IocBuyerScope.PaymentTypes) : IOCBuyer()
-            data class SubmitPayment(val item: SubmitPaymentRequest) : IOCBuyer()
+            //Methods for Pay now
+            data class OpenPayNow(
+                val unitCode: String,
+                val invoiceId: String,
+                val type: IocBuyerScope.PaymentTypes
+            ) : IOCBuyer()
+
+            data class SubmitPayment(val item: SubmitPaymentRequest, val mobile: String) :
+                IOCBuyer()
 
             //Methods for InvUserListing
             data class LoadUsers(val search: String? = null) : IOCBuyer()
@@ -581,7 +596,9 @@ sealed class Event {
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
-            data class OpenPaymentMethod(val item: BuyerDetailsData) : IOCBuyer()
+            data class OpenPaymentMethod(val unitCode: String, val invoiceId: String) : IOCBuyer()
+
+            object ClearScopes : IOCBuyer()
         }
     }
 

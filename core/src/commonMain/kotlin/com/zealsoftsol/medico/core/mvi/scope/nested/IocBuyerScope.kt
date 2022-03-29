@@ -76,7 +76,8 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val data: DataSource<InvListingData?> = DataSource(null)
         val slider: DataSource<Float> = DataSource(0f)
 
-        init {
+
+        fun loadData(){
             EventCollector.sendEvent(Event.Action.IOCBuyer.LoadInvListing(item.unitCode))
         }
 
@@ -100,26 +101,23 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val data: DataSource<InvoiceDetails?> = DataSource(null)
         val items: DataSource<List<InvContactDetails>> = DataSource(emptyList())
 
-        init {
-            loadData(item.invoiceId)
-        }
-
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.OnlyBackHeader(title = item.tradeName)
         }
 
-        fun openPaymentMethod(item: BuyerDetailsData) {
-            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPaymentMethod(item))
+        fun openPaymentMethod(unitCode: String, invoiceId: String) {
+            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPaymentMethod(unitCode, invoiceId))
         }
 
-        private fun loadData(invoiceId: String) {
+        fun loadData(invoiceId: String) {
             EventCollector.sendEvent(Event.Action.IOCBuyer.LoadInvDetails(invoiceId))
         }
 
     }
 
 
-    class IOCPaymentMethod(val item: BuyerDetailsData) : IocBuyerScope(), CommonScope.CanGoBack {
+    class IOCPaymentMethod(val unitCode: String, val invoiceId: String) : IocBuyerScope(),
+        CommonScope.CanGoBack {
         val items: DataSource<List<PaymentTypes>> = DataSource(emptyList())
         val selected: DataSource<Int> = DataSource(-1)
 
@@ -127,9 +125,9 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             items.value = paymentTypesCash
         }
 
-        fun openPayNow(item: BuyerDetailsData, index: Int, type: PaymentTypes) {
+        fun openPayNow(unitCode: String, invoiceId: String, index: Int, type: PaymentTypes) {
             selected.value = index
-            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPayNow(item, type))
+            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenPayNow(unitCode, invoiceId, type))
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -137,8 +135,9 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
     }
 
-    class IOCPayNow(val item: BuyerDetailsData, val method: PaymentTypes) : IocBuyerScope(),
-        CommonScope.CanGoBack {
+    class IOCPayNow(val unitCode: String, val invoiceId: String, val method: PaymentTypes) :
+        IocBuyerScope(),
+        CommonScope.CanGoBack, CommonScope.PhoneVerificationEntryPoint {
 
         val enableButton: DataSource<Boolean> = DataSource(false)
         val lineManName: DataSource<String> = DataSource("")
@@ -171,14 +170,14 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
             validate()
         }
 
-        fun submitPayment(phoneNumber: String) {
+        fun submitPayment(phoneNumber: String, deviceId: String) {
             val request = SubmitPaymentRequest(
-                method.type, item.invoiceId,
-                item.unitCode, lineManName.value,
+                method.type, invoiceId,
+                unitCode, lineManName.value,
                 totalAmount.value.toDouble(),
-                phoneNumber, ""
+                mobileNumber.value, deviceId
             )
-            EventCollector.sendEvent(Event.Action.IOCBuyer.SubmitPayment(request))
+            EventCollector.sendEvent(Event.Action.IOCBuyer.SubmitPayment(request, phoneNumber))
         }
 
 

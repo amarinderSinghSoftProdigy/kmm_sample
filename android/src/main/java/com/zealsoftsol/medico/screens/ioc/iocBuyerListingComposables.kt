@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.ioc
 
 import android.annotation.SuppressLint
+import android.provider.Settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -87,6 +89,7 @@ fun IocBuyerListingScreen(scope: IocBuyerScope) {
     }
 }
 
+@SuppressLint("RememberReturnType")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -94,6 +97,9 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
     val data = scope.data.flow.collectAsState()
     val items = scope.items.flow.collectAsState()
 
+    remember {
+        scope.loadData(scope.item.invoiceId)
+    }
     Box(
         modifier = Modifier.background(Color.White)
     ) {
@@ -216,7 +222,12 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
                 text = stringResource(id = R.string.pay_now),
                 isEnabled = true,
                 elevation = null,
-                onClick = { scope.openPaymentMethod(scope.item) },
+                onClick = {
+                    scope.openPaymentMethod(
+                        data.value?.unitCode ?: "",
+                        data.value?.invoiceId ?: ""
+                    )
+                },
                 contentColor = MaterialTheme.colors.background,
                 wrapTextSize = true,
             )
@@ -224,6 +235,7 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
     }
 }
 
+@SuppressLint("RememberReturnType")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -231,7 +243,9 @@ private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
     val items = scope.items.flow.collectAsState()
     val data = scope.data.flow.collectAsState()
     val slider = scope.slider.flow.collectAsState()
-
+    remember {
+        scope.loadData()
+    }
     Column {
 
         Surface(
@@ -263,7 +277,7 @@ private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
                             .weight(0.33f),
                     ) {
                         Text(
-                            text = data.value?.totalAmount?.formatted ?: "",
+                            text = data.value?.totalAmount?.formatted ?: "0.0",
                             color = Color.White,
                             fontWeight = FontWeight.W700,
                             fontSize = 16.sp,
@@ -288,7 +302,7 @@ private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
 
 
                         Text(
-                            text = data.value?.amountReceived?.formatted ?: "",
+                            text = data.value?.amountReceived?.formatted ?: "0.0",
                             color = Color.White,
                             fontWeight = FontWeight.W700,
                             fontSize = 16.sp,
@@ -310,7 +324,7 @@ private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
                             .weight(0.33f),
                     ) {
                         Text(
-                            text = data.value?.outstandingAmount?.formatted ?: "",
+                            text = data.value?.outstandingAmount?.formatted ?: "0.0",
                             color = Color.White,
                             fontWeight = FontWeight.W600,
                             modifier = Modifier.fillMaxWidth(),
@@ -457,7 +471,7 @@ private fun InvBuyerUserListing(scope: IocBuyerScope.InvUserListing) {
                                 .weight(0.33f),
                         ) {
                             Text(
-                                text = total.value?.formatted ?: "",
+                                text = total.value?.formatted ?: "0.0",
                                 color = Color.White,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 16.sp,
@@ -482,7 +496,7 @@ private fun InvBuyerUserListing(scope: IocBuyerScope.InvUserListing) {
 
 
                             Text(
-                                text = paid.value?.formatted ?: "",
+                                text = paid.value?.formatted ?: "0.0",
                                 color = Color.White,
                                 fontWeight = FontWeight.W700,
                                 fontSize = 16.sp,
@@ -504,7 +518,7 @@ private fun InvBuyerUserListing(scope: IocBuyerScope.InvUserListing) {
                                 .weight(0.33f),
                         ) {
                             Text(
-                                text = outstand.value?.formatted ?: "",
+                                text = outstand.value?.formatted ?: "0.0",
                                 color = Color.White,
                                 fontWeight = FontWeight.W600,
                                 modifier = Modifier.fillMaxWidth(),
@@ -933,7 +947,7 @@ fun BuyerPaymentOptionItem(
     }
 }
 
-@SuppressLint("SimpleDateFormat")
+@SuppressLint("SimpleDateFormat", "HardwareIds")
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
@@ -1050,12 +1064,18 @@ private fun IocPayNow(
                 )
             }
             Space(26.dp)
-
+            val context = LocalContext.current
+            val id = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             MedicoRoundButton(
                 text = stringResource(id = R.string.continue_),
                 isEnabled = enable.value,
                 elevation = null,
-                onClick = { scope.submitPayment(mobileNumber.value.formatIndia()) },
+                onClick = {
+                    scope.submitPayment(
+                        mobileNumber.value.formatIndia(),
+                        id
+                    )
+                },
                 contentColor = MaterialTheme.colors.background,
             )
         }
@@ -1089,7 +1109,7 @@ private fun IocPaymentMethod(
                 items = items.value,
                 itemContent = { index, item ->
                     SelectPaymentOptionItem(item, indexOld == index) {
-                        scope.openPayNow(scope.item, index, item)
+                        scope.openPayNow(scope.unitCode, scope.invoiceId, index, item)
                     }
                 },
             )
