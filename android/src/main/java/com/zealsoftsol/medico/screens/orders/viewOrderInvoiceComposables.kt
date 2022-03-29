@@ -102,20 +102,19 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                     )
                                 },
                                 color = Color.Black,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
-
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.type))
+                                    append(stringResource(id = R.string.status))
                                     append(": ")
                                     val startIndex = length
-                                    append(order.value?.info?.paymentMethod ?: "")
+                                    append(orderTaxValue.info.orderStatus.toString())
                                     addStyle(
                                         SpanStyle(
-                                            color = ConstColors.green,
+                                            color = Color.Black,
                                             fontWeight = FontWeight.W600
                                         ),
                                         startIndex,
@@ -123,26 +122,70 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                     )
                                 },
                                 color = Color.Black,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
+
                             Space(5.dp)
+
+                            Row(verticalAlignment = Alignment.CenterVertically){
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.type))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.paymentMethod)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.green,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                            }
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = orderTaxValue.info.orderDate,
                                 color = Color.Gray,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
                             Text(
                                 text = orderTaxValue.info.orderTime,
                                 color = Color.Gray,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.discount))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.discount.formatted ?: "0.0")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                            }
                         }
                     }
                     Space(8.dp)
