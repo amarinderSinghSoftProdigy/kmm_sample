@@ -20,16 +20,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -38,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +46,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -112,9 +110,9 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     .clickable(
                         indication = null,
                         onClick = {
-                            if(showSearchBar.value){
+                            if (showSearchBar.value) {
                                 showSearchBar.value = false
-                            }else{
+                            } else {
                                 scope.goBack()
                             }
                         }
@@ -124,44 +122,56 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(45.dp)
                         .padding(start = 10.dp)
-                        .padding(end = 40.dp),
+                        .padding(end = 45.dp)
+                        .align(CenterVertically),
                     shape = RoundedCornerShape(3.dp),
-                    elevation = 5.dp
+                    elevation = 3.dp,
+                    color = Color.White
                 ) {
-                    TextField(
-                        modifier = Modifier.height(48.dp),
-                        value = searchTerm.value,
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.White,
-                            textColor = Color.Black,
-                            placeholderColor = Color.Black,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                        onValueChange = {
+                    Row(
+                        modifier = Modifier
+                            .height(45.dp)
+                            .fillMaxWidth(), verticalAlignment = CenterVertically
+                    ) {
+                        BasicTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 5.dp),
+                            value = searchTerm.value,
+                            maxLines = 1,
+                            singleLine = true,
+                            onValueChange = {
+                                    searchTerm.value = it
 
-                            searchTerm.value = it
+                                    queryTextChangedJob?.cancel()
 
-                            queryTextChangedJob?.cancel()
-
-                            queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                delay(500)
-                                scope.startSearch(it)
+                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                        delay(500)
+                                        scope.startSearch(it)
+                                    }
+                            },
+                            textStyle = LocalTextStyle.current.copy(
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                background = Color.White,
+                            ),
+                            decorationBox = { innerTextField ->
+                                Row(modifier = Modifier) {
+                                    if (searchTerm.value.isEmpty()) {
+                                        Text(
+                                            text = stringResource(id = R.string.search_inventory),
+                                            color = Color.Gray,
+                                            fontSize = 14.sp,
+                                            maxLines = 1,
+                                        )
+                                    }
+                                }
+                                innerTextField()
                             }
-                        },
-                        placeholder = {
-                            Text(
-                                stringResource(id = R.string.search_inventory),
-                                color = Color.Gray,
-                                fontSize = 14.sp
-                            )
-                        },
-                        maxLines = 1
-                    )
+                        )
+                    }
                 }
             }
 
@@ -262,7 +272,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
             }
         }
 
-        if(showManufacturers.value){
+        if (showManufacturers.value) {
             Space(10.dp)
             LazyRow(
                 contentPadding = PaddingValues(start = 3.dp),

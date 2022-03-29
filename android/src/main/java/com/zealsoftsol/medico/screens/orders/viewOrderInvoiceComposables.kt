@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.screens.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -36,7 +38,6 @@ import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.BuyingOption
 import com.zealsoftsol.medico.data.OrderEntry
-import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
@@ -47,9 +48,19 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
     val order = scope.orderTax.flow.collectAsState()
     val b2bData = scope.b2bData.flow.collectAsState()
     val entries = scope.entries.flow.collectAsState()
-    val declineReasons = scope.declineReason.flow.collectAsState()
+    val declineReasonCode = scope.declineReasonCode.flow.collectAsState()
     val openDialog = scope.showAlert.flow.collectAsState()
     val selectedId = scope.selectedId.flow.collectAsState()
+    var declineReason = ""
+
+    run reason@{
+        scope.declineReasons.forEach {
+            if (declineReasonCode.value == it.code) {
+                declineReason = it.name
+                return@reason
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -91,20 +102,19 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                     )
                                 },
                                 color = Color.Black,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
-
                             Text(
                                 text = buildAnnotatedString {
-                                    append(stringResource(id = R.string.type))
+                                    append(stringResource(id = R.string.status))
                                     append(": ")
                                     val startIndex = length
-                                    append(order.value?.info?.paymentMethod ?: "")
+                                    append(orderTaxValue.info.orderStatus.toString())
                                     addStyle(
                                         SpanStyle(
-                                            color = ConstColors.green,
+                                            color = Color.Black,
                                             fontWeight = FontWeight.W600
                                         ),
                                         startIndex,
@@ -112,26 +122,70 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                     )
                                 },
                                 color = Color.Black,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
+
                             Space(5.dp)
+
+                            Row(verticalAlignment = Alignment.CenterVertically){
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.type))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.paymentMethod)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.green,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                            }
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = orderTaxValue.info.orderDate,
                                 color = Color.Gray,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
                             Text(
                                 text = orderTaxValue.info.orderTime,
                                 color = Color.Gray,
-                                fontWeight = FontWeight.Normal,
+                                fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                             )
                             Space(5.dp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.discount))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.discount.formatted ?: "0.0")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                            }
                         }
                     }
                     Space(8.dp)
@@ -150,6 +204,7 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                         scope.changeSelectedItem(it.id)
                                         scope.openBottomSheet(it, scope)
                                     },
+                                    declineReason = declineReason
                                 )
                                 Space(8.dp)
                             }
@@ -167,8 +222,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                                 scope.openBottomSheet(
                                     orderDetails = null,
                                     orderTaxDetails = order.value?.info,
-                                    if (declineReasons.value.isNotEmpty()) {
-                                        declineReasons.value
+                                    if (declineReasonCode.value.isNotEmpty()) {
+                                        declineReasonCode.value
                                     } else {
                                         ""
                                     },
@@ -213,8 +268,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
                             isEnabled = true,
                             onClick = {
                                 scope.confirm(
-                                    if (declineReasons.value.isNotEmpty()) {
-                                        declineReasons.value
+                                    if (declineReasonCode.value.isNotEmpty()) {
+                                        declineReasonCode.value
                                     } else {
                                         ""
                                     }
@@ -235,7 +290,8 @@ fun ViewOrderInvoiceScreen(scope: ViewOrderInvoiceScope) {
 private fun OrderInvoiceEntryItem(
     entry: OrderEntry,
     onClick: () -> Unit,
-    selectedId: String = ""
+    selectedId: String = "",
+    declineReason: String
 ) {
     Surface(
         elevation = 5.dp,
@@ -245,13 +301,17 @@ private fun OrderInvoiceEntryItem(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         color = Color.White,
-        border = when (selectedId) {
-            entry.id -> BorderStroke(
+        border = when {
+            entry.buyingOption == BuyingOption.QUOTE -> BorderStroke(
                 1.dp,
-                ConstColors.gray,
+                ConstColors.gray.copy(alpha = 0.5f),
+            )
+            entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED -> BorderStroke(
+                1.dp,
+                ConstColors.red,
             )
             else -> null
-        },
+        }
     ) {
         Column {
             Row(
@@ -374,12 +434,22 @@ private fun OrderInvoiceEntryItem(
                                         append(": ")
                                         val startIndex = length
                                         append(entry.totalAmount.formatted)
+                                        val nextIndex = length
                                         addStyle(
                                             SpanStyle(
                                                 color = Color.Black,
                                                 fontWeight = FontWeight.W500
                                             ),
                                             startIndex,
+                                            length,
+                                        )
+                                        append("*")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.lightBlue,
+                                                fontWeight = FontWeight.W500
+                                            ),
+                                            nextIndex,
                                             length,
                                         )
                                     },
@@ -434,6 +504,81 @@ private fun OrderInvoiceEntryItem(
                 }
 
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp)
+                    .padding(start = 8.dp, end = 35.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.required_qty))
+                        append(": ")
+                        val startIndex = length
+                        append(entry.requestedQty.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = ConstColors.red,
+                                fontWeight = FontWeight.W500
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Text(
+                    text = buildAnnotatedString {
+                        append(stringResource(id = R.string.serve_qty))
+                        append(": ")
+                        val startIndex = length
+                        append(entry.servedQty.formatted)
+                        addStyle(
+                            SpanStyle(
+                                color = ConstColors.green,
+                                fontWeight = FontWeight.W500
+                            ),
+                            startIndex,
+                            length,
+                        )
+                    },
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp), onDraw = {
+                            drawCircle(color = Color.Red)
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                        text = "${stringResource(id = R.string.declined)} - $declineReason",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.W500,
+                    )
+                }
+            }
+
         }
 
     }

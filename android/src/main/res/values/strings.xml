@@ -420,6 +420,9 @@
     <string name="regenerate_code">Regenerate Code</string>
     <string name="no_stockist">No Stockist found</string>
     <string name="global_search">Global Search</string>
+    <string name="declined">Declined</string>
+    <string name="required_qty">Required Qty</string>
+    <string name="serve_qty">Served Qty</string>
     <string name="create_debt">Create IOC</string>
     <string name="enter_invoice_no">Invoice No.</string>
     <string name="enter_invoice_date">Invoice Date</string>

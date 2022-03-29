@@ -163,13 +163,15 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Orders -> setScope(
                     OrdersScope(
                         listOf(OrdersScope.Tab.ORDERS),
-                        notificationRepo.getUnreadMessagesDataSource()
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.PoOrdersAndHistory -> setScope(
                     OrdersScope(
                         listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS),
-                        notificationRepo.getUnreadMessagesDataSource()
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.MyInvoices -> setScope(
