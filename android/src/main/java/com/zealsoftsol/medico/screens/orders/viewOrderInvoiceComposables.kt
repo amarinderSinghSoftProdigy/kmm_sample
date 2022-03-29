@@ -504,28 +504,6 @@ private fun OrderInvoiceEntryItem(
                 }
 
             }
-            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 10.dp, bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Canvas(
-                        modifier = Modifier
-                            .size(8.dp), onDraw = {
-                            drawCircle(color = Color.Red)
-                        }
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
-                        text = "${stringResource(id = R.string.declined)} - $declineReason",
-                        color = Color.Black,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.W500,
-                    )
-                }
-            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -577,6 +555,30 @@ private fun OrderInvoiceEntryItem(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
+
+            if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Canvas(
+                        modifier = Modifier
+                            .size(8.dp), onDraw = {
+                            drawCircle(color = Color.Red)
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                        text = "${stringResource(id = R.string.declined)} - $declineReason",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.W500,
+                    )
+                }
+            }
+
         }
 
     }
