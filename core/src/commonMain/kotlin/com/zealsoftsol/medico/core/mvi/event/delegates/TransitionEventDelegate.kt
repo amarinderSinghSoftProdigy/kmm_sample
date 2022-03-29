@@ -32,7 +32,6 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.getDashboardDataSource
 import com.zealsoftsol.medico.core.repository.getEntriesCountDataSource
 import com.zealsoftsol.medico.core.repository.getUnreadMessagesDataSource
-import com.zealsoftsol.medico.core.repository.getUserDataSource
 import com.zealsoftsol.medico.core.repository.getUserDataSourceV2
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.repository.requireUserOld
@@ -162,13 +161,15 @@ internal class TransitionEventDelegate(
                 is Event.Transition.Orders -> setScope(
                     OrdersScope(
                         listOf(OrdersScope.Tab.ORDERS),
-                        notificationRepo.getUnreadMessagesDataSource()
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.PoOrdersAndHistory -> setScope(
                     OrdersScope(
                         listOf(OrdersScope.Tab.PO_ORDERS, OrdersScope.Tab.HISTORY_ORDERS),
-                        notificationRepo.getUnreadMessagesDataSource()
+                        notificationRepo.getUnreadMessagesDataSource(),
+                        cartRepo.getEntriesCountDataSource()
                     )
                 )
                 is Event.Transition.MyInvoices -> setScope(

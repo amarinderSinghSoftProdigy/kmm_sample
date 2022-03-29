@@ -302,6 +302,7 @@ sealed class Event {
                 val orderId: String,
                 val acceptedEntries: List<String>,
                 val reasonCode: String? = null,
+                val declineReasons: List<DeclineReason>
             ) : Orders()
 
             data class ToggleCheckEntry(val entry: OrderEntry) : Orders()

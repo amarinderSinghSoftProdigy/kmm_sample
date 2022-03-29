@@ -28,10 +28,17 @@ import com.zealsoftsol.medico.data.TaxType
 
 class OrdersScope(
     val tabs: List<Tab>, val unreadNotifications: ReadOnlyDataSource<Int>,
-) : Scope.Child.TabBar(), Loadable<Order> {
+    private val cartItemsCount: ReadOnlyDataSource<Int>,
 
-    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) =
-        TabBarInfo.NoIconTitle("", unreadNotifications)
+    ) : Scope.Child.TabBar(), Loadable<Order> {
+
+    override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
+        return TabBarInfo.NoIconTitle(
+            title = "",
+            notificationItemsCount = unreadNotifications,
+            cartItemsCount = cartItemsCount
+        )
+    }
 
     override val isRoot: Boolean = false
 
@@ -306,7 +313,8 @@ class ViewOrderInvoiceScope(
     var orderTax: DataSource<OrderTaxInvoice?>,
     var b2bData: DataSource<B2BData?>,
     var entries: DataSource<List<OrderEntry>>,
-    var declineReason: DataSource<String>,
+    var declineReasonCode: DataSource<String>,
+    val declineReasons: List<DeclineReason>
 ) : Scope.Child.TabBar(), CommonScope.WithNotifications {
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
     val showAlert: DataSource<Boolean> = DataSource(false)
@@ -565,7 +573,8 @@ class ConfirmOrderScope(
     fun selectItem(orderId: String, reasonCode: String, entires: List<String>) {
         EventCollector.sendEvent(
             Event.Action.Orders.ViewOrderInvoiceAction(
-                orderId = orderId, reasonCode = reasonCode, acceptedEntries = entires
+                orderId = orderId, reasonCode = reasonCode, acceptedEntries = entires,
+                declineReasons = declineReason.value
             )
         )
     }
