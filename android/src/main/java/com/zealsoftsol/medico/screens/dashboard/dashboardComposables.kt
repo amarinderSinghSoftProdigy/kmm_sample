@@ -375,6 +375,7 @@ private fun ShowStockistDashBoard(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
     ) {

@@ -159,9 +159,9 @@ class ViewOrderScope(
 
     }
 
-    override val checkedEntries = DataSource(listOf<OrderEntry>())
+    override var checkedEntries = DataSource(listOf<OrderEntry>())
     override val notifications: DataSource<ScopeNotification?> = DataSource(null)
-    val actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
+    var actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
     val showAlert: DataSource<Boolean> = DataSource(false)
     val showPaymentTypeOption: DataSource<Boolean> = DataSource(false)
     val showEditDiscountOption: DataSource<Boolean> = DataSource(false)
@@ -172,13 +172,16 @@ class ViewOrderScope(
      * get the details of selected order
      */
 
-    fun updateData() =
+    fun updateData() {
+        actions = DataSource(listOf(Action.REJECT_ALL, Action.ACCEPT_ALL))
+        checkedEntries = DataSource(emptyList())
         EventCollector.sendEvent(
             Event.Action.Orders.GetOrderDetails(
                 orderId,
                 typeInfo
             )
         )
+    }
 
     /**
      * update the scope of payment option dialog
@@ -463,7 +466,7 @@ class ConfirmOrderScope(
 
 
     val actions = DataSource(listOf(Action.PREVIEW))
-    val entries = DataSource(acceptedEntries)
+    val entries = DataSource(acceptedEntries + rejectedEntries)
     override val checkedEntries = DataSource(emptyList<OrderEntry>())
     val tabs = listOf(Tab.ACCEPTED, Tab.REJECTED)
     val activeTab = DataSource(Tab.ACCEPTED)
@@ -491,7 +494,7 @@ class ConfirmOrderScope(
         }
     }
 
-    private fun previewOrConfirmOrder(){
+    private fun previewOrConfirmOrder() {
         if (rejectedEntries.isNotEmpty() && selectedDeclineReason.value.isEmpty()) {
             manageDeclineBottomSheetVisibility(true)
         } else {
@@ -505,6 +508,13 @@ class ConfirmOrderScope(
             selectItem(order.value?.info?.id ?: "", selectedDeclineReason.value, check)
             //EventCollector.sendEvent(Event.Action.Orders.Confirm(fromNotification = false, selectedDeclineReason.value))
         }
+    }
+
+    /**
+     * check if the order entry is declined
+     */
+    fun ifIsDeclinedEntry(orderEntry: OrderEntry): Boolean {
+        return orderEntry in rejectedEntries
     }
 
     fun selectTab(tab: Tab) {

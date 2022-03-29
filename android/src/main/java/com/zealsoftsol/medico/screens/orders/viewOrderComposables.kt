@@ -1,5 +1,6 @@
 package com.zealsoftsol.medico.screens.orders
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -61,6 +62,7 @@ import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.stringResourceByName
 
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun ViewOrderScreen(scope: ViewOrderScope) {
 
@@ -433,7 +435,7 @@ fun ShowEditDiscountDropDown(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 16.dp),
-                        value = discountValue.value.toString(),
+                        value = discountValue.value,
                         onValueChange = {
                             if (it.toDoubleOrNull() != null && it.length < 6) {
                                 if (it.toDouble() <= 100)
@@ -485,7 +487,8 @@ fun OrderEntryItem(
     entry: OrderEntry,
     onChecked: ((Boolean) -> Unit)? = null,
     onClick: () -> Unit,
-    showDetails: Boolean = false
+    showDetails: Boolean = false,
+    isConfirmOrderScope: Boolean = false,
 ) {
     Surface(
         elevation = 5.dp,
@@ -681,13 +684,37 @@ fun OrderEntryItem(
 
                 }
             }
+            if (isConfirmOrderScope && (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED)) {
+                if (entry.status == OrderEntry.Status.REJECTED || entry.status == OrderEntry.Status.DECLINED) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Canvas(
+                            modifier = Modifier
+                                .size(8.dp), onDraw = {
+                                drawCircle(color = Color.Red)
+                            }
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                            text = stringResource(id = R.string.declined),
+                            color = Color.Black,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.W500,
+                        )
+                    }
+                }
+            }
         }
 
     }
 }
 
 /**
- * check if order entry contains any entry that is required for acceptance but is emtpty
+ * check if order entry contains any entry that is required for acceptance but is empty
  */
 
 fun checkOrderEntryValidation(entry: OrderEntry): Boolean {

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +39,7 @@ import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -178,76 +178,33 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
                             }
                         }
                     }
-                    Space(20.dp)
-                    Text(
+                    Space(10.dp)
+                    /*Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         text = stringResource(id = R.string.action_confirmation),
                         color = MaterialTheme.colors.background,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W700,
-                    )
-                    Space(15.dp)
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .height(41.dp)
-                            .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
-                    ) {
-                        scope.tabs.forEach {
-                            var boxMod = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                            boxMod = if (scope.tabs.size == 1) {
-                                boxMod
-                            } else {
-                                boxMod
-                                    .padding(5.dp)
-                                    .clickable { scope.selectTab(it) }
-                            }
-                            val isActive = activeTab.value == it
-                            boxMod = if (isActive) {
-                                boxMod.background(
-                                    Color(activeTab.value.bgColorHex.toColorInt()),
-                                    MaterialTheme.shapes.medium
-                                )
-                            } else {
-                                boxMod
-                            }
-                            Row(
-                                modifier = boxMod,
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    text = stringResourceByName(it.stringId),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = if (isActive) Color.White else MaterialTheme.colors.background,
-                                )
-                                if (isActive && entries.value.isNotEmpty()) {
-                                    Space(6.dp)
-                                    Text(
-                                        text = entries.value.size.toString(),
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W700,
-                                        color = ConstColors.yellow,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    )*/
+                    Divider()
+                    Space(10.dp)
                     Column(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     ) {
                         Space(8.dp)
                         entries.value.forEach {
+                            if(scope.ifIsDeclinedEntry(it)){
+                                it.status = OrderEntry.Status.DECLINED
+                            }else{
+                                it.status = OrderEntry.Status.ACCEPTED
+                            }
                             OrderEntryItem(
-                                canEdit = true,
+                                canEdit = false,
                                 entry = it,
                                 isChecked = it in checkedEntries.value,
                                 onChecked = { _ -> scope.toggleCheck(it) },
                                 onClick = { },
+                                isConfirmOrderScope = true,
                             )
                         }
                         Space(8.dp)
