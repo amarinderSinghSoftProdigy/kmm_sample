@@ -158,6 +158,25 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
                     )
 
                 }
+
+                Space(4.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(id = R.string.out_amount))
+                            append(" ")
+                            append(data.value?.invoiceOutstdAmount?.formatted ?: "")
+                        },
+                        color = ConstColors.marron,
+                        fontWeight = FontWeight.W600,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
                 Space(8.dp)
                 Divider(thickness = 0.5.dp)
                 Space(8.dp)
