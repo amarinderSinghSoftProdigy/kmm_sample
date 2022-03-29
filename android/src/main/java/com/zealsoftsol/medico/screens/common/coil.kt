@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.CachePolicy
 import com.zealsoftsol.medico.utils.ZoomableImage
 
 @OptIn(ExperimentalCoilApi::class)
@@ -22,7 +23,7 @@ fun CoilImage(
     onError: @Composable (() -> Unit)? = null,
     onLoading: @Composable (() -> Unit)? = null,
 ) {
-    val painter = rememberImagePainter(src, builder = { crossfade(isCrossFadeEnabled) })
+    val painter = rememberImagePainter(src, builder = {  memoryCachePolicy(policy = CachePolicy.ENABLED) })
     Box(Modifier.size(size), contentAlignment = Alignment.Center) {
         Image(
             painter = painter,
@@ -46,7 +47,7 @@ fun CoilImage(
     onError: @Composable (() -> Unit)? = null,
     onLoading: @Composable (() -> Unit)? = null,
 ) {
-    val painter = rememberImagePainter(src, builder = { crossfade(isCrossFadeEnabled) })
+    val painter = rememberImagePainter(src, builder = {  memoryCachePolicy(policy = CachePolicy.ENABLED)})
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Image(
             contentScale = ContentScale.FillBounds,
@@ -71,7 +72,7 @@ fun CoilImageZoom(
     onError: @Composable (() -> Unit)? = null,
     onLoading: @Composable (() -> Unit)? = null,
 ) {
-    val painter = rememberImagePainter(src, builder = { crossfade(isCrossFadeEnabled) })
+    val painter = rememberImagePainter(src, builder = { memoryCachePolicy(policy = CachePolicy.ENABLED) })
     Box(Modifier.size(size), contentAlignment = Alignment.Center) {
         ZoomableImage(
             painter = painter,
