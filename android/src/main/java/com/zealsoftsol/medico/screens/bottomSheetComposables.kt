@@ -329,7 +329,9 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                                     .padding(start = 16.dp, top = 5.dp)
                             ) {
                                 Image(
-                                    painter = if(item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(id = R.drawable.ic_not_connected),
+                                    painter = if (item.connected) painterResource(id = R.drawable.ic_connected) else painterResource(
+                                        id = R.drawable.ic_not_connected
+                                    ),
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(25.dp)
@@ -344,7 +346,8 @@ private fun ShowConnectedStockist(stockist: List<ConnectedStockist>, onDismiss: 
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 16.dp).padding(bottom = 5.dp),
+                                    .padding(start = 16.dp)
+                                    .padding(bottom = 5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -2635,7 +2638,8 @@ private fun EditBatchItemBottomSheet(
                                         .padding(end = 10.dp),
                                     value = batchNo.value,
                                     onValueChange = {
-                                        info.updateBatch(it)
+                                        if (it.length <= 20)
+                                            info.updateBatch(it)
                                     },
                                     maxLines = 1,
                                     singleLine = true,
