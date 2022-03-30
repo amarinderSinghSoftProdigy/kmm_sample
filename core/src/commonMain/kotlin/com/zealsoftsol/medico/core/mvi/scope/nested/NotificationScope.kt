@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.NotificationAction
@@ -20,6 +21,8 @@ sealed class NotificationScope : Scope.Child.TabBar() {
         override val searchText: DataSource<String> = DataSource(""),
         val filter: DataSource<NotificationFilter> = DataSource(NotificationFilter.ALL),
     ) : NotificationScope(), Loadable<NotificationData> {
+
+        override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("notifications")
 
         val allFilters: List<NotificationFilter> = NotificationFilter.values().toList()
 

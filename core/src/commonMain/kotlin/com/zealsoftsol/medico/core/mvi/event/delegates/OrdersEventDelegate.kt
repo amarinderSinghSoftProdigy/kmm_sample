@@ -56,7 +56,7 @@ internal class OrdersEventDelegate(
             event.orderDetails, event.scope
         )
         is Event.Action.Orders.ViewOrderInvoiceAction -> viewOrderInvoiceAction(
-            event.orderId, event.acceptedEntries, event.reasonCode
+            event.orderId, event.acceptedEntries, event.reasonCode, event.declineReasons
         )
         is Event.Action.Orders.SelectEntry -> selectEntry(
             event.taxType,
@@ -209,6 +209,7 @@ internal class OrdersEventDelegate(
         orderId: String,
         acceptedEntries: List<String>,
         reasonCode: String? = null,
+        declineReason: List<DeclineReason>,
     ) {
         navigator.withScope<Scopable> {
             withProgress {
@@ -227,7 +228,8 @@ internal class OrdersEventDelegate(
                         orderTax = DataSource(body.order),
                         b2bData = DataSource(body.unitData.data),
                         entries = DataSource(body.entries),
-                        declineReason = DataSource(reasonCode ?: "")
+                        declineReasonCode = DataSource(reasonCode ?: ""),
+                        declineReasons = declineReason
                     )
                 )
             }.onError(navigator)

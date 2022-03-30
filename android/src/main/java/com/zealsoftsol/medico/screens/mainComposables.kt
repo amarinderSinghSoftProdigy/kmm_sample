@@ -806,45 +806,52 @@ private fun NoIconHeader(
                 contentDescription = null
             )
         }
-        if (scope.childScope.flow.collectAsState().value is StoresScope) {
-            Box(modifier = Modifier.weight(0.7f))
-        } else if (scope.childScope.flow.collectAsState().value is InStoreSellerScope) {
-            Row(modifier = Modifier.weight(0.7f)) {
-                val scopeCustom = scope.childScope.flow.collectAsState().value as InStoreSellerScope
-                BasicSearchBar(
-                    start = 0.dp,
-                    input = scopeCustom.searchText.flow.collectAsState().value,
-                    hint = R.string.search_tradename,
-                    searchBarEnd = SearchBarEnd.Eraser,
-                    icon = Icons.Default.Search,
-                    elevation = 2.dp,
-                    isSearchFocused = false,
-                    onSearch = { v, _ ->
-                        scopeCustom.search(v)
-                    },
-                )
+        when (scope.childScope.flow.collectAsState().value) {
+            is StoresScope -> {
+                Box(modifier = Modifier.weight(0.7f))
             }
-        } else {
-            Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
-                Row(
-                    modifier = Modifier
-                        .clickable(indication = null) { info.goToSearch() }
-                        .background(Color.White, MaterialTheme.shapes.medium)
-                        .padding(horizontal = 14.dp)
-                        .height(40.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        tint = ConstColors.gray,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
+            is OrdersScope -> {
+                Box(modifier = Modifier.weight(0.7f))
+            }
+            is InStoreSellerScope -> {
+                Row(modifier = Modifier.weight(0.7f)) {
+                    val scopeCustom = scope.childScope.flow.collectAsState().value as InStoreSellerScope
+                    BasicSearchBar(
+                        start = 0.dp,
+                        input = scopeCustom.searchText.flow.collectAsState().value,
+                        hint = R.string.search_tradename,
+                        searchBarEnd = SearchBarEnd.Eraser,
+                        icon = Icons.Default.Search,
+                        elevation = 2.dp,
+                        isSearchFocused = false,
+                        onSearch = { v, _ ->
+                            scopeCustom.search(v)
+                        },
                     )
-                    Text(
-                        text = stringResource(id = R.string.search_products),
-                        color = ConstColors.gray.copy(alpha = 0.5f),
-                        modifier = Modifier.padding(start = 24.dp),
-                    )
+                }
+            }
+            else -> {
+                Surface(elevation = 5.dp, modifier = Modifier.weight(0.7f)) {
+                    Row(
+                        modifier = Modifier
+                            .clickable(indication = null) { info.goToSearch() }
+                            .background(Color.White, MaterialTheme.shapes.medium)
+                            .padding(horizontal = 14.dp)
+                            .height(40.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            tint = ConstColors.gray,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                        )
+                        Text(
+                            text = stringResource(id = R.string.search_products),
+                            color = ConstColors.gray.copy(alpha = 0.5f),
+                            modifier = Modifier.padding(start = 24.dp),
+                        )
+                    }
                 }
             }
         }

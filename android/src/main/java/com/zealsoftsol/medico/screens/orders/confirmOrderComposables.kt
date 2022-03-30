@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import androidx.core.graphics.toColorInt
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.ConfirmOrderScope
+import com.zealsoftsol.medico.data.OrderEntry
 import com.zealsoftsol.medico.screens.cart.OrderTotal
 import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.NoOpIndication
@@ -57,139 +59,214 @@ fun ConfirmOrderScreen(scope: ConfirmOrderScope) {
     val openDialog = scope.showAlert.flow.collectAsState()
 
     Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .background(Color.White)
-                .verticalScroll(
-                    rememberScrollState()
-                ),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Column {
-                Space(20.dp)
-                Text(
-                    text = stringResource(id = R.string.action_confirmation),
-                    color = MaterialTheme.colors.background,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W700,
-                )
-                Space(15.dp)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(41.dp)
-                        .background(MaterialTheme.colors.secondary, MaterialTheme.shapes.medium)
-                ) {
-                    scope.tabs.forEach {
-                        var boxMod = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                        boxMod = if (scope.tabs.size == 1) {
-                            boxMod
-                        } else {
-                            boxMod
-                                .padding(5.dp)
-                                .clickable { scope.selectTab(it) }
-                        }
-                        val isActive = activeTab.value == it
-                        boxMod = if (isActive) {
-                            boxMod.background(
-                                Color(activeTab.value.bgColorHex.toColorInt()),
-                                MaterialTheme.shapes.medium
-                            )
-                        } else {
-                            boxMod
-                        }
-                        Row(
-                            modifier = boxMod,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
+        order.value?.let { orderTaxValue ->
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .verticalScroll(
+                        rememberScrollState()
+                    ),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column {
+                    Space(8.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Column {
                             Text(
-                                text = stringResourceByName(it.stringId),
-                                fontSize = 14.sp,
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.order_no))
+                                    append(" ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.id)
+                                    addStyle(
+                                        SpanStyle(fontWeight = FontWeight.W600),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
                                 fontWeight = FontWeight.W600,
-                                color = if (isActive) Color.White else MaterialTheme.colors.background,
+                                fontSize = 16.sp,
                             )
-                            if (isActive && entries.value.isNotEmpty()) {
-                                Space(6.dp)
+                            Space(5.dp)
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(stringResource(id = R.string.status))
+                                    append(": ")
+                                    val startIndex = length
+                                    append(orderTaxValue.info.status.toString())
+                                    addStyle(
+                                        SpanStyle(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600
+                                        ),
+                                        startIndex,
+                                        length,
+                                    )
+                                },
+                                color = Color.Black,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+
+                            Space(5.dp)
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = entries.value.size.toString(),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W700,
-                                    color = ConstColors.yellow,
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.type))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.paymentMethod.name)
+                                        addStyle(
+                                            SpanStyle(
+                                                color = ConstColors.green,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                )
+                            }
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(
+                                text = orderTaxValue.info.date,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Text(
+                                text = orderTaxValue.info.time,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                            )
+                            Space(5.dp)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        append(stringResource(id = R.string.discount))
+                                        append(": ")
+                                        val startIndex = length
+                                        append(orderTaxValue.info.discount?.formatted ?: "0.0")
+                                        addStyle(
+                                            SpanStyle(
+                                                color = Color.Black,
+                                                fontWeight = FontWeight.W600
+                                            ),
+                                            startIndex,
+                                            length,
+                                        )
+                                    },
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
                                 )
                             }
                         }
                     }
-                }
-                Column {
-                    Space(8.dp)
-                    entries.value.forEach {
-                        OrderEntryItem(
-                            canEdit = true,
-                            entry = it,
-                            isChecked = it in checkedEntries.value,
-                            onChecked = { _ -> scope.toggleCheck(it) },
-                            onClick = { },
-                        )
+                    Space(10.dp)
+                    /*Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(id = R.string.action_confirmation),
+                        color = MaterialTheme.colors.background,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.W700,
+                    )*/
+                    Divider()
+                    Space(10.dp)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
+                        Space(8.dp)
+                        entries.value.forEach {
+                            if(scope.ifIsDeclinedEntry(it)){
+                                it.status = OrderEntry.Status.DECLINED
+                            }else{
+                                it.status = OrderEntry.Status.ACCEPTED
+                            }
+                            OrderEntryItem(
+                                canEdit = false,
+                                entry = it,
+                                isChecked = it in checkedEntries.value,
+                                onChecked = { _ -> scope.toggleCheck(it) },
+                                onClick = { },
+                                isConfirmOrderScope = true,
+                            )
+                        }
+                        Space(8.dp)
                     }
-                    Space(8.dp)
                 }
-            }
-            Column {
-                order.value?.info?.total?.formattedPrice?.let {
-                    OrderTotal(it)
-                }
-                Space(16.dp)
-                val actions = scope.actions.flow.collectAsState()
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    actions.value.forEachIndexed { index, action ->
-                        MedicoButton(
-                            modifier = Modifier.weight(action.weight),
-                            text = stringResourceByName(action.stringId),
-                            txtColor = if (action.stringId == ConfirmOrderScope.Action.CONFIRM.stringId) MaterialTheme.colors.background else Color.White,
-                            isEnabled = true,
-                            color = Color(action.bgColorHex.toColorInt()),
-                            contentColor = Color(action.textColorHex.toColorInt()),
-                            onClick = {
-                                when (action) {
-                                    ConfirmOrderScope.Action.ACCEPT -> run {
-                                        for (entry in checkedEntries.value) {
-                                            if (checkOrderEntryValidation(entry)) {
-                                                scope.changeAlertScope(true)
-                                                return@run
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    order.value?.info?.total?.formattedPrice?.let {
+                        OrderTotal(it)
+                    }
+                    Space(16.dp)
+                    val actions = scope.actions.flow.collectAsState()
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        actions.value.forEachIndexed { index, action ->
+                            MedicoButton(
+                                modifier = Modifier.weight(action.weight),
+                                text = stringResourceByName(action.stringId),
+                                txtColor = if (action.stringId == ConfirmOrderScope.Action.PREVIEW.stringId) MaterialTheme.colors.background else Color.White,
+                                isEnabled = true,
+                                color = Color(action.bgColorHex.toColorInt()),
+                                contentColor = Color(action.textColorHex.toColorInt()),
+                                onClick = {
+                                    when (action) {
+                                        ConfirmOrderScope.Action.ACCEPT -> run {
+                                            for (entry in checkedEntries.value) {
+                                                if (checkOrderEntryValidation(entry)) {
+                                                    scope.changeAlertScope(true)
+                                                    return@run
+                                                }
                                             }
+                                            scope.acceptAction(action)
                                         }
-                                        scope.acceptAction(action)
+                                        ConfirmOrderScope.Action.REJECT -> {
+                                            scope.acceptAction(action)
+                                        }
+                                        ConfirmOrderScope.Action.PREVIEW -> {
+                                            scope.acceptAction(action)
+                                        }
+                                        ConfirmOrderScope.Action.CONFIRM -> {
+                                            scope.acceptAction(action)
+                                        }
                                     }
-                                    ConfirmOrderScope.Action.REJECT -> {
-                                        scope.acceptAction(action)
-                                    }
-                                    ConfirmOrderScope.Action.CONFIRM -> {
-                                        scope.acceptAction(action)
-                                    }
-                                }
-                            },
-                        )
-                        if (index != actions.value.lastIndex) {
-                            Space(16.dp)
+                                },
+                            )
+                            if (index != actions.value.lastIndex) {
+                                Space(16.dp)
+                            }
                         }
                     }
+                    Space(10.dp)
                 }
-                Space(10.dp)
             }
+            if (openDeclineReasonBottomSheet)
+                DeclineReasonBottomSheet(scope)
+            if (openDialog.value)
+                ShowAlert(stringResource(id = R.string.warning_order_entry_validation)) {
+                    scope.changeAlertScope(
+                        false
+                    )
+                }
         }
-        if (openDeclineReasonBottomSheet)
-            DeclineReasonBottomSheet(scope)
-        if (openDialog.value)
-            ShowAlert(stringResource(id = R.string.warning_order_entry_validation)) {
-                scope.changeAlertScope(
-                    false
-                )
-            }
     }
 }
 
@@ -223,7 +300,8 @@ fun DeclineReasonBottomSheet(scope: ConfirmOrderScope) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross),
                     contentDescription = null,
-                    modifier =  Modifier.size(45.dp)
+                    modifier = Modifier
+                        .size(45.dp)
                         .padding(15.dp)
                         .clickable {
                             scope.manageDeclineBottomSheetVisibility(false)
