@@ -322,46 +322,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
             backgroundColor = Color.White,
         ) {
             Column {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(horizontal = 10.dp, vertical = 10.dp),
-                ) {
-                    Text(
-                        text = mCurrentManufacturer,
-                        color = ConstColors.green,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Row(
-                        modifier = Modifier.padding(top = 5.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.total_prod),
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 5.dp)
-                        )
-                        Text(
-                            text = totalResults.toString(),
-                            color = Color.Black,
-                            fontSize = 12.sp,
-                            modifier = Modifier
-                                .border(
-                                    1.dp,
-                                    color = ConstColors.green,
-                                    shape = RoundedCornerShape(2.dp)
-                                )
-                                .padding(3.dp)
-                        )
-
-                    }
-                }
                 LazyColumn(
                     contentPadding = PaddingValues(start = 3.dp),
                     modifier = Modifier
@@ -562,14 +522,35 @@ private fun ManufacturersItem(
                     Color.White,
                 )
         ) {
-            CoilImageBrands(
-                src = CdnUrlProvider.urlForM(item.code),
-                contentScale = ContentScale.Crop,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-                height = 90.dp,
-                width = 150.dp,
-            )
+            Box {
+                CoilImageBrands(
+                    src = CdnUrlProvider.urlForM(item.code),
+                    contentScale = ContentScale.Crop,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    height = 90.dp,
+                    width = 150.dp,
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Text(
+                        text = item.count.toString(),
+                        color = Color.Black,
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .border(
+                                1.dp,
+                                color = ConstColors.green,
+                                shape = RoundedCornerShape(2.dp)
+                            )
+                            .align(Alignment.TopEnd)
+                            .padding(3.dp)
+                    )
+                }
+            }
         }
         Space(5.dp)
         Text(
