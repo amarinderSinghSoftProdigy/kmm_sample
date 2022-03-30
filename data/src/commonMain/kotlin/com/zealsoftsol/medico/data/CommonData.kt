@@ -28,7 +28,10 @@ data class HeaderData(
     val dlExpiryDate: FormattedData<Double>,
     val dlExpiresIn: String,
     val flExpiryDate: FormattedData<Double>,
-    val flExpiresIn: String
+    val flExpiresIn: String,
+    val seasonBoyRetailerData: SeasonBoyRetailerData? = null,
+    val seasonBoyData: SeasonBoyData? = null,
+    val subscriptionData: SubscriptionData? = null
 )
 
 @Serializable

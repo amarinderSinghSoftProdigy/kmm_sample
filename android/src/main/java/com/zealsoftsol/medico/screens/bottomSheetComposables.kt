@@ -2721,7 +2721,7 @@ private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
     Space(12.dp)
     Separator(padding = 0.dp)
     Space(12.dp)
-    /*entityInfo.subscriptionData?.let {
+    entityInfo.subscriptionData?.let {
         DataWithLabel(label = R.string.status, data = it.status.serverValue)
     }
     entityInfo.seasonBoyData?.let {
@@ -2733,7 +2733,7 @@ private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
     }
     entityInfo.seasonBoyData?.let {
         DataWithLabel(label = R.string.retailers, data = it.retailers.toString())
-    }*/
+    }
 }
 
 @Composable
@@ -2814,7 +2814,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
         border = BorderStroke(2.dp, ConstColors.separator)
     ) {
         Column(modifier = Modifier.padding(all = 12.dp)) {
-           /* when {
+            when {
                 entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -2920,6 +2920,34 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                     entityInfo.drugLicenseNo2?.let {
                         DataWithLabel(label = R.string.dl_two, data = it, size = 12.sp)
                     }
+                    Space(4.dp)
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.flExpiryDate?.let {
+                                    DataWithLabel(
+                                        label = R.string.expiry,
+                                        data = it.formatted, size = 12.sp
+                                    )
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+
+                                entityInfo.flExpiresIn?.let {
+                                    DataWithLabel(
+                                        label = R.string.expires_in,
+                                        data = it,
+                                        size = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                 }
                 entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
@@ -3002,7 +3030,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                         }
                     }
                 }
-            }*/
+            }
         }
     }
 }
