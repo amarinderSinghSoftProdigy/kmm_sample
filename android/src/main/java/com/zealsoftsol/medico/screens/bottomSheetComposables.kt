@@ -2760,7 +2760,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
             Space(4.dp)
             Divider(thickness = 0.3.dp)
             Space(4.dp)
-            GeoLocationSheet(entityInfo.geoData.cityAddress(), isBold = true, textSize = 12.sp)
+            GeoLocationSheet(entityInfo.geoData.landmark, isBold = true, textSize = 12.sp)
 
             entityInfo.geoData.let { data ->
                 Space(4.dp)
@@ -2780,7 +2780,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> 
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             SingleTextLabel(
-                                data = data.landmark
+                                data = data.pincode
                             )
                         }
                     }
