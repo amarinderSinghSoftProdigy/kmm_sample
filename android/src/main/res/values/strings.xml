@@ -247,7 +247,7 @@
     <string name="accept_selected">Accept Selected</string>
     <string name="batch_no">Batch No:</string>
     <string name="batch">Batch</string>
-    <string name="expiry">Expiry:</string>
+    <string name="expiry">Expiry</string>
     <string name="expiry_">Expiry</string>
     <string name="requested_qty">Req QTY:</string>
     <string name="served_qty">Picked QTY:</string>
@@ -461,6 +461,7 @@
     <string name="line_man_name">Lineman Name</string>
     <string name="payment_method_">Payment Method</string>
     <string name="pay_now">Pay Now</string>
+    <string name="expires_in">Expires in</string>
 
     <!-- Termrs and Cond -->
 

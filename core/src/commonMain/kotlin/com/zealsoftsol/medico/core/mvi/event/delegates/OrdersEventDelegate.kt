@@ -79,7 +79,7 @@ internal class OrdersEventDelegate(
         is Event.Action.Orders.Confirm -> confirmOrder(event.fromNotification, event.reasonCode)
         is Event.Action.Orders.ConfirmInvoice -> confirmInvoiceOrder(event.reasonCode)
         is Event.Action.Orders.GetOrderDetails -> getOrderDetail(event.orderId, event.type)
-        is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
+        //is Event.Action.Orders.ShowDetailsOfRetailer -> showDetails(event.item, event.scope)
         is Event.Action.Orders.EditDiscount -> editDiscount(event.orderId, event.discount)
         is Event.Action.Orders.ChangePaymentMethod -> changePaymentMethod(event.orderId, event.type)
     }
@@ -112,7 +112,7 @@ internal class OrdersEventDelegate(
         }
     }
 
-    private fun showDetails(item: EntityInfo, scp: Scope) {
+    /*private fun showDetails(item: EntityInfo, scp: Scope) {
         if (scp is ViewOrderScope) {
             navigator.withScope<ViewOrderScope> {
                 val hostScope = scope.value
@@ -143,7 +143,7 @@ internal class OrdersEventDelegate(
         }
 
     }
-
+*/
     private suspend fun loadOrders(isFirstLoad: Boolean) {
         loadHelper.load<OrdersScope, Order>(isFirstLoad = isFirstLoad) {
             val user = userRepo.requireUser()

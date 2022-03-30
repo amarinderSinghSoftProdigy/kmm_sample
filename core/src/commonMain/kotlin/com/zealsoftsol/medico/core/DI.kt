@@ -160,8 +160,12 @@ fun startKodein(
     bind<NetworkScope.IOCBuyerStore>() with singleton {
         instance<NetworkClient>()
     }
+    bind<NetworkScope.BottomSheetStore>() with singleton {
+        instance<NetworkClient>()
+    }
     bind<UserRepo>() with singleton {
         UserRepo(
+            instance(),
             instance(),
             instance(),
             instance(),

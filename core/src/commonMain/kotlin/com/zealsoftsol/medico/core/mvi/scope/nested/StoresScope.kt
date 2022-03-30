@@ -98,41 +98,11 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true, search = ""))
         }
 
-        fun startSearchWithNoLoader() {
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
-        }
-
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            val address = GeoData(
-                location = store.location,
-                city = store.city,
-                pincode = store.pincode,
-                distance = store.distance,
-                formattedDistance = store.formattedDistance,
-                addressLine = store.fullAddress(),
-                destination = null,
-                landmark = "",
-                origin = GeoPoints(0.0, 0.0)
-            )
-            val item = EntityInfo(
-                tradeName = store.tradeName,
-                phoneNumber = store.mobileNumber,
-                geoData = address,
-                seasonBoyData = null,
-                seasonBoyRetailerData = null,
-                drugLicenseNo1 = store.drugLicenseNo1,
-                drugLicenseNo2 = store.drugLicenseNo2,
-                gstin = store.gstin,
-                isVerified = true,
-                panNumber = store.panNumber,
-                subscriptionData = null,
-                unitCode = store.sellerUnitCode
-            )
             return TabBarInfo.StoreTitle(
                 storeName = store.tradeName,
-                notificationItemsCount = notificationCount,
-                cartItemsCount = cartItemsCount,
-                event = Event.Action.Stores.ShowDetails(item)
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(store.sellerUnitCode)
             )
         }
     }

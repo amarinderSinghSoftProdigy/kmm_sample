@@ -54,7 +54,6 @@ internal class SearchEventDelegate(
         is Event.Action.Search.ResetButton -> resetButton(event.item)
         is Event.Action.Search.AddToCart -> updateBatchSelection(true, event.product)
         is Event.Action.Search.showToast -> showToast(event.msg, event.cartData)
-        is Event.Action.Search.ShowDetails -> select(event.item)
         is Event.Action.Search.UpdateFree -> updateQty(event.qty, event.id)
         is Event.Action.Search.ShowConnectedStockistBottomSheet -> showConnectedStockist(event.stockist)
         is Event.Action.Search.SelectAutoCompleteGlobal -> selectAutoCompleteGlobal(event.autoComplete)
@@ -113,17 +112,6 @@ internal class SearchEventDelegate(
         }
     }
 
-
-    private fun select(item: EntityInfo) {
-        navigator.withScope<StoresScope.StorePreview> {
-            val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
-                item,
-                isSeasonBoy = false,
-                canSubscribe = false,
-            )
-        }
-    }
 
     private fun showToast(msg: String, cartData: CartData?) {
         navigator.withScope<StoresScope.StorePreview> {

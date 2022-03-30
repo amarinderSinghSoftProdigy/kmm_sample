@@ -17,6 +17,7 @@ import com.zealsoftsol.medico.data.CustomerData
 import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.LicenseDocumentData
 import com.zealsoftsol.medico.data.LocationData
 import com.zealsoftsol.medico.data.PasswordValidation
@@ -59,6 +60,7 @@ class UserRepo(
     private val networkConfigScope: NetworkScope.Config,
     private val whatsappPreferenceScope: NetworkScope.WhatsappStore,
     private val profileImageScope: NetworkScope.ProfileImage,
+    private val bottomSheetStore: NetworkScope.BottomSheetStore,
     private val settings: Settings,
     private val tokenStorage: TokenStorage,
     private val ipAddressFetcher: IpAddressFetcher,
@@ -247,6 +249,10 @@ class UserRepo(
         return networkSignUpScope.uploadDocument(uploadData)
     }
 
+    suspend fun getBottomSheetDetails(item: String): BodyResponse<HeaderData> {
+        return bottomSheetStore.getDetails(item)
+    }
+
     @Deprecated("move to separate network scope")
     suspend fun getLocationData(pincode: String): Response<LocationData, PincodeValidation> {
         return networkSignUpScope.getLocationData(pincode)
@@ -411,6 +417,7 @@ internal inline fun UserRepo.requireUserOld(): User =
 internal inline fun UserRepo.getUserDataSource(): ReadOnlyDataSource<User> = ReadOnlyDataSource(
     userFlow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUserOld())
 )
+
 internal inline fun UserRepo.getUserDataSourceV2(): ReadOnlyDataSource<UserV2> = ReadOnlyDataSource(
     userV2Flow.filterNotNull().stateIn(GlobalScope, SharingStarted.Eagerly, requireUser())
 )

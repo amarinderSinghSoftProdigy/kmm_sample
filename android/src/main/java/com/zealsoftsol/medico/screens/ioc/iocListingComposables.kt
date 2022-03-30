@@ -64,7 +64,8 @@ fun IocListingScreen(sellerScope: IocSellerScope) {
             is IocSellerScope.InvUserListing -> InvSellerUserListing(sellerScope)
             is IocSellerScope.InvListing -> InvSellerListing(sellerScope)
             is IocSellerScope.InvDetails -> InvSellerDetails(sellerScope)
-            else -> {}
+            else -> {
+            }
         }
     }
 }
