@@ -100,7 +100,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
@@ -180,7 +180,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 Row(
                     modifier = Modifier
                         .padding(end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
                     Surface(
@@ -371,7 +371,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
 private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier
-            .height(75.dp)
+            .height(90.dp)
             .clickable {
                 scope.getBatchesData(item.spid ?: "", item)
             }) {
@@ -384,7 +384,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -392,7 +392,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     .weight(1f)
                     .padding(top = 5.dp),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.ptr?.formattedValue ?: "",
@@ -421,7 +421,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             Row(
                 modifier = Modifier.weight(1f),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = stringResource(id = R.string.stock),
@@ -440,7 +440,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -448,7 +448,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     .weight(1f)
                     .padding(top = 5.dp),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.stockStatus ?: "",
@@ -464,7 +464,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             Row(
                 modifier = Modifier.weight(1f),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.status ?: "",
@@ -480,6 +480,40 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                         }
                     },
                     fontSize = 12.sp,
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier.weight(.7f),
+                text = item.vendorMnfrName ?: "",
+                fontSize = 12.sp,
+                color = ConstColors.green,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(
+                modifier = Modifier.weight(.3f),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.batchs),
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.padding(end = 5.dp)
+                )
+                CommonRoundedView(
+                    text = item.availableQty?.formattedValue ?: "", modifier = Modifier.padding(
+                        end = 5.dp
+                    ), color = ConstColors.darkGreen, radius = 2
                 )
             }
         }
@@ -892,7 +926,7 @@ private fun CommonRoundedView(
 @Composable
 private fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
 
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier, verticalAlignment = CenterVertically) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(3.dp))
