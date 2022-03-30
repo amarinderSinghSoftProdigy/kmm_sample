@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.core.mvi.event
 import com.zealsoftsol.medico.core.interop.DataSource
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
@@ -646,7 +647,7 @@ sealed class Event {
             val phoneNumber: String
         ) : Transition()
 
-        object Inventory : Transition()
+        data class Inventory(val type: DashboardScope.InventoryType) : Transition()
         object Menu : Transition()
         data class Batches(
             val spid: String,

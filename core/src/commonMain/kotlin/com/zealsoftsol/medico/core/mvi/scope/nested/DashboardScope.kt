@@ -61,15 +61,15 @@ class DashboardScope private constructor(
     /**
      * Move to offers screens
      */
-    fun moveToOffersScreen(){
+    fun moveToOffersScreen() {
         EventCollector.sendEvent(Event.Transition.Offers)
     }
 
     /**
      * Move to Inventory screens
      */
-    fun moveToInventoryScreen(){
-        EventCollector.sendEvent(Event.Transition.Inventory)
+    fun moveToInventoryScreen(search: InventoryType) {
+        EventCollector.sendEvent(Event.Transition.Inventory(search))
     }
 
     /**
@@ -91,6 +91,12 @@ class DashboardScope private constructor(
         EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.PoOrdersAndHistory else Event.Transition.Orders)
 
     fun selectSection(section: Section) = section.event?.let(EventCollector::sendEvent) ?: false
+
+    enum class InventoryType {
+        EMPTY,
+        IN_STOCK,
+        OUT_OF_STOCK
+    }
 
     enum class Section(val stringId: String, val event: Event?) {
         STOCKIST_COUNT("stockists", Event.Transition.Management(UserType.STOCKIST)),
