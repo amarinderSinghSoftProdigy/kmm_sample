@@ -88,6 +88,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
+import org.joda.time.LocalDate
 
 /**
  * @param scope current scope to get the current and updated state of views
@@ -122,6 +123,7 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val batchData = scope.batchData.flow.collectAsState()
     val selectedBatchData = scope.selectedBatchData.flow.collectAsState()
+    val displayPtrError = remember { mutableStateOf(false) }
 
     /**
      * update editable data is user has selected a batch from ViewBatchComposable
@@ -813,9 +815,16 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                                             scope.updateExpiry("${month + 1}/${year}")
                                                         },
                                                         now.year,
-                                                        now.monthOfYear - 1,
+                                                        now.monthOfYear,
                                                         now.dayOfMonth,
                                                     )
+                                                    val today = LocalDate.now()
+                                                    val firstOfNextMonth: LocalDate =
+                                                        today // add one to the month
+                                                            .withMonthOfYear(today.monthOfYear + 1) // and take the first day of that month
+                                                            .withDayOfMonth(1)
+                                                    dialog.datePicker.minDate =
+                                                        firstOfNextMonth.toDate().time
                                                     dialog.show()
                                                 }
                                             }) {
@@ -1071,8 +1080,15 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                             .padding(10.dp)
                                             .height(40.dp),
                                         text = stringResource(id = R.string.save),
-                                        onClick = { scope.saveEntry() },
-                                        isEnabled = mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
+                                        onClick = {
+                                            if (price.toDouble() > mrp.toDouble()) {
+                                                displayPtrError.value = true
+                                            } else {
+                                                scope.saveEntry()
+                                            }
+                                        },
+                                        isEnabled =
+                                        mrp.toDouble() != 0.0 && price.toDouble() != 0.0 // only allow submit if mrp and proce is entered
                                     )
                                 }
                             }
@@ -1089,6 +1105,11 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
             WarningProductNotAvailable(scope)
         if (openDeclineReasonBottomSheet)
             DeclineReasonBottomSheet(scope)
+        if (displayPtrError.value) {
+            ShowAlert(stringResource(id = R.string.ptr_more_warning)) {
+                displayPtrError.value = false
+            }
+        }
     }
 
 }
