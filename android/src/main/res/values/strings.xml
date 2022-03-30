@@ -461,6 +461,7 @@
     <string name="line_man_name">Lineman Name</string>
     <string name="payment_method_">Payment Method</string>
     <string name="pay_now">Pay Now</string>
+    <string name="ptr_more_warning">PTR is greater than MRP</string>
 
     <!-- Termrs and Cond -->
 
