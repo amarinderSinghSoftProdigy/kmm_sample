@@ -429,7 +429,7 @@ private fun ShowStockistDashBoard(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            scope.moveToInventoryScreen()
+                            scope.moveToInventoryScreen(DashboardScope.InventoryType.IN_STOCK)
                         }
                         .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
@@ -469,7 +469,7 @@ private fun ShowStockistDashBoard(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            scope.moveToInventoryScreen()
+                            scope.moveToInventoryScreen(DashboardScope.InventoryType.OUT_OF_STOCK)
                         }
                         .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
