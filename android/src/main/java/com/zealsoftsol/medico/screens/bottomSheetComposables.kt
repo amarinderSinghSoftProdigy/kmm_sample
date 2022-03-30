@@ -89,8 +89,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
@@ -183,7 +183,7 @@ fun Scope.Host.showBottomSheet(
                 )
             }
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
-                entityInfo = bs.entityInfo,
+                headerData = bs.headerData,
                 isForSeasonBoy = bs.isSeasonBoy,
                 onSubscribe = if (bs.canSubscribe) {
                     { bs.subscribe() }
@@ -1893,7 +1893,7 @@ private fun DocumentUploadBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PreviewItemBottomSheet(
-    entityInfo: EntityInfo,
+    headerData: HeaderData,
     isForSeasonBoy: Boolean,
     onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
@@ -1936,7 +1936,7 @@ private fun PreviewItemBottomSheet(
                 Space(dp = 16.dp)
                 Column {
                     CoilImage(
-                        src = entityInfo.tradeNameUrl.toString(),
+                        src = headerData.tradeProfile,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
@@ -1944,14 +1944,6 @@ private fun PreviewItemBottomSheet(
                         onLoading = { PlaceholderText() },
                         isCrossFadeEnabled = false
                     )
-                    /*Image(
-                        painter = painterResource(id = R.drawable.ic_acc_place),
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                    )*/
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (isForSeasonBoy) {
@@ -1964,13 +1956,13 @@ private fun PreviewItemBottomSheet(
                             Space(16.dp)
                         }
                         Text(
-                            text = entityInfo.tradeName,
+                            text = headerData.tradeName,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colors.background,
                             modifier = Modifier.padding(end = 10.dp),
                         )
-                        if (entityInfo.isVerified == true) {
+                        if (headerData.isVerified == true) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_verified),
@@ -1981,7 +1973,7 @@ private fun PreviewItemBottomSheet(
                         }
                     }
                     Space(4.dp)
-                    entityInfo.phoneNumber?.let {
+                    headerData.mobileNumber.let {
                         Row {
                             ClickableText(
                                 text = AnnotatedString(it),
@@ -1990,15 +1982,15 @@ private fun PreviewItemBottomSheet(
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.W600
                                 ),
-                                onClick = { activity.openDialer(entityInfo.phoneNumber ?: "") },
+                                onClick = { activity.openDialer(headerData.mobileNumber) },
                             )
                         }
                     }
                     if (isForSeasonBoy) {
                         Space(8.dp)
-                        SeasonBoyPreviewItem(entityInfo)
+                        SeasonBoyPreviewItem(headerData)
                     } else {
-                        NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
+                        NonSeasonBoyPreviewItem(headerData, onSubscribe)
                     }
                 }
             }
@@ -2715,8 +2707,8 @@ private fun EditBatchItemBottomSheet(
 
 
 @Composable
-private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
-    val phoneNumber = entityInfo.phoneNumber?.formatIndia().orEmpty()
+private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
+    val phoneNumber = entityInfo.mobileNumber.formatIndia()
     val activity = (LocalContext.current as MainActivity)
     Text(
         text = phoneNumber,
@@ -2729,7 +2721,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     Space(12.dp)
     Separator(padding = 0.dp)
     Space(12.dp)
-    entityInfo.subscriptionData?.let {
+    /*entityInfo.subscriptionData?.let {
         DataWithLabel(label = R.string.status, data = it.status.serverValue)
     }
     entityInfo.seasonBoyData?.let {
@@ -2741,11 +2733,11 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
     }
     entityInfo.seasonBoyData?.let {
         DataWithLabel(label = R.string.retailers, data = it.retailers.toString())
-    }
+    }*/
 }
 
 @Composable
-private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
+private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> Unit)?) {
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -2795,27 +2787,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     }
                 }
                 Space(4.dp)
-                /*Divider(thickness = 0.3.dp)
-                Space(4.dp)
-                Row {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 2)) {
-                            SingleTextLabel(
-                                data = data.city
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2)
-                                .align(Alignment.BottomEnd),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            SingleTextLabel(
-                                data = data.pincode
-                            )
-                        }
-                    }
-                }*/
             }
 
             if (onSubscribe != null) {
@@ -2843,7 +2814,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
         border = BorderStroke(2.dp, ConstColors.separator)
     ) {
         Column(modifier = Modifier.padding(all = 12.dp)) {
-            when {
+           /* when {
                 entityInfo.subscriptionData != null -> entityInfo.subscriptionData?.let { data ->
                     Row {
                         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
@@ -2875,11 +2846,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                     .align(Alignment.BottomEnd),
                                 contentAlignment = Alignment.BottomEnd
                             ) {
-
-                                /*DataWithLabel(
-                         label = R.string.status,
-                         data = data.status.serverValue
-                     )*/
                                 Row {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_location),
@@ -2989,7 +2955,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colors.background,
                                         )
-                                        //DataWithLabel(label = R.string.gstin_num, data = it)
                                     }
                                 }
                                 Box(
@@ -3037,7 +3002,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                         }
                     }
                 }
-            }
+            }*/
         }
     }
 }

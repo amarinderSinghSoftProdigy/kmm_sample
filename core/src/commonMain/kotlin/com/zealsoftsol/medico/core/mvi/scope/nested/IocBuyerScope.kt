@@ -9,8 +9,10 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.BuyerDetailsData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.FormattedData
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InvUserData
@@ -20,6 +22,7 @@ import com.zealsoftsol.medico.data.SubmitPaymentRequest
 
 sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     override val supportedFileTypes: Array<FileType> = FileType.forProfile()
+    var b2bData: DataSource<HeaderData?> = DataSource(null)
 
     val paymentTypes: List<PaymentTypes> = listOf(
         PaymentTypes.CASH_IN_HAND,
@@ -77,7 +80,7 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val slider: DataSource<Float> = DataSource(0f)
 
 
-        fun loadData(){
+        fun loadData() {
             EventCollector.sendEvent(Event.Action.IOCBuyer.LoadInvListing(item.unitCode))
         }
 
@@ -92,7 +95,11 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
+            return TabBarInfo.StoreTitle(
+                storeName = item.tradeName,
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(item.unitCode)
+            )
         }
     }
 
@@ -102,7 +109,11 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         val items: DataSource<List<InvContactDetails>> = DataSource(emptyList())
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
+            return TabBarInfo.StoreTitle(
+                storeName = item.tradeName,
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(item.unitCode)
+            )
         }
 
         fun openPaymentMethod(unitCode: String, invoiceId: String) {
@@ -198,9 +209,6 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
 
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
-
-    fun openRetailerDetails(item: String) =
-        EventCollector.sendEvent(Event.Action.IOCBuyer.ShowRetailerDetails(item))
 
     enum class PaymentTypes(val stringId: String, val type: String) {
         CASH_IN_HAND("cash_in_hand", "CASH_IN_HAND"),

@@ -149,9 +149,9 @@ class ViewOrderScope(
             )
 
             return TabBarInfo.StoreTitle(
-                storeName = it.tradeName,
+                storeName = b2bData.tradeName,
                 showNotifications = false,
-                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+                event = Event.Action.Management.GetDetails(b2bData.unitCode)
             )
         }
 
@@ -354,9 +354,9 @@ class ViewOrderInvoiceScope(
             )
 
             return TabBarInfo.StoreTitle(
-                storeName = it.tradeName,
+                storeName = b2bData.tradeName,
                 showNotifications = false,
-                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+                event = Event.Action.Management.GetDetails(b2bData.unitCode)
             )
         }
 
@@ -454,9 +454,9 @@ class ConfirmOrderScope(
             )
 
             return TabBarInfo.StoreTitle(
-                storeName = it.tradeName,
+                storeName = b2bData.tradeName,
                 showNotifications = false,
-                event = Event.Action.Orders.ShowDetailsOfRetailer(item, this)
+                event = Event.Action.Management.GetDetails(b2bData.unitCode)
             )
         }
 

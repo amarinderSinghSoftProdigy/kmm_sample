@@ -7,6 +7,31 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @Serializable
+data class HeaderData(
+    val unitCode: String = "",
+    val name: String,
+    val tradeName: String,
+    val geoData: GeoData,
+    val gstin: String,
+    val panNumber: String,
+    val productsInCatalogue: Int,
+    val manufacturersInCatalogue: Int,
+    val mobileNumber: String,
+    val drugLicenseNo1: String,
+    val drugLicenseNo2: String,
+    val drugLicenseUrl: String,
+    val tradeProfile: String,
+    val aadhaarCardNo: String,
+    val customerType: String,
+    val isVerified: Boolean,
+    val isMultiStore: Boolean,
+    val dlExpiryDate: FormattedData<Double>,
+    val dlExpiresIn: String,
+    val flExpiryDate: FormattedData<Double>,
+    val flExpiresIn: String
+)
+
+@Serializable
 data class GeoPoints(
     val latitude: Double,
     val longitude: Double,

@@ -36,6 +36,7 @@ import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EditOfferRequest
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.ErrorCode
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
@@ -154,6 +155,7 @@ class NetworkClient(
     NetworkScope.BatchesStore,
     NetworkScope.IOCStore,
     NetworkScope.IOCBuyerStore,
+    NetworkScope.BottomSheetStore,
     NetworkScope.QrCodeStore {
 
     init {
@@ -1169,7 +1171,7 @@ class NetworkClient(
     override suspend fun getDetails(
         unitCode: String,
     ) = simpleRequest {
-        client.get<BodyResponse<AnyResponse>>("${baseUrl.url}/b2bapp/detail/${unitCode}") {
+        client.get<BodyResponse<HeaderData>>("${baseUrl.url}/b2bapp/detail/${unitCode}") {
             withMainToken()
         }
     }

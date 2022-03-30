@@ -4,7 +4,10 @@ import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ManagementScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -12,6 +15,7 @@ import com.zealsoftsol.medico.core.repository.UserRepo
 import com.zealsoftsol.medico.core.repository.requireUser
 import com.zealsoftsol.medico.core.utils.LoadHelper
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.PaymentMethod
 import com.zealsoftsol.medico.data.SubscribeRequest
 import com.zealsoftsol.medico.data.UserType
@@ -28,13 +32,30 @@ internal class ManagementEventDelegate(
     override suspend fun handleEvent(event: Event.Action.Management) = when (event) {
         is Event.Action.Management.Load -> loadUserManagement(event.isFirstLoad)
         is Event.Action.Management.Search -> searchUserManagement(event.value)
-        is Event.Action.Management.Select -> select(event.item)
         is Event.Action.Management.RequestSubscribe -> requestSubscribe(event.item)
+        is Event.Action.Management.GetDetails -> openRetailerDetails(event.item)
         is Event.Action.Management.ChoosePayment -> choosePayment(
             event.paymentMethod,
             event.creditDays
         )
         is Event.Action.Management.VerifyRetailerTraderDetails -> verifyRetailerTraderDetails()
+    }
+
+    private suspend fun openRetailerDetails(item: String) {
+        navigator.withProgress {
+            userRepo.getBottomSheetDetails(
+                item
+            )
+        }.onSuccess { body ->
+            navigator.withScope<Scope> {
+                val hostScope = scope.value
+                hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
+                    body,
+                    isSeasonBoy = false,
+                    canSubscribe = false,
+                )
+            }
+        }.onError(navigator)
     }
 
     private suspend fun loadUserManagement(isFirstLoad: Boolean) {
@@ -65,18 +86,8 @@ internal class ManagementEventDelegate(
         }
     }
 
-    private fun select(item: EntityInfo) {
-        navigator.withScope<ManagementScope.User> {
-            val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
-                item,
-                isSeasonBoy = it is ManagementScope.User.SeasonBoy,
-                canSubscribe = it.activeTab.value == ManagementScope.Tab.ALL_STOCKISTS,
-            )
-        }
-    }
 
-    private fun requestSubscribe(entityInfo: EntityInfo) {
+    private fun requestSubscribe(entityInfo: HeaderData) {
         navigator.withScope<ManagementScope.User.Stockist> {
             val user = userRepo.requireUser()
             subscribeRequest = SubscribeRequest(

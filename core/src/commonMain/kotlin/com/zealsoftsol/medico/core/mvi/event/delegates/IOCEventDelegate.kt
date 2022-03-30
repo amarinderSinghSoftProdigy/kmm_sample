@@ -6,6 +6,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -49,8 +50,7 @@ internal class IOCEventDelegate(
         is Event.Action.IOC.LoadMoreUsers -> loadMoreUsers()
         is Event.Action.IOC.LoadInvListing -> getRetailerInvoiceListing(event.unitCode)
         is Event.Action.IOC.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
-    }
-
+   }
     private suspend fun submitInvoice(value: AddInvoice) {
         navigator.withScope<IocSellerScope.IOCCreate> {
             val result = withProgress {
