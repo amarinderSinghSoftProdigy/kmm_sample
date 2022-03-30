@@ -4,6 +4,7 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.withProgress
 import com.zealsoftsol.medico.core.network.NetworkScope
@@ -43,6 +44,19 @@ internal class IOCBuyerEventDelegate(
         )
         is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item, event.mobile)
         is Event.Action.IOCBuyer.ClearScopes -> clearScopes()
+        is Event.Action.IOCBuyer.ShowRetailerDetails -> openRetailerDetails(event.item)
+    }
+
+    private suspend fun openRetailerDetails(item: String) {
+        //navigator.withScope<IocBuyerScope> {
+            navigator.withProgress {
+                networkStoresScope.getDetails(
+                    item
+                )
+            }.onSuccess { _ ->
+
+            }.onError(navigator)
+        //}  // navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, type)
     }
 
     private fun clearScopes() {

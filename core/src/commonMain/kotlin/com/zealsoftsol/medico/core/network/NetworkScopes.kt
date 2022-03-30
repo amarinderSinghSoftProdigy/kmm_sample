@@ -500,5 +500,9 @@ interface NetworkScope {
         suspend fun submitPayment(
             request: SubmitPaymentRequest,
         ): BodyResponse<String>
+
+        suspend fun getDetails(
+            unitCode: String,
+        ): BodyResponse<AnyResponse>
     }
 }

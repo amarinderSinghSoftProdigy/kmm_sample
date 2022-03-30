@@ -597,6 +597,7 @@ sealed class Event {
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
             data class OpenPaymentMethod(val unitCode: String, val invoiceId: String) : IOCBuyer()
+            data class ShowRetailerDetails(val item: String) : IOCBuyer()
 
             object ClearScopes : IOCBuyer()
         }

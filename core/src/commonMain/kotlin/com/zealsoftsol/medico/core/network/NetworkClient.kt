@@ -1166,6 +1166,14 @@ class NetworkClient(
         }
     }
 
+    override suspend fun getDetails(
+        unitCode: String,
+    ) = simpleRequest {
+        client.get<BodyResponse<AnyResponse>>("${baseUrl.url}/details/${unitCode}") {
+            withMainToken()
+        }
+    }
+
 
     override suspend fun getRetailers(
         unitCode: String,

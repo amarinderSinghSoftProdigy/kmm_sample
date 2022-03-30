@@ -199,6 +199,9 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
     fun previewImage(item: String) =
         EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(item))
 
+    fun openRetailerDetails(item: String) =
+        EventCollector.sendEvent(Event.Action.IOCBuyer.ShowRetailerDetails(item))
+
     enum class PaymentTypes(val stringId: String, val type: String) {
         CASH_IN_HAND("cash_in_hand", "CASH_IN_HAND"),
         GOOGLE_PAY("g_pay", "GOOGLE_PAY"),
