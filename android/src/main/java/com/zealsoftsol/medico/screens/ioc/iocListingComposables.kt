@@ -277,7 +277,8 @@ private fun InvSellerListing(sellerScope: IocSellerScope.InvListing) {
                     modifier = Modifier
                         .background(ConstColors.darkBlue)
                         .fillMaxWidth()
-                        .padding(all = 16.dp),
+                        .padding(all = 16.dp).
+                    clickable { sellerScope.openRetailerDetails(sellerScope.item.unitCode) },
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
