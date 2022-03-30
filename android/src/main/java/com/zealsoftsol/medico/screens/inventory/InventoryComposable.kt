@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,12 +84,12 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val totalResults = scope.totalProducts
     val mCurrentManufacturer = scope.mCurrentManufacturerName.flow.collectAsState().value
     val searchTerm = remember { mutableStateOf("") }
-    val keyboardController = LocalSoftwareKeyboardController.current
     var queryTextChangedJob: Job? = null
     val showNoBatchesDialog = scope.showNoBatchesDialog.flow.collectAsState().value
-    var showSearchBar = remember { mutableStateOf(false) }
-    var showManufacturers = remember { mutableStateOf(false) }
+    val showSearchBar = remember { mutableStateOf(false) }
+    val showManufacturers = remember { mutableStateOf(false) }
     val showGraphs = remember { mutableStateOf(false) }
+    val lazyListState = rememberLazyListState()
 
     Column(
         modifier = Modifier
@@ -143,14 +144,14 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             maxLines = 1,
                             singleLine = true,
                             onValueChange = {
-                                    searchTerm.value = it
+                                searchTerm.value = it
 
-                                    queryTextChangedJob?.cancel()
+                                queryTextChangedJob?.cancel()
 
-                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                        delay(500)
-                                        scope.startSearch(it)
-                                    }
+                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                    delay(500)
+                                    scope.startSearch(it)
+                                }
                             },
                             textStyle = LocalTextStyle.current.copy(
                                 color = Color.Black,
@@ -241,6 +242,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
 
             Space(10.dp)
             LazyRow(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -268,6 +270,20 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             .fillParentMaxWidth()
                             .padding(8.dp),
                     )
+                }
+            }
+
+            //auto rotate banner after every 3 seconds
+            LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                delay(5000) // wait for 5 seconds.
+                // increasing the position and check the limit
+                var newPosition = lazyListState.firstVisibleItemIndex + 1
+                if (newPosition > 3 - 1) newPosition = 0
+                // scrolling to the new position.
+                if (newPosition == 0) {
+                    lazyListState.scrollToItem(newPosition)
+                } else {
+                    lazyListState.animateScrollToItem(newPosition)
                 }
             }
         }
