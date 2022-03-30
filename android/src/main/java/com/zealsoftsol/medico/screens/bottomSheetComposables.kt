@@ -132,8 +132,8 @@ import kotlinx.coroutines.launch
 import org.joda.time.DateTime
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.time.LocalDate
+import java.util.Date
 
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -2615,9 +2615,15 @@ private fun EditBatchItemBottomSheet(
                                         info.updateExpiry("${month + 1}/${year}")
                                     },
                                     now.year,
-                                    now.monthOfYear - 1,
+                                    now.monthOfYear,
                                     now.dayOfMonth,
                                 )
+
+                                val today = LocalDate.now()
+                                val firstOfNextMonth: LocalDate = today // add one to the month
+                                    .withMonth(today.monthValue + 1) // and take the first day of that month
+                                    .withDayOfMonth(1)
+                                dialog.datePicker.minDate = firstOfNextMonth.toEpochDay()
                                 dialog.show()
                             }) {
                             Box(
