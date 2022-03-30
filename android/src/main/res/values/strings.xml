@@ -398,7 +398,7 @@
     <string name="qty_warning">Selected batch has less than the requested quantity. Please select a batch with
     more than or equal to the requested quantity</string>
     <string name="search_inventory">Search Inventory</string>
-    <string name="more">See More</string>
+    <string name="more">Load More</string>
     <string name="no_batches_available">No batches available for selected product</string>
     <string name="enter_amount">Enter Amount</string>
     <string name="enter_quantity">Enter Quantity</string>

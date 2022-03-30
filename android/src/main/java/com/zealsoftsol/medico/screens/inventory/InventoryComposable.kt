@@ -2,7 +2,6 @@ package com.zealsoftsol.medico.screens.inventory
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +61,7 @@ import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -338,20 +338,16 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 }
 
                 if (productsList.size < totalResults) {
-                    Text(
+                    MedicoButton(
                         modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(top = 5.dp)
-                            .height(30.dp)
-                            .clickable {
-                                scope.getInventory(search = searchTerm.value)
-                            },
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 5.dp,bottom = 5.dp)
+                            .height(40.dp),
                         text = stringResource(id = R.string.more),
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 16.sp
-                    )
+                        isEnabled = true,
+                    ) {
+                        scope.getInventory(search = searchTerm.value)
+                    }
                 }
             }
         }
@@ -570,18 +566,9 @@ private fun ManufacturersItem(
                         .padding(3.dp)
                         .align(Alignment.TopEnd)
                 ) {
-                    Text(
-                        text = item.count.toString(),
-                        color = Color.Black,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .border(
-                                1.dp,
-                                color = ConstColors.green,
-                                shape = RoundedCornerShape(2.dp)
-                            )
-                            .align(Alignment.TopEnd)
-                            .padding(3.dp)
+                    CommonRoundedView(
+                        text = item.count.toString(), modifier = Modifier
+                            .align(Alignment.TopEnd), color = ConstColors.darkGreen, radius = 2
                     )
                 }
             }
