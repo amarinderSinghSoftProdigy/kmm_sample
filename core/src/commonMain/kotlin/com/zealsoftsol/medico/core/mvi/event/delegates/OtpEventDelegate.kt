@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.onError
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OtpScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.PasswordScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SignUpScope
@@ -64,6 +65,9 @@ internal class OtpEventDelegate(
                     }
                     is SignUpScope.PreviewDetails -> {
                         EventCollector.sendEvent(Event.Action.Registration.SignUp)
+                    }
+                    is IocBuyerScope.IOCPayNow -> {
+                        EventCollector.sendEvent(Event.Action.IOCBuyer.ClearScopes)
                     }
                     else -> throw UnsupportedOperationException("unknown subtype of PhoneVerificationEntryPoint")
                 }

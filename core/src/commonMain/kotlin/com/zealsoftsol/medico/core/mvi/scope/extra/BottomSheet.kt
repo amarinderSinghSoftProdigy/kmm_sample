@@ -7,10 +7,12 @@ import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.CartScope
+import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.OffersScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderInvoiceScope
 import com.zealsoftsol.medico.data.Batch
 import com.zealsoftsol.medico.data.BatchUpdateRequest
+import com.zealsoftsol.medico.data.BuyerDetailsData
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
 import com.zealsoftsol.medico.data.EntityInfo
@@ -27,6 +29,7 @@ import com.zealsoftsol.medico.data.Promotions
 import com.zealsoftsol.medico.data.SellerCart
 import com.zealsoftsol.medico.data.SellerInfo
 import com.zealsoftsol.medico.data.TaxInfo
+import com.zealsoftsol.medico.data.UpdateInvoiceRequest
 import com.zealsoftsol.medico.data.UserRegistration1
 
 sealed class BottomSheet {
@@ -105,6 +108,35 @@ sealed class BottomSheet {
             return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
                 EventCollector.sendEvent(
                     Event.Action.Profile.UploadUserProfile(
+                        size = sizeInBytes(base64).toString(),
+                        asBase64 = base64,
+                        fileType = fileType,
+                        type = type
+                    )
+                )
+            } else {
+                EventCollector.sendEvent(Event.Action.Profile.UploadFileTooBig)
+                false
+            }
+        }
+
+        private fun sizeInBytes(base64: String): Int =
+            (base64.length * 3 / 4) - base64.takeLast(2).count { it == '=' }
+
+        companion object {
+            private const val MAX_FILE_SIZE = 10_000_000
+        }
+    }
+
+    class UploadInvoiceData(
+        val type: String,
+        val supportedFileTypes: Array<FileType>,
+    ) : BottomSheet() {
+
+        fun uploadInvoice(base64: String, fileType: FileType, type: String): Boolean {
+            return if (sizeInBytes(base64) <= MAX_FILE_SIZE) {
+                EventCollector.sendEvent(
+                    Event.Action.IOC.UploadInvoice(
                         size = sizeInBytes(base64).toString(),
                         asBase64 = base64,
                         fileType = fileType,
@@ -407,4 +439,55 @@ sealed class BottomSheet {
     ) : BottomSheet()
 
     data class ShowConnectedStockist(val stockist: List<ConnectedStockist>) : BottomSheet()
+
+    class EditIOC(
+        val info: BuyerDetailsData,
+        val sellerScope: IocSellerScope,
+    ) : BottomSheet() {
+
+        val enableButton: DataSource<Boolean> = DataSource(false)
+        val dateMili = DataSource(0L)
+        val date = DataSource("")
+        val amount = DataSource("")
+        val typeId = DataSource("")
+        val type = DataSource("")
+
+        fun updateDate(date: String, mili: Long) {
+            this.date.value = date
+            this.dateMili.value = mili
+            validate()
+        }
+
+        fun updateAmount(data: String) {
+            this.amount.value = data
+            validate()
+        }
+
+        fun updateType(data: String, dataId: String) {
+            this.typeId.value = dataId
+            this.type.value = data
+            validate()
+        }
+
+        private fun validate() {
+            enableButton.value = date.value.isNotEmpty()
+                    && amount.value.isNotEmpty()
+                    && type.value.isNotEmpty()
+                    && dateMili.value != 0L
+        }
+
+
+        fun confirm() {
+            val request = UpdateInvoiceRequest(
+                this.dateMili.value,
+                this.amount.value.toDouble(),
+                this.typeId.value,
+                info.invoiceId
+            )
+            EventCollector.sendEvent(Event.Action.IOC.UpdateIOC(request, sellerScope))
+        }
+
+
+    }
+
 }

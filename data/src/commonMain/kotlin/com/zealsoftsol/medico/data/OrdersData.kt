@@ -23,7 +23,7 @@ data class OrderEntry(
     @SerialName("orderEntryId")
     val id: String,
     @SerialName("entryStatus")
-    val status: Status,
+    var status: Status,
     @SerialName("orderEntryNumber")
     val number: Int,
     val batchNo: String,

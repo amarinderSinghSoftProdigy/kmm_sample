@@ -76,3 +76,36 @@ fun PermissionCheckUIForSignUp(
         }
     }
 }
+
+@Composable
+fun PermissionCheckUIForInvoice(
+    scaffoldState: ScaffoldState,
+    permissionViewModel: PermissionViewModel,
+) {
+    val context = LocalContext.current
+    val performAction by permissionViewModel.performAction.collectAsState()
+    val performTypeAction by permissionViewModel.performTypeAction.collectAsState()
+
+    if (performAction) {
+        PermissionUI(
+            context,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            stringResource(id = R.string.permission_message),
+            scaffoldState
+        ) { permissionAction ->
+            when (permissionAction) {
+                is PermissionAction.OnPermissionGranted -> {
+                    permissionViewModel.setPerformLocationAction(false, performTypeAction)
+                    EventCollector.sendEvent(
+                        Event.Action.IOC.ShowUploadBottomSheets(
+                            performTypeAction,
+                        )
+                    )
+                }
+                is PermissionAction.OnPermissionDenied -> {
+                    permissionViewModel.setPerformLocationAction(false, performTypeAction)
+                }
+            }
+        }
+    }
+}

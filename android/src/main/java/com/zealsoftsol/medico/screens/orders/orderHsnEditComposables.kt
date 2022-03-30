@@ -630,7 +630,8 @@ fun OrderHsnEditScreen(scope: OrderHsnEditScope) {
                                                         .padding(end = 10.dp),
                                                     value = batchNo,
                                                     onValueChange = {
-                                                        scope.updateBatch(it)
+                                                        if (it.length <= 20)
+                                                            scope.updateBatch(it)
                                                     },
                                                     maxLines = 1,
                                                     singleLine = true,
