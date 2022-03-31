@@ -90,8 +90,14 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
                     ?: 0.0)) / (data.value?.totalAmount?.value ?: 1.0)) * 100).toFloat()
         }
 
-        fun openIOCDetails(item: BuyerDetailsData) {
-            EventCollector.sendEvent(Event.Action.IOCBuyer.OpenIOCDetails(item))
+        fun openIOCDetails(invoiceId: String) {
+            EventCollector.sendEvent(
+                Event.Action.IOCBuyer.OpenIOCDetails(
+                    item.unitCode,
+                    item.tradeName,
+                    invoiceId
+                )
+            )
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
@@ -103,16 +109,17 @@ sealed class IocBuyerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
     }
 
-    class InvDetails(val item: BuyerDetailsData) : IocBuyerScope() {
+    class InvDetails(val unitCode: String, val tradeName: String, val invoiceId: String) :
+        IocBuyerScope() {
         override val isRoot: Boolean = false
         val data: DataSource<InvoiceDetails?> = DataSource(null)
         val items: DataSource<List<InvContactDetails>> = DataSource(emptyList())
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
             return TabBarInfo.StoreTitle(
-                storeName = item.tradeName,
+                storeName = tradeName,
                 showNotifications = false,
-                event = Event.Action.Management.GetDetails(item.unitCode)
+                event = Event.Action.Management.GetDetails(unitCode)
             )
         }
 

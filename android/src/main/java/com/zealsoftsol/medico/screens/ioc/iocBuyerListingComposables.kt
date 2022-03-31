@@ -98,7 +98,7 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
     val items = scope.items.flow.collectAsState()
 
     remember {
-        scope.loadData(scope.item.invoiceId)
+        scope.loadData(scope.invoiceId)
     }
     Box(
         modifier = Modifier.background(Color.White)
@@ -385,7 +385,9 @@ private fun InvBuyerListing(scope: IocBuyerScope.InvListing) {
                     itemContent = { _, item ->
                         BuyerInvoiceListItem(
                             item,
-                            { scope.openIOCDetails(item) },
+                            {
+                                scope.openIOCDetails(item.invoiceId)
+                            },
                             { scope.previewImage(item = item.viewInvoiceUrl) })
                     },
                 )
