@@ -19,7 +19,8 @@ class MockSearchScope : NetworkScope.Search {
         unitCode: String?,
         latitude: Double,
         longitude: Double,
-        pagination: Pagination
+        pagination: Pagination,
+        addPage:Boolean
     ) = mockResponse {
         SearchResponse(emptyList(), emptyList(), 0, emptyList())
     }

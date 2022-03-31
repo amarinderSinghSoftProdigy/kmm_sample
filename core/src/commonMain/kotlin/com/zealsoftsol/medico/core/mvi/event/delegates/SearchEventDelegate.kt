@@ -4,7 +4,9 @@ import com.zealsoftsol.medico.core.extensions.toScope
 import com.zealsoftsol.medico.core.mvi.Navigator
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.onError
+import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.extra.BottomSheet
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.SearchScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.StoresScope
@@ -36,7 +38,11 @@ internal class SearchEventDelegate(
     private var searchJob: Job? = null
 
     override suspend fun handleEvent(event: Event.Action.Search) = when (event) {
-        is Event.Action.Search.SearchInput -> searchInput(event.isOneOf, event.search, event.query)
+        is Event.Action.Search.SearchInput -> searchInput(
+            event.isOneOf,
+            event.search,
+            event.query,
+        )
         is Event.Action.Search.SearchAutoComplete -> searchAutoComplete(
             event.value,
             event.sellerUnitCode
@@ -127,19 +133,32 @@ internal class SearchEventDelegate(
         }
     }
 
-    private suspend fun searchInput(isOneOf: Boolean, search: String?, query: Map<String, String>) {
+    private suspend fun searchInput(
+        isOneOf: Boolean,
+        search: String?,
+        query: Map<String, String>,
+    ) {
         reset()
         navigator.withScope<BaseSearchScope> {
-            it.pagination.reset()
+            if (search != null) it.pagination.reset()
             if (search != null) it.productSearch.value = search
             it.autoComplete.value = emptyList()
             val isWildcardSearch = search == null && query.isEmpty()
-            it.search(
-                addPage = false,
-                withDelay = false,
-                withProgress = true,//if (it.supportsAutoComplete) !isWildcardSearch else false,
-                extraFilters = query.mapValues { (_, value) -> Option.StringValue(value, false) },
-            )
+            withProgress {
+                it.search(
+                    it.pagination,
+                    addPage = isOneOf,
+                    withDelay = false,
+                    withProgress = true,//if (it.supportsAutoComplete) !isWildcardSearch else false,
+                    extraFilters = query.mapValues { (_, value) ->
+                        Option.StringValue(
+                            value,
+                            false
+                        )
+                    },
+
+                    )
+            }
         }
     }
 
@@ -203,6 +222,7 @@ internal class SearchEventDelegate(
             it.productSearch.value = autoComplete.suggestion
             it.pagination.reset()
             it.search(
+                it.pagination,
                 addPage = false,
                 withDelay = false,
                 withProgress = true,
@@ -264,6 +284,7 @@ internal class SearchEventDelegate(
                             (activeFilters + extraFilters) as HashMap<String, Option.StringValue>
                     }
                     it.search(
+                        it.pagination,
                         addPage = false,
                         withDelay = false,
                         withProgress = true,
@@ -312,6 +333,7 @@ internal class SearchEventDelegate(
                 it.filterSearches.value = emptyMap()
             }
             it.search(
+                it.pagination,
                 addPage = false,
                 withDelay = false,
                 withProgress = true,
@@ -322,7 +344,7 @@ internal class SearchEventDelegate(
     private suspend fun selectSortOption(option: SortOption?) {
         navigator.withScope<BaseSearchScope> {
             it.selectedSortOption.value = option ?: it.sortOptions.value.firstOrNull()
-            searchInput(false, null, emptyMap())
+            searchInput(false, "", emptyMap())
         }
     }
 
@@ -331,6 +353,7 @@ internal class SearchEventDelegate(
             if (!navigator.scope.value.isInProgress.value && it.pagination.canLoadMore()) {
                 setHostProgress(true)
                 it.search(
+                    it.pagination,
                     addPage = true,
                     withDelay = false,
                     withProgress = true,
@@ -375,34 +398,37 @@ internal class SearchEventDelegate(
     }
 
     private suspend inline fun BaseSearchScope.search(
-        addPage: Boolean,
+        pagination: Pagination,
+        addPage: Boolean = false,
         withDelay: Boolean,
         withProgress: Boolean,
         extraFilters: Map<String, Option.StringValue> = emptyMap(),
         crossinline onEnd: () -> Unit = {}
     ) {
-        searchAsync(withDelay = withDelay, withProgress = withProgress) {
-            //val address = userRepo.requireUser().addressData
-            val address = userRepo.requireUser()
-            networkSearchScope.search(
-                selectedSortOption.value?.code,
-                (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
-                unitCode.takeIf { this is StoresScope.StorePreview },
-                address.latitude,
-                address.longitude,
-                pagination,
-            ).onSuccess { body ->
-                pagination.setTotal(body.totalResults)
-                filtersManufactures.value = body.facets.toManufactureFilter()
-                filters.value = body.facets.toFilter()
-                products.value = if (!addPage) body.products else products.value + body.products
-                sortOptions.value = body.sortOptions
-                if (selectedSortOption.value == null) {
-                    selectedSortOption.value = sortOptions.value.firstOrNull()
-                }
-            }.onError(navigator)
-            onEnd()
-        }
+        //searchAsync(withDelay = withDelay, withProgress = withProgress) {
+        //val address = userRepo.requireUser().addressData
+        val address = userRepo.requireUser()
+        networkSearchScope.search(
+            selectedSortOption.value?.code,
+            (activeFilters + extraFilters).map { (queryName, option) -> queryName to option.value },
+            unitCode.takeIf { this is StoresScope.StorePreview },
+            address.latitude,
+            address.longitude,
+            pagination,
+            addPage,
+        ).onSuccess { body ->
+            pagination.setTotal(body.totalResults)
+            filtersManufactures.value = body.facets.toManufactureFilter()
+            filters.value = body.facets.toFilter()
+            products.value = /*if (!addPage)*/
+                body.products /*else products.value + body.products*/
+            sortOptions.value = body.sortOptions
+            if (selectedSortOption.value == null) {
+                selectedSortOption.value = sortOptions.value.firstOrNull()
+            }
+        }.onError(navigator)
+        onEnd()
+        //}
     }
 
     private suspend fun searchAsync(

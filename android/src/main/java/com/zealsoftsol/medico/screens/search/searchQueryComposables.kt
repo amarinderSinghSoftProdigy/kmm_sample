@@ -92,6 +92,8 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
@@ -101,17 +103,21 @@ import com.zealsoftsol.medico.screens.common.clickable
 fun SearchScreen(scope: SearchScope, listState: LazyListState) {
     Box {
         val showAlert = scope.showNoStockistAlert.flow.collectAsState()
+        val search = scope.productSearch.flow.collectAsState()
+        val autoComplete = scope.autoComplete.flow.collectAsState()
+        val filters = scope.filters.flow.collectAsState()
+        val filterSearches = scope.filterSearches.flow.collectAsState()
+        val products = scope.products.flow.collectAsState()
+        val showFilter = scope.isFilterOpened.flow.collectAsState()
+        val sortOptions = scope.sortOptions.flow.collectAsState()
+        val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+        val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            val search = scope.productSearch.flow.collectAsState()
-            val autoComplete = scope.autoComplete.flow.collectAsState()
-            val filters = scope.filters.flow.collectAsState()
-            val filterSearches = scope.filterSearches.flow.collectAsState()
-            val products = scope.products.flow.collectAsState()
-            val showFilter = scope.isFilterOpened.flow.collectAsState()
-            val sortOptions = scope.sortOptions.flow.collectAsState()
-            val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 30.dp)
+        ) {
 
             if (showFilter.value) {
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -216,9 +222,9 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                                     onBuy = { scope.buy(item) },
                                     scope = scope
                                 )
-                                if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
+                                /*if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
                                     scope.loadMoreProducts()
-                                }
+                                }*/
                             },
                         )
                     }
@@ -242,6 +248,19 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                     }
                 }
             }
+        }
+
+        if (products.value.isNotEmpty()) {
+            PaginationButtons(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                .align(Alignment.BottomCenter),
+                scope.pagination, products.value.size, {
+                    scope.startSearch(true)
+                }, {
+                    scope.startSearch(false)
+                })
+
         }
         if (showAlert.value)
             ShowAlert(message = stringResource(id = R.string.no_stockist)) {
