@@ -511,7 +511,7 @@ sealed class Event {
                 val manufacturer: String? = null,
                 val page: Int,
                 val stockStatus: InventoryScope.InventoryType,
-                val status: InventoryScope.InventoryStatus
+                val status: InventoryScope.StockStatus
             ) : Inventory()
 
             data class GetBatches(val spid: String, val productsData: ProductsData) : Inventory()

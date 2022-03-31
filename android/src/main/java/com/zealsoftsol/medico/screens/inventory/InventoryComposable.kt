@@ -3,6 +3,7 @@ package com.zealsoftsol.medico.screens.inventory
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -27,8 +29,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -84,7 +84,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val manufacturersList = scope.manufacturersList.flow.collectAsState().value
     val productsList = scope.productsList.flow.collectAsState().value
     val totalResults = scope.totalProducts
-    val mCurrentManufacturer = scope.mCurrentManufacturerName.flow.collectAsState().value
     val searchTerm = remember { mutableStateOf("") }
     var queryTextChangedJob: Job? = null
     val showNoBatchesDialog = scope.showNoBatchesDialog.flow.collectAsState().value
@@ -92,8 +91,6 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val showManufacturers = remember { mutableStateOf(false) }
     val showGraphs = remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
-    val inventoryType = scope.inventoryType.flow.collectAsState().value
-    val inventoryStatus = scope.inventoryStatus.flow.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -243,64 +240,17 @@ fun InventoryMainComposable(scope: InventoryScope) {
             startIndent = 0.dp
         )
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 10.dp),
-            verticalAlignment = CenterVertically,
-            horizontalArrangement = Arrangement.End
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = CenterVertically
-            ) {
-
-                Text(
-                    text = inventoryType.title,
-                    color = if (inventoryType.value) ConstColors.lightGreen else ConstColors.red,
-                    fontSize = 12.sp,
-                )
-                Space(dp = 12.dp)
-                Switch(
-                    checked = inventoryType.value, onCheckedChange = {
-                        if (it) {
-                            scope.updateInventoryType(InventoryScope.InventoryType.IN_STOCK)
-                        } else {
-                            scope.updateInventoryType(InventoryScope.InventoryType.OUT_OF_STOCK)
-                        }
-                    }, colors = SwitchDefaults.colors(
-                        checkedThumbColor = ConstColors.green,
-                        uncheckedThumbColor = ConstColors.red
-                    )
-                )
-            }
-            Row(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                verticalAlignment = CenterVertically
-            ) {
-
-                Text(
-                    text = inventoryStatus.title,
-                    color = if (inventoryStatus.value) ConstColors.lightGreen else ConstColors.red,
-                    fontSize = 12.sp,
-                )
-                Space(dp = 12.dp)
-                Switch(
-                    checked = inventoryStatus.value, onCheckedChange = {
-                        if (it) {
-                            scope.updateInventoryStatus(InventoryScope.InventoryStatus.ONLINE)
-                        } else {
-                            scope.updateInventoryStatus(InventoryScope.InventoryStatus.OFFLINE)
-                        }
-                    }, colors = SwitchDefaults.colors(
-                        checkedThumbColor = ConstColors.green,
-                        uncheckedThumbColor = ConstColors.red
-                    )
-                )
-            }
+            StockStatus(scope)
+            InventoryStatus(scope)
         }
 
         if (showGraphs.value) {
-
             Space(10.dp)
             LazyRow(
                 state = lazyListState,
@@ -382,33 +332,43 @@ fun InventoryMainComposable(scope: InventoryScope) {
             shape = RoundedCornerShape(5.dp),
             backgroundColor = Color.White,
         ) {
-            Column {
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 7.dp)
-                        .weight(0.9f),
-                ) {
-                    itemsIndexed(
-                        items = productsList,
-                        key = { index, _ -> index },
-                        itemContent = { index, item ->
-                            ProductsItem(item, scope)
-                        },
-                    )
-                }
-
-                if (productsList.size < totalResults) {
-                    MedicoButton(
+            Column(verticalArrangement = Arrangement.Center) {
+                if (productsList.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 3.dp),
                         modifier = Modifier
-                            .padding(horizontal = 20.dp)
-                            .padding(top = 5.dp, bottom = 5.dp)
-                            .height(40.dp),
-                        text = stringResource(id = R.string.more),
-                        isEnabled = true,
+                            .padding(horizontal = 7.dp)
+                            .weight(0.9f),
                     ) {
-                        scope.getInventory(search = searchTerm.value)
+                        itemsIndexed(
+                            items = productsList,
+                            key = { index, _ -> index },
+                            itemContent = { index, item ->
+                                ProductsItem(item, scope)
+                            },
+                        )
                     }
+
+                    if (productsList.size < totalResults) {
+                        MedicoButton(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .padding(top = 5.dp, bottom = 5.dp)
+                                .height(40.dp),
+                            text = stringResource(id = R.string.more),
+                            isEnabled = true,
+                        ) {
+                            scope.getInventory(search = searchTerm.value)
+                        }
+                    }
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.no_products),
+                        fontWeight = FontWeight.W600,
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -417,6 +377,129 @@ fun InventoryMainComposable(scope: InventoryScope) {
     if (showNoBatchesDialog) {
         ShowAlert(message = stringResource(id = R.string.no_batches_available)) {
             scope.hideBatchesDialog()
+        }
+    }
+}
+
+@Composable
+fun StockStatus(scope: InventoryScope) {
+
+    val options = listOf(
+        InventoryScope.StockStatus.ALL,
+        InventoryScope.StockStatus.ONLINE,
+        InventoryScope.StockStatus.OFFLINE,
+    )
+    val stockStatus = scope.stockStatus.flow.collectAsState().value
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .horizontalScroll(
+                rememberScrollState()
+            ),
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 5.dp),
+            text = "${stringResource(id = R.string.status)}:",
+            color = Color.Black,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.W600
+        )
+        options.forEach {
+            Row(Modifier.padding(all = 5.dp)) {
+                Text(
+                    text = it.title,
+                    color = if (it == stockStatus) {
+                        Color.White
+                    } else {
+                        Color.Black
+                    },
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clip(
+                            shape = RoundedCornerShape(
+                                size = 10.dp,
+                            ),
+                        )
+                        .clickable {
+                            scope.updateInventoryStatus(it)
+                        }
+                        .background(
+                            if (it == stockStatus) {
+                                ConstColors.green
+                            } else {
+                                Color.LightGray
+                            }
+                        )
+                        .padding(
+                            vertical = 5.dp,
+                            horizontal = 5.dp,
+                        ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun InventoryStatus(scope: InventoryScope) {
+
+    val options = listOf(
+        InventoryScope.InventoryType.ALL,
+        InventoryScope.InventoryType.IN_STOCK,
+        InventoryScope.InventoryType.LIMITED_STOCK,
+        InventoryScope.InventoryType.OUT_OF_STOCK,
+    )
+    val inventoryStatus = scope.inventoryType.flow.collectAsState().value
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .horizontalScroll(
+                rememberScrollState()
+            )
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 5.dp),
+            text = "${stringResource(id = R.string.stock_status)}:",
+            color = Color.Black,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.W600
+        )
+        options.forEach {
+            Row(modifier = Modifier.padding(all = 5.dp)) {
+                Text(
+                    text = it.title,
+                    color = if (it == inventoryStatus) {
+                        Color.White
+                    } else {
+                        Color.Black
+                    },
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clip(
+                            shape = RoundedCornerShape(
+                                size = 10.dp,
+                            ),
+                        )
+                        .clickable {
+                            scope.updateInventoryType(it)
+                        }
+                        .background(
+                            if (it == inventoryStatus) {
+                                ConstColors.green
+                            } else {
+                                Color.LightGray
+                            }
+                        )
+                        .padding(
+                            vertical = 5.dp,
+                            horizontal = 5.dp,
+                        ),
+                )
+            }
         }
     }
 }
@@ -560,7 +643,8 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = CenterVertically
             ) {
-                Text(
+                //to be uncommented when batch count is added in API
+                /*Text(
                     text = stringResource(id = R.string.batchs),
                     color = Color.Black,
                     fontSize = 12.sp,
@@ -571,7 +655,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     text = item.availableQty?.formattedValue ?: "", modifier = Modifier.padding(
                         end = 5.dp
                     ), color = ConstColors.darkGreen, radius = 2
-                )
+                )*/
             }
         }
 

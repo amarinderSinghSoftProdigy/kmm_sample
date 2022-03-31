@@ -198,7 +198,7 @@ fun StockistMenu(scope: MenuScope) {
     )
     Separator(thickness = 0.5f)
     AccountContentItem(
-        route = Event.Transition.Inventory(InventoryScope.InventoryType.IN_STOCK),
+        route = Event.Transition.Inventory(InventoryScope.InventoryType.ALL),
         drawableResourceId = R.drawable.ic_menu_inventory,
         stringResourceId = R.string.inventory,
         scope = scope,

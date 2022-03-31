@@ -1285,7 +1285,7 @@ class NetworkClient(
         page: Int,
         manufacturer: String?,
         stockStatus: InventoryScope.InventoryType,
-        status: InventoryScope.InventoryStatus
+        status: InventoryScope.StockStatus
     ): BodyResponse<InventoryData> = simpleRequest {
         client.get("${baseUrl.url}/inventory/view") {
             withMainToken()

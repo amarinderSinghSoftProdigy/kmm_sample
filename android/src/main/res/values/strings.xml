@@ -463,6 +463,7 @@
     <string name="pay_now">Pay Now</string>
     <string name="ptr_more_warning">PTR is greater than MRP</string>
     <string name="margin_perc">Margin Percentage</string>
+    <string name="stock_status">Stock Status</string>
 
     <!-- Termrs and Cond -->
 

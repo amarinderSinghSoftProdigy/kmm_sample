@@ -112,7 +112,7 @@ internal class InventoryEventDelegate(
         manufacturer: String?,
         page: Int,
         stockStatus: InventoryScope.InventoryType,
-        status: InventoryScope.InventoryStatus
+        status: InventoryScope.StockStatus
     ) {
         navigator.withScope<InventoryScope> {
             withProgress {

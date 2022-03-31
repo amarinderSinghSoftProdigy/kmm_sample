@@ -13,8 +13,8 @@ import com.zealsoftsol.medico.data.StockExpiredData
 import com.zealsoftsol.medico.data.StocksStatusData
 
 class InventoryScope(
-    var inventoryType: DataSource<InventoryType> = DataSource(InventoryType.IN_STOCK),
-    var inventoryStatus: DataSource<InventoryStatus> = DataSource(InventoryStatus.ONLINE)
+    var inventoryType: DataSource<InventoryType> = DataSource(InventoryType.ALL),
+    var stockStatus: DataSource<StockStatus> = DataSource(StockStatus.ALL)
 ) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
@@ -31,13 +31,13 @@ class InventoryScope(
     var totalProducts = 0
     private var mManufacturerCode = ""
 
-    enum class InventoryType(val title: String, val value: Boolean) {
-        IN_STOCK("In Stock", true),
-        OUT_OF_STOCK("Out Of Stock", false)
+    enum class InventoryType(val title: String) {
+        ALL("All"), LIMITED_STOCK("Limited Stock"), IN_STOCK("In Stock"),
+        OUT_OF_STOCK("Out Of Stock")
     }
 
-    enum class InventoryStatus(val title: String, val value: Boolean) {
-        ONLINE("Online", true), OFFLINE("Offline", false)
+    enum class StockStatus(val title: String) {
+        ALL("All"), ONLINE("Online"), OFFLINE("Offline")
     }
 
 
@@ -91,8 +91,8 @@ class InventoryScope(
     /**
      * update Inventory Status to API
      */
-    fun updateInventoryStatus(status: InventoryStatus) {
-        inventoryStatus.value = status
+    fun updateInventoryStatus(status: StockStatus) {
+        stockStatus.value = status
         productsList.value.clear()
         getInventory(true)
     }
@@ -110,7 +110,7 @@ class InventoryScope(
                     page = 0,
                     search = search,
                     manufacturer = mManufacturerCode,
-                    status = inventoryStatus.value,
+                    status = stockStatus.value,
                     stockStatus = inventoryType.value
                 )
             )
@@ -143,7 +143,7 @@ class InventoryScope(
                 page = mCurrentPage,
                 search = search,
                 manufacturer = mManufacturerCode,
-                status = inventoryStatus.value,
+                status = stockStatus.value,
                 stockStatus = inventoryType.value
             )
         )

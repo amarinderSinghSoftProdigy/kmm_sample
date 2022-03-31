@@ -372,7 +372,7 @@ interface NetworkScope {
             page: Int,
             manufacturer: String?,
             stockStatus: InventoryScope.InventoryType,
-            status: InventoryScope.InventoryStatus
+            status: InventoryScope.StockStatus
         ): BodyResponse<InventoryData>
 
         suspend fun getBatches(
