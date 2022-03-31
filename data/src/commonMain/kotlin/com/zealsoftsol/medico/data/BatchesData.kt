@@ -28,7 +28,8 @@ data class Batch(
     val hsncode: String,
     val spid: String,
     val promotionData: BatchPromotionData,
-    val status: Status
+    val status: Status,
+    val marginPercent: String,
 ) {
     enum class Status {
         ONLINE, OFFLINE
