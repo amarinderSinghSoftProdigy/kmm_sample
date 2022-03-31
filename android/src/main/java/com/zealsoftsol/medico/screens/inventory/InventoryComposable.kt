@@ -347,20 +347,23 @@ fun InventoryMainComposable(scope: InventoryScope) {
                                 ProductsItem(item, scope)
                             },
                         )
-                    }
 
-                    if (productsList.size < totalResults) {
-                        MedicoButton(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .padding(top = 5.dp, bottom = 5.dp)
-                                .height(40.dp),
-                            text = stringResource(id = R.string.more),
-                            isEnabled = true,
-                        ) {
-                            scope.getInventory(search = searchTerm.value)
+                        item {
+                            if (productsList.size < totalResults) {
+                                MedicoButton(
+                                    modifier = Modifier
+                                        .padding(horizontal = 20.dp)
+                                        .padding(top = 5.dp, bottom = 5.dp)
+                                        .height(40.dp),
+                                    text = stringResource(id = R.string.more),
+                                    isEnabled = true,
+                                ) {
+                                    scope.getInventory(search = searchTerm.value)
+                                }
+                            }
                         }
                     }
+
                 } else {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
