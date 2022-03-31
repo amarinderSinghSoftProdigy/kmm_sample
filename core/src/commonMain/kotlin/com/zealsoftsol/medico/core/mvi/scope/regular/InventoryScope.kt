@@ -12,7 +12,10 @@ import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.StockExpiredData
 import com.zealsoftsol.medico.data.StocksStatusData
 
-class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
+class InventoryScope(
+    var inventoryType: DataSource<InventoryType> = DataSource(InventoryType.ALL),
+    var stockStatus: DataSource<StockStatus> = DataSource(StockStatus.ALL)
+) : Scope.Child.TabBar(), CommonScope.CanGoBack {
 
     override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo) = TabBarInfo.OnlyBackHeader("")
 
@@ -28,19 +31,29 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     var totalProducts = 0
     private var mManufacturerCode = ""
 
+    enum class InventoryType(val title: String) {
+        ALL("All"), LIMITED_STOCK("Limited Stock"), IN_STOCK("In Stock"),
+        OUT_OF_STOCK("Out Of Stock")
+    }
+
+    enum class StockStatus(val title: String) {
+        ALL("All"), ONLINE("Online"), OFFLINE("Offline")
+    }
+
+
     init {
         getInventory(true)
     }
 
-    fun hideBatchesDialog(){
+    fun hideBatchesDialog() {
         showNoBatchesDialog.value = false
     }
 
     /**
      * get batches data for the selected product
      */
-    fun getBatchesData(spid: String,productsData: ProductsData) {
-        EventCollector.sendEvent(Event.Action.Inventory.GetBatches(spid,productsData))
+    fun getBatchesData(spid: String, productsData: ProductsData) {
+        EventCollector.sendEvent(Event.Action.Inventory.GetBatches(spid, productsData))
     }
 
     /**
@@ -67,6 +80,24 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     }
 
     /**
+     * update Inventory Type to API
+     */
+    fun updateInventoryType(type: InventoryType) {
+        inventoryType.value = type
+        productsList.value.clear()
+        getInventory(true)
+    }
+
+    /**
+     * update Inventory Status to API
+     */
+    fun updateInventoryStatus(status: StockStatus) {
+        stockStatus.value = status
+        productsList.value.clear()
+        getInventory(true)
+    }
+
+    /**
      * start search for a product
      */
     fun startSearch(search: String?) {
@@ -78,7 +109,9 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
                 Event.Action.Inventory.GetInventory(
                     page = 0,
                     search = search,
-                    manufacturer = mManufacturerCode
+                    manufacturer = mManufacturerCode,
+                    status = stockStatus.value,
+                    stockStatus = inventoryType.value
                 )
             )
         }
@@ -97,7 +130,10 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
     /**
      * get current Inventory of stockist
      */
-    fun getInventory(isFirstLoad: Boolean = false, search: String? = null) {
+    fun getInventory(
+        isFirstLoad: Boolean = false,
+        search: String? = null,
+    ) {
         if (isFirstLoad)
             mCurrentPage = 0
         else
@@ -106,7 +142,9 @@ class InventoryScope : Scope.Child.TabBar(), CommonScope.CanGoBack {
             Event.Action.Inventory.GetInventory(
                 page = mCurrentPage,
                 search = search,
-                manufacturer = mManufacturerCode
+                manufacturer = mManufacturerCode,
+                status = stockStatus.value,
+                stockStatus = inventoryType.value
             )
         )
     }

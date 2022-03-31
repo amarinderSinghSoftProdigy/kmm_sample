@@ -2,8 +2,8 @@ package com.zealsoftsol.medico.screens.inventory
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -32,6 +34,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +63,7 @@ import com.zealsoftsol.medico.data.ProductsData
 import com.zealsoftsol.medico.data.StockStatus
 import com.zealsoftsol.medico.screens.common.CoilImageBrands
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
+import com.zealsoftsol.medico.screens.common.MedicoButton
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
@@ -81,14 +84,13 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val manufacturersList = scope.manufacturersList.flow.collectAsState().value
     val productsList = scope.productsList.flow.collectAsState().value
     val totalResults = scope.totalProducts
-    val mCurrentManufacturer = scope.mCurrentManufacturerName.flow.collectAsState().value
     val searchTerm = remember { mutableStateOf("") }
-    val keyboardController = LocalSoftwareKeyboardController.current
     var queryTextChangedJob: Job? = null
     val showNoBatchesDialog = scope.showNoBatchesDialog.flow.collectAsState().value
-    var showSearchBar = remember { mutableStateOf(false) }
-    var showManufacturers = remember { mutableStateOf(false) }
+    val showSearchBar = remember { mutableStateOf(false) }
+    val showManufacturers = remember { mutableStateOf(false) }
     val showGraphs = remember { mutableStateOf(false) }
+    val lazyListState = rememberLazyListState()
 
     Column(
         modifier = Modifier
@@ -99,7 +101,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
@@ -143,14 +145,14 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             maxLines = 1,
                             singleLine = true,
                             onValueChange = {
-                                    searchTerm.value = it
+                                searchTerm.value = it
 
-                                    queryTextChangedJob?.cancel()
+                                queryTextChangedJob?.cancel()
 
-                                    queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
-                                        delay(500)
-                                        scope.startSearch(it)
-                                    }
+                                queryTextChangedJob = CoroutineScope(Dispatchers.Main).launch {
+                                    delay(500)
+                                    scope.startSearch(it)
+                                }
                             },
                             textStyle = LocalTextStyle.current.copy(
                                 color = Color.Black,
@@ -179,7 +181,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                 Row(
                     modifier = Modifier
                         .padding(end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
                     Surface(
@@ -237,10 +239,21 @@ fun InventoryMainComposable(scope: InventoryScope) {
             thickness = 0.5.dp,
             startIndent = 0.dp
         )
-        if (showGraphs.value) {
 
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            StockStatus(scope)
+            InventoryStatus(scope)
+        }
+
+        if (showGraphs.value) {
             Space(10.dp)
             LazyRow(
+                state = lazyListState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -268,6 +281,20 @@ fun InventoryMainComposable(scope: InventoryScope) {
                             .fillParentMaxWidth()
                             .padding(8.dp),
                     )
+                }
+            }
+
+            //auto rotate banner after every 3 seconds
+            LaunchedEffect(lazyListState.firstVisibleItemIndex) {
+                delay(5000) // wait for 5 seconds.
+                // increasing the position and check the limit
+                var newPosition = lazyListState.firstVisibleItemIndex + 1
+                if (newPosition > 3 - 1) newPosition = 0
+                // scrolling to the new position.
+                if (newPosition == 0) {
+                    lazyListState.scrollToItem(newPosition)
+                } else {
+                    lazyListState.animateScrollToItem(newPosition)
                 }
             }
         }
@@ -305,76 +332,45 @@ fun InventoryMainComposable(scope: InventoryScope) {
             shape = RoundedCornerShape(5.dp),
             backgroundColor = Color.White,
         ) {
-            Column {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .padding(horizontal = 10.dp, vertical = 10.dp),
-                ) {
-                    Text(
-                        text = mCurrentManufacturer,
-                        color = ConstColors.green,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.W700,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-
-                    Row(
-                        modifier = Modifier.padding(top = 5.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.total_prod),
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(end = 5.dp)
-                        )
-                        Text(
-                            text = totalResults.toString(),
-                            color = Color.Black,
-                            fontSize = 12.sp,
-                            modifier = Modifier
-                                .border(
-                                    1.dp,
-                                    color = ConstColors.green,
-                                    shape = RoundedCornerShape(2.dp)
-                                )
-                                .padding(3.dp)
-                        )
-
-                    }
-                }
-                LazyColumn(
-                    contentPadding = PaddingValues(start = 3.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 7.dp)
-                        .weight(0.9f),
-                ) {
-                    itemsIndexed(
-                        items = productsList,
-                        key = { index, _ -> index },
-                        itemContent = { index, item ->
-                            ProductsItem(item, scope)
-                        },
-                    )
-                }
-
-                if (productsList.size < totalResults) {
-                    Text(
+            Column(verticalArrangement = Arrangement.Center) {
+                if (productsList.isNotEmpty()) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(start = 3.dp),
                         modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(top = 5.dp)
-                            .height(30.dp)
-                            .clickable {
-                                scope.getInventory(search = searchTerm.value)
+                            .padding(horizontal = 7.dp)
+                            .weight(0.9f),
+                    ) {
+                        itemsIndexed(
+                            items = productsList,
+                            key = { index, _ -> index },
+                            itemContent = { index, item ->
+                                ProductsItem(item, scope)
                             },
-                        text = stringResource(id = R.string.more),
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        fontWeight = FontWeight.W700,
-                        fontSize = 16.sp
+                        )
+
+                        item {
+                            if (productsList.size < totalResults) {
+                                MedicoButton(
+                                    modifier = Modifier
+                                        .padding(horizontal = 20.dp)
+                                        .padding(top = 5.dp, bottom = 5.dp)
+                                        .height(40.dp),
+                                    text = stringResource(id = R.string.more),
+                                    isEnabled = true,
+                                ) {
+                                    scope.getInventory(search = searchTerm.value)
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.no_products),
+                        fontWeight = FontWeight.W600,
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -388,6 +384,129 @@ fun InventoryMainComposable(scope: InventoryScope) {
     }
 }
 
+@Composable
+fun StockStatus(scope: InventoryScope) {
+
+    val options = listOf(
+        InventoryScope.StockStatus.ALL,
+        InventoryScope.StockStatus.ONLINE,
+        InventoryScope.StockStatus.OFFLINE,
+    )
+    val stockStatus = scope.stockStatus.flow.collectAsState().value
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .horizontalScroll(
+                rememberScrollState()
+            ),
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 5.dp),
+            text = "${stringResource(id = R.string.status)}:",
+            color = Color.Black,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.W600
+        )
+        options.forEach {
+            Row(Modifier.padding(all = 5.dp)) {
+                Text(
+                    text = it.title,
+                    color = if (it == stockStatus) {
+                        Color.White
+                    } else {
+                        Color.Black
+                    },
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clip(
+                            shape = RoundedCornerShape(
+                                size = 10.dp,
+                            ),
+                        )
+                        .clickable {
+                            scope.updateInventoryStatus(it)
+                        }
+                        .background(
+                            if (it == stockStatus) {
+                                ConstColors.green
+                            } else {
+                                Color.LightGray
+                            }
+                        )
+                        .padding(
+                            vertical = 5.dp,
+                            horizontal = 5.dp,
+                        ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun InventoryStatus(scope: InventoryScope) {
+
+    val options = listOf(
+        InventoryScope.InventoryType.ALL,
+        InventoryScope.InventoryType.IN_STOCK,
+        InventoryScope.InventoryType.LIMITED_STOCK,
+        InventoryScope.InventoryType.OUT_OF_STOCK,
+    )
+    val inventoryStatus = scope.inventoryType.flow.collectAsState().value
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp)
+            .horizontalScroll(
+                rememberScrollState()
+            )
+    ) {
+        Text(
+            modifier = Modifier.padding(end = 5.dp),
+            text = "${stringResource(id = R.string.stock_status)}:",
+            color = Color.Black,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.W600
+        )
+        options.forEach {
+            Row(modifier = Modifier.padding(all = 5.dp)) {
+                Text(
+                    text = it.title,
+                    color = if (it == inventoryStatus) {
+                        Color.White
+                    } else {
+                        Color.Black
+                    },
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clip(
+                            shape = RoundedCornerShape(
+                                size = 10.dp,
+                            ),
+                        )
+                        .clickable {
+                            scope.updateInventoryType(it)
+                        }
+                        .background(
+                            if (it == inventoryStatus) {
+                                ConstColors.green
+                            } else {
+                                Color.LightGray
+                            }
+                        )
+                        .padding(
+                            vertical = 5.dp,
+                            horizontal = 5.dp,
+                        ),
+                )
+            }
+        }
+    }
+}
+
 /**
  * Display product data
  */
@@ -395,7 +514,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
 private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
     Column(
         verticalArrangement = Arrangement.Center, modifier = Modifier
-            .height(75.dp)
+            .height(90.dp)
             .clickable {
                 scope.getBatchesData(item.spid ?: "", item)
             }) {
@@ -408,7 +527,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -416,7 +535,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     .weight(1f)
                     .padding(top = 5.dp),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.ptr?.formattedValue ?: "",
@@ -445,7 +564,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             Row(
                 modifier = Modifier.weight(1f),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = stringResource(id = R.string.stock),
@@ -464,7 +583,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -472,7 +591,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     .weight(1f)
                     .padding(top = 5.dp),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.stockStatus ?: "",
@@ -488,7 +607,7 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
             Row(
                 modifier = Modifier.weight(1f),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = item.status ?: "",
@@ -505,6 +624,41 @@ private fun ProductsItem(item: ProductsData, scope: InventoryScope) {
                     },
                     fontSize = 12.sp,
                 )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                modifier = Modifier.weight(.7f),
+                text = item.vendorMnfrName ?: "",
+                fontSize = 12.sp,
+                color = ConstColors.green,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(
+                modifier = Modifier.weight(.3f),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = CenterVertically
+            ) {
+                //to be uncommented when batch count is added in API
+                /*Text(
+                    text = stringResource(id = R.string.batchs),
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W700,
+                    modifier = Modifier.padding(end = 5.dp)
+                )
+                CommonRoundedView(
+                    text = item.availableQty?.formattedValue ?: "", modifier = Modifier.padding(
+                        end = 5.dp
+                    ), color = ConstColors.darkGreen, radius = 2
+                )*/
             }
         }
 
@@ -546,14 +700,26 @@ private fun ManufacturersItem(
                     Color.White,
                 )
         ) {
-            CoilImageBrands(
-                src = CdnUrlProvider.urlForM(item.code),
-                contentScale = ContentScale.Crop,
-                onError = { ItemPlaceholder() },
-                onLoading = { ItemPlaceholder() },
-                height = 90.dp,
-                width = 150.dp,
-            )
+            Box {
+                CoilImageBrands(
+                    src = CdnUrlProvider.urlForM(item.code),
+                    contentScale = ContentScale.Crop,
+                    onError = { ItemPlaceholder() },
+                    onLoading = { ItemPlaceholder() },
+                    height = 90.dp,
+                    width = 150.dp,
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    CommonRoundedView(
+                        text = item.count.toString(), modifier = Modifier
+                            .align(Alignment.TopEnd), color = ConstColors.darkGreen, radius = 2
+                    )
+                }
+            }
         }
         Space(5.dp)
         Text(
@@ -895,7 +1061,7 @@ private fun CommonRoundedView(
 @Composable
 private fun ColorIndicatorTextView(color: Color, text: String, modifier: Modifier) {
 
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier, verticalAlignment = CenterVertically) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(3.dp))

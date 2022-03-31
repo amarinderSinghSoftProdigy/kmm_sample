@@ -27,6 +27,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.scope.nested.MenuScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.screens.common.clickable
 
@@ -197,7 +198,7 @@ fun StockistMenu(scope: MenuScope) {
     )
     Separator(thickness = 0.5f)
     AccountContentItem(
-        route = Event.Transition.Inventory,
+        route = Event.Transition.Inventory(InventoryScope.InventoryType.ALL),
         drawableResourceId = R.drawable.ic_menu_inventory,
         stringResourceId = R.string.inventory,
         scope = scope,

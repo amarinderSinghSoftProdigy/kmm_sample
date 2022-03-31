@@ -207,7 +207,7 @@ internal class TransitionEventDelegate(
                 is Event.Transition.WhatsappPreference -> setScope(
                     WhatsappPreferenceScope("whatsapp_preference")
                 )
-                is Event.Transition.Inventory -> setScope(InventoryScope())
+                is Event.Transition.Inventory -> setScope(InventoryScope(DataSource(event.type)))
                 is Event.Transition.Menu -> setScope(
                     MenuScope(
                         userRepo.requireUser(),

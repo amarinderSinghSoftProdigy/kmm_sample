@@ -7,10 +7,10 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -61,15 +61,15 @@ class DashboardScope private constructor(
     /**
      * Move to offers screens
      */
-    fun moveToOffersScreen(){
+    fun moveToOffersScreen() {
         EventCollector.sendEvent(Event.Transition.Offers)
     }
 
     /**
      * Move to Inventory screens
      */
-    fun moveToInventoryScreen(){
-        EventCollector.sendEvent(Event.Transition.Inventory)
+    fun moveToInventoryScreen(type: InventoryScope.InventoryType) {
+        EventCollector.sendEvent(Event.Transition.Inventory(type))
     }
 
     /**

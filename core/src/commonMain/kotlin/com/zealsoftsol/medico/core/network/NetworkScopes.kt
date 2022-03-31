@@ -1,6 +1,7 @@
 package com.zealsoftsol.medico.core.network
 
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
 import com.zealsoftsol.medico.data.AddInvoiceResponse
@@ -371,7 +372,9 @@ interface NetworkScope {
             unitCode: String,
             search: String?,
             page: Int,
-            manufacturer: String?
+            manufacturer: String?,
+            stockStatus: InventoryScope.InventoryType,
+            status: InventoryScope.StockStatus
         ): BodyResponse<InventoryData>
 
         suspend fun getBatches(

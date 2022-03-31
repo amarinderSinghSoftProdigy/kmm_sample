@@ -245,32 +245,6 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
 
             val switchEnabled =
                 remember { mutableStateOf(item.status == Batch.Status.ONLINE) }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text = if (switchEnabled.value) stringResource(id = R.string.online)
-                    else stringResource(id = R.string.offline),
-                    color = if (switchEnabled.value) ConstColors.lightGreen else ConstColors.red,
-                    fontSize = 12.sp,
-                )
-                Space(dp = 12.dp)
-                if (selectData.value == null){
-                    Switch(
-                        checked = switchEnabled.value, onCheckedChange = {
-                            switchEnabled.value = it
-                            scope.updateBatchStatus(item, it)
-                        }, colors = SwitchDefaults.colors(
-                            checkedThumbColor = ConstColors.green
-                        )
-                    )
-                }
-            }
 
             Row(
                 modifier = Modifier
@@ -349,9 +323,60 @@ fun BatchesItem(item: Batch, scope: BatchesScope) {
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
+
+                    Row(
+                        modifier = Modifier.padding(top = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = "${stringResource(id = R.string.margin_perc)}:",
+                            color = ConstColors.txtGrey,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 5.dp),
+                            text = item.marginPercent,
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.W500,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
 
-                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                Column(modifier = Modifier.weight(0.8f), horizontalAlignment = Alignment.End) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 5.dp),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = if (switchEnabled.value) stringResource(id = R.string.online)
+                            else stringResource(id = R.string.offline),
+                            color = if (switchEnabled.value) ConstColors.lightGreen else ConstColors.red,
+                            fontSize = 12.sp,
+                        )
+                        Space(dp = 12.dp)
+                        if (selectData.value == null){
+                            Switch(
+                                checked = switchEnabled.value, onCheckedChange = {
+                                    switchEnabled.value = it
+                                    scope.updateBatchStatus(item, it)
+                                }, colors = SwitchDefaults.colors(
+                                    checkedThumbColor = ConstColors.green
+                                )
+                            )
+                        }
+                    }
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = buildAnnotatedString {

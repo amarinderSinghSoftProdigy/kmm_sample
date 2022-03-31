@@ -7,6 +7,7 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.IocBuyerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.IocSellerScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewInvoiceScope
 import com.zealsoftsol.medico.core.mvi.scope.nested.ViewOrderScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.OrderHsnEditScope
 import com.zealsoftsol.medico.data.AadhaarData
 import com.zealsoftsol.medico.data.AddInvoice
@@ -506,6 +507,8 @@ sealed class Event {
                 val search: String? = null,
                 val manufacturer: String? = null,
                 val page: Int,
+                val stockStatus: InventoryScope.InventoryType,
+                val status: InventoryScope.StockStatus
             ) : Inventory()
 
             data class GetBatches(val spid: String, val productsData: ProductsData) : Inventory()
@@ -642,7 +645,7 @@ sealed class Event {
             val phoneNumber: String
         ) : Transition()
 
-        object Inventory : Transition()
+        data class Inventory(val type: InventoryScope.InventoryType) : Transition()
         object Menu : Transition()
         data class Batches(
             val spid: String,

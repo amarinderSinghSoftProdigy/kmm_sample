@@ -115,6 +115,7 @@ import com.zealsoftsol.medico.screens.common.NoOpIndication
 import com.zealsoftsol.medico.screens.common.Placeholder
 import com.zealsoftsol.medico.screens.common.PlaceholderText
 import com.zealsoftsol.medico.screens.common.Separator
+import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.SingleTextLabel
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.UserLogoPlaceholder
@@ -130,6 +131,7 @@ import com.zealsoftsol.medico.screens.search.BatchItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.joda.time.DateTime
+import org.joda.time.LocalDate
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -2437,269 +2439,288 @@ private fun EditBatchItemBottomSheet(
         val batchNo = info.batchNo.flow.collectAsState()
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
+        val displayPtrError = remember { mutableStateOf(false) }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(500.dp)
-                .padding(vertical = 16.dp, horizontal = 24.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
+        Box {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(500.dp)
+                    .padding(vertical = 16.dp, horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.Black.copy(alpha = 0.12f),
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .size(24.dp),
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            tint = ConstColors.gray,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    }
-                }
-
-                Space(dp = 16.dp)
-
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.ptr),
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            modifier = Modifier.weight(0.3f),
-                            fontWeight = FontWeight.W600
-                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.BottomEnd
+                    ) {
                         Surface(
+                            shape = CircleShape,
+                            color = Color.Black.copy(alpha = 0.12f),
+                            onClick = onDismiss,
                             modifier = Modifier
-                                .weight(0.7f)
-                                .height(55.dp),
-                            color = Color.White,
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, ConstColors.separator)
+                                .size(24.dp),
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                EditText(
-                                    modifier = Modifier.padding(end = 10.dp),
-                                    canEdit = true,
-                                    value = ptr.value,
-                                    onChange = { info.updatePtr(it) })
-                            }
+
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = ConstColors.gray,
+                                modifier = Modifier.size(16.dp),
+                            )
                         }
                     }
-                    Space(dp = 8.dp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.mrp),
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier.weight(0.3f)
-                        )
 
-                        Surface(
-                            modifier = Modifier
-                                .weight(0.7f)
-                                .height(55.dp),
-                            color = Color.White,
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, ConstColors.separator)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                EditText(
-                                    modifier = Modifier.padding(end = 10.dp),
-                                    canEdit = true,
-                                    value = mrp.value,
-                                    onChange = { info.updateMrp(it) })
-                            }
-                        }
-                    }
-                    Space(dp = 8.dp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.stock),
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier.weight(0.3f)
-                        )
+                    Space(dp = 16.dp)
 
-                        Surface(
-                            modifier = Modifier
-                                .weight(0.7f)
-                                .height(55.dp),
-                            color = Color.White,
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, ConstColors.separator)
-                        ) {
-                            Box(
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.ptr),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                modifier = Modifier.weight(0.3f),
+                                fontWeight = FontWeight.W600
+                            )
+                            Surface(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterStart
+                                    .weight(0.7f)
+                                    .height(55.dp),
+                                color = Color.White,
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, ConstColors.separator)
                             ) {
-                                EditText(
-                                    modifier = Modifier.padding(end = 10.dp),
-                                    canEdit = true,
-                                    value = quantity.value,
-                                    onChange = {
-                                        if (it.contains(".")) {
-                                            info.updateQuantity(
-                                                roundToNearestDecimalOf5(it)
-                                            )
-                                        } else {
-                                            info.updateQuantity(it)
-                                        }
-                                    })
-                            }
-                        }
-                    }
-                    Space(dp = 8.dp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.exp_mm_yyyy),
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier.weight(0.3f)
-                        )
-
-                        Surface(modifier = Modifier
-                            .weight(0.7f)
-                            .height(55.dp),
-                            color = Color.White,
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, ConstColors.separator),
-                            onClick = {
-                                val now = DateTime.now()
-                                val dialog = DatePickerDialog(
-                                    context,
-                                    { _, year, month, _ ->
-                                        info.updateExpiry("${month + 1}/${year}")
-                                    },
-                                    now.year,
-                                    now.monthOfYear - 1,
-                                    now.dayOfMonth,
-                                )
-                                dialog.show()
-                            }) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(start = 16.dp, end = 10.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Text(
-                                    text = expiry.value,
-                                    color = Color.Black,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.W600,
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                        }
-                    }
-                    Space(dp = 8.dp)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(id = R.string.batch_no_),
-                            color = ConstColors.gray,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W600,
-                            modifier = Modifier.weight(0.3f)
-                        )
-
-                        Surface(
-                            modifier = Modifier
-                                .weight(0.7f)
-                                .height(55.dp),
-                            color = Color.White,
-                            shape = MaterialTheme.shapes.medium,
-                            border = BorderStroke(1.dp, ConstColors.separator)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp)
-                                    .align(Alignment.CenterVertically),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                BasicTextField(
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(end = 10.dp),
-                                    value = batchNo.value,
-                                    onValueChange = {
-                                        if (it.length <= 20)
-                                            info.updateBatch(it)
-                                    },
-                                    maxLines = 1,
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        imeAction = ImeAction.Done
-                                    ),
-                                    keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                                    enabled = true,
-                                    textStyle = TextStyle(
+                                        .padding(start = 16.dp)
+                                        .align(Alignment.CenterVertically),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    EditText(
+                                        modifier = Modifier.padding(end = 10.dp),
+                                        canEdit = true,
+                                        value = ptr.value,
+                                        onChange = { info.updatePtr(it) })
+                                }
+                            }
+                        }
+                        Space(dp = 8.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.mrp),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier.weight(0.3f)
+                            )
+
+                            Surface(
+                                modifier = Modifier
+                                    .weight(0.7f)
+                                    .height(55.dp),
+                                color = Color.White,
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, ConstColors.separator)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp)
+                                        .align(Alignment.CenterVertically),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    EditText(
+                                        modifier = Modifier.padding(end = 10.dp),
+                                        canEdit = true,
+                                        value = mrp.value,
+                                        onChange = { info.updateMrp(it) })
+                                }
+                            }
+                        }
+                        Space(dp = 8.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.stock),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier.weight(0.3f)
+                            )
+
+                            Surface(
+                                modifier = Modifier
+                                    .weight(0.7f)
+                                    .height(55.dp),
+                                color = Color.White,
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, ConstColors.separator)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp)
+                                        .align(Alignment.CenterVertically),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    EditText(
+                                        modifier = Modifier.padding(end = 10.dp),
+                                        canEdit = true,
+                                        value = quantity.value,
+                                        onChange = {
+                                            if (it.contains(".")) {
+                                                info.updateQuantity(
+                                                    roundToNearestDecimalOf5(it)
+                                                )
+                                            } else {
+                                                info.updateQuantity(it)
+                                            }
+                                        })
+                                }
+                            }
+                        }
+                        Space(dp = 8.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.exp_mm_yyyy),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier.weight(0.3f)
+                            )
+
+                            Surface(modifier = Modifier
+                                .weight(0.7f)
+                                .height(55.dp),
+                                color = Color.White,
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, ConstColors.separator),
+                                onClick = {
+                                    val now = DateTime.now()
+                                    val dialog = DatePickerDialog(
+                                        context,
+                                        { _, year, month, _ ->
+                                            info.updateExpiry("${month + 1}/${year}")
+                                        },
+                                        now.year,
+                                        now.monthOfYear,
+                                        now.dayOfMonth,
+                                    )
+
+                                    val today = LocalDate.now()
+                                    val firstOfNextMonth: LocalDate = today // add one to the month
+                                        .withMonthOfYear(today.monthOfYear + 1) // and take the first day of that month
+                                        .withDayOfMonth(1)
+                                    dialog.datePicker.minDate = firstOfNextMonth.toDate().time
+                                    dialog.show()
+                                }) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(start = 16.dp, end = 10.dp)
+                                        .align(Alignment.CenterVertically),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Text(
+                                        text = expiry.value,
                                         color = Color.Black,
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.W600,
-                                        textAlign = TextAlign.End,
+                                        textAlign = TextAlign.End
                                     )
-                                )
+                                }
+                            }
+                        }
+                        Space(dp = 8.dp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.batch_no_),
+                                color = ConstColors.gray,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W600,
+                                modifier = Modifier.weight(0.3f)
+                            )
+
+                            Surface(
+                                modifier = Modifier
+                                    .weight(0.7f)
+                                    .height(55.dp),
+                                color = Color.White,
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, ConstColors.separator)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp)
+                                        .align(Alignment.CenterVertically),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    BasicTextField(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 10.dp),
+                                        value = batchNo.value,
+                                        onValueChange = {
+                                            if (it.length <= 20)
+                                                info.updateBatch(it)
+                                        },
+                                        maxLines = 1,
+                                        singleLine = true,
+                                        keyboardOptions = KeyboardOptions.Default.copy(
+                                            imeAction = ImeAction.Done
+                                        ),
+                                        keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+                                        enabled = true,
+                                        textStyle = TextStyle(
+                                            color = Color.Black,
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.W600,
+                                            textAlign = TextAlign.End,
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
+                    Space(dp = 16.dp)
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    MedicoButton(
+                        text = stringResource(id = R.string.save),
+                        isEnabled = enableButton.value,
+                        height = 50.dp,
+                        elevation = null,
+                        onClick = {
+                            if (ptr.value.toDouble() > mrp.value.toDouble()) {
+                                displayPtrError.value = true
+                            } else {
+                                onSubscribe()
+                            }
+                        },
+                        textSize = 14.sp,
+                        color = ConstColors.yellow,
+                        txtColor = MaterialTheme.colors.background,
+                    )
                 }
                 Space(dp = 16.dp)
-
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                MedicoButton(
-                    text = stringResource(id = R.string.save),
-                    isEnabled = enableButton.value,
-                    height = 50.dp,
-                    elevation = null,
-                    onClick = onSubscribe,
-                    textSize = 14.sp,
-                    color = ConstColors.yellow,
-                    txtColor = MaterialTheme.colors.background,
-                )
-            }
-            Space(dp = 16.dp)
+            if (displayPtrError.value)
+                ShowAlert(stringResource(id = R.string.ptr_more_warning)) {
+                    displayPtrError.value = false
+                }
         }
     }
 }

@@ -3,7 +3,7 @@ package com.zealsoftsol.medico.core.mvi
 import com.zealsoftsol.medico.core.interop.ReadOnlyDataSource
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
-import com.zealsoftsol.medico.data.User
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -28,7 +28,10 @@ sealed class NavigationOption(private val event: Event, val stringId: String) {
 
     object Stores : NavigationOption(Event.Transition.Stores, "stores")
 
-    object Inventory : NavigationOption(Event.Transition.Inventory, "inventory")
+    object Inventory : NavigationOption(
+        Event.Transition.Inventory(InventoryScope.InventoryType.IN_STOCK),
+        "inventory"
+    )
 
     object Orders : NavigationOption(Event.Transition.Orders, "orders")
 

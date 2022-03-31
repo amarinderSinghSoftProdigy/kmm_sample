@@ -27,7 +27,9 @@ internal class InventoryEventDelegate(
         is Event.Action.Inventory.GetInventory -> load(
             search = event.search,
             manufacturer = event.manufacturer,
-            page = event.page
+            page = event.page,
+            status = event.status,
+            stockStatus = event.stockStatus
         )
         is Event.Action.Inventory.GetBatches -> loadBatches(event.spid, event.productsData)
         is Event.Action.Inventory.EditBatch -> openDetails(event.item, event.productsData)
@@ -108,7 +110,9 @@ internal class InventoryEventDelegate(
     private suspend fun load(
         search: String?,
         manufacturer: String?,
-        page: Int
+        page: Int,
+        stockStatus: InventoryScope.InventoryType,
+        status: InventoryScope.StockStatus
     ) {
         navigator.withScope<InventoryScope> {
             withProgress {
@@ -116,7 +120,9 @@ internal class InventoryEventDelegate(
                     unitCode = userRepo.requireUser().unitCode,
                     manufacturer = manufacturer,
                     search = search,
-                    page = page
+                    page = page,
+                    status = status,
+                    stockStatus = stockStatus
                 )
             }.onSuccess { body ->
                 if (search.isNullOrEmpty()) {

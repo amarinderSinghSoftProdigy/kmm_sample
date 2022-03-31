@@ -56,6 +56,7 @@ import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.nested.DashboardScope
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.data.BannerData
 import com.zealsoftsol.medico.data.BrandsData
 import com.zealsoftsol.medico.data.DashboardData
@@ -429,7 +430,7 @@ private fun ShowStockistDashBoard(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            scope.moveToInventoryScreen()
+                            scope.moveToInventoryScreen(InventoryScope.InventoryType.IN_STOCK)
                         }
                         .background(Color.White/*ConstColors.green.copy(alpha = .2f)*/, shape1)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape1)
@@ -469,7 +470,7 @@ private fun ShowStockistDashBoard(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-                            scope.moveToInventoryScreen()
+                            scope.moveToInventoryScreen(InventoryScope.InventoryType.OUT_OF_STOCK)
                         }
                         .background(Color.White/*ConstColors.red.copy(alpha = .2f)*/, shape2)
                         .border(1.dp, ConstColors.gray.copy(alpha = .1f), shape2)
