@@ -53,7 +53,7 @@ sealed class ManagementScope : Scope.Child.TabBar() {
         }
 
         fun selectItem(item: EntityInfo) =
-            EventCollector.sendEvent(Event.Action.Management.Select(item))
+            EventCollector.sendEvent(Event.Action.Management.GetDetails(item.unitCode))
 
         fun search(value: String): Boolean {
             return if (searchText.value != value) {

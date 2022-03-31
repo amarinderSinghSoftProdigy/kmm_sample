@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.DeclineReason
 import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
 import com.zealsoftsol.medico.data.Filter
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvUserData
 import com.zealsoftsol.medico.data.InvoiceEntry
@@ -165,7 +166,6 @@ sealed class Event {
             data class ViewAllItems(val value: String) : Search()
             data class AddToCart(val product: ProductSearch) : Search()
             data class showToast(val msg: String, val cartData: CartData?) : Search()
-            data class ShowDetails(val item: EntityInfo) : Search()
             data class ResetButton(val item: Boolean) : Search()
             data class UpdateFree(val qty: Double, val id: String) : Search()
             object LoadMoreProducts : Search()
@@ -196,11 +196,10 @@ sealed class Event {
 
         sealed class Management : Action() {
             override val typeClazz: KClass<*> = Management::class
-
-            data class Select(val item: EntityInfo) : Management()
             data class Search(val value: String) : Management()
             data class Load(val isFirstLoad: Boolean) : Management()
-            data class RequestSubscribe(val item: EntityInfo) : Management()
+            data class GetDetails(val item: String) : Management()
+            data class RequestSubscribe(val item: HeaderData) : Management()
             data class ChoosePayment(val paymentMethod: PaymentMethod, val creditDays: Int?) :
                 Management()
 
@@ -225,9 +224,7 @@ sealed class Event {
             data class Select(val item: Store) : Stores()
             data class Search(val value: String) : Stores()
             data class Load(val isFirstLoad: Boolean) : Stores()
-            data class ShowDetails(val item: EntityInfo) : Stores()
             data class ShowLargeImage(val item: String, val type: String? = "") : Stores()
-
         }
 
         sealed class Cart : Action() {
@@ -341,7 +338,7 @@ sealed class Event {
 
             data class GetOrderDetails(val orderId: String, val type: OrderType) : Orders()
 
-            data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
+            //data class ShowDetailsOfRetailer(val item: EntityInfo, val scope: Scope) : Orders()
 
             data class EditDiscount(val orderId: String, val discount: Double) : Orders()
 
@@ -601,7 +598,6 @@ sealed class Event {
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
             data class OpenPaymentMethod(val unitCode: String, val invoiceId: String) : IOCBuyer()
-
             object ClearScopes : IOCBuyer()
         }
     }

@@ -76,8 +76,7 @@ import com.zealsoftsol.medico.utils.PermissionCheckUIForInvoice
 import com.zealsoftsol.medico.utils.PermissionViewModel
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi

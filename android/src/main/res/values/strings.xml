@@ -247,7 +247,7 @@
     <string name="accept_selected">Accept Selected</string>
     <string name="batch_no">Batch No:</string>
     <string name="batch">Batch</string>
-    <string name="expiry">Expiry:</string>
+    <string name="expiry">Expiry</string>
     <string name="expiry_">Expiry</string>
     <string name="requested_qty">Req QTY:</string>
     <string name="served_qty">Picked QTY:</string>
@@ -464,6 +464,7 @@
     <string name="ptr_more_warning">PTR is greater than MRP</string>
     <string name="margin_perc">Margin Percentage</string>
     <string name="stock_status">Stock Status</string>
+    <string name="expires_in">Expires in</string>
 
     <!-- Termrs and Cond -->
 

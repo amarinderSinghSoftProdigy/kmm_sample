@@ -89,8 +89,8 @@ import com.zealsoftsol.medico.core.mvi.scope.nested.BaseSearchScope
 import com.zealsoftsol.medico.core.network.CdnUrlProvider
 import com.zealsoftsol.medico.data.CartItem
 import com.zealsoftsol.medico.data.ConnectedStockist
-import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InStoreProduct
 import com.zealsoftsol.medico.data.InvoiceEntry
 import com.zealsoftsol.medico.data.OrderEntry
@@ -184,7 +184,7 @@ fun Scope.Host.showBottomSheet(
                 )
             }
             is BottomSheet.PreviewManagementItem -> PreviewItemBottomSheet(
-                entityInfo = bs.entityInfo,
+                headerData = bs.headerData,
                 isForSeasonBoy = bs.isSeasonBoy,
                 onSubscribe = if (bs.canSubscribe) {
                     { bs.subscribe() }
@@ -1894,7 +1894,7 @@ private fun DocumentUploadBottomSheet(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PreviewItemBottomSheet(
-    entityInfo: EntityInfo,
+    headerData: HeaderData,
     isForSeasonBoy: Boolean,
     onSubscribe: (() -> Unit)?,
     onDismiss: () -> Unit,
@@ -1937,7 +1937,7 @@ private fun PreviewItemBottomSheet(
                 Space(dp = 16.dp)
                 Column {
                     CoilImage(
-                        src = entityInfo.tradeNameUrl.toString(),
+                        src = headerData.tradeProfile,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
@@ -1945,14 +1945,6 @@ private fun PreviewItemBottomSheet(
                         onLoading = { PlaceholderText() },
                         isCrossFadeEnabled = false
                     )
-                    /*Image(
-                        painter = painterResource(id = R.drawable.ic_acc_place),
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                    )*/
                     Space(dp = 8.dp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (isForSeasonBoy) {
@@ -1965,13 +1957,13 @@ private fun PreviewItemBottomSheet(
                             Space(16.dp)
                         }
                         Text(
-                            text = entityInfo.tradeName,
+                            text = headerData.tradeName,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colors.background,
                             modifier = Modifier.padding(end = 10.dp),
                         )
-                        if (entityInfo.isVerified == true) {
+                        if (headerData.isVerified == true) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_verified),
@@ -1982,7 +1974,7 @@ private fun PreviewItemBottomSheet(
                         }
                     }
                     Space(4.dp)
-                    entityInfo.phoneNumber?.let {
+                    headerData.mobileNumber.let {
                         Row {
                             ClickableText(
                                 text = AnnotatedString(it),
@@ -1991,15 +1983,15 @@ private fun PreviewItemBottomSheet(
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.W600
                                 ),
-                                onClick = { activity.openDialer(entityInfo.phoneNumber ?: "") },
+                                onClick = { activity.openDialer(headerData.mobileNumber) },
                             )
                         }
                     }
                     if (isForSeasonBoy) {
                         Space(8.dp)
-                        SeasonBoyPreviewItem(entityInfo)
+                        SeasonBoyPreviewItem(headerData)
                     } else {
-                        NonSeasonBoyPreviewItem(entityInfo, onSubscribe)
+                        NonSeasonBoyPreviewItem(headerData, onSubscribe)
                     }
                 }
             }
@@ -2735,8 +2727,8 @@ private fun EditBatchItemBottomSheet(
 
 
 @Composable
-private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
-    val phoneNumber = entityInfo.phoneNumber?.formatIndia().orEmpty()
+private fun SeasonBoyPreviewItem(entityInfo: HeaderData) {
+    val phoneNumber = entityInfo.mobileNumber.formatIndia()
     val activity = (LocalContext.current as MainActivity)
     Text(
         text = phoneNumber,
@@ -2765,7 +2757,7 @@ private fun SeasonBoyPreviewItem(entityInfo: EntityInfo) {
 }
 
 @Composable
-private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> Unit)?) {
+private fun NonSeasonBoyPreviewItem(entityInfo: HeaderData, onSubscribe: (() -> Unit)?) {
     Space(8.dp)
     Surface(
         modifier = Modifier
@@ -2789,7 +2781,7 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
             Space(4.dp)
             Divider(thickness = 0.3.dp)
             Space(4.dp)
-            GeoLocationSheet(entityInfo.geoData.cityAddress(), isBold = true, textSize = 12.sp)
+            GeoLocationSheet(entityInfo.geoData.landmark, isBold = true, textSize = 12.sp)
 
             entityInfo.geoData.let { data ->
                 Space(4.dp)
@@ -2809,33 +2801,12 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                             contentAlignment = Alignment.BottomEnd
                         ) {
                             SingleTextLabel(
-                                data = data.landmark
+                                data = data.pincode
                             )
                         }
                     }
                 }
                 Space(4.dp)
-                /*Divider(thickness = 0.3.dp)
-                Space(4.dp)
-                Row {
-                    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-                        Box(modifier = Modifier.width(maxWidth / 2)) {
-                            SingleTextLabel(
-                                data = data.city
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .width(maxWidth / 2)
-                                .align(Alignment.BottomEnd),
-                            contentAlignment = Alignment.BottomEnd
-                        ) {
-                            SingleTextLabel(
-                                data = data.pincode
-                            )
-                        }
-                    }
-                }*/
             }
 
             if (onSubscribe != null) {
@@ -2895,11 +2866,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                     .align(Alignment.BottomEnd),
                                 contentAlignment = Alignment.BottomEnd
                             ) {
-
-                                /*DataWithLabel(
-                         label = R.string.status,
-                         data = data.status.serverValue
-                     )*/
                                 Row {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_location),
@@ -2974,6 +2940,34 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                     entityInfo.drugLicenseNo2?.let {
                         DataWithLabel(label = R.string.dl_two, data = it, size = 12.sp)
                     }
+                    Space(4.dp)
+                    Row {
+                        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                            Box(modifier = Modifier.width(maxWidth / 2)) {
+                                entityInfo.flExpiryDate?.let {
+                                    DataWithLabel(
+                                        label = R.string.expiry,
+                                        data = it.formatted, size = 12.sp
+                                    )
+                                }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .width(maxWidth / 2)
+                                    .align(Alignment.BottomEnd),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+
+                                entityInfo.flExpiresIn?.let {
+                                    DataWithLabel(
+                                        label = R.string.expires_in,
+                                        data = it,
+                                        size = 12.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                 }
                 entityInfo.seasonBoyRetailerData != null -> entityInfo.seasonBoyRetailerData?.let { data ->
@@ -3009,7 +3003,6 @@ private fun NonSeasonBoyPreviewItem(entityInfo: EntityInfo, onSubscribe: (() -> 
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colors.background,
                                         )
-                                        //DataWithLabel(label = R.string.gstin_num, data = it)
                                     }
                                 }
                                 Box(
