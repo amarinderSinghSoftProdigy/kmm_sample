@@ -365,6 +365,7 @@ class NetworkClient(
         latitude: Double,
         longitude: Double,
         pagination: Pagination,
+        addPage: Boolean
     ) = simpleRequest {
         client.get<BodyResponse<SearchResponse>>("${baseUrl.url}/search/${if (unitCode == null) "global" else "stores"}") {
             withMainToken()
@@ -377,12 +378,15 @@ class NetworkClient(
                     unitCode?.let { append("unitCode", it) }
                     append("latitude", latitude.toString())
                     append("longitude", longitude.toString())
-                    append("page", pagination.nextPage().toString())
+                    append(
+                        "page", if (addPage) pagination.previousPage().toString()
+                        else pagination.nextPage().toString()
+                    )
                     append("pageSize", pagination.itemsPerPage.toString())
                 }
             }
         }.also {
-            if (it.isSuccess) pagination.pageLoaded()
+            if (it.isSuccess) pagination.pageLoaded(addPage)
         }
     }
 

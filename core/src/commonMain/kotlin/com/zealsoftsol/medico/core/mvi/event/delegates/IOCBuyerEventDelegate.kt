@@ -28,7 +28,11 @@ internal class IOCBuyerEventDelegate(
 
     override suspend fun handleEvent(event: Event.Action.IOCBuyer) = when (event) {
         is Event.Action.IOCBuyer.LoadUsers -> loadUsers(event.search)
-        is Event.Action.IOCBuyer.OpenIOCDetails -> openDetails(event.item)
+        is Event.Action.IOCBuyer.OpenIOCDetails -> openDetails(
+            event.unitCode,
+            event.tradeName,
+            event.invoiceId
+        )
         is Event.Action.IOCBuyer.OpenIOCListing -> openListing(event.item)
         is Event.Action.IOCBuyer.LoadMoreUsers -> loadMoreUsers()
         is Event.Action.IOCBuyer.LoadInvListing -> getRetailerInvoiceListing(event.unitCode)
@@ -71,10 +75,10 @@ internal class IOCBuyerEventDelegate(
         }
     }
 
-    private fun openDetails(item: BuyerDetailsData) {
+    private fun openDetails(unitCode: String, tradeName: String, invoiceId: String) {
         navigator.withScope<IocBuyerScope.InvListing> {
             setScope(
-                IocBuyerScope.InvDetails(item)
+                IocBuyerScope.InvDetails(unitCode, tradeName, invoiceId)
             )
         }
     }

@@ -15,15 +15,33 @@ class Pagination(internal val itemsPerPage: Int = DEFAULT_ITEMS_PER_PAGE) {
         totalItems = 0
     }
 
-    internal fun pageLoaded() {
-        if (totalItems != 0) currentPage++
+    internal fun pageLoaded(addPage: Boolean = false) {
+        if (totalItems != 0) {
+            if (addPage)
+                currentPage--
+            else
+                currentPage++
+        }
     }
 
     internal fun nextPage(): Int {
         return if (totalItems == 0) 0 else currentPage + 1
     }
 
+    internal fun previousPage(): Int {
+        return if (totalItems == 0) 0 else if (currentPage == 0) 0 else currentPage - 1
+    }
+
+    fun getCurrentPage(): Int {
+        return currentPage
+    }
+
+    fun getTotalCount(): Int {
+        return totalItems
+    }
+
     companion object {
         internal const val DEFAULT_ITEMS_PER_PAGE = 20
+        internal const val ITEMS_PER_PAGE_30 = 30
     }
 }

@@ -50,6 +50,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -75,6 +76,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
@@ -92,27 +96,35 @@ import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.FlowRow
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
+import com.zealsoftsol.medico.screens.common.MedicoRoundButton
+import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.Separator
 import com.zealsoftsol.medico.screens.common.ShowAlert
 import com.zealsoftsol.medico.screens.common.Space
 import com.zealsoftsol.medico.screens.common.clickable
+import com.zealsoftsol.medico.screens.common.scrollOnFocus
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(scope: SearchScope, listState: LazyListState) {
     Box {
         val showAlert = scope.showNoStockistAlert.flow.collectAsState()
+        val search = scope.productSearch.flow.collectAsState()
+        val autoComplete = scope.autoComplete.flow.collectAsState()
+        val filters = scope.filters.flow.collectAsState()
+        val filterSearches = scope.filterSearches.flow.collectAsState()
+        val products = scope.products.flow.collectAsState()
+        val showFilter = scope.isFilterOpened.flow.collectAsState()
+        val sortOptions = scope.sortOptions.flow.collectAsState()
+        val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
+        val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
+        val listStateScroll = rememberScrollState()
+        val coroutineScope = rememberCoroutineScope()
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            val search = scope.productSearch.flow.collectAsState()
-            val autoComplete = scope.autoComplete.flow.collectAsState()
-            val filters = scope.filters.flow.collectAsState()
-            val filterSearches = scope.filterSearches.flow.collectAsState()
-            val products = scope.products.flow.collectAsState()
-            val showFilter = scope.isFilterOpened.flow.collectAsState()
-            val sortOptions = scope.sortOptions.flow.collectAsState()
-            val selectedSortOption = scope.selectedSortOption.flow.collectAsState()
-            val activeFilterIds = scope.activeFilterIds.flow.collectAsState()
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
             if (showFilter.value) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
@@ -204,23 +216,43 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                 }
             } else {
                 if (autoComplete.value.isEmpty()) {
-                    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                        itemsIndexed(
-                            items = products.value,
-                            key = { _, item -> item.id },
-                            itemContent = { index, item ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(listStateScroll)
+                    ) {
+                        FlowRow(
+                            mainAxisSize = SizeMode.Expand,
+                            mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                        ) {
+                            products.value.forEachIndexed { index, productSearch ->
                                 ProductItem(
-                                    item,
+                                    productSearch,
                                     onClick = { //scope.selectProduct(item)
                                     },
-                                    onBuy = { scope.buy(item) },
+                                    onBuy = { scope.buy(productSearch) },
                                     scope = scope
                                 )
-                                if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                                    scope.loadMoreProducts()
-                                }
-                            },
-                        )
+                            }
+                        }
+                        Space(dp = 12.dp)
+                        if (products.value.isNotEmpty()) {
+                            PaginationButtons(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                                scope.pagination, products.value.size, {
+                                    coroutineScope.launch {
+                                        listStateScroll.scrollTo(0)
+                                    }
+                                    scope.startSearch(true)
+                                }, {
+                                    coroutineScope.launch {
+                                        listStateScroll.scrollTo(0)
+                                    }
+                                    scope.startSearch(false)
+                                })
+
+                        }
                     }
                 } else {
                     LazyColumn(
@@ -242,7 +274,9 @@ fun SearchScreen(scope: SearchScope, listState: LazyListState) {
                     }
                 }
             }
+
         }
+
         if (showAlert.value)
             ShowAlert(message = stringResource(id = R.string.no_stockist)) {
                 scope.manageAlertVisibility(false)

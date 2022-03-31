@@ -127,7 +127,7 @@ class SearchScope(
 
     override val unitCode: String? = null
     override val supportsAutoComplete: Boolean = true
-    override val pagination: Pagination = Pagination()
+    override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_30)
     val showNoStockistAlert = DataSource(false)
 
     init {
@@ -145,11 +145,20 @@ class SearchScope(
                 )
             }
         } else {
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true))
+            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = false, search = ""))
         }
     }
 
-    fun manageAlertVisibility(value: Boolean){
+    fun startSearch(check: Boolean) {
+        EventCollector.sendEvent(
+            Event.Action.Search.SearchInput(
+                isOneOf = check,
+                search = null
+            )
+        )
+    }
+
+    fun manageAlertVisibility(value: Boolean) {
         showNoStockistAlert.value = value
     }
 
