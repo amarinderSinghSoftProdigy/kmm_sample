@@ -7,10 +7,10 @@ import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.Scope
 import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.mvi.scope.regular.TabBarScope
 import com.zealsoftsol.medico.data.AutoComplete
 import com.zealsoftsol.medico.data.DashboardData
-import com.zealsoftsol.medico.data.User
 import com.zealsoftsol.medico.data.UserType
 import com.zealsoftsol.medico.data.UserV2
 
@@ -68,8 +68,8 @@ class DashboardScope private constructor(
     /**
      * Move to Inventory screens
      */
-    fun moveToInventoryScreen(search: InventoryType) {
-        EventCollector.sendEvent(Event.Transition.Inventory(search))
+    fun moveToInventoryScreen(type: InventoryScope.InventoryType) {
+        EventCollector.sendEvent(Event.Transition.Inventory(type))
     }
 
     /**
@@ -91,12 +91,6 @@ class DashboardScope private constructor(
         EventCollector.sendEvent(if (userType == UserType.STOCKIST) Event.Transition.PoOrdersAndHistory else Event.Transition.Orders)
 
     fun selectSection(section: Section) = section.event?.let(EventCollector::sendEvent) ?: false
-
-    enum class InventoryType {
-        EMPTY,
-        IN_STOCK,
-        OUT_OF_STOCK
-    }
 
     enum class Section(val stringId: String, val event: Event?) {
         STOCKIST_COUNT("stockists", Event.Transition.Management(UserType.STOCKIST)),

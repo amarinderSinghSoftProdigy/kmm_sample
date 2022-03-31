@@ -27,6 +27,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -90,6 +92,8 @@ fun InventoryMainComposable(scope: InventoryScope) {
     val showManufacturers = remember { mutableStateOf(false) }
     val showGraphs = remember { mutableStateOf(false) }
     val lazyListState = rememberLazyListState()
+    val inventoryType = scope.inventoryType.flow.collectAsState().value
+    val inventoryStatus = scope.inventoryStatus.flow.collectAsState().value
 
     Column(
         modifier = Modifier
@@ -238,6 +242,63 @@ fun InventoryMainComposable(scope: InventoryScope) {
             thickness = 0.5.dp,
             startIndent = 0.dp
         )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Row(
+                verticalAlignment = CenterVertically
+            ) {
+
+                Text(
+                    text = inventoryType.title,
+                    color = if (inventoryType.value) ConstColors.lightGreen else ConstColors.red,
+                    fontSize = 12.sp,
+                )
+                Space(dp = 12.dp)
+                Switch(
+                    checked = inventoryType.value, onCheckedChange = {
+                        if (it) {
+                            scope.updateInventoryType(InventoryScope.InventoryType.IN_STOCK)
+                        } else {
+                            scope.updateInventoryType(InventoryScope.InventoryType.OUT_OF_STOCK)
+                        }
+                    }, colors = SwitchDefaults.colors(
+                        checkedThumbColor = ConstColors.green,
+                        uncheckedThumbColor = ConstColors.red
+                    )
+                )
+            }
+            Row(
+                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                verticalAlignment = CenterVertically
+            ) {
+
+                Text(
+                    text = inventoryStatus.title,
+                    color = if (inventoryStatus.value) ConstColors.lightGreen else ConstColors.red,
+                    fontSize = 12.sp,
+                )
+                Space(dp = 12.dp)
+                Switch(
+                    checked = inventoryStatus.value, onCheckedChange = {
+                        if (it) {
+                            scope.updateInventoryStatus(InventoryScope.InventoryStatus.ONLINE)
+                        } else {
+                            scope.updateInventoryStatus(InventoryScope.InventoryStatus.OFFLINE)
+                        }
+                    }, colors = SwitchDefaults.colors(
+                        checkedThumbColor = ConstColors.green,
+                        uncheckedThumbColor = ConstColors.red
+                    )
+                )
+            }
+        }
+
         if (showGraphs.value) {
 
             Space(10.dp)
@@ -341,7 +402,7 @@ fun InventoryMainComposable(scope: InventoryScope) {
                     MedicoButton(
                         modifier = Modifier
                             .padding(horizontal = 20.dp)
-                            .padding(top = 5.dp,bottom = 5.dp)
+                            .padding(top = 5.dp, bottom = 5.dp)
                             .height(40.dp),
                         text = stringResource(id = R.string.more),
                         isEnabled = true,

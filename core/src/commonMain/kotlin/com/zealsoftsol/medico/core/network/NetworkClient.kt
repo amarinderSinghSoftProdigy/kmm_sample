@@ -9,6 +9,7 @@ import com.zealsoftsol.medico.core.ktorDispatcher
 import com.zealsoftsol.medico.core.mvi.event.Event
 import com.zealsoftsol.medico.core.mvi.event.EventCollector
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
+import com.zealsoftsol.medico.core.mvi.scope.regular.InventoryScope
 import com.zealsoftsol.medico.core.storage.TokenStorage
 import com.zealsoftsol.medico.data.AadhaarUpload
 import com.zealsoftsol.medico.data.AddInvoice
@@ -1282,7 +1283,9 @@ class NetworkClient(
         unitCode: String,
         search: String?,
         page: Int,
-        manufacturer: String?
+        manufacturer: String?,
+        stockStatus: InventoryScope.InventoryType,
+        status: InventoryScope.InventoryStatus
     ): BodyResponse<InventoryData> = simpleRequest {
         client.get("${baseUrl.url}/inventory/view") {
             withMainToken()
@@ -1293,6 +1296,8 @@ class NetworkClient(
                         append("search", search)
                     if (manufacturer != null)
                         append("manufacturer", manufacturer)
+                    append("status", status.toString())
+                    append("stockStatus", stockStatus.toString())
                     append("page", page.toString())
                     append("pageSize", Pagination.DEFAULT_ITEMS_PER_PAGE.toString())
                 }
