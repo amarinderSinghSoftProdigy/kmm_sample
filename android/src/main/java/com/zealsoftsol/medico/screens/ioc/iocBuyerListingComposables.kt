@@ -900,7 +900,10 @@ fun BuyerPaymentOptionItem(
                             else -> painterResource(id = R.drawable.ic_net_banking)
                         },
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = when (item.paymentType) {
+                            IocBuyerScope.PaymentTypes.PHONE_PE.type -> Modifier.size(60.dp)
+                            else -> Modifier.size(40.dp)
+                        }
                     )
                     Space(dp = 4.dp)
                     Text(
