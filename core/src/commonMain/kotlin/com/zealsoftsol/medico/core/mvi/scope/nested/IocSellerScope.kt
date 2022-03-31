@@ -9,8 +9,13 @@ import com.zealsoftsol.medico.core.mvi.scope.TabBarInfo
 import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.core.utils.Loadable
 import com.zealsoftsol.medico.data.AddInvoice
+import com.zealsoftsol.medico.data.B2BData
 import com.zealsoftsol.medico.data.BuyerDetailsData
+import com.zealsoftsol.medico.data.EntityInfo
 import com.zealsoftsol.medico.data.FileType
+import com.zealsoftsol.medico.data.GeoData
+import com.zealsoftsol.medico.data.GeoPoints
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.InvContactDetails
 import com.zealsoftsol.medico.data.InvListingData
 import com.zealsoftsol.medico.data.InvUserData
@@ -75,7 +80,11 @@ sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
+            return TabBarInfo.StoreTitle(
+                storeName = item.tradeName,
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(item.unitCode)
+            )
         }
     }
 
@@ -89,7 +98,11 @@ sealed class IocSellerScope : Scope.Child.TabBar(), CommonScope.UploadDocument {
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {
-            return TabBarInfo.OnlyBackHeader(title = item.tradeName)
+            return TabBarInfo.StoreTitle(
+                storeName = item.tradeName,
+                showNotifications = false,
+                event = Event.Action.Management.GetDetails(item.unitCode)
+            )
         }
 
 

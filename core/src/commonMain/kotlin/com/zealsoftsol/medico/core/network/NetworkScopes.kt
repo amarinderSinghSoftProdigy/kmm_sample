@@ -26,6 +26,7 @@ import com.zealsoftsol.medico.data.CustomerDataV2
 import com.zealsoftsol.medico.data.DashboardData
 import com.zealsoftsol.medico.data.DrugLicenseUpload
 import com.zealsoftsol.medico.data.EntityInfo
+import com.zealsoftsol.medico.data.HeaderData
 import com.zealsoftsol.medico.data.HelpData
 import com.zealsoftsol.medico.data.IOCResponse
 import com.zealsoftsol.medico.data.InStoreCart
@@ -481,7 +482,6 @@ interface NetworkScope {
         suspend fun updateInvoice(
             request: UpdateInvoiceRequest
         ): BodyResponse<String>
-
     }
 
     interface IOCBuyerStore : NetworkScope {
@@ -503,5 +503,14 @@ interface NetworkScope {
         suspend fun submitPayment(
             request: SubmitPaymentRequest,
         ): BodyResponse<String>
+
+
     }
+
+    interface BottomSheetStore : NetworkScope {
+        suspend fun getDetails(
+            unitCode: String,
+        ): BodyResponse<HeaderData>
+    }
+
 }

@@ -28,23 +28,11 @@ internal class StoresEventDelegate(
         is Event.Action.Stores.Load -> loadStores(event.isFirstLoad)
         is Event.Action.Stores.Search -> searchStores(event.value)
         is Event.Action.Stores.Select -> select(event.item)
-        is Event.Action.Stores.ShowDetails -> openDetails(event.item)
         is Event.Action.Stores.ShowLargeImage -> selectProductLargeImage(event.item, event.type)
     }
 
     fun selectProductLargeImage(item: String, type: String?) {
         navigator.scope.value.bottomSheet.value = BottomSheet.ViewLargeImage(item, type)
-    }
-
-    private fun openDetails(item: EntityInfo) {
-        navigator.withScope<StoresScope.StorePreview> {
-            val hostScope = scope.value
-            hostScope.bottomSheet.value = BottomSheet.PreviewManagementItem(
-                item,
-                isSeasonBoy = false,
-                canSubscribe = false,
-            )
-        }
     }
 
     private suspend fun loadStores(isFirstLoad: Boolean) {

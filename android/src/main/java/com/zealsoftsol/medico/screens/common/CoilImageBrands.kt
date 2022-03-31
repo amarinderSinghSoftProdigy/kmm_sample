@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
+import coil.request.CachePolicy
 
 /**
  * for image of different proportions
@@ -28,7 +29,9 @@ fun CoilImageBrands(
     onLoading: @Composable (() -> Unit)? = null,
     contentScale: ContentScale
 ) {
-    val painter = rememberImagePainter(src, builder = { crossfade(isCrossFadeEnabled) })
+    val painter = rememberImagePainter(src){
+        memoryCachePolicy(policy = CachePolicy.ENABLED)
+    }
     Box(
         Modifier
             .height(height)
