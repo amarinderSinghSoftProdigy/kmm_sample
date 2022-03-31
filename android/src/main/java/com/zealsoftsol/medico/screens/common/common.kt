@@ -1002,14 +1002,16 @@ fun PaginationButtons(
     Row(
         modifier = modifier,
     ) {
-        MedicoRoundButton(
+        MedicoButton(
             modifier = Modifier.weight(0.5f),
             text = stringResource(id = R.string.previous),
             isEnabled = pagination.getCurrentPage() != 0,
-            onClick = onPreviousClick
+            height = 38.dp,
+            onClick = onPreviousClick,
         )
         Space(dp = 16.dp)
-        MedicoRoundButton(
+        MedicoButton(
+            height = 38.dp,
             modifier = Modifier.weight(0.5f),
             text = stringResource(id = R.string.next),
             isEnabled = pagination.getTotalCount() > size,

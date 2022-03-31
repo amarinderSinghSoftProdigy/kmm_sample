@@ -68,6 +68,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowMainAxisAlignment
+import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.SizeMode
 import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.extensions.density
@@ -90,7 +93,6 @@ import com.zealsoftsol.medico.data.SubscriptionStatus
 import com.zealsoftsol.medico.screens.common.CoilImage
 import com.zealsoftsol.medico.screens.common.ItemPlaceholder
 import com.zealsoftsol.medico.screens.common.MedicoButton
-import com.zealsoftsol.medico.screens.common.MedicoRoundButton
 import com.zealsoftsol.medico.screens.common.NoRecords
 import com.zealsoftsol.medico.screens.common.PaginationButtons
 import com.zealsoftsol.medico.screens.common.ShowToastGlobal
@@ -131,6 +133,8 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
 
     val entries = if (cartData.value != null) cartData.value?.sellerCarts?.get(0)?.items else null
     val cartItem = entries?.get(entries.size - 1)
+    val listStateScroll = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(
         color = Color.White,
@@ -157,9 +161,10 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
             )
             val offersFilter =
                 Filter(name = "Offers", queryId = "offers", options = emptyList())
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 30.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
                 Space(12.dp)
 
                 BasicSearchBar(
@@ -295,15 +300,16 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         if (autoComplete.value.isEmpty()) {
                             val listState = rememberLazyListState()
 
-                            LazyColumn(
-                                state = listState,
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(top = 8.dp)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(listStateScroll)
                             ) {
-                                itemsIndexed(
-                                    items = products.value,
-                                    key = { _, item -> item.id },
-                                    itemContent = { index, item ->
+                                FlowRow(
+                                    mainAxisSize = SizeMode.Expand,
+                                    mainAxisAlignment = FlowMainAxisAlignment.SpaceEvenly
+                                ) {
+                                    products.value.forEachIndexed { index, item ->
                                         ProductItemStore(
                                             item,
                                             onClick = { scope.selectProduct(item) },
@@ -322,11 +328,26 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                                             cartItem = cartItem,
                                             batchSelected.value
                                         )
-                                        /* if (index == products.value.lastIndex && scope.pagination.canLoadMore()) {
-                                             scope.loadMoreProducts()
-                                         }*/
-                                    },
-                                )
+                                    }
+                                }
+                                Space(dp = 12.dp)
+                                if (products.value.isNotEmpty()) {
+                                    PaginationButtons(modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                                        scope.pagination, products.value.size, {
+                                            scope.startSearch(true)
+                                            coroutineScope.launch {
+                                                listStateScroll.scrollTo(0)
+                                            }
+                                        }, {
+                                            scope.startSearch(false)
+                                            coroutineScope.launch {
+                                                listStateScroll.scrollTo(0)
+                                            }
+                                        })
+
+                                }
                             }
                         } else {
                             LazyColumn(
@@ -350,18 +371,6 @@ private fun StorePreview(scope: StoresScope.StorePreview) {
                         }
                     }
                 }
-            }
-
-            if (products.value.isNotEmpty()) {
-                PaginationButtons(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
-                    .align(Alignment.BottomCenter),
-                    scope.pagination, products.value.size, {
-                        scope.startSearch(true)
-                    }, {
-                        scope.startSearch(false)
-                    })
             }
         }
     }
