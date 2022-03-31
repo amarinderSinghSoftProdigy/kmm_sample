@@ -79,12 +79,12 @@ sealed class StoresScope : Scope.Child.TabBar() {
     ) : StoresScope(), BaseSearchScope {
 
         override val autoComplete: DataSource<List<AutoComplete>> = DataSource(emptyList())
-        override val pagination: Pagination = Pagination()
+        override val pagination: Pagination = Pagination(Pagination.ITEMS_PER_PAGE_30)
         override val unitCode: String = store.sellerUnitCode
         override val supportsAutoComplete: Boolean = true
 
         init {
-            startSearch()
+            startSearch(false)
         }
 
         fun selectItem(item: String) {
@@ -94,8 +94,13 @@ sealed class StoresScope : Scope.Child.TabBar() {
             EventCollector.sendEvent(Event.Action.Stores.ShowLargeImage(url))
         }
 
-        fun startSearch() {
-            EventCollector.sendEvent(Event.Action.Search.SearchInput(isOneOf = true, search = ""))
+        fun startSearch(check: Boolean) {
+            EventCollector.sendEvent(
+                Event.Action.Search.SearchInput(
+                    isOneOf = check,
+                    search = null
+                )
+            )
         }
 
         override fun overrideParentTabBarInfo(tabBarInfo: TabBarInfo): TabBarInfo {

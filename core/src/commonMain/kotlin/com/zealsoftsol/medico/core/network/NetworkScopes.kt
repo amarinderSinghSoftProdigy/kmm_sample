@@ -162,6 +162,7 @@ interface NetworkScope {
             latitude: Double,
             longitude: Double,
             pagination: Pagination,
+            addPage: Boolean,
         ): BodyResponse<SearchResponse>
 
         suspend fun autocomplete(

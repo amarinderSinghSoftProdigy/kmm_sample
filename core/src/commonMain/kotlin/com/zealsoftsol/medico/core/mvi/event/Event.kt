@@ -593,7 +593,7 @@ sealed class Event {
 
             //Methods for InvLisitng
             data class LoadInvListing(val unitCode: String) : IOCBuyer()
-            data class OpenIOCDetails(val item: BuyerDetailsData) : IOCBuyer()
+            data class OpenIOCDetails(val unitCode: String,val tradeName: String,val invoiceId:String) : IOCBuyer()
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()

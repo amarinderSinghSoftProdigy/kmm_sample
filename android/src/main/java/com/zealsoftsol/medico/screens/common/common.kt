@@ -95,6 +95,7 @@ import com.zealsoftsol.medico.ConstColors
 import com.zealsoftsol.medico.R
 import com.zealsoftsol.medico.core.mvi.scope.CommonScope.WithNotifications
 import com.zealsoftsol.medico.core.mvi.scope.Scope
+import com.zealsoftsol.medico.core.mvi.scope.extra.Pagination
 import com.zealsoftsol.medico.screens.Notification
 import kotlinx.coroutines.Deferred
 import java.io.File
@@ -990,4 +991,31 @@ fun roundToNearestDecimalOf5(text: String): String {
     }
 
     return "$modBefore$modAfter"
+}
+
+@Composable
+fun PaginationButtons(
+    modifier: Modifier, pagination: Pagination,
+    size: Int, onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    Row(
+        modifier = modifier,
+    ) {
+        MedicoButton(
+            modifier = Modifier.weight(0.5f),
+            text = stringResource(id = R.string.previous),
+            isEnabled = pagination.getCurrentPage() != 0,
+            height = 38.dp,
+            onClick = onPreviousClick,
+        )
+        Space(dp = 16.dp)
+        MedicoButton(
+            height = 38.dp,
+            modifier = Modifier.weight(0.5f),
+            text = stringResource(id = R.string.next),
+            isEnabled = pagination.getTotalCount() > size,
+            onClick = onNextClick
+        )
+    }
 }

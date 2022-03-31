@@ -617,5 +617,6 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
+    <string name="previous">Previous</string>
 
 </resources>
