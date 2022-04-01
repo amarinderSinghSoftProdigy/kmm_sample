@@ -229,27 +229,30 @@ private fun InvBuyerDetails(scope: IocBuyerScope.InvDetails) {
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            MedicoRoundButton(
-                text = stringResource(id = R.string.pay_now),
-                isEnabled = true,
-                elevation = null,
-                onClick = {
-                    scope.openPaymentMethod(
-                        data.value?.unitCode ?: "",
-                        data.value?.invoiceId ?: ""
-                    )
-                },
-                contentColor = MaterialTheme.colors.background,
-                wrapTextSize = true,
-            )
+        if (data.value?.invoiceOutstdAmount?.value != 0.0 && data.value?.viewStatus?.uppercase() != "COMPLETED") {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                MedicoRoundButton(
+                    text = stringResource(id = R.string.pay_now),
+                    isEnabled = true,
+                    elevation = null,
+                    onClick = {
+                        scope.openPaymentMethod(
+                            data.value?.unitCode ?: "",
+                            data.value?.invoiceId ?: "",
+                            data.value?.invoiceOutstdAmount?.value ?: 0.0
+                        )
+                    },
+                    contentColor = MaterialTheme.colors.background,
+                    wrapTextSize = true,
+                )
+            }
         }
     }
 }
@@ -986,6 +989,7 @@ private fun IocPayNow(
     val mobileNumber = scope.mobileNumber.flow.collectAsState()
     val validPhone = scope.validPhone(mobileNumber.value)
     val enable = scope.enableButton.flow.collectAsState()
+    val showError = scope.showError.flow.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -1024,54 +1028,61 @@ private fun IocPayNow(
             }
 
             Space(12.dp)
-            InputField(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .scrollOnFocus(scrollState, coroutineScope),
-                hint = stringResource(id = R.string.enter_total_amount),
-                text = totalAmount.value,
-                isValid = true,
-                onValueChange = {
-                    val split =
-                        it.replace(",", ".").split(".")
-                    val beforeDot = split[0]
-                    val afterDot = split.getOrNull(1)
-                    var modBefore =
-                        beforeDot.toIntOrNull() ?: 0
-                    val modAfter = when (afterDot?.length) {
-                        0 -> "."
-                        in 1..Int.MAX_VALUE -> when (afterDot!!.take(
-                            1
-                        ).toIntOrNull()) {
-                            0 -> ".0"
-                            in 1..4 -> ".0"
-                            5 -> ".5"
-                            in 6..9 -> {
-                                modBefore++
-                                ".0"
+            InputWithError(
+                errorText = if (showError.value) stringResource(id = R.string.total_amount_message).replace(
+                    "$",
+                    scope.outStand.toString()
+                ) else null
+            ) {
+                InputField(
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .scrollOnFocus(scrollState, coroutineScope),
+                    hint = stringResource(id = R.string.enter_total_amount),
+                    text = totalAmount.value,
+                    isValid = true,
+                    onValueChange = {
+                        val split =
+                            it.replace(",", ".").split(".")
+                        val beforeDot = split[0]
+                        val afterDot = split.getOrNull(1)
+                        var modBefore =
+                            beforeDot.toIntOrNull() ?: 0
+                        val modAfter = when (afterDot?.length) {
+                            0 -> "."
+                            in 1..Int.MAX_VALUE -> when (afterDot!!.take(
+                                1
+                            ).toIntOrNull()) {
+                                0 -> ".0"
+                                in 1..4 -> ".0"
+                                5 -> ".5"
+                                in 6..9 -> {
+                                    modBefore++
+                                    ".0"
+                                }
+                                null -> ""
+                                else -> throw UnsupportedOperationException(
+                                    "cant be that"
+                                )
                             }
                             null -> ""
                             else -> throw UnsupportedOperationException(
                                 "cant be that"
                             )
                         }
-                        null -> ""
-                        else -> throw UnsupportedOperationException(
-                            "cant be that"
-                        )
-                    }
-                    total.value = "$modBefore$modAfter"
-                    scope.updateTotalAmount(total.value)
-                },
-                mandatory = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = {
-                    keyboardController?.hide()
-                })
-            )
+                        total.value = "$modBefore$modAfter"
+                        scope.updateTotalAmount(total.value)
+                    },
+                    mandatory = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
+                )
+            }
             Space(12.dp)
             InputWithError(errorText = if (!validPhone) stringResource(id = R.string.phone_validation) else null) {
                 PhoneFormatInputFieldForRegister(
@@ -1133,7 +1144,7 @@ private fun IocPaymentMethod(
                 items = items.value,
                 itemContent = { index, item ->
                     SelectPaymentOptionItem(item, indexOld == index) {
-                        scope.openPayNow(scope.unitCode, scope.invoiceId, index, item)
+                        scope.openPayNow(index, item)
                     }
                 },
             )

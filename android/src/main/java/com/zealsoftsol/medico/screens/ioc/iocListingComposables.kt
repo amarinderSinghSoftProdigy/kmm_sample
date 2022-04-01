@@ -170,42 +170,45 @@ private fun InvSellerDetails(sellerScope: IocSellerScope.InvDetails) {
                         fontWeight = FontWeight.W700
                     )
                 }
-                Row(
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .clickable {
-                            sellerScope.openEditInvoice(
-                                BuyerDetailsData(
-                                    data.value?.unitCode ?: "",
-                                    data.value?.tradeName ?: "",
-                                    data.value?.invoiceNo ?: "",
-                                    data.value?.invoiceAmount ?: FormattedData("0.0", 0.0),
-                                    data.value?.viewInvoiceUrl ?: "",
-                                    data.value?.viewStatus ?: "",
-                                    data.value?.invoiceId ?: "",
-                                    data.value?.invoiceDate ?: FormattedData("0", 0L),
-                                ),
-                                sellerScope
-                            )
-                        },
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
 
-                    Icon(
-                        modifier = Modifier.size(15.dp),
-                        painter = painterResource(id = R.drawable.ic_edit),
-                        contentDescription = null,
-                        tint = ConstColors.lightBlue
-                    )
-                    Space(dp = 4.dp)
-                    Text(
-                        text = stringResource(id = R.string.add_payment),
-                        fontSize = 14.sp,
-                        color = ConstColors.lightBlue,
-                        fontWeight = FontWeight.W700,
-                        textAlign = TextAlign.End
-                    )
+                if (data.value?.invoiceOutstdAmount?.value != 0.0 && data.value?.viewStatus?.uppercase() != "COMPLETED") {
+                    Row(
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .clickable {
+                                sellerScope.openEditInvoice(
+                                    BuyerDetailsData(
+                                        data.value?.unitCode ?: "",
+                                        data.value?.tradeName ?: "",
+                                        data.value?.invoiceNo ?: "",
+                                        data.value?.invoiceAmount ?: FormattedData("0.0", 0.0),
+                                        data.value?.viewInvoiceUrl ?: "",
+                                        data.value?.viewStatus ?: "",
+                                        data.value?.invoiceId ?: "",
+                                        data.value?.invoiceDate ?: FormattedData("0", 0L),
+                                    ),
+                                    sellerScope
+                                )
+                            },
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Icon(
+                            modifier = Modifier.size(15.dp),
+                            painter = painterResource(id = R.drawable.ic_edit),
+                            contentDescription = null,
+                            tint = ConstColors.lightBlue
+                        )
+                        Space(dp = 4.dp)
+                        Text(
+                            text = stringResource(id = R.string.add_payment),
+                            fontSize = 14.sp,
+                            color = ConstColors.lightBlue,
+                            fontWeight = FontWeight.W700,
+                            textAlign = TextAlign.End
+                        )
+                    }
                 }
             }
             Space(4.dp)

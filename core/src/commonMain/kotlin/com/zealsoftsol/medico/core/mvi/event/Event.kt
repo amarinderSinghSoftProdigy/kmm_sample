@@ -580,6 +580,7 @@ sealed class Event {
             data class OpenPayNow(
                 val unitCode: String,
                 val invoiceId: String,
+                val outStand: Double,
                 val type: IocBuyerScope.PaymentTypes
             ) : IOCBuyer()
 
@@ -597,7 +598,9 @@ sealed class Event {
 
             //Methods for InvDetails
             data class LoadInvDetails(val invoiceId: String) : IOCBuyer()
-            data class OpenPaymentMethod(val unitCode: String, val invoiceId: String) : IOCBuyer()
+            data class OpenPaymentMethod(val unitCode: String,
+                                         val invoiceId: String,
+                                         val outStand: Double) : IOCBuyer()
             object ClearScopes : IOCBuyer()
         }
     }

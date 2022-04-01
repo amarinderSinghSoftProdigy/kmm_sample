@@ -464,7 +464,9 @@
     <string name="ptr_more_warning">PTR is greater than MRP</string>
     <string name="margin_perc">Margin Percentage</string>
     <string name="stock_status">Stock Status</string>
+    <string name="previous">Previous</string>
     <string name="expires_in">Expires in</string>
+    <string name="total_amount_message">Amount entered should not be more than the Outstanding amount (Out. Amount : $)</string>
 
     <!-- Termrs and Cond -->
 
@@ -617,6 +619,5 @@
     <string name="E0056">Document/Image Not found</string>
     <string name="E0057">Please enter a valid Food License</string>
     <string name="E0058">Food License already registered. Please try again.</string>
-    <string name="previous">Previous</string>
 
 </resources>

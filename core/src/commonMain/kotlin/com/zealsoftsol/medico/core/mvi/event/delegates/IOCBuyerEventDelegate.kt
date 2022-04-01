@@ -39,11 +39,13 @@ internal class IOCBuyerEventDelegate(
         is Event.Action.IOCBuyer.LoadInvDetails -> getInvoiceDetails(event.invoiceId)
         is Event.Action.IOCBuyer.OpenPaymentMethod -> openPaymentMethod(
             event.unitCode,
-            event.invoiceId
+            event.invoiceId,
+            event.outStand
         )
         is Event.Action.IOCBuyer.OpenPayNow -> openPayNow(
             event.unitCode,
             event.invoiceId,
+            event.outStand,
             event.type
         )
         is Event.Action.IOCBuyer.SubmitPayment -> submitPayment(event.item, event.mobile)
@@ -84,18 +86,23 @@ internal class IOCBuyerEventDelegate(
     }
 
 
-    private fun openPayNow(unitCode: String, invoiceId: String, type: IocBuyerScope.PaymentTypes) {
+    private fun openPayNow(
+        unitCode: String,
+        invoiceId: String,
+        outStand: Double,
+        type: IocBuyerScope.PaymentTypes
+    ) {
         navigator.withScope<IocBuyerScope.IOCPaymentMethod> {
             setScope(
-                IocBuyerScope.IOCPayNow(unitCode, invoiceId, type)
+                IocBuyerScope.IOCPayNow(unitCode, invoiceId, outStand, type)
             )
         }
     }
 
-    private fun openPaymentMethod(unitCode: String, invoiceId: String) {
+    private fun openPaymentMethod(unitCode: String, invoiceId: String, outStand: Double) {
         navigator.withScope<IocBuyerScope.InvDetails> {
             setScope(
-                IocBuyerScope.IOCPaymentMethod(unitCode, invoiceId)
+                IocBuyerScope.IOCPaymentMethod(unitCode, invoiceId, outStand)
             )
         }
     }
